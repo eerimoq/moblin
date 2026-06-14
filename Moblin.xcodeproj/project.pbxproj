@@ -422,6 +422,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 035E9E412A9A02D7009D4F5A /* Build configuration list for PBXNativeTarget "Moblin" */;
 			buildPhases = (
+				03B31D8D2C59D89A00A38166 /* Run Script */,
 				035E9E2F2A9A02D6009D4F5A /* Sources */,
 				035E9E302A9A02D6009D4F5A /* Frameworks */,
 				035E9E312A9A02D6009D4F5A /* Resources */,
@@ -704,6 +705,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		03B31D8D2C59D89A00A38166 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -f \"$SRCROOT/utils/generate_new_features.py\" ]; then\n    echo \"=== Generating New Features Manifest ===\"\n    python3 \"$SRCROOT/utils/generate_new_features.py\" || echo \"⚠️ New features script failed, continuing build...\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0312E42A2C00F24E00C6F878 /* Sources */ = {

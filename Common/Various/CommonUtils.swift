@@ -786,7 +786,23 @@ extension KeyedDecodingContainer {
     }
 }
 
+public struct NewFeaturesManifest: Decodable {
+    public let version: String
+    public let features: [String]
+    public let generatedAt: String
+    public let source: String
+}
+
 public enum NewFeatureManager {
+    private static let manifest: NewFeaturesManifest? = {
+        guard let url = Bundle.main.url(forResource: "NewFeatures", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode(NewFeaturesManifest.self, from: data) else {
+            return nil
+        }
+        return decoded
+    }()
+
     public static let currentVersion: String = {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         if version == "1.0" {
@@ -795,32 +811,11 @@ public enum NewFeatureManager {
         return version
     }()
 
-    private static let featuresIntroduced: [String: String] = [
-        "speed": "33.8.0",
-        "averageSpeed": "33.8.0",
-        "altitude": "33.8.0",
-        "distance": "33.8.0",
-        "splitDistance": "33.8.0",
-        "temperature": "33.8.0",
-        "feelsLikeTemperature": "33.8.0",
-        "wind": "33.8.0",
-        "workoutDistance": "33.8.0",
-        "runningPace": "33.8.0",
-        "runningDistance": "33.8.0",
-        "gForce": "33.8.0",
-        "gForceRecentMax": "33.8.0",
-        "gForceMax": "33.8.0",
-        "generalUnits": "33.8.0",
-        "locationUnits": "33.8.0",
-        "weatherUnits": "33.8.0",
-        "workoutUnits": "33.8.0",
-        "djiWifi": "33.8.0",
-    ]
-
     public static func shouldShowIndicator(for feature: String) -> Bool {
+        guard let manifest else { return false }
+        guard currentVersion == manifest.version else { return false }
         let baseFeature = feature.split(separator: ":").first.map(String.init) ?? feature
-        guard let introducedVersion = featuresIntroduced[baseFeature] else { return false }
-        return currentVersion == introducedVersion
+        return manifest.features.contains(baseFeature)
     }
 
     public static func shouldShowAnyWidgetsIndicator() -> Bool {
@@ -831,7 +826,9 @@ public enum NewFeatureManager {
     }
 
     public static func shouldShowAnyIndicator() -> Bool {
-        featuresIntroduced.keys.contains { shouldShowIndicator(for: $0) }
+        guard let manifest else { return false }
+        guard currentVersion == manifest.version else { return false }
+        return !manifest.features.isEmpty
     }
 }
 

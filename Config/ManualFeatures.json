@@ -1,0 +1,25 @@
+{
+  "features": [
+    "speed",
+    "averageSpeed",
+    "altitude",
+    "distance",
+    "splitDistance",
+    "temperature",
+    "feelsLikeTemperature",
+    "wind",
+    "workoutDistance",
+    "runningPace",
+    "runningDistance",
+    "gForce",
+    "gForceRecentMax",
+    "gForceMax",
+    "generalUnits",
+    "locationUnits",
+    "weatherUnits",
+    "workoutUnits",
+    "djiWifi",
+    "gemini"
+  ],
+  "autoDetectFromGit": true
+}

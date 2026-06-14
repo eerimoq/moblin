@@ -1,0 +1,27 @@
+{
+  "version": "33.8.0",
+  "features": [
+    "altitude",
+    "averageSpeed",
+    "distance",
+    "djiWifi",
+    "feelsLikeTemperature",
+    "gForce",
+    "gForceMax",
+    "gForceRecentMax",
+    "gemini",
+    "generalUnits",
+    "locationUnits",
+    "runningDistance",
+    "runningPace",
+    "speed",
+    "splitDistance",
+    "temperature",
+    "weatherUnits",
+    "wind",
+    "workoutDistance",
+    "workoutUnits"
+  ],
+  "generatedAt": "2026-06-14T21:40:16.544690Z",
+  "source": "git+manual"
+}
