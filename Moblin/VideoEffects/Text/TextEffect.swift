@@ -11,8 +11,8 @@ struct TextEffectStats {
     let fps: Int?
     let date: Date
     let debugOverlayLines: [String]
-    let speed: String
-    let averageSpeed: String
+    let speed: Double
+    let averageSpeed: Double
     let altitude: String
     let distance: String
     let splitDistance: String

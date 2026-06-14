@@ -6,7 +6,7 @@ enum TextFormatSpeedUnit {
     case kilometersPerHour
     case milesPerHour
 
-    init?(value: String) {
+    init?(_ value: String) {
         switch value {
         case "m/s":
             self = .metersPerSecond
@@ -16,6 +16,19 @@ enum TextFormatSpeedUnit {
             self = .milesPerHour
         default:
             return nil
+        }
+    }
+
+    func toSystem() -> UnitSpeed? {
+        switch self {
+        case .system:
+            nil
+        case .metersPerSecond:
+            .metersPerSecond
+        case .kilometersPerHour:
+            .kilometersPerHour
+        case .milesPerHour:
+            .milesPerHour
         }
     }
 }
@@ -43,7 +56,7 @@ enum TextFormatPart: Equatable {
     case conditions
     case temperature(String?)
     case feelsLikeTemperature(String?)
-    case wind(String?)
+    case wind(TextFormatSpeedUnit)
     case country
     case countryFlag
     case state
@@ -129,8 +142,7 @@ class TextFormatLoader {
                     loadItem(part: .temperature(nil), offsetBy: 13)
                 } else if formatFromIndex.hasPrefix("{feelsliketemperature}") {
                     loadItem(part: .feelsLikeTemperature(nil), offsetBy: 22)
-                } else if formatFromIndex.hasPrefix("{wind}") {
-                    loadItem(part: .wind(nil), offsetBy: 6)
+                } else if appendWindIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{country}") {
                     loadItem(part: .country, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
@@ -195,96 +207,82 @@ class TextFormatLoader {
     }
 
     private func appendSpeedIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{speed}") {
-            loadItem(part: .speed(.system), offsetBy: 7)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{speed:([^}]+)}/),
-                  let unit = TextFormatSpeedUnit(value: String(match.output.1))
-        {
-            loadItem(part: .speed(unit), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{speed}",
+                               /{speed:([^}]+)}/,
+                               TextFormatSpeedUnit.init) { .speed($0 ?? .system) }
     }
 
     private func appendAverageSpeedIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{averagespeed}") {
-            loadItem(part: .averageSpeed(.system), offsetBy: 14)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{averagespeed:([^}]+)}/),
-                  let unit = TextFormatSpeedUnit(value: String(match.output.1))
-        {
-            loadItem(part: .averageSpeed(unit), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{averagespeed}",
+                               /{averagespeed:([^}]+)}/,
+                               TextFormatSpeedUnit.init) { .averageSpeed($0 ?? .system) }
     }
 
     private func appendHeartRateIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{heartrate}") {
-            loadItem(part: .heartRate(""), offsetBy: 11)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{heartrate:([^}]+)}/) {
-            let deviceName = String(match.output.1)
-            loadItem(part: .heartRate(deviceName), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{heartrate}",
+                               /{heartrate:([^}]+)}/,
+                               { $0 },
+                               { .heartRate($0 ?? "") })
     }
 
     private func appendPaceIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{runningpace}") {
-            loadItem(part: .runningPace("", nil), offsetBy: 13)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{runningpace:([^}]+)}/) {
-            let deviceName = String(match.output.1)
-            loadItem(part: .runningPace(deviceName, nil), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{runningpace}",
+                               /{runningpace:([^}]+)}/,
+                               { $0 },
+                               { .runningPace($0 ?? "", nil) })
     }
 
     private func appendCadenceIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{runningcadence}") {
-            loadItem(part: .runningCadence(""), offsetBy: 16)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{runningcadence:([^}]+)}/) {
-            let deviceName = String(match.output.1)
-            loadItem(part: .runningCadence(deviceName), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{runningcadence}",
+                               /{runningcadence:([^}]+)}/,
+                               { $0 },
+                               { .runningCadence($0 ?? "") })
     }
 
     private func appendRunDistanceIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{runningdistance}") {
-            loadItem(part: .runningDistance("", nil), offsetBy: 17)
-            return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{runningdistance:([^}]+)}/) {
-            let deviceName = String(match.output.1)
-            loadItem(part: .runningDistance(deviceName, nil), offsetBy: match.output.0.count)
-            return true
-        } else {
-            return false
-        }
+        appendOptionsIfPresent(formatFromIndex,
+                               "{runningdistance}",
+                               /{runningdistance:([^}]+)}/,
+                               { $0 },
+                               { .runningDistance($0 ?? "", nil) })
+    }
+
+    private func appendWindIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{wind}",
+                               /{wind:([^}]+)}/,
+                               TextFormatSpeedUnit.init) { .wind($0 ?? .system) }
     }
 
     private func appendSubtitlesIfPresent(formatFromIndex: String) -> Bool {
-        if formatFromIndex.hasPrefix("{subtitles}") {
-            loadItem(part: .subtitles(nil), offsetBy: 11)
+        appendOptionsIfPresent(formatFromIndex,
+                               "{subtitles}",
+                               /{subtitles:([^}]+)}/,
+                               { $0 },
+                               { .subtitles($0) })
+    }
+
+    private func appendOptionsIfPresent<Options>(_ formatFromIndex: String,
+                                                 _ plain: String,
+                                                 _ regex: Regex<(Substring, Substring)>,
+                                                 _ makeOptions: (String) -> Options?,
+                                                 _ makePart: (Options?) -> TextFormatPart) -> Bool
+    {
+        if formatFromIndex.hasPrefix(plain) {
+            loadItem(part: makePart(nil), offsetBy: plain.count)
             return true
-        } else if let match = formatFromIndex.prefixMatch(of: /{subtitles:([^}]+)}/) {
-            let languageIdentifier = String(match.output.1)
-            loadItem(part: .subtitles(languageIdentifier), offsetBy: match.output.0.count)
+        } else if let match = formatFromIndex.prefixMatch(of: regex),
+                  let options = makeOptions(String(match.output.1))
+        {
+            loadItem(part: makePart(options), offsetBy: match.output.0.count)
             return true
-        } else {
-            return false
         }
+        return false
     }
 
     private func appendTextIfPresent() {

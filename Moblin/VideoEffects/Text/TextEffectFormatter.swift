@@ -39,6 +39,7 @@ class TextEffectFormatter {
     var timersEndTime: [ContinuousClock.Instant]
     var stopwatches: [SettingsWidgetTextStopwatch]
     var temperatureFormatter = MeasurementFormatter()
+    let speedFormatter = MeasurementFormatter()
     var checkboxes: [Bool]
     var ratings: [Int]
     var subtitles: [String?: Subtitles] = [:]
@@ -67,6 +68,7 @@ class TextEffectFormatter {
         self.ratings = ratings
         self.lapTimes = lapTimes
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
+        speedFormatter.numberFormatter.maximumFractionDigits = 0
     }
 
     func format(stats: TextEffectStats, now: ContinuousClock.Instant) -> [TextEffectLine] {
@@ -103,10 +105,10 @@ class TextEffectFormatter {
                 formatFps(stats: stats)
             case .debugOverlay:
                 formatDebugOverlay(stats: stats)
-            case .speed:
-                formatSpeed(stats: stats)
-            case .averageSpeed:
-                formatAverageSpeed(stats: stats)
+            case let .speed(unit):
+                formatSpeed(stats: stats, unit: unit)
+            case let .averageSpeed(unit):
+                formatAverageSpeed(stats: stats, unit: unit)
             case .altitude:
                 formatAltitude(stats: stats)
             case .distance:
@@ -125,8 +127,8 @@ class TextEffectFormatter {
                 formatTemperature(stats: stats)
             case .feelsLikeTemperature:
                 formatFeelsLikeTemperature(stats: stats)
-            case .wind:
-                formatWind(stats: stats)
+            case let .wind(unit):
+                formatWind(stats: stats, unit: unit)
             case .country:
                 formatCountry(stats: stats)
             case .countryFlag:
@@ -243,12 +245,12 @@ class TextEffectFormatter {
         appendTextPart(value: stats.debugOverlayLines.joined(separator: "\n"))
     }
 
-    private func formatSpeed(stats: TextEffectStats) {
-        appendTextPart(value: stats.speed)
+    private func formatSpeed(stats: TextEffectStats, unit: TextFormatSpeedUnit) {
+        appendTextPart(value: formatSpeed(speed: stats.speed, unit: unit))
     }
 
-    private func formatAverageSpeed(stats: TextEffectStats) {
-        appendTextPart(value: stats.averageSpeed)
+    private func formatAverageSpeed(stats: TextEffectStats, unit: TextFormatSpeedUnit) {
+        appendTextPart(value: formatSpeed(speed: stats.averageSpeed, unit: unit))
     }
 
     private func formatAltitude(stats: TextEffectStats) {
@@ -311,12 +313,14 @@ class TextEffectFormatter {
         }
     }
 
-    private func formatWind(stats: TextEffectStats) {
+    private func formatWind(stats: TextEffectStats, unit: TextFormatSpeedUnit) {
         if let windSpeed = stats.windSpeed {
             if let windGust = stats.windGust {
-                appendTextPart(value: formatWindAndGustSpeed(speed: windSpeed, gust: windGust))
+                appendTextPart(value: formatWindAndGustSpeed(speed: windSpeed,
+                                                             gust: windGust,
+                                                             unit: unit.toSystem()))
             } else {
-                appendTextPart(value: formatWindSpeed(speed: windSpeed))
+                appendTextPart(value: formatWindSpeed(speed: windSpeed, unit: unit.toSystem()))
             }
         } else {
             appendTextPart(value: "-")
@@ -517,6 +521,23 @@ class TextEffectFormatter {
         } else {
             "-"
         }
+    }
+
+    private func formatSpeed(speed: Double, unit: TextFormatSpeedUnit) -> String {
+        var measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
+        switch unit {
+        case .system:
+            speedFormatter.unitOptions = []
+        case .metersPerSecond:
+            speedFormatter.unitOptions = .providedUnit
+        case .kilometersPerHour:
+            speedFormatter.unitOptions = .providedUnit
+            measurement = measurement.converted(to: .kilometersPerHour)
+        case .milesPerHour:
+            speedFormatter.unitOptions = .providedUnit
+            measurement = measurement.converted(to: .milesPerHour)
+        }
+        return speedFormatter.string(from: measurement)
     }
 
     private func appendTextPart(value: String) {

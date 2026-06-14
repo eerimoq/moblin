@@ -30,16 +30,18 @@ struct UtilsSuite {
 
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func windSpeed() {
-        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour)) == "2 m/s")
-        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour)) == "4 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour), unit: nil) == "2 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour), unit: nil) == "4 m/s")
     }
 
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func windSpeedAndGust() {
         #expect(formatWindAndGustSpeed(speed: Measurement(value: 5, unit: .milesPerHour),
-                                       gust: Measurement(value: 10, unit: .milesPerHour)) == "2 (4) m/s")
+                                       gust: Measurement(value: 10, unit: .milesPerHour),
+                                       unit: nil) == "2 (4) m/s")
         #expect(formatWindAndGustSpeed(speed: Measurement(value: 15, unit: .milesPerHour),
-                                       gust: Measurement(value: 20, unit: .milesPerHour)) == "6 (8) m/s")
+                                       gust: Measurement(value: 20, unit: .milesPerHour),
+                                       unit: nil) == "6 (8) m/s")
     }
 
     @Test

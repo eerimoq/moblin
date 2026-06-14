@@ -67,6 +67,51 @@ struct TextEffectSuite {
     }
 
     @Test
+    func speed() {
+        var lines = format(format: "{speed:m/s}", stats: createStats())
+        #expect(lines == createLine(data: .text("5 m/s")))
+        lines = format(format: "{speed:km/h}", stats: createStats())
+        #expect(lines == createLine(data: .text("18 km/h")))
+        lines = format(format: "{speed:mph}", stats: createStats())
+        #expect(lines == createLine(data: .text("11 mph")))
+        let systemPart = format(format: "{speed}", stats: createStats())
+        lines = format(format: "{speed:mph} {speed} {speed:m/s}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("11 mph"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("5 m/s"))[0].parts[0].data)
+    }
+
+    @Test
+    func averageSpeed() {
+        var lines = format(format: "{averagespeed:m/s}", stats: createStats())
+        #expect(lines == createLine(data: .text("7 m/s")))
+        lines = format(format: "{averagespeed:km/h}", stats: createStats())
+        #expect(lines == createLine(data: .text("25 km/h")))
+        lines = format(format: "{averagespeed:mph}", stats: createStats())
+        #expect(lines == createLine(data: .text("16 mph")))
+        let systemPart = format(format: "{averagespeed}", stats: createStats())
+        lines = format(format: "{averagespeed:mph} {averagespeed} {averagespeed:m/s}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("16 mph"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("7 m/s"))[0].parts[0].data)
+    }
+
+    @Test
+    func wind() {
+        var lines = format(format: "{wind:m/s}", stats: createStats())
+        #expect(lines == createLine(data: .text("3 m/s")))
+        lines = format(format: "{wind:km/h}", stats: createStats())
+        #expect(lines == createLine(data: .text("11 km/h")))
+        lines = format(format: "{wind:mph}", stats: createStats())
+        #expect(lines == createLine(data: .text("7 mph")))
+        let systemPart = format(format: "{wind}", stats: createStats())
+        lines = format(format: "{wind:mph} {wind} {wind:m/s}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("7 mph"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("3 m/s"))[0].parts[0].data)
+    }
+
+    @Test
     func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
@@ -178,8 +223,8 @@ struct TextEffectSuite {
                         fps: nil,
                         date: Date(timeIntervalSince1970: 1_723_350_366),
                         debugOverlayLines: [],
-                        speed: "",
-                        averageSpeed: "",
+                        speed: 5,
+                        averageSpeed: 7,
                         altitude: "",
                         distance: "",
                         splitDistance: "",
@@ -187,7 +232,7 @@ struct TextEffectSuite {
                         conditions: conditions,
                         temperature: nil,
                         feelsLikeTemperature: nil,
-                        windSpeed: nil,
+                        windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),
                         windGust: nil,
                         country: nil,
                         countryFlag: nil,
