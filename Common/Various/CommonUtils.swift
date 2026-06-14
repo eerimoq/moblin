@@ -797,7 +797,8 @@ public enum NewFeatureManager {
     private static let manifest: NewFeaturesManifest? = {
         guard let url = Bundle.main.url(forResource: "NewFeatures", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode(NewFeaturesManifest.self, from: data) else {
+              let decoded = try? JSONDecoder().decode(NewFeaturesManifest.self, from: data)
+        else {
             return nil
         }
         return decoded
