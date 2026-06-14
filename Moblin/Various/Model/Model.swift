@@ -401,6 +401,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pendingStreamImportCollisionTitle: String = ""
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
+    @Published var editWidgetsMode = false
+    @Published var selectedWidgetForInteraction: WidgetInScene?
     @Published var showBrowser = false
     @Published var showNavigation = false
     @Published var webBrowserUrl: String = ""
@@ -1155,6 +1157,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateQuickButtonStates()
+        editWidgetsMode = database.quickButtons.first(where: { $0.type == .editWidgets })?.isOn ?? false
         setQuickButton(type: .blurFaces, isOn: database.face.blurFaces)
         setQuickButton(type: .blurText, isOn: database.face.blurText)
         setQuickButton(type: .privacy, isOn: database.face.blurBackground)

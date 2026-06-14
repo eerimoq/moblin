@@ -301,6 +301,13 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .widgets, panel: .sceneWidgets)
     }
 
+    private func editWidgetsAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.setQuickButton(type: .editWidgets, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.editWidgetsMode = state.button.isOn
+    }
+
     private func lutsAction() {
         model.toggleShowingPanel(type: .luts, panel: .luts)
         model.updateLutsButtonState()
@@ -714,6 +721,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             widgetsAction()
+                        }
+                    case .editWidgets:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            editWidgetsAction(state: state)
                         }
                     case .luts:
                         QuickButtonImage(model: model,

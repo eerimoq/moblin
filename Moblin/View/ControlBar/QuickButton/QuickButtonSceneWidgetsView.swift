@@ -59,6 +59,25 @@ struct QuickButtonSceneWidgetsView: View {
     var body: some View {
         Form {
             Section {
+                Toggle(isOn: Binding(
+                    get: { model.editWidgetsMode },
+                    set: { value in
+                        model.editWidgetsMode = value
+                        model.setQuickButton(type: .editWidgets, isOn: value)
+                        model.updateQuickButtonStates()
+                    }
+                )) {
+                    IconAndTextView(
+                        image: "arrow.up.and.down.and.arrow.left.and.right",
+                        text: String(localized: "Edit layout on screen"),
+                        longDivider: true
+                    )
+                }
+            } footer: {
+                Text("Turn on to drag and resize widgets directly on the camera preview.")
+            }
+
+            Section {
                 List {
                     ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in
                         WidgetView(model: model,

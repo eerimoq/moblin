@@ -1783,4 +1783,77 @@ extension Model {
         })
         startGForceManager()
     }
+
+    func updateWidgetLayoutDirectly(widgetId: UUID, sceneWidget: SettingsSceneWidget) {
+        // Trigger a UI redraw so InteractiveWidgetOverlayView moves the blue selection borders in real-time
+        objectWillChange.send()
+
+        if let effect = imageEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = textEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = browserEffects[widgetId] {
+            if let scene = getSelectedScene() {
+                effect.setSceneWidget(
+                    sceneWidget: sceneWidget.clone(),
+                    crops: findWidgetCrops(scene: scene, sourceWidgetId: widgetId)
+                )
+            }
+        } else if let effect = mapEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = qrCodeEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = alertsEffects[widgetId] {
+            effect.setPosition(x: sceneWidget.layout.x, y: sceneWidget.layout.y)
+        } else if let effect = videoSourceEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = scoreboardEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = vTuberEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = pngTuberEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = snapshotEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = chatEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = chatEmoteComboEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = slideshowEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = wheelOfLuckEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = bingoCardEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        } else if let effect = pomodoroTimerEffects[widgetId] {
+            effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        }
+    }
+
+    func bringWidgetToFront(widgetId: UUID) {
+        guard let scene = getSelectedScene() else { return }
+        if let index = scene.widgets.firstIndex(where: { $0.widgetId == widgetId }) {
+            let sceneWidget = scene.widgets.remove(at: index)
+            scene.widgets.append(sceneWidget)
+            sceneUpdated(attachCamera: false, updateRemoteScene: true)
+        }
+    }
+
+    func sendWidgetToBack(widgetId: UUID) {
+        guard let scene = getSelectedScene() else { return }
+        if let index = scene.widgets.firstIndex(where: { $0.widgetId == widgetId }) {
+            let sceneWidget = scene.widgets.remove(at: index)
+            scene.widgets.insert(sceneWidget, at: 0)
+            sceneUpdated(attachCamera: false, updateRemoteScene: true)
+        }
+    }
+
+    func deleteWidgetFromScene(widgetId: UUID) {
+        guard let scene = getSelectedScene() else { return }
+        if let index = scene.widgets.firstIndex(where: { $0.widgetId == widgetId }) {
+            scene.widgets.remove(at: index)
+            selectedWidgetForInteraction = nil
+            sceneUpdated(attachCamera: false, updateRemoteScene: true)
+        }
+    }
 }
