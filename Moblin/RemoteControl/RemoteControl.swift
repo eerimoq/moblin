@@ -554,7 +554,10 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var country: String?
     var countryFlag: String?
     var state: String?
+    var region: String?
+    var area: String?
     var city: String?
+    var neighborhood: String?
     var muted: Bool
     var heartRates: [String: Int?]
     var activeEnergyBurned: Int?
@@ -593,7 +596,9 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         country = stats.country
         countryFlag = stats.countryFlag
         state = stats.state
+        area = stats.area
         city = stats.city
+        neighborhood = stats.neighborhood
         muted = stats.muted
         heartRates = stats.heartRates
         activeEnergyBurned = stats.activeEnergyBurned
@@ -633,7 +638,9 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                         country: country,
                         countryFlag: countryFlag,
                         state: state,
+                        area: area,
                         city: city,
+                        neighborhood: neighborhood,
                         muted: muted,
                         heartRates: heartRates,
                         activeEnergyBurned: activeEnergyBurned,

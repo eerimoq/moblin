@@ -832,7 +832,13 @@ private struct LocationVariablesView: View {
                         text: $value
                     )
                     VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
+                    VariableView(title: "{area}", description: String(localized: "Show area"), text: $value)
                     VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                    VariableView(
+                        title: "{neighborhood}",
+                        description: String(localized: "Show neighborhood"),
+                        text: $value
+                    )
                     VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
                     VariableWithSpeedUnitView(model: model,
                                               description: String(localized: "Show speed in given unit"),

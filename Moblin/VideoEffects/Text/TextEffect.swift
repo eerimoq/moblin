@@ -25,7 +25,9 @@ struct TextEffectStats {
     let country: String?
     let countryFlag: String?
     let state: String?
+    let area: String?
     let city: String?
+    let neighborhood: String?
     let muted: Bool
     let heartRates: [String: Int?]
     let activeEnergyBurned: Int?
