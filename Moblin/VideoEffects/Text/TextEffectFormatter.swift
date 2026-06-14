@@ -123,10 +123,10 @@ class TextEffectFormatter {
                 formatStopwatch(stats: stats, now: now)
             case .conditions:
                 formatConditions(stats: stats)
-            case .temperature:
-                formatTemperature(stats: stats)
-            case .feelsLikeTemperature:
-                formatFeelsLikeTemperature(stats: stats)
+            case let .temperature(unit):
+                formatTemperature(stats: stats, unit: unit)
+            case let .feelsLikeTemperature(unit):
+                formatFeelsLikeTemperature(stats: stats, unit: unit)
             case let .wind(unit):
                 formatWind(stats: stats, unit: unit)
             case .country:
@@ -297,20 +297,12 @@ class TextEffectFormatter {
         }
     }
 
-    private func formatTemperature(stats: TextEffectStats) {
-        if let temperature = stats.temperature {
-            appendTextPart(value: temperatureFormatter.string(from: temperature))
-        } else {
-            appendTextPart(value: "-")
-        }
+    private func formatTemperature(stats: TextEffectStats, unit: TextFormatTemperatureUnit) {
+        appendTextPart(value: formatTemperature(temperature: stats.temperature, unit: unit))
     }
 
-    private func formatFeelsLikeTemperature(stats: TextEffectStats) {
-        if let temperature = stats.feelsLikeTemperature {
-            appendTextPart(value: temperatureFormatter.string(from: temperature))
-        } else {
-            appendTextPart(value: "-")
-        }
+    private func formatFeelsLikeTemperature(stats: TextEffectStats, unit: TextFormatTemperatureUnit) {
+        appendTextPart(value: formatTemperature(temperature: stats.feelsLikeTemperature, unit: unit))
     }
 
     private func formatWind(stats: TextEffectStats, unit: TextFormatSpeedUnit) {
@@ -538,6 +530,29 @@ class TextEffectFormatter {
             measurement = measurement.converted(to: .milesPerHour)
         }
         return speedFormatter.string(from: measurement)
+    }
+
+    private func formatTemperature(temperature: Measurement<UnitTemperature>?,
+                                   unit: TextFormatTemperatureUnit) -> String
+    {
+        if var temperature {
+            switch unit {
+            case .system:
+                temperatureFormatter.unitOptions = []
+            case .kelvin:
+                temperatureFormatter.unitOptions = .providedUnit
+                temperature = temperature.converted(to: .kelvin)
+            case .celsius:
+                temperatureFormatter.unitOptions = .providedUnit
+                temperature = temperature.converted(to: .celsius)
+            case .fahrenheit:
+                temperatureFormatter.unitOptions = .providedUnit
+                temperature = temperature.converted(to: .fahrenheit)
+            }
+            return temperatureFormatter.string(from: temperature)
+        } else {
+            return "-"
+        }
     }
 
     private func appendTextPart(value: String) {

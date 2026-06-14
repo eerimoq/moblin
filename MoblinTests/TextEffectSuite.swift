@@ -83,14 +83,14 @@ struct TextEffectSuite {
 
     @Test
     func averageSpeed() {
-        var lines = format(format: "{averagespeed:m/s}", stats: createStats())
+        var lines = format(format: "{averageSpeed:m/s}", stats: createStats())
         #expect(lines == createLine(data: .text("7 m/s")))
-        lines = format(format: "{averagespeed:km/h}", stats: createStats())
+        lines = format(format: "{averageSpeed:km/h}", stats: createStats())
         #expect(lines == createLine(data: .text("25 km/h")))
-        lines = format(format: "{averagespeed:mph}", stats: createStats())
+        lines = format(format: "{averageSpeed:mph}", stats: createStats())
         #expect(lines == createLine(data: .text("16 mph")))
-        let systemPart = format(format: "{averagespeed}", stats: createStats())
-        lines = format(format: "{averagespeed:mph} {averagespeed} {averagespeed:m/s}", stats: createStats())
+        let systemPart = format(format: "{averageSpeed}", stats: createStats())
+        lines = format(format: "{averageSpeed:mph} {averageSpeed} {averageSpeed:m/s}", stats: createStats())
         #expect(lines[0].parts[0] == createLine(data: .text("16 mph"))[0].parts[0])
         #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
         #expect(lines[0].parts[4].data == createLine(data: .text("7 m/s"))[0].parts[0].data)
@@ -109,6 +109,37 @@ struct TextEffectSuite {
         #expect(lines[0].parts[0] == createLine(data: .text("7 mph"))[0].parts[0])
         #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
         #expect(lines[0].parts[4].data == createLine(data: .text("3 m/s"))[0].parts[0].data)
+    }
+
+    @Test
+    func temperature() {
+        var lines = format(format: "{temperature:c}", stats: createStats())
+        #expect(lines == createLine(data: .text("22°C")))
+        lines = format(format: "{temperature:f}", stats: createStats())
+        #expect(lines == createLine(data: .text("72°F")))
+        lines = format(format: "{temperature:k}", stats: createStats())
+        #expect(lines == createLine(data: .text("295 K")))
+        let systemPart = format(format: "{temperature}", stats: createStats())
+        lines = format(format: "{temperature:f} {temperature} {temperature:c}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("72°F"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("22°C"))[0].parts[0].data)
+    }
+
+    @Test
+    func feelsLikeTemperature() {
+        var lines = format(format: "{feelsLikeTemperature:c}", stats: createStats())
+        #expect(lines == createLine(data: .text("17°C")))
+        lines = format(format: "{feelsLikeTemperature:f}", stats: createStats())
+        #expect(lines == createLine(data: .text("63°F")))
+        lines = format(format: "{feelsLikeTemperature:k}", stats: createStats())
+        #expect(lines == createLine(data: .text("290 K")))
+        let systemPart = format(format: "{feelsLikeTemperature}", stats: createStats())
+        lines = format(format: "{feelsLikeTemperature:f} {feelsLikeTemperature} {feelsLikeTemperature:c}",
+                       stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("63°F"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("17°C"))[0].parts[0].data)
     }
 
     @Test
@@ -230,8 +261,8 @@ struct TextEffectSuite {
                         splitDistance: "",
                         slope: "",
                         conditions: conditions,
-                        temperature: nil,
-                        feelsLikeTemperature: nil,
+                        temperature: Measurement(value: 22, unit: UnitTemperature.celsius),
+                        feelsLikeTemperature: Measurement(value: 17, unit: UnitTemperature.celsius),
                         windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),
                         windGust: nil,
                         country: nil,

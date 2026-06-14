@@ -33,6 +33,39 @@ enum TextFormatSpeedUnit {
     }
 }
 
+enum TextFormatTemperatureUnit {
+    case system
+    case kelvin
+    case celsius
+    case fahrenheit
+
+    init?(_ value: String) {
+        switch value {
+        case "k":
+            self = .kelvin
+        case "c":
+            self = .celsius
+        case "f":
+            self = .fahrenheit
+        default:
+            return nil
+        }
+    }
+
+    func toSystem() -> UnitTemperature? {
+        switch self {
+        case .system:
+            nil
+        case .kelvin:
+            .kelvin
+        case .celsius:
+            .celsius
+        case .fahrenheit:
+            .fahrenheit
+        }
+    }
+}
+
 enum TextFormatPart: Equatable {
     case text(String)
     case newLine
@@ -54,8 +87,8 @@ enum TextFormatPart: Equatable {
     case timer
     case stopwatch
     case conditions
-    case temperature(String?)
-    case feelsLikeTemperature(String?)
+    case temperature(TextFormatTemperatureUnit)
+    case feelsLikeTemperature(TextFormatTemperatureUnit)
     case wind(TextFormatSpeedUnit)
     case country
     case countryFlag
@@ -138,10 +171,8 @@ class TextFormatLoader {
                     loadItem(part: .stopwatch, offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{conditions}") {
                     loadItem(part: .conditions, offsetBy: 12)
-                } else if formatFromIndex.hasPrefix("{temperature}") {
-                    loadItem(part: .temperature(nil), offsetBy: 13)
-                } else if formatFromIndex.hasPrefix("{feelsliketemperature}") {
-                    loadItem(part: .feelsLikeTemperature(nil), offsetBy: 22)
+                } else if appendTemperatureIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendFeelsLikeTemperatureIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendWindIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{country}") {
                     loadItem(part: .country, offsetBy: 9)
@@ -218,6 +249,20 @@ class TextFormatLoader {
                                "{averagespeed}",
                                /{averagespeed:([^}]+)}/,
                                TextFormatSpeedUnit.init) { .averageSpeed($0 ?? .system) }
+    }
+
+    private func appendTemperatureIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{temperature}",
+                               /{temperature:([^}]+)}/,
+                               TextFormatTemperatureUnit.init) { .temperature($0 ?? .system) }
+    }
+
+    private func appendFeelsLikeTemperatureIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{feelsliketemperature}",
+                               /{feelsliketemperature:([^}]+)}/,
+                               TextFormatTemperatureUnit.init) { .feelsLikeTemperature($0 ?? .system) }
     }
 
     private func appendHeartRateIfPresent(formatFromIndex: String) -> Bool {
