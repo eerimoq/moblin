@@ -82,6 +82,81 @@ struct TextEffectSuite {
         ])
     }
 
+    @Test
+    func loadFormatSpeed() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{speed}")
+        #expect(parts == [.speed(.system)])
+        parts = loader.load(format: "{speed:m/s}")
+        #expect(parts == [.speed(.metersPerSecond)])
+        parts = loader.load(format: "{speed:km/h}")
+        #expect(parts == [.speed(.kilometersPerHour)])
+        parts = loader.load(format: "{speed:mph}")
+        #expect(parts == [.speed(.milesPerHour)])
+        parts = loader.load(format: "{speed:foo}")
+        #expect(parts == [.text("{speed:foo}")])
+    }
+
+    @Test
+    func loadFormatAverageSpeed() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{averagespeed}")
+        #expect(parts == [.averageSpeed(.system)])
+        parts = loader.load(format: "{averagespeed:m/s}")
+        #expect(parts == [.averageSpeed(.metersPerSecond)])
+        parts = loader.load(format: "{averagespeed:km/h}")
+        #expect(parts == [.averageSpeed(.kilometersPerHour)])
+        parts = loader.load(format: "{averagespeed:mph}")
+        #expect(parts == [.averageSpeed(.milesPerHour)])
+        parts = loader.load(format: "{averagespeed:foo}")
+        #expect(parts == [.text("{averagespeed:foo}")])
+    }
+
+    @Test
+    func loadFormatHeartrate() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{heartrate}")
+        #expect(parts == [.heartRate("")])
+        parts = loader.load(format: "{heartrate:My device}")
+        #expect(parts == [.heartRate("my device")])
+    }
+
+    @Test
+    func loadFormatRunningPace() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{runningpace}")
+        #expect(parts == [.runningPace("", nil)])
+        parts = loader.load(format: "{runningpace:My device}")
+        #expect(parts == [.runningPace("my device", nil)])
+    }
+
+    @Test
+    func loadFormatRunningCadence() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{runningcadence}")
+        #expect(parts == [.runningCadence("")])
+        parts = loader.load(format: "{runningcadence:My device}")
+        #expect(parts == [.runningCadence("my device")])
+    }
+
+    @Test
+    func loadFormatRunningDistance() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{runningdistance}")
+        #expect(parts == [.runningDistance("", nil)])
+        parts = loader.load(format: "{runningdistance:My device}")
+        #expect(parts == [.runningDistance("my device", nil)])
+    }
+
+    @Test
+    func loadFormatSubtitles() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{subtitles}")
+        #expect(parts == [.subtitles(nil)])
+        parts = loader.load(format: "{subtitles:dk}")
+        #expect(parts == [.subtitles("dk")])
+    }
+
     private func format(format: String, stats: TextEffectStats) -> [TextEffectLine] {
         let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: format),
                                             timersEndTime: [],

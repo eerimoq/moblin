@@ -1,5 +1,25 @@
 import Foundation
 
+enum TextFormatSpeedUnit {
+    case system
+    case metersPerSecond
+    case kilometersPerHour
+    case milesPerHour
+
+    init?(value: String) {
+        switch value {
+        case "m/s":
+            self = .metersPerSecond
+        case "km/h":
+            self = .kilometersPerHour
+        case "mph":
+            self = .milesPerHour
+        default:
+            return nil
+        }
+    }
+}
+
 enum TextFormatPart: Equatable {
     case text(String)
     case newLine
@@ -12,18 +32,18 @@ enum TextFormatPart: Equatable {
     case resolution
     case fps
     case debugOverlay
-    case speed
-    case averageSpeed
-    case altitude
-    case distance
-    case splitDistance
+    case speed(TextFormatSpeedUnit)
+    case averageSpeed(TextFormatSpeedUnit)
+    case altitude(String?)
+    case distance(String?)
+    case splitDistance(String?)
     case slope
     case timer
     case stopwatch
     case conditions
-    case temperature
-    case feelsLikeTemperature
-    case wind
+    case temperature(String?)
+    case feelsLikeTemperature(String?)
+    case wind(String?)
     case country
     case countryFlag
     case state
@@ -36,20 +56,20 @@ enum TextFormatPart: Equatable {
     case activeEnergyBurned
     case power
     case stepCount
-    case workoutDistance
+    case workoutDistance(String?)
     case teslaBatteryLevel
     case teslaDrive
     case teslaMedia
     case cyclingPower
     case cyclingCadence
-    case runningPace(String)
+    case runningPace(String, String?)
     case runningCadence(String)
-    case runningDistance(String)
+    case runningDistance(String, String?)
     case lapTimes
     case browserTitle
-    case gForce
-    case gForceRecentMax
-    case gForceMax
+    case gForce(String?)
+    case gForceRecentMax(String?)
+    case gForceMax(String?)
     case latestSubscriber
     case latestFollower
 }
@@ -88,17 +108,15 @@ class TextFormatLoader {
                     loadItem(part: .fps, offsetBy: 5)
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {
                     loadItem(part: .debugOverlay, offsetBy: 14)
-                } else if formatFromIndex.hasPrefix("{speed}") {
-                    loadItem(part: .speed, offsetBy: 7)
-                } else if formatFromIndex.hasPrefix("{averagespeed}") {
-                    loadItem(part: .averageSpeed, offsetBy: 14)
+                } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{altitude}") {
-                    loadItem(part: .altitude, offsetBy: 10)
+                    loadItem(part: .altitude(nil), offsetBy: 10)
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{splitdistance}") {
-                    loadItem(part: .splitDistance, offsetBy: 15)
+                    loadItem(part: .splitDistance(nil), offsetBy: 15)
                 } else if formatFromIndex.hasPrefix("{distance}") {
-                    loadItem(part: .distance, offsetBy: 10)
+                    loadItem(part: .distance(nil), offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{slope}") {
                     loadItem(part: .slope, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{timer}") {
@@ -108,11 +126,11 @@ class TextFormatLoader {
                 } else if formatFromIndex.hasPrefix("{conditions}") {
                     loadItem(part: .conditions, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{temperature}") {
-                    loadItem(part: .temperature, offsetBy: 13)
+                    loadItem(part: .temperature(nil), offsetBy: 13)
                 } else if formatFromIndex.hasPrefix("{feelsliketemperature}") {
-                    loadItem(part: .feelsLikeTemperature, offsetBy: 22)
+                    loadItem(part: .feelsLikeTemperature(nil), offsetBy: 22)
                 } else if formatFromIndex.hasPrefix("{wind}") {
-                    loadItem(part: .wind, offsetBy: 6)
+                    loadItem(part: .wind(nil), offsetBy: 6)
                 } else if formatFromIndex.hasPrefix("{country}") {
                     loadItem(part: .country, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
@@ -138,7 +156,7 @@ class TextFormatLoader {
                 } else if !isMac(), formatFromIndex.hasPrefix("{stepcount}") {
                     loadItem(part: .stepCount, offsetBy: 11)
                 } else if !isMac(), formatFromIndex.hasPrefix("{workoutdistance}") {
-                    loadItem(part: .workoutDistance, offsetBy: 17)
+                    loadItem(part: .workoutDistance(nil), offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{teslabatterylevel}") {
                     loadItem(part: .teslaBatteryLevel, offsetBy: 19)
                 } else if formatFromIndex.hasPrefix("{tesladrive}") {
@@ -154,11 +172,11 @@ class TextFormatLoader {
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {
                     loadItem(part: .browserTitle, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{gforce}") {
-                    loadItem(part: .gForce, offsetBy: 8)
+                    loadItem(part: .gForce(nil), offsetBy: 8)
                 } else if formatFromIndex.hasPrefix("{gforcerecentmax}") {
-                    loadItem(part: .gForceRecentMax, offsetBy: 17)
+                    loadItem(part: .gForceRecentMax(nil), offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{gforcemax}") {
-                    loadItem(part: .gForceMax, offsetBy: 11)
+                    loadItem(part: .gForceMax(nil), offsetBy: 11)
                 } else if formatFromIndex.hasPrefix("{latestsubscriber}") {
                     loadItem(part: .latestSubscriber, offsetBy: 18)
                 } else if formatFromIndex.hasPrefix("{latestfollower}") {
@@ -176,6 +194,34 @@ class TextFormatLoader {
         return parts
     }
 
+    private func appendSpeedIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{speed}") {
+            loadItem(part: .speed(.system), offsetBy: 7)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{speed:([^}]+)}/),
+                  let unit = TextFormatSpeedUnit(value: String(match.output.1))
+        {
+            loadItem(part: .speed(unit), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private func appendAverageSpeedIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{averagespeed}") {
+            loadItem(part: .averageSpeed(.system), offsetBy: 14)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{averagespeed:([^}]+)}/),
+                  let unit = TextFormatSpeedUnit(value: String(match.output.1))
+        {
+            loadItem(part: .averageSpeed(unit), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+
     private func appendHeartRateIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{heartrate}") {
             loadItem(part: .heartRate(""), offsetBy: 11)
@@ -191,11 +237,11 @@ class TextFormatLoader {
 
     private func appendPaceIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{runningpace}") {
-            loadItem(part: .runningPace(""), offsetBy: 13)
+            loadItem(part: .runningPace("", nil), offsetBy: 13)
             return true
         } else if let match = formatFromIndex.prefixMatch(of: /{runningpace:([^}]+)}/) {
             let deviceName = String(match.output.1)
-            loadItem(part: .runningPace(deviceName), offsetBy: match.output.0.count)
+            loadItem(part: .runningPace(deviceName, nil), offsetBy: match.output.0.count)
             return true
         } else {
             return false
@@ -217,11 +263,11 @@ class TextFormatLoader {
 
     private func appendRunDistanceIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{runningdistance}") {
-            loadItem(part: .runningDistance(""), offsetBy: 17)
+            loadItem(part: .runningDistance("", nil), offsetBy: 17)
             return true
         } else if let match = formatFromIndex.prefixMatch(of: /{runningdistance:([^}]+)}/) {
             let deviceName = String(match.output.1)
-            loadItem(part: .runningDistance(deviceName), offsetBy: match.output.0.count)
+            loadItem(part: .runningDistance(deviceName, nil), offsetBy: match.output.0.count)
             return true
         } else {
             return false
@@ -265,8 +311,8 @@ extension [TextFormatPart] {
         var afterCheckbox = false
         var checkboxTexts: [String] = []
         var currentIndex = 0
-        for part in self {
-            switch part {
+        for variable in self {
+            switch variable {
             case let .text(text):
                 if afterCheckbox {
                     checkboxTexts.append(text)
@@ -294,52 +340,67 @@ extension [TextFormatPart] {
     }
 
     func isWorkoutVariable() -> Bool {
-        if contains(.heartRate("")) {
-            return true
-        } else if contains(.activeEnergyBurned) {
-            return true
-        } else if contains(.power) {
-            return true
-        } else if contains(.stepCount) {
-            return true
-        } else if contains(.workoutDistance) {
-            return true
+        for variable in self {
+            switch variable {
+            case .heartRate:
+                return true
+            case .activeEnergyBurned:
+                return true
+            case .power:
+                return true
+            case .stepCount:
+                return true
+            case .workoutDistance:
+                return true
+            default:
+                break
+            }
         }
         return false
     }
 
     func isWeatherVariable() -> Bool {
-        if contains(.conditions) {
-            return true
-        } else if contains(.temperature) {
-            return true
-        } else if contains(.feelsLikeTemperature) {
-            return true
-        } else if contains(.wind) {
-            return true
+        for variable in self {
+            switch variable {
+            case .conditions:
+                return true
+            case .temperature:
+                return true
+            case .feelsLikeTemperature:
+                return true
+            case .wind:
+                return true
+            default:
+                break
+            }
         }
         return false
     }
 
     func isLocationVariable() -> Bool {
-        if contains(.speed) {
-            return true
-        } else if contains(.averageSpeed) {
-            return true
-        } else if contains(.altitude) {
-            return true
-        } else if contains(.distance) {
-            return true
-        } else if contains(.slope) {
-            return true
-        } else if contains(.country) {
-            return true
-        } else if contains(.countryFlag) {
-            return true
-        } else if contains(.state) {
-            return true
-        } else if contains(.city) {
-            return true
+        for variable in self {
+            switch variable {
+            case .speed:
+                return true
+            case .averageSpeed:
+                return true
+            case .altitude:
+                return true
+            case .distance:
+                return true
+            case .slope:
+                return true
+            case .country:
+                return true
+            case .countryFlag:
+                return true
+            case .state:
+                return true
+            case .city:
+                return true
+            default:
+                break
+            }
         }
         return false
     }
