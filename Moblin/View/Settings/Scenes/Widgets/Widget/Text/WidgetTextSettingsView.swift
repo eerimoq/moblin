@@ -196,6 +196,110 @@ private struct SubtitlesWithLanguageView: View {
     }
 }
 
+private struct VariableWithUnitView: View {
+    let model: Model
+    let description: String
+    let variable: String
+    let units: [(String, String)]
+    @Binding var text: String
+    @State private var presentingPicker: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                presentingPicker = true
+            } label: {
+                Text("{\(variable):<unit>}")
+                    .font(.title3)
+            }
+            Text(description)
+        }
+        .sheet(isPresented: $presentingPicker) {
+            NavigationStack {
+                Form {
+                    Section {
+                        ForEach(units, id: \.0) { name, symbol in
+                            Button {
+                                let value = "{\(variable):\(symbol)}"
+                                text += value
+                                model.makeToast(title: "Appended \(value) to widget text")
+                                presentingPicker = false
+                            } label: {
+                                Text(name)
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Unit")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    CloseToolbar(presenting: $presentingPicker)
+                }
+            }
+        }
+    }
+}
+
+private struct VariableWithLengthUnitView: View {
+    let model: Model
+    let description: String
+    let variable: String
+    @Binding var text: String
+    @State private var presentingPicker: Bool = false
+
+    private func units() -> [(String, String)] {
+        TextFormatLengthUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }
+    }
+
+    var body: some View {
+        VariableWithUnitView(model: model,
+                             description: description,
+                             variable: variable,
+                             units: units(),
+                             text: $text)
+    }
+}
+
+private struct VariableWithSpeedUnitView: View {
+    let model: Model
+    let description: String
+    let variable: String
+    @Binding var text: String
+    @State private var presentingPicker: Bool = false
+
+    private func units() -> [(String, String)] {
+        TextFormatSpeedUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }
+    }
+
+    var body: some View {
+        VariableWithUnitView(model: model,
+                             description: description,
+                             variable: variable,
+                             units: units(),
+                             text: $text)
+    }
+}
+
+private struct VariableWithTemperatureUnitView: View {
+    let model: Model
+    let description: String
+    let variable: String
+    @Binding var text: String
+    @State private var presentingPicker: Bool = false
+
+    private func units() -> [(String, String)] {
+        TextFormatTemperatureUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }
+    }
+
+    var body: some View {
+        VariableWithUnitView(model: model,
+                             description: description,
+                             variable: variable,
+                             units: units(),
+                             text: $text)
+    }
+}
+
 struct TimeComponentPickerView: View {
     let title: LocalizedStringKey
     let range: Range<Int>
@@ -710,6 +814,7 @@ private struct TimeVariablesView: View {
 }
 
 private struct LocationVariablesView: View {
+    let model: Model
     @Binding var value: String
 
     var body: some View {
@@ -729,26 +834,50 @@ private struct LocationVariablesView: View {
                     VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
                     VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
                     VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                    VariableWithSpeedUnitView(model: model,
+                                              description: String(localized: "Show speed in given unit"),
+                                              variable: "speed",
+                                              text: $value)
                     VariableView(
                         title: "{averageSpeed}",
                         description: String(localized: "Show average speed"),
                         text: $value
                     )
+                    VariableWithSpeedUnitView(model: model,
+                                              description: String(
+                                                  localized: "Show average speed in given unit"
+                                              ),
+                                              variable: "averageSpeed",
+                                              text: $value)
                     VariableView(
                         title: "{altitude}",
                         description: String(localized: "Show altitude"),
                         text: $value
                     )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(localized: "Show altitude in given unit"),
+                                               variable: "altitude",
+                                               text: $value)
                     VariableView(
                         title: "{distance}",
                         description: String(localized: "Show distance"),
                         text: $value
                     )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(localized: "Show distance in given unit"),
+                                               variable: "distance",
+                                               text: $value)
                     VariableView(
                         title: "{splitDistance}",
                         description: String(localized: "Show split distance"),
                         text: $value
                     )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(
+                                                   localized: "Show split distance in given unit"
+                                               ),
+                                               variable: "splitDistance",
+                                               text: $value)
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
                 }
             }
@@ -760,6 +889,7 @@ private struct LocationVariablesView: View {
 }
 
 private struct WeatherVariablesView: View {
+    let model: Model
     @Binding var value: String
 
     var body: some View {
@@ -776,16 +906,32 @@ private struct WeatherVariablesView: View {
                         description: String(localized: "Show temperature"),
                         text: $value
                     )
+                    VariableWithTemperatureUnitView(model: model,
+                                                    description: String(
+                                                        localized: "Show temperature in given unit"
+                                                    ),
+                                                    variable: "temperature",
+                                                    text: $value)
                     VariableView(
                         title: "{feelsLikeTemperature}",
                         description: String(localized: "Show feels like temperature"),
                         text: $value
                     )
+                    VariableWithTemperatureUnitView(model: model,
+                                                    description: String(
+                                                        localized: "Show feels like temperature in given unit"
+                                                    ),
+                                                    variable: "feelsLikeTemperature",
+                                                    text: $value)
                     VariableView(
                         title: "{wind}",
                         description: String(localized: "Show wind"),
                         text: $value
                     )
+                    VariableWithSpeedUnitView(model: model,
+                                              description: String(localized: "Show wind in given unit"),
+                                              variable: "wind",
+                                              text: $value)
                 } footer: {
                     VStack(alignment: .leading) {
                         let image = Image(systemName: "apple.logo")
@@ -1006,8 +1152,8 @@ private struct TextSelectionView: View {
             Section {
                 GeneralVariablesView(value: $value)
                 TimeVariablesView(value: $value)
-                LocationVariablesView(value: $value)
-                WeatherVariablesView(value: $value)
+                LocationVariablesView(model: model, value: $value)
+                WeatherVariablesView(model: model, value: $value)
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)

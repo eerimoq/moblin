@@ -1751,7 +1751,7 @@ extension Model {
     private func updateNeedsWeather(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
         text.needsWeather = parts.contains(where: {
             switch $0 {
-            case .conditions, .temperature:
+            case .conditions, .temperature, .wind:
                 true
             default:
                 false

@@ -1,6 +1,6 @@
 import Foundation
 
-enum TextFormatSpeedUnit {
+enum TextFormatSpeedUnit: CaseIterable {
     case system
     case metersPerSecond
     case kilometersPerHour
@@ -19,6 +19,35 @@ enum TextFormatSpeedUnit {
         }
     }
 
+    func symbol() -> String {
+        switch self {
+        case .system:
+            ""
+        case .metersPerSecond:
+            "m/s"
+        case .kilometersPerHour:
+            "km/h"
+        case .milesPerHour:
+            "mph"
+        }
+    }
+
+    func toString() -> String {
+        guard let symbol = toSystem()?.symbol else {
+            return ""
+        }
+        switch self {
+        case .system:
+            return ""
+        case .metersPerSecond:
+            return String(localized: "Meters per second") + " [\(symbol)]"
+        case .kilometersPerHour:
+            return String(localized: "Kilometers per hour") + " [\(symbol)]"
+        case .milesPerHour:
+            return String(localized: "Feet per second") + " [\(symbol)]"
+        }
+    }
+
     func toSystem() -> UnitSpeed? {
         switch self {
         case .system:
@@ -33,7 +62,7 @@ enum TextFormatSpeedUnit {
     }
 }
 
-enum TextFormatTemperatureUnit {
+enum TextFormatTemperatureUnit: CaseIterable {
     case system
     case kelvin
     case celsius
@@ -52,6 +81,35 @@ enum TextFormatTemperatureUnit {
         }
     }
 
+    func symbol() -> String {
+        switch self {
+        case .system:
+            ""
+        case .kelvin:
+            "k"
+        case .celsius:
+            "c"
+        case .fahrenheit:
+            "f"
+        }
+    }
+
+    func toString() -> String {
+        guard let symbol = toSystem()?.symbol else {
+            return ""
+        }
+        switch self {
+        case .system:
+            return ""
+        case .kelvin:
+            return String(localized: "Kelvin") + " [\(symbol)]"
+        case .celsius:
+            return String(localized: "Celsius") + " [\(symbol)]"
+        case .fahrenheit:
+            return String(localized: "Fahrenheit") + " [\(symbol)]"
+        }
+    }
+
     func toSystem() -> UnitTemperature? {
         switch self {
         case .system:
@@ -66,7 +124,7 @@ enum TextFormatTemperatureUnit {
     }
 }
 
-enum TextFormatLengthUnit {
+enum TextFormatLengthUnit: CaseIterable {
     case system
     case meters
     case kilometers
@@ -94,6 +152,51 @@ enum TextFormatLengthUnit {
             self = .lightYears
         default:
             return nil
+        }
+    }
+
+    func symbol() -> String {
+        switch self {
+        case .system:
+            ""
+        case .meters:
+            "m"
+        case .kilometers:
+            "km"
+        case .feet:
+            "ft"
+        case .yards:
+            "yd"
+        case .miles:
+            "mi"
+        case .nauticalMiles:
+            "nmi"
+        case .lightYears:
+            "ly"
+        }
+    }
+
+    func toString() -> String {
+        guard let symbol = toSystem()?.symbol else {
+            return ""
+        }
+        switch self {
+        case .system:
+            return ""
+        case .meters:
+            return String(localized: "Meters") + " [\(symbol)]"
+        case .kilometers:
+            return String(localized: "Kilometers") + " [\(symbol)]"
+        case .feet:
+            return String(localized: "Feet") + " [\(symbol)]"
+        case .yards:
+            return String(localized: "Yards") + " [\(symbol)]"
+        case .miles:
+            return String(localized: "Miles") + " [\(symbol)]"
+        case .nauticalMiles:
+            return String(localized: "Nautic miles") + " [\(symbol)]"
+        case .lightYears:
+            return String(localized: "Light years") + " [\(symbol)]"
         }
     }
 
