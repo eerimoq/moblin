@@ -79,7 +79,13 @@ private struct DjiDeviceWiFiSettingsView: View {
             NavigationLink {
                 DjiDeviceWiFiSettingsInnerView(model: model, database: model.database, device: device)
             } label: {
-                TextItemLocalizedView(name: "Network", value: device.wifiSsid)
+                HStack {
+                    TextItemLocalizedView(name: "Network", value: device.wifiSsid)
+                    if NewFeatureManager.shouldShowIndicator(for: "djiWifi") {
+                        Spacer()
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
             if device.wifiSsid.isEmpty {
                 Text("⚠️ Enter the SSID of the network the DJI device should connect to.")

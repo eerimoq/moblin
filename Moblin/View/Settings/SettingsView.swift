@@ -20,7 +20,13 @@ struct SettingsView: View {
                 NavigationLink {
                     ScenesSettingsView(database: database)
                 } label: {
-                    Label("Scenes", systemImage: "photo.on.rectangle")
+                    HStack {
+                        Label("Scenes", systemImage: "photo.on.rectangle")
+                        if NewFeatureManager.shouldShowAnyWidgetsIndicator() {
+                            Spacer()
+                            NewFeatureIndicatorView()
+                        }
+                    }
                 }
                 NavigationLink {
                     ChatSettingsView(model: model,
@@ -58,7 +64,13 @@ struct SettingsView: View {
                     NavigationLink {
                         GeminiSettingsView(database: database)
                     } label: {
-                        Label("Gemini AI", systemImage: "sparkles")
+                        HStack {
+                            Label("Gemini AI", systemImage: "sparkles")
+                            if NewFeatureManager.shouldShowIndicator(for: "gemini") {
+                                Spacer()
+                                NewFeatureIndicatorView()
+                            }
+                        }
                     }
                 }
                 NavigationLink {
@@ -144,7 +156,13 @@ struct SettingsView: View {
                     NavigationLink {
                         DjiDevicesSettingsView(djiDevices: database.djiDevices)
                     } label: {
-                        Label("DJI devices", systemImage: "appletvremote.gen1")
+                        HStack {
+                            Label("DJI devices", systemImage: "appletvremote.gen1")
+                            if NewFeatureManager.shouldShowIndicator(for: "djiWifi") {
+                                Spacer()
+                                NewFeatureIndicatorView()
+                            }
+                        }
                     }
                     NavigationLink {
                         GoProSettingsView()

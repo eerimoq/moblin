@@ -12,6 +12,9 @@ private struct DjiDeviceSettingsWrapperView: View {
             HStack {
                 DraggableItemPrefixView()
                 Text(device.name)
+                if NewFeatureManager.shouldShowIndicator(for: "djiWifi") {
+                    NewFeatureIndicatorView()
+                }
                 Spacer()
                 GrayTextView(text: formatDjiDeviceState(state: device.state))
             }

@@ -108,8 +108,16 @@ private struct VariableView: View {
                 text += title
                 model.makeToast(title: "Appended \(title) to widget text")
             } label: {
-                Text(title)
-                    .font(.title3)
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(.title3)
+                    if NewFeatureManager
+                        .shouldShowIndicator(for: title
+                            .trimmingCharacters(in: CharacterSet(charactersIn: "{}")))
+                    {
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
             Text(description)
         }
@@ -130,8 +138,13 @@ private struct VariableWithUnitView: View {
             Button {
                 presentingUnitPicker = true
             } label: {
-                Text(title)
-                    .font(.title3)
+                HStack(spacing: 6) {
+                    Text(title)
+                        .font(.title3)
+                    if NewFeatureManager.shouldShowIndicator(for: nameWithoutBraces) {
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
             Text(description)
         }
@@ -721,7 +734,13 @@ private struct GeneralVariablesView: View {
             }
             .navigationTitle("General")
         } label: {
-            Text("General")
+            HStack {
+                Text("General")
+                if NewFeatureManager.shouldShowIndicator(for: "generalUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -831,7 +850,13 @@ private struct LocationVariablesView: View {
             }
             .navigationTitle("Location")
         } label: {
-            Text("Location")
+            HStack {
+                Text("Location")
+                if NewFeatureManager.shouldShowIndicator(for: "locationUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -886,7 +911,13 @@ private struct WeatherVariablesView: View {
             }
             .navigationTitle("Weather")
         } label: {
-            Text("Weather")
+            HStack {
+                Text("Weather")
+                if NewFeatureManager.shouldShowIndicator(for: "weatherUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -986,7 +1017,13 @@ private struct WorkoutVariablesView: View {
             }
             .navigationTitle("Workout")
         } label: {
-            Text("Workout")
+            HStack {
+                Text("Workout")
+                if NewFeatureManager.shouldShowIndicator(for: "workoutUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -1308,7 +1345,13 @@ struct WidgetTextSettingsView: View {
             NavigationLink {
                 TextSelectionView(widget: widget, value: text.formatString)
             } label: {
-                TextItemLocalizedView(name: "Text", value: widget.text.formatString)
+                HStack {
+                    TextItemLocalizedView(name: "Text", value: widget.text.formatString)
+                    if NewFeatureManager.shouldShowAnyIndicator() {
+                        Spacer()
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
         }
         WarningsView(model: model,

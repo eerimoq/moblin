@@ -217,22 +217,21 @@ func formatWindAndGustSpeedKmh(speed: Measurement<UnitSpeed>, gust: Measurement<
 
 func formatSpeed(speed: Double, unit: String?) -> String {
     let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
-    let targetUnit: UnitSpeed
-    if let unit = unit?.lowercased() {
+    let targetUnit: UnitSpeed = if let unit = unit?.lowercased() {
         switch unit {
         case "m/s":
-            targetUnit = .metersPerSecond
+            .metersPerSecond
         case "km/h":
-            targetUnit = .kilometersPerHour
+            .kilometersPerHour
         case "mph":
-            targetUnit = .milesPerHour
+            .milesPerHour
         case "knots":
-            targetUnit = .knots
+            .knots
         default:
-            targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+            Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
         }
     } else {
-        targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+        Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
     }
     let formatter = MeasurementFormatter()
     formatter.unitOptions = .providedUnit
@@ -242,18 +241,17 @@ func formatSpeed(speed: Double, unit: String?) -> String {
 
 func formatAltitude(altitude: Double, unit: String?) -> String {
     let measurement = Measurement(value: altitude, unit: UnitLength.meters)
-    let targetUnit: UnitLength
-    if let unit = unit?.lowercased() {
+    let targetUnit: UnitLength = if let unit = unit?.lowercased() {
         switch unit {
         case "m":
-            targetUnit = .meters
+            .meters
         case "ft":
-            targetUnit = .feet
+            .feet
         default:
-            targetUnit = UnitLength(forLocale: .current) == .feet ? .feet : .meters
+            UnitLength(forLocale: .current) == .feet ? .feet : .meters
         }
     } else {
-        targetUnit = UnitLength(forLocale: .current) == .feet ? .feet : .meters
+        UnitLength(forLocale: .current) == .feet ? .feet : .meters
     }
     let formatter = MeasurementFormatter()
     formatter.unitOptions = .providedUnit
@@ -263,47 +261,46 @@ func formatAltitude(altitude: Double, unit: String?) -> String {
 
 func formatDistance(meters: Double, unit: String?) -> String {
     let measurement = Measurement(value: max(meters, 0), unit: UnitLength.meters)
-    let targetUnit: UnitLength
-    if let unit = unit?.lowercased() {
+    let targetUnit: UnitLength = if let unit = unit?.lowercased() {
         switch unit {
         case "m":
-            targetUnit = .meters
+            .meters
         case "km":
-            targetUnit = .kilometers
+            .kilometers
         case "mi":
-            targetUnit = .miles
+            .miles
         case "yd":
-            targetUnit = .yards
+            .yards
         case "ft":
-            targetUnit = .feet
+            .feet
         default:
-            targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+            Locale.current.measurementSystem == .metric ? .kilometers : .miles
         }
     } else {
-        targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+        Locale.current.measurementSystem == .metric ? .kilometers : .miles
     }
     let formatter = MeasurementFormatter()
     formatter.unitOptions = .providedUnit
-    formatter.numberFormatter.maximumFractionDigits = (targetUnit == .kilometers || targetUnit == .miles) ? 1 : 0
+    formatter.numberFormatter
+        .maximumFractionDigits = (targetUnit == .kilometers || targetUnit == .miles) ? 1 : 0
     return formatter.string(from: measurement.converted(to: targetUnit))
 }
 
 func formatTemperature(measurement: Measurement<UnitTemperature>?, unit: String?) -> String {
-    guard let measurement = measurement else { return "-" }
-    let targetUnit: UnitTemperature
-    if let unit = unit?.lowercased() {
+    guard let measurement else { return "-" }
+    let targetUnit: UnitTemperature = if let unit = unit?.lowercased() {
         switch unit {
         case "c", "°c":
-            targetUnit = .celsius
+            .celsius
         case "f", "°f":
-            targetUnit = .fahrenheit
+            .fahrenheit
         case "k":
-            targetUnit = .kelvin
+            .kelvin
         default:
-            targetUnit = Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
+            Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
         }
     } else {
-        targetUnit = Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
+        Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
     }
     let formatter = MeasurementFormatter()
     formatter.unitOptions = .providedUnit
@@ -312,28 +309,27 @@ func formatTemperature(measurement: Measurement<UnitTemperature>?, unit: String?
 }
 
 func formatWind(speed: Measurement<UnitSpeed>?, gust: Measurement<UnitSpeed>?, unit: String?) -> String {
-    guard let speed = speed else { return "-" }
-    let targetUnit: UnitSpeed
-    if let unit = unit?.lowercased() {
+    guard let speed else { return "-" }
+    let targetUnit: UnitSpeed = if let unit = unit?.lowercased() {
         switch unit {
         case "m/s":
-            targetUnit = .metersPerSecond
+            .metersPerSecond
         case "km/h":
-            targetUnit = .kilometersPerHour
+            .kilometersPerHour
         case "mph":
-            targetUnit = .milesPerHour
+            .milesPerHour
         default:
-            targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+            Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
         }
     } else {
-        targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+        Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
     }
 
     let formatter = MeasurementFormatter()
     formatter.unitOptions = .providedUnit
     formatter.numberFormatter.maximumFractionDigits = 0
 
-    if let gust = gust {
+    if let gust {
         let speedVal = Int(speed.converted(to: targetUnit).value)
         let gustVal = Int(gust.converted(to: targetUnit).value)
         return "\(speedVal) (\(gustVal)) \(targetUnit.symbol)"
@@ -344,18 +340,17 @@ func formatWind(speed: Measurement<UnitSpeed>?, gust: Measurement<UnitSpeed>?, u
 
 func formatRunningPace(speed: Double, unit: String?) -> String {
     guard speed > 0 else { return "-" }
-    let targetUnit: UnitLength
-    if let unit = unit?.lowercased() {
+    let targetUnit: UnitLength = if let unit = unit?.lowercased() {
         switch unit {
         case "min/km":
-            targetUnit = .kilometers
+            .kilometers
         case "min/mile":
-            targetUnit = .miles
+            .miles
         default:
-            targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+            Locale.current.measurementSystem == .metric ? .kilometers : .miles
         }
     } else {
-        targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+        Locale.current.measurementSystem == .metric ? .kilometers : .miles
     }
     let metersPerUnit = Measurement(value: 1, unit: targetUnit).converted(to: .meters).value
     let secondsPerUnit = Int(metersPerUnit / speed)
@@ -366,7 +361,7 @@ func formatRunningPace(speed: Double, unit: String?) -> String {
 }
 
 func formatGForce(value: Double?, unit: String?) -> String {
-    guard let value = value else { return "-" }
+    guard let value else { return "-" }
     let targetValue: Double
     let suffix: String
     if let unit = unit?.lowercased() {
@@ -971,5 +966,87 @@ extension KeyedEncodingContainer {
 extension KeyedDecodingContainer {
     func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T {
         (try? decode(type, forKey: key)) ?? defaultValue
+    }
+}
+
+public enum NewFeatureManager {
+    public static let currentVersion: String = {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        if version == "1.0" {
+            return "33.8.0"
+        }
+        return version
+    }()
+
+    private static let featuresIntroduced: [String: String] = [
+        "speed": "33.8.0",
+        "averageSpeed": "33.8.0",
+        "altitude": "33.8.0",
+        "distance": "33.8.0",
+        "splitDistance": "33.8.0",
+        "temperature": "33.8.0",
+        "feelsLikeTemperature": "33.8.0",
+        "wind": "33.8.0",
+        "workoutDistance": "33.8.0",
+        "runningPace": "33.8.0",
+        "runningDistance": "33.8.0",
+        "gForce": "33.8.0",
+        "gForceRecentMax": "33.8.0",
+        "gForceMax": "33.8.0",
+        "generalUnits": "33.8.0",
+        "locationUnits": "33.8.0",
+        "weatherUnits": "33.8.0",
+        "workoutUnits": "33.8.0",
+        "djiWifi": "33.8.0",
+        "gemini": "33.8.0",
+    ]
+
+    public static func shouldShowIndicator(for feature: String) -> Bool {
+        let baseFeature = feature.split(separator: ":").first.map(String.init) ?? feature
+        guard let introducedVersion = featuresIntroduced[baseFeature] else { return false }
+        return currentVersion == introducedVersion
+    }
+
+    public static func shouldShowAnyWidgetsIndicator() -> Bool {
+        shouldShowIndicator(for: "generalUnits") ||
+            shouldShowIndicator(for: "locationUnits") ||
+            shouldShowIndicator(for: "weatherUnits") ||
+            shouldShowIndicator(for: "workoutUnits")
+    }
+
+    public static func shouldShowAnyIndicator() -> Bool {
+        featuresIntroduced.keys.contains { shouldShowIndicator(for: $0) }
+    }
+}
+
+public struct NewFeatureIndicatorView: View {
+    public init() {}
+
+    public var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [Color.blue, Color.cyan.opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 16, height: 16)
+                .shadow(color: Color.blue.opacity(0.45), radius: 2, x: 0, y: 1)
+            Circle()
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.65), Color.clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+                .frame(width: 15, height: 15)
+            Image(systemName: "checkmark")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundColor(.white)
+        }
     }
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 #if canImport(UIKit)
-    import UIKit
+import UIKit
 #endif
 
 // MARK: - Interactive Widget Overlay View
@@ -51,9 +51,9 @@ struct InteractiveWidgetOverlayView: View {
 
     private func triggerHaptic() {
         #if os(iOS)
-            let generator = UIImpactFeedbackGenerator(style: .light)
-            generator.prepare()
-            generator.impactOccurred()
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.prepare()
+        generator.impactOccurred()
         #endif
     }
 
