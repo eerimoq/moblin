@@ -69,14 +69,29 @@ enum TextFormatTemperatureUnit {
 enum TextFormatLengthUnit {
     case system
     case meters
+    case kilometers
     case feet
+    case yards
+    case miles
+    case nauticalMiles
+    case lightYears
 
     init?(_ value: String) {
         switch value {
         case "m":
             self = .meters
+        case "km":
+            self = .kilometers
         case "ft":
             self = .feet
+        case "yd":
+            self = .yards
+        case "mi":
+            self = .miles
+        case "nmi":
+            self = .nauticalMiles
+        case "ly":
+            self = .lightYears
         default:
             return nil
         }
@@ -88,8 +103,18 @@ enum TextFormatLengthUnit {
             nil
         case .meters:
             .meters
+        case .kilometers:
+            .kilometers
         case .feet:
             .feet
+        case .yards:
+            .yards
+        case .miles:
+            .miles
+        case .nauticalMiles:
+            .nauticalMiles
+        case .lightYears:
+            .lightyears
         }
     }
 }
@@ -109,7 +134,7 @@ enum TextFormatPart: Equatable {
     case speed(TextFormatSpeedUnit)
     case averageSpeed(TextFormatSpeedUnit)
     case altitude(TextFormatLengthUnit)
-    case distance(String?)
+    case distance(TextFormatLengthUnit)
     case splitDistance(String?)
     case slope
     case timer
@@ -188,8 +213,7 @@ class TextFormatLoader {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{splitdistance}") {
                     loadItem(part: .splitDistance(nil), offsetBy: 15)
-                } else if formatFromIndex.hasPrefix("{distance}") {
-                    loadItem(part: .distance(nil), offsetBy: 10)
+                } else if appendDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{slope}") {
                     loadItem(part: .slope, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{timer}") {
@@ -329,6 +353,13 @@ class TextFormatLoader {
                                /{runningdistance:([^}]+)}/,
                                { $0 },
                                { .runningDistance($0 ?? "", nil) })
+    }
+
+    private func appendDistanceIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{distance}",
+                               /{distance:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .distance($0 ?? .system) }
     }
 
     private func appendWindIfPresent(formatFromIndex: String) -> Bool {

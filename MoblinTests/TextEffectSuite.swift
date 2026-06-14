@@ -157,6 +157,29 @@ struct TextEffectSuite {
     }
 
     @Test
+    func distance() {
+        var lines = format(format: "{distance:m}", stats: createStats())
+        #expect(lines == createLine(data: .text("1 700 m")))
+        lines = format(format: "{distance:km}", stats: createStats())
+        #expect(lines == createLine(data: .text("2 km")))
+        lines = format(format: "{distance:yd}", stats: createStats())
+        #expect(lines == createLine(data: .text("1 859 yd")))
+        lines = format(format: "{distance:ft}", stats: createStats())
+        #expect(lines == createLine(data: .text("5 577 ft")))
+        lines = format(format: "{distance:mi}", stats: createStats())
+        #expect(lines == createLine(data: .text("1 mi")))
+        lines = format(format: "{distance:nmi}", stats: createStats())
+        #expect(lines == createLine(data: .text("1 nmi")))
+        lines = format(format: "{distance:ly}", stats: createStats())
+        #expect(lines == createLine(data: .text("0 ly")))
+        let systemPart = format(format: "{distance}", stats: createStats())
+        lines = format(format: "{distance:mi} {distance} {distance:m}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("1 mi"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("1 700 m"))[0].parts[0].data)
+    }
+
+    @Test
     func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
@@ -271,7 +294,7 @@ struct TextEffectSuite {
                         speed: 5,
                         averageSpeed: 7,
                         altitude: 243,
-                        distance: "",
+                        distance: 1700,
                         splitDistance: "",
                         slope: "",
                         conditions: conditions,

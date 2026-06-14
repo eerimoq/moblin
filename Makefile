@@ -17,7 +17,7 @@ PERIPHERY_ARGS = \
 	--disable-update-check
 CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json" \
-	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 PYLINT_ARGS = \
 	--disable missing-function-docstring \
 	--disable missing-module-docstring \

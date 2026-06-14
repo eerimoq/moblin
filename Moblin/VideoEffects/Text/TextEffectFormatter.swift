@@ -41,6 +41,7 @@ class TextEffectFormatter {
     var temperatureFormatter = MeasurementFormatter()
     let speedFormatter = MeasurementFormatter()
     let altitudeFormatter = MeasurementFormatter()
+    let lengthFormatter = MeasurementFormatter()
     var checkboxes: [Bool]
     var ratings: [Int]
     var subtitles: [String?: Subtitles] = [:]
@@ -72,6 +73,8 @@ class TextEffectFormatter {
         speedFormatter.numberFormatter.maximumFractionDigits = 0
         altitudeFormatter.unitOptions = .providedUnit
         altitudeFormatter.numberFormatter.maximumFractionDigits = 0
+        lengthFormatter.unitOptions = .providedUnit
+        lengthFormatter.numberFormatter.maximumFractionDigits = 0
     }
 
     func format(stats: TextEffectStats, now: ContinuousClock.Instant) -> [TextEffectLine] {
@@ -114,8 +117,8 @@ class TextEffectFormatter {
                 formatAverageSpeed(stats: stats, unit: unit)
             case let .altitude(unit):
                 formatAltitude(stats: stats, unit: unit)
-            case .distance:
-                formatDistance(stats: stats)
+            case let .distance(unit):
+                formatDistance(stats: stats, unit: unit)
             case .splitDistance:
                 formatSplitDistance(stats: stats)
             case .slope:
@@ -265,14 +268,44 @@ class TextEffectFormatter {
             }
         case .meters:
             break
+        case .kilometers:
+            measurement = measurement.converted(to: .kilometers)
         case .feet:
             measurement = measurement.converted(to: .feet)
+        case .yards:
+            measurement = measurement.converted(to: .yards)
+        case .miles:
+            measurement = measurement.converted(to: .miles)
+        case .nauticalMiles:
+            measurement = measurement.converted(to: .nauticalMiles)
+        case .lightYears:
+            measurement = measurement.converted(to: .lightyears)
         }
         appendTextPart(value: altitudeFormatter.string(from: measurement))
     }
 
-    private func formatDistance(stats: TextEffectStats) {
-        appendTextPart(value: stats.distance)
+    private func formatDistance(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        var measurement = Measurement(value: stats.distance, unit: UnitLength.meters)
+        switch unit {
+        case .system:
+            appendTextPart(value: Moblin.format(distance: stats.distance))
+            return
+        case .meters:
+            break
+        case .kilometers:
+            measurement = measurement.converted(to: .kilometers)
+        case .feet:
+            measurement = measurement.converted(to: .feet)
+        case .yards:
+            measurement = measurement.converted(to: .yards)
+        case .miles:
+            measurement = measurement.converted(to: .miles)
+        case .nauticalMiles:
+            measurement = measurement.converted(to: .nauticalMiles)
+        case .lightYears:
+            measurement = measurement.converted(to: .lightyears)
+        }
+        appendTextPart(value: lengthFormatter.string(from: measurement))
     }
 
     private func formatSplitDistance(stats: TextEffectStats) {
