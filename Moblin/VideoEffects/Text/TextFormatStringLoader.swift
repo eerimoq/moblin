@@ -155,15 +155,15 @@ enum TextFormatPart: Equatable {
     case activeEnergyBurned
     case power
     case stepCount
-    case workoutDistance(String?)
+    case workoutDistance
     case teslaBatteryLevel
     case teslaDrive
     case teslaMedia
     case cyclingPower
     case cyclingCadence
-    case runningPace(String, String?)
+    case runningPace(String)
     case runningCadence(String)
-    case runningDistance(String, String?)
+    case runningDistance(String)
     case lapTimes
     case browserTitle
     case gForce(String?)
@@ -249,7 +249,7 @@ class TextFormatLoader {
                 } else if !isMac(), formatFromIndex.hasPrefix("{stepcount}") {
                     loadItem(part: .stepCount, offsetBy: 11)
                 } else if !isMac(), formatFromIndex.hasPrefix("{workoutdistance}") {
-                    loadItem(part: .workoutDistance(nil), offsetBy: 17)
+                    loadItem(part: .workoutDistance, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{teslabatterylevel}") {
                     loadItem(part: .teslaBatteryLevel, offsetBy: 19)
                 } else if formatFromIndex.hasPrefix("{tesladrive}") {
@@ -335,7 +335,7 @@ class TextFormatLoader {
                                "{runningpace}",
                                /{runningpace:([^}]+)}/,
                                { $0 },
-                               { .runningPace($0 ?? "", nil) })
+                               { .runningPace($0 ?? "") })
     }
 
     private func appendCadenceIfPresent(formatFromIndex: String) -> Bool {
@@ -351,7 +351,7 @@ class TextFormatLoader {
                                "{runningdistance}",
                                /{runningdistance:([^}]+)}/,
                                { $0 },
-                               { .runningDistance($0 ?? "", nil) })
+                               { .runningDistance($0 ?? "") })
     }
 
     private func appendSplitDistanceIfPresent(formatFromIndex: String) -> Bool {

@@ -261,9 +261,9 @@ struct TextEffectSuite {
     func loadFormatRunningPace() {
         let loader = TextFormatLoader()
         var parts = loader.load(format: "{runningpace}")
-        #expect(parts == [.runningPace("", nil)])
+        #expect(parts == [.runningPace("")])
         parts = loader.load(format: "{runningpace:My device}")
-        #expect(parts == [.runningPace("my device", nil)])
+        #expect(parts == [.runningPace("my device")])
     }
 
     @Test
@@ -279,9 +279,9 @@ struct TextEffectSuite {
     func loadFormatRunningDistance() {
         let loader = TextFormatLoader()
         var parts = loader.load(format: "{runningdistance}")
-        #expect(parts == [.runningDistance("", nil)])
+        #expect(parts == [.runningDistance("")])
         parts = loader.load(format: "{runningdistance:My device}")
-        #expect(parts == [.runningDistance("my device", nil)])
+        #expect(parts == [.runningDistance("my device")])
     }
 
     @Test

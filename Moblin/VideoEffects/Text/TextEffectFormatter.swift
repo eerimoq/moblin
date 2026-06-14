@@ -171,11 +171,11 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
-            case let .runningPace(deviceName, _):
+            case let .runningPace(deviceName):
                 formatRunningPace(stats: stats, deviceName: deviceName)
             case let .runningCadence(deviceName):
                 formatRunningCadence(stats: stats, deviceName: deviceName)
-            case let .runningDistance(deviceName, _):
+            case let .runningDistance(deviceName):
                 formatRunningDistance(stats: stats, deviceName: deviceName)
             case .lapTimes:
                 formatLapTimes()
