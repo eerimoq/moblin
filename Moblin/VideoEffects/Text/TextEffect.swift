@@ -13,7 +13,7 @@ struct TextEffectStats {
     let debugOverlayLines: [String]
     let speed: Double
     let averageSpeed: Double
-    let altitude: String
+    let altitude: Double
     let distance: String
     let splitDistance: String
     let slope: String

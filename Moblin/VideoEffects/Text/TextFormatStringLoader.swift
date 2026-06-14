@@ -66,6 +66,34 @@ enum TextFormatTemperatureUnit {
     }
 }
 
+enum TextFormatLengthUnit {
+    case system
+    case meters
+    case feet
+
+    init?(_ value: String) {
+        switch value {
+        case "m":
+            self = .meters
+        case "ft":
+            self = .feet
+        default:
+            return nil
+        }
+    }
+
+    func toSystem() -> UnitLength? {
+        switch self {
+        case .system:
+            nil
+        case .meters:
+            .meters
+        case .feet:
+            .feet
+        }
+    }
+}
+
 enum TextFormatPart: Equatable {
     case text(String)
     case newLine
@@ -80,7 +108,7 @@ enum TextFormatPart: Equatable {
     case debugOverlay
     case speed(TextFormatSpeedUnit)
     case averageSpeed(TextFormatSpeedUnit)
-    case altitude(String?)
+    case altitude(TextFormatLengthUnit)
     case distance(String?)
     case splitDistance(String?)
     case slope
@@ -156,8 +184,7 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
-                } else if formatFromIndex.hasPrefix("{altitude}") {
-                    loadItem(part: .altitude(nil), offsetBy: 10)
+                } else if appendAltitudeIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{splitdistance}") {
                     loadItem(part: .splitDistance(nil), offsetBy: 15)
@@ -249,6 +276,13 @@ class TextFormatLoader {
                                "{averagespeed}",
                                /{averagespeed:([^}]+)}/,
                                TextFormatSpeedUnit.init) { .averageSpeed($0 ?? .system) }
+    }
+
+    private func appendAltitudeIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{altitude}",
+                               /{altitude:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .altitude($0 ?? .system) }
     }
 
     private func appendTemperatureIfPresent(formatFromIndex: String) -> Bool {

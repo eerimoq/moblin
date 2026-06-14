@@ -143,6 +143,20 @@ struct TextEffectSuite {
     }
 
     @Test
+    func altitude() {
+        var lines = format(format: "{altitude:m}", stats: createStats())
+        #expect(lines == createLine(data: .text("243 m")))
+        lines = format(format: "{altitude:ft}", stats: createStats())
+        #expect(lines == createLine(data: .text("797 ft")))
+        let systemPart = format(format: "{altitude}", stats: createStats())
+        lines = format(format: "{altitude:ft} {altitude} {altitude:m}",
+                       stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("797 ft"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("243 m"))[0].parts[0].data)
+    }
+
+    @Test
     func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
@@ -256,7 +270,7 @@ struct TextEffectSuite {
                         debugOverlayLines: [],
                         speed: 5,
                         averageSpeed: 7,
-                        altitude: "",
+                        altitude: 243,
                         distance: "",
                         splitDistance: "",
                         slope: "",

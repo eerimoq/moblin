@@ -1523,7 +1523,7 @@ extension Model {
                 debugOverlayLines: debugOverlay.debugLines,
                 speed: location?.speed ?? 0,
                 averageSpeed: averageSpeed,
-                altitude: format(altitude: location?.altitude ?? 0),
+                altitude: location?.altitude ?? 0,
                 distance: getDistance(),
                 splitDistance: getSplitDistance(),
                 slope: "\(Int(slopePercent))%",

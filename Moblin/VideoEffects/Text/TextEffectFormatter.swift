@@ -40,6 +40,7 @@ class TextEffectFormatter {
     var stopwatches: [SettingsWidgetTextStopwatch]
     var temperatureFormatter = MeasurementFormatter()
     let speedFormatter = MeasurementFormatter()
+    let altitudeFormatter = MeasurementFormatter()
     var checkboxes: [Bool]
     var ratings: [Int]
     var subtitles: [String?: Subtitles] = [:]
@@ -69,6 +70,8 @@ class TextEffectFormatter {
         self.lapTimes = lapTimes
         temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         speedFormatter.numberFormatter.maximumFractionDigits = 0
+        altitudeFormatter.unitOptions = .providedUnit
+        altitudeFormatter.numberFormatter.maximumFractionDigits = 0
     }
 
     func format(stats: TextEffectStats, now: ContinuousClock.Instant) -> [TextEffectLine] {
@@ -109,8 +112,8 @@ class TextEffectFormatter {
                 formatSpeed(stats: stats, unit: unit)
             case let .averageSpeed(unit):
                 formatAverageSpeed(stats: stats, unit: unit)
-            case .altitude:
-                formatAltitude(stats: stats)
+            case let .altitude(unit):
+                formatAltitude(stats: stats, unit: unit)
             case .distance:
                 formatDistance(stats: stats)
             case .splitDistance:
@@ -253,8 +256,19 @@ class TextEffectFormatter {
         appendTextPart(value: formatSpeed(speed: stats.averageSpeed, unit: unit))
     }
 
-    private func formatAltitude(stats: TextEffectStats) {
-        appendTextPart(value: stats.altitude)
+    private func formatAltitude(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        var measurement = Measurement(value: stats.altitude, unit: UnitLength.meters)
+        switch unit {
+        case .system:
+            if UnitLength(forLocale: .current) == .feet {
+                measurement = measurement.converted(to: .feet)
+            }
+        case .meters:
+            break
+        case .feet:
+            measurement = measurement.converted(to: .feet)
+        }
+        appendTextPart(value: altitudeFormatter.string(from: measurement))
     }
 
     private func formatDistance(stats: TextEffectStats) {
