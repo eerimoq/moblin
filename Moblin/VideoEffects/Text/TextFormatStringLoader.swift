@@ -44,7 +44,7 @@ enum TextFormatSpeedUnit: CaseIterable {
         case .kilometersPerHour:
             return String(localized: "Kilometers per hour") + " [\(symbol)]"
         case .milesPerHour:
-            return String(localized: "Feet per second") + " [\(symbol)]"
+            return String(localized: "Miles per hour") + " [\(symbol)]"
         }
     }
 
