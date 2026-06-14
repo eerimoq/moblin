@@ -137,6 +137,12 @@ class TextEffectFormatter {
                 formatState(stats: stats)
             case .city:
                 formatCity(stats: stats)
+            case .region:
+                formatRegion(stats: stats)
+            case .area:
+                formatArea(stats: stats)
+            case .suburb:
+                formatSuburb(stats: stats)
             case .checkbox:
                 formatCheckbox()
             case .rating:
@@ -341,6 +347,18 @@ class TextEffectFormatter {
 
     private func formatCity(stats: TextEffectStats) {
         appendTextPart(value: stats.city ?? "-")
+    }
+
+    private func formatRegion(stats: TextEffectStats) {
+        appendTextPart(value: stats.region ?? "-")
+    }
+
+    private func formatArea(stats: TextEffectStats) {
+        appendTextPart(value: stats.area ?? "-")
+    }
+
+    private func formatSuburb(stats: TextEffectStats) {
+        appendTextPart(value: stats.suburb ?? "-")
     }
 
     private func formatCheckbox() {

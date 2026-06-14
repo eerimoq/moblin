@@ -1536,6 +1536,9 @@ extension Model {
                 countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
                 state: placemark?.administrativeArea,
                 city: placemark?.locality,
+                region: placemark?.administrativeArea,
+                area: placemark?.subAdministrativeArea,
+                suburb: placemark?.subLocality,
                 muted: isMuteOn,
                 heartRates: heartRates,
                 activeEnergyBurned: workoutActiveEnergyBurned,
@@ -1763,7 +1766,7 @@ extension Model {
     private func updateNeedsGeography(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
         text.needsGeography = parts.contains(where: {
             switch $0 {
-            case .country, .countryFlag, .state, .city:
+            case .country, .countryFlag, .state, .city, .region, .area, .suburb:
                 true
             default:
                 false

@@ -61,6 +61,9 @@ enum TextFormatPart: Equatable {
     case countryFlag
     case state
     case city
+    case region
+    case area
+    case suburb
     case checkbox
     case rating
     case subtitles(String?)
@@ -151,6 +154,12 @@ class TextFormatLoader {
                     loadItem(part: .state, offsetBy: 7)
                 } else if formatFromIndex.hasPrefix("{city}") {
                     loadItem(part: .city, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{region}") {
+                    loadItem(part: .region, offsetBy: 8)
+                } else if formatFromIndex.hasPrefix("{area}") {
+                    loadItem(part: .area, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{suburb}") {
+                    loadItem(part: .suburb, offsetBy: 8)
                 } else if formatFromIndex.hasPrefix("{checkbox}") {
                     loadItem(part: .checkbox, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{rating}") {
@@ -395,6 +404,12 @@ extension [TextFormatPart] {
             case .state:
                 return true
             case .city:
+                return true
+            case .region:
+                return true
+            case .area:
+                return true
+            case .suburb:
                 return true
             default:
                 break
