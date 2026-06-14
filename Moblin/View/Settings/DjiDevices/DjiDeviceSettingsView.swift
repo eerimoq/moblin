@@ -79,7 +79,13 @@ private struct DjiDeviceWiFiSettingsView: View {
             NavigationLink {
                 DjiDeviceWiFiSettingsInnerView(model: model, database: model.database, device: device)
             } label: {
-                TextItemLocalizedView(name: "Network", value: device.wifiSsid)
+                HStack {
+                    TextItemLocalizedView(name: "Network", value: device.wifiSsid)
+                    if NewFeatureManager.shouldShowIndicator(for: "djiWifi") {
+                        Spacer()
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
             .disabled(device.isStarted)
             if device.wifiSsid.isEmpty {

@@ -17,6 +17,9 @@ private struct WidgetsSettingsItemView: View {
                         text: widget.name,
                         longDivider: true
                     )
+                    if widget.type == .text, NewFeatureManager.shouldShowAnyWidgetsIndicator() {
+                        NewFeatureIndicatorView()
+                    }
                     Spacer()
                 }
             }
@@ -66,7 +69,12 @@ struct WidgetsSettingsView: View {
                 }
             }
         } header: {
-            Text("Widgets")
+            HStack {
+                Text("Widgets")
+                if NewFeatureManager.shouldShowAnyWidgetsIndicator() {
+                    NewFeatureIndicatorView()
+                }
+            }
         } footer: {
             VStack(alignment: .leading) {
                 Text("A widget can be used in zero or more scenes.")

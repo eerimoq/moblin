@@ -785,3 +785,84 @@ extension KeyedDecodingContainer {
         (try? decode(type, forKey: key)) ?? defaultValue
     }
 }
+
+public enum NewFeatureManager {
+    public static let currentVersion: String = {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        if version == "1.0" {
+            return "33.8.0"
+        }
+        return version
+    }()
+
+    private static let featuresIntroduced: [String: String] = [
+        "speed": "33.8.0",
+        "averageSpeed": "33.8.0",
+        "altitude": "33.8.0",
+        "distance": "33.8.0",
+        "splitDistance": "33.8.0",
+        "temperature": "33.8.0",
+        "feelsLikeTemperature": "33.8.0",
+        "wind": "33.8.0",
+        "workoutDistance": "33.8.0",
+        "runningPace": "33.8.0",
+        "runningDistance": "33.8.0",
+        "gForce": "33.8.0",
+        "gForceRecentMax": "33.8.0",
+        "gForceMax": "33.8.0",
+        "generalUnits": "33.8.0",
+        "locationUnits": "33.8.0",
+        "weatherUnits": "33.8.0",
+        "workoutUnits": "33.8.0",
+        "djiWifi": "33.8.0",
+    ]
+
+    public static func shouldShowIndicator(for feature: String) -> Bool {
+        let baseFeature = feature.split(separator: ":").first.map(String.init) ?? feature
+        guard let introducedVersion = featuresIntroduced[baseFeature] else { return false }
+        return currentVersion == introducedVersion
+    }
+
+    public static func shouldShowAnyWidgetsIndicator() -> Bool {
+        shouldShowIndicator(for: "generalUnits") ||
+            shouldShowIndicator(for: "locationUnits") ||
+            shouldShowIndicator(for: "weatherUnits") ||
+            shouldShowIndicator(for: "workoutUnits")
+    }
+
+    public static func shouldShowAnyIndicator() -> Bool {
+        featuresIntroduced.keys.contains { shouldShowIndicator(for: $0) }
+    }
+}
+
+public struct NewFeatureIndicatorView: View {
+    public init() {}
+
+    public var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [Color.blue, Color.cyan.opacity(0.8)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 16, height: 16)
+                .shadow(color: Color.blue.opacity(0.45), radius: 2, x: 0, y: 1)
+            Circle()
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.65), Color.clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+                .frame(width: 15, height: 15)
+            Image(systemName: "checkmark")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundColor(.white)
+        }
+    }
+}

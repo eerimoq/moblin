@@ -754,7 +754,13 @@ private struct LocationVariablesView: View {
             }
             .navigationTitle("Location")
         } label: {
-            Text("Location")
+            HStack {
+                Text("Location")
+                if NewFeatureManager.shouldShowIndicator(for: "locationUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -798,7 +804,13 @@ private struct WeatherVariablesView: View {
             }
             .navigationTitle("Weather")
         } label: {
-            Text("Weather")
+            HStack {
+                Text("Weather")
+                if NewFeatureManager.shouldShowIndicator(for: "weatherUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -892,7 +904,13 @@ private struct WorkoutVariablesView: View {
             }
             .navigationTitle("Workout")
         } label: {
-            Text("Workout")
+            HStack {
+                Text("Workout")
+                if NewFeatureManager.shouldShowIndicator(for: "workoutUnits") {
+                    Spacer()
+                    NewFeatureIndicatorView()
+                }
+            }
         }
     }
 }
@@ -1214,7 +1232,13 @@ struct WidgetTextSettingsView: View {
             NavigationLink {
                 TextSelectionView(widget: widget, value: text.formatString)
             } label: {
-                TextItemLocalizedView(name: "Text", value: widget.text.formatString)
+                HStack {
+                    TextItemLocalizedView(name: "Text", value: widget.text.formatString)
+                    if NewFeatureManager.shouldShowAnyIndicator() {
+                        Spacer()
+                        NewFeatureIndicatorView()
+                    }
+                }
             }
         }
         WarningsView(model: model,
