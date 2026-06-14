@@ -27,6 +27,11 @@ struct WhipServerStreamSettingsView: View {
             return
         }
         stream.latency = latency
+        stream.audioOffset = max(stream.audioOffset, -stream.latency)
+    }
+
+    private var audioOffsetMinMs: Double {
+        max(-2000, -Double(stream.latency))
     }
 
     private var audioOffsetBinding: Binding<Double> {
@@ -74,7 +79,7 @@ struct WhipServerStreamSettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Audio offset")
                         HStack {
-                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                            Slider(value: audioOffsetBinding, in: audioOffsetMinMs ... 2000, step: 10)
                                 .onChange(of: stream.audioOffset) { _ in
                                     model.setWhipStreamAudioOffset(stream: stream)
                                 }

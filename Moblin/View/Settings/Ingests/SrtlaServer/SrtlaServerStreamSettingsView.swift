@@ -65,7 +65,7 @@ struct SrtlaServerStreamSettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Audio offset")
                         HStack {
-                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                            Slider(value: audioOffsetBinding, in: -500 ... 2000, step: 10)
                                 .onChange(of: stream.audioOffset) { _ in
                                     model.setSrtlaStreamAudioOffset(stream: stream)
                                 }
