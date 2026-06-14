@@ -94,7 +94,7 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "speedometer")
                 }
                 Label {
-                    Toggle("Bitrate timeline", isOn: $show.bitrateTimeline)
+                    Toggle("Connection status timeline", isOn: $show.connectionTimeline)
                 } icon: {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                 }

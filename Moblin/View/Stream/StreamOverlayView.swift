@@ -5,17 +5,17 @@ private let endRadiusFraction = 0.5
 
 private struct BitrateTimelineView: View {
     @ObservedObject var show: SettingsShow
-    @ObservedObject var bitrateTimeline: BitrateTimeline
+    @ObservedObject var connectionTimeline: ConnectionTimeline
 
     private let segmentSize: CGFloat = 10
     private let segmentSpacing: CGFloat = 2
 
     var body: some View {
-        if show.bitrateTimeline {
+        if show.connectionTimeline {
             GeometryReader { proxy in
                 let segmentHeight = segmentSize + segmentSpacing
                 let visibleCount = max(Int(ceil(proxy.size.height / segmentHeight)) + 1, 1)
-                let samples = bitrateTimeline.samples.suffix(visibleCount)
+                let samples = connectionTimeline.samples.suffix(visibleCount)
                 let topPadding = max(proxy.size.height - CGFloat(samples.count) * segmentHeight, 0)
 
                 VStack(spacing: segmentSpacing) {
@@ -207,7 +207,7 @@ struct StreamOverlayView: View {
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
-                BitrateTimelineView(show: model.database.show, bitrateTimeline: model.bitrateTimeline)
+                BitrateTimelineView(show: model.database.show, connectionTimeline: model.bitrateTimeline)
                     .frame(width: timelineWidth)
                     .padding(.leading, leadingPadding())
                     .padding(.top)
