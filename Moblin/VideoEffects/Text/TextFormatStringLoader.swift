@@ -135,7 +135,7 @@ enum TextFormatPart: Equatable {
     case averageSpeed(TextFormatSpeedUnit)
     case altitude(TextFormatLengthUnit)
     case distance(TextFormatLengthUnit)
-    case splitDistance(String?)
+    case splitDistance(TextFormatLengthUnit)
     case slope
     case timer
     case stopwatch
@@ -211,8 +211,7 @@ class TextFormatLoader {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
-                } else if formatFromIndex.hasPrefix("{splitdistance}") {
-                    loadItem(part: .splitDistance(nil), offsetBy: 15)
+                } else if appendSplitDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{slope}") {
                     loadItem(part: .slope, offsetBy: 7)
@@ -353,6 +352,13 @@ class TextFormatLoader {
                                /{runningdistance:([^}]+)}/,
                                { $0 },
                                { .runningDistance($0 ?? "", nil) })
+    }
+
+    private func appendSplitDistanceIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{splitdistance}",
+                               /{splitdistance:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .splitDistance($0 ?? .system) }
     }
 
     private func appendDistanceIfPresent(formatFromIndex: String) -> Bool {

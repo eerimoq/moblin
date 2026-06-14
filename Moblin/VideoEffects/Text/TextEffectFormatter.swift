@@ -119,8 +119,8 @@ class TextEffectFormatter {
                 formatAltitude(stats: stats, unit: unit)
             case let .distance(unit):
                 formatDistance(stats: stats, unit: unit)
-            case .splitDistance:
-                formatSplitDistance(stats: stats)
+            case let .splitDistance(unit):
+                formatSplitDistance(stats: stats, unit: unit)
             case .slope:
                 formatSlope(stats: stats)
             case .timer:
@@ -285,31 +285,11 @@ class TextEffectFormatter {
     }
 
     private func formatDistance(stats: TextEffectStats, unit: TextFormatLengthUnit) {
-        var measurement = Measurement(value: stats.distance, unit: UnitLength.meters)
-        switch unit {
-        case .system:
-            appendTextPart(value: Moblin.format(distance: stats.distance))
-            return
-        case .meters:
-            break
-        case .kilometers:
-            measurement = measurement.converted(to: .kilometers)
-        case .feet:
-            measurement = measurement.converted(to: .feet)
-        case .yards:
-            measurement = measurement.converted(to: .yards)
-        case .miles:
-            measurement = measurement.converted(to: .miles)
-        case .nauticalMiles:
-            measurement = measurement.converted(to: .nauticalMiles)
-        case .lightYears:
-            measurement = measurement.converted(to: .lightyears)
-        }
-        appendTextPart(value: lengthFormatter.string(from: measurement))
+        formatDistance(distance: stats.distance, unit: unit)
     }
 
-    private func formatSplitDistance(stats: TextEffectStats) {
-        appendTextPart(value: stats.splitDistance)
+    private func formatSplitDistance(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        formatDistance(distance: stats.splitDistance, unit: unit)
     }
 
     private func formatSlope(stats: TextEffectStats) {
@@ -600,6 +580,30 @@ class TextEffectFormatter {
         } else {
             return "-"
         }
+    }
+
+    private func formatDistance(distance: Double, unit: TextFormatLengthUnit) {
+        var measurement = Measurement(value: distance, unit: UnitLength.meters)
+        switch unit {
+        case .system:
+            appendTextPart(value: Moblin.format(distance: distance))
+            return
+        case .meters:
+            break
+        case .kilometers:
+            measurement = measurement.converted(to: .kilometers)
+        case .feet:
+            measurement = measurement.converted(to: .feet)
+        case .yards:
+            measurement = measurement.converted(to: .yards)
+        case .miles:
+            measurement = measurement.converted(to: .miles)
+        case .nauticalMiles:
+            measurement = measurement.converted(to: .nauticalMiles)
+        case .lightYears:
+            measurement = measurement.converted(to: .lightyears)
+        }
+        appendTextPart(value: lengthFormatter.string(from: measurement))
     }
 
     private func appendTextPart(value: String) {

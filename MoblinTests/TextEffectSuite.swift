@@ -180,6 +180,29 @@ struct TextEffectSuite {
     }
 
     @Test
+    func splitDistance() {
+        var lines = format(format: "{splitDistance:m}", stats: createStats())
+        #expect(lines == createLine(data: .text("5 400 m")))
+        lines = format(format: "{splitDistance:km}", stats: createStats())
+        #expect(lines == createLine(data: .text("5 km")))
+        lines = format(format: "{splitDistance:yd}", stats: createStats())
+        #expect(lines == createLine(data: .text("5 906 yd")))
+        lines = format(format: "{splitDistance:ft}", stats: createStats())
+        #expect(lines == createLine(data: .text("17 717 ft")))
+        lines = format(format: "{splitDistance:mi}", stats: createStats())
+        #expect(lines == createLine(data: .text("3 mi")))
+        lines = format(format: "{splitDistance:nmi}", stats: createStats())
+        #expect(lines == createLine(data: .text("3 nmi")))
+        lines = format(format: "{splitDistance:ly}", stats: createStats())
+        #expect(lines == createLine(data: .text("0 ly")))
+        let systemPart = format(format: "{splitDistance}", stats: createStats())
+        lines = format(format: "{splitDistance:mi} {splitDistance} {splitDistance:m}", stats: createStats())
+        #expect(lines[0].parts[0] == createLine(data: .text("3 mi"))[0].parts[0])
+        #expect(lines[0].parts[2].data == systemPart[0].parts[0].data)
+        #expect(lines[0].parts[4].data == createLine(data: .text("5 400 m"))[0].parts[0].data)
+    }
+
+    @Test
     func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
@@ -295,7 +318,7 @@ struct TextEffectSuite {
                         averageSpeed: 7,
                         altitude: 243,
                         distance: 1700,
-                        splitDistance: "",
+                        splitDistance: 5400,
                         slope: "",
                         conditions: conditions,
                         temperature: Measurement(value: 22, unit: UnitTemperature.celsius),

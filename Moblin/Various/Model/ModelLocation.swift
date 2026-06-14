@@ -127,14 +127,6 @@ extension Model {
         averageSpeed = distance / elapsed.seconds
     }
 
-    func getDistance() -> String {
-        format(distance: database.location.distance)
-    }
-
-    func getSplitDistance() -> String {
-        format(distance: database.location.splitDistance)
-    }
-
     func isShowingStatusLocation() -> Bool {
         database.show.location && isLocationEnabled()
     }

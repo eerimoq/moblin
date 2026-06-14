@@ -544,7 +544,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var averageSpeed: Double
     var altitude: Double
     var distance: Double
-    var splitDistance: String
+    var splitDistance: Double
     var slope: String
     var conditions: String?
     var temperature: Measurement<UnitTemperature>?
