@@ -487,7 +487,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
-    let bitrateTimeline = ConnectionTimeline()
+    let connectionTimeline = ConnectionTimeline()
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
@@ -1709,7 +1709,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         weatherManager.setLocation(location: latestKnownLocation)
         geographyManager.setLocation(location: latestKnownLocation)
         updateBitrateStatus()
-        bitrateTimeline.update(isStreaming: isStreaming(), streamState: streamState)
+        connectionTimeline.update(isStreaming: isStreaming(), streamState: streamState)
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
             resourceUsage.update(now: monotonicNow)

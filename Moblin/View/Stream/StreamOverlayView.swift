@@ -3,7 +3,7 @@ import SwiftUI
 private let startRadiusFraction = 0.45
 private let endRadiusFraction = 0.5
 
-private struct BitrateTimelineView: View {
+private struct ConnectionTimelineView: View {
     @ObservedObject var show: SettingsShow
     @ObservedObject var connectionTimeline: ConnectionTimeline
 
@@ -207,10 +207,13 @@ struct StreamOverlayView: View {
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
-                BitrateTimelineView(show: model.database.show, connectionTimeline: model.bitrateTimeline)
-                    .frame(width: timelineWidth)
-                    .padding(.leading, leadingPadding())
-                    .padding(.top)
+                ConnectionTimelineView(
+                    show: model.database.show,
+                    connectionTimeline: model.connectionTimeline
+                )
+                .frame(width: timelineWidth)
+                .padding(.leading, leadingPadding())
+                .padding(.top)
                 Spacer()
             }
             .allowsHitTesting(false)
