@@ -362,12 +362,12 @@ class TextEffectFormatter {
         appendTextPart(value: stats.state ?? "-")
     }
 
-    private func formatCity(stats: TextEffectStats) {
-        appendTextPart(value: stats.city ?? "-")
-    }
-
     private func formatArea(stats: TextEffectStats) {
         appendTextPart(value: stats.area ?? "-")
+    }
+
+    private func formatCity(stats: TextEffectStats) {
+        appendTextPart(value: stats.city ?? "-")
     }
 
     private func formatNeighborhood(stats: TextEffectStats) {
