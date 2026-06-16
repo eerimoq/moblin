@@ -5,7 +5,13 @@ private struct SceneItemView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
 
-    private func deleteItem() {
+    private func duplicate() {
+        let clone = scene.clone()
+        clone.name = makeUniqueName(name: scene.name, existingNames: database.scenes)
+        database.scenes.append(clone)
+    }
+
+    private func delete() {
         let deletedCurrentScene = model.getSelectedScene() === scene
         database.scenes.removeAll { $0 === scene }
         if deletedCurrentScene {
@@ -31,19 +37,19 @@ private struct SceneItemView: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             SwipeLeftToDeleteButtonView {
-                deleteItem()
+                delete()
             }
             SwipeLeftToDuplicateButtonView {
-                database.scenes.append(scene.clone())
+                duplicate()
             }
         }
         .contextMenu {
             if isMac() {
                 ContextMenuDuplicateButtonView {
-                    database.scenes.append(scene.clone())
+                    duplicate()
                 }
                 ContextMenuDeleteButtonView {
-                    deleteItem()
+                    delete()
                 }
             }
         }

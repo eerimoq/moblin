@@ -5,6 +5,16 @@ private struct StreamItemView: View {
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
+    private func duplicate() {
+        let clone = stream.clone()
+        clone.name = makeUniqueName(name: stream.name, existingNames: database.streams)
+        database.streams.append(clone)
+    }
+
+    private func delete() {
+        database.streams.removeAll { $0 === stream }
+    }
+
     var body: some View {
         NavigationLink {
             StreamSettingsView(database: database, stream: stream)
@@ -23,21 +33,21 @@ private struct StreamItemView: View {
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if !stream.enabled {
                 SwipeLeftToDeleteButtonView {
-                    database.streams.removeAll { $0 === stream }
+                    delete()
                 }
             }
             SwipeLeftToDuplicateButtonView {
-                database.streams.append(stream.clone())
+                duplicate()
             }
         }
         .contextMenu {
             if isMac() {
                 ContextMenuDuplicateButtonView {
-                    database.streams.append(stream.clone())
+                    duplicate()
                 }
                 if !stream.enabled {
                     ContextMenuDeleteButtonView {
-                        database.streams.removeAll { $0 === stream }
+                        delete()
                     }
                 }
             }
