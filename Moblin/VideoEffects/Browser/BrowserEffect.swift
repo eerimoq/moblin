@@ -74,7 +74,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
-        mode = widget.mode
+        if widget.localOnly {
+            mode = .audioOnly
+        } else {
+            mode = widget.mode
+        }
         speechToText = widget.speechToText
         width = Double(widget.width)
         height = Double(widget.height)

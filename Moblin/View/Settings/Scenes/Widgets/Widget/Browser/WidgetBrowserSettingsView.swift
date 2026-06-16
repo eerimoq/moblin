@@ -89,50 +89,74 @@ struct WidgetBrowserSettingsView: View {
                                    keyboardType: .numbersAndPunctuation)
         }
         Section {
-            NavigationLink {
-                InlinePickerView(
-                    title: "Mode",
-                    onChange: { value in
-                        browser.mode = SettingsWidgetBrowserMode(rawValue: value) ?? .periodicAudioAndVideo
-                        model.resetSelectedScene(changeScene: false)
-                    },
-                    items:
-                    SettingsWidgetBrowserMode.allCases.map { .init(id: $0.rawValue, text: $0.toString()) },
-                    selectedId: browser.mode.rawValue
-                )
-            } label: {
-                HStack {
-                    Text("Mode")
-                    Spacer()
-                    Text(browser.mode.toString()).foregroundStyle(.gray)
+            Toggle("Local only", isOn: $browser.localOnly)
+                .onChange(of: browser.localOnly) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
+            let image = Image(systemName: "hand.tap")
+            if browser.localOnly {
+                Toggle("\(image) Interactive browser widgets", isOn: Binding(get: {
+                    model.interactiveBrowsers
+                }, set: {
+                    model.setInteractiveBrowserWidgets(on: $0)
+                }))
+                if !model.interactiveBrowsers {
+                    Text("""
+                    ⚠️ Tap the \(image) Interactive browser widgets quick button to \
+                    hide/show browsers, or enable the toggle above.
+                    """)
                 }
             }
-            if browser.mode == .periodicAudioAndVideo {
-                HStack {
-                    Text("Base FPS")
-                    SliderView(
-                        value: browser.baseFps,
-                        minimum: 1,
-                        maximum: 15,
-                        step: 1,
-                        onSubmit: submitFps,
-                        width: 60,
-                        format: formatFps
+        }
+        if !browser.localOnly {
+            Section {
+                NavigationLink {
+                    InlinePickerView(
+                        title: "Mode",
+                        onChange: { value in
+                            browser
+                                .mode = SettingsWidgetBrowserMode(rawValue: value) ?? .periodicAudioAndVideo
+                            model.resetSelectedScene(changeScene: false)
+                        },
+                        items:
+                        SettingsWidgetBrowserMode.allCases
+                            .map { .init(id: $0.rawValue, text: $0.toString()) },
+                        selectedId: browser.mode.rawValue
                     )
+                } label: {
+                    HStack {
+                        Text("Mode")
+                        Spacer()
+                        Text(browser.mode.toString()).foregroundStyle(.gray)
+                    }
                 }
-            }
-        } footer: {
-            VStack(alignment: .leading) {
-                Text("""
-                When \"Audio and video only\" mode is selected, images, text, GIFs etc. \
-                will only be shown when a video (.mp4/.mov) is playing, reducing overall \
-                energy consumption.
-                """)
-                Text("")
-                Text("""
-                When \"Audio only\" mode is selected, no video will be rendered at all. \
-                Only audio will play.
-                """)
+                if browser.mode == .periodicAudioAndVideo {
+                    HStack {
+                        Text("Base FPS")
+                        SliderView(
+                            value: browser.baseFps,
+                            minimum: 1,
+                            maximum: 15,
+                            step: 1,
+                            onSubmit: submitFps,
+                            width: 60,
+                            format: formatFps
+                        )
+                    }
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("""
+                    When \"Audio and video only\" mode is selected, images, text, GIFs etc. \
+                    will only be shown when a video (.mp4/.mov) is playing, reducing overall \
+                    energy consumption.
+                    """)
+                    Text("")
+                    Text("""
+                    When \"Audio only\" mode is selected, no video will be rendered at all. \
+                    Only audio will play.
+                    """)
+                }
             }
         }
         Section {

@@ -931,6 +931,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
     @Published var styleSheet: String = ""
     @Published var moblinAccess: Bool = false
     @Published var speechToText: Bool = false
+    @Published var localOnly: Bool = false
 
     init() {}
 
@@ -944,6 +945,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         case styleSheet
         case moblinAccess
         case speechToText
+        case localOnly
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -956,6 +958,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         try container.encode(.styleSheet, styleSheet)
         try container.encode(.moblinAccess, moblinAccess)
         try container.encode(.speechToText, speechToText)
+        try container.encode(.localOnly, localOnly)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -973,6 +976,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         styleSheet = container.decode(.styleSheet, String.self, "")
         moblinAccess = container.decode(.moblinAccess, Bool.self, false)
         speechToText = container.decode(.speechToText, Bool.self, false)
+        localOnly = container.decode(.localOnly, Bool.self, false)
     }
 }
 

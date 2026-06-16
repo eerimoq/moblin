@@ -418,9 +418,7 @@ struct QuickButtonsInnerView: View {
 
     private func interactiveBrowserWidgetsAction() {
         state.button.isOn.toggle()
-        model.interactiveBrowsers = state.button.isOn
-        model.setQuickButton(type: .interactiveBrowserWidgets, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.setInteractiveBrowserWidgets(on: state.button.isOn)
     }
 
     private func macrosAction() {

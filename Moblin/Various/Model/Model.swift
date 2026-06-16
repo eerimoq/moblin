@@ -841,6 +841,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateQuickButtonStates()
     }
 
+    func setInteractiveBrowserWidgets(on: Bool) {
+        interactiveBrowsers = on
+        setQuickButton(type: .interactiveBrowserWidgets, isOn: on)
+        updateQuickButtonStates()
+    }
+
     func setAllowVideoRangePixelFormat() {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
