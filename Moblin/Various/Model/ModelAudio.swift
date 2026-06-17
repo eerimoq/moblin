@@ -96,6 +96,7 @@ extension Model {
                     options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
                 )
                 try session.setPreferredSampleRate(48000)
+                try session.setPrefersNoInterruptionsFromSystemAlerts(true)
                 try session.setActive(true)
                 logger.info("audio: Preferred sample rate: \(session.preferredSampleRate)")
             } catch {
