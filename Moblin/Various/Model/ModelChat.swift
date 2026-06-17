@@ -285,6 +285,7 @@ extension Model {
         if pollEnabled, live, filter?.poll != false {
             handlePollVote(vote: segments.first?.text?.trim())
         }
+        let highlight = highlight ?? (isModerator ? ChatHighlight.makeModerator() : nil)
         let post = ChatPost(
             id: chatPostId,
             messageId: messageId,

@@ -35,6 +35,7 @@ enum ChatPostHighlightKind {
     case reply
     case redemption
     case other
+    case moderator
 
     static func fromWatchProtocol(kind: WatchProtocolChatHighlightKind) -> ChatPostHighlightKind {
         switch kind {
@@ -44,6 +45,8 @@ enum ChatPostHighlightKind {
             .redemption
         case .other:
             .other
+        case .moderator:
+            .moderator
         }
     }
 }

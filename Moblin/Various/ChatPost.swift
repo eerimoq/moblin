@@ -32,6 +32,7 @@ enum ChatHighlightKind: Codable {
     case firstMessage
     case newFollower
     case reply
+    case moderator
 }
 
 struct ChatHighlight {
@@ -121,6 +122,15 @@ struct ChatHighlight {
         )
     }
 
+    static func makeModerator() -> ChatHighlight {
+        ChatHighlight(
+            kind: .moderator,
+            barColor: .cyan,
+            image: "shield.check",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Moderator"))
+        )
+    }
+
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind = switch kind {
         case .redemption:
@@ -133,6 +143,8 @@ struct ChatHighlight {
             .other
         case .reply:
             .reply
+        case .moderator:
+            .moderator
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
         return WatchProtocolChatHighlight(

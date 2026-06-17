@@ -92,6 +92,7 @@ enum WatchProtocolChatHighlightKind: Codable {
     case reply
     case redemption
     case other
+    case moderator
 }
 
 struct WatchProtocolChatHighlight: Codable {

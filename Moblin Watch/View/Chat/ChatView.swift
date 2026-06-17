@@ -86,6 +86,8 @@ private struct NormalView: View {
     func highlightColor(highlight: ChatPostHighlight) -> Color {
         if highlight.kind == .reply {
             .gray
+        } else if highlight.kind == .moderator {
+            .cyan
         } else {
             .white
         }
