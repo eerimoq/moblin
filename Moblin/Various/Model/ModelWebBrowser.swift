@@ -41,8 +41,6 @@ extension Model {
             configuration.setHttpProxy(endpoint: getHttpProxyServerEndpoint())
             webBrowser = WKWebView(frame: .zero, configuration: configuration)
             webBrowser?.navigationDelegate = self
-            webBrowser?.isOpaque = false
-            webBrowser?.backgroundColor = .clear
             webBrowser?.uiDelegate = webBrowserController
             DispatchQueue.main.async {
                 self.loadWebBrowserHome()

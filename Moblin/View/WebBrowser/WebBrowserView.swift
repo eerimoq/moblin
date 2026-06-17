@@ -158,7 +158,6 @@ private struct WebBrowserSmallView: View {
                     HStack {
                         Spacer()
                         WebView(model: model)
-                            .background(.clear)
                             .frame(maxWidth: mapSide(maximum: metrics.size.width),
                                    maxHeight: mapSide(maximum: metrics.size.height))
                             .clipShape(RoundedRectangle(cornerRadius: 7))
@@ -234,7 +233,6 @@ private struct WebBrowserBigView: View {
                                   presentingBookmarks: $presentingBookmarks)
                 }
         }
-        .background(.clear, ignoresSafeAreaEdges: .bottom)
     }
 }
 
