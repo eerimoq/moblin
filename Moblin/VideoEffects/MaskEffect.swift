@@ -73,14 +73,13 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         guard width > 0, height > 0 else {
             return nil
         }
-        let colorSpace = CGColorSpaceCreateDeviceGray()
         guard let context = CGContext(
             data: nil,
             width: width,
             height: height,
             bitsPerComponent: 8,
             bytesPerRow: width,
-            space: colorSpace,
+            space: CGColorSpaceCreateDeviceGray(),
             bitmapInfo: CGImageAlphaInfo.none.rawValue
         ) else {
             return nil
