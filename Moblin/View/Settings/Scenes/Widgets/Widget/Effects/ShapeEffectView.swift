@@ -18,6 +18,22 @@ private struct CornerRadiusView: View {
                 Text(String(Int(shape.cornerRadius * 100)))
                     .frame(width: 35)
             }
+            Toggle("Top left", isOn: $shape.cornerRadiusTopLeft)
+                .onChange(of: shape.cornerRadiusTopLeft) { _ in
+                    updateWidget()
+                }
+            Toggle("Top right", isOn: $shape.cornerRadiusTopRight)
+                .onChange(of: shape.cornerRadiusTopRight) { _ in
+                    updateWidget()
+                }
+            Toggle("Bottom left", isOn: $shape.cornerRadiusBottomLeft)
+                .onChange(of: shape.cornerRadiusBottomLeft) { _ in
+                    updateWidget()
+                }
+            Toggle("Bottom right", isOn: $shape.cornerRadiusBottomRight)
+                .onChange(of: shape.cornerRadiusBottomRight) { _ in
+                    updateWidget()
+                }
         } header: {
             Text("Corner radius")
         }

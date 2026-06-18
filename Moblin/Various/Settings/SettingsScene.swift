@@ -104,6 +104,10 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
 
 class SettingsVideoEffectShape: Codable, ObservableObject {
     @Published var cornerRadius: Float = 0.1
+    @Published var cornerRadiusTopLeft: Bool = true
+    @Published var cornerRadiusTopRight: Bool = true
+    @Published var cornerRadiusBottomLeft: Bool = true
+    @Published var cornerRadiusBottomRight: Bool = true
     @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color
@@ -115,6 +119,10 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case cornerRadius
+        case cornerRadiusTopLeft
+        case cornerRadiusTopRight
+        case cornerRadiusBottomLeft
+        case cornerRadiusBottomRight
         case borderWidth
         case borderColor
         case cropEnabled
@@ -131,6 +139,10 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.cornerRadius, cornerRadius)
+        try container.encode(.cornerRadiusTopLeft, cornerRadiusTopLeft)
+        try container.encode(.cornerRadiusTopRight, cornerRadiusTopRight)
+        try container.encode(.cornerRadiusBottomLeft, cornerRadiusBottomLeft)
+        try container.encode(.cornerRadiusBottomRight, cornerRadiusBottomRight)
         try container.encode(.borderWidth, borderWidth)
         try container.encode(.borderColor, borderColor)
         try container.encode(.cropEnabled, cropEnabled)
@@ -143,6 +155,10 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0.1)
+        cornerRadiusTopLeft = container.decode(.cornerRadiusTopLeft, Bool.self, true)
+        cornerRadiusTopRight = container.decode(.cornerRadiusTopRight, Bool.self, true)
+        cornerRadiusBottomLeft = container.decode(.cornerRadiusBottomLeft, Bool.self, true)
+        cornerRadiusBottomRight = container.decode(.cornerRadiusBottomRight, Bool.self, true)
         borderWidth = container.decode(.borderWidth, Double.self, 0)
         borderColor = container.decode(.borderColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         borderColorColor = borderColor.color()
@@ -155,6 +171,10 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
 
     func toSettings() -> ShapeEffectSettings {
         .init(cornerRadius: cornerRadius,
+              cornerRadiusTopLeft: cornerRadiusTopLeft,
+              cornerRadiusTopRight: cornerRadiusTopRight,
+              cornerRadiusBottomLeft: cornerRadiusBottomLeft,
+              cornerRadiusBottomRight: cornerRadiusBottomRight,
               borderWidth: borderWidth,
               borderColor: CIColor(
                   red: Double(borderColor.red) / 255,
