@@ -1,12 +1,7 @@
 import CoreImage
-import CoreImage.CIFilterBuiltins
 
 struct ShapeEffectSettings {
     var cornerRadius: Float = 0
-    var cornerRadiusTopLeft: Bool = true
-    var cornerRadiusTopRight: Bool = true
-    var cornerRadiusBottomLeft: Bool = true
-    var cornerRadiusBottomRight: Bool = true
     var borderWidth: Double = 1.0
     var borderColor: CIColor = .black
     var cropEnabled: Bool = false
@@ -39,28 +34,12 @@ private struct MaskImage {
         guard settings.cornerRadius == cornerRadius else {
             return nil
         }
-        guard settings.cornerRadiusTopLeft == cornerRadiusTopLeft else {
-            return nil
-        }
-        guard settings.cornerRadiusTopRight == cornerRadiusTopRight else {
-            return nil
-        }
-        guard settings.cornerRadiusBottomLeft == cornerRadiusBottomLeft else {
-            return nil
-        }
-        guard settings.cornerRadiusBottomRight == cornerRadiusBottomRight else {
-            return nil
-        }
         return image
     }
 
     mutating func set(extent: CGRect, settings: ShapeEffectSettings, image: CIImage?) {
         self.extent = extent
         cornerRadius = settings.cornerRadius
-        cornerRadiusTopLeft = settings.cornerRadiusTopLeft
-        cornerRadiusTopRight = settings.cornerRadiusTopRight
-        cornerRadiusBottomLeft = settings.cornerRadiusBottomLeft
-        cornerRadiusBottomRight = settings.cornerRadiusBottomRight
         self.image = image
     }
 }
@@ -83,70 +62,20 @@ final class ShapeEffect: VideoEffect, @unchecked Sendable {
         if let image = cache.get(extent: extent, settings: settings) {
             return image
         }
-        let width = Int(extent.width)
-        let height = Int(extent.height)
-        guard width > 0, height > 0 else {
-            return nil
-        }
-        let inset: CGFloat = 1.0
-        let rect = extent
-            .offsetBy(dx: inset, dy: inset)
-            .insetBy(dx: inset, dy: inset)
-        let cornerRadius = CGFloat(min(rect.height, rect.width)) / 2.0 * CGFloat(settings.cornerRadius)
-        let cornerRadiusTopLeft = settings.cornerRadiusTopLeft ? cornerRadius : 0
-        let cornerRadiusTopRight = settings.cornerRadiusTopRight ? cornerRadius : 0
-        let cornerRadiusBottomLeft = settings.cornerRadiusBottomLeft ? cornerRadius : 0
-        let cornerRadiusBottomRight = settings.cornerRadiusBottomRight ? cornerRadius : 0
-        let minX = rect.minX
-        let maxX = rect.maxX
-        let minY = rect.minY
-        let maxY = rect.maxY
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: minX + cornerRadiusTopLeft, y: maxY))
-        path.addLine(to: CGPoint(x: maxX - cornerRadiusTopRight, y: maxY))
-        if cornerRadiusTopRight > 0 {
-            path.addArc(tangent1End: CGPoint(x: maxX, y: maxY),
-                        tangent2End: CGPoint(x: maxX, y: maxY - cornerRadiusTopRight),
-                        radius: cornerRadiusTopRight)
-        }
-        path.addLine(to: CGPoint(x: maxX, y: minY + cornerRadiusBottomRight))
-        if cornerRadiusBottomRight > 0 {
-            path.addArc(tangent1End: CGPoint(x: maxX, y: minY),
-                        tangent2End: CGPoint(x: maxX - cornerRadiusBottomRight, y: minY),
-                        radius: cornerRadiusBottomRight)
-        }
-        path.addLine(to: CGPoint(x: minX + cornerRadiusBottomLeft, y: minY))
-        if cornerRadiusBottomLeft > 0 {
-            path.addArc(tangent1End: CGPoint(x: minX, y: minY),
-                        tangent2End: CGPoint(x: minX, y: minY + cornerRadiusBottomLeft),
-                        radius: cornerRadiusBottomLeft)
-        }
-        path.addLine(to: CGPoint(x: minX, y: maxY - cornerRadiusTopLeft))
-        if cornerRadiusTopLeft > 0 {
-            path.addArc(tangent1End: CGPoint(x: minX, y: maxY),
-                        tangent2End: CGPoint(x: minX + cornerRadiusTopLeft, y: maxY),
-                        radius: cornerRadiusTopLeft)
-        }
-        path.closeSubpath()
-        guard let context = CGContext(
-            data: nil,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: width,
-            space: CGColorSpaceCreateDeviceGray(),
-            bitmapInfo: CGImageAlphaInfo.none.rawValue
-        ) else {
-            return nil
-        }
-        context.setFillColor(gray: 1.0, alpha: 1.0)
-        context.addPath(path)
-        context.fillPath()
-        guard let cgImage = context.makeImage() else {
-            return nil
-        }
-        let maskImage = CIImage(cgImage: cgImage)
-        cache.set(extent: extent, settings: settings, image: maskImage)
+        let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
+        roundedRectangleGenerator.color = .green
+        // Slightly smaller to remove ~1px black line around image.
+        var maskExtent = extent
+        maskExtent.origin.x += 1
+        maskExtent.origin.y += 1
+        maskExtent.size.width -= 2
+        maskExtent.size.height -= 2
+        roundedRectangleGenerator.extent = maskExtent
+        var radiusPixels = Float(min(extent.height, extent.width))
+        radiusPixels /= 2
+        radiusPixels *= settings.cornerRadius
+        roundedRectangleGenerator.radius = radiusPixels
+        cache.set(extent: extent, settings: settings, image: roundedRectangleGenerator.outputImage)
         return cache.get(extent: extent, settings: settings)
     }
 
