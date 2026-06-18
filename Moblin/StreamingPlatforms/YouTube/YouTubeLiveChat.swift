@@ -226,7 +226,7 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
     }
 
     private func makeGetLiveChatUrl() -> URL? {
-        URL(string: "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat")
+        URL(string: "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false")
     }
 
     private func getInitialContinuation() async throws {
