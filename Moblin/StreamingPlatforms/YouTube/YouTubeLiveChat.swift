@@ -123,6 +123,15 @@ private struct GiftPurchaseAnnouncementDescription: Codable {
     let header: SponsorshipsHeader?
 }
 
+private struct Content: Codable {
+    let content: String
+}
+
+private struct GiftMessageVieModel: Codable {
+    let authorName: Content
+    let text: Content
+}
+
 private struct AddChatItemActionItem: Codable {
     let liveChatTextMessageRenderer: ChatDescription?
     let liveChatPaidMessageRenderer: ChatDescription?
@@ -130,6 +139,7 @@ private struct AddChatItemActionItem: Codable {
     let liveChatMembershipItemRenderer: ChatDescription?
     let liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: GiftPurchaseAnnouncementDescription?
     let liveChatSponsorshipsGiftRedemptionAnnouncementRenderer: ChatDescription?
+    let giftMessageViewModel: GiftMessageVieModel?
 }
 
 private struct AddChatItemAction: Codable {
@@ -300,6 +310,11 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                             highlight: ChatHighlight.makeGiftedMemberships()
                         )
                     }
+                    if let giftMessageViewModel = item.giftMessageViewModel {
+                        numberOfMessages += await handleGiftMessageViewModel(
+                            giftMessageViewModel: giftMessageViewModel
+                        )
+                    }
                 }
             }
             try updateContinuation(getLiveChat: getLiveChat)
@@ -412,6 +427,32 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                                     isOwner: isOwner,
                                     bits: nil,
                                     highlight: ChatHighlight.makeGiftedMemberships(),
+                                    live: true)
+        }
+        return 1
+    }
+
+    private func handleGiftMessageViewModel(giftMessageViewModel: GiftMessageVieModel) async -> Int {
+        var id = 0
+        var segments = createSegments(message: giftMessageViewModel.text.content, id: &id)
+        let nonMutSegments = segments
+        await MainActor.run {
+            model.appendChatMessage(platform: .youTube,
+                                    messageId: nil,
+                                    displayName: giftMessageViewModel.authorName.content,
+                                    user: giftMessageViewModel.authorName.content,
+                                    userId: nil,
+                                    userColor: nil,
+                                    userBadges: [],
+                                    segments: nonMutSegments,
+                                    timestamp: model.statusOther.digitalClock,
+                                    timestampTime: .now,
+                                    isAction: false,
+                                    isSubscriber: false,
+                                    isModerator: false,
+                                    isOwner: false,
+                                    bits: nil,
+                                    highlight: ChatHighlight.makeJewels(),
                                     live: true)
         }
         return 1

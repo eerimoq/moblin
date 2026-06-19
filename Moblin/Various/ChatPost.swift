@@ -122,6 +122,15 @@ struct ChatHighlight {
         )
     }
 
+    static func makeJewels() -> ChatHighlight {
+        ChatHighlight(
+            kind: .other,
+            barColor: .blue,
+            image: "diamond",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Jewels"))
+        )
+    }
+
     static func makeModerator() -> ChatHighlight {
         ChatHighlight(
             kind: .moderator,
