@@ -2,7 +2,7 @@ import Foundation
 
 class DjiDeviceWrapper {
     let device: DjiDevice
-    var autoRestartStreamTimer: (any DispatchSourceTimer)?
+    let autoRestartStreamTimer = SimpleTimer(queue: .main)
 
     init(device: DjiDevice) {
         self.device = device
@@ -39,13 +39,9 @@ extension Model {
         guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
-        djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
-            .makeTimerSource(queue: DispatchQueue.main)
-        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 5)
-        djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
+        djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 5) { [weak self] in
             self?.restartDjiLiveStreamIfNeeded(device: device)
         }
-        djiDeviceWrapper.autoRestartStreamTimer!.activate()
     }
 
     func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
@@ -56,8 +52,7 @@ extension Model {
             guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
                 continue
             }
-            djiDeviceWrapper.autoRestartStreamTimer?.cancel()
-            djiDeviceWrapper.autoRestartStreamTimer = nil
+            djiDeviceWrapper.autoRestartStreamTimer.stop()
         }
     }
 
@@ -183,22 +178,17 @@ extension Model {
     }
 
     private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {
-        djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
-            .makeTimerSource(queue: DispatchQueue.main)
-        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 45)
-        djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
+        djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 45) { [weak self] in
             self?
                 .makeErrorToast(
                     title: String(localized: "Failed to start live stream from DJI device \(device.name)")
                 )
             self?.restartDjiLiveStreamIfNeeded(device: device)
         }
-        djiDeviceWrapper.autoRestartStreamTimer!.activate()
     }
 
     private func stopDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper) {
-        djiDeviceWrapper.autoRestartStreamTimer?.cancel()
-        djiDeviceWrapper.autoRestartStreamTimer = nil
+        djiDeviceWrapper.autoRestartStreamTimer.stop()
     }
 
     private func restartDjiLiveStreamIfNeeded(device: SettingsDjiDevice) {
