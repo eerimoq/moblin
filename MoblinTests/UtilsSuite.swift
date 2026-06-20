@@ -5,16 +5,16 @@ import Testing
 struct UtilsSuite {
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func fullDuration() {
-        #expect(formatFullDuration(seconds: 0) == "0 seconds")
-        #expect(formatFullDuration(seconds: 1) == "1 second")
-        #expect(formatFullDuration(seconds: 30) == "30 seconds")
-        #expect(formatFullDuration(seconds: 60) == "1 minute")
-        #expect(formatFullDuration(seconds: 120) == "2 minutes")
-        #expect(formatFullDuration(seconds: 3600) == "1 hour")
-        #expect(formatFullDuration(seconds: 86400) == "1 day")
-        #expect(formatFullDuration(seconds: 7 * 86400) == "7 days")
-        #expect(formatFullDuration(seconds: 30 * 86400) == "30 days")
-        #expect(formatFullDuration(seconds: 90 * 86400) == "90 days")
+        #expect(formatShortDuration(seconds: 0) == "0 sec")
+        #expect(formatShortDuration(seconds: 1) == "1 sec")
+        #expect(formatShortDuration(seconds: 30) == "30 sec")
+        #expect(formatShortDuration(seconds: 60) == "1 min")
+        #expect(formatShortDuration(seconds: 120) == "2 min")
+        #expect(formatShortDuration(seconds: 3600) == "1 hr")
+        #expect(formatShortDuration(seconds: 86400) == "1 day")
+        #expect(formatShortDuration(seconds: 7 * 86400) == "7 days")
+        #expect(formatShortDuration(seconds: 30 * 86400) == "30 days")
+        #expect(formatShortDuration(seconds: 90 * 86400) == "90 days")
     }
 
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))

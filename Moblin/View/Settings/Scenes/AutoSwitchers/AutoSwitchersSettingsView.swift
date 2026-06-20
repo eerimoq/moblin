@@ -4,12 +4,10 @@ struct SwitcherTimePickerView: View {
     @Binding var time: Int
 
     var body: some View {
-        Picker(selection: $time) {
+        Picker("Time", selection: $time) {
             ForEach([5, 10, 15, 30, 45, 60, 90, 120, 180, 240, 300], id: \.self) {
-                Text("\($0)s")
+                Text(formatShortDuration(seconds: $0))
             }
-        } label: {
-            Text("Time")
         }
     }
 }
@@ -47,7 +45,7 @@ private struct AutoSwitcherSceneSettingsView: View {
                 DraggableItemPrefixView()
                 Text(getSceneName(sceneId: scene.sceneId))
                 Spacer()
-                Text("\(scene.time)s")
+                Text(formatShortDuration(seconds: scene.time))
             }
         }
     }

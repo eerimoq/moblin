@@ -278,7 +278,7 @@ struct StreamReplaySettingsView: View {
                 Section {
                     Picker("Post trigger delay", selection: $replay.postTriggerDelay) {
                         ForEach([2, 3, 4, 5], id: \.self) { delay in
-                            Text("\(delay) s")
+                            Text(formatShortDuration(seconds: delay))
                         }
                     }
                 } footer: {

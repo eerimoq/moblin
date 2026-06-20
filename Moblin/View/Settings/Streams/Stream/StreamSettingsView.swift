@@ -350,7 +350,7 @@ struct StreamSettingsView: View {
                     } label: {
                         TextItemLocalizedView(
                             name: "Estimated viewer delay",
-                            value: "\(formatOneDecimal(stream.estimatedViewerDelay)) s"
+                            value: formatShortDuration(seconds: Int(stream.estimatedViewerDelay))
                         )
                     }
                 } footer: {

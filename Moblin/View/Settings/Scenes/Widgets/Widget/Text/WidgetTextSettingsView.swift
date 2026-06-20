@@ -401,7 +401,7 @@ private struct TimerWidgetView: View {
                 HStack(spacing: 13) {
                     Picker("", selection: $timer.delta) {
                         ForEach([1, 2, 5, 15, 60], id: \.self) { delta in
-                            Text("\(delta) min")
+                            Text(formatShortDuration(seconds: 60 * delta))
                                 .tag(delta)
                         }
                     }

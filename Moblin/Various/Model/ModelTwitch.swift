@@ -734,7 +734,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
 
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {
         adsEndDate = Date().advanced(by: Double(event.duration_seconds))
-        let duration = formatFullDuration(seconds: event.duration_seconds)
+        let duration = formatShortDuration(seconds: event.duration_seconds)
         let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
         makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
     }

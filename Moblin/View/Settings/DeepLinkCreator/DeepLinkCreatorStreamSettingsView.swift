@@ -52,7 +52,8 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         submitMaxKeyFrameInterval(value: $0)
                     }
                 } label: {
-                    TextItemView(name: "Key frame interval", value: "\(video.maxKeyFrameInterval) s")
+                    TextItemView(name: "Key frame interval",
+                                 value: formatShortDuration(seconds: Int(video.maxKeyFrameInterval)))
                 }
                 Toggle(isOn: $video.bFrames) {
                     Text("B-frames")

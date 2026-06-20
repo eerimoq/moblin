@@ -40,7 +40,7 @@ struct WatchChatSettingsView: View {
                     }
                 Picker("Notification rate", selection: $chat.notificationRate) {
                     ForEach([60, 30, 15, 5, 1], id: \.self) { rate in
-                        Text("\(rate) s")
+                        Text(formatShortDuration(seconds: rate))
                     }
                 }
                 .onChange(of: chat.notificationRate) { _ in

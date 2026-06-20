@@ -70,7 +70,7 @@ struct WidgetScoreboardModularSettingsView: View {
         guard let maximum = Int(value) else {
             return ""
         }
-        return formatFullDuration(seconds: 60 * maximum)
+        return formatShortDuration(seconds: 60 * maximum)
     }
 
     var body: some View {

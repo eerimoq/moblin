@@ -159,18 +159,18 @@ extension Duration {
     }
 }
 
-private func createFullDurationFormatter() -> DateComponentsFormatter {
+private func createShortDurationFormatter() -> DateComponentsFormatter {
     let formatter = DateComponentsFormatter()
     formatter.allowedUnits = [.day, .hour, .minute, .second]
-    formatter.unitsStyle = .full
+    formatter.unitsStyle = .short
     formatter.referenceDate = Date(timeIntervalSince1970: 0)
     return formatter
 }
 
-private let fullDurationFormatter = createFullDurationFormatter()
+private let shortDurationFormatter = createShortDurationFormatter()
 
-func formatFullDuration(seconds: Int) -> String {
-    fullDurationFormatter.string(from: Double(seconds)) ?? ""
+func formatShortDuration(seconds: Int) -> String {
+    shortDurationFormatter.string(from: Double(seconds)) ?? ""
 }
 
 private func createSpeedFormatter() -> MeasurementFormatter {

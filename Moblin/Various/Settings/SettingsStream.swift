@@ -757,7 +757,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
 
     func maxKeyFrameIntervalString() -> String {
         if maxKeyFrameInterval != 0 {
-            "\(maxKeyFrameInterval) s"
+            formatShortDuration(seconds: Int(maxKeyFrameInterval))
         } else {
             String(localized: "Auto")
         }
@@ -1700,7 +1700,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func maxKeyFrameIntervalString() -> String {
         if maxKeyFrameInterval != 0 {
-            "\(maxKeyFrameInterval) s"
+            formatShortDuration(seconds: Int(maxKeyFrameInterval))
         } else {
             String(localized: "Auto")
         }

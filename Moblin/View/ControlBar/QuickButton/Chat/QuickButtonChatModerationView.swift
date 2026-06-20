@@ -122,7 +122,7 @@ private struct DurationActionView: View {
                     Text("Off")
                         .tag(nil as Int?)
                     ForEach(durations, id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
+                        Text(formatShortDuration(seconds: $0))
                             .tag($0 as Int?)
                     }
                 }
@@ -276,7 +276,7 @@ private struct UserModerationItemView: View {
                 Section {
                     Picker("Duration", selection: $timeoutDuration) {
                         ForEach(timeoutPresets, id: \.self) {
-                            Text(formatFullDuration(seconds: $0))
+                            Text(formatShortDuration(seconds: $0))
                         }
                     }
                 }
@@ -351,14 +351,14 @@ private struct CreatePollView: View {
             Section {
                 Picker("Duration", selection: $duration) {
                     ForEach([30, 120, 180, 240, 300], id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
+                        Text(formatShortDuration(seconds: $0))
                     }
                 }
             }
             Section {
                 Picker("Result display duration", selection: $resultDisplayDuration) {
                     ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
+                        Text(formatShortDuration(seconds: $0))
                     }
                 }
             }
@@ -425,7 +425,7 @@ private struct CreatePredictionView: View {
             Section {
                 Picker("Duration", selection: $duration) {
                     ForEach([60, 300, 600, 1800], id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
+                        Text(formatShortDuration(seconds: $0))
                     }
                 }
             }
@@ -706,7 +706,7 @@ private struct RunCommercialView: View {
             Section {
                 Picker("Duration", selection: $duration) {
                     ForEach([30, 60, 90, 120, 180], id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
+                        Text(formatShortDuration(seconds: $0))
                     }
                 }
             } header: {

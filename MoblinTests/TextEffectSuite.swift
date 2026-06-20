@@ -293,46 +293,6 @@ struct TextEffectSuite {
         #expect(parts == [.subtitles("dk")])
     }
 
-    @Test
-    func loadFormatLocationVariables() {
-        let loader = TextFormatLoader()
-        #expect(loader.load(format: "{region}") == [.region])
-        #expect(loader.load(format: "{area}") == [.area])
-        #expect(loader.load(format: "{suburb}") == [.suburb])
-        #expect(loader.load(format: "{area}, {city}") == [.area, .text(", "), .city])
-    }
-
-    @Test
-    func isLocationVariableForNewVariables() {
-        #expect([TextFormatPart.area].isLocationVariable())
-        #expect([TextFormatPart.region].isLocationVariable())
-        #expect([TextFormatPart.suburb].isLocationVariable())
-    }
-
-    @Test
-    func region() {
-        var lines = format(format: "{region}", stats: createStats())
-        #expect(lines == createLine(data: .text("-")))
-        lines = format(format: "{region}", stats: createStats(region: "Vestland"))
-        #expect(lines == createLine(data: .text("Vestland")))
-    }
-
-    @Test
-    func area() {
-        var lines = format(format: "{area}", stats: createStats())
-        #expect(lines == createLine(data: .text("-")))
-        lines = format(format: "{area}", stats: createStats(area: "Aurland"))
-        #expect(lines == createLine(data: .text("Aurland")))
-    }
-
-    @Test
-    func suburb() {
-        var lines = format(format: "{suburb}", stats: createStats())
-        #expect(lines == createLine(data: .text("-")))
-        lines = format(format: "{suburb}", stats: createStats(suburb: "Fretheim"))
-        #expect(lines == createLine(data: .text("Fretheim")))
-    }
-
     private func format(format: String, stats: TextEffectStats) -> [TextEffectLine] {
         let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: format),
                                             timersEndTime: [],
@@ -345,10 +305,7 @@ struct TextEffectSuite {
 
     private func createStats(conditions: String? = nil,
                              heartRates: [String: Int?] = [:],
-                             gForce: GForce? = nil,
-                             region: String? = nil,
-                             area: String? = nil,
-                             suburb: String? = nil) -> TextEffectStats
+                             gForce: GForce? = nil) -> TextEffectStats
     {
         TextEffectStats(timestamp: .now,
                         bitrate: "",
@@ -371,10 +328,9 @@ struct TextEffectSuite {
                         country: nil,
                         countryFlag: nil,
                         state: nil,
+                        area: nil,
                         city: nil,
-                        region: region,
-                        area: area,
-                        suburb: suburb,
+                        neighborhood: nil,
                         muted: false,
                         heartRates: heartRates,
                         activeEnergyBurned: nil,
