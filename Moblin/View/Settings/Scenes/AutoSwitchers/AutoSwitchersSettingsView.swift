@@ -5,7 +5,7 @@ struct SwitcherTimePickerView: View {
 
     var body: some View {
         Picker(selection: $time) {
-            ForEach([5, 10, 15, 30, 60, 120], id: \.self) {
+            ForEach([5, 10, 15, 30, 45, 60, 90, 120, 180, 240, 300], id: \.self) {
                 Text("\($0)s")
             }
         } label: {
