@@ -11,9 +11,6 @@ class DjiDeviceWrapper {
 
 extension Model {
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        guard device.canStartLive(statusOther.isConnectedToIpv4WiFi()) else {
-            return
-        }
         if !djiDeviceWrappers.keys.contains(device.id) {
             let djiDevice = DjiDevice()
             djiDevice.delegate = self
@@ -157,8 +154,12 @@ extension Model {
                 deviceId: deviceId,
                 model: device.model
             )
+            startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+        } else {
+            djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 3) { [weak self] in
+                self?.restartDjiLiveStreamIfNeeded(device: device)
+            }
         }
-        startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
     }
 
     func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
