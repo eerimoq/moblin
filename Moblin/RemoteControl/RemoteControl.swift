@@ -299,15 +299,15 @@ struct RemoteControlRemoteSceneSettingsScene: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsSceneWidgetLayout: Codable {
-    var x: Double
-    var y: Double
-    var size: Double
-    var alignment: SettingsAlignment
+    let x: Double
+    let y: Double
+    let size: Double
+    let alignment: SettingsAlignment
 }
 
 struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
-    var id: UUID
-    var layout: RemoteControlRemoteSceneSettingsSceneWidgetLayout
+    let id: UUID
+    let layout: RemoteControlRemoteSceneSettingsSceneWidgetLayout
 
     init(widget: SettingsSceneWidget) {
         id = widget.widgetId
@@ -328,9 +328,9 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidget: Codable {
-    var id: UUID
-    var enabled: Bool
-    var type: RemoteControlRemoteSceneSettingsWidgetType
+    let id: UUID
+    let enabled: Bool
+    let type: RemoteControlRemoteSceneSettingsWidgetType
 
     init?(widget: SettingsWidget) {
         id = widget.id
@@ -407,12 +407,12 @@ enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
-    var url: String
-    var width: Int
-    var height: Int
-    var mode: SettingsWidgetBrowserMode
-    var fps: Float
-    var styleSheet: String
+    let url: String
+    let width: Int
+    let height: Int
+    let mode: SettingsWidgetBrowserMode
+    let fps: Float
+    let styleSheet: String
 
     init(browser: SettingsWidgetBrowser) {
         url = browser.url
@@ -436,17 +436,17 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
-    var formatString: String
-    var backgroundColor: RgbColor
-    var clearBackgroundColor: Bool
-    var foregroundColor: RgbColor
-    var clearForegroundColor: Bool
-    var fontSize: Int
-    var fontDesign: SettingsFontDesign
-    var fontWeight: SettingsFontWeight
-    var fontMonospacedDigits: Bool
-    var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
-    var delay: Double
+    let formatString: String
+    let backgroundColor: RgbColor
+    let clearBackgroundColor: Bool
+    let foregroundColor: RgbColor
+    let clearForegroundColor: Bool
+    let fontSize: Int
+    let fontDesign: SettingsFontDesign
+    let fontWeight: SettingsFontWeight
+    let fontMonospacedDigits: Bool
+    let horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
+    let delay: Double
 
     init(text: SettingsWidgetText) {
         formatString = text.formatString
@@ -508,7 +508,7 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
-    var northUp: Bool
+    let northUp: Bool
 
     init(map: SettingsWidgetMap) {
         northUp = map.northUp
@@ -522,7 +522,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
 }
 
 struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
-    var sceneId: UUID
+    let sceneId: UUID
 
     init(scene: SettingsWidgetScene) {
         sceneId = scene.sceneId
@@ -541,46 +541,45 @@ struct RemoteControlRemoteSceneData: Codable {
 }
 
 struct RemoteControlRemoteSceneDataTextStats: Codable {
-    var bitrate: String
-    var bitrateAndTotal: String
-    var resolution: String?
-    var fps: Int?
-    var date: Date
-    var debugOverlayLines: [String]
-    var speed: Double
-    var averageSpeed: Double
-    var altitude: Double
-    var distance: Double
-    var splitDistance: Double
-    var slope: String
-    var conditions: String?
-    var temperature: Measurement<UnitTemperature>?
-    var feelsLikeTemperature: Measurement<UnitTemperature>?
-    var windSpeed: Measurement<UnitSpeed>?
-    var windGust: Measurement<UnitSpeed>?
-    var country: String?
-    var countryFlag: String?
-    var state: String?
-    var region: String?
-    var area: String?
-    var city: String?
-    var neighborhood: String?
-    var muted: Bool
-    var heartRates: [String: Int?]
-    var activeEnergyBurned: Int?
-    var workoutDistance: Int?
-    var power: Int?
-    var stepCount: Int?
-    var teslaBatteryLevel: String
-    var teslaDrive: String
-    var teslaMedia: String
-    var cyclingPower: String
-    var cyclingCadence: String
-    var runningMetrics: [String: WorkoutDeviceRunningMetrics]
-    var browserTitle: String
-    var gForce: GForce?
-    var latestSubscriber: String
-    var latestFollower: String
+    let bitrate: String
+    let bitrateAndTotal: String
+    let resolution: String?
+    let fps: Int?
+    let date: Date
+    let debugOverlayLines: [String]
+    let speed: Double
+    let averageSpeed: Double
+    let altitude: Double
+    let distance: Double
+    let splitDistance: Double
+    let slope: String
+    let conditions: String?
+    let temperature: Measurement<UnitTemperature>?
+    let feelsLikeTemperature: Measurement<UnitTemperature>?
+    let windSpeed: Measurement<UnitSpeed>?
+    let windGust: Measurement<UnitSpeed>?
+    let country: String?
+    let countryFlag: String?
+    let state: String?
+    let area: String?
+    let city: String?
+    let neighborhood: String?
+    let muted: Bool
+    let heartRates: [String: Int?]
+    let activeEnergyBurned: Int?
+    let workoutDistance: Int?
+    let power: Int?
+    let stepCount: Int?
+    let teslaBatteryLevel: String
+    let teslaDrive: String
+    let teslaMedia: String
+    let cyclingPower: String
+    let cyclingCadence: String
+    let runningMetrics: [String: WorkoutDeviceRunningMetrics]
+    let browserTitle: String
+    let gForce: GForce?
+    let latestSubscriber: String
+    let latestFollower: String
 
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
@@ -619,6 +618,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         cyclingCadence = stats.cyclingCadence
         runningMetrics = stats.runningMetrics
         browserTitle = stats.browserTitle
+        gForce = stats.gForce
         latestSubscriber = stats.latestSubscriber
         latestFollower = stats.latestFollower
     }
@@ -668,8 +668,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
 }
 
 struct RemoteControlRemoteSceneDataLocation: Codable {
-    var latitude: Double
-    var longitude: Double
+    let latitude: Double
+    let longitude: Double
 
     init(location: CLLocation) {
         latitude = location.coordinate.latitude
@@ -766,40 +766,40 @@ struct RemoteControlStatusTopRight: Codable {
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {
-    var id: UUID
-    var name: String
+    let id: UUID
+    let name: String
 }
 
 struct RemoteControlSettingsAutoSceneSwitcher: Codable, Identifiable {
-    var id: UUID
-    var name: String
+    let id: UUID
+    let name: String
 }
 
 struct RemoteControlSettingsBitratePreset: Codable, Identifiable {
-    var id: UUID
-    var bitrate: UInt32
+    let id: UUID
+    let bitrate: UInt32
 }
 
 struct RemoteControlSettingsMic: Codable, Identifiable {
-    var id: String
-    var name: String
+    let id: String
+    let name: String
 }
 
 struct RemoteControlSettingsSrtConnectionPriority: Codable, Identifiable {
-    var id: UUID
-    var name: String
+    let id: UUID
+    let name: String
     var priority: Int
     var enabled: Bool
 }
 
 struct RemoteControlSettingsSrt: Codable {
-    var connectionPrioritiesEnabled: Bool
-    var connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
+    let connectionPrioritiesEnabled: Bool
+    let connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
 }
 
 struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
-    var id: UUID
-    var name: String
+    let id: UUID
+    let name: String
 }
 
 struct RemoteControlSettings: Codable {
@@ -812,12 +812,12 @@ struct RemoteControlSettings: Codable {
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {
-    var id: UUID?
+    let id: UUID?
 }
 
 struct RemoteControlZoomPreset: Codable, Identifiable {
-    var id: UUID
-    var name: String
+    let id: UUID
+    let name: String
 }
 
 struct RemoteControlAssistantStreamerState: Codable {
