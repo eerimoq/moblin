@@ -95,6 +95,7 @@ private struct FeaturesContainer: Codable {
     let features: Features
 }
 
+@MainActor
 class OpenStreamingPlatformChat: @unchecked Sendable {
     private var model: Model
     private var task: Task<Void, any Error>?
@@ -224,26 +225,24 @@ class OpenStreamingPlatformChat: @unchecked Sendable {
 
     private func handleMessageMessage(message: Message) async throws {
         let segments = createSegments(message: message.body)
-        await MainActor.run {
-            let user = message.user() ?? "unknown"
-            model.appendChatMessage(platform: .openStreamingPlatform,
-                                    messageId: nil,
-                                    displayName: user,
-                                    user: user,
-                                    userId: nil,
-                                    userColor: nil,
-                                    userBadges: [],
-                                    segments: segments,
-                                    timestamp: model.statusOther.digitalClock,
-                                    timestampTime: .now,
-                                    isAction: false,
-                                    isSubscriber: false,
-                                    isModerator: false,
-                                    isOwner: false,
-                                    bits: nil,
-                                    highlight: nil,
-                                    live: true)
-        }
+        let user = message.user() ?? "unknown"
+        model.appendChatMessage(platform: .openStreamingPlatform,
+                                messageId: nil,
+                                displayName: user,
+                                user: user,
+                                userId: nil,
+                                userColor: nil,
+                                userBadges: [],
+                                segments: segments,
+                                timestamp: model.statusOther.digitalClock,
+                                timestampTime: .now,
+                                isAction: false,
+                                isSubscriber: false,
+                                isModerator: false,
+                                isOwner: false,
+                                bits: nil,
+                                highlight: nil,
+                                live: true)
     }
 
     private func handleMessageIq(message: Iq) async throws {

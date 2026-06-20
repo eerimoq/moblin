@@ -79,6 +79,7 @@ struct PlayerLiveResponse: Codable {
     }
 }
 
+@MainActor
 final class SoopChat: NSObject, @unchecked Sendable {
     private var model: Model
     private var channelName: String
@@ -219,7 +220,7 @@ final class SoopChat: NSObject, @unchecked Sendable {
                     connected = true
                     try await sendTwo(chatno: info.chatno, ftk: info.ftk)
                 case .post:
-                    await handlePostMessage(parts: parts)
+                    handlePostMessage(parts: parts)
                 default:
                     break
                 }
@@ -231,34 +232,32 @@ final class SoopChat: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handlePostMessage(parts: [String]) async {
+    private func handlePostMessage(parts: [String]) {
         guard parts.count > 5 else {
             logger.info("soop: Bad post length")
             return
         }
         let user = parts[5]
         let segments = createSegments(message: parts[0])
-        await MainActor.run {
-            self.model.appendChatMessage(
-                platform: .soop,
-                messageId: nil,
-                displayName: user,
-                user: user,
-                userId: nil,
-                userColor: nil,
-                userBadges: [],
-                segments: segments,
-                timestamp: model.statusOther.digitalClock,
-                timestampTime: .now,
-                isAction: false,
-                isSubscriber: false,
-                isModerator: false,
-                isOwner: false,
-                bits: nil,
-                highlight: nil,
-                live: true
-            )
-        }
+        model.appendChatMessage(
+            platform: .soop,
+            messageId: nil,
+            displayName: user,
+            user: user,
+            userId: nil,
+            userColor: nil,
+            userBadges: [],
+            segments: segments,
+            timestamp: model.statusOther.digitalClock,
+            timestampTime: .now,
+            isAction: false,
+            isSubscriber: false,
+            isModerator: false,
+            isOwner: false,
+            bits: nil,
+            highlight: nil,
+            live: true
+        )
     }
 
     private func getChannelInfo() async throws -> PlayerLiveChannel {

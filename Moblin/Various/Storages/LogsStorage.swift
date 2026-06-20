@@ -5,7 +5,7 @@ private let maximumNumberOfLogFiles = 10
 private let maximumLogFileSizeBytes: UInt64 = 10 * 1024 * 1024
 private let queue = DispatchQueue(label: "com.eerimoq.Moblin.LogsStorage")
 
-class LogsStorage {
+class LogsStorage: @unchecked Sendable {
     private let fileManager: FileManager
     private var logsUrl: URL
     private var currentFileHandle: FileHandle?

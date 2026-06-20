@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class KickPlatformStatus: @unchecked Sendable {
     private var task: Task<Void, any Error>?
     var platformStatus: PlatformStatus = .unknown
@@ -12,15 +13,15 @@ class KickPlatformStatus: @unchecked Sendable {
                     try await sleep(seconds: delay)
                     let info = try await getKickChannelInfo(channelName: channelName)
                     if let livestream = info.livestream {
-                        await self.setNumberOfViewers(status: .live(viewerCount: livestream.viewers))
+                        self.setNumberOfViewers(status: .live(viewerCount: livestream.viewers))
                     } else {
-                        await self.setNumberOfViewers(status: .offline)
+                        self.setNumberOfViewers(status: .offline)
                     }
                 } catch {
-                    await self.setNumberOfViewers(status: .unknown)
+                    self.setNumberOfViewers(status: .unknown)
                 }
                 if Task.isCancelled {
-                    await self.setNumberOfViewers(status: .unknown)
+                    self.setNumberOfViewers(status: .unknown)
                     break
                 }
                 delay = 30
@@ -28,10 +29,8 @@ class KickPlatformStatus: @unchecked Sendable {
         }
     }
 
-    private func setNumberOfViewers(status: PlatformStatus) async {
-        await MainActor.run {
-            self.platformStatus = status
-        }
+    private func setNumberOfViewers(status: PlatformStatus) {
+        platformStatus = status
     }
 
     func stop() {
