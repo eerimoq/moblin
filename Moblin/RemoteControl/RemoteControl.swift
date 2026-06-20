@@ -298,24 +298,31 @@ struct RemoteControlRemoteSceneSettingsScene: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
-    var id: UUID
+struct RemoteControlRemoteSceneSettingsSceneWidgetLayout: Codable {
     var x: Double
     var y: Double
     var size: Double
+    var alignment: SettingsAlignment
+}
+
+struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
+    var id: UUID
+    var layout: RemoteControlRemoteSceneSettingsSceneWidgetLayout
 
     init(widget: SettingsSceneWidget) {
         id = widget.widgetId
-        x = widget.layout.x
-        y = widget.layout.y
-        size = widget.layout.size
+        layout = RemoteControlRemoteSceneSettingsSceneWidgetLayout(x: widget.layout.x,
+                                                                   y: widget.layout.y,
+                                                                   size: widget.layout.size,
+                                                                   alignment: widget.layout.alignment)
     }
 
     func toSettings() -> SettingsSceneWidget {
         let widget = SettingsSceneWidget(widgetId: id)
-        widget.layout.x = x
-        widget.layout.y = y
-        widget.layout.size = size
+        widget.layout.x = layout.x
+        widget.layout.y = layout.y
+        widget.layout.size = layout.size
+        widget.layout.alignment = layout.alignment
         return widget
     }
 }
