@@ -1,5 +1,5 @@
 {
-  "originHash" : "28372b62409b078c82307b90176be36c0e6c3fb8799c4cb0bb489192a485fa55",
+  "originHash" : "d72ccb679b9bf13f273787251b7ae9687c7d12fa789914ce9187ed9a0ab1bbd4",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -116,6 +116,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "7152305fd14439dcb5e7e13a4e4009f90c3b6968"
+      }
+    },
+    {
+      "identity" : "streamdeck-kit-ipad",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elgatosf/streamdeck-kit-ipad.git",
+      "state" : {
+        "revision" : "23c3770bd51aa016a681d88d108cb0ab712171d5",
+        "version" : "1.3.0"
       }
     },
     {

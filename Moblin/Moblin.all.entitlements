@@ -4,6 +4,8 @@
 <dict>
 	<key>com.apple.developer.avfoundation.multitasking-camera-access</key>
 	<true/>
+	<key>com.apple.developer.driverkit.communicates-with-drivers</key>
+	<true/>
 	<key>com.apple.developer.healthkit</key>
 	<true/>
 	<key>com.apple.developer.healthkit.access</key>

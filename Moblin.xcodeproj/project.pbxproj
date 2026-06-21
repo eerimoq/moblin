@@ -15,6 +15,7 @@
 		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
 		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
 		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
+		035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035503F12FE7C9B500067E65 /* StreamDeckKit */; };
 		0360FD162F228EEB00FF8847 /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 0360FD152F228EEB00FF8847 /* MetalPetal */; };
 		0375F6E62F5354BE005BE7A8 /* Rist in Frameworks */ = {isa = PBXBuildFile; productRef = 0375F6E52F5354BE005BE7A8 /* Rist */; };
 		0375F6E92F535715005BE7A8 /* Rist in Frameworks */ = {isa = PBXBuildFile; productRef = 0375F6E82F535715005BE7A8 /* Rist */; };
@@ -311,6 +312,7 @@
 				0375F6E62F5354BE005BE7A8 /* Rist in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
+				035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */,
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
@@ -465,6 +467,8 @@
 				0375F6EE2F539602005BE7A8 /* Srt */,
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
+				035503F12FE7C9B500067E65 /* StreamDeckKit */,
+				035503F52FE7CD6100067E65 /* StreamDeckSimulator */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -645,6 +649,7 @@
 				0375F6EA2F53844B005BE7A8 /* XCRemoteSwiftPackageReference "DataChannel" */,
 				0375FD792F539AAC005BE7A8 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 				03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */,
+				035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1472,6 +1477,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elgatosf/streamdeck-kit-ipad.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		0360FD142F228EEB00FF8847 /* XCRemoteSwiftPackageReference "MetalPetal" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/MetalPetal";
@@ -1619,6 +1632,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
 			productName = AppAuth;
+		};
+		035503F12FE7C9B500067E65 /* StreamDeckKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */;
+			productName = StreamDeckKit;
+		};
+		035503F52FE7CD6100067E65 /* StreamDeckSimulator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */;
+			productName = StreamDeckSimulator;
 		};
 		0360FD152F228EEB00FF8847 /* MetalPetal */ = {
 			isa = XCSwiftPackageProductDependency;

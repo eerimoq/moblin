@@ -1176,6 +1176,7 @@ class Database: Codable, ObservableObject {
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
     var scoreboardSizeMigrated: Bool = false
+    var streamDeck: SettingsStreamDeck = .init()
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
@@ -1295,6 +1296,7 @@ class Database: Codable, ObservableObject {
         case gimbal
         case scoreboardSizeMigrated
         case savedWifiNetworks
+        case streamDeck
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1379,6 +1381,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.gimbal, gimbal)
         try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
         try container.encode(.savedWifiNetworks, savedWifiNetworks)
+        try container.encode(.streamDeck, streamDeck)
     }
 
     init() {}
@@ -1523,6 +1526,7 @@ class Database: Codable, ObservableObject {
             }
             scoreboardSizeMigrated = true
         }
+        streamDeck = container.decode(.streamDeck, SettingsStreamDeck.self, .init())
     }
 }
 

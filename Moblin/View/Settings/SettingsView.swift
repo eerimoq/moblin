@@ -129,6 +129,15 @@ struct SettingsView: View {
                             Label("Keyboard", systemImage: "keyboard")
                         }
                     }
+                    #if !targetEnvironment(macCatalyst)
+                    if isPad() {
+                        NavigationLink {
+                            StreamDeckSettingsView(model: model, streamDeck: database.streamDeck)
+                        } label: {
+                            Label("Stream deck", systemImage: "square.grid.3x3.square")
+                        }
+                    }
+                    #endif
                     NavigationLink {
                         RemoteControlSettingsView(database: database, stream: $model.stream)
                     } label: {
