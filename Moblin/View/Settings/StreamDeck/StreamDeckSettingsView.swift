@@ -47,24 +47,76 @@ struct StreamDeckSettingsView: View {
     @ObservedObject var streamDeck: SettingsStreamDeck
 
     var body: some View {
-        Form {
-            Section {
-                List {
-                    ForEach(streamDeck.keys) { key in
-                        if let index = streamDeck.keys.firstIndex(where: { $0 === key }) {
-                            HStack {
-                                DraggableItemPrefixView()
-                                StreamDeckSettingsKeyView(model: model, index: index, key: key)
-                                Spacer()
+        NavigationLink {
+            Form {
+                Section {
+                    List {
+                        ForEach(streamDeck.keys) { key in
+                            if let index = streamDeck.keys.firstIndex(where: { $0 === key }) {
+                                HStack {
+                                    DraggableItemPrefixView()
+                                    StreamDeckSettingsKeyView(model: model, index: index, key: key)
+                                    Spacer()
+                                }
                             }
                         }
+                        .onMove { froms, to in
+                            streamDeck.keys.move(fromOffsets: froms, toOffset: to)
+                        }
                     }
-                    .onMove { froms, to in
-                        streamDeck.keys.move(fromOffsets: froms, toOffset: to)
+                } header: {
+                    Text("Keys")
+                }
+            }
+            .navigationTitle("Stream deck")
+        } label: {
+            Text(streamDeck.name)
+        }
+    }
+}
+
+struct StreamDecksSettingsView: View {
+    let model: Model
+    @ObservedObject var streamDecks: SettingsStreamDecks
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("Current", selection: $streamDecks.selectedId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(streamDecks.streamDecks) {
+                        Text($0.name)
+                            .tag($0.id as UUID?)
                     }
                 }
+                .onChange(of: streamDecks.selectedId) { selectedId in
+                    model.streamDeck.streamDeck = streamDecks.streamDecks
+                        .first(where: { $0.id == selectedId })
+                }
+            }
+            Section {
+                List {
+                    ForEach(streamDecks.streamDecks) { streamDeck in
+                        StreamDeckSettingsView(model: model, streamDeck: streamDeck)
+                    }
+                    .onMove { froms, to in
+                        streamDecks.streamDecks.move(fromOffsets: froms, toOffset: to)
+                    }
+                    .onDelete { offsets in
+                        streamDecks.streamDecks.remove(atOffsets: offsets)
+                    }
+                }
+                CreateButtonView {
+                    let streamDeck = SettingsStreamDeck()
+                    streamDeck.name = makeUniqueName(name: SettingsStreamDeck.baseName,
+                                                     existingNames: streamDecks.streamDecks)
+                    streamDecks.streamDecks.append(streamDeck)
+                }
             } header: {
-                Text("Keys")
+                Text("Stream decks")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String("a stream deck"))
             }
         }
         .navigationTitle("Stream deck")

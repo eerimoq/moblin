@@ -711,6 +711,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var speechToTextTextAligners: [String?: TextAligner] = [:]
     var httpProxyServer: HttpProxyServer?
     var httpProxyPort: Network.NWEndpoint.Port?
+    let streamDeck = StreamDeck()
 
     weak var processor: Processor? {
         didSet {

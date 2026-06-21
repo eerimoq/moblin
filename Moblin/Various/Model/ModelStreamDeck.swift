@@ -1,6 +1,10 @@
 import StreamDeckKit
 import SwiftUI
 
+class StreamDeck: ObservableObject {
+    @Published var streamDeck: SettingsStreamDeck?
+}
+
 private struct StreamDeckKeyItemView: View {
     let model: Model
     let index: Int
@@ -23,18 +27,31 @@ private struct StreamDeckKeyItemView: View {
 
 private struct StreamDeckView: View {
     let model: Model
-    @ObservedObject var streamDeck: SettingsStreamDeck
+    @ObservedObject var streamDeck: StreamDeck
 
     var body: some View {
-        StreamDeckLayout {
-            StreamDeckKeyAreaLayout { index in
-                if index < streamDeck.keys.count {
-                    StreamDeckKeyItemView(model: model,
-                                          index: index,
-                                          key: streamDeck.keys[index])
+        if let streamDeck = streamDeck.streamDeck {
+            StreamDeckLayout {
+                StreamDeckKeyAreaLayout { index in
+                    if index < streamDeck.keys.count {
+                        StreamDeckKeyItemView(model: model,
+                                              index: index,
+                                              key: streamDeck.keys[index])
+                    }
                 }
-            }
-        } windowArea: {}
+            } windowArea: {}
+        } else {
+            StreamDeckLayout {
+                StreamDeckKeyAreaLayout { _ in
+                    StreamDeckKeyView { _ in
+                    } content: {
+                        Text("")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(.white)
+                    }
+                }
+            } windowArea: {}
+        }
     }
 }
 
@@ -45,7 +62,7 @@ extension Model {
             return
         }
         StreamDeckSession.setUp(newDeviceHandler: {
-            $0.render(StreamDeckView(model: self, streamDeck: self.database.streamDeck))
+            $0.render(StreamDeckView(model: self, streamDeck: self.streamDeck))
         })
         #endif
     }

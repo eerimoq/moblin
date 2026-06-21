@@ -51,7 +51,10 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
     }
 }
 
-class SettingsStreamDeck: Codable, ObservableObject {
+class SettingsStreamDeck: Codable, ObservableObject, Identifiable, Named {
+    static let baseName = "My stream deck"
+    var id: UUID = .init()
+    @Published var name: String = baseName
     @Published var keys: [SettingsStreamDeckKey] = []
 
     init() {
@@ -61,19 +64,49 @@ class SettingsStreamDeck: Codable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
+        case id
+        case name
         case keys
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
         try container.encode(.keys, keys)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
         keys = container.decode(.keys, [SettingsStreamDeckKey].self, [])
         for _ in keys.count ..< 36 {
             keys.append(.init())
         }
+    }
+}
+
+class SettingsStreamDecks: Codable, ObservableObject {
+    @Published var streamDecks: [SettingsStreamDeck] = []
+    @Published var selectedId: UUID?
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case streamDecks
+        case selectedId
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streamDecks, streamDecks)
+        try container.encode(.selectedId, selectedId)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streamDecks = container.decode(.streamDecks, [SettingsStreamDeck].self, [])
+        selectedId = container.decode(.selectedId, UUID?.self, nil)
     }
 }

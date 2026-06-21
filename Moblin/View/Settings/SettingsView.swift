@@ -132,9 +132,9 @@ struct SettingsView: View {
                     #if !targetEnvironment(macCatalyst)
                     if isPad() {
                         NavigationLink {
-                            StreamDeckSettingsView(model: model, streamDeck: database.streamDeck)
+                            StreamDecksSettingsView(model: model, streamDecks: database.streamDecks)
                         } label: {
-                            Label("Stream deck", systemImage: "square.grid.3x3.square")
+                            Label("Stream decks", systemImage: "square.grid.3x3.square")
                         }
                     }
                     #endif
