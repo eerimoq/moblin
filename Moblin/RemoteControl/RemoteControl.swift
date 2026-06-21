@@ -76,21 +76,21 @@ enum RemoteControlEvent: Codable {
 }
 
 struct RemoteControlChatMessage: Codable {
-    var id: Int
-    var platform: Platform
-    var messageId: String?
-    var displayName: String?
-    var user: String?
-    var userId: String?
-    var userColor: RgbColor?
-    var userBadges: [URL]
-    var segments: [ChatPostSegment]
-    var timestamp: String
-    var isAction: Bool
-    var isModerator: Bool
-    var isSubscriber: Bool
-    var isOwner: Bool
-    var bits: String?
+    let id: Int
+    let platform: Platform
+    let messageId: String?
+    let displayName: String?
+    let user: String?
+    let userId: String?
+    let userColor: RgbColor?
+    let userBadges: [URL]
+    let segments: [ChatPostSegment]
+    let timestamp: String
+    let isAction: Bool
+    let isModerator: Bool
+    let isSubscriber: Bool
+    let isOwner: Bool
+    let bits: String?
 }
 
 enum RemoteControlReaction: Codable, CaseIterable {
@@ -918,18 +918,18 @@ struct RemoteControlScoreboardMatchConfig: Codable {
 }
 
 struct RemoteControlGolfPlayer: Codable {
-    var name: String
-    var scores: [Int]
-    var color: RgbColor
+    let name: String
+    let scores: [Int]
+    let color: RgbColor
 }
 
 struct RemoteControlGolfScoreboard: Codable {
-    var title: String
-    var numberOfHoles: Int
-    var pars: [Int]
-    var currentHole: Int
-    var players: [RemoteControlGolfPlayer]
-    var playerColors: Bool
+    let title: String
+    let numberOfHoles: Int
+    let pars: [Int]
+    let currentHole: Int
+    let players: [RemoteControlGolfPlayer]
+    let playerColors: Bool
 
     enum CodingKeys: CodingKey {
         case title
@@ -966,8 +966,8 @@ struct RemoteControlGolfScoreboard: Codable {
 }
 
 struct RemoteControlAuthentication: Codable {
-    var challenge: String
-    var salt: String
+    let challenge: String
+    let salt: String
 }
 
 enum RemoteControlResult: Codable {
