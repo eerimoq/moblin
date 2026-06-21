@@ -20,12 +20,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum VCSEC_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case none // = 0
   case presentKey // = 2
@@ -59,7 +59,7 @@ enum VCSEC_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_KeyFormFactor: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_KeyFormFactor: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case unknown // = 0
   case nfcCard // = 1
@@ -105,7 +105,7 @@ enum VCSEC_KeyFormFactor: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_InformationRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_InformationRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case getStatus // = 0
   case getWhitelistInfo // = 5
@@ -143,7 +143,7 @@ enum VCSEC_InformationRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_RKEAction_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_RKEAction_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case rkeActionUnlock // = 0
   case rkeActionLock // = 1
@@ -189,7 +189,7 @@ enum VCSEC_RKEAction_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_ClosureMoveType_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_ClosureMoveType_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case closureMoveTypeNone // = 0
   case closureMoveTypeMove // = 1
@@ -235,7 +235,7 @@ enum VCSEC_ClosureMoveType_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case operationstatusOk // = 0
   case operationstatusWait // = 1
@@ -273,7 +273,7 @@ enum VCSEC_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_SignedMessage_information_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_SignedMessage_information_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case signedmessageInformationNone // = 0
   case signedmessageInformationFaultUnknown // = 1
@@ -379,7 +379,7 @@ enum VCSEC_SignedMessage_information_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case whitelistoperationInformationNone // = 0
   case whitelistoperationInformationUndocumentedError // = 1
@@ -521,7 +521,7 @@ enum VCSEC_WhitelistOperation_information_E: SwiftProtobuf.Enum, Swift.CaseItera
 
 }
 
-enum VCSEC_ClosureState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_ClosureState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case closurestateClosed // = 0
   case closurestateOpen // = 1
@@ -575,7 +575,7 @@ enum VCSEC_ClosureState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_VehicleLockState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_VehicleLockState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case vehiclelockstateUnlocked // = 0
   case vehiclelockstateLocked // = 1
@@ -617,7 +617,7 @@ enum VCSEC_VehicleLockState_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_VehicleSleepStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_VehicleSleepStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case vehicleSleepStatusUnknown // = 0
   case vehicleSleepStatusAwake // = 1
@@ -655,7 +655,7 @@ enum VCSEC_VehicleSleepStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum VCSEC_UserPresence_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum VCSEC_UserPresence_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case vehicleUserPresenceUnknown // = 0
   case vehicleUserPresenceNotPresent // = 1
@@ -693,7 +693,7 @@ enum VCSEC_UserPresence_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct VCSEC_SignedMessage: Sendable {
+nonisolated struct VCSEC_SignedMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -707,7 +707,7 @@ struct VCSEC_SignedMessage: Sendable {
   init() {}
 }
 
-struct VCSEC_ToVCSECMessage: Sendable {
+nonisolated struct VCSEC_ToVCSECMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -728,7 +728,7 @@ struct VCSEC_ToVCSECMessage: Sendable {
   fileprivate var _signedMessage: VCSEC_SignedMessage? = nil
 }
 
-struct VCSEC_KeyIdentifier: Sendable {
+nonisolated struct VCSEC_KeyIdentifier: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -740,7 +740,7 @@ struct VCSEC_KeyIdentifier: Sendable {
   init() {}
 }
 
-struct VCSEC_KeyMetadata: Sendable {
+nonisolated struct VCSEC_KeyMetadata: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -752,7 +752,7 @@ struct VCSEC_KeyMetadata: Sendable {
   init() {}
 }
 
-struct VCSEC_PublicKey: Sendable {
+nonisolated struct VCSEC_PublicKey: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -764,7 +764,7 @@ struct VCSEC_PublicKey: Sendable {
   init() {}
 }
 
-struct VCSEC_WhitelistInfo: Sendable {
+nonisolated struct VCSEC_WhitelistInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -780,7 +780,7 @@ struct VCSEC_WhitelistInfo: Sendable {
   init() {}
 }
 
-struct VCSEC_WhitelistEntryInfo: Sendable {
+nonisolated struct VCSEC_WhitelistEntryInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -825,7 +825,7 @@ struct VCSEC_WhitelistEntryInfo: Sendable {
   fileprivate var _metadataForKey: VCSEC_KeyMetadata? = nil
 }
 
-struct VCSEC_InformationRequest: Sendable {
+nonisolated struct VCSEC_InformationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -860,7 +860,7 @@ struct VCSEC_InformationRequest: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Key: Equatable, Sendable {
+  nonisolated enum OneOf_Key: Equatable, Sendable {
     case keyID(VCSEC_KeyIdentifier)
     case publicKey(Data)
     case slot(UInt32)
@@ -870,7 +870,7 @@ struct VCSEC_InformationRequest: Sendable {
   init() {}
 }
 
-struct VCSEC_ClosureMoveRequest: Sendable {
+nonisolated struct VCSEC_ClosureMoveRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -896,7 +896,7 @@ struct VCSEC_ClosureMoveRequest: Sendable {
   init() {}
 }
 
-struct VCSEC_PermissionChange: Sendable {
+nonisolated struct VCSEC_PermissionChange: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -921,7 +921,7 @@ struct VCSEC_PermissionChange: Sendable {
   fileprivate var _key: VCSEC_PublicKey? = nil
 }
 
-struct VCSEC_ReplaceKey: Sendable {
+nonisolated struct VCSEC_ReplaceKey: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -959,7 +959,7 @@ struct VCSEC_ReplaceKey: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_KeyToReplace: Equatable, Sendable {
+  nonisolated enum OneOf_KeyToReplace: Equatable, Sendable {
     case publicKeyToReplace(VCSEC_PublicKey)
     case slotToReplace(UInt32)
 
@@ -970,7 +970,7 @@ struct VCSEC_ReplaceKey: Sendable {
   fileprivate var _keyToAdd: VCSEC_PublicKey? = nil
 }
 
-struct VCSEC_WhitelistOperation: Sendable {
+nonisolated struct VCSEC_WhitelistOperation: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1068,7 +1068,7 @@ struct VCSEC_WhitelistOperation: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SubMessage: Equatable, Sendable {
+  nonisolated enum OneOf_SubMessage: Equatable, Sendable {
     case addPublicKeyToWhitelist(VCSEC_PublicKey)
     case removePublicKeyFromWhitelist(VCSEC_PublicKey)
     case addPermissionsToPublicKey(VCSEC_PermissionChange)
@@ -1087,7 +1087,7 @@ struct VCSEC_WhitelistOperation: Sendable {
   fileprivate var _metadataForKey: VCSEC_KeyMetadata? = nil
 }
 
-struct VCSEC_WhitelistOperation_status: Sendable {
+nonisolated struct VCSEC_WhitelistOperation_status: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1112,7 +1112,7 @@ struct VCSEC_WhitelistOperation_status: Sendable {
   fileprivate var _signerOfOperation: VCSEC_KeyIdentifier? = nil
 }
 
-struct VCSEC_SignedMessage_status: Sendable {
+nonisolated struct VCSEC_SignedMessage_status: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1126,7 +1126,7 @@ struct VCSEC_SignedMessage_status: Sendable {
   init() {}
 }
 
-struct VCSEC_CommandStatus: Sendable {
+nonisolated struct VCSEC_CommandStatus: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1153,7 +1153,7 @@ struct VCSEC_CommandStatus: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SubMessage: Equatable, Sendable {
+  nonisolated enum OneOf_SubMessage: Equatable, Sendable {
     case signedMessageStatus(VCSEC_SignedMessage_status)
     case whitelistOperationStatus(VCSEC_WhitelistOperation_status)
 
@@ -1162,7 +1162,7 @@ struct VCSEC_CommandStatus: Sendable {
   init() {}
 }
 
-struct VCSEC_UnsignedMessage: Sendable {
+nonisolated struct VCSEC_UnsignedMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1203,7 +1203,7 @@ struct VCSEC_UnsignedMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SubMessage: Equatable, Sendable {
+  nonisolated enum OneOf_SubMessage: Equatable, Sendable {
     case informationRequest(VCSEC_InformationRequest)
     case rkeaction(VCSEC_RKEAction_E)
     case closureMoveRequest(VCSEC_ClosureMoveRequest)
@@ -1214,7 +1214,7 @@ struct VCSEC_UnsignedMessage: Sendable {
   init() {}
 }
 
-struct VCSEC_ClosureStatuses: Sendable {
+nonisolated struct VCSEC_ClosureStatuses: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1240,7 +1240,7 @@ struct VCSEC_ClosureStatuses: Sendable {
   init() {}
 }
 
-struct VCSEC_DetailedClosureStatus: Sendable {
+nonisolated struct VCSEC_DetailedClosureStatus: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1252,7 +1252,7 @@ struct VCSEC_DetailedClosureStatus: Sendable {
   init() {}
 }
 
-struct VCSEC_VehicleStatus: Sendable {
+nonisolated struct VCSEC_VehicleStatus: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1289,7 +1289,7 @@ struct VCSEC_VehicleStatus: Sendable {
   fileprivate var _detailedClosureStatus: VCSEC_DetailedClosureStatus? = nil
 }
 
-struct VCSEC_FromVCSECMessage: Sendable {
+nonisolated struct VCSEC_FromVCSECMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1338,7 +1338,7 @@ struct VCSEC_FromVCSECMessage: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SubMessage: Equatable, Sendable {
+  nonisolated enum OneOf_SubMessage: Equatable, Sendable {
     case vehicleStatus(VCSEC_VehicleStatus)
     case commandStatus(VCSEC_CommandStatus)
     case whitelistInfo(VCSEC_WhitelistInfo)
@@ -1352,57 +1352,57 @@ struct VCSEC_FromVCSECMessage: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "VCSEC"
+fileprivate nonisolated let _protobuf_package = "VCSEC"
 
-extension VCSEC_SignatureType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_SignatureType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SIGNATURE_TYPE_NONE\0\u{2}\u{2}SIGNATURE_TYPE_PRESENT_KEY\0")
 }
 
-extension VCSEC_KeyFormFactor: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_KeyFormFactor: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0KEY_FORM_FACTOR_UNKNOWN\0\u{1}KEY_FORM_FACTOR_NFC_CARD\0\u{2}\u{5}KEY_FORM_FACTOR_IOS_DEVICE\0\u{1}KEY_FORM_FACTOR_ANDROID_DEVICE\0\u{2}\u{2}KEY_FORM_FACTOR_CLOUD_KEY\0")
 }
 
-extension VCSEC_InformationRequestType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_InformationRequestType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INFORMATION_REQUEST_TYPE_GET_STATUS\0\u{2}\u{5}INFORMATION_REQUEST_TYPE_GET_WHITELIST_INFO\0\u{1}INFORMATION_REQUEST_TYPE_GET_WHITELIST_ENTRY_INFO\0")
 }
 
-extension VCSEC_RKEAction_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_RKEAction_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RKE_ACTION_UNLOCK\0\u{1}RKE_ACTION_LOCK\0\u{2}\u{13}RKE_ACTION_REMOTE_DRIVE\0\u{2}\u{9}RKE_ACTION_AUTO_SECURE_VEHICLE\0\u{1}RKE_ACTION_WAKE_VEHICLE\0")
 }
 
-extension VCSEC_ClosureMoveType_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ClosureMoveType_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CLOSURE_MOVE_TYPE_NONE\0\u{1}CLOSURE_MOVE_TYPE_MOVE\0\u{1}CLOSURE_MOVE_TYPE_STOP\0\u{1}CLOSURE_MOVE_TYPE_OPEN\0\u{1}CLOSURE_MOVE_TYPE_CLOSE\0")
 }
 
-extension VCSEC_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATIONSTATUS_OK\0\u{1}OPERATIONSTATUS_WAIT\0\u{1}OPERATIONSTATUS_ERROR\0")
 }
 
-extension VCSEC_SignedMessage_information_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_SignedMessage_information_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SIGNEDMESSAGE_INFORMATION_NONE\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_UNKNOWN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_NOT_ON_WHITELIST\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_IV_SMALLER_THAN_EXPECTED\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_INVALID_TOKEN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_AND_COUNTER_INVALID\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_AES_DECRYPT_AUTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_INPUT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_ECDSA_SIGNATURE\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_START\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_LOCAL_ENTITY_RESULT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_KEY\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_RETRIEVE_TOKEN\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_SIGNATURE_TOO_SHORT\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TOKEN_IS_INCORRECT_LENGTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_INCORRECT_EPOCH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_IV_INCORRECT_LENGTH\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_TIME_EXPIRED\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_NOT_PROVISIONED_WITH_IDENTITY\0\u{1}SIGNEDMESSAGE_INFORMATION_FAULT_COULD_NOT_HASH_METADATA\0")
 }
 
-extension VCSEC_WhitelistOperation_information_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_WhitelistOperation_information_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WHITELISTOPERATION_INFORMATION_NONE\0\u{1}WHITELISTOPERATION_INFORMATION_UNDOCUMENTED_ERROR\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_KEYFOB_SLOTS_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_WHITELIST_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_ADD\0\u{1}WHITELISTOPERATION_INFORMATION_INVALID_PUBLIC_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_REMOVE\0\u{1}WHITELISTOPERATION_INFORMATION_NO_PERMISSION_TO_CHANGE_PERMISSIONS\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ELEVATE_OTHER_ABOVE_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_DEMOTE_SUPERIOR_TO_ONESELF\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_REMOVE_OWN_PERMISSIONS\0\u{1}WHITELISTOPERATION_INFORMATION_PUBLIC_KEY_NOT_ON_WHITELIST\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_THAT_IS_ALREADY_ON_THE_WHITELIST\0\u{1}WHITELISTOPERATION_INFORMATION_NOT_ALLOWED_TO_ADD_UNLESS_ON_READER\0\u{1}WHITELISTOPERATION_INFORMATION_FM_MODIFYING_OUTSIDE_OF_F_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_ADD_PERMANENT_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_FM_ATTEMPTING_TO_REMOVE_PERMANENT_KEY\0\u{1}WHITELISTOPERATION_INFORMATION_KEYCHAIN_WHILE_FS_FULL\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITHOUT_ROLE\0\u{1}WHITELISTOPERATION_INFORMATION_ATTEMPTING_TO_ADD_KEY_WITH_SERVICE_ROLE\0\u{1}WHITELISTOPERATION_INFORMATION_NON_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH\0\u{1}WHITELISTOPERATION_INFORMATION_SERVICE_KEY_ATTEMPTING_TO_ADD_SERVICE_TECH_OUTSIDE_SERVICE_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_COULD_NOT_START_LOCAL_ENTITY_AUTH\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_UI_DENIED\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_TIMED_OUT_WAITING_FOR_TAP\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_TIMED_OUT_WAITING_FOR_UI_ACK\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_VALET_MODE\0\u{1}WHITELISTOPERATION_INFORMATION_LOCAL_ENTITY_AUTH_FAILED_CANCELLED\0")
 }
 
-extension VCSEC_ClosureState_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ClosureState_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CLOSURESTATE_CLOSED\0\u{1}CLOSURESTATE_OPEN\0\u{1}CLOSURESTATE_AJAR\0\u{1}CLOSURESTATE_UNKNOWN\0\u{1}CLOSURESTATE_FAILED_UNLATCH\0\u{1}CLOSURESTATE_OPENING\0\u{1}CLOSURESTATE_CLOSING\0")
 }
 
-extension VCSEC_VehicleLockState_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_VehicleLockState_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLELOCKSTATE_UNLOCKED\0\u{1}VEHICLELOCKSTATE_LOCKED\0\u{1}VEHICLELOCKSTATE_INTERNAL_LOCKED\0\u{1}VEHICLELOCKSTATE_SELECTIVE_UNLOCKED\0")
 }
 
-extension VCSEC_VehicleSleepStatus_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_VehicleSleepStatus_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLE_SLEEP_STATUS_UNKNOWN\0\u{1}VEHICLE_SLEEP_STATUS_AWAKE\0\u{1}VEHICLE_SLEEP_STATUS_ASLEEP\0")
 }
 
-extension VCSEC_UserPresence_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_UserPresence_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VEHICLE_USER_PRESENCE_UNKNOWN\0\u{1}VEHICLE_USER_PRESENCE_NOT_PRESENT\0\u{1}VEHICLE_USER_PRESENCE_PRESENT\0")
 }
 
-extension VCSEC_SignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_SignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SignedMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}protobufMessageAsBytes\0\u{1}signatureType\0")
 
@@ -1437,7 +1437,7 @@ extension VCSEC_SignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension VCSEC_ToVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ToVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ToVCSECMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}signedMessage\0")
 
@@ -1471,7 +1471,7 @@ extension VCSEC_ToVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension VCSEC_KeyIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_KeyIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".KeyIdentifier"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKeySHA1\0")
 
@@ -1501,7 +1501,7 @@ extension VCSEC_KeyIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension VCSEC_KeyMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_KeyMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".KeyMetadata"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}keyFormFactor\0")
 
@@ -1531,7 +1531,7 @@ extension VCSEC_KeyMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension VCSEC_PublicKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_PublicKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PublicKey"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}PublicKeyRaw\0")
 
@@ -1561,7 +1561,7 @@ extension VCSEC_PublicKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
   }
 }
 
-extension VCSEC_WhitelistInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_WhitelistInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistInfo"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}numberOfEntries\0\u{1}whitelistEntries\0\u{1}slotMask\0")
 
@@ -1601,7 +1601,7 @@ extension VCSEC_WhitelistInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension VCSEC_WhitelistEntryInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_WhitelistEntryInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistEntryInfo"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}keyId\0\u{1}publicKey\0\u{2}\u{2}metadataForKey\0\u{2}\u{2}slot\0\u{1}keyRole\0")
 
@@ -1655,7 +1655,7 @@ extension VCSEC_WhitelistEntryInfo: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension VCSEC_InformationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_InformationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".InformationRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}informationRequestType\0\u{1}keyId\0\u{1}publicKey\0\u{1}slot\0")
 
@@ -1734,7 +1734,7 @@ extension VCSEC_InformationRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension VCSEC_ClosureMoveRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ClosureMoveRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosureMoveRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}frontDriverDoor\0\u{1}frontPassengerDoor\0\u{1}rearDriverDoor\0\u{1}rearPassengerDoor\0\u{1}rearTrunk\0\u{1}frontTrunk\0\u{1}chargePort\0\u{1}tonneau\0")
 
@@ -1799,7 +1799,7 @@ extension VCSEC_ClosureMoveRequest: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension VCSEC_PermissionChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_PermissionChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PermissionChange"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{2}\u{2}secondsToBeActive\0\u{1}keyRole\0")
 
@@ -1843,7 +1843,7 @@ extension VCSEC_PermissionChange: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension VCSEC_ReplaceKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ReplaceKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReplaceKey"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}publicKeyToReplace\0\u{1}slotToReplace\0\u{1}keyToAdd\0\u{1}keyRole\0\u{1}impermanent\0")
 
@@ -1920,7 +1920,7 @@ extension VCSEC_ReplaceKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension VCSEC_WhitelistOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_WhitelistOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistOperation"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}addPublicKeyToWhitelist\0\u{1}removePublicKeyFromWhitelist\0\u{1}addPermissionsToPublicKey\0\u{1}removePermissionsFromPublicKey\0\u{1}addKeyToWhitelistAndAddPermissions\0\u{1}metadataForKey\0\u{1}updateKeyAndPermissions\0\u{1}addImpermanentKey\0\u{1}addImpermanentKeyAndRemoveExisting\0\u{2}\u{7}removeAllImpermanentKeys\0\u{1}replaceKey\0")
 
@@ -2126,7 +2126,7 @@ extension VCSEC_WhitelistOperation: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension VCSEC_WhitelistOperation_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_WhitelistOperation_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WhitelistOperation_status"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}whitelistOperationInformation\0\u{1}signerOfOperation\0\u{1}operationStatus\0")
 
@@ -2170,7 +2170,7 @@ extension VCSEC_WhitelistOperation_status: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension VCSEC_SignedMessage_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_SignedMessage_status: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SignedMessage_status"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}counter\0\u{1}signedMessageInformation\0")
 
@@ -2205,7 +2205,7 @@ extension VCSEC_SignedMessage_status: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension VCSEC_CommandStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_CommandStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".CommandStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}operationStatus\0\u{1}signedMessageStatus\0\u{1}whitelistOperationStatus\0")
 
@@ -2277,7 +2277,7 @@ extension VCSEC_CommandStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension VCSEC_UnsignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_UnsignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".UnsignedMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}InformationRequest\0\u{1}RKEAction\0\u{2}\u{2}closureMoveRequest\0\u{2}\u{c}WhitelistOperation\0\u{c}\u{6}\u{1}\u{c}\u{7}\u{1}\u{c}\u{a}\u{1}\u{c}\u{c}\u{1}\u{c}\u{d}\u{1}")
 
@@ -2373,7 +2373,7 @@ extension VCSEC_UnsignedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension VCSEC_ClosureStatuses: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_ClosureStatuses: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosureStatuses"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}frontDriverDoor\0\u{1}frontPassengerDoor\0\u{1}rearDriverDoor\0\u{1}rearPassengerDoor\0\u{1}rearTrunk\0\u{1}frontTrunk\0\u{1}chargePort\0\u{1}tonneau\0")
 
@@ -2438,7 +2438,7 @@ extension VCSEC_ClosureStatuses: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension VCSEC_DetailedClosureStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_DetailedClosureStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DetailedClosureStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}tonneauPercentOpen\0")
 
@@ -2468,7 +2468,7 @@ extension VCSEC_DetailedClosureStatus: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension VCSEC_VehicleStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_VehicleStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}closureStatuses\0\u{1}vehicleLockState\0\u{1}vehicleSleepStatus\0\u{1}userPresence\0\u{1}detailedClosureStatus\0")
 
@@ -2522,7 +2522,7 @@ extension VCSEC_VehicleStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension VCSEC_FromVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension VCSEC_FromVCSECMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".FromVCSECMessage"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}vehicleStatus\0\u{2}\u{3}commandStatus\0\u{2}\u{c}whitelistInfo\0\u{1}whitelistEntryInfo\0\u{2}\u{1d}nominalError\0\u{c}\u{6}\u{5}")
 

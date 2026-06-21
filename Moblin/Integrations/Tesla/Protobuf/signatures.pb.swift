@@ -20,12 +20,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum Signatures_Tag: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum Signatures_Tag: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case signatureType // = 0
   case domain // = 1
@@ -95,7 +95,7 @@ enum Signatures_Tag: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum Signatures_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum Signatures_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case aesGcm // = 0
   case aesGcmPersonalized // = 5
@@ -141,7 +141,7 @@ enum Signatures_SignatureType: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum Signatures_Session_Info_Status: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum Signatures_Session_Info_Status: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case ok // = 0
   case keyNotOnWhitelist // = 1
@@ -175,7 +175,7 @@ enum Signatures_Session_Info_Status: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct Signatures_KeyIdentity: Sendable {
+nonisolated struct Signatures_KeyIdentity: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -200,7 +200,7 @@ struct Signatures_KeyIdentity: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_IdentityType: Equatable, Sendable {
+  nonisolated enum OneOf_IdentityType: Equatable, Sendable {
     case publicKey(Data)
     case handle(UInt32)
 
@@ -209,7 +209,7 @@ struct Signatures_KeyIdentity: Sendable {
   init() {}
 }
 
-struct Signatures_AES_GCM_Personalized_Signature_Data: Sendable {
+nonisolated struct Signatures_AES_GCM_Personalized_Signature_Data: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -229,7 +229,7 @@ struct Signatures_AES_GCM_Personalized_Signature_Data: Sendable {
   init() {}
 }
 
-struct Signatures_AES_GCM_Response_Signature_Data: Sendable {
+nonisolated struct Signatures_AES_GCM_Response_Signature_Data: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -245,7 +245,7 @@ struct Signatures_AES_GCM_Response_Signature_Data: Sendable {
   init() {}
 }
 
-struct Signatures_HMAC_Signature_Data: Sendable {
+nonisolated struct Signatures_HMAC_Signature_Data: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -257,7 +257,7 @@ struct Signatures_HMAC_Signature_Data: Sendable {
   init() {}
 }
 
-struct Signatures_HMAC_Personalized_Signature_Data: Sendable {
+nonisolated struct Signatures_HMAC_Personalized_Signature_Data: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -275,7 +275,7 @@ struct Signatures_HMAC_Personalized_Signature_Data: Sendable {
   init() {}
 }
 
-struct Signatures_SignatureData: Sendable {
+nonisolated struct Signatures_SignatureData: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -325,7 +325,7 @@ struct Signatures_SignatureData: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SigType: Equatable, Sendable {
+  nonisolated enum OneOf_SigType: Equatable, Sendable {
     case aesGcmPersonalizedData(Signatures_AES_GCM_Personalized_Signature_Data)
     case sessionInfoTag(Signatures_HMAC_Signature_Data)
     case hmacPersonalizedData(Signatures_HMAC_Personalized_Signature_Data)
@@ -338,7 +338,7 @@ struct Signatures_SignatureData: Sendable {
   fileprivate var _signerIdentity: Signatures_KeyIdentity? = nil
 }
 
-struct Signatures_GetSessionInfoRequest: Sendable {
+nonisolated struct Signatures_GetSessionInfoRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -359,7 +359,7 @@ struct Signatures_GetSessionInfoRequest: Sendable {
   fileprivate var _keyIdentity: Signatures_KeyIdentity? = nil
 }
 
-struct Signatures_SessionInfo: Sendable {
+nonisolated struct Signatures_SessionInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -383,21 +383,21 @@ struct Signatures_SessionInfo: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "Signatures"
+fileprivate nonisolated let _protobuf_package = "Signatures"
 
-extension Signatures_Tag: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_Tag: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0TAG_SIGNATURE_TYPE\0\u{1}TAG_DOMAIN\0\u{1}TAG_PERSONALIZATION\0\u{1}TAG_EPOCH\0\u{1}TAG_EXPIRES_AT\0\u{1}TAG_COUNTER\0\u{1}TAG_CHALLENGE\0\u{1}TAG_FLAGS\0\u{1}TAG_REQUEST_HASH\0\u{1}TAG_FAULT\0\u{2}v\u{3}TAG_END\0")
 }
 
-extension Signatures_SignatureType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_SignatureType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SIGNATURE_TYPE_AES_GCM\0\u{2}\u{5}SIGNATURE_TYPE_AES_GCM_PERSONALIZED\0\u{1}SIGNATURE_TYPE_HMAC\0\u{2}\u{2}SIGNATURE_TYPE_HMAC_PERSONALIZED\0\u{1}SIGNATURE_TYPE_AES_GCM_RESPONSE\0")
 }
 
-extension Signatures_Session_Info_Status: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_Session_Info_Status: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SESSION_INFO_STATUS_OK\0\u{1}SESSION_INFO_STATUS_KEY_NOT_ON_WHITELIST\0")
 }
 
-extension Signatures_KeyIdentity: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_KeyIdentity: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".KeyIdentity"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}public_key\0\u{2}\u{2}handle\0\u{c}\u{2}\u{1}")
 
@@ -454,7 +454,7 @@ extension Signatures_KeyIdentity: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension Signatures_AES_GCM_Personalized_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_AES_GCM_Personalized_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AES_GCM_Personalized_Signature_Data"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}epoch\0\u{1}nonce\0\u{1}counter\0\u{3}expires_at\0\u{1}tag\0")
 
@@ -504,7 +504,7 @@ extension Signatures_AES_GCM_Personalized_Signature_Data: SwiftProtobuf.Message,
   }
 }
 
-extension Signatures_AES_GCM_Response_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_AES_GCM_Response_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AES_GCM_Response_Signature_Data"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}nonce\0\u{1}counter\0\u{1}tag\0")
 
@@ -544,7 +544,7 @@ extension Signatures_AES_GCM_Response_Signature_Data: SwiftProtobuf.Message, Swi
   }
 }
 
-extension Signatures_HMAC_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_HMAC_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HMAC_Signature_Data"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}tag\0")
 
@@ -574,7 +574,7 @@ extension Signatures_HMAC_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension Signatures_HMAC_Personalized_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_HMAC_Personalized_Signature_Data: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HMAC_Personalized_Signature_Data"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}epoch\0\u{1}counter\0\u{3}expires_at\0\u{1}tag\0")
 
@@ -619,7 +619,7 @@ extension Signatures_HMAC_Personalized_Signature_Data: SwiftProtobuf.Message, Sw
   }
 }
 
-extension Signatures_SignatureData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_SignatureData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SignatureData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}signer_identity\0\u{4}\u{4}AES_GCM_Personalized_data\0\u{3}session_info_tag\0\u{4}\u{2}HMAC_Personalized_data\0\u{3}AES_GCM_Response_data\0\u{c}\u{7}\u{1}")
 
@@ -725,7 +725,7 @@ extension Signatures_SignatureData: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension Signatures_GetSessionInfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_GetSessionInfoRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetSessionInfoRequest"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}key_identity\0")
 
@@ -759,7 +759,7 @@ extension Signatures_GetSessionInfoRequest: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension Signatures_SessionInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Signatures_SessionInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionInfo"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}counter\0\u{1}publicKey\0\u{1}epoch\0\u{3}clock_time\0\u{1}status\0\u{1}handle\0")
 

@@ -15,12 +15,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum Errors_GenericError_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum Errors_GenericError_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case genericerrorNone // = 0
   case genericerrorUnknown // = 1
@@ -78,7 +78,7 @@ enum Errors_GenericError_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct Errors_NominalError: Sendable {
+nonisolated struct Errors_NominalError: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -92,13 +92,13 @@ struct Errors_NominalError: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "Errors"
+fileprivate nonisolated let _protobuf_package = "Errors"
 
-extension Errors_GenericError_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Errors_GenericError_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0GENERICERROR_NONE\0\u{1}GENERICERROR_UNKNOWN\0\u{1}GENERICERROR_CLOSURES_OPEN\0\u{1}GENERICERROR_ALREADY_ON\0\u{1}GENERICERROR_DISABLED_FOR_USER_COMMAND\0\u{1}GENERICERROR_VEHICLE_NOT_IN_PARK\0\u{1}GENERICERROR_UNAUTHORIZED\0\u{1}GENERICERROR_NOT_ALLOWED_OVER_TRANSPORT\0")
 }
 
-extension Errors_NominalError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Errors_NominalError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NominalError"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericError\0")
 

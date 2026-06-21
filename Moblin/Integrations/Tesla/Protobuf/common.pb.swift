@@ -15,12 +15,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum CarServer_Invalid: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum CarServer_Invalid: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case invalid // = 0
   case UNRECOGNIZED(Int)
@@ -50,7 +50,7 @@ enum CarServer_Invalid: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum CarServer_MediaPlaybackStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum CarServer_MediaPlaybackStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case stopped // = 0
   case playing // = 1
@@ -88,7 +88,7 @@ enum CarServer_MediaPlaybackStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-enum CarServer_StwHeatLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum CarServer_StwHeatLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case unknown // = 0
   case off // = 1
@@ -130,7 +130,7 @@ enum CarServer_StwHeatLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct CarServer_Void: Sendable {
+nonisolated struct CarServer_Void: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -140,7 +140,7 @@ struct CarServer_Void: Sendable {
   init() {}
 }
 
-struct CarServer_LatLong: Sendable {
+nonisolated struct CarServer_LatLong: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -154,7 +154,7 @@ struct CarServer_LatLong: Sendable {
   init() {}
 }
 
-struct CarServer_ChargePortLatchState: Sendable {
+nonisolated struct CarServer_ChargePortLatchState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -195,7 +195,7 @@ struct CarServer_ChargePortLatchState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Type: Equatable, Sendable {
+  nonisolated enum OneOf_Type: Equatable, Sendable {
     case sna(CarServer_Void)
     case disengaged(CarServer_Void)
     case engaged(CarServer_Void)
@@ -206,7 +206,7 @@ struct CarServer_ChargePortLatchState: Sendable {
   init() {}
 }
 
-struct CarServer_PreconditioningTimes: Sendable {
+nonisolated struct CarServer_PreconditioningTimes: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -231,7 +231,7 @@ struct CarServer_PreconditioningTimes: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Times: Equatable, Sendable {
+  nonisolated enum OneOf_Times: Equatable, Sendable {
     case allWeek(CarServer_Void)
     case weekdays(CarServer_Void)
 
@@ -240,7 +240,7 @@ struct CarServer_PreconditioningTimes: Sendable {
   init() {}
 }
 
-struct CarServer_OffPeakChargingTimes: Sendable {
+nonisolated struct CarServer_OffPeakChargingTimes: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -265,7 +265,7 @@ struct CarServer_OffPeakChargingTimes: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Times: Equatable, Sendable {
+  nonisolated enum OneOf_Times: Equatable, Sendable {
     case allWeek(CarServer_Void)
     case weekdays(CarServer_Void)
 
@@ -274,7 +274,7 @@ struct CarServer_OffPeakChargingTimes: Sendable {
   init() {}
 }
 
-struct CarServer_ChargeSchedule: Sendable {
+nonisolated struct CarServer_ChargeSchedule: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -309,7 +309,7 @@ struct CarServer_ChargeSchedule: Sendable {
   init() {}
 }
 
-struct CarServer_PreconditionSchedule: Sendable {
+nonisolated struct CarServer_PreconditionSchedule: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -339,21 +339,21 @@ struct CarServer_PreconditionSchedule: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "CarServer"
+fileprivate nonisolated let _protobuf_package = "CarServer"
 
-extension CarServer_Invalid: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Invalid: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INVALID\0")
 }
 
-extension CarServer_MediaPlaybackStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaPlaybackStatus: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0Stopped\0\u{1}Playing\0\u{1}Paused\0")
 }
 
-extension CarServer_StwHeatLevel: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_StwHeatLevel: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0StwHeatLevel_Unknown\0\u{1}StwHeatLevel_Off\0\u{1}StwHeatLevel_Low\0\u{1}StwHeatLevel_High\0")
 }
 
-extension CarServer_Void: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Void: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Void"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -372,7 +372,7 @@ extension CarServer_Void: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
   }
 }
 
-extension CarServer_LatLong: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_LatLong: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".LatLong"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}latitude\0\u{1}longitude\0")
 
@@ -407,7 +407,7 @@ extension CarServer_LatLong: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   }
 }
 
-extension CarServer_ChargePortLatchState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargePortLatchState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargePortLatchState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}Disengaged\0\u{1}Engaged\0\u{1}Blocking\0")
 
@@ -508,7 +508,7 @@ extension CarServer_ChargePortLatchState: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_PreconditioningTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_PreconditioningTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditioningTimes"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}all_week\0\u{1}weekdays\0")
 
@@ -575,7 +575,7 @@ extension CarServer_PreconditioningTimes: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_OffPeakChargingTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_OffPeakChargingTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".OffPeakChargingTimes"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}all_week\0\u{1}weekdays\0")
 
@@ -642,7 +642,7 @@ extension CarServer_OffPeakChargingTimes: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_ChargeSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeSchedule"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{3}days_of_week\0\u{3}start_enabled\0\u{3}start_time\0\u{3}end_enabled\0\u{3}end_time\0\u{3}one_time\0\u{1}enabled\0\u{1}latitude\0\u{1}longitude\0")
 
@@ -722,7 +722,7 @@ extension CarServer_ChargeSchedule: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_PreconditionSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_PreconditionSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditionSchedule"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{3}days_of_week\0\u{3}precondition_time\0\u{3}one_time\0\u{1}enabled\0\u{1}latitude\0\u{1}longitude\0")
 

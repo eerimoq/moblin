@@ -15,12 +15,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case none // = 0
   case service // = 1
@@ -80,6 +80,6 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-extension Keys_Role: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Keys_Role: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ROLE_NONE\0\u{1}ROLE_SERVICE\0\u{1}ROLE_OWNER\0\u{1}ROLE_DRIVER\0\u{1}ROLE_FM\0\u{1}ROLE_VEHICLE_MONITOR\0\u{1}ROLE_CHARGING_MANAGER\0\u{2}\u{2}ROLE_GUEST\0")
 }

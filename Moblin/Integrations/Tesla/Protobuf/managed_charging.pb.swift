@@ -15,14 +15,14 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
 /// The reasons why the site controller may recommend no charge.
 /// The site controller will only return the highest priority reason to the vehicle.
-enum ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case invalid // = 0
 
@@ -81,6 +81,6 @@ enum ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf.Enum, Swift.Case
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-extension ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension ManagedCharging_ChargeOnSolarNoChargeReason: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CHARGE_ON_SOLAR_NO_CHARGE_REASON_INVALID\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_POWERWALL_CHARGE_PRIORITY\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_INSUFFICIENT_SOLAR\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_GRID_EXPORT_PRIORITY\0\u{1}CHARGE_ON_SOLAR_NO_CHARGE_REASON_ALTERNATE_VEHICLE_CHARGE_PRIORITY\0")
 }

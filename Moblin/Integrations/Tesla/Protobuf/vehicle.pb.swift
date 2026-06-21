@@ -15,12 +15,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum CarServer_MediaSourceType: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum CarServer_MediaSourceType: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
 
   /// Standard sources
@@ -184,7 +184,7 @@ enum CarServer_MediaSourceType: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct CarServer_VehicleData: @unchecked Sendable {
+nonisolated struct CarServer_VehicleData: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -304,7 +304,7 @@ struct CarServer_VehicleData: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_ClosuresState: @unchecked Sendable {
+nonisolated struct CarServer_ClosuresState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -620,108 +620,108 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalDoorOpenDriverFront: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenDriverFront: Equatable, Sendable {
     case doorOpenDriverFront(Bool)
 
   }
 
-  enum OneOf_OptionalDoorOpenDriverRear: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenDriverRear: Equatable, Sendable {
     case doorOpenDriverRear(Bool)
 
   }
 
-  enum OneOf_OptionalDoorOpenPassengerFront: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenPassengerFront: Equatable, Sendable {
     case doorOpenPassengerFront(Bool)
 
   }
 
-  enum OneOf_OptionalDoorOpenPassengerRear: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenPassengerRear: Equatable, Sendable {
     case doorOpenPassengerRear(Bool)
 
   }
 
-  enum OneOf_OptionalDoorOpenTrunkFront: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenTrunkFront: Equatable, Sendable {
     case doorOpenTrunkFront(Bool)
 
   }
 
-  enum OneOf_OptionalDoorOpenTrunkRear: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDoorOpenTrunkRear: Equatable, Sendable {
     case doorOpenTrunkRear(Bool)
 
   }
 
-  enum OneOf_OptionalWindowOpenDriverFront: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWindowOpenDriverFront: Equatable, Sendable {
     case windowOpenDriverFront(Bool)
 
   }
 
-  enum OneOf_OptionalWindowOpenPassengerFront: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWindowOpenPassengerFront: Equatable, Sendable {
     case windowOpenPassengerFront(Bool)
 
   }
 
-  enum OneOf_OptionalWindowOpenDriverRear: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWindowOpenDriverRear: Equatable, Sendable {
     case windowOpenDriverRear(Bool)
 
   }
 
-  enum OneOf_OptionalWindowOpenPassengerRear: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWindowOpenPassengerRear: Equatable, Sendable {
     case windowOpenPassengerRear(Bool)
 
   }
 
-  enum OneOf_OptionalSunRoofPercentOpen: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSunRoofPercentOpen: Equatable, Sendable {
     case sunRoofPercentOpen(Int32)
 
   }
 
-  enum OneOf_OptionalLocked: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLocked: Equatable, Sendable {
     case locked(Bool)
 
   }
 
-  enum OneOf_OptionalIsUserPresent: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsUserPresent: Equatable, Sendable {
     case isUserPresent(Bool)
 
   }
 
   /// `true` when remote start is active.
-  enum OneOf_OptionalRemoteStart: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalRemoteStart: Equatable, Sendable {
     case remoteStart(Bool)
 
   }
 
-  enum OneOf_OptionalValetMode: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalValetMode: Equatable, Sendable {
     case valetMode(Bool)
 
   }
 
-  enum OneOf_OptionalValetPinNeeded: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalValetPinNeeded: Equatable, Sendable {
     case valetPinNeeded(Bool)
 
   }
 
-  enum OneOf_OptionalSentryModeAvailable: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSentryModeAvailable: Equatable, Sendable {
     case sentryModeAvailable(Bool)
 
   }
 
-  enum OneOf_OptionalTonneauState: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTonneauState: Equatable, Sendable {
     case tonneauState(VCSEC_ClosureState_E)
 
   }
 
-  enum OneOf_OptionalTonneauPercentOpen: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTonneauPercentOpen: Equatable, Sendable {
     case tonneauPercentOpen(UInt32)
 
   }
 
-  enum OneOf_OptionalTonneauInMotion: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTonneauInMotion: Equatable, Sendable {
     case tonneauInMotion(Bool)
 
   }
 
-  struct SunRoofState: Sendable {
+  nonisolated struct SunRoofState: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -778,7 +778,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case unknown(CarServer_Void)
       case calibrating(CarServer_Void)
       case closed(CarServer_Void)
@@ -791,7 +791,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
     init() {}
   }
 
-  struct DisplayState: Sendable {
+  nonisolated struct DisplayState: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -880,7 +880,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case off(CarServer_Void)
       case dim(CarServer_Void)
       case accessory(CarServer_Void)
@@ -897,7 +897,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
     init() {}
   }
 
-  struct SentryModeState: Sendable {
+  nonisolated struct SentryModeState: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -954,7 +954,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case off(CarServer_Void)
       case idle(CarServer_Void)
       case armed(CarServer_Void)
@@ -972,7 +972,7 @@ struct CarServer_ClosuresState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_ChargeScheduleState: @unchecked Sendable {
+nonisolated struct CarServer_ChargeScheduleState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1058,27 +1058,27 @@ struct CarServer_ChargeScheduleState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalChargeScheduleWindow: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeScheduleWindow: Equatable, Sendable {
     case chargeScheduleWindow(CarServer_ChargeSchedule)
 
   }
 
-  enum OneOf_OptionalChargeBuffer: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeBuffer: Equatable, Sendable {
     case chargeBuffer(Int32)
 
   }
 
-  enum OneOf_OptionalMaxNumChargeSchedules: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxNumChargeSchedules: Equatable, Sendable {
     case maxNumChargeSchedules(UInt32)
 
   }
 
-  enum OneOf_OptionalNextSchedule: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNextSchedule: Equatable, Sendable {
     case nextSchedule(Bool)
 
   }
 
-  enum OneOf_OptionalShowScheduleCompleteState: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalShowScheduleCompleteState: Equatable, Sendable {
     case showScheduleCompleteState(Bool)
 
   }
@@ -1088,7 +1088,7 @@ struct CarServer_ChargeScheduleState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_PreconditioningScheduleState: Sendable {
+nonisolated struct CarServer_PreconditioningScheduleState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1136,17 +1136,17 @@ struct CarServer_PreconditioningScheduleState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalPreconditioningScheduleWindow: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPreconditioningScheduleWindow: Equatable, Sendable {
     case preconditioningScheduleWindow(CarServer_PreconditionSchedule)
 
   }
 
-  enum OneOf_OptionalMaxNumPreconditionSchedules: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxNumPreconditionSchedules: Equatable, Sendable {
     case maxNumPreconditionSchedules(UInt32)
 
   }
 
-  enum OneOf_OptionalNextSchedule: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNextSchedule: Equatable, Sendable {
     case nextSchedule(Bool)
 
   }
@@ -1156,7 +1156,7 @@ struct CarServer_PreconditioningScheduleState: Sendable {
   fileprivate var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_SpeedLimitMode: Sendable {
+nonisolated struct CarServer_SpeedLimitMode: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1213,27 +1213,27 @@ struct CarServer_SpeedLimitMode: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalActive: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActive: Equatable, Sendable {
     case active(Bool)
 
   }
 
-  enum OneOf_OptionalPinCodeSet: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPinCodeSet: Equatable, Sendable {
     case pinCodeSet(Bool)
 
   }
 
-  enum OneOf_OptionalMaxLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxLimitMph: Equatable, Sendable {
     case maxLimitMph(Float)
 
   }
 
-  enum OneOf_OptionalMinLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinLimitMph: Equatable, Sendable {
     case minLimitMph(Float)
 
   }
 
-  enum OneOf_OptionalCurrentLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCurrentLimitMph: Equatable, Sendable {
     case currentLimitMph(Float)
 
   }
@@ -1241,7 +1241,7 @@ struct CarServer_SpeedLimitMode: Sendable {
   init() {}
 }
 
-struct CarServer_ParentalControlsSettings: Sendable {
+nonisolated struct CarServer_ParentalControlsSettings: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1338,47 +1338,47 @@ struct CarServer_ParentalControlsSettings: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalSpeedLimitEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSpeedLimitEnabled: Equatable, Sendable {
     case speedLimitEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalMaxLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxLimitMph: Equatable, Sendable {
     case maxLimitMph(Float)
 
   }
 
-  enum OneOf_OptionalMinLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinLimitMph: Equatable, Sendable {
     case minLimitMph(Float)
 
   }
 
-  enum OneOf_OptionalCurrentLimitMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCurrentLimitMph: Equatable, Sendable {
     case currentLimitMph(Float)
 
   }
 
-  enum OneOf_OptionalChillAccelerationEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChillAccelerationEnabled: Equatable, Sendable {
     case chillAccelerationEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalRequireSafetySettingsEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalRequireSafetySettingsEnabled: Equatable, Sendable {
     case requireSafetySettingsEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalCurfewEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCurfewEnabled: Equatable, Sendable {
     case curfewEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalCurfewStartTime: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCurfewStartTime: Equatable, Sendable {
     case curfewStartTime(Int32)
 
   }
 
-  enum OneOf_OptionalCurfewEndTime: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCurfewEndTime: Equatable, Sendable {
     case curfewEndTime(Int32)
 
   }
@@ -1386,7 +1386,7 @@ struct CarServer_ParentalControlsSettings: Sendable {
   init() {}
 }
 
-struct CarServer_ParentalControlsState: Sendable {
+nonisolated struct CarServer_ParentalControlsState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1431,12 +1431,12 @@ struct CarServer_ParentalControlsState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalParentalControlsActive: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalParentalControlsActive: Equatable, Sendable {
     case parentalControlsActive(Bool)
 
   }
 
-  enum OneOf_OptionalParentalControlsPinSet: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalParentalControlsPinSet: Equatable, Sendable {
     case parentalControlsPinSet(Bool)
 
   }
@@ -1447,7 +1447,7 @@ struct CarServer_ParentalControlsState: Sendable {
   fileprivate var _parentalControlsSettings: CarServer_ParentalControlsSettings? = nil
 }
 
-struct CarServer_SoftwareUpdateState: Sendable {
+nonisolated struct CarServer_SoftwareUpdateState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1532,37 +1532,37 @@ struct CarServer_SoftwareUpdateState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalScheduledTimeMs: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledTimeMs: Equatable, Sendable {
     case scheduledTimeMs(UInt64)
 
   }
 
-  enum OneOf_OptionalWarningTimeRemainingMs: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWarningTimeRemainingMs: Equatable, Sendable {
     case warningTimeRemainingMs(UInt64)
 
   }
 
-  enum OneOf_OptionalExpectedDurationSec: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalExpectedDurationSec: Equatable, Sendable {
     case expectedDurationSec(UInt32)
 
   }
 
-  enum OneOf_OptionalDownloadPerc: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDownloadPerc: Equatable, Sendable {
     case downloadPerc(UInt32)
 
   }
 
-  enum OneOf_OptionalInstallPerc: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalInstallPerc: Equatable, Sendable {
     case installPerc(UInt32)
 
   }
 
-  enum OneOf_OptionalVersion: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalVersion: Equatable, Sendable {
     case version(String)
 
   }
 
-  struct SoftwareUpdateStatus: Sendable {
+  nonisolated struct SoftwareUpdateStatus: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1619,7 +1619,7 @@ struct CarServer_SoftwareUpdateState: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case unknown(CarServer_Void)
       case installing(CarServer_Void)
       case scheduled(CarServer_Void)
@@ -1638,7 +1638,7 @@ struct CarServer_SoftwareUpdateState: Sendable {
   fileprivate var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_DriveState: Sendable {
+nonisolated struct CarServer_DriveState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1781,52 +1781,52 @@ struct CarServer_DriveState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalSpeed: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSpeed: Equatable, Sendable {
     case speed(UInt32)
 
   }
 
-  enum OneOf_OptionalPower: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPower: Equatable, Sendable {
     case power(Int32)
 
   }
 
-  enum OneOf_OptionalOdometerInHundredthsOfAMile: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOdometerInHundredthsOfAMile: Equatable, Sendable {
     case odometerInHundredthsOfAMile(Int32)
 
   }
 
-  enum OneOf_OptionalSpeedFloat: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSpeedFloat: Equatable, Sendable {
     case speedFloat(Float)
 
   }
 
-  enum OneOf_OptionalActiveRouteDestination: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActiveRouteDestination: Equatable, Sendable {
     case activeRouteDestination(String)
 
   }
 
-  enum OneOf_OptionalActiveRouteMinutesToArrival: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActiveRouteMinutesToArrival: Equatable, Sendable {
     case activeRouteMinutesToArrival(Float)
 
   }
 
-  enum OneOf_OptionalActiveRouteMilesToArrival: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActiveRouteMilesToArrival: Equatable, Sendable {
     case activeRouteMilesToArrival(Float)
 
   }
 
-  enum OneOf_OptionalActiveRouteTrafficMinutesDelay: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActiveRouteTrafficMinutesDelay: Equatable, Sendable {
     case activeRouteTrafficMinutesDelay(Float)
 
   }
 
-  enum OneOf_OptionalActiveRouteEnergyAtArrival: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalActiveRouteEnergyAtArrival: Equatable, Sendable {
     case activeRouteEnergyAtArrival(Float)
 
   }
 
-  enum OneOf_OptionalLastRouteUpdate: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLastRouteUpdate: Equatable, Sendable {
     case lastRouteUpdate(UInt32)
 
   }
@@ -1839,7 +1839,7 @@ struct CarServer_DriveState: Sendable {
   fileprivate var _activeRouteCoordinates: CarServer_LatLong? = nil
 }
 
-struct CarServer_ChargeState: @unchecked Sendable {
+nonisolated struct CarServer_ChargeState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2784,335 +2784,335 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalChargeLimitSoc: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeLimitSoc: Equatable, Sendable {
     case chargeLimitSoc(Int32)
 
   }
 
-  enum OneOf_OptionalChargeLimitSocStd: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeLimitSocStd: Equatable, Sendable {
     case chargeLimitSocStd(Int32)
 
   }
 
-  enum OneOf_OptionalChargeLimitSocMin: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeLimitSocMin: Equatable, Sendable {
     case chargeLimitSocMin(Int32)
 
   }
 
-  enum OneOf_OptionalChargeLimitSocMax: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeLimitSocMax: Equatable, Sendable {
     case chargeLimitSocMax(Int32)
 
   }
 
-  enum OneOf_OptionalMaxRangeChargeCounter: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxRangeChargeCounter: Equatable, Sendable {
     case maxRangeChargeCounter(Int32)
 
   }
 
-  enum OneOf_OptionalFastChargerPresent: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalFastChargerPresent: Equatable, Sendable {
     case fastChargerPresent(Bool)
 
   }
 
   /// 2 decimals
-  enum OneOf_OptionalBatteryRange: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalBatteryRange: Equatable, Sendable {
     case batteryRange(Float)
 
   }
 
-  enum OneOf_OptionalEstBatteryRange: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalEstBatteryRange: Equatable, Sendable {
     case estBatteryRange(Float)
 
   }
 
-  enum OneOf_OptionalIdealBatteryRange: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIdealBatteryRange: Equatable, Sendable {
     case idealBatteryRange(Float)
 
   }
 
-  enum OneOf_OptionalBatteryLevel: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalBatteryLevel: Equatable, Sendable {
     case batteryLevel(Int32)
 
   }
 
-  enum OneOf_OptionalUsableBatteryLevel: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalUsableBatteryLevel: Equatable, Sendable {
     case usableBatteryLevel(Int32)
 
   }
 
   /// 1 decimal
-  enum OneOf_OptionalChargeEnergyAdded: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeEnergyAdded: Equatable, Sendable {
     case chargeEnergyAdded(Float)
 
   }
 
-  enum OneOf_OptionalChargeMilesAddedRated: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeMilesAddedRated: Equatable, Sendable {
     case chargeMilesAddedRated(Float)
 
   }
 
-  enum OneOf_OptionalChargeMilesAddedIdeal: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeMilesAddedIdeal: Equatable, Sendable {
     case chargeMilesAddedIdeal(Float)
 
   }
 
-  enum OneOf_OptionalChargerVoltage: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargerVoltage: Equatable, Sendable {
     case chargerVoltage(Int32)
 
   }
 
-  enum OneOf_OptionalChargerPilotCurrent: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargerPilotCurrent: Equatable, Sendable {
     case chargerPilotCurrent(Int32)
 
   }
 
-  enum OneOf_OptionalChargerActualCurrent: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargerActualCurrent: Equatable, Sendable {
     case chargerActualCurrent(Int32)
 
   }
 
-  enum OneOf_OptionalChargerPower: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargerPower: Equatable, Sendable {
     case chargerPower(Int32)
 
   }
 
-  enum OneOf_OptionalMinutesToFullCharge: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinutesToFullCharge: Equatable, Sendable {
     case minutesToFullCharge(Int32)
 
   }
 
-  enum OneOf_OptionalMinutesToChargeLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinutesToChargeLimit: Equatable, Sendable {
     case minutesToChargeLimit(Int32)
 
   }
 
-  enum OneOf_OptionalTripCharging: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTripCharging: Equatable, Sendable {
     case tripCharging(Bool)
 
   }
 
-  enum OneOf_OptionalChargeRateMph: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeRateMph: Equatable, Sendable {
     case chargeRateMph(Int32)
 
   }
 
-  enum OneOf_OptionalChargePortDoorOpen: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargePortDoorOpen: Equatable, Sendable {
     case chargePortDoorOpen(Bool)
 
   }
 
   /// seconds / datetime
-  enum OneOf_OptionalScheduledChargingStartTime: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledChargingStartTime: Equatable, Sendable {
     case scheduledChargingStartTime(UInt64)
 
   }
 
-  enum OneOf_OptionalScheduledChargingPending: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledChargingPending: Equatable, Sendable {
     case scheduledChargingPending(Bool)
 
   }
 
-  enum OneOf_OptionalUserChargeEnableRequest: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalUserChargeEnableRequest: Equatable, Sendable {
     case userChargeEnableRequest(Bool)
 
   }
 
-  enum OneOf_OptionalChargeEnableRequest: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeEnableRequest: Equatable, Sendable {
     case chargeEnableRequest(Bool)
 
   }
 
-  enum OneOf_OptionalChargerPhases: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargerPhases: Equatable, Sendable {
     case chargerPhases(Int32)
 
   }
 
-  enum OneOf_OptionalChargePortColdWeatherMode: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargePortColdWeatherMode: Equatable, Sendable {
     case chargePortColdWeatherMode(Bool)
 
   }
 
-  enum OneOf_OptionalChargeCurrentRequest: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeCurrentRequest: Equatable, Sendable {
     case chargeCurrentRequest(Int32)
 
   }
 
-  enum OneOf_OptionalChargeCurrentRequestMax: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeCurrentRequestMax: Equatable, Sendable {
     case chargeCurrentRequestMax(Int32)
 
   }
 
-  enum OneOf_OptionalManagedChargingActive: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalManagedChargingActive: Equatable, Sendable {
     case managedChargingActive(Bool)
 
   }
 
-  enum OneOf_OptionalManagedChargingUserCanceled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalManagedChargingUserCanceled: Equatable, Sendable {
     case managedChargingUserCanceled(Bool)
 
   }
 
-  enum OneOf_OptionalManagedChargingStartTime: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalManagedChargingStartTime: Equatable, Sendable {
     case managedChargingStartTime(UInt64)
 
   }
 
-  enum OneOf_OptionalOffPeakHoursEndTime: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOffPeakHoursEndTime: Equatable, Sendable {
     case offPeakHoursEndTime(UInt32)
 
   }
 
-  enum OneOf_OptionalScheduledChargingMode: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledChargingMode: Equatable, Sendable {
     case scheduledChargingMode(CarServer_ChargeState.ScheduledChargingMode)
 
   }
 
-  enum OneOf_OptionalChargingAmps: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargingAmps: Equatable, Sendable {
     case chargingAmps(Int32)
 
   }
 
-  enum OneOf_OptionalScheduledChargingStartTimeMinutes: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledChargingStartTimeMinutes: Equatable, Sendable {
     case scheduledChargingStartTimeMinutes(UInt32)
 
   }
 
-  enum OneOf_OptionalScheduledDepartureTimeMinutes: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledDepartureTimeMinutes: Equatable, Sendable {
     case scheduledDepartureTimeMinutes(UInt32)
 
   }
 
-  enum OneOf_OptionalPreconditioningEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPreconditioningEnabled: Equatable, Sendable {
     case preconditioningEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalScheduledChargingStartTimeApp: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalScheduledChargingStartTimeApp: Equatable, Sendable {
     case scheduledChargingStartTimeApp(Int32)
 
   }
 
-  enum OneOf_OptionalSuperchargerSessionTripPlanner: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSuperchargerSessionTripPlanner: Equatable, Sendable {
     case superchargerSessionTripPlanner(Bool)
 
   }
 
-  enum OneOf_OptionalChargePortColor: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargePortColor: Equatable, Sendable {
     case chargePortColor(CarServer_ChargeState.ChargePortColor_E)
 
   }
 
-  enum OneOf_OptionalChargeRateMphFloat: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeRateMphFloat: Equatable, Sendable {
     case chargeRateMphFloat(Float)
 
   }
 
-  enum OneOf_OptionalChargeLimitReason: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeLimitReason: Equatable, Sendable {
     case chargeLimitReason(CarServer_ChargeState.ChargeLimitReason)
 
   }
 
-  enum OneOf_OptionalChargeCableUnlatched: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeCableUnlatched: Equatable, Sendable {
     case chargeCableUnlatched(Bool)
 
   }
 
-  enum OneOf_OptionalOutletState: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOutletState: Equatable, Sendable {
     case outletState(CarServer_ChargeState.OutletState)
 
   }
 
-  enum OneOf_OptionalPowerFeedState: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowerFeedState: Equatable, Sendable {
     case powerFeedState(CarServer_ChargeState.PowerFeedState)
 
   }
 
-  enum OneOf_OptionOutletSocLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionOutletSocLimit: Equatable, Sendable {
     case outletSocLimit(Int32)
 
   }
 
-  enum OneOf_OptionPowerFeedSocLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionPowerFeedSocLimit: Equatable, Sendable {
     case powerFeedSocLimit(Int32)
 
   }
 
-  enum OneOf_OptionOutletTimeRemaining: Equatable, Sendable {
+  nonisolated enum OneOf_OptionOutletTimeRemaining: Equatable, Sendable {
     case outletTimeRemaining(Int64)
 
   }
 
-  enum OneOf_OptionPowerFeedTimeRemaining: Equatable, Sendable {
+  nonisolated enum OneOf_OptionPowerFeedTimeRemaining: Equatable, Sendable {
     case powerFeedTimeRemaining(Int64)
 
   }
 
-  enum OneOf_OptionalPowershareFeatureAllowed: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareFeatureAllowed: Equatable, Sendable {
     case powershareFeatureAllowed(Bool)
 
   }
 
-  enum OneOf_OptionalPowershareFeatureEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareFeatureEnabled: Equatable, Sendable {
     case powershareFeatureEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalPowershareRequest: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareRequest: Equatable, Sendable {
     case powershareRequest(Bool)
 
   }
 
-  enum OneOf_OptionalPowershareType: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareType: Equatable, Sendable {
     case powershareType(CarServer_ChargeState.PowershareType)
 
   }
 
-  enum OneOf_OptionalPowershareStatus: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareStatus: Equatable, Sendable {
     case powershareStatus(CarServer_ChargeState.PowershareStatus)
 
   }
 
-  enum OneOf_OptionalPowershareStopReason: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareStopReason: Equatable, Sendable {
     case powershareStopReason(CarServer_ChargeState.PowershareStopReason)
 
   }
 
-  enum OneOf_OptionalPowershareInstantaneousLoadKw: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareInstantaneousLoadKw: Equatable, Sendable {
     case powershareInstantaneousLoadKw(Float)
 
   }
 
-  enum OneOf_OptionalPowershareVehicleEnergyLeftHr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareVehicleEnergyLeftHr: Equatable, Sendable {
     case powershareVehicleEnergyLeftHr(Int32)
 
   }
 
-  enum OneOf_OptionalPowershareSocLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPowershareSocLimit: Equatable, Sendable {
     case powershareSocLimit(Int32)
 
   }
 
-  enum OneOf_OptionalOneTimeSocLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOneTimeSocLimit: Equatable, Sendable {
     case oneTimeSocLimit(Int32)
 
   }
 
-  enum OneOf_OptionalHomeLocation: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalHomeLocation: Equatable, Sendable {
     case homeLocation(CarServer_LatLong)
 
   }
 
-  enum OneOf_OptionalWorkLocation: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWorkLocation: Equatable, Sendable {
     case workLocation(CarServer_LatLong)
 
   }
 
-  enum OneOf_OptionalOutletMaxTimerMinutes: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOutletMaxTimerMinutes: Equatable, Sendable {
     case outletMaxTimerMinutes(Int32)
 
   }
 
-  enum ScheduledChargingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ScheduledChargingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case off // = 0
     case startAt // = 1
@@ -3150,7 +3150,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum ChargePortColor_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ChargePortColor_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case chargePortColorOff // = 0
     case chargePortColorRed // = 1
@@ -3220,7 +3220,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum ChargeLimitReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ChargeLimitReason: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case unknown // = 0
     case none // = 1
@@ -3270,7 +3270,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum OutletState: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum OutletState: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case off // = 0
     case cabinAndBed // = 1
@@ -3308,7 +3308,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum PowerFeedState: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum PowerFeedState: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case off // = 0
     case cabinAndBed // = 1
@@ -3346,7 +3346,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum PowershareStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum PowershareStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
 
     /// disconnected or connected, but don't know if powershare capable
@@ -3408,7 +3408,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum PowershareType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum PowershareType: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case none // = 0
     case load // = 1
@@ -3446,7 +3446,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  enum PowershareStopReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum PowershareStopReason: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case none // = 0
     case soctooLow // = 1
@@ -3500,7 +3500,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
   }
 
-  struct CableType: Sendable {
+  nonisolated struct CableType: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3549,7 +3549,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case sna(CarServer_Void)
       case iec(CarServer_Void)
       case sae(CarServer_Void)
@@ -3561,7 +3561,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
     init() {}
   }
 
-  struct ChargerType: Sendable {
+  nonisolated struct ChargerType: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3642,7 +3642,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case sna(CarServer_Void)
       case supercharger(CarServer_Void)
       case chademo(CarServer_Void)
@@ -3658,7 +3658,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
     init() {}
   }
 
-  struct ChargingState: Sendable {
+  nonisolated struct ChargingState: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3731,7 +3731,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case unknown(CarServer_Void)
       case disconnected(CarServer_Void)
       case noPower(CarServer_Void)
@@ -3746,7 +3746,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
     init() {}
   }
 
-  struct ChargerBrand: Sendable {
+  nonisolated struct ChargerBrand: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3771,7 +3771,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case tesla(CarServer_Void)
       case sna(CarServer_Void)
 
@@ -3785,7 +3785,7 @@ struct CarServer_ChargeState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_ManagedChargingState: Sendable {
+nonisolated struct CarServer_ManagedChargingState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3831,17 +3831,17 @@ struct CarServer_ManagedChargingState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalChargeOnSolarGatewayDin: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalChargeOnSolarGatewayDin: Equatable, Sendable {
     case chargeOnSolarGatewayDin(String)
 
   }
 
-  enum OneOf_OptionalTeslaElectricAssetID: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTeslaElectricAssetID: Equatable, Sendable {
     case teslaElectricAssetID(String)
 
   }
 
-  enum OneOf_OptionalMinutesToLowerLimit: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinutesToLowerLimit: Equatable, Sendable {
     case minutesToLowerLimit(Int32)
 
   }
@@ -3851,7 +3851,7 @@ struct CarServer_ManagedChargingState: Sendable {
   fileprivate var _chargeOnSolarState: CarServer_ChargeOnSolarState? = nil
 }
 
-struct CarServer_ChargeOnSolarState: Sendable {
+nonisolated struct CarServer_ChargeOnSolarState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3938,7 +3938,7 @@ struct CarServer_ChargeOnSolarState: Sendable {
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   /// The state of the charge on solar managed charging feature.
-  enum OneOf_State: Equatable, Sendable {
+  nonisolated enum OneOf_State: Equatable, Sendable {
     /// Conditions do not support the Charge on Solar feature. For example, the vehicle may not be located at
     /// a managed charging site.
     case notAllowed(CarServer_ChargeOnSolarStateNotAllowed)
@@ -3967,7 +3967,7 @@ struct CarServer_ChargeOnSolarState: Sendable {
 
 /// Conditions do not support the Charge on Solar feature. For example, the vehicle may not be located at
 /// a managed charging site.
-struct CarServer_ChargeOnSolarStateNotAllowed: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateNotAllowed: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3980,7 +3980,7 @@ struct CarServer_ChargeOnSolarStateNotAllowed: Sendable {
 /// Charge on solar is enabled and the vehicle SOC is above the lower limit, however the
 /// vehicle is not charging off solar for one or more reasons.
 /// We return the highest priority reason to the mobile app.
-struct CarServer_ChargeOnSolarStateNoChargeRecommended: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateNoChargeRecommended: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -3994,7 +3994,7 @@ struct CarServer_ChargeOnSolarStateNoChargeRecommended: Sendable {
 
 /// Charge on solar is enabled and the conditions allow for charging on solar.
 /// The SOC may be above or below the lower left charging limit.
-struct CarServer_ChargeOnSolarStateChargingOnExcessSolar: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateChargingOnExcessSolar: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4005,7 +4005,7 @@ struct CarServer_ChargeOnSolarStateChargingOnExcessSolar: Sendable {
 }
 
 /// The vehicle is charging at full power on any source.
-struct CarServer_ChargeOnSolarStateChargingOnAnything: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateChargingOnAnything: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4016,7 +4016,7 @@ struct CarServer_ChargeOnSolarStateChargingOnAnything: Sendable {
 }
 
 /// The user disabled the charge on solar feature.
-struct CarServer_ChargeOnSolarStateUserDisabled: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateUserDisabled: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4029,7 +4029,7 @@ struct CarServer_ChargeOnSolarStateUserDisabled: Sendable {
 /// The vehicle just entered a valid state for Charge on Solar and is waiting for an initial
 /// response from the site controller. It will wait in this state for 15min before entering
 /// the ChargeOnSolarError state if it does not receive a successful response from the site controller.
-struct CarServer_ChargeOnSolarStateWaitingForServer: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateWaitingForServer: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4041,7 +4041,7 @@ struct CarServer_ChargeOnSolarStateWaitingForServer: Sendable {
 
 /// The managed charging service has received a sustained number of error responses and the
 /// ChargingManager is no longer following the charge on solar power set points.
-struct CarServer_ChargeOnSolarStateError: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateError: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4052,7 +4052,7 @@ struct CarServer_ChargeOnSolarStateError: Sendable {
 }
 
 /// The user pressed the Stop Charging button during a Charge on Solar session.
-struct CarServer_ChargeOnSolarStateUserStopped: Sendable {
+nonisolated struct CarServer_ChargeOnSolarStateUserStopped: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4074,7 +4074,7 @@ struct CarServer_ChargeOnSolarStateUserStopped: Sendable {
 /// between the raw and estimated location, as determined by the
 /// "estimated to raw distance" field. This scenario most frequently arises when
 /// the vehicle has recently been transported or towed.
-struct CarServer_LocationState: @unchecked Sendable {
+nonisolated struct CarServer_LocationState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4333,97 +4333,97 @@ struct CarServer_LocationState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalLatitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLatitude: Equatable, Sendable {
     case latitude(Float)
 
   }
 
-  enum OneOf_OptionalLongitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLongitude: Equatable, Sendable {
     case longitude(Float)
 
   }
 
-  enum OneOf_OptionalHeading: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalHeading: Equatable, Sendable {
     case heading(UInt32)
 
   }
 
-  enum OneOf_OptionalGpsAsOf: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGpsAsOf: Equatable, Sendable {
     case gpsAsOf(UInt64)
 
   }
 
-  enum OneOf_OptionalNativeLocationSupported: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNativeLocationSupported: Equatable, Sendable {
     case nativeLocationSupported(Bool)
 
   }
 
-  enum OneOf_OptionalNativeLatitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNativeLatitude: Equatable, Sendable {
     case nativeLatitude(Float)
 
   }
 
-  enum OneOf_OptionalNativeLongitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNativeLongitude: Equatable, Sendable {
     case nativeLongitude(Float)
 
   }
 
-  enum OneOf_OptionalCorrectedLatitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCorrectedLatitude: Equatable, Sendable {
     case correctedLatitude(Float)
 
   }
 
-  enum OneOf_OptionalCorrectedLongitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCorrectedLongitude: Equatable, Sendable {
     case correctedLongitude(Float)
 
   }
 
-  enum OneOf_OptionalHomelinkNearby: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalHomelinkNearby: Equatable, Sendable {
     case homelinkNearby(Bool)
 
   }
 
-  enum OneOf_OptionalLocationName: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLocationName: Equatable, Sendable {
     case locationName(String)
 
   }
 
-  enum OneOf_OptionalGeoLatitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGeoLatitude: Equatable, Sendable {
     case geoLatitude(Float)
 
   }
 
-  enum OneOf_OptionalGeoLongitude: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGeoLongitude: Equatable, Sendable {
     case geoLongitude(Float)
 
   }
 
-  enum OneOf_OptionalGeoHeading: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGeoHeading: Equatable, Sendable {
     case geoHeading(Float)
 
   }
 
-  enum OneOf_OptionalGeoElevation: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGeoElevation: Equatable, Sendable {
     case geoElevation(Float)
 
   }
 
-  enum OneOf_OptionalGeoAccuracy: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalGeoAccuracy: Equatable, Sendable {
     case geoAccuracy(Float)
 
   }
 
-  enum OneOf_OptionalEstimatedGpsValid: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalEstimatedGpsValid: Equatable, Sendable {
     case estimatedGpsValid(Bool)
 
   }
 
-  enum OneOf_OptionalEstimatedToRawDistance: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalEstimatedToRawDistance: Equatable, Sendable {
     case estimatedToRawDistance(Float)
 
   }
 
-  struct GPSCoordinateType: Sendable {
+  nonisolated struct GPSCoordinateType: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4448,7 +4448,7 @@ struct CarServer_LocationState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case gcj(CarServer_Void)
       case wgs(CarServer_Void)
 
@@ -4462,7 +4462,7 @@ struct CarServer_LocationState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_VehicleState: Sendable {
+nonisolated struct CarServer_VehicleState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -4478,7 +4478,7 @@ struct CarServer_VehicleState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct GuestMode: Sendable {
+  nonisolated struct GuestMode: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -4495,7 +4495,7 @@ struct CarServer_VehicleState: Sendable {
   fileprivate var _guestMode: CarServer_VehicleState.GuestMode? = nil
 }
 
-struct CarServer_ClimateState: @unchecked Sendable {
+nonisolated struct CarServer_ClimateState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5088,222 +5088,222 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalInsideTempCelsius: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalInsideTempCelsius: Equatable, Sendable {
     case insideTempCelsius(Float)
 
   }
 
-  enum OneOf_OptionalOutsideTempCelsius: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalOutsideTempCelsius: Equatable, Sendable {
     case outsideTempCelsius(Float)
 
   }
 
-  enum OneOf_OptionalDriverTempSetting: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalDriverTempSetting: Equatable, Sendable {
     case driverTempSetting(Float)
 
   }
 
-  enum OneOf_OptionalPassengerTempSetting: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalPassengerTempSetting: Equatable, Sendable {
     case passengerTempSetting(Float)
 
   }
 
-  enum OneOf_OptionalLeftTempDirection: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalLeftTempDirection: Equatable, Sendable {
     case leftTempDirection(Int32)
 
   }
 
-  enum OneOf_OptionalRightTempDirection: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalRightTempDirection: Equatable, Sendable {
     case rightTempDirection(Int32)
 
   }
 
-  enum OneOf_OptionalIsFrontDefrosterOn: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsFrontDefrosterOn: Equatable, Sendable {
     case isFrontDefrosterOn(Bool)
 
   }
 
-  enum OneOf_OptionalIsRearDefrosterOn: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsRearDefrosterOn: Equatable, Sendable {
     case isRearDefrosterOn(Bool)
 
   }
 
-  enum OneOf_OptionalFanStatus: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalFanStatus: Equatable, Sendable {
     case fanStatus(Int32)
 
   }
 
-  enum OneOf_OptionalIsClimateOn: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsClimateOn: Equatable, Sendable {
     case isClimateOn(Bool)
 
   }
 
-  enum OneOf_OptionalMinAvailTempCelsius: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMinAvailTempCelsius: Equatable, Sendable {
     case minAvailTempCelsius(Float)
 
   }
 
-  enum OneOf_OptionalMaxAvailTempCelsius: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMaxAvailTempCelsius: Equatable, Sendable {
     case maxAvailTempCelsius(Float)
 
   }
 
-  enum OneOf_OptionalSeatHeaterLeft: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterLeft: Equatable, Sendable {
     case seatHeaterLeft(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRight: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRight: Equatable, Sendable {
     case seatHeaterRight(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRearLeft: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRearLeft: Equatable, Sendable {
     case seatHeaterRearLeft(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRearRight: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRearRight: Equatable, Sendable {
     case seatHeaterRearRight(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRearCenter: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRearCenter: Equatable, Sendable {
     case seatHeaterRearCenter(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRearRightBack: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRearRightBack: Equatable, Sendable {
     case seatHeaterRearRightBack(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterRearLeftBack: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterRearLeftBack: Equatable, Sendable {
     case seatHeaterRearLeftBack(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterThirdRowRight: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterThirdRowRight: Equatable, Sendable {
     case seatHeaterThirdRowRight(Int32)
 
   }
 
-  enum OneOf_OptionalSeatHeaterThirdRowLeft: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatHeaterThirdRowLeft: Equatable, Sendable {
     case seatHeaterThirdRowLeft(Int32)
 
   }
 
-  enum OneOf_OptionalBatteryHeater: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalBatteryHeater: Equatable, Sendable {
     case batteryHeater(Bool)
 
   }
 
-  enum OneOf_OptionalBatteryHeaterNoPower: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalBatteryHeaterNoPower: Equatable, Sendable {
     case batteryHeaterNoPower(Bool)
 
   }
 
-  enum OneOf_OptionalSteeringWheelHeater: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSteeringWheelHeater: Equatable, Sendable {
     case steeringWheelHeater(Bool)
 
   }
 
-  enum OneOf_OptionalWiperBladeHeater: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalWiperBladeHeater: Equatable, Sendable {
     case wiperBladeHeater(Bool)
 
   }
 
-  enum OneOf_OptionalSideMirrorHeaters: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSideMirrorHeaters: Equatable, Sendable {
     case sideMirrorHeaters(Bool)
 
   }
 
-  enum OneOf_OptionalIsPreconditioning: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsPreconditioning: Equatable, Sendable {
     case isPreconditioning(Bool)
 
   }
 
-  enum OneOf_OptionalRemoteHeaterControlEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalRemoteHeaterControlEnabled: Equatable, Sendable {
     case remoteHeaterControlEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalBioweaponModeOn: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalBioweaponModeOn: Equatable, Sendable {
     case bioweaponModeOn(Bool)
 
   }
 
-  enum OneOf_OptionalIsAutoConditioningOn: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalIsAutoConditioningOn: Equatable, Sendable {
     case isAutoConditioningOn(Bool)
 
   }
 
-  enum OneOf_OptionalAutoSeatClimateLeft: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAutoSeatClimateLeft: Equatable, Sendable {
     case autoSeatClimateLeft(Bool)
 
   }
 
-  enum OneOf_OptionalAutoSeatClimateRight: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAutoSeatClimateRight: Equatable, Sendable {
     case autoSeatClimateRight(Bool)
 
   }
 
-  enum OneOf_OptionalSeatFanFrontLeft: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatFanFrontLeft: Equatable, Sendable {
     case seatFanFrontLeft(Int32)
 
   }
 
-  enum OneOf_OptionalSeatFanFrontRight: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSeatFanFrontRight: Equatable, Sendable {
     case seatFanFrontRight(Int32)
 
   }
 
-  enum OneOf_OptionalAllowCabinOverheatProtection: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAllowCabinOverheatProtection: Equatable, Sendable {
     case allowCabinOverheatProtection(Bool)
 
   }
 
-  enum OneOf_OptionalSupportsFanOnlyCabinOverheatProtection: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSupportsFanOnlyCabinOverheatProtection: Equatable, Sendable {
     case supportsFanOnlyCabinOverheatProtection(Bool)
 
   }
 
-  enum OneOf_OptionalCabinOverheatProtection: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCabinOverheatProtection: Equatable, Sendable {
     case cabinOverheatProtection(CarServer_ClimateState.CabinOverheatProtection_E)
 
   }
 
-  enum OneOf_OptionalCabinOverheatProtectionActivelyCooling: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCabinOverheatProtectionActivelyCooling: Equatable, Sendable {
     case cabinOverheatProtectionActivelyCooling(Bool)
 
   }
 
-  enum OneOf_OptionalCopActivationTemperature: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCopActivationTemperature: Equatable, Sendable {
     case copActivationTemperature(CarServer_ClimateState.CopActivationTemp)
 
   }
 
-  enum OneOf_OptionalAutoSteeringWheelHeat: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAutoSteeringWheelHeat: Equatable, Sendable {
     case autoSteeringWheelHeat(Bool)
 
   }
 
-  enum OneOf_OptionalSteeringWheelHeatLevel: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalSteeringWheelHeatLevel: Equatable, Sendable {
     case steeringWheelHeatLevel(CarServer_StwHeatLevel)
 
   }
 
-  enum OneOf_OptionalHvacAutoRequest: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalHvacAutoRequest: Equatable, Sendable {
     case hvacAutoRequest(CarServer_ClimateState.HvacAutoRequest)
 
   }
 
-  enum OneOf_OptionalCopNotRunningReason: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalCopNotRunningReason: Equatable, Sendable {
     case copNotRunningReason(CarServer_ClimateState.COPNotRunningReason)
 
   }
 
-  enum HvacAutoRequest: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum HvacAutoRequest: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case on // = 0
     case override // = 1
@@ -5337,7 +5337,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  enum CabinOverheatProtection_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum CabinOverheatProtection_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case cabinOverheatProtectionOff // = 0
     case cabinOverheatProtectionOn // = 1
@@ -5375,7 +5375,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  enum SeatHeaterLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum SeatHeaterLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case seatHeaterLevelOff // = 0
     case seatHeaterLevelLow // = 1
@@ -5417,7 +5417,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  enum SeatCoolingLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum SeatCoolingLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case seatCoolingLevelOff // = 0
     case seatCoolingLevelLow // = 1
@@ -5459,7 +5459,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  enum CopActivationTemp: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum CopActivationTemp: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case unspecified // = 0
     case low // = 1
@@ -5501,7 +5501,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  enum COPNotRunningReason: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum COPNotRunningReason: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case noReason // = 0
     case userInteraction // = 1
@@ -5555,7 +5555,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
   }
 
-  struct ClimateKeeperMode: Sendable {
+  nonisolated struct ClimateKeeperMode: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -5604,7 +5604,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case unknown(CarServer_Void)
       case off(CarServer_Void)
       case on(CarServer_Void)
@@ -5616,7 +5616,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
     init() {}
   }
 
-  struct DefrostMode: Sendable {
+  nonisolated struct DefrostMode: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -5649,7 +5649,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case off(CarServer_Void)
       case normal(CarServer_Void)
       case max(CarServer_Void)
@@ -5664,7 +5664,7 @@ struct CarServer_ClimateState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_TirePressureState: @unchecked Sendable {
+nonisolated struct CarServer_TirePressureState: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -5900,73 +5900,73 @@ struct CarServer_TirePressureState: @unchecked Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalTpmsPressureFl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsPressureFl: Equatable, Sendable {
     case tpmsPressureFl(Float)
 
   }
 
-  enum OneOf_OptionalTpmsPressureFr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsPressureFr: Equatable, Sendable {
     case tpmsPressureFr(Float)
 
   }
 
-  enum OneOf_OptionalTpmsPressureRl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsPressureRl: Equatable, Sendable {
     case tpmsPressureRl(Float)
 
   }
 
-  enum OneOf_OptionalTpmsPressureRr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsPressureRr: Equatable, Sendable {
     case tpmsPressureRr(Float)
 
   }
 
-  enum OneOf_OptionalTpmsHardWarningFl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsHardWarningFl: Equatable, Sendable {
     case tpmsHardWarningFl(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsHardWarningFr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsHardWarningFr: Equatable, Sendable {
     case tpmsHardWarningFr(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsHardWarningRl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsHardWarningRl: Equatable, Sendable {
     case tpmsHardWarningRl(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsHardWarningRr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsHardWarningRr: Equatable, Sendable {
     case tpmsHardWarningRr(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsSoftWarningFl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsSoftWarningFl: Equatable, Sendable {
     case tpmsSoftWarningFl(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsSoftWarningFr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsSoftWarningFr: Equatable, Sendable {
     case tpmsSoftWarningFr(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsSoftWarningRl: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsSoftWarningRl: Equatable, Sendable {
     case tpmsSoftWarningRl(Bool)
 
   }
 
-  enum OneOf_OptionalTpmsSoftWarningRr: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsSoftWarningRr: Equatable, Sendable {
     case tpmsSoftWarningRr(Bool)
 
   }
 
   /// rcp values in bar
-  enum OneOf_OptionalTpmsRcpFrontValue: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsRcpFrontValue: Equatable, Sendable {
     case tpmsRcpFrontValue(Float)
 
   }
 
-  enum OneOf_OptionalTpmsRcpRearValue: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalTpmsRcpRearValue: Equatable, Sendable {
     case tpmsRcpRearValue(Float)
 
   }
@@ -5976,7 +5976,7 @@ struct CarServer_TirePressureState: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_MediaState: Sendable {
+nonisolated struct CarServer_MediaState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6072,42 +6072,42 @@ struct CarServer_MediaState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalRemoteControlEnabled: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalRemoteControlEnabled: Equatable, Sendable {
     case remoteControlEnabled(Bool)
 
   }
 
-  enum OneOf_OptionalNowPlayingArtist: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingArtist: Equatable, Sendable {
     case nowPlayingArtist(String)
 
   }
 
-  enum OneOf_OptionalNowPlayingTitle: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingTitle: Equatable, Sendable {
     case nowPlayingTitle(String)
 
   }
 
-  enum OneOf_OptionalAudioVolume: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAudioVolume: Equatable, Sendable {
     case audioVolume(Float)
 
   }
 
-  enum OneOf_OptionalAudioVolumeIncrement: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAudioVolumeIncrement: Equatable, Sendable {
     case audioVolumeIncrement(Float)
 
   }
 
-  enum OneOf_OptionalAudioVolumeMax: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalAudioVolumeMax: Equatable, Sendable {
     case audioVolumeMax(Float)
 
   }
 
-  enum OneOf_OptionalNowPlayingSource: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingSource: Equatable, Sendable {
     case nowPlayingSource(CarServer_MediaSourceType)
 
   }
 
-  enum OneOf_OptionalMediaPlaybackStatus: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalMediaPlaybackStatus: Equatable, Sendable {
     case mediaPlaybackStatus(CarServer_MediaPlaybackStatus)
 
   }
@@ -6117,7 +6117,7 @@ struct CarServer_MediaState: Sendable {
   fileprivate var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_MediaDetailState: Sendable {
+nonisolated struct CarServer_MediaDetailState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6193,32 +6193,32 @@ struct CarServer_MediaDetailState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_OptionalNowPlayingDuration: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingDuration: Equatable, Sendable {
     case nowPlayingDuration(Int32)
 
   }
 
-  enum OneOf_OptionalNowPlayingElapsed: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingElapsed: Equatable, Sendable {
     case nowPlayingElapsed(Int32)
 
   }
 
-  enum OneOf_OptionalNowPlayingSourceString: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingSourceString: Equatable, Sendable {
     case nowPlayingSourceString(String)
 
   }
 
-  enum OneOf_OptionalNowPlayingAlbum: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingAlbum: Equatable, Sendable {
     case nowPlayingAlbum(String)
 
   }
 
-  enum OneOf_OptionalNowPlayingStation: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalNowPlayingStation: Equatable, Sendable {
     case nowPlayingStation(String)
 
   }
 
-  enum OneOf_OptionalA2DpSourceName: Equatable, Sendable {
+  nonisolated enum OneOf_OptionalA2DpSourceName: Equatable, Sendable {
     case a2DpSourceName(String)
 
   }
@@ -6228,7 +6228,7 @@ struct CarServer_MediaDetailState: Sendable {
   fileprivate var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_ShiftState: Sendable {
+nonisolated struct CarServer_ShiftState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -6285,7 +6285,7 @@ struct CarServer_ShiftState: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Type: Equatable, Sendable {
+  nonisolated enum OneOf_Type: Equatable, Sendable {
     case invalid(CarServer_Void)
     case p(CarServer_Void)
     case r(CarServer_Void)
@@ -6300,13 +6300,13 @@ struct CarServer_ShiftState: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "CarServer"
+fileprivate nonisolated let _protobuf_package = "CarServer"
 
-extension CarServer_MediaSourceType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaSourceType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0MediaSourceType_None\0\u{1}MediaSourceType_AM\0\u{1}MediaSourceType_FM\0\u{1}MediaSourceType_XM\0\u{2}\u{2}MediaSourceType_Slacker\0\u{1}MediaSourceType_LocalFiles\0\u{1}MediaSourceType_iPod\0\u{1}MediaSourceType_Bluetooth\0\u{1}MediaSourceType_AuxIn\0\u{1}MediaSourceType_DAB\0\u{1}MediaSourceType_Rdio\0\u{1}MediaSourceType_Spotify\0\u{1}MediaSourceType_USRadio\0\u{1}MediaSourceType_EURadio\0\u{2}\u{2}MediaSourceType_MediaFile\0\u{1}MediaSourceType_TuneIn\0\u{1}MediaSourceType_Stingray\0\u{1}MediaSourceType_SiriusXM\0\u{1}MediaSourceType_Tidal\0\u{1}MediaSourceType_QQMusic\0\u{1}MediaSourceType_QQMusic2\0\u{1}MediaSourceType_Ximalaya\0\u{1}MediaSourceType_OnlineRadio\0\u{1}MediaSourceType_OnlineRadio2\0\u{1}MediaSourceType_NetEaseMusic\0\u{2}\u{2}MediaSourceType_Browser\0\u{1}MediaSourceType_Theater\0\u{1}MediaSourceType_Game\0\u{1}MediaSourceType_Tutorial\0\u{1}MediaSourceType_Toybox\0\u{1}MediaSourceType_RecentsFavorites\0\u{1}MediaSourceType_HomeApps\0\u{1}MediaSourceType_Search\0")
 }
 
-extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{3}charge_state\0\u{3}climate_state\0\u{3}drive_state\0\u{4}\u{3}location_state\0\u{3}closures_state\0\u{4}\u{6}charge_schedule_state\0\u{3}preconditioning_schedule_state\0\u{4}\u{3}tire_pressure_state\0\u{3}media_state\0\u{3}media_detail_state\0\u{4}\u{2}software_update_state\0\u{3}parental_controls_state\0")
 
@@ -6453,7 +6453,7 @@ extension CarServer_VehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClosuresState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{b}sun_roof_state\0\u{4}\u{4}center_display_state\0\u{4}\u{4}sentry_mode_state\0\u{4}\u{3}speed_limit_mode\0\u{3}tonneau_state\0\u{3}tonneau_percent_open\0\u{3}tonneau_in_motion\0\u{4}L\u{1}door_open_driver_front\0\u{3}door_open_driver_rear\0\u{3}door_open_passenger_front\0\u{3}door_open_passenger_rear\0\u{3}door_open_trunk_front\0\u{3}door_open_trunk_rear\0\u{3}window_open_driver_front\0\u{3}window_open_passenger_front\0\u{3}window_open_driver_rear\0\u{3}window_open_passenger_rear\0\u{4}\u{2}sun_roof_percent_open\0\u{1}locked\0\u{3}is_user_present\0\u{4}\u{2}remote_start\0\u{3}valet_mode\0\u{3}valet_pin_needed\0\u{4}\u{2}sentry_mode_available\0\u{2}X\u{1d}timestamp\0")
 
@@ -6831,7 +6831,7 @@ extension CarServer_ClosuresState: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_ClosuresState.SunRoofState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClosuresState.SunRoofState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".SunRoofState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Calibrating\0\u{1}Closed\0\u{1}Open\0\u{1}Moving\0\u{1}Vent\0")
 
@@ -6966,7 +6966,7 @@ extension CarServer_ClosuresState.SunRoofState: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension CarServer_ClosuresState.DisplayState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClosuresState.DisplayState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".DisplayState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Dim\0\u{1}Accessory\0\u{1}On\0\u{1}Driving\0\u{1}Charging\0\u{1}Lock\0\u{1}Sentry\0\u{1}Dog\0\u{1}Entertainment\0")
 
@@ -7169,7 +7169,7 @@ extension CarServer_ClosuresState.DisplayState: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension CarServer_ClosuresState.SentryModeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClosuresState.SentryModeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClosuresState.protoMessageName + ".SentryModeState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Idle\0\u{1}Armed\0\u{1}Aware\0\u{1}Panic\0\u{1}Quiet\0")
 
@@ -7304,7 +7304,7 @@ extension CarServer_ClosuresState.SentryModeState: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeScheduleState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charge_schedules\0\u{3}charge_schedule_window\0\u{3}charge_buffer\0\u{3}max_num_charge_schedules\0\u{3}next_schedule\0\u{3}show_schedule_complete_state\0\u{2}J\u{1f}timestamp\0")
 
@@ -7456,7 +7456,7 @@ extension CarServer_ChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_PreconditioningScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_PreconditioningScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditioningScheduleState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}precondition_schedules\0\u{3}preconditioning_schedule_window\0\u{3}max_num_precondition_schedules\0\u{3}next_schedule\0\u{2}L\u{1f}timestamp\0")
 
@@ -7536,7 +7536,7 @@ extension CarServer_PreconditioningScheduleState: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension CarServer_SpeedLimitMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SpeedLimitMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SpeedLimitMode"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}g\u{1}active\0\u{3}pin_code_set\0\u{4}\u{2}max_limit_mph\0\u{3}min_limit_mph\0\u{3}current_limit_mph\0")
 
@@ -7625,7 +7625,7 @@ extension CarServer_SpeedLimitMode: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_ParentalControlsSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ParentalControlsSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ParentalControlsSettings"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}speed_limit_enabled\0\u{3}max_limit_mph\0\u{3}min_limit_mph\0\u{3}current_limit_mph\0\u{3}chill_acceleration_enabled\0\u{3}require_safety_settings_enabled\0\u{3}curfew_enabled\0\u{3}curfew_start_time\0\u{3}curfew_end_time\0")
 
@@ -7762,7 +7762,7 @@ extension CarServer_ParentalControlsSettings: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension CarServer_ParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ParentalControlsState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}parental_controls_active\0\u{3}parental_controls_pin_set\0\u{3}parental_controls_settings\0")
 
@@ -7825,7 +7825,7 @@ extension CarServer_ParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_SoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SoftwareUpdateState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{4}e\u{1}scheduled_time_ms\0\u{3}warning_time_remaining_ms\0\u{3}expected_duration_sec\0\u{3}download_perc\0\u{3}install_perc\0\u{1}version\0\u{1}timestamp\0")
 
@@ -7936,7 +7936,7 @@ extension CarServer_SoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_SoftwareUpdateState.SoftwareUpdateStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SoftwareUpdateState.SoftwareUpdateStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_SoftwareUpdateState.protoMessageName + ".SoftwareUpdateStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Installing\0\u{1}Scheduled\0\u{1}Available\0\u{1}DownloadingWifiWait\0\u{1}Downloading\0")
 
@@ -8071,7 +8071,7 @@ extension CarServer_SoftwareUpdateState.SoftwareUpdateStatus: SwiftProtobuf.Mess
   }
 }
 
-extension CarServer_DriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_DriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DriveState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}shift_state\0\u{2}\u{3}timestamp\0\u{4}\u{3}active_route_destination\0\u{3}active_route_minutes_to_arrival\0\u{3}active_route_miles_to_arrival\0\u{3}active_route_traffic_minutes_delay\0\u{3}active_route_energy_at_arrival\0\u{3}active_route_coordinates\0\u{4}\u{2}last_route_update\0\u{3}last_traffic_update\0\u{2}W\u{1}speed\0\u{1}power\0\u{4}\u{2}odometer_in_hundredths_of_a_mile\0\u{3}speed_float\0")
 
@@ -8240,7 +8240,7 @@ extension CarServer_DriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charging_state\0\u{3}fast_charger_type\0\u{3}fast_charger_brand\0\u{4}\u{19}conn_charge_cable\0\u{4}\u{3}scheduled_departure_time\0\u{4}\u{4}charge_port_latch\0\u{2}\u{9}timestamp\0\u{3}preconditioning_times\0\u{3}off_peak_charging_times\0\u{4}:charge_limit_soc\0\u{3}charge_limit_soc_std\0\u{3}charge_limit_soc_min\0\u{3}charge_limit_soc_max\0\u{4}\u{2}max_range_charge_counter\0\u{3}fast_charger_present\0\u{3}battery_range\0\u{3}est_battery_range\0\u{3}ideal_battery_range\0\u{3}battery_level\0\u{3}usable_battery_level\0\u{3}charge_energy_added\0\u{3}charge_miles_added_rated\0\u{3}charge_miles_added_ideal\0\u{3}charger_voltage\0\u{3}charger_pilot_current\0\u{3}charger_actual_current\0\u{3}charger_power\0\u{3}minutes_to_full_charge\0\u{4}\u{2}trip_charging\0\u{3}charge_rate_mph\0\u{3}charge_port_door_open\0\u{4}\u{2}scheduled_charging_start_time\0\u{3}scheduled_charging_pending\0\u{4}\u{2}user_charge_enable_request\0\u{3}charge_enable_request\0\u{3}charger_phases\0\u{4}\u{2}charge_port_cold_weather_mode\0\u{3}charge_current_request\0\u{3}charge_current_request_max\0\u{3}managed_charging_active\0\u{3}managed_charging_user_canceled\0\u{3}managed_charging_start_time\0\u{3}minutes_to_charge_limit\0\u{4}\u{5}off_peak_hours_end_time\0\u{3}scheduled_charging_mode\0\u{3}charging_amps\0\u{3}scheduled_charging_start_time_minutes\0\u{3}scheduled_departure_time_minutes\0\u{3}preconditioning_enabled\0\u{3}scheduled_charging_start_time_app\0\u{3}supercharger_session_trip_planner\0\u{3}charge_port_color\0\u{3}charge_rate_mph_float\0\u{3}charge_limit_reason\0\u{3}managed_charging_state\0\u{3}charge_cable_unlatched\0\u{3}outlet_state\0\u{3}power_feed_state\0\u{3}outlet_soc_limit\0\u{3}power_feed_soc_limit\0\u{3}outlet_time_remaining\0\u{3}power_feed_time_remaining\0\u{3}powershare_feature_allowed\0\u{3}powershare_feature_enabled\0\u{3}powershare_request\0\u{3}powershare_type\0\u{3}powershare_status\0\u{3}powershare_stop_reason\0\u{3}powershare_instantaneous_load_kw\0\u{3}powershare_vehicle_energy_left_hr\0\u{3}powershare_soc_limit\0\u{3}one_time_soc_limit\0\u{3}home_location\0\u{3}work_location\0\u{3}outlet_max_timer_minutes\0\u{c}\u{8}\u{1}\u{c}*\u{1}\u{c}+\u{1}")
 
@@ -9293,39 +9293,39 @@ extension CarServer_ChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension CarServer_ChargeState.ScheduledChargingMode: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ScheduledChargingMode: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ScheduledChargingModeOff\0\u{1}ScheduledChargingModeStartAt\0\u{1}ScheduledChargingModeDepartBy\0")
 }
 
-extension CarServer_ChargeState.ChargePortColor_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ChargePortColor_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ChargePortColorOff\0\u{1}ChargePortColorRed\0\u{1}ChargePortColorGreen\0\u{1}ChargePortColorBlue\0\u{1}ChargePortColorWhite\0\u{1}ChargePortColorFlashingGreen\0\u{1}ChargePortColorFlashingAmber\0\u{1}ChargePortColorAmber\0\u{1}ChargePortColorRave\0\u{1}ChargePortColorDebug\0\u{1}ChargePortColorFlashingBlue\0")
 }
 
-extension CarServer_ChargeState.ChargeLimitReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ChargeLimitReason: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ChargeLimitReasonUnknown\0\u{1}ChargeLimitReasonNone\0\u{1}ChargeLimitReasonEvse\0\u{1}ChargeLimitReasonBattTempLow\0\u{1}ChargeLimitReasonHighSoc\0\u{1}ChargeLimitReasonCabin\0")
 }
 
-extension CarServer_ChargeState.OutletState: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.OutletState: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OutletStateOff\0\u{1}OutletStateCabinAndBed\0\u{1}OutletStateCabin\0")
 }
 
-extension CarServer_ChargeState.PowerFeedState: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.PowerFeedState: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowerFeedStateOff\0\u{1}PowerFeedStateCabinAndBed\0\u{1}PowerFeedStateCabin\0")
 }
 
-extension CarServer_ChargeState.PowershareStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.PowershareStatus: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareStatusInactive\0\u{1}PowershareStatusInit\0\u{1}PowershareStatusActive\0\u{1}PowershareStatusStopped\0\u{1}PowershareStatusHandshaking\0\u{1}PowershareStatusActiveReconnectingSoon\0")
 }
 
-extension CarServer_ChargeState.PowershareType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.PowershareType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareTypeNone\0\u{1}PowershareTypeLoad\0\u{1}PowershareTypeHome\0")
 }
 
-extension CarServer_ChargeState.PowershareStopReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.PowershareStopReason: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PowershareStopReasonNone\0\u{1}PowershareStopReasonSOCTooLow\0\u{1}PowershareStopReasonRetry\0\u{1}PowershareStopReasonFault\0\u{1}PowershareStopReasonUser\0\u{1}PowershareStopReasonReconnecting\0\u{1}PowershareStopReasonAuthentication\0")
 }
 
-extension CarServer_ChargeState.CableType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.CableType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".CableType"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}IEC\0\u{1}SAE\0\u{3}GB_AC\0\u{3}GB_DC\0")
 
@@ -9443,7 +9443,7 @@ extension CarServer_ChargeState.CableType: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_ChargeState.ChargerType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ChargerType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargerType"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}Supercharger\0\u{1}Chademo\0\u{1}Gb\0\u{1}ACSingleWireCAN\0\u{1}Combo\0\u{1}MCSingleWireCAN\0\u{1}Other\0\u{1}Tesla\0")
 
@@ -9629,7 +9629,7 @@ extension CarServer_ChargeState.ChargerType: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_ChargeState.ChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargingState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Disconnected\0\u{1}NoPower\0\u{1}Starting\0\u{1}Charging\0\u{1}Complete\0\u{1}Stopped\0\u{1}Calibrating\0")
 
@@ -9798,7 +9798,7 @@ extension CarServer_ChargeState.ChargingState: SwiftProtobuf.Message, SwiftProto
   }
 }
 
-extension CarServer_ChargeState.ChargerBrand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeState.ChargerBrand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ChargeState.protoMessageName + ".ChargerBrand"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Tesla\0\u{1}SNA\0")
 
@@ -9865,7 +9865,7 @@ extension CarServer_ChargeState.ChargerBrand: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension CarServer_ManagedChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ManagedChargingState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ManagedChargingState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charge_on_solar_state\0\u{3}charge_on_solar_gateway_din\0\u{3}tesla_electric_asset_id\0\u{3}minutes_to_lower_limit\0")
 
@@ -9935,7 +9935,7 @@ extension CarServer_ManagedChargingState: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_ChargeOnSolarState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}not_allowed\0\u{3}no_charge_recommended\0\u{3}charging_on_excess_solar\0\u{3}charging_on_anything\0\u{4}\u{2}user_disabled\0\u{3}waiting_for_server\0\u{1}error\0\u{3}user_stopped\0\u{c}\u{5}\u{1}")
 
@@ -10104,7 +10104,7 @@ extension CarServer_ChargeOnSolarState: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension CarServer_ChargeOnSolarStateNotAllowed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateNotAllowed: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateNotAllowed"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10123,7 +10123,7 @@ extension CarServer_ChargeOnSolarStateNotAllowed: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension CarServer_ChargeOnSolarStateNoChargeRecommended: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateNoChargeRecommended: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateNoChargeRecommended"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
@@ -10153,7 +10153,7 @@ extension CarServer_ChargeOnSolarStateNoChargeRecommended: SwiftProtobuf.Message
   }
 }
 
-extension CarServer_ChargeOnSolarStateChargingOnExcessSolar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateChargingOnExcessSolar: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateChargingOnExcessSolar"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10172,7 +10172,7 @@ extension CarServer_ChargeOnSolarStateChargingOnExcessSolar: SwiftProtobuf.Messa
   }
 }
 
-extension CarServer_ChargeOnSolarStateChargingOnAnything: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateChargingOnAnything: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateChargingOnAnything"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10191,7 +10191,7 @@ extension CarServer_ChargeOnSolarStateChargingOnAnything: SwiftProtobuf.Message,
   }
 }
 
-extension CarServer_ChargeOnSolarStateUserDisabled: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateUserDisabled: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateUserDisabled"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10210,7 +10210,7 @@ extension CarServer_ChargeOnSolarStateUserDisabled: SwiftProtobuf.Message, Swift
   }
 }
 
-extension CarServer_ChargeOnSolarStateWaitingForServer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateWaitingForServer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateWaitingForServer"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10229,7 +10229,7 @@ extension CarServer_ChargeOnSolarStateWaitingForServer: SwiftProtobuf.Message, S
   }
 }
 
-extension CarServer_ChargeOnSolarStateError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateError"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10248,7 +10248,7 @@ extension CarServer_ChargeOnSolarStateError: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_ChargeOnSolarStateUserStopped: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargeOnSolarStateUserStopped: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeOnSolarStateUserStopped"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -10267,7 +10267,7 @@ extension CarServer_ChargeOnSolarStateUserStopped: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension CarServer_LocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_LocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".LocationState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{8}native_type\0\u{2}\u{3}timestamp\0\u{2}Z\u{1}latitude\0\u{1}longitude\0\u{1}heading\0\u{3}gps_as_of\0\u{3}native_location_supported\0\u{3}native_latitude\0\u{3}native_longitude\0\u{4}\u{2}corrected_latitude\0\u{3}corrected_longitude\0\u{4}\u{2}homelink_nearby\0\u{3}location_name\0\u{3}geo_latitude\0\u{3}geo_longitude\0\u{3}geo_heading\0\u{3}geo_elevation\0\u{3}geo_accuracy\0\u{3}estimated_gps_valid\0\u{3}estimated_to_raw_distance\0\u{c}\u{c}\u{1}")
 
@@ -10596,7 +10596,7 @@ extension CarServer_LocationState: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_LocationState.GPSCoordinateType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_LocationState.GPSCoordinateType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_LocationState.protoMessageName + ".GPSCoordinateType"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}GCJ\0\u{1}WGS\0")
 
@@ -10663,7 +10663,7 @@ extension CarServer_LocationState.GPSCoordinateType: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_VehicleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}J\u{1}guestMode\0")
 
@@ -10697,7 +10697,7 @@ extension CarServer_VehicleState: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension CarServer_VehicleState.GuestMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleState.GuestMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_VehicleState.protoMessageName + ".GuestMode"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}GuestModeActive\0")
 
@@ -10727,7 +10727,7 @@ extension CarServer_VehicleState.GuestMode: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClimateState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{4}\u{1e}climate_keeper_mode\0\u{2}\u{3}timestamp\0\u{4}\u{2}defrost_mode\0\u{4}B\u{1}inside_temp_celsius\0\u{3}outside_temp_celsius\0\u{3}driver_temp_setting\0\u{3}passenger_temp_setting\0\u{3}left_temp_direction\0\u{3}right_temp_direction\0\u{3}is_front_defroster_on\0\u{3}is_rear_defroster_on\0\u{3}fan_status\0\u{3}is_climate_on\0\u{3}min_avail_temp_celsius\0\u{3}max_avail_temp_celsius\0\u{3}seat_heater_left\0\u{3}seat_heater_right\0\u{3}seat_heater_rear_left\0\u{3}seat_heater_rear_right\0\u{3}seat_heater_rear_center\0\u{3}seat_heater_rear_right_back\0\u{3}seat_heater_rear_left_back\0\u{3}seat_heater_third_row_right\0\u{3}seat_heater_third_row_left\0\u{3}battery_heater\0\u{3}battery_heater_no_power\0\u{4}\u{2}steering_wheel_heater\0\u{3}wiper_blade_heater\0\u{3}side_mirror_heaters\0\u{3}is_preconditioning\0\u{3}remote_heater_control_enabled\0\u{4}\u{5}bioweapon_mode_on\0\u{4}\u{2}is_auto_conditioning_on\0\u{3}auto_seat_climate_left\0\u{3}auto_seat_climate_right\0\u{3}seat_fan_front_left\0\u{3}seat_fan_front_right\0\u{3}allow_cabin_overheat_protection\0\u{3}supports_fan_only_cabin_overheat_protection\0\u{3}cabin_overheat_protection\0\u{3}cabin_overheat_protection_actively_cooling\0\u{4}\u{2}cop_activation_temperature\0\u{3}auto_steering_wheel_heat\0\u{3}steering_wheel_heat_level\0\u{4}\u{2}hvac_auto_request\0\u{3}cop_not_running_reason\0\u{c}Q\u{2}\u{1}")
 
@@ -11413,31 +11413,31 @@ extension CarServer_ClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension CarServer_ClimateState.HvacAutoRequest: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.HvacAutoRequest: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacAutoRequestOn\0\u{1}HvacAutoRequestOverride\0")
 }
 
-extension CarServer_ClimateState.CabinOverheatProtection_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.CabinOverheatProtection_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CabinOverheatProtectionOff\0\u{1}CabinOverheatProtectionOn\0\u{1}CabinOverheatProtectionFanOnly\0")
 }
 
-extension CarServer_ClimateState.SeatHeaterLevel_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.SeatHeaterLevel_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SeatHeaterLevelOff\0\u{1}SeatHeaterLevelLow\0\u{1}SeatHeaterLevelMed\0\u{1}SeatHeaterLevelHigh\0")
 }
 
-extension CarServer_ClimateState.SeatCoolingLevel_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.SeatCoolingLevel_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SeatCoolingLevelOff\0\u{1}SeatCoolingLevelLow\0\u{1}SeatCoolingLevelMed\0\u{1}SeatCoolingLevelHigh\0")
 }
 
-extension CarServer_ClimateState.CopActivationTemp: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.CopActivationTemp: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CopActivationTempUnspecified\0\u{1}CopActivationTempLow\0\u{1}CopActivationTempMedium\0\u{1}CopActivationTempHigh\0")
 }
 
-extension CarServer_ClimateState.COPNotRunningReason: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.COPNotRunningReason: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0COPNotRunningReasonNoReason\0\u{1}COPNotRunningReasonUserInteraction\0\u{1}COPNotRunningReasonEnergyConsumptionReached\0\u{1}COPNotRunningReasonTimeout\0\u{1}COPNotRunningReasonLowSolarLoad\0\u{1}COPNotRunningReasonFault\0\u{1}COPNotRunningReasonCabinBelowThreshold\0")
 }
 
-extension CarServer_ClimateState.ClimateKeeperMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.ClimateKeeperMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClimateState.protoMessageName + ".ClimateKeeperMode"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Unknown\0\u{1}Off\0\u{1}On\0\u{1}Dog\0\u{1}Party\0")
 
@@ -11555,7 +11555,7 @@ extension CarServer_ClimateState.ClimateKeeperMode: SwiftProtobuf.Message, Swift
   }
 }
 
-extension CarServer_ClimateState.DefrostMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ClimateState.DefrostMode: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_ClimateState.protoMessageName + ".DefrostMode"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Off\0\u{1}Normal\0\u{1}Max\0")
 
@@ -11639,7 +11639,7 @@ extension CarServer_ClimateState.DefrostMode: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TirePressureState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}tpms_pressure_fl\0\u{3}tpms_pressure_fr\0\u{3}tpms_pressure_rl\0\u{3}tpms_pressure_rr\0\u{3}tpms_last_seen_pressure_time_fl\0\u{3}tpms_last_seen_pressure_time_fr\0\u{3}tpms_last_seen_pressure_time_rl\0\u{3}tpms_last_seen_pressure_time_rr\0\u{3}tpms_hard_warning_fl\0\u{3}tpms_hard_warning_fr\0\u{3}tpms_hard_warning_rl\0\u{3}tpms_hard_warning_rr\0\u{3}tpms_soft_warning_fl\0\u{3}tpms_soft_warning_fr\0\u{3}tpms_soft_warning_rl\0\u{3}tpms_soft_warning_rr\0\u{3}tpms_rcp_front_value\0\u{3}tpms_rcp_rear_value\0")
 
@@ -11933,7 +11933,7 @@ extension CarServer_TirePressureState: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension CarServer_MediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}remote_control_enabled\0\u{3}now_playing_artist\0\u{3}now_playing_title\0\u{3}audio_volume\0\u{3}audio_volume_increment\0\u{3}audio_volume_max\0\u{3}now_playing_source\0\u{3}media_playback_status\0")
 
@@ -12063,7 +12063,7 @@ extension CarServer_MediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension CarServer_MediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaDetailState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{3}now_playing_duration\0\u{3}now_playing_elapsed\0\u{3}now_playing_source_string\0\u{3}now_playing_album\0\u{3}now_playing_station\0\u{3}a2dp_source_name\0")
 
@@ -12169,7 +12169,7 @@ extension CarServer_MediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension CarServer_ShiftState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ShiftState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ShiftState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}Invalid\0\u{1}P\0\u{1}R\0\u{1}N\0\u{1}D\0\u{1}SNA\0")
 

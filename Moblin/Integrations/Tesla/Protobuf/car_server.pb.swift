@@ -20,12 +20,12 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
 
-enum CarServer_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+nonisolated enum CarServer_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
   typealias RawValue = Int
   case operationstatusOk // = 0
   case rror // = 1
@@ -59,7 +59,7 @@ enum CarServer_OperationStatus_E: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
-struct CarServer_Action: Sendable {
+nonisolated struct CarServer_Action: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -76,7 +76,7 @@ struct CarServer_Action: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_ActionMsg: Equatable, Sendable {
+  nonisolated enum OneOf_ActionMsg: Equatable, Sendable {
     case vehicleAction(CarServer_VehicleAction)
 
   }
@@ -84,7 +84,7 @@ struct CarServer_Action: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleAction: Sendable {
+nonisolated struct CarServer_VehicleAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -533,7 +533,7 @@ struct CarServer_VehicleAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_VehicleActionMsg: Equatable, Sendable {
+  nonisolated enum OneOf_VehicleActionMsg: Equatable, Sendable {
     case getVehicleData(CarServer_GetVehicleData)
     case chargingSetLimitAction(CarServer_ChargingSetLimitAction)
     case chargingStartStopAction(CarServer_ChargingStartStopAction)
@@ -595,7 +595,7 @@ struct CarServer_VehicleAction: Sendable {
   init() {}
 }
 
-struct CarServer_GetVehicleData: Sendable {
+nonisolated struct CarServer_GetVehicleData: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -726,7 +726,7 @@ struct CarServer_GetVehicleData: Sendable {
   fileprivate var _getParentalControlsState: CarServer_GetParentalControlsState? = nil
 }
 
-struct CarServer_GetTirePressureState: Sendable {
+nonisolated struct CarServer_GetTirePressureState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -736,7 +736,7 @@ struct CarServer_GetTirePressureState: Sendable {
   init() {}
 }
 
-struct CarServer_GetMediaState: Sendable {
+nonisolated struct CarServer_GetMediaState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -746,7 +746,7 @@ struct CarServer_GetMediaState: Sendable {
   init() {}
 }
 
-struct CarServer_GetMediaDetailState: Sendable {
+nonisolated struct CarServer_GetMediaDetailState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -756,7 +756,7 @@ struct CarServer_GetMediaDetailState: Sendable {
   init() {}
 }
 
-struct CarServer_GetSoftwareUpdateState: Sendable {
+nonisolated struct CarServer_GetSoftwareUpdateState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -766,7 +766,7 @@ struct CarServer_GetSoftwareUpdateState: Sendable {
   init() {}
 }
 
-struct CarServer_GetChargeState: Sendable {
+nonisolated struct CarServer_GetChargeState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -776,7 +776,7 @@ struct CarServer_GetChargeState: Sendable {
   init() {}
 }
 
-struct CarServer_GetClimateState: Sendable {
+nonisolated struct CarServer_GetClimateState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -786,7 +786,7 @@ struct CarServer_GetClimateState: Sendable {
   init() {}
 }
 
-struct CarServer_GetDriveState: Sendable {
+nonisolated struct CarServer_GetDriveState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -796,7 +796,7 @@ struct CarServer_GetDriveState: Sendable {
   init() {}
 }
 
-struct CarServer_GetLocationState: Sendable {
+nonisolated struct CarServer_GetLocationState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -806,7 +806,7 @@ struct CarServer_GetLocationState: Sendable {
   init() {}
 }
 
-struct CarServer_GetClosuresState: Sendable {
+nonisolated struct CarServer_GetClosuresState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -816,7 +816,7 @@ struct CarServer_GetClosuresState: Sendable {
   init() {}
 }
 
-struct CarServer_GetChargeScheduleState: Sendable {
+nonisolated struct CarServer_GetChargeScheduleState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -826,7 +826,7 @@ struct CarServer_GetChargeScheduleState: Sendable {
   init() {}
 }
 
-struct CarServer_GetPreconditioningScheduleState: Sendable {
+nonisolated struct CarServer_GetPreconditioningScheduleState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -836,7 +836,7 @@ struct CarServer_GetPreconditioningScheduleState: Sendable {
   init() {}
 }
 
-struct CarServer_GetParentalControlsState: Sendable {
+nonisolated struct CarServer_GetParentalControlsState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -846,7 +846,7 @@ struct CarServer_GetParentalControlsState: Sendable {
   init() {}
 }
 
-struct CarServer_EraseUserDataAction: Sendable {
+nonisolated struct CarServer_EraseUserDataAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -858,7 +858,7 @@ struct CarServer_EraseUserDataAction: Sendable {
   init() {}
 }
 
-struct CarServer_Response: Sendable {
+nonisolated struct CarServer_Response: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -908,7 +908,7 @@ struct CarServer_Response: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_ResponseMsg: Equatable, Sendable {
+  nonisolated enum OneOf_ResponseMsg: Equatable, Sendable {
     case vehicleData(CarServer_VehicleData)
     case getSessionInfoResponse(Signatures_SessionInfo)
     case getNearbyChargingSites(CarServer_NearbyChargingSites)
@@ -921,7 +921,7 @@ struct CarServer_Response: Sendable {
   fileprivate var _actionStatus: CarServer_ActionStatus? = nil
 }
 
-struct CarServer_ActionStatus: Sendable {
+nonisolated struct CarServer_ActionStatus: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -944,7 +944,7 @@ struct CarServer_ActionStatus: Sendable {
   fileprivate var _resultReason: CarServer_ResultReason? = nil
 }
 
-struct CarServer_ResultReason: Sendable {
+nonisolated struct CarServer_ResultReason: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -961,7 +961,7 @@ struct CarServer_ResultReason: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Reason: Equatable, Sendable {
+  nonisolated enum OneOf_Reason: Equatable, Sendable {
     case plainText(String)
 
   }
@@ -969,7 +969,7 @@ struct CarServer_ResultReason: Sendable {
   init() {}
 }
 
-struct CarServer_EncryptedData: Sendable {
+nonisolated struct CarServer_EncryptedData: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -985,7 +985,7 @@ struct CarServer_EncryptedData: Sendable {
   init() {}
 }
 
-struct CarServer_ChargingSetLimitAction: Sendable {
+nonisolated struct CarServer_ChargingSetLimitAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -997,7 +997,7 @@ struct CarServer_ChargingSetLimitAction: Sendable {
   init() {}
 }
 
-struct CarServer_ChargingStartStopAction: Sendable {
+nonisolated struct CarServer_ChargingStartStopAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1046,7 +1046,7 @@ struct CarServer_ChargingStartStopAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_ChargingAction: Equatable, Sendable {
+  nonisolated enum OneOf_ChargingAction: Equatable, Sendable {
     case unknown(CarServer_Void)
     case start(CarServer_Void)
     case startStandard(CarServer_Void)
@@ -1058,7 +1058,7 @@ struct CarServer_ChargingStartStopAction: Sendable {
   init() {}
 }
 
-struct CarServer_DrivingClearSpeedLimitPinAction: Sendable {
+nonisolated struct CarServer_DrivingClearSpeedLimitPinAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1070,7 +1070,7 @@ struct CarServer_DrivingClearSpeedLimitPinAction: Sendable {
   init() {}
 }
 
-struct CarServer_DrivingClearSpeedLimitPinAdminAction: Sendable {
+nonisolated struct CarServer_DrivingClearSpeedLimitPinAdminAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1080,7 +1080,7 @@ struct CarServer_DrivingClearSpeedLimitPinAdminAction: Sendable {
   init() {}
 }
 
-struct CarServer_DrivingSetSpeedLimitAction: Sendable {
+nonisolated struct CarServer_DrivingSetSpeedLimitAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1092,7 +1092,7 @@ struct CarServer_DrivingSetSpeedLimitAction: Sendable {
   init() {}
 }
 
-struct CarServer_DrivingSpeedLimitAction: Sendable {
+nonisolated struct CarServer_DrivingSpeedLimitAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1106,7 +1106,7 @@ struct CarServer_DrivingSpeedLimitAction: Sendable {
   init() {}
 }
 
-struct CarServer_HvacAutoAction: Sendable {
+nonisolated struct CarServer_HvacAutoAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1120,7 +1120,7 @@ struct CarServer_HvacAutoAction: Sendable {
   init() {}
 }
 
-struct CarServer_HvacSeatHeaterActions: Sendable {
+nonisolated struct CarServer_HvacSeatHeaterActions: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1129,7 +1129,7 @@ struct CarServer_HvacSeatHeaterActions: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct HvacSeatHeaterAction: Sendable {
+  nonisolated struct HvacSeatHeaterAction: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1260,7 +1260,7 @@ struct CarServer_HvacSeatHeaterActions: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_SeatHeaterLevel: Equatable, Sendable {
+    nonisolated enum OneOf_SeatHeaterLevel: Equatable, Sendable {
       case seatHeaterUnknown(CarServer_Void)
       case seatHeaterOff(CarServer_Void)
       case seatHeaterLow(CarServer_Void)
@@ -1269,7 +1269,7 @@ struct CarServer_HvacSeatHeaterActions: Sendable {
 
     }
 
-    enum OneOf_SeatPosition: Equatable, Sendable {
+    nonisolated enum OneOf_SeatPosition: Equatable, Sendable {
       case carSeatUnknown(CarServer_Void)
       case carSeatFrontLeft(CarServer_Void)
       case carSeatFrontRight(CarServer_Void)
@@ -1289,7 +1289,7 @@ struct CarServer_HvacSeatHeaterActions: Sendable {
   init() {}
 }
 
-struct CarServer_HvacSeatCoolerActions: Sendable {
+nonisolated struct CarServer_HvacSeatCoolerActions: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1298,7 +1298,7 @@ struct CarServer_HvacSeatCoolerActions: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum HvacSeatCoolerLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum HvacSeatCoolerLevel_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case hvacSeatCoolerLevelUnknown // = 0
     case hvacSeatCoolerLevelOff // = 1
@@ -1344,7 +1344,7 @@ struct CarServer_HvacSeatCoolerActions: Sendable {
 
   }
 
-  enum HvacSeatCoolerPosition_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum HvacSeatCoolerPosition_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case hvacSeatCoolerPositionUnknown // = 0
     case hvacSeatCoolerPositionFrontLeft // = 1
@@ -1382,7 +1382,7 @@ struct CarServer_HvacSeatCoolerActions: Sendable {
 
   }
 
-  struct HvacSeatCoolerAction: Sendable {
+  nonisolated struct HvacSeatCoolerAction: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1399,7 +1399,7 @@ struct CarServer_HvacSeatCoolerActions: Sendable {
   init() {}
 }
 
-struct CarServer_HvacSetPreconditioningMaxAction: Sendable {
+nonisolated struct CarServer_HvacSetPreconditioningMaxAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1412,7 +1412,7 @@ struct CarServer_HvacSetPreconditioningMaxAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum ManualOverrideMode_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ManualOverrideMode_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case dogMode // = 0
     case soc // = 1
@@ -1453,7 +1453,7 @@ struct CarServer_HvacSetPreconditioningMaxAction: Sendable {
   init() {}
 }
 
-struct CarServer_HvacSteeringWheelHeaterAction: Sendable {
+nonisolated struct CarServer_HvacSteeringWheelHeaterAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1465,7 +1465,7 @@ struct CarServer_HvacSteeringWheelHeaterAction: Sendable {
   init() {}
 }
 
-struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
+nonisolated struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1493,7 +1493,7 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  struct Temperature: Sendable {
+  nonisolated struct Temperature: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1526,7 +1526,7 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case tempUnknown(CarServer_Void)
       case tempMin(CarServer_Void)
       case tempMax(CarServer_Void)
@@ -1536,7 +1536,7 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
     init() {}
   }
 
-  struct HvacTemperatureZone: Sendable {
+  nonisolated struct HvacTemperatureZone: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -1577,7 +1577,7 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    enum OneOf_Type: Equatable, Sendable {
+    nonisolated enum OneOf_Type: Equatable, Sendable {
       case tempZoneUnknown(CarServer_Void)
       case tempZoneFrontLeft(CarServer_Void)
       case tempZoneFrontRight(CarServer_Void)
@@ -1593,7 +1593,7 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
   fileprivate var _level: CarServer_HvacTemperatureAdjustmentAction.Temperature? = nil
 }
 
-struct CarServer_GetNearbyChargingSites: Sendable {
+nonisolated struct CarServer_GetNearbyChargingSites: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1609,7 +1609,7 @@ struct CarServer_GetNearbyChargingSites: Sendable {
   init() {}
 }
 
-struct CarServer_NearbyChargingSites: Sendable {
+nonisolated struct CarServer_NearbyChargingSites: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1634,7 +1634,7 @@ struct CarServer_NearbyChargingSites: Sendable {
   fileprivate var _timestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_Superchargers: @unchecked Sendable {
+nonisolated struct CarServer_Superchargers: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1750,7 +1750,7 @@ struct CarServer_Superchargers: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-struct CarServer_MediaPlayAction: Sendable {
+nonisolated struct CarServer_MediaPlayAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1760,7 +1760,7 @@ struct CarServer_MediaPlayAction: Sendable {
   init() {}
 }
 
-struct CarServer_MediaUpdateVolume: Sendable {
+nonisolated struct CarServer_MediaUpdateVolume: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1785,7 +1785,7 @@ struct CarServer_MediaUpdateVolume: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_MediaVolume: Equatable, Sendable {
+  nonisolated enum OneOf_MediaVolume: Equatable, Sendable {
     case volumeDelta(Int32)
     case volumeAbsoluteFloat(Float)
 
@@ -1794,7 +1794,7 @@ struct CarServer_MediaUpdateVolume: Sendable {
   init() {}
 }
 
-struct CarServer_MediaNextFavorite: Sendable {
+nonisolated struct CarServer_MediaNextFavorite: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1804,7 +1804,7 @@ struct CarServer_MediaNextFavorite: Sendable {
   init() {}
 }
 
-struct CarServer_MediaPreviousFavorite: Sendable {
+nonisolated struct CarServer_MediaPreviousFavorite: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1814,7 +1814,7 @@ struct CarServer_MediaPreviousFavorite: Sendable {
   init() {}
 }
 
-struct CarServer_MediaNextTrack: Sendable {
+nonisolated struct CarServer_MediaNextTrack: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1824,7 +1824,7 @@ struct CarServer_MediaNextTrack: Sendable {
   init() {}
 }
 
-struct CarServer_MediaPreviousTrack: Sendable {
+nonisolated struct CarServer_MediaPreviousTrack: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1834,7 +1834,7 @@ struct CarServer_MediaPreviousTrack: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlCancelSoftwareUpdateAction: Sendable {
+nonisolated struct CarServer_VehicleControlCancelSoftwareUpdateAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1844,7 +1844,7 @@ struct CarServer_VehicleControlCancelSoftwareUpdateAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlFlashLightsAction: Sendable {
+nonisolated struct CarServer_VehicleControlFlashLightsAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1854,7 +1854,7 @@ struct CarServer_VehicleControlFlashLightsAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlHonkHornAction: Sendable {
+nonisolated struct CarServer_VehicleControlHonkHornAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1864,7 +1864,7 @@ struct CarServer_VehicleControlHonkHornAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlResetValetPinAction: Sendable {
+nonisolated struct CarServer_VehicleControlResetValetPinAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1874,7 +1874,7 @@ struct CarServer_VehicleControlResetValetPinAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlScheduleSoftwareUpdateAction: Sendable {
+nonisolated struct CarServer_VehicleControlScheduleSoftwareUpdateAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1886,7 +1886,7 @@ struct CarServer_VehicleControlScheduleSoftwareUpdateAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlSetSentryModeAction: Sendable {
+nonisolated struct CarServer_VehicleControlSetSentryModeAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1898,7 +1898,7 @@ struct CarServer_VehicleControlSetSentryModeAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlSetValetModeAction: Sendable {
+nonisolated struct CarServer_VehicleControlSetValetModeAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1912,7 +1912,7 @@ struct CarServer_VehicleControlSetValetModeAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlSunroofOpenCloseAction: Sendable {
+nonisolated struct CarServer_VehicleControlSunroofOpenCloseAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1963,13 +1963,13 @@ struct CarServer_VehicleControlSunroofOpenCloseAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_SunroofLevel: Equatable, Sendable {
+  nonisolated enum OneOf_SunroofLevel: Equatable, Sendable {
     case absoluteLevel(Int32)
     case deltaLevel(Int32)
 
   }
 
-  enum OneOf_Action: Equatable, Sendable {
+  nonisolated enum OneOf_Action: Equatable, Sendable {
     case vent(CarServer_Void)
     case close(CarServer_Void)
     case `open`(CarServer_Void)
@@ -1979,7 +1979,7 @@ struct CarServer_VehicleControlSunroofOpenCloseAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlTriggerHomelinkAction: Sendable {
+nonisolated struct CarServer_VehicleControlTriggerHomelinkAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2002,7 +2002,7 @@ struct CarServer_VehicleControlTriggerHomelinkAction: Sendable {
   fileprivate var _location: CarServer_LatLong? = nil
 }
 
-struct CarServer_VehicleControlWindowAction: Sendable {
+nonisolated struct CarServer_VehicleControlWindowAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2035,7 +2035,7 @@ struct CarServer_VehicleControlWindowAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Action: Equatable, Sendable {
+  nonisolated enum OneOf_Action: Equatable, Sendable {
     case unknown(CarServer_Void)
     case vent(CarServer_Void)
     case close(CarServer_Void)
@@ -2045,7 +2045,7 @@ struct CarServer_VehicleControlWindowAction: Sendable {
   init() {}
 }
 
-struct CarServer_HvacBioweaponModeAction: Sendable {
+nonisolated struct CarServer_HvacBioweaponModeAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2059,7 +2059,7 @@ struct CarServer_HvacBioweaponModeAction: Sendable {
   init() {}
 }
 
-struct CarServer_AutoSeatClimateAction: Sendable {
+nonisolated struct CarServer_AutoSeatClimateAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2068,7 +2068,7 @@ struct CarServer_AutoSeatClimateAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum AutoSeatPosition_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum AutoSeatPosition_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case autoSeatPositionUnknown // = 0
     case autoSeatPositionFrontLeft // = 1
@@ -2106,7 +2106,7 @@ struct CarServer_AutoSeatClimateAction: Sendable {
 
   }
 
-  struct CarSeat: Sendable {
+  nonisolated struct CarSeat: Sendable {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -2123,7 +2123,7 @@ struct CarServer_AutoSeatClimateAction: Sendable {
   init() {}
 }
 
-struct CarServer_Ping: Sendable {
+nonisolated struct CarServer_Ping: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2156,7 +2156,7 @@ struct CarServer_Ping: Sendable {
   fileprivate var _lastRemoteTimestamp: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-struct CarServer_ScheduledChargingAction: Sendable {
+nonisolated struct CarServer_ScheduledChargingAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2170,7 +2170,7 @@ struct CarServer_ScheduledChargingAction: Sendable {
   init() {}
 }
 
-struct CarServer_ScheduledDepartureAction: Sendable {
+nonisolated struct CarServer_ScheduledDepartureAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2207,7 +2207,7 @@ struct CarServer_ScheduledDepartureAction: Sendable {
   fileprivate var _offPeakChargingTimes: CarServer_OffPeakChargingTimes? = nil
 }
 
-struct CarServer_HvacClimateKeeperAction: Sendable {
+nonisolated struct CarServer_HvacClimateKeeperAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2218,7 +2218,7 @@ struct CarServer_HvacClimateKeeperAction: Sendable {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum ClimateKeeperAction_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+  nonisolated enum ClimateKeeperAction_E: SwiftProtobuf.Enum, Swift.CaseIterable {
     typealias RawValue = Int
     case climateKeeperActionOff // = 0
     case climateKeeperActionOn // = 1
@@ -2263,7 +2263,7 @@ struct CarServer_HvacClimateKeeperAction: Sendable {
   init() {}
 }
 
-struct CarServer_SetChargingAmpsAction: Sendable {
+nonisolated struct CarServer_SetChargingAmpsAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2275,7 +2275,7 @@ struct CarServer_SetChargingAmpsAction: Sendable {
   init() {}
 }
 
-struct CarServer_RemoveChargeScheduleAction: Sendable {
+nonisolated struct CarServer_RemoveChargeScheduleAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2288,7 +2288,7 @@ struct CarServer_RemoveChargeScheduleAction: Sendable {
   init() {}
 }
 
-struct CarServer_BatchRemoveChargeSchedulesAction: Sendable {
+nonisolated struct CarServer_BatchRemoveChargeSchedulesAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2305,7 +2305,7 @@ struct CarServer_BatchRemoveChargeSchedulesAction: Sendable {
   init() {}
 }
 
-struct CarServer_BatchRemovePreconditionSchedulesAction: Sendable {
+nonisolated struct CarServer_BatchRemovePreconditionSchedulesAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2322,7 +2322,7 @@ struct CarServer_BatchRemovePreconditionSchedulesAction: Sendable {
   init() {}
 }
 
-struct CarServer_RemovePreconditionScheduleAction: Sendable {
+nonisolated struct CarServer_RemovePreconditionScheduleAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2335,7 +2335,7 @@ struct CarServer_RemovePreconditionScheduleAction: Sendable {
   init() {}
 }
 
-struct CarServer_SetCabinOverheatProtectionAction: Sendable {
+nonisolated struct CarServer_SetCabinOverheatProtectionAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2349,7 +2349,7 @@ struct CarServer_SetCabinOverheatProtectionAction: Sendable {
   init() {}
 }
 
-struct CarServer_SetVehicleNameAction: Sendable {
+nonisolated struct CarServer_SetVehicleNameAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2361,7 +2361,7 @@ struct CarServer_SetVehicleNameAction: Sendable {
   init() {}
 }
 
-struct CarServer_ChargePortDoorClose: Sendable {
+nonisolated struct CarServer_ChargePortDoorClose: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2371,7 +2371,7 @@ struct CarServer_ChargePortDoorClose: Sendable {
   init() {}
 }
 
-struct CarServer_ChargePortDoorOpen: Sendable {
+nonisolated struct CarServer_ChargePortDoorOpen: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2381,7 +2381,7 @@ struct CarServer_ChargePortDoorOpen: Sendable {
   init() {}
 }
 
-struct CarServer_SetCopTempAction: Sendable {
+nonisolated struct CarServer_SetCopTempAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2393,7 +2393,7 @@ struct CarServer_SetCopTempAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlSetPinToDriveAction: Sendable {
+nonisolated struct CarServer_VehicleControlSetPinToDriveAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2407,7 +2407,7 @@ struct CarServer_VehicleControlSetPinToDriveAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlResetPinToDriveAction: Sendable {
+nonisolated struct CarServer_VehicleControlResetPinToDriveAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2417,7 +2417,7 @@ struct CarServer_VehicleControlResetPinToDriveAction: Sendable {
   init() {}
 }
 
-struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
+nonisolated struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2427,7 +2427,7 @@ struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
   init() {}
 }
 
-struct CarServer_SetLowPowerModeAction: Sendable {
+nonisolated struct CarServer_SetLowPowerModeAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2439,7 +2439,7 @@ struct CarServer_SetLowPowerModeAction: Sendable {
   init() {}
 }
 
-struct CarServer_SetKeepAccessoryPowerModeAction: Sendable {
+nonisolated struct CarServer_SetKeepAccessoryPowerModeAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2453,13 +2453,13 @@ struct CarServer_SetKeepAccessoryPowerModeAction: Sendable {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "CarServer"
+fileprivate nonisolated let _protobuf_package = "CarServer"
 
-extension CarServer_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATIONSTATUS_OK\0\u{1}OPERATIONSTATUS_ERROR\0")
 }
 
-extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Action"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}vehicleAction\0\u{c}\u{3}\u{3}")
 
@@ -2505,7 +2505,7 @@ extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{2}\u{16}setLowPowerModeAction\0\u{2}\u{8}setKeepAccessoryPowerModeAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
 
@@ -3473,7 +3473,7 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetVehicleData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}getChargeState\0\u{1}getClimateState\0\u{1}getDriveState\0\u{2}\u{3}getLocationState\0\u{1}getClosuresState\0\u{2}\u{2}getChargeScheduleState\0\u{1}getPreconditioningScheduleState\0\u{2}\u{3}getTirePressureState\0\u{1}getMediaState\0\u{1}getMediaDetailState\0\u{1}getSoftwareUpdateState\0\u{2}\u{2}getParentalControlsState\0\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}\u{c}\u{c}\u{1}\u{c}\u{d}\u{1}")
 
@@ -3562,7 +3562,7 @@ extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_GetTirePressureState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetTirePressureState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetTirePressureState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3581,7 +3581,7 @@ extension CarServer_GetTirePressureState: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_GetMediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetMediaState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetMediaState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3600,7 +3600,7 @@ extension CarServer_GetMediaState: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_GetMediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetMediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetMediaDetailState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3619,7 +3619,7 @@ extension CarServer_GetMediaDetailState: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_GetSoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetSoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetSoftwareUpdateState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3638,7 +3638,7 @@ extension CarServer_GetSoftwareUpdateState: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension CarServer_GetChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetChargeState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetChargeState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3657,7 +3657,7 @@ extension CarServer_GetChargeState: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_GetClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetClimateState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetClimateState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3676,7 +3676,7 @@ extension CarServer_GetClimateState: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension CarServer_GetDriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetDriveState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetDriveState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3695,7 +3695,7 @@ extension CarServer_GetDriveState: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_GetLocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetLocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetLocationState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3714,7 +3714,7 @@ extension CarServer_GetLocationState: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension CarServer_GetClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetClosuresState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3733,7 +3733,7 @@ extension CarServer_GetClosuresState: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension CarServer_GetChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetChargeScheduleState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3752,7 +3752,7 @@ extension CarServer_GetChargeScheduleState: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension CarServer_GetPreconditioningScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetPreconditioningScheduleState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetPreconditioningScheduleState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3771,7 +3771,7 @@ extension CarServer_GetPreconditioningScheduleState: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_GetParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetParentalControlsState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetParentalControlsState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -3790,7 +3790,7 @@ extension CarServer_GetParentalControlsState: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension CarServer_EraseUserDataAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_EraseUserDataAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".EraseUserDataAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
@@ -3820,7 +3820,7 @@ extension CarServer_EraseUserDataAction: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Response"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}actionStatus\0\u{1}vehicleData\0\u{1}getSessionInfoResponse\0\u{2}\u{2}getNearbyChargingSites\0\u{2}\u{4}ping\0")
 
@@ -3926,7 +3926,7 @@ extension CarServer_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
   }
 }
 
-extension CarServer_ActionStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ActionStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ActionStatus"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}result\0\u{3}result_reason\0")
 
@@ -3965,7 +3965,7 @@ extension CarServer_ActionStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension CarServer_ResultReason: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ResultReason: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ResultReason"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}plain_text\0")
 
@@ -4006,7 +4006,7 @@ extension CarServer_ResultReason: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension CarServer_EncryptedData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_EncryptedData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".EncryptedData"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}field_number\0\u{1}ciphertext\0\u{1}tag\0")
 
@@ -4046,7 +4046,7 @@ extension CarServer_EncryptedData: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_ChargingSetLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargingSetLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargingSetLimitAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}percent\0")
 
@@ -4076,7 +4076,7 @@ extension CarServer_ChargingSetLimitAction: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension CarServer_ChargingStartStopAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargingStartStopAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargingStartStopAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}unknown\0\u{1}start\0\u{3}start_standard\0\u{3}start_max_range\0\u{1}stop\0")
 
@@ -4194,7 +4194,7 @@ extension CarServer_ChargingStartStopAction: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_DrivingClearSpeedLimitPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_DrivingClearSpeedLimitPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingClearSpeedLimitPinAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pin\0")
 
@@ -4224,7 +4224,7 @@ extension CarServer_DrivingClearSpeedLimitPinAction: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_DrivingClearSpeedLimitPinAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_DrivingClearSpeedLimitPinAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingClearSpeedLimitPinAdminAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -4243,7 +4243,7 @@ extension CarServer_DrivingClearSpeedLimitPinAdminAction: SwiftProtobuf.Message,
   }
 }
 
-extension CarServer_DrivingSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_DrivingSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingSetSpeedLimitAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}limit_mph\0")
 
@@ -4273,7 +4273,7 @@ extension CarServer_DrivingSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension CarServer_DrivingSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_DrivingSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingSpeedLimitAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}activate\0\u{1}pin\0")
 
@@ -4308,7 +4308,7 @@ extension CarServer_DrivingSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_HvacAutoAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacAutoAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacAutoAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}power_on\0\u{3}manual_override\0")
 
@@ -4343,7 +4343,7 @@ extension CarServer_HvacAutoAction: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_HvacSeatHeaterActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatHeaterActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSeatHeaterActions"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hvacSeatHeaterAction\0")
 
@@ -4373,7 +4373,7 @@ extension CarServer_HvacSeatHeaterActions: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_HvacSeatHeaterActions.HvacSeatHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatHeaterActions.HvacSeatHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacSeatHeaterActions.protoMessageName + ".HvacSeatHeaterAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}SEAT_HEATER_UNKNOWN\0\u{3}SEAT_HEATER_OFF\0\u{3}SEAT_HEATER_LOW\0\u{3}SEAT_HEATER_MED\0\u{3}SEAT_HEATER_HIGH\0\u{3}CAR_SEAT_UNKNOWN\0\u{3}CAR_SEAT_FRONT_LEFT\0\u{3}CAR_SEAT_FRONT_RIGHT\0\u{3}CAR_SEAT_REAR_LEFT\0\u{3}CAR_SEAT_REAR_LEFT_BACK\0\u{3}CAR_SEAT_REAR_CENTER\0\u{3}CAR_SEAT_REAR_RIGHT\0\u{3}CAR_SEAT_REAR_RIGHT_BACK\0\u{3}CAR_SEAT_THIRD_ROW_LEFT\0\u{3}CAR_SEAT_THIRD_ROW_RIGHT\0")
 
@@ -4665,7 +4665,7 @@ extension CarServer_HvacSeatHeaterActions.HvacSeatHeaterAction: SwiftProtobuf.Me
   }
 }
 
-extension CarServer_HvacSeatCoolerActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatCoolerActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSeatCoolerActions"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hvacSeatCoolerAction\0")
 
@@ -4695,15 +4695,15 @@ extension CarServer_HvacSeatCoolerActions: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerLevel_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerLevel_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacSeatCoolerLevel_Unknown\0\u{1}HvacSeatCoolerLevel_Off\0\u{1}HvacSeatCoolerLevel_Low\0\u{1}HvacSeatCoolerLevel_Med\0\u{1}HvacSeatCoolerLevel_High\0")
 }
 
-extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerPosition_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerPosition_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacSeatCoolerPosition_Unknown\0\u{1}HvacSeatCoolerPosition_FrontLeft\0\u{1}HvacSeatCoolerPosition_FrontRight\0")
 }
 
-extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacSeatCoolerActions.protoMessageName + ".HvacSeatCoolerAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}seat_cooler_level\0\u{3}seat_position\0")
 
@@ -4738,7 +4738,7 @@ extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerAction: SwiftProtobuf.Me
   }
 }
 
-extension CarServer_HvacSetPreconditioningMaxAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSetPreconditioningMaxAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSetPreconditioningMaxAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}manual_override\0\u{3}manual_override_mode\0")
 
@@ -4778,11 +4778,11 @@ extension CarServer_HvacSetPreconditioningMaxAction: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_HvacSetPreconditioningMaxAction.ManualOverrideMode_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSetPreconditioningMaxAction.ManualOverrideMode_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DogMode\0\u{1}Soc\0\u{1}Doors\0")
 }
 
-extension CarServer_HvacSteeringWheelHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacSteeringWheelHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSteeringWheelHeaterAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}power_on\0")
 
@@ -4812,7 +4812,7 @@ extension CarServer_HvacSteeringWheelHeaterAction: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension CarServer_HvacTemperatureAdjustmentAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacTemperatureAdjustmentAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacTemperatureAdjustmentAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}delta_celsius\0\u{3}delta_percent\0\u{3}absolute_celsius\0\u{3}hvac_temperature_zone\0\u{1}level\0\u{3}driver_temp_celsius\0\u{3}passenger_temp_celsius\0")
 
@@ -4876,7 +4876,7 @@ extension CarServer_HvacTemperatureAdjustmentAction: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_HvacTemperatureAdjustmentAction.Temperature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacTemperatureAdjustmentAction.Temperature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacTemperatureAdjustmentAction.protoMessageName + ".Temperature"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}TEMP_UNKNOWN\0\u{3}TEMP_MIN\0\u{3}TEMP_MAX\0")
 
@@ -4960,7 +4960,7 @@ extension CarServer_HvacTemperatureAdjustmentAction.Temperature: SwiftProtobuf.M
   }
 }
 
-extension CarServer_HvacTemperatureAdjustmentAction.HvacTemperatureZone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacTemperatureAdjustmentAction.HvacTemperatureZone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacTemperatureAdjustmentAction.protoMessageName + ".HvacTemperatureZone"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}TEMP_ZONE_UNKNOWN\0\u{3}TEMP_ZONE_FRONT_LEFT\0\u{3}TEMP_ZONE_FRONT_RIGHT\0\u{3}TEMP_ZONE_REAR\0")
 
@@ -5061,7 +5061,7 @@ extension CarServer_HvacTemperatureAdjustmentAction.HvacTemperatureZone: SwiftPr
   }
 }
 
-extension CarServer_GetNearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_GetNearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetNearbyChargingSites"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}include_meta_data\0\u{1}radius\0\u{1}count\0")
 
@@ -5101,7 +5101,7 @@ extension CarServer_GetNearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-extension CarServer_NearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_NearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NearbyChargingSites"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{2}\u{2}superchargers\0\u{3}congestion_sync_time_utc_secs\0")
 
@@ -5145,7 +5145,7 @@ extension CarServer_NearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_Superchargers: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Superchargers: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Superchargers"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}amenities\0\u{3}available_stalls\0\u{3}billing_info\0\u{3}billing_time\0\u{1}city\0\u{1}country\0\u{3}distance_miles\0\u{1}district\0\u{1}location\0\u{1}name\0\u{3}postal_code\0\u{3}site_closed\0\u{1}state\0\u{3}street_address\0\u{3}total_stalls\0\u{3}within_range\0\u{3}max_power_kw\0\u{3}out_of_order_stalls_number\0\u{3}out_of_order_stalls_names\0")
 
@@ -5348,7 +5348,7 @@ extension CarServer_Superchargers: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension CarServer_MediaPlayAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaPlayAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaPlayAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5367,7 +5367,7 @@ extension CarServer_MediaPlayAction: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension CarServer_MediaUpdateVolume: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaUpdateVolume: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaUpdateVolume"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}volume_delta\0\u{4}\u{2}volume_absolute_float\0\u{c}\u{2}\u{1}")
 
@@ -5424,7 +5424,7 @@ extension CarServer_MediaUpdateVolume: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension CarServer_MediaNextFavorite: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaNextFavorite: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaNextFavorite"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5443,7 +5443,7 @@ extension CarServer_MediaNextFavorite: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-extension CarServer_MediaPreviousFavorite: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaPreviousFavorite: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaPreviousFavorite"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5462,7 +5462,7 @@ extension CarServer_MediaPreviousFavorite: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_MediaNextTrack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaNextTrack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaNextTrack"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5481,7 +5481,7 @@ extension CarServer_MediaNextTrack: SwiftProtobuf.Message, SwiftProtobuf._Messag
   }
 }
 
-extension CarServer_MediaPreviousTrack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_MediaPreviousTrack: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaPreviousTrack"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5500,7 +5500,7 @@ extension CarServer_MediaPreviousTrack: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension CarServer_VehicleControlCancelSoftwareUpdateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlCancelSoftwareUpdateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlCancelSoftwareUpdateAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5519,7 +5519,7 @@ extension CarServer_VehicleControlCancelSoftwareUpdateAction: SwiftProtobuf.Mess
   }
 }
 
-extension CarServer_VehicleControlFlashLightsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlFlashLightsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlFlashLightsAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5538,7 +5538,7 @@ extension CarServer_VehicleControlFlashLightsAction: SwiftProtobuf.Message, Swif
   }
 }
 
-extension CarServer_VehicleControlHonkHornAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlHonkHornAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlHonkHornAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5557,7 +5557,7 @@ extension CarServer_VehicleControlHonkHornAction: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension CarServer_VehicleControlResetValetPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlResetValetPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlResetValetPinAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -5576,7 +5576,7 @@ extension CarServer_VehicleControlResetValetPinAction: SwiftProtobuf.Message, Sw
   }
 }
 
-extension CarServer_VehicleControlScheduleSoftwareUpdateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlScheduleSoftwareUpdateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlScheduleSoftwareUpdateAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}offset_sec\0")
 
@@ -5606,7 +5606,7 @@ extension CarServer_VehicleControlScheduleSoftwareUpdateAction: SwiftProtobuf.Me
   }
 }
 
-extension CarServer_VehicleControlSetSentryModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlSetSentryModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetSentryModeAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0")
 
@@ -5636,7 +5636,7 @@ extension CarServer_VehicleControlSetSentryModeAction: SwiftProtobuf.Message, Sw
   }
 }
 
-extension CarServer_VehicleControlSetValetModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlSetValetModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetValetModeAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{1}password\0")
 
@@ -5671,7 +5671,7 @@ extension CarServer_VehicleControlSetValetModeAction: SwiftProtobuf.Message, Swi
   }
 }
 
-extension CarServer_VehicleControlSunroofOpenCloseAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlSunroofOpenCloseAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSunroofOpenCloseAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}absolute_level\0\u{3}delta_level\0\u{1}vent\0\u{1}close\0\u{1}open\0")
 
@@ -5783,7 +5783,7 @@ extension CarServer_VehicleControlSunroofOpenCloseAction: SwiftProtobuf.Message,
   }
 }
 
-extension CarServer_VehicleControlTriggerHomelinkAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlTriggerHomelinkAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlTriggerHomelinkAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}location\0\u{1}token\0")
 
@@ -5822,7 +5822,7 @@ extension CarServer_VehicleControlTriggerHomelinkAction: SwiftProtobuf.Message, 
   }
 }
 
-extension CarServer_VehicleControlWindowAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlWindowAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlWindowAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}unknown\0\u{1}vent\0\u{1}close\0\u{c}\u{1}\u{1}")
 
@@ -5906,7 +5906,7 @@ extension CarServer_VehicleControlWindowAction: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension CarServer_HvacBioweaponModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacBioweaponModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacBioweaponModeAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}manual_override\0")
 
@@ -5941,7 +5941,7 @@ extension CarServer_HvacBioweaponModeAction: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_AutoSeatClimateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_AutoSeatClimateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AutoSeatClimateAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}carseat\0")
 
@@ -5971,11 +5971,11 @@ extension CarServer_AutoSeatClimateAction: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_AutoSeatClimateAction.AutoSeatPosition_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_AutoSeatClimateAction.AutoSeatPosition_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0AutoSeatPosition_Unknown\0\u{1}AutoSeatPosition_FrontLeft\0\u{1}AutoSeatPosition_FrontRight\0")
 }
 
-extension CarServer_AutoSeatClimateAction.CarSeat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_AutoSeatClimateAction.CarSeat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_AutoSeatClimateAction.protoMessageName + ".CarSeat"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}seat_position\0")
 
@@ -6010,7 +6010,7 @@ extension CarServer_AutoSeatClimateAction.CarSeat: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension CarServer_Ping: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_Ping: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Ping"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ping_id\0\u{3}local_timestamp\0\u{3}last_remote_timestamp\0")
 
@@ -6054,7 +6054,7 @@ extension CarServer_Ping: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
   }
 }
 
-extension CarServer_ScheduledChargingAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ScheduledChargingAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ScheduledChargingAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}enabled\0\u{3}charging_time\0")
 
@@ -6089,7 +6089,7 @@ extension CarServer_ScheduledChargingAction: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_ScheduledDepartureAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ScheduledDepartureAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ScheduledDepartureAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}enabled\0\u{3}departure_time\0\u{3}preconditioning_times\0\u{3}off_peak_charging_times\0\u{3}off_peak_hours_end_time\0")
 
@@ -6143,7 +6143,7 @@ extension CarServer_ScheduledDepartureAction: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-extension CarServer_HvacClimateKeeperAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacClimateKeeperAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacClimateKeeperAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ClimateKeeperAction\0\u{3}manual_override\0")
 
@@ -6178,11 +6178,11 @@ extension CarServer_HvacClimateKeeperAction: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-extension CarServer_HvacClimateKeeperAction.ClimateKeeperAction_E: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_HvacClimateKeeperAction.ClimateKeeperAction_E: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ClimateKeeperAction_Off\0\u{1}ClimateKeeperAction_On\0\u{1}ClimateKeeperAction_Dog\0\u{1}ClimateKeeperAction_Camp\0")
 }
 
-extension CarServer_SetChargingAmpsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetChargingAmpsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetChargingAmpsAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charging_amps\0")
 
@@ -6212,7 +6212,7 @@ extension CarServer_SetChargingAmpsAction: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_RemoveChargeScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_RemoveChargeScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RemoveChargeScheduleAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
@@ -6242,7 +6242,7 @@ extension CarServer_RemoveChargeScheduleAction: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-extension CarServer_BatchRemoveChargeSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_BatchRemoveChargeSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BatchRemoveChargeSchedulesAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}home\0\u{1}work\0\u{1}other\0")
 
@@ -6282,7 +6282,7 @@ extension CarServer_BatchRemoveChargeSchedulesAction: SwiftProtobuf.Message, Swi
   }
 }
 
-extension CarServer_BatchRemovePreconditionSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_BatchRemovePreconditionSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BatchRemovePreconditionSchedulesAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}home\0\u{1}work\0\u{1}other\0")
 
@@ -6322,7 +6322,7 @@ extension CarServer_BatchRemovePreconditionSchedulesAction: SwiftProtobuf.Messag
   }
 }
 
-extension CarServer_RemovePreconditionScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_RemovePreconditionScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RemovePreconditionScheduleAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
@@ -6352,7 +6352,7 @@ extension CarServer_RemovePreconditionScheduleAction: SwiftProtobuf.Message, Swi
   }
 }
 
-extension CarServer_SetCabinOverheatProtectionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetCabinOverheatProtectionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetCabinOverheatProtectionAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}fan_only\0")
 
@@ -6387,7 +6387,7 @@ extension CarServer_SetCabinOverheatProtectionAction: SwiftProtobuf.Message, Swi
   }
 }
 
-extension CarServer_SetVehicleNameAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetVehicleNameAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetVehicleNameAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}vehicleName\0")
 
@@ -6417,7 +6417,7 @@ extension CarServer_SetVehicleNameAction: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
-extension CarServer_ChargePortDoorClose: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargePortDoorClose: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargePortDoorClose"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -6436,7 +6436,7 @@ extension CarServer_ChargePortDoorClose: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 }
 
-extension CarServer_ChargePortDoorOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_ChargePortDoorOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargePortDoorOpen"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -6455,7 +6455,7 @@ extension CarServer_ChargePortDoorOpen: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension CarServer_SetCopTempAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetCopTempAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetCopTempAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}copActivationTemp\0")
 
@@ -6485,7 +6485,7 @@ extension CarServer_SetCopTempAction: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 }
 
-extension CarServer_VehicleControlSetPinToDriveAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlSetPinToDriveAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetPinToDriveAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{1}password\0")
 
@@ -6520,7 +6520,7 @@ extension CarServer_VehicleControlSetPinToDriveAction: SwiftProtobuf.Message, Sw
   }
 }
 
-extension CarServer_VehicleControlResetPinToDriveAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlResetPinToDriveAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlResetPinToDriveAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -6539,7 +6539,7 @@ extension CarServer_VehicleControlResetPinToDriveAction: SwiftProtobuf.Message, 
   }
 }
 
-extension CarServer_VehicleControlResetPinToDriveAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_VehicleControlResetPinToDriveAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlResetPinToDriveAdminAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -6558,7 +6558,7 @@ extension CarServer_VehicleControlResetPinToDriveAdminAction: SwiftProtobuf.Mess
   }
 }
 
-extension CarServer_SetLowPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetLowPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetLowPowerModeAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}low_power_mode\0")
 
@@ -6588,7 +6588,7 @@ extension CarServer_SetLowPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension CarServer_SetKeepAccessoryPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension CarServer_SetKeepAccessoryPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetKeepAccessoryPowerModeAction"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}keep_accessory_power_mode\0")
 
