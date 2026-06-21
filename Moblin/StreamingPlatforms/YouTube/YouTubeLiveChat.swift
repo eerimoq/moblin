@@ -115,6 +115,25 @@ private struct SponsorshipsHeaderRenderer: Codable {
     let authorBadges: [AuthorBadge]?
 }
 
+private func getUserRoles(authorBadges: [AuthorBadge]?) -> (Bool, Bool) {
+    var isOwner = false
+    var isModerator = false
+    if let authorBadges {
+        for authorBadge in authorBadges {
+            let iconType = authorBadge.liveChatAuthorBadgeRenderer?.icon?.iconType
+            switch iconType {
+            case "OWNER":
+                isOwner = true
+            case "MODERATOR":
+                isModerator = true
+            default:
+                break
+            }
+        }
+    }
+    return (isOwner, isModerator)
+}
+
 private struct SponsorshipsHeader: Codable {
     let liveChatSponsorshipsHeaderRenderer: SponsorshipsHeaderRenderer?
 }
@@ -370,9 +389,7 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
         guard !segments.isEmpty || highlight != nil else {
             return 0
         }
-        let nonMutSegments = segments
-        let isOwner = chatDescription.authorBadges?
-            .first(where: { $0.liveChatAuthorBadgeRenderer?.icon?.iconType == "OWNER" }) != nil
+        let (isOwner, isModerator) = getUserRoles(authorBadges: chatDescription.authorBadges)
         model.appendChatMessage(platform: .youTube,
                                 messageId: nil,
                                 displayName: chatDescription.authorName.simpleText,
@@ -380,12 +397,12 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                                 userId: nil,
                                 userColor: nil,
                                 userBadges: [],
-                                segments: nonMutSegments,
+                                segments: segments,
                                 timestamp: model.statusOther.digitalClock,
                                 timestampTime: .now,
                                 isAction: false,
                                 isSubscriber: false,
-                                isModerator: false,
+                                isModerator: isModerator,
                                 isOwner: isOwner,
                                 bits: nil,
                                 highlight: highlight,
@@ -406,8 +423,7 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
         guard !segments.isEmpty else {
             return 0
         }
-        let isOwner = headerRenderer.authorBadges?
-            .first(where: { $0.liveChatAuthorBadgeRenderer?.icon?.iconType == "OWNER" }) != nil
+        let (isOwner, isModerator) = getUserRoles(authorBadges: headerRenderer.authorBadges)
         model.appendChatMessage(platform: .youTube,
                                 messageId: nil,
                                 displayName: headerRenderer.authorName.simpleText,
@@ -420,7 +436,7 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                                 timestampTime: .now,
                                 isAction: false,
                                 isSubscriber: false,
-                                isModerator: false,
+                                isModerator: isModerator,
                                 isOwner: isOwner,
                                 bits: nil,
                                 highlight: ChatHighlight.makeGiftedMemberships(),
