@@ -16,6 +16,19 @@ extension Model {
         remoteControlStateChanged(state: .init(autoSceneSwitcher: .init(id: id)))
     }
 
+    func setAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool) {
+        guard let switcher = database.autoSceneSwitchers.switchers.first(where: { $0.id == id }) else {
+            return
+        }
+        switcher.shuffle = shuffle
+        // If the changed switcher is currently running, drop the precomputed scene
+        // order so the next switch rebuilds it with the new shuffle setting. This
+        // avoids disrupting the current scene while the loop keeps running.
+        if autoSceneSwitcher.currentSwitcherId == id {
+            autoSceneSwitcher.sceneIds.removeAll()
+        }
+    }
+
     func deleteAutoSceneSwitchers(offsets: IndexSet) {
         database.autoSceneSwitchers.switchers.remove(atOffsets: offsets)
         if !database.autoSceneSwitchers.switchers

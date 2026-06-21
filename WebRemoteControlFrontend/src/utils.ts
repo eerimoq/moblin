@@ -192,9 +192,13 @@ export interface RemoteControlSettingsSrt {
   connectionPriorities: RemoteControlSettingsSrtConnectionPriority[];
 }
 
+export interface AutoSceneSwitcherItem extends NamedItem {
+  shuffle?: boolean;
+}
+
 export interface RemoteControlSettings {
   scenes: NamedItem[];
-  autoSceneSwitchers?: NamedItem[];
+  autoSceneSwitchers?: AutoSceneSwitcherItem[];
   bitratePresets: BitratePreset[];
   mics: NamedItem[];
   srt: RemoteControlSettingsSrt;
@@ -368,6 +372,10 @@ export class WebSocketConnection {
 
   setAutoSceneSwitcher(id: string | null): void {
     this.sendRequest({ setAutoSceneSwitcher: { id } });
+  }
+
+  setAutoSceneSwitcherShuffle(id: string, shuffle: boolean): void {
+    this.sendRequest({ setAutoSceneSwitcherShuffle: { id, shuffle } });
   }
 
   setMic(id: string): void {

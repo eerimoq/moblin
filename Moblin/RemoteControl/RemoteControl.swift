@@ -24,6 +24,7 @@ enum RemoteControlRequest: Codable {
     case setDebugLogging(on: Bool)
     case setScene(id: UUID)
     case setAutoSceneSwitcher(id: UUID?)
+    case setAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool)
     case setBitratePreset(id: UUID)
     case setMic(id: String)
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
@@ -773,6 +774,7 @@ struct RemoteControlSettingsScene: Codable, Identifiable {
 struct RemoteControlSettingsAutoSceneSwitcher: Codable, Identifiable {
     let id: UUID
     let name: String
+    var shuffle: Bool?
 }
 
 struct RemoteControlSettingsBitratePreset: Codable, Identifiable {

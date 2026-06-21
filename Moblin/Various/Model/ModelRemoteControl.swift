@@ -252,6 +252,14 @@ extension Model {
         }
     }
 
+    func remoteControlAssistantSetAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool) {
+        remoteControlAssistant?.setAutoSceneSwitcherShuffle(id: id, shuffle: shuffle) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
+    }
+
     func remoteControlAssistantSetMic(id: String) {
         remoteControlAssistant?.setMic(id: id) {
             DispatchQueue.main.async {
@@ -614,7 +622,7 @@ extension Model {
             RemoteControlSettingsScene(id: $0.id, name: $0.name)
         }
         let autoSceneSwitchers = database.autoSceneSwitchers.switchers.map {
-            RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name)
+            RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name, shuffle: $0.shuffle)
         }
         let mics = database.mics.mics.map {
             RemoteControlSettingsMic(id: $0.id, name: $0.name)
@@ -694,6 +702,10 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?) {
         setAutoSceneSwitcher(id: id)
+    }
+
+    func remoteControlStreamerSetAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool) {
+        setAutoSceneSwitcherShuffle(id: id, shuffle: shuffle)
     }
 
     func remoteControlStreamerSetMic(id: String) {
@@ -1124,6 +1136,10 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
 
     func remoteControlWebSetAutoSceneSwitcher(id: UUID?) {
         remoteControlStreamerSetAutoSceneSwitcher(id: id)
+    }
+
+    func remoteControlWebSetAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool) {
+        remoteControlStreamerSetAutoSceneSwitcherShuffle(id: id, shuffle: shuffle)
     }
 
     func remoteControlWebSetMic(id: String) {

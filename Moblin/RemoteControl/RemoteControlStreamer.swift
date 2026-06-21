@@ -9,6 +9,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerGetSettings() -> RemoteControlSettings
     func remoteControlStreamerSetScene(id: UUID)
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?)
+    func remoteControlStreamerSetAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool)
     func remoteControlStreamerSetMic(id: String)
     func remoteControlStreamerSetBitratePreset(id: UUID)
     func remoteControlStreamerSetRecord(on: Bool)
@@ -233,6 +234,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setAutoSceneSwitcher(id: autoSceneSwitcherId):
             delegate.remoteControlStreamerSetAutoSceneSwitcher(id: autoSceneSwitcherId)
+            sendEmptyOkResponse(id: id)
+        case let .setAutoSceneSwitcherShuffle(id: autoSceneSwitcherId, shuffle: shuffle):
+            delegate.remoteControlStreamerSetAutoSceneSwitcherShuffle(id: autoSceneSwitcherId, shuffle: shuffle)
             sendEmptyOkResponse(id: id)
         case let .setMic(id: micId):
             delegate.remoteControlStreamerSetMic(id: micId)
