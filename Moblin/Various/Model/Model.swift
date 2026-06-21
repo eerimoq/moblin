@@ -1202,6 +1202,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.flushFileLogToFile()
         }
         setupStreamDeck()
+        setSelectedStreamDeck()
     }
 
     func reloadIngests() {

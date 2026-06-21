@@ -90,9 +90,8 @@ struct StreamDecksSettingsView: View {
                             .tag($0.id as UUID?)
                     }
                 }
-                .onChange(of: streamDecks.selectedId) { selectedId in
-                    model.streamDeck.streamDeck = streamDecks.streamDecks
-                        .first(where: { $0.id == selectedId })
+                .onChange(of: streamDecks.selectedId) { _ in
+                    model.setSelectedStreamDeck()
                 }
             }
             Section {

@@ -66,4 +66,11 @@ extension Model {
         })
         #endif
     }
+
+    func setSelectedStreamDeck() {
+        let streamDecks = database.streamDecks
+        streamDeck.streamDeck = streamDecks.streamDecks.first(where: {
+            $0.id == streamDecks.selectedId
+        })
+    }
 }
