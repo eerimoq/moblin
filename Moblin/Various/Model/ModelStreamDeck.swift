@@ -2,6 +2,7 @@ import StreamDeckKit
 import SwiftUI
 
 class StreamDeck: ObservableObject {
+    @Published var isDeviceDriverInstalled: Bool = true
     @Published var streamDeck: SettingsStreamDeck?
 }
 
@@ -64,6 +65,7 @@ extension Model {
         StreamDeckSession.setUp(newDeviceHandler: {
             $0.render(StreamDeckView(model: self, streamDeck: self.streamDeck))
         })
+        updateIsStreamDeckDeviceDriverInstalled()
         #endif
     }
 
@@ -75,5 +77,13 @@ extension Model {
         if streamDeck.streamDeck == nil {
             streamDecks.selectedId = nil
         }
+    }
+
+    func updateIsStreamDeckDeviceDriverInstalled() {
+        guard isPad() else {
+            return
+        }
+        streamDeck.isDeviceDriverInstalled = UIApplication.shared
+            .canOpenURL(URL(string: "elgato-device-driver://")!)
     }
 }

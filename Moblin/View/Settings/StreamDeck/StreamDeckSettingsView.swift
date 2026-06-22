@@ -77,6 +77,7 @@ struct StreamDeckSettingsView: View {
 
 struct StreamDecksSettingsView: View {
     let model: Model
+    @ObservedObject var streamDeck: StreamDeck
     @ObservedObject var streamDecks: SettingsStreamDecks
 
     var body: some View {
@@ -84,6 +85,15 @@ struct StreamDecksSettingsView: View {
             Section {
                 HCenter {
                     IntegrationImageView(imageName: "StreamDeck")
+                }
+            }
+            if !streamDeck.isDeviceDriverInstalled {
+                Section {
+                    Text("""
+                    ⚠️ Stream Deck device driver is not installed. Download and install \
+                    Stream Deck Connect from the App Store, and then enable the Stream \
+                    Deck Device Driver in its settings.
+                    """)
                 }
             }
             Section {
