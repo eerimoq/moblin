@@ -147,13 +147,17 @@ private class Connection: @unchecked Sendable {
                 return
             }
             if let data, !data.isEmpty {
-                self.client.send(content: data, completion: .idempotent)
+                if isComplete {
+                    self.client.send(content: data, completion: .contentProcessed({ _ in
+                        self.stop()
+                    }))
+                } else {
+                    self.client.send(content: data, completion: .idempotent)
+                    self.receiveFromDestination()
+                }
+            } else if !isComplete {
+                self.receiveFromDestination()
             }
-            guard !isComplete else {
-                self.stop()
-                return
-            }
-            self.receiveFromDestination()
         }
     }
 
