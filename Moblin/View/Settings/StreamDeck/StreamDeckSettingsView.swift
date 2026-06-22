@@ -82,6 +82,11 @@ struct StreamDecksSettingsView: View {
     var body: some View {
         Form {
             Section {
+                HCenter {
+                    IntegrationImageView(imageName: "StreamDeck")
+                }
+            }
+            Section {
                 Picker("Current", selection: $streamDecks.selectedId) {
                     Text("-- None --")
                         .tag(nil as UUID?)
