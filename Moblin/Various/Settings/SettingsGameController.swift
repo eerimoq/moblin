@@ -84,6 +84,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case switchScene = "Switch scene"
     case widget = "Widget"
     case macro = "Macro"
+    case streamDeckLayout = "Stream deck layout"
     case instantReplay = "Instant replay"
     case stopReplay = "Stop replay"
     case snapshot = "Snapshot"
@@ -143,6 +144,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             String(localized: "Widget")
         case .macro:
             String(localized: "Macro")
+        case .streamDeckLayout:
+            String(localized: "Stream Deck layout")
         case .instantReplay:
             String(localized: "Instant replay")
         case .stopReplay:
@@ -250,6 +253,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             .general
         case .macro:
             .general
+        case .streamDeckLayout:
+            .general
         case .instantReplay:
             .general
         case .stopReplay:
@@ -296,6 +301,7 @@ struct SettingsControllerFunctionData {
     var gimbalPresetId: UUID?
     var gimbalMotion: SettingsGimbalMotion = .kapow
     var macroId: UUID?
+    var streamDeckLayoutId: UUID?
 }
 
 class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
@@ -317,6 +323,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         case gimbalPresetId
         case gimbalMotion
         case macroId
+        case streamDeckLayoutId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -330,6 +337,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
         try container.encode(.gimbalMotion, functionData.gimbalMotion)
         try container.encode(.macroId, functionData.macroId)
+        try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -343,6 +351,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         functionData.gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
+        functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
     }
 }
 

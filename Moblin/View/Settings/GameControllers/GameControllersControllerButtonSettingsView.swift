@@ -62,6 +62,15 @@ struct ControllerButtonView: View {
                         .tag($0.id as UUID?)
                 }
             }
+        case .streamDeckLayout:
+            Picker("Layout", selection: $functionData.streamDeckLayoutId) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(model.database.streamDecks.layouts) {
+                    Text($0.name)
+                        .tag($0.id as UUID?)
+                }
+            }
         default:
             EmptyView()
         }

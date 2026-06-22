@@ -17,6 +17,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         case gimbalPresetId
         case gimbalMotion
         case macroId
+        case streamDeckLayoutId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -29,6 +30,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
         try container.encode(.gimbalMotion, functionData.gimbalMotion)
         try container.encode(.macroId, functionData.macroId)
+        try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -41,6 +43,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         functionData.gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
         functionData.macroId = container.decode(.macroId, UUID?.self, nil)
+        functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
     }
 }
 

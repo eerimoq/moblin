@@ -116,6 +116,11 @@ extension Model {
             if let macroId = functionData.macroId, !pressed {
                 toggleMacroStartStop(id: macroId)
             }
+        case .streamDeckLayout:
+            if !pressed {
+                database.streamDecks.selectedId = functionData.streamDeckLayoutId
+                setSelectedStreamDeck()
+            }
         case .instantReplay:
             if !pressed {
                 instantReplay()

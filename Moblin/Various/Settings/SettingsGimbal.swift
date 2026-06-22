@@ -58,12 +58,14 @@ class SettingsGimbal: Codable, ObservableObject {
         case shutterGimbalPresetId
         case shutterMotion
         case shutterMacroId
+        case shutterStreamDeckLayoutId
         case functionFlip
         case flipSceneId
         case flipWidgetId
         case flipGimbalPresetId
         case flipMotion
         case flipMacroId
+        case flipStreamDeckLayoutId
         case presets
     }
 
@@ -76,14 +78,16 @@ class SettingsGimbal: Codable, ObservableObject {
         try container.encode(.shutterSceneId, functionDataShutter.sceneId)
         try container.encode(.shutterWidgetId, functionDataShutter.widgetId)
         try container.encode(.shutterGimbalPresetId, functionDataShutter.gimbalPresetId)
-        try container.encode(.shutterMotion, functionDataFlip.gimbalMotion)
-        try container.encode(.shutterMacroId, functionDataFlip.macroId)
+        try container.encode(.shutterMotion, functionDataShutter.gimbalMotion)
+        try container.encode(.shutterMacroId, functionDataShutter.macroId)
+        try container.encode(.shutterStreamDeckLayoutId, functionDataShutter.streamDeckLayoutId)
         try container.encode(.functionFlip, functionFlip)
         try container.encode(.flipSceneId, functionDataFlip.sceneId)
         try container.encode(.flipWidgetId, functionDataFlip.widgetId)
         try container.encode(.flipGimbalPresetId, functionDataFlip.gimbalPresetId)
         try container.encode(.flipMotion, functionDataFlip.gimbalMotion)
         try container.encode(.flipMacroId, functionDataFlip.macroId)
+        try container.encode(.flipStreamDeckLayoutId, functionDataFlip.streamDeckLayoutId)
         try container.encode(.presets, presets)
     }
 
@@ -100,12 +104,14 @@ class SettingsGimbal: Codable, ObservableObject {
         functionDataShutter.gimbalPresetId = container.decode(.shutterGimbalPresetId, UUID?.self, nil)
         functionDataShutter.gimbalMotion = container.decode(.shutterMotion, SettingsGimbalMotion.self, .kapow)
         functionDataShutter.macroId = container.decode(.shutterMacroId, UUID?.self, nil)
+        functionDataShutter.streamDeckLayoutId = container.decode(.shutterStreamDeckLayoutId, UUID?.self, nil)
         functionFlip = container.decode(.functionFlip, SettingsControllerFunction.self, .switchScene)
         functionDataFlip.sceneId = container.decode(.flipSceneId, UUID?.self, nil)
         functionDataFlip.widgetId = container.decode(.flipWidgetId, UUID?.self, nil)
         functionDataFlip.gimbalPresetId = container.decode(.flipGimbalPresetId, UUID?.self, nil)
         functionDataFlip.gimbalMotion = container.decode(.flipMotion, SettingsGimbalMotion.self, .kapow)
         functionDataFlip.macroId = container.decode(.flipMacroId, UUID?.self, nil)
+        functionDataFlip.streamDeckLayoutId = container.decode(.flipStreamDeckLayoutId, UUID?.self, nil)
         presets = container.decode(.presets, [SettingsGimbalPreset].self, [])
     }
 }
