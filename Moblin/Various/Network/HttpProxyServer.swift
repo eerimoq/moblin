@@ -148,9 +148,9 @@ private class Connection: @unchecked Sendable {
             }
             if let data, !data.isEmpty {
                 if isComplete {
-                    self.client.send(content: data, completion: .contentProcessed({ _ in
+                    self.client.send(content: data, completion: .contentProcessed { _ in
                         self.stop()
-                    }))
+                    })
                 } else {
                     self.client.send(content: data, completion: .idempotent)
                     self.receiveFromDestination()
