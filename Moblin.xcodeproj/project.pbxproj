@@ -36,7 +36,6 @@
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
-		03D5A1C22F5A600100A1B2C3 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03DC6B162F8A1D6700E12FAB /* DockKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
@@ -316,7 +315,6 @@
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
-				03D5A1C22F5A600100A1B2C3 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,7 +466,6 @@
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
-				035503F52FE7CD6100067E65 /* StreamDeckSimulator */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -1637,11 +1634,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */;
 			productName = StreamDeckKit;
-		};
-		035503F52FE7CD6100067E65 /* StreamDeckSimulator */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */;
-			productName = StreamDeckSimulator;
 		};
 		0360FD152F228EEB00FF8847 /* MetalPetal */ = {
 			isa = XCSwiftPackageProductDependency;
