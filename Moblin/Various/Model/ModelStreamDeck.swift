@@ -3,7 +3,7 @@ import SwiftUI
 
 class StreamDeck: ObservableObject {
     @Published var isDeviceDriverInstalled: Bool = true
-    @Published var streamDeck: SettingsStreamDeck?
+    @Published var streamDeck: SettingsStreamDeckLayout?
 }
 
 private struct StreamDeckKeyItemView: View {
@@ -71,7 +71,7 @@ extension Model {
 
     func setSelectedStreamDeck() {
         let streamDecks = database.streamDecks
-        streamDeck.streamDeck = streamDecks.streamDecks.first(where: {
+        streamDeck.streamDeck = streamDecks.layouts.first(where: {
             $0.id == streamDecks.selectedId
         })
         if streamDeck.streamDeck == nil {

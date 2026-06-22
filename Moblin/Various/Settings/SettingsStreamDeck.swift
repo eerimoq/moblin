@@ -51,8 +51,8 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
     }
 }
 
-class SettingsStreamDeck: Codable, ObservableObject, Identifiable, Named {
-    static let baseName = "My stream deck"
+class SettingsStreamDeckLayout: Codable, ObservableObject, Identifiable, Named {
+    static let baseName = "My layout"
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var keys: [SettingsStreamDeckKey] = []
@@ -88,25 +88,25 @@ class SettingsStreamDeck: Codable, ObservableObject, Identifiable, Named {
 }
 
 class SettingsStreamDecks: Codable, ObservableObject {
-    @Published var streamDecks: [SettingsStreamDeck] = []
+    @Published var layouts: [SettingsStreamDeckLayout] = []
     @Published var selectedId: UUID?
 
     init() {}
 
     enum CodingKeys: CodingKey {
-        case streamDecks
+        case layouts
         case selectedId
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.streamDecks, streamDecks)
+        try container.encode(.layouts, layouts)
         try container.encode(.selectedId, selectedId)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        streamDecks = container.decode(.streamDecks, [SettingsStreamDeck].self, [])
+        layouts = container.decode(.layouts, [SettingsStreamDeckLayout].self, [])
         selectedId = container.decode(.selectedId, UUID?.self, nil)
     }
 }
