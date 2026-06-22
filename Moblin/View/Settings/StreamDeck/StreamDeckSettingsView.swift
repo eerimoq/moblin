@@ -30,7 +30,7 @@ private struct StreamDeckSettingsKeyView: View {
             }
         } label: {
             HStack {
-                Text("Key \(index)")
+                Text("Key \(index + 1)")
                 Spacer()
                 Text(key.function.toString(
                     sceneName: model.getSceneName(id: key.functionData.sceneId ?? .init()),
@@ -104,6 +104,7 @@ struct StreamDecksSettingsView: View {
                     }
                     .onDelete { offsets in
                         streamDecks.streamDecks.remove(atOffsets: offsets)
+                        model.setSelectedStreamDeck()
                     }
                 }
                 CreateButtonView {

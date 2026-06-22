@@ -72,5 +72,8 @@ extension Model {
         streamDeck.streamDeck = streamDecks.streamDecks.first(where: {
             $0.id == streamDecks.selectedId
         })
+        if streamDeck.streamDeck == nil {
+            streamDecks.selectedId = nil
+        }
     }
 }
