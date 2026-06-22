@@ -90,9 +90,8 @@ struct StreamDecksSettingsView: View {
             if !streamDeck.isDeviceDriverInstalled {
                 Section {
                     Text("""
-                    ⚠️ Stream Deck device driver is not installed. Download and install \
-                    Stream Deck Connect from the App Store, and then enable the Stream \
-                    Deck Device Driver in its settings.
+                    ⚠️ Download and install Stream Deck Connect from the App Store, and \
+                    then enable the Stream Deck Device Driver in its settings.
                     """)
                 }
             }
