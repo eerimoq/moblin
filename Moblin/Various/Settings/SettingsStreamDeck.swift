@@ -1,7 +1,7 @@
 import SwiftUI
 
 class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
-    static let defaultColor = RgbColor.white
+    static let defaultColor = RgbColor.black
     var id: UUID = .init()
     @Published var text: String = ""
     var color: RgbColor = defaultColor
