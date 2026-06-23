@@ -8,6 +8,16 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.9.0", date: "2026-06-23", changes: [
+        "• Make DJI device auto start on app start when auto IP address is configured. 🐛 schieder-karl",
+        "• More options in auto scene switcher time picker. 💡 PIRATO",
+        "• Fix remote scene widget positioning.",
+        "• YouTube moderator support. 💡 LunaMach",
+        "• Use a Stream Deck to control Moblin on iPad. 💡 Mechanic Eric AMericA",
+        "  • Normal keys only.",
+        "• Make browser bonding work better. 🐛 Alps On Air | John and mikeful",
+        "  • It was sometimes losing some data at the end.",
+    ]),
     Version(version: "33.8.0", date: "2026-06-19", changes: [
         "• Kick level badges. 🧑‍🏭 iChrisIRL",
         "• Mod action to show/hide Kick channel live view count. 🧑‍🏭 iChrisIRL",
