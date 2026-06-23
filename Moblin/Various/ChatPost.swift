@@ -134,7 +134,7 @@ struct ChatHighlight {
     static func makeModerator() -> ChatHighlight {
         ChatHighlight(
             kind: .moderator,
-            barColor: .mint,
+            barColor: .green,
             image: "shield.check",
             titleSegments: nil
         )
