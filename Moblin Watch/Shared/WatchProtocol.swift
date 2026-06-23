@@ -99,7 +99,7 @@ struct WatchProtocolChatHighlight: Codable {
     let kind: WatchProtocolChatHighlightKind
     let barColor: WatchProtocolColor
     let image: String
-    let title: String
+    let title: String?
 }
 
 struct WatchProtocolChatMessage: Codable {

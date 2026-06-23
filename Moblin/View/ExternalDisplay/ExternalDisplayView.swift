@@ -11,19 +11,21 @@ private struct HighlightMessageView: View {
     let highlight: ChatHighlight
 
     var body: some View {
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: highlight.image)
-            Text(" ")
-            Text(highlight.titleNoEmotes())
+        if let title = highlight.titleNoEmotes() {
+            WrappingHStack(
+                alignment: .leading,
+                horizontalSpacing: 0,
+                verticalSpacing: 0,
+                fitContentWidth: true
+            ) {
+                Image(systemName: highlight.image)
+                Text(" ")
+                Text(title)
+            }
+            .foregroundStyle(highlight.messageColor())
+            .padding(.leading, 5)
+            .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
         }
-        .foregroundStyle(highlight.messageColor())
-        .padding(.leading, 5)
-        .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
 }
 

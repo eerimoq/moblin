@@ -101,9 +101,11 @@ private struct NormalView: View {
                     .foregroundStyle(highlight.barColor)
                     .padding(.trailing, 3)
                 VStack(alignment: .leading) {
-                    HighlightView(image: highlight.image,
-                                  name: highlight.title,
-                                  color: highlightColor(highlight: highlight))
+                    if let title = highlight.title {
+                        HighlightView(image: highlight.image,
+                                      name: title,
+                                      color: highlightColor(highlight: highlight))
+                    }
                     LineView(chatSettings: chatSettings, post: post)
                 }
             }

@@ -55,7 +55,7 @@ struct ChatPostHighlight {
     let kind: ChatPostHighlightKind
     let barColor: Color
     let image: String
-    let title: String
+    let title: String?
 
     static func fromWatchProtocol(highlight: WatchProtocolChatHighlight) -> ChatPostHighlight {
         ChatPostHighlight(

@@ -13,47 +13,49 @@ private struct HighlightMessageView: View {
     }
 
     var body: some View {
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: highlight.image)
-            Text(" ")
-            ForEach(highlight.titleSegments, id: \.id) { segment in
-                if let text = segment.text {
-                    if let url = getHttpsUrl(text: text) {
-                        QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
-                    } else {
-                        Text(text)
-                            .foregroundStyle(highlight.messageColor())
+        if let titleSegments = highlight.titleSegments {
+            WrappingHStack(
+                alignment: .leading,
+                horizontalSpacing: 0,
+                verticalSpacing: 0,
+                fitContentWidth: true
+            ) {
+                Image(systemName: highlight.image)
+                Text(" ")
+                ForEach(titleSegments, id: \.id) { segment in
+                    if let text = segment.text {
+                        if let url = getHttpsUrl(text: text) {
+                            QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
+                        } else {
+                            Text(text)
+                                .foregroundStyle(highlight.messageColor())
+                        }
                     }
-                }
-                if let url = segment.url {
-                    if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 25)
-                            .opacity(imageOpacity())
-                    } else {
-                        CacheAsyncImage(url: url) { image in
-                            image
+                    if let url = segment.url {
+                        if chat.animatedEmotes {
+                            WebImage(url: url)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            EmptyView()
+                                .frame(height: 25)
+                                .opacity(imageOpacity())
+                        } else {
+                            CacheAsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                EmptyView()
+                            }
+                            .frame(height: 25)
+                            .opacity(imageOpacity())
                         }
-                        .frame(height: 25)
-                        .opacity(imageOpacity())
+                        Text(" ")
                     }
-                    Text(" ")
                 }
             }
+            .foregroundStyle(highlight.messageColor())
+            .padding(.leading, 5)
         }
-        .foregroundStyle(highlight.messageColor())
-        .padding(.leading, 5)
     }
 }
 

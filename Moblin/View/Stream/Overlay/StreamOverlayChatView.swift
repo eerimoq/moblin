@@ -35,48 +35,50 @@ private struct HighlightMessageView: View {
     }
 
     var body: some View {
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: highlight.image)
-            Text(" ")
-            ForEach(highlight.titleSegments, id: \.id) { segment in
-                if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
-                }
-                if let url = segment.url {
-                    if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+        if let titleSegments = highlight.titleSegments {
+            WrappingHStack(
+                alignment: .leading,
+                horizontalSpacing: 0,
+                verticalSpacing: 0,
+                fitContentWidth: true
+            ) {
+                Image(systemName: highlight.image)
+                Text(" ")
+                ForEach(titleSegments, id: \.id) { segment in
+                    if let text = segment.text {
+                        Text(text)
+                            .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
+                    }
+                    if let url = segment.url {
+                        if chat.animatedEmotes {
+                            WebImage(url: url)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
+                                .frame(height: frameHeightEmotes())
+                                .opacity(imageOpacity())
+                        } else {
+                            CacheAsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                EmptyView()
+                            }
                             .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                             .frame(height: frameHeightEmotes())
                             .opacity(imageOpacity())
-                    } else {
-                        CacheAsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            EmptyView()
                         }
-                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                        .frame(height: frameHeightEmotes())
-                        .opacity(imageOpacity())
                     }
                 }
             }
+            .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
+            .padding(.leading, 5)
+            .font(.system(size: CGFloat(chat.fontSize)))
+            .background(backgroundColor())
+            .foregroundStyle(.white)
+            .cornerRadius(5)
         }
-        .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-        .padding(.leading, 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
-        .background(backgroundColor())
-        .foregroundStyle(.white)
-        .cornerRadius(5)
     }
 }
 

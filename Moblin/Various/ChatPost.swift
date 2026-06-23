@@ -39,7 +39,7 @@ struct ChatHighlight {
     let kind: ChatHighlightKind
     let barColor: Color
     let image: String
-    let titleSegments: [ChatPostSegment]
+    let titleSegments: [ChatPostSegment]?
 
     static func makeReply(user: String, segments: [ChatPostSegment]) -> ChatHighlight {
         let prefixText = String(localized: "Replying to \(user):")
@@ -65,7 +65,7 @@ struct ChatHighlight {
             id += 1
         }
         return ChatHighlight(kind: .reply,
-                             barColor: .purple,
+                             barColor: .clear,
                              image: "arrowshape.turn.up.left",
                              titleSegments: replySegments)
     }
@@ -134,9 +134,9 @@ struct ChatHighlight {
     static func makeModerator() -> ChatHighlight {
         ChatHighlight(
             kind: .moderator,
-            barColor: .cyan,
+            barColor: .mint,
             image: "shield.check",
-            titleSegments: makeChatPostTextSegments(text: String(localized: "Moderator"))
+            titleSegments: nil
         )
     }
 
@@ -164,8 +164,8 @@ struct ChatHighlight {
         )
     }
 
-    func titleNoEmotes() -> String {
-        titleSegments.compactMap(\.text).joined()
+    func titleNoEmotes() -> String? {
+        titleSegments?.compactMap(\.text).joined()
     }
 
     func messageColor(defaultColor: Color = .white) -> Color {

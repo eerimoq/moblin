@@ -30,38 +30,40 @@ private struct HighlightMessageView: View {
     }
 
     var body: some View {
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Image(systemName: highlight.image)
-            Text(" ")
-            ForEach(highlight.titleSegments, id: \.id) { segment in
-                if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColorColor))
-                }
-                if let url = segment.url {
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        EmptyView()
+        if let titleSegments = highlight.titleSegments {
+            WrappingHStack(
+                alignment: .leading,
+                horizontalSpacing: 0,
+                verticalSpacing: 0,
+                fitContentWidth: true
+            ) {
+                Image(systemName: highlight.image)
+                Text(" ")
+                ForEach(titleSegments, id: \.id) { segment in
+                    if let text = segment.text {
+                        Text(text)
+                            .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColorColor))
                     }
-                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
-                    .frame(height: frameHeightEmotes())
+                    if let url = segment.url {
+                        CacheAsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            EmptyView()
+                        }
+                        .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
+                        .frame(height: frameHeightEmotes())
+                    }
                 }
             }
+            .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
+            .padding(.leading, 5)
+            .font(.system(size: CGFloat(settings.fontSize)))
+            .background(backgroundColor())
+            .foregroundStyle(.white)
+            .cornerRadius(5)
         }
-        .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding(.leading, 5)
-        .font(.system(size: CGFloat(settings.fontSize)))
-        .background(backgroundColor())
-        .foregroundStyle(.white)
-        .cornerRadius(5)
     }
 }
 
