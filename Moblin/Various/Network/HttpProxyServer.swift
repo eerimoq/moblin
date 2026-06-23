@@ -47,6 +47,7 @@ private class Connection: @unchecked Sendable {
     private var parser = HttpConnectRequestParser()
     private var tunneling = false
     private var body: Data?
+    private let stopSoonTimer = SimpleTimer(queue: queue)
 
     init(_ connection: NWConnection,
          _ networkInterfaceTypeSelector: NetworkInterfaceTypeSelector)
@@ -61,9 +62,11 @@ private class Connection: @unchecked Sendable {
     }
 
     private func stop() {
-        client.cancel()
-        destination?.cancel()
-        destination = nil
+        stopSoonTimer.startSingleShot(timeout: 10) { [weak self] in
+            self?.client.cancel()
+            self?.destination?.cancel()
+            self?.destination = nil
+        }
     }
 
     private func receiveFromClient() {
@@ -147,15 +150,11 @@ private class Connection: @unchecked Sendable {
                 return
             }
             if let data, !data.isEmpty {
-                if isComplete {
-                    self.client.send(content: data, completion: .contentProcessed { _ in
-                        self.stop()
-                    })
-                } else {
-                    self.client.send(content: data, completion: .idempotent)
-                    self.receiveFromDestination()
-                }
-            } else if !isComplete {
+                self.client.send(content: data, completion: .idempotent)
+            }
+            if isComplete {
+                self.stop()
+            } else {
                 self.receiveFromDestination()
             }
         }
