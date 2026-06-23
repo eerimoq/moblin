@@ -285,7 +285,6 @@ extension Model {
         if pollEnabled, live, filter?.poll != false {
             handlePollVote(vote: segments.first?.text?.trim())
         }
-        let highlight = highlight ?? (isModerator ? ChatHighlight.makeModerator() : nil)
         let post = ChatPost(
             id: chatPostId,
             messageId: messageId,
@@ -300,7 +299,7 @@ extension Model {
             isAction: isAction,
             isSubscriber: isSubscriber,
             bits: bits,
-            highlight: highlight,
+            highlight: highlight ?? (true ? ChatHighlight.makeModerator() : nil),
             live: live,
             filter: filter,
             platform: platform,
