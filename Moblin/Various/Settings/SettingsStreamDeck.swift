@@ -54,10 +54,25 @@ class SettingsStreamDeckKey: Codable, ObservableObject, Identifiable {
     }
 }
 
+enum SettingsStreamDeckLayoutModel: String, Codable, CaseIterable {
+    case mini
+    case classic
+
+    func toString() -> String {
+        switch self {
+        case .mini:
+            String(localized: "Mini")
+        case .classic:
+            String(localized: "Classic")
+        }
+    }
+}
+
 class SettingsStreamDeckLayout: Codable, ObservableObject, Identifiable, Named {
     static let baseName = "My layout"
     var id: UUID = .init()
     @Published var name: String = baseName
+    @Published var model: SettingsStreamDeckLayoutModel = .classic
     @Published var keys: [SettingsStreamDeckKey] = []
 
     init() {
@@ -69,6 +84,7 @@ class SettingsStreamDeckLayout: Codable, ObservableObject, Identifiable, Named {
     enum CodingKeys: CodingKey {
         case id
         case name
+        case model
         case keys
     }
 
@@ -76,6 +92,7 @@ class SettingsStreamDeckLayout: Codable, ObservableObject, Identifiable, Named {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
+        try container.encode(.model, model)
         try container.encode(.keys, keys)
     }
 
@@ -83,6 +100,7 @@ class SettingsStreamDeckLayout: Codable, ObservableObject, Identifiable, Named {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
+        model = container.decode(.model, SettingsStreamDeckLayoutModel.self, .classic)
         keys = container.decode(.keys, [SettingsStreamDeckKey].self, [])
         for _ in keys.count ..< 36 {
             keys.append(.init())
