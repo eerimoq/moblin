@@ -195,8 +195,10 @@ private struct StreamDeckLayoutSettingsView: View {
                     }
                 }
                 Section {
-                    if selectedIndex < layout.keys.count {
-                        StreamDeckSettingsKeyView(model: model, key: layout.keys[selectedIndex])
+                    ForEach(layout.keys) { key in
+                        if layout.keys.firstIndex(where: { $0 === key }) == selectedIndex {
+                            StreamDeckSettingsKeyView(model: model, key: key)
+                        }
                     }
                 }
             }
