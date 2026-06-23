@@ -299,7 +299,7 @@ extension Model {
             isAction: isAction,
             isSubscriber: isSubscriber,
             bits: bits,
-            highlight: highlight ?? (true ? ChatHighlight.makeModerator() : nil),
+            highlight: highlight ?? (isModerator ? ChatHighlight.makeModerator() : nil),
             live: live,
             filter: filter,
             platform: platform,
