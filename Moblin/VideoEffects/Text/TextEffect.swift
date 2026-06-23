@@ -44,6 +44,8 @@ struct TextEffectStats {
     let gForce: GForce?
     let latestSubscriber: String
     let latestFollower: String
+    let bonding: String
+    let bondingRtts: String
 }
 
 private class TextViewState: ObservableObject {
