@@ -46,9 +46,8 @@ private struct StreamDeckView: View {
                 StreamDeckKeyAreaLayout { _ in
                     StreamDeckKeyView { _ in
                     } content: {
-                        Text("")
+                        Color.black
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(.white)
                     }
                 }
             } windowArea: {}
