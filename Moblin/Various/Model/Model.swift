@@ -492,7 +492,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickPlatformStatus: KickPlatformStatus?
-    var youTubeLiveChat: YouTubeLiveChat?
+    var youTubeLiveChats: [String: YouTubeLiveChat] = [:]
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
