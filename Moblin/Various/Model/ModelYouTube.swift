@@ -76,7 +76,7 @@ extension Model {
     }
 
     func tryToFetchYouTubeVideoId() {
-        guard database.chat.enabled, !stream.youTubeHandle.isEmpty, let youTubeFetchVideoIdStartTime else {
+        guard database.chat.enabled, let youTubeFetchVideoIdStartTime else {
             return
         }
         guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(120) else {
@@ -85,15 +85,33 @@ extension Model {
                            subTitle: String(localized: "You must be live on YouTube for this to work."))
             return
         }
-        Task { @MainActor in
-            if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
-                stopFetchingYouTubeChatVideoId()
-                guard videoId != stream.youTubeVideoIds else {
-                    return
+        if stream.youTubeAuthState != nil {
+            getYouTubeApi(stream: stream) { youTubeApi in
+                guard let youTubeApi else { return }
+                youTubeApi.listLiveBroadcasts(status: "active") { response in
+                    Task { @MainActor in
+                        switch response {
+                        case let .success(listResponse):
+                            let videoIds = listResponse.items.map(\.id)
+                            guard !videoIds.isEmpty else { return }
+                            self.stopFetchingYouTubeChatVideoId()
+                            let newVideoIdString = videoIds.joined(separator: ",")
+                            guard newVideoIdString != self.stream.youTubeVideoIds else { return }
+                            self.stream.youTubeVideoIds = newVideoIdString
+                            if self.stream.enabled { self.youTubeVideoIdUpdated() }
+                        default:
+                            break
+                        }
+                    }
                 }
-                stream.youTubeVideoIds = videoId
-                if stream.enabled {
-                    youTubeVideoIdUpdated()
+            }
+        } else if !stream.youTubeHandle.isEmpty {
+            Task { @MainActor in
+                if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
+                    stopFetchingYouTubeChatVideoId()
+                    guard videoId != stream.youTubeVideoIds else { return }
+                    stream.youTubeVideoIds = videoId
+                    if stream.enabled { youTubeVideoIdUpdated() }
                 }
             }
         }
@@ -108,17 +126,11 @@ extension Model {
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
-        for youTubeLiveChat in youTubeLiveChats.values where !youTubeLiveChat.isConnected() {
-            return false
-        }
-        return true
+        youTubeLiveChats.values.contains(where: { $0.isConnected() })
     }
 
     func hasYouTubeLiveChatEmotes() -> Bool {
-        for youTubeLiveChat in youTubeLiveChats.values where !youTubeLiveChat.hasEmotes() {
-            return false
-        }
-        return true
+        youTubeLiveChats.values.contains(where: { $0.hasEmotes() })
     }
 
     func reloadYouTubeLiveChat() {
@@ -169,21 +181,29 @@ extension Model {
 
     private func getVideo() {
         getYouTubeApi(stream: stream) { youTubeApi in
-            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoIds) {
-                switch $0 {
-                case let .success(response):
-                    if let liveStreamingDetails = response.items.first?.liveStreamingDetails {
-                        if liveStreamingDetails.isLive() {
-                            let viewers = Int(liveStreamingDetails.concurrentViewers ?? "0") ?? 0
-                            self.youTubePlatformStatus = .live(viewerCount: viewers)
-                        } else {
-                            self.youTubePlatformStatus = .offline
+            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoIds) { response in
+                Task { @MainActor in
+                    switch response {
+                    case let .success(response):
+                        var totalViewers = 0
+                        var isLive = false
+                        for item in response.items {
+                            let liveStreamingDetails = item.liveStreamingDetails
+                            if liveStreamingDetails.isLive() {
+                                isLive = true
+                                totalViewers += Int(liveStreamingDetails.concurrentViewers ?? "0") ?? 0
+                            }
                         }
-                    } else {
+                        if isLive {
+                            self.youTubePlatformStatus = .live(viewerCount: totalViewers)
+                        } else if !response.items.isEmpty {
+                            self.youTubePlatformStatus = .offline
+                        } else {
+                            self.youTubePlatformStatus = .unknown
+                        }
+                    default:
                         self.youTubePlatformStatus = .unknown
                     }
-                default:
-                    self.youTubePlatformStatus = .unknown
                 }
             }
         }
