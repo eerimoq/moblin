@@ -1156,7 +1156,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
     @Published var youTubeAuthState: OIDAuthState?
-    @Published var youTubeVideoId: String = ""
+    @Published var youTubeVideoIds: String = ""
     @Published var youTubeHandle: String = ""
     @Published var youTubeScheduleStreamTitle: String = ""
     @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
@@ -1335,7 +1335,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         if let encoded = encodeYouTubeAuthState() {
             storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
         }
-        try container.encode(.youTubeVideoId, youTubeVideoId)
+        try container.encode(.youTubeVideoId, youTubeVideoIds)
         try container.encode(.youTubeHandle, youTubeHandle)
         try container.encode(.youTubeScheduleStreamTitle, youTubeScheduleStreamTitle)
         try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
@@ -1427,7 +1427,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }
-        youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
+        youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
         youTubeScheduleStreamTitle = container.decode(.youTubeScheduleStreamTitle, String.self, "")
         youTubeScheduleStreamVisibility = container.decode(.youTubeScheduleStreamVisibility,
@@ -1534,7 +1534,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
         new.youTubeAuthState = youTubeAuthState
-        new.youTubeVideoId = youTubeVideoId
+        new.youTubeVideoIds = youTubeVideoIds
         new.youTubeHandle = youTubeHandle
         new.soopChannelName = soopChannelName
         new.soopStreamId = soopStreamId

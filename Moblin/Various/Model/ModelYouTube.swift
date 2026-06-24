@@ -88,10 +88,10 @@ extension Model {
         Task { @MainActor in
             if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
                 stopFetchingYouTubeChatVideoId()
-                guard videoId != stream.youTubeVideoId else {
+                guard videoId != stream.youTubeVideoIds else {
                     return
                 }
-                stream.youTubeVideoId = videoId
+                stream.youTubeVideoIds = videoId
                 if stream.enabled {
                     youTubeVideoIdUpdated()
                 }
@@ -100,31 +100,42 @@ extension Model {
     }
 
     func isYouTubeViewersConfigured() -> Bool {
-        stream.youTubeAuthState != nil && !stream.youTubeVideoId.isEmpty
+        stream.youTubeAuthState != nil && !stream.youTubeVideoIds.isEmpty
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        database.chat.enabled && stream.youTubeVideoId != ""
+        database.chat.enabled && stream.youTubeVideoIds != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
-        youTubeLiveChat?.isConnected() ?? false
+        for youTubeLiveChat in youTubeLiveChats.values where !youTubeLiveChat.isConnected() {
+            return false
+        }
+        return true
     }
 
     func hasYouTubeLiveChatEmotes() -> Bool {
-        youTubeLiveChat?.hasEmotes() ?? false
+        for youTubeLiveChat in youTubeLiveChats.values where !youTubeLiveChat.hasEmotes() {
+            return false
+        }
+        return true
     }
 
     func reloadYouTubeLiveChat() {
-        youTubeLiveChat?.stop()
-        youTubeLiveChat = nil
+        for chat in youTubeLiveChats.values {
+            chat.stop()
+        }
+        youTubeLiveChats.removeAll()
         if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
-            youTubeLiveChat = YouTubeLiveChat(
-                model: self,
-                videoId: stream.youTubeVideoId,
-                settings: stream.chat
-            )
-            youTubeLiveChat!.start()
+            let videoIds = stream.youTubeVideoIds
+                .split(separator: ",")
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            for videoId in videoIds {
+                let chat = YouTubeLiveChat(model: self, videoId: videoId, settings: stream.chat)
+                youTubeLiveChats[videoId] = chat
+                chat.start()
+            }
         }
         updateChatMoreThanOneChatConfigured()
     }
@@ -158,7 +169,7 @@ extension Model {
 
     private func getVideo() {
         getYouTubeApi(stream: stream) { youTubeApi in
-            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoId) {
+            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoIds) {
                 switch $0 {
                 case let .success(response):
                     if let liveStreamingDetails = response.items.first?.liveStreamingDetails {

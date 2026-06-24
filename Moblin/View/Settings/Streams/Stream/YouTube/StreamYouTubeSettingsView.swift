@@ -59,7 +59,7 @@ private struct StreamDescriptionView: View {
                 }
             }
             let ingestsUrl = url()
-            if stream.url != ingestsUrl || stream.youTubeVideoId != youTubeStream.id {
+            if stream.url != ingestsUrl || stream.youTubeVideoIds != youTubeStream.id {
                 HStack {
                     Text("⚠️ Moblin is not configured to stream to this stream.")
                     Button {
@@ -80,11 +80,11 @@ private struct StreamDescriptionView: View {
                             return
                         }
                         stream.url = ingestsUrl
-                        stream.youTubeVideoId = youTubeStream.id
+                        stream.youTubeVideoIds = youTubeStream.id
                         model.reloadStreamIfEnabled(stream: stream)
                     }
                     Button("No") {
-                        stream.youTubeVideoId = youTubeStream.id
+                        stream.youTubeVideoIds = youTubeStream.id
                         model.youTubeVideoIdUpdated()
                     }
                 }
@@ -255,7 +255,7 @@ private struct ScheduleStreamView: View {
         case let .success(liveBroadcast):
             youTubeApi.bindLiveBroadcast(boardcastId: liveBroadcast.id, streamId: liveStream.id) {
                 if $0 {
-                    stream.youTubeVideoId = liveBroadcast.id
+                    stream.youTubeVideoIds = liveBroadcast.id
                     model.youTubeVideoIdUpdated()
                     scheduleStreamSucceeded()
                     loadStreams()
@@ -457,7 +457,7 @@ struct StreamYouTubeSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
     private func submitVideoId(value: String) {
-        stream.youTubeVideoId = value
+        stream.youTubeVideoIds = value
         if stream.enabled {
             model.youTubeVideoIdUpdated()
         }
@@ -509,7 +509,7 @@ struct StreamYouTubeSettingsView: View {
                 )
                 TextEditNavigationView(
                     title: String(localized: "Video id"),
-                    value: String(stream.youTubeVideoId),
+                    value: String(stream.youTubeVideoIds),
                     onSubmit: submitVideoId,
                     placeholder: "FekKCUN5W8U"
                 )
