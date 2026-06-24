@@ -423,7 +423,7 @@ struct InteractiveWidgetOverlayView: View {
 
     @ViewBuilder
     private func widgetItemView(widgetInScene: WidgetInScene, rect: CGRect,
-                                videoBounds: CGRect) -> some View
+                                videoBounds _: CGRect) -> some View
     {
         let isSelected = model.selectedWidgetForInteraction?.id == widgetInScene.id
         let isClickable = widgetInScene.sceneWidget.layout.clickable
@@ -493,11 +493,18 @@ struct InteractiveWidgetOverlayView: View {
 
     // MARK: - Hit-Testing Helper
 
-    private func widgetAtPoint(_ point: CGPoint, widgets: [WidgetInScene], videoBounds: CGRect) -> WidgetInScene? {
+    private func widgetAtPoint(_ point: CGPoint, widgets: [WidgetInScene],
+                               videoBounds: CGRect) -> WidgetInScene?
+    {
         var candidates: [WidgetInScene] = []
         for widgetInScene in widgets {
             let rect = getWidgetRect(widgetInScene: widgetInScene, videoBounds: videoBounds)
-            let hitRect = widgetInScene.widget.hasSize() ? rect : CGRect(x: rect.midX - 22, y: rect.midY - 22, width: 44, height: 44)
+            let hitRect = widgetInScene.widget.hasSize() ? rect : CGRect(
+                x: rect.midX - 22,
+                y: rect.midY - 22,
+                width: 44,
+                height: 44
+            )
             if hitRect.contains(point) {
                 candidates.append(widgetInScene)
             }
@@ -528,49 +535,58 @@ struct InteractiveWidgetOverlayView: View {
                         DragGesture(minimumDistance: 0, coordinateSpace: .local)
                             .onChanged { value in
                                 guard !isPinching else { return }
-                                
+
                                 let dx = value.translation.width
                                 let dy = value.translation.height
-                                
+
                                 if activeDragWidgetId == nil {
                                     // Start of drag: find widget under start location
-                                    if let widget = widgetAtPoint(value.startLocation, widgets: widgets, videoBounds: videoBounds) {
+                                    if let widget = widgetAtPoint(
+                                        value.startLocation,
+                                        widgets: widgets,
+                                        videoBounds: videoBounds
+                                    ) {
                                         activeDragWidgetId = widget.id
-                                        
+
                                         // Auto-select on drag start
                                         if model.selectedWidgetForInteraction?.id != widget.id {
                                             triggerHaptic()
                                             model.selectedWidgetForInteraction = widget
                                         }
-                                        
+
                                         // Convert to top-left for math consistency
                                         convertToTopLeft(
                                             widgetInScene: widget,
-                                            rect: getWidgetRect(widgetInScene: widget, videoBounds: videoBounds),
+                                            rect: getWidgetRect(
+                                                widgetInScene: widget,
+                                                videoBounds: videoBounds
+                                            ),
                                             videoBounds: videoBounds
                                         )
-                                        
+
                                         let layout = widget.sceneWidget.layout
                                         dragStartLayoutX = layout.x
                                         dragStartLayoutY = layout.y
                                     }
                                 }
-                                
+
                                 // If we have an active drag target, update its position
                                 if let dragId = activeDragWidgetId,
                                    let widgetInScene = widgets.first(where: { $0.id == dragId })
                                 {
                                     var layout = widgetInScene.sceneWidget.layout
                                     guard !layout.positioningLock else { return }
-                                    
+
                                     let (widgetWidth, widgetHeight) = getWidgetDimensions(
                                         widgetInScene: widgetInScene,
                                         videoBounds: videoBounds
                                     )
-                                    
-                                    var candidateMinX = videoBounds.minX + CGFloat(dragStartLayoutX / 100.0) * videoBounds.width + dx
-                                    var candidateMinY = videoBounds.minY + CGFloat(dragStartLayoutY / 100.0) * videoBounds.height + dy
-                                    
+
+                                    var candidateMinX = videoBounds
+                                        .minX + CGFloat(dragStartLayoutX / 100.0) * videoBounds.width + dx
+                                    var candidateMinY = videoBounds
+                                        .minY + CGFloat(dragStartLayoutY / 100.0) * videoBounds.height + dy
+
                                     // Apply snapping
                                     applySnapping(
                                         candidateMinX: &candidateMinX,
@@ -579,15 +595,22 @@ struct InteractiveWidgetOverlayView: View {
                                         widgetHeight: widgetHeight,
                                         videoBounds: videoBounds
                                     )
-                                    
+
                                     // Convert back to percentage
-                                    layout.x = max(0.0, Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0)
-                                    layout.y = max(0.0, Double((candidateMinY - videoBounds.minY) / videoBounds.height) * 100.0)
+                                    layout.x = max(
+                                        0.0,
+                                        Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0
+                                    )
+                                    layout.y = max(
+                                        0.0,
+                                        Double((candidateMinY - videoBounds.minY) / videoBounds.height) *
+                                            100.0
+                                    )
                                     layout.updateXString()
                                     layout.updateYString()
-                                    
+
                                     widgetInScene.sceneWidget.layout = layout
-                                    
+
                                     let now = Date()
                                     if now.timeIntervalSince(lastDragUpdate) > 0.033 {
                                         model.updateWidgetLayoutDirectly(
@@ -602,11 +625,15 @@ struct InteractiveWidgetOverlayView: View {
                                 let dx = value.translation.width
                                 let dy = value.translation.height
                                 let distance = sqrt(dx * dx + dy * dy)
-                                
+
                                 if distance <= 5 {
                                     // Tap gesture
                                     triggerHaptic()
-                                    let tappedWidget = widgetAtPoint(value.startLocation, widgets: widgets, videoBounds: videoBounds)
+                                    let tappedWidget = widgetAtPoint(
+                                        value.startLocation,
+                                        widgets: widgets,
+                                        videoBounds: videoBounds
+                                    )
                                     if let tappedWidget {
                                         if model.selectedWidgetForInteraction?.id == tappedWidget.id {
                                             model.selectedWidgetForInteraction = nil
@@ -627,7 +654,7 @@ struct InteractiveWidgetOverlayView: View {
                                         )
                                     }
                                 }
-                                
+
                                 isPinching = false
                                 activeDragWidgetId = nil
                                 activeSnapX = nil
@@ -639,31 +666,33 @@ struct InteractiveWidgetOverlayView: View {
                             .simultaneously(with: MagnificationGesture()
                                 .onChanged { scale in
                                     isPinching = true
-                                    
+
                                     // Resize the currently selected widget
                                     if let selectedWidget = model.selectedWidgetForInteraction {
                                         var layout = selectedWidget.sceneWidget.layout
                                         guard !layout.positioningLock else { return }
-                                        
+
                                         if selectedWidget.widget.type == .text {
                                             if pinchStartSize == 0 {
-                                                pinchStartSize = Double(selectedWidget.widget.text.fontSizeFloat)
+                                                pinchStartSize = Double(selectedWidget.widget.text
+                                                    .fontSizeFloat)
                                             }
-                                            let newSize = (pinchStartSize * Double(scale)).clamped(to: 10 ... 300)
+                                            let newSize = (pinchStartSize * Double(scale))
+                                                .clamped(to: 10 ... 300)
                                             selectedWidget.widget.text.fontSizeFloat = Float(newSize)
                                             selectedWidget.widget.text.fontSize = Int(newSize)
                                             model.objectWillChange.send()
                                             return
                                         }
-                                        
+
                                         if pinchStartSize == 0 {
                                             pinchStartSize = layout.size
                                         }
-                                        
+
                                         let newSize = (pinchStartSize * Double(scale)).clamped(to: 1 ... 100)
                                         layout.size = newSize
                                         layout.updateSizeString()
-                                        
+
                                         selectedWidget.sceneWidget.layout = layout
                                         model.updateWidgetLayoutDirectly(
                                             widgetId: selectedWidget.widget.id,
@@ -674,8 +703,7 @@ struct InteractiveWidgetOverlayView: View {
                                 .onEnded { _ in
                                     pinchStartSize = 0
                                     model.sceneUpdated(attachCamera: false, updateRemoteScene: true)
-                                }
-                            )
+                                })
                     )
 
                 // Snap guide lines (yellow dashed)
