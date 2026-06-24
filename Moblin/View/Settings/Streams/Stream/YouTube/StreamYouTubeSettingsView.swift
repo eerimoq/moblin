@@ -99,8 +99,10 @@ private struct YouTubeStreamView: View {
     let youTubeStream: YouTubeApiLiveBroadcast
     let ingests: [YouTubeApiLiveStream]
     let destroyImage: String
+    let destroyText: String
     let destroy: (String, YouTubeApi, @escaping () -> Void) -> Void
     @State private var destroying: Bool = false
+    @State private var presentingConfirm: Bool = false
 
     private func handleDestroy() {
         destroying = true
@@ -133,7 +135,7 @@ private struct YouTubeStreamView: View {
                         ProgressView()
                     } else {
                         Button {
-                            handleDestroy()
+                            presentingConfirm = true
                         } label: {
                             Image(systemName: destroyImage)
                                 .font(.title)
@@ -143,6 +145,11 @@ private struct YouTubeStreamView: View {
                     }
                 }
                 .frame(width: 50)
+                .confirmationDialog("", isPresented: $presentingConfirm) {
+                    Button(destroyText, role: .destructive) {
+                        handleDestroy()
+                    }
+                }
             }
             .padding(.trailing, 5)
         }
@@ -157,6 +164,7 @@ private struct StreamsView: View {
     @Binding var loadError: String?
     @Binding var ingests: [YouTubeApiLiveStream]
     let destroyImage: String
+    let destroyText: String
     let destroy: (String, YouTubeApi, @escaping () -> Void) -> Void
 
     var body: some View {
@@ -167,6 +175,7 @@ private struct StreamsView: View {
                                   youTubeStream: youTubeStream,
                                   ingests: ingests,
                                   destroyImage: destroyImage,
+                                  destroyText: destroyText,
                                   destroy: destroy)
             }
             if streams.isEmpty {
@@ -416,6 +425,7 @@ struct StreamYouTubeScheduleStreamView: View {
                                 loadError: $liveStreamsLoadError,
                                 ingests: $ingests,
                                 destroyImage: "stop",
+                                destroyText: String(localized: "End"),
                                 destroy: stopLiveStream)
                     StreamsView(model: model,
                                 stream: stream,
@@ -424,6 +434,7 @@ struct StreamYouTubeScheduleStreamView: View {
                                 loadError: $upcomingStreamsLoadError,
                                 ingests: $ingests,
                                 destroyImage: "trash",
+                                destroyText: String(localized: "Delete"),
                                 destroy: deleteUpcomingStream)
                 }
                 .navigationTitle("Manage streams")
