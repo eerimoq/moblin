@@ -60,104 +60,125 @@ private struct StreamDeckKeyView: View {
 }
 
 private struct StreamDeckMiniView: View {
+    static let size = 55.0
     @Binding var keys: [SettingsStreamDeckKey]
     @Binding var selectedIndex: Int
 
+    private func key(index: Int) -> some View {
+        StreamDeckKeyView(key: keys[index],
+                          index: index,
+                          selectedIndex: $selectedIndex,
+                          size: Self.size)
+    }
+
     var body: some View {
-        let size = 55.0
         VStack {
             HCenter {
-                StreamDeckKeyView(key: keys[0], index: 0, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[1], index: 1, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[2], index: 2, selectedIndex: $selectedIndex, size: size)
+                key(index: 0)
+                key(index: 1)
+                key(index: 2)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[3], index: 3, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[4], index: 4, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[5], index: 5, selectedIndex: $selectedIndex, size: size)
+                key(index: 3)
+                key(index: 4)
+                key(index: 5)
             }
         }
     }
 }
 
 private struct StreamDeckClassicView: View {
+    static let size = 45.0
     @Binding var keys: [SettingsStreamDeckKey]
     @Binding var selectedIndex: Int
 
+    private func key(index: Int) -> some View {
+        StreamDeckKeyView(key: keys[index],
+                          index: index,
+                          selectedIndex: $selectedIndex,
+                          size: Self.size)
+    }
+
     var body: some View {
-        let size = 45.0
         VStack {
             HCenter {
-                StreamDeckKeyView(key: keys[0], index: 0, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[1], index: 1, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[2], index: 2, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[3], index: 3, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[4], index: 4, selectedIndex: $selectedIndex, size: size)
+                key(index: 0)
+                key(index: 1)
+                key(index: 2)
+                key(index: 3)
+                key(index: 4)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[5], index: 5, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[6], index: 6, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[7], index: 7, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[8], index: 8, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[9], index: 9, selectedIndex: $selectedIndex, size: size)
+                key(index: 5)
+                key(index: 6)
+                key(index: 7)
+                key(index: 8)
+                key(index: 9)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[10], index: 10, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[11], index: 11, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[12], index: 12, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[13], index: 13, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[14], index: 14, selectedIndex: $selectedIndex, size: size)
+                key(index: 10)
+                key(index: 11)
+                key(index: 12)
+                key(index: 13)
+                key(index: 14)
             }
         }
     }
 }
 
 private struct StreamDeckXlView: View {
+    static let size = 30.0
     @Binding var keys: [SettingsStreamDeckKey]
     @Binding var selectedIndex: Int
 
+    private func key(index: Int) -> some View {
+        StreamDeckKeyView(key: keys[index],
+                          index: index,
+                          selectedIndex: $selectedIndex,
+                          size: Self.size)
+    }
+
     var body: some View {
-        let size = 30.0
         VStack {
             HCenter {
-                StreamDeckKeyView(key: keys[0], index: 0, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[1], index: 1, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[2], index: 2, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[3], index: 3, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[4], index: 4, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[5], index: 5, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[6], index: 6, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[7], index: 7, selectedIndex: $selectedIndex, size: size)
+                key(index: 0)
+                key(index: 1)
+                key(index: 2)
+                key(index: 3)
+                key(index: 4)
+                key(index: 5)
+                key(index: 6)
+                key(index: 7)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[8], index: 8, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[9], index: 9, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[10], index: 10, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[11], index: 11, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[12], index: 12, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[13], index: 13, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[14], index: 14, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[15], index: 15, selectedIndex: $selectedIndex, size: size)
+                key(index: 8)
+                key(index: 9)
+                key(index: 10)
+                key(index: 11)
+                key(index: 12)
+                key(index: 13)
+                key(index: 14)
+                key(index: 15)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[16], index: 16, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[17], index: 17, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[18], index: 18, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[19], index: 19, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[20], index: 20, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[21], index: 21, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[22], index: 22, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[23], index: 23, selectedIndex: $selectedIndex, size: size)
+                key(index: 16)
+                key(index: 17)
+                key(index: 18)
+                key(index: 19)
+                key(index: 20)
+                key(index: 21)
+                key(index: 22)
+                key(index: 23)
             }
             HCenter {
-                StreamDeckKeyView(key: keys[24], index: 24, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[25], index: 25, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[26], index: 26, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[27], index: 27, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[28], index: 28, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[29], index: 29, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[30], index: 30, selectedIndex: $selectedIndex, size: size)
-                StreamDeckKeyView(key: keys[31], index: 31, selectedIndex: $selectedIndex, size: size)
+                key(index: 24)
+                key(index: 25)
+                key(index: 26)
+                key(index: 27)
+                key(index: 28)
+                key(index: 29)
+                key(index: 30)
+                key(index: 31)
             }
         }
     }
