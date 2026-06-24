@@ -116,12 +116,12 @@ class YouTubeApi {
     }
 
     func listVideos(
-        videoId: String,
+        videoIds: String,
         onCompleted: @escaping (NetworkResponse<YouTubeApiListVideosResponse>) -> Void
     ) {
         let subPath = makeUrl("videos", [
             ("part", "liveStreamingDetails"),
-            ("id", videoId),
+            ("id", videoIds),
         ])
         doGet(subPath: subPath) {
             switch $0 {

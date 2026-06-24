@@ -7,11 +7,7 @@ private struct ChatBotCommandView: View {
     @State var name: String
 
     private func onSubmit(value: String) {
-        command.name = value.lowercased().trim().replacingOccurrences(
-            of: "\\s",
-            with: "",
-            options: .regularExpression
-        )
+        command.name = value.lowercased().removeAllWhitespaces()
         name = command.name
         model.updateAlertsSettings()
     }

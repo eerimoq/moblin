@@ -1509,6 +1509,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         previewStream = container.decode(.previewStream, SettingsStreamPreviewStream.self, .init())
     }
 
+    func getYouTubeVideoIds() -> [String] {
+        youTubeVideoIds.split(separator: ",").map { String($0) }
+    }
+
     func clone() -> SettingsStream {
         let new = SettingsStream(name: name)
         new.url = url

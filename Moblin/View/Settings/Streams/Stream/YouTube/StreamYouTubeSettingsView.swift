@@ -59,7 +59,7 @@ private struct StreamDescriptionView: View {
                 }
             }
             let ingestsUrl = url()
-            if stream.url != ingestsUrl || stream.youTubeVideoIds != youTubeStream.id {
+            if stream.url != ingestsUrl || !stream.getYouTubeVideoIds().contains(youTubeStream.id) {
                 HStack {
                     Text("⚠️ Moblin is not configured to stream to this stream.")
                     Button {
@@ -456,8 +456,8 @@ struct StreamYouTubeSettingsView: View {
     @ObservedObject var debug: SettingsDebug
     @ObservedObject var stream: SettingsStream
 
-    private func submitVideoId(value: String) {
-        stream.youTubeVideoIds = value
+    private func submitVideoIds(value: String) {
+        stream.youTubeVideoIds = value.removeAllWhitespaces()
         if stream.enabled {
             model.youTubeVideoIdUpdated()
         }
@@ -510,14 +510,14 @@ struct StreamYouTubeSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "Video id"),
                     value: String(stream.youTubeVideoIds),
-                    onSubmit: submitVideoId,
+                    onSubmit: submitVideoIds,
                     placeholder: "FekKCUN5W8U"
                 )
                 TextButtonView("Fetch Video ID") {
                     Task { @MainActor in
                         do {
                             let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
-                            submitVideoId(value: videoId)
+                            submitVideoIds(value: videoId)
                         } catch {
                             model.makeErrorToast(
                                 title: String(localized: "Failed to fetch YouTube Video ID"),

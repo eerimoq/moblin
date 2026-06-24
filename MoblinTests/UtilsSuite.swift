@@ -100,4 +100,17 @@ struct UtilsSuite {
         let data = Data(repeating: 0xFF, count: 8)
         #expect(data.getInt64Be(offset: 0) == -1)
     }
+
+    @Test
+    func removeAllWhitespaces() {
+        #expect("".removeAllWhitespaces() == "")
+        #expect(" ji ji ji ".removeAllWhitespaces() == "jijiji")
+        #expect("   ".removeAllWhitespaces() == "")
+        #expect("a     a".removeAllWhitespaces() == "aa")
+        #expect("""
+        fds
+        df
+        df
+        """.removeAllWhitespaces() == "fdsdfdf")
+    }
 }

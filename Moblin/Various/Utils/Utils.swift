@@ -13,6 +13,12 @@ func randomHumanString() -> String {
     )
 }
 
+extension String {
+    func removeAllWhitespaces() -> String {
+        replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+    }
+}
+
 func randomName() -> String {
     let colors = ["Black", "Red", "Green", "Yellow", "Blue", "Purple", "Cyan", "White"]
     return colors.randomElement() ?? "Black"

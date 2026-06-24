@@ -98,11 +98,11 @@ extension Model {
                             return
                         }
                         self.stopFetchingYouTubeChatVideoId()
-                        let newVideoIdString = videoIds.joined(separator: ",")
-                        guard newVideoIdString != self.stream.youTubeVideoIds else {
+                        let newVideoIds = videoIds.joined(separator: ",")
+                        guard newVideoIds != self.stream.youTubeVideoIds else {
                             return
                         }
-                        self.stream.youTubeVideoIds = newVideoIdString
+                        self.stream.youTubeVideoIds = newVideoIds
                         if self.stream.enabled {
                             self.youTubeVideoIdUpdated()
                         }
@@ -132,7 +132,7 @@ extension Model {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        database.chat.enabled && stream.youTubeVideoIds != ""
+        database.chat.enabled && !stream.youTubeVideoIds.isEmpty
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
@@ -155,11 +155,7 @@ extension Model {
         }
         youTubeLiveChats.removeAll()
         if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
-            let videoIds = stream.youTubeVideoIds
-                .split(separator: ",")
-                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                .filter { !$0.isEmpty }
-            for videoId in videoIds {
+            for videoId in stream.getYouTubeVideoIds() {
                 let chat = YouTubeLiveChat(model: self, videoId: videoId, settings: stream.chat)
                 youTubeLiveChats[videoId] = chat
                 chat.start()
@@ -197,7 +193,7 @@ extension Model {
 
     private func getVideo() {
         getYouTubeApi(stream: stream) { youTubeApi in
-            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoIds) { response in
+            youTubeApi?.listVideos(videoIds: self.stream.youTubeVideoIds) { response in
                 switch response {
                 case let .success(response):
                     var totalViewers = 0
