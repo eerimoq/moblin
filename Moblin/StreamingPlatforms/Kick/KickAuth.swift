@@ -37,6 +37,11 @@ struct KickWebView: UIViewRepresentable {
         configuration.websiteDataStore = .nonPersistent()
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        // Avoid Google Login disallowed_useragent error by using a standard Safari User-Agent
+        let userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) "
+            + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 "
+            + "Mobile/15E148 Safari/604.1"
+        webView.customUserAgent = userAgent
         return webView
     }
 
