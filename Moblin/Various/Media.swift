@@ -439,7 +439,8 @@ final class Media: NSObject, @unchecked Sendable {
             transportBitrate: streamTransportBitrate(),
             latency: nil,
             mbpsSendRate: nil,
-            relaxed: nil
+            relaxed: nil,
+            sendBufferUtilization: rtmpStream.currentMetrics?.sendBufferUtilization
         ))
         guard overlay else {
             return nil
@@ -587,16 +588,19 @@ final class Media: NSObject, @unchecked Sendable {
                          targetBitrate: UInt32,
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
+        let abrRtmp: AdaptiveBitrateRtmp?
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate,
-                                                      delegate: self,
-                                                      rttMax: 500,
-                                                      pifMax: 100)
+            abrRtmp = AdaptiveBitrateRtmp(targetBitrate: targetBitrate, delegate: self)
+            adaptiveBitrate = abrRtmp
         } else {
+            abrRtmp = nil
             adaptiveBitrate = nil
         }
         rtmpStream?.setUrl(url)
         for rtmpStream in rtmpStreams {
+            rtmpStream.onKeyframeSent = { [weak abrRtmp] in
+                abrRtmp?.notifyKeyframeSent()
+            }
             rtmpStream.connect()
         }
     }

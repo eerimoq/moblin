@@ -14,6 +14,7 @@ protocol RtmpSocketDelegate: AnyObject {
     func socketReadyStateChanged(readyState: RtmpSocketReadyState)
     func socketUpdateStats(totalBytesSent: Int64)
     func socketPost(data: AsObject)
+    func socketGetCurrentBitrate() -> UInt32
 }
 
 final class RtmpSocket: @unchecked Sendable {
@@ -22,11 +23,13 @@ final class RtmpSocket: @unchecked Sendable {
     private var readyState: RtmpSocketReadyState = .uninitialized
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
-    private var totalBytesSending: Int64 = 0
-    private var totalBytesSent: Int64 = 0
+    private(set) var totalBytesSending: Int64 = 0
+    private(set) var totalBytesSent: Int64 = 0
     private let name: String
     private var connection: NWConnection?
     private let queue: DispatchQueue
+    private let sendQueue = RtmpSendQueue()
+    private var isFlushing = Atomic<Bool>(false)
 
     init(name: String, queue: DispatchQueue) {
         self.name = name
@@ -39,10 +42,15 @@ final class RtmpSocket: @unchecked Sendable {
         maximumChunkSizeFromServer = RtmpChunk.defaultSize
         totalBytesSending = 0
         totalBytesSent = 0
+        sendQueue.clear()
+        isFlushing.mutate { $0 = false }
         inputBuffer.removeAll(keepingCapacity: false)
+        let tcpOptions = NWProtocolTCP.Options()
+        tcpOptions.noDelay = true
+        let parameters = NWParameters(tls: tlsOptions, tcp: tcpOptions)
         connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integer: port)),
-            using: .init(tls: tlsOptions)
+            using: parameters
         )
         connection!.viabilityUpdateHandler = viabilityDidChange
         connection!.stateUpdateHandler = stateDidChange
@@ -71,11 +79,83 @@ final class RtmpSocket: @unchecked Sendable {
         }
     }
 
+    private let serializer = RtmpChunkSerializer()
+
+    private var isDropModeActive = false
+
+    /// Heuristic estimate of outbound send pressure.
+    ///
+    /// Computed as:
+    /// bytesSubmittedToNWConnection - bytesCompletedByContentProcessed
+    ///
+    /// This is NOT the actual TCP congestion window,
+    /// kernel socket send buffer occupancy,
+    /// or TCP retransmission queue.
+    ///
+    /// It is an application-level estimate useful for
+    /// congestion detection and adaptive bitrate decisions.
+    func estimatedSendPressure() -> Double {
+        let expectedBufferedSeconds = 0.6
+        let minimumBacklogBytes = 300_000.0 // Evita sensibilidade extrema em bitrates baixos
+        let recentSendRateBytesPerSecond = Double(delegate?.socketGetCurrentBitrate() ?? 500_000) / 8.0
+        let maxBacklog = max(minimumBacklogBytes, recentSendRateBytesPerSecond * expectedBufferedSeconds)
+        let bufferedBytes = Double(max(0, totalBytesSending - totalBytesSent))
+        return min(1.0, bufferedBytes / maxBacklog)
+    }
+
     func write(chunk: RtmpChunk) -> Int {
-        for data in chunk.split(maximumSize: maximumChunkSizeToServer) {
-            write(data: data)
+        let pressure = estimatedSendPressure()
+
+        if isDropModeActive {
+            if pressure < 0.65 {
+                isDropModeActive = false
+            }
+        } else {
+            if pressure > 0.85 {
+                isDropModeActive = true
+                sendQueue.dropInterframes() // Limpa o atrasado na transição
+                // requestKeyframe() can be called here if needed
+            }
         }
+
+        let priority = priorityFor(chunk: chunk)
+
+        // Bloqueia a entrada de novos P-Frames enquanto a congestão persistir
+        if isDropModeActive, priority == .videoInterframe {
+            return chunk.message!.length
+        }
+
+        let serializedChunks = serializer.serialize(
+            chunk: chunk,
+            maximumChunkSize: maximumChunkSizeToServer
+        )
+        for data in serializedChunks {
+            sendQueue.enqueue(data, priority: priority)
+        }
+        flush()
         return chunk.message!.length
+    }
+
+    private func priorityFor(chunk: RtmpChunk) -> RtmpChunkPriority {
+        if chunk.type == .zero || chunk.chunkStreamId == RtmpChunk.ChunkStreamId.control.rawValue {
+            return .control
+        }
+        if chunk.chunkStreamId == FlvTagType.audio.streamId {
+            return .audio
+        }
+        if chunk.chunkStreamId == FlvTagType.video.streamId {
+            if let payload = chunk.message?.encoded, !payload.isEmpty {
+                let firstByte = payload[0]
+                let isExtended = (firstByte & 0b1000_0000) != 0
+                let frameType = isExtended ? ((firstByte & 0b0111_0000) >> 4) : (firstByte >> 4)
+                if frameType == FlvFrameType.key.rawValue {
+                    return .videoKeyframe
+                }
+                return .videoInterframe
+            }
+            return .videoKeyframe
+        }
+        return .metadata
     }
 
     private func setReadyState(state: RtmpSocketReadyState) {
@@ -87,26 +167,57 @@ final class RtmpSocket: @unchecked Sendable {
         delegate?.socketReadyStateChanged(readyState: readyState)
     }
 
-    private func write(data: Data) {
+    private func flush() {
+        var shouldFlush = false
+        isFlushing.mutate {
+            if !$0 {
+                $0 = true
+                shouldFlush = true
+            }
+        }
+        guard shouldFlush else { return }
+
+        queue.async { [weak self] in
+            self?.performFlush()
+        }
+    }
+
+    private func performFlush() {
+        guard let data = sendQueue.dequeue() else {
+            isFlushing.mutate { $0 = false }
+            return
+        }
+
         let size = Int64(data.count)
         totalBytesSending += size
+
         connection?.send(content: data, completion: .contentProcessed { [weak self] error in
-            guard let self else {
-                return
-            }
+            guard let self else { return }
             if error != nil {
                 close(isDisconnected: true)
                 return
             }
+
             totalBytesSent += size
-        })
-        delegate?.socketUpdateStats(totalBytesSent: totalBytesSending)
-        if hasTooMuchDataBuffered() {
-            logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
-            queue.async {
-                self.close(isDisconnected: true)
+            delegate?.socketUpdateStats(totalBytesSent: totalBytesSending)
+
+            if hasTooMuchDataBuffered() {
+                logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
+                queue.async {
+                    self.close(isDisconnected: true)
+                }
+                return
             }
-        }
+
+            queue.async {
+                self.performFlush()
+            }
+        })
+    }
+
+    private func write(data: Data) {
+        sendQueue.enqueue(data, priority: .control)
+        flush()
     }
 
     private func hasTooMuchDataBuffered() -> Bool {

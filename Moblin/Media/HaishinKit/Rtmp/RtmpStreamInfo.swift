@@ -33,10 +33,11 @@ class RtmpStreamInfo {
 
     func onWritten(sequence: Int64) {
         latestWrittenSequence = sequence
-        // Just for safety
-        if sendTimings.count < 500 {
-            sendTimings.append(SendTiming(timestamp: .now, sequence: sequence))
+        // Keep a rolling window instead of dropping new timings completely
+        if sendTimings.count >= 5000 {
+            sendTimings.removeFirst()
         }
+        sendTimings.append(SendTiming(timestamp: .now, sequence: sequence))
         let packetsInFlight = packetsInFlight()
         stats.mutate {
             $0.packetsInFlight = packetsInFlight

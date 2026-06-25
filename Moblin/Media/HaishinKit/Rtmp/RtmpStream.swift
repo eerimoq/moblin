@@ -58,11 +58,18 @@ private enum State {
     case publishing
 }
 
+import Combine
+
 class RtmpStream: @unchecked Sendable {
+    @Published var currentMetrics: RtmpStreamMetrics?
+    private var metricsTimer: SimpleTimer?
     let info = RtmpStreamInfo()
+    var onKeyframeSent: (() -> Void)?
     var streamId: UInt32 = 0
     private var state: State = .initialized
     private var startedAt = Date()
+    private var reconnectAttempts = 0
+    private let reconnectPolicy = RtmpReconnectPolicy()
     private var audioChunkType: RtmpChunkType = .zero
     private var videoChunkType: RtmpChunkType = .zero
     private var dataTimeStamps: [String: Date] = [:]
@@ -79,6 +86,9 @@ class RtmpStream: @unchecked Sendable {
     private var videoTimeStampDelta = 0.0
     private var prevRebasedAudioTimeStamp: Double?
     private var prevRebasedVideoTimeStamp: Double?
+    private var lastSessionTimestampOffset: UInt32 = 0
+    private var lastSentTimestampInSession: UInt32 = 0
+    var enhancedCapabilities = RtmpEnhancedCapabilities(supportedFourCCs: [.avc1])
     private let processor: Processor
     weak var delegate: (any RtmpStreamDelegate)?
 
@@ -88,6 +98,7 @@ class RtmpStream: @unchecked Sendable {
         self.delegate = delegate
         self.queue = queue
         connectTimer = SimpleTimer(queue: queue)
+        metricsTimer = SimpleTimer(queue: queue)
         connection = RtmpConnection(name: name, queue: queue)
         connection.stream = self
     }
@@ -105,12 +116,25 @@ class RtmpStream: @unchecked Sendable {
 
     func disconnect() {
         queue.async {
+            self.reconnectAttempts = 0
+            self.lastSessionTimestampOffset = 0
+            self.lastSentTimestampInSession = 0
             self.disconnectInternal()
         }
     }
 
-    func reconnectSoon() {
-        queue.asyncAfter(deadline: .now() + 5) { [weak self] in
+    func reconnectSoon(errorDescription: String? = nil) {
+        guard reconnectPolicy.shouldRetry(forError: errorDescription) else {
+            logger.info("rtmp: \(name): Fatal error '\(errorDescription ?? "")', stopping reconnect.")
+            closeInternal()
+            return
+        }
+
+        let delay = reconnectPolicy.delay(forAttempt: reconnectAttempts)
+        reconnectAttempts += 1
+
+        logger.info("rtmp: \(name): Reconnecting in \(delay) seconds (attempt \(reconnectAttempts))")
+        queue.asyncAfter(deadline: .now() + delay) { [weak self] in
             self?.connectInternal()
         }
     }
@@ -122,7 +146,31 @@ class RtmpStream: @unchecked Sendable {
     func closeInternal() {
         setState(state: .initialized)
         stopConnectTimer()
+        metricsTimer?.stop()
         processor.stopEncoding(self)
+    }
+
+    func getMetrics() -> RtmpStreamMetrics {
+        let stats = info.stats.value
+        let bitrateStats = info.bitrateStats.value
+
+        let totalSent = connection.socket.totalBytesSent
+        let totalSending = connection.socket.totalBytesSending
+
+        let utilization = connection.socket.estimatedSendPressure()
+
+        return RtmpStreamMetrics(
+            timestamp: .now,
+            instantBitrate: Int(bitrateStats.latestSpeed) * 8, // bps
+            bytesSentTotal: UInt64(totalSent),
+            estimatedRttMs: stats.rttMs > 0 ? stats.rttMs : nil,
+            sendBufferUtilization: utilization,
+            currentChunkSize: connection.socket.maximumChunkSizeToServer,
+            reconnectAttempts: reconnectAttempts,
+            videoTimestampDrift: 0, // Not easily exposed right now
+            audioTimestampDrift: 0,
+            lastReconnectReason: nil // Can populate later if we store it
+        )
     }
 
     func onInternal(data: AsObject) {
@@ -132,6 +180,7 @@ class RtmpStream: @unchecked Sendable {
         delegate?.rtmpStreamStatus(self, code: code)
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
+            reconnectAttempts = 0
             setState(state: .initialized)
             sendReleaseStream()
             sendFCPublish()
@@ -139,9 +188,17 @@ class RtmpStream: @unchecked Sendable {
         case RtmpStreamCode.publishStart.rawValue:
             if state != .initialized {
                 setState(state: .publishing)
+                startMetricsTimer()
             }
         default:
             break
+        }
+    }
+
+    private func startMetricsTimer() {
+        metricsTimer?.startPeriodic(interval: 1.0) { [weak self] in
+            guard let self else { return }
+            currentMetrics = getMetrics()
         }
     }
 
@@ -157,6 +214,8 @@ class RtmpStream: @unchecked Sendable {
             sendDeleteStream()
             sendCloseStream()
             processor.stopEncoding(self)
+            lastSessionTimestampOffset += lastSentTimestampInSession + 100
+            lastSentTimestampInSession = 0
         }
         switch state {
         case .open:
@@ -326,10 +385,12 @@ class RtmpStream: @unchecked Sendable {
         guard state == .publishing else {
             return
         }
+        lastSentTimestampInSession = max(lastSentTimestampInSession, timestamp)
+        let adjustedTimestamp = timestamp + lastSessionTimestampOffset
         let length = connection.socket.write(chunk: RtmpChunk(
             type: audioChunkType,
             chunkStreamId: FlvTagType.audio.streamId,
-            message: RtmpAudioMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
+            message: RtmpAudioMessage(streamId: streamId, timestamp: adjustedTimestamp, payload: buffer)
         ))
         audioChunkType = .one
         info.bitrateStats.mutate { $0.add(bytesTransferred: length) }
@@ -339,10 +400,12 @@ class RtmpStream: @unchecked Sendable {
         guard state == .publishing else {
             return
         }
+        lastSentTimestampInSession = max(lastSentTimestampInSession, timestamp)
+        let adjustedTimestamp = timestamp + lastSessionTimestampOffset
         let length = connection.socket.write(chunk: RtmpChunk(
             type: videoChunkType,
             chunkStreamId: FlvTagType.video.streamId,
-            message: RtmpVideoMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
+            message: RtmpVideoMessage(streamId: streamId, timestamp: adjustedTimestamp, payload: buffer)
         ))
         videoChunkType = .one
         info.bitrateStats.mutate { $0.add(bytesTransferred: length) }
@@ -448,7 +511,11 @@ class RtmpStream: @unchecked Sendable {
             return
         }
         var buffer: Data
-        let frameType = sampleBuffer.getIsSync() ? FlvFrameType.key : FlvFrameType.inter
+        let isKeyframe = sampleBuffer.getIsSync()
+        if isKeyframe {
+            onKeyframeSent?()
+        }
+        let frameType = isKeyframe ? FlvFrameType.key : FlvFrameType.inter
         switch format {
         case .h264:
             buffer = makeAvcVideoTagHeader(frameType, .nal)

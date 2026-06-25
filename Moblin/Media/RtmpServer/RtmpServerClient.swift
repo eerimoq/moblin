@@ -14,6 +14,7 @@ private enum ClientState {
 
 private enum ChunkState {
     case basicHeaderFirstByte
+    case basicHeaderRemainingBytes(format: UInt8, firstByte: UInt8)
     case messageHeaderType0
     case messageHeaderType1
     case messageHeaderType2
@@ -162,6 +163,8 @@ class RtmpServerClient: @unchecked Sendable {
         switch chunkState {
         case .basicHeaderFirstByte:
             handleDataHandshakeDoneBasicHeaderFirstByte(data: data)
+        case let .basicHeaderRemainingBytes(format, firstByte):
+            handleBasicHeaderRemainingBytes(format: format, firstByte: firstByte, data: data)
         case .messageHeaderType0:
             handleDataHandshakeDoneMessageHeaderType0(data: data)
         case .messageHeaderType1:
@@ -191,21 +194,46 @@ class RtmpServerClient: @unchecked Sendable {
         }
         let firstByte = data[0]
         let format = firstByte >> 6
-        let chunkStreamId = UInt16(firstByte & 0x3F)
-        switch chunkStreamId {
-        case 0:
-            stopInternal(reason: "Two bytes basic header is not implemented")
+        let chunkStreamId = firstByte & 0x3F
+        if chunkStreamId == 0 {
+            chunkState = .basicHeaderRemainingBytes(format: format, firstByte: firstByte)
+            receiveData(size: 1)
             return
-        case 1:
-            stopInternal(reason: "Three bytes basic header is not implemented")
+        } else if chunkStreamId == 1 {
+            chunkState = .basicHeaderRemainingBytes(format: format, firstByte: firstByte)
+            receiveData(size: 2)
             return
-        default:
-            break
         }
-        if chunkStreams[chunkStreamId] == nil {
-            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
+        setupChunkStream(streamId: UInt16(chunkStreamId), format: format)
+    }
+
+    private func handleBasicHeaderRemainingBytes(format: UInt8, firstByte: UInt8, data: Data) {
+        let chunkStreamId = firstByte & 0x3F
+        let streamId: UInt16
+        if chunkStreamId == 0 {
+            guard data.count == 1 else {
+                stopInternal(reason: "Wrong length \(data.count) in 2-byte basic header")
+                return
+            }
+            streamId = UInt16(data[0]) + 64
+        } else if chunkStreamId == 1 {
+            guard data.count == 2 else {
+                stopInternal(reason: "Wrong length \(data.count) in 3-byte basic header")
+                return
+            }
+            streamId = UInt16(data[0]) * 256 + UInt16(data[1]) + 64 // Big endian decoding
+        } else {
+            stopInternal(reason: "Invalid state in remaining basic header bytes")
+            return
         }
-        chunkStream = chunkStreams[chunkStreamId]
+        setupChunkStream(streamId: streamId, format: format)
+    }
+
+    private func setupChunkStream(streamId: UInt16, format: UInt8) {
+        if chunkStreams[streamId] == nil {
+            chunkStreams[streamId] = RtmpServerChunkStream(client: self, streamId: streamId)
+        }
+        chunkStream = chunkStreams[streamId]
         // logger.info("rtmp-server: \(chunkStreamId): Chunk message header format: \(format)")
         switch format {
         case 0:

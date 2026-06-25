@@ -104,3 +104,6 @@ test/*.png
 test/*.dot
 test/logs
 __pycache__
+
+# Python virtual env
+venv/

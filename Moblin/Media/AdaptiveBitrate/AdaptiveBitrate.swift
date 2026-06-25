@@ -15,6 +15,7 @@ struct StreamStats {
     let latency: Int32?
     let mbpsSendRate: Double?
     let relaxed: Bool?
+    var sendBufferUtilization: Double?
 
     // To not push too high bitrate after static scene. The encoder may output way
     // lower bitrate than configured.

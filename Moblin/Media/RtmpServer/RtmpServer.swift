@@ -75,7 +75,7 @@ class RtmpServer: @unchecked Sendable {
 
     private func setupListener() {
         let options = NWProtocolTCP.Options()
-        // options.noDelay = true
+        options.noDelay = true
         let parameters = NWParameters(tls: nil, tcp: options)
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.any),

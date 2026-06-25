@@ -127,7 +127,7 @@ class RtmpConnection: @unchecked Sendable {
         }
         switch RtmpConnectionCode(rawValue: code) {
         case .connectSuccess:
-            handleConnectSuccess()
+            handleConnectSuccess(data: data)
         case .connectRejected:
             handleConnectRejected(data: data)
         case .connectClosed:
@@ -137,8 +137,13 @@ class RtmpConnection: @unchecked Sendable {
         }
     }
 
-    private func handleConnectSuccess() {
-        socket.maximumChunkSizeToServer = 1024 * 8
+    private func handleConnectSuccess(data: AsObject) {
+        stream?.enhancedCapabilities = RtmpEnhancedCapabilities.fromConnectResponse(data)
+
+        let targetBitrate = stream?.info.bitrateStats.value.latestSpeed ?? 0
+        // Reduce chunk size to 32KB / 64KB max to prevent HOL blocking on bad mobile networks
+        let chunkSize = targetBitrate > 4_000_000 ? 1024 * 64 : 1024 * 32
+        socket.maximumChunkSizeToServer = chunkSize
         _ = socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
@@ -200,6 +205,10 @@ class RtmpConnection: @unchecked Sendable {
                 "videoFunction": .number(Double(VideoFunction.clientSeek.rawValue)),
                 "pageUrl": .null,
                 "objectEncoding": .number(0),
+                "videoFourCcInfoMap": .object([
+                    "hvc1": .object(["codecHeaderType": .string("sequence")]),
+                    "av01": .object(["codecHeaderType": .string("sequence")]),
+                ]),
             ],
             arguments: []
         )
@@ -296,6 +305,11 @@ extension RtmpConnection: RtmpSocketDelegate {
 
     func socketUpdateStats(totalBytesSent: Int64) {
         stream?.info.onWritten(sequence: totalBytesSent)
+    }
+
+    func socketGetCurrentBitrate() -> UInt32 {
+        let latestBytesPerSecond = stream?.info.bitrateStats.value.latestSpeed ?? 62500
+        return UInt32(latestBytesPerSecond * 8)
     }
 
     func socketDataReceived(data: Data) -> Data {
