@@ -11,5 +11,6 @@ class Ffmpeg:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._server.kill()
-        self._server.wait()
+        if self._server is not None:
+            self._server.kill()
+            self._server.wait()

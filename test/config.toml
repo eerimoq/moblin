@@ -1,0 +1,7 @@
+[general]
+# The IP address of the device that runs Moblin.
+moblin-ip-address = "iphone16pro.home"
+# The IP address of the machine that runs the test suite.
+tester-ip-address = "macpro.home"
+remote-control-port = 2345
+remote-control-password = "1234"

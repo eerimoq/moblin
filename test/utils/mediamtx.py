@@ -23,8 +23,9 @@ class MediaMtx:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._server.kill()
-        self._server.wait()
+        if self._server is not None:
+            self._server.kill()
+            self._server.wait()
 
     def wait_for_rtmp_stream(self, path, bytes_received):
         end_time = time.monotonic() + 15
