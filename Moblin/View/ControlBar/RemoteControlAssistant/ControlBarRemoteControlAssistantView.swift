@@ -345,7 +345,7 @@ private struct LiveView: View {
         ))
         .confirmationDialog("", isPresented: $presentingConfirm) {
             Button(pendingStreaming ? "Go Live" : "End") {
-                model.remoteControlAssistantSetStream(on: pendingStreaming)
+                model.remoteControlAssistantSetLive(on: pendingStreaming)
                 remoteControl.streaming = pendingStreaming
             }
         }

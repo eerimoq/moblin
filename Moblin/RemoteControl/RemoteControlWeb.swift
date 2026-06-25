@@ -11,7 +11,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetMic(id: String)
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
-    func remoteControlWebSetStream(on: Bool)
+    func remoteControlWebSetLive(on: Bool)
     func remoteControlWebSetPreviewStream(on: Bool)
     func remoteControlWebSetZoom(x: Float)
     func remoteControlWebSetZoomPreset(id: UUID)
@@ -378,8 +378,8 @@ class RemoteControlWeb: @unchecked Sendable {
         case let .setRecord(on: on):
             delegate.remoteControlWebSetRecord(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
-        case let .setStream(on: on):
-            delegate.remoteControlWebSetStream(on: on)
+        case let .setLive(on: on):
+            delegate.remoteControlWebSetLive(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setPreviewStream(on: on):
             delegate.remoteControlWebSetPreviewStream(on: on)

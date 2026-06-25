@@ -444,7 +444,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchRemoteControl() {
-                self.remoteControlAssistantSetStream(on: value)
+                self.remoteControlAssistantSetLive(on: value)
             } else {
                 if value {
                     self.startStream()

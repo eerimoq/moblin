@@ -124,8 +124,8 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .setRecord(on: on), onSuccess: onSuccess)
     }
 
-    func setStream(on: Bool, onSuccess: @escaping () -> Void) {
-        performRequestNoResponseData(data: .setStream(on: on), onSuccess: onSuccess)
+    func setLive(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setLive(on: on), onSuccess: onSuccess)
     }
 
     func setPreviewStream(on: Bool, onSuccess: @escaping () -> Void) {

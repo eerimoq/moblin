@@ -14,7 +14,7 @@ enum RemoteControlRequest: Codable {
     case getStatus
     case getSettings
     case setRecord(on: Bool)
-    case setStream(on: Bool)
+    case setLive(on: Bool)
     case setPreviewStream(on: Bool)
     case setZoom(x: Float)
     case setZoomPreset(id: UUID)

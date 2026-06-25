@@ -200,8 +200,8 @@ extension Model {
         remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
-    func remoteControlAssistantSetStream(on: Bool) {
-        remoteControlAssistant?.setStream(on: on) {
+    func remoteControlAssistantSetLive(on: Bool) {
+        remoteControlAssistant?.setLive(on: on) {
             DispatchQueue.main.async {
                 self.updateRemoteControlAssistantStatus()
             }
@@ -718,7 +718,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         updateQuickButtonStates()
     }
 
-    func remoteControlStreamerSetStream(on: Bool) {
+    func remoteControlStreamerSetLive(on: Bool) {
         if on {
             startStream()
         } else {
@@ -1138,8 +1138,8 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
         remoteControlStreamerSetRecord(on: on)
     }
 
-    func remoteControlWebSetStream(on: Bool) {
-        remoteControlStreamerSetStream(on: on)
+    func remoteControlWebSetLive(on: Bool) {
+        remoteControlStreamerSetLive(on: on)
     }
 
     func remoteControlWebSetPreviewStream(on: Bool) {
