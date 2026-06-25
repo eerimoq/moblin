@@ -482,6 +482,13 @@ struct StreamYouTubeSettingsView: View {
         }
     }
 
+    private func showFailedToFetchVideoIdsToast() {
+        model.makeErrorToast(
+            title: String(localized: "Failed to fetch YouTube Video IDs"),
+            subTitle: String(localized: "You must be live on YouTube for this to work.")
+        )
+    }
+
     var body: some View {
         Form {
             Section {
@@ -508,25 +515,44 @@ struct StreamYouTubeSettingsView: View {
                     placeholder: "@erimo144"
                 )
                 TextEditNavigationView(
-                    title: String(localized: "Video id"),
+                    title: String(localized: "Video IDs"),
                     value: String(stream.youTubeVideoIds),
                     onSubmit: submitVideoIds,
                     placeholder: "FekKCUN5W8U"
                 )
-                TextButtonView("Fetch Video ID") {
-                    Task { @MainActor in
-                        do {
-                            let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
-                            submitVideoIds(value: videoId)
-                        } catch {
-                            model.makeErrorToast(
-                                title: String(localized: "Failed to fetch YouTube Video ID"),
-                                subTitle: String(localized: "You must be live on YouTube for this to work.")
-                            )
+                TextButtonView("Fetch Video IDs") {
+                    if stream.youTubeAuthState != nil {
+                        model.getYouTubeApi(stream: stream) { youTubeApi in
+                            guard let youTubeApi else {
+                                showFailedToFetchVideoIdsToast()
+                                return
+                            }
+                            youTubeApi.listLiveBroadcasts(status: "active") { response in
+                                switch response {
+                                case let .success(listResponse):
+                                    let videoIds = listResponse.items.map(\.id)
+                                    guard !videoIds.isEmpty else {
+                                        showFailedToFetchVideoIdsToast()
+                                        return
+                                    }
+                                    submitVideoIds(value: videoIds.joined(separator: ","))
+                                default:
+                                    showFailedToFetchVideoIdsToast()
+                                }
+                            }
+                        }
+                    } else {
+                        Task { @MainActor in
+                            do {
+                                let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
+                                submitVideoIds(value: videoId)
+                            } catch {
+                                showFailedToFetchVideoIdsToast()
+                            }
                         }
                     }
                 }
-                .disabled(stream.youTubeHandle.isEmpty)
+                .disabled(stream.youTubeAuthState == nil && stream.youTubeHandle.isEmpty)
             } footer: {
                 Text("The Video ID unique for every live stream.")
             }
