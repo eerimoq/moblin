@@ -5,7 +5,7 @@ moblin-ip-address = "iphone16pro.home"
 moblin-ip-address = "macpro.home"
 
 [general]
-device = "macpro"
+device = "iphone16pro"
 tester-ip-address = "macpro.home"
 remote-control-port = 2345
 remote-control-password = "1234"

@@ -10,14 +10,14 @@ def create_settings(config):
     return {
         "streams": [
             {
-                "url": f"rtmp://{tester_ip_address}:1935/test",
                 "name": "RTMP",
                 "enabled": True,
+                "url": f"rtmp://{tester_ip_address}:1935/test",
                 "rtmp": {"adaptiveBitrateEnabled": False},
             },
             {
-                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
                 "name": "SRT",
+                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
                 "srt": {"adaptiveBitrateEnabled": False},
             },
         ],
@@ -40,8 +40,9 @@ def main():
     args = parser.parse_args()
     config = tomllib.loads(args.config_toml.read_text())
     settings = create_settings(config)
-    with open(f"{config["general"]["device"]}-settings.json", "w") as fout:
-        fout.write(json.dumps(settings, indent=4))
+    Path(f"{config["general"]["device"]}-settings.json").write_text(
+        json.dumps(settings, indent=4), encoding="utf-8"
+    )
 
 
 main()

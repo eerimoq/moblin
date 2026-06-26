@@ -1,9 +1,13 @@
-# Moblin settings
+# Prerequisites
 
-## Streams
-RTMP: rtmp://macpro.home:1935/test
-SRT: srt://macpro.home:8890?streamid=publish:test
+1. `pip install -r ../requirements.txt`
+2. Install mediamtx.
 
-## Remote control
-Password: 1234
-Assistant URL: ws://macpro.home:2345
+# Moblin device configuration
+
+1. Generate settings with `make -C .. test-generate-device-settings`.
+2. Import the generated settings into Moblin.
+
+# Run the tests
+
+`make -C .. test`

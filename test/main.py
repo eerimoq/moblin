@@ -3,7 +3,6 @@ import tomllib
 from pathlib import Path
 import systest
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
-
 from tests.stream import StreamSrtFromMoblinToMediaMtx
 
 # from tests.ingests import AllIngestsInParallel
