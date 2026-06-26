@@ -37,7 +37,7 @@ class MediaMtx:
             self._server.wait()
 
     def wait_for_rtmp_stream(self, path, bytes_received):
-        end_time = time.monotonic() + 15
+        end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             response = self._api_get("rtmpconns/list")
             try:
@@ -53,7 +53,7 @@ class MediaMtx:
         raise Exception("Timeout waiting for RTMP stream to MediaMTX")
 
     def wait_for_srt_stream(self, path, bytes_received):
-        end_time = time.monotonic() + 15
+        end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             response = self._api_get("srtconns/list")
             try:

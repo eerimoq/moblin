@@ -74,6 +74,10 @@ test:
 	rm -rf test/logs test/mediamtx.log
 	cd test && python main.py config.toml
 
+test-generate-device-settings:
+	rm -f test/*-settings.json
+	cd test && python generate_device_settings.py config.toml && cat *-settings.json | pbcopy
+
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
 
