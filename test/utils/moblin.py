@@ -47,6 +47,9 @@ class Moblin:
         except subprocess.CalledProcessError:
             time.sleep(3)
 
+    def set_scene(self, name):
+        self._execute("set_scene", name)
+
     def go_live(self):
         self._execute("go_live")
 

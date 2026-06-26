@@ -41,7 +41,10 @@ def create_settings(config):
                 },
             },
         ],
-        "scenes": [{"name": "Front", "cameraPosition": "Front", "enabled": True}],
+        "scenes": [
+            {"name": "Front", "cameraPosition": "Front", "enabled": True},
+            {"name": "Screen", "cameraPosition": "Screen capture", "enabled": True},
+        ],
         "remoteControl": {
             "server": {
                 "enabled": True,

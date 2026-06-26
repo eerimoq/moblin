@@ -5,6 +5,7 @@ import systest
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
 from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
+from tests.scenes import SceneSwitchMultipleTimes
 
 # from tests.ingests import AllIngestsInParallel
 from utils.moblin import Moblin
@@ -20,11 +21,10 @@ def main():
     moblin = Moblin(general["remote-control-port"], general["remote-control-password"])
     with moblin:
         sequencer.run(
+            SceneSwitchMultipleTimes(moblin),
             StreamRtmpFromMoblinToMediaMtx(moblin),
             StreamSrtFromMoblinToMediaMtx(moblin),
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
-            # RTMP multistream.
-            # Switch scenes fast.
             # One test per ingest type?
             # Widgets?
             # High load tests.
