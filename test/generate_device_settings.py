@@ -66,9 +66,8 @@ def main():
     args = parser.parse_args()
     config = tomllib.loads(args.config_toml.read_text())
     settings = create_settings(config)
-    Path(f"{config["general"]["device"]}-settings.json").write_text(
-        json.dumps(settings, indent=4), encoding="utf-8"
-    )
+    settings_json = Path(f"{config["general"]["device"]}-settings.json")
+    settings_json.write_text(json.dumps(settings, indent=4), encoding="utf-8")
 
 
 main()
