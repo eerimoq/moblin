@@ -33,7 +33,7 @@ extension Model {
         httpProxyServer?.start()
     }
 
-    private func stopHttpProxyServer() {
+    func stopHttpProxyServer() {
         httpProxyServer?.stop()
         httpProxyServer = nil
         httpProxyPort = nil

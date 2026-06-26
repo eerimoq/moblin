@@ -1536,6 +1536,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopCatPrinters()
         stopWorkoutDevices()
         stopRemoteControlAssistant()
+        stopHttpProxyServer()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
         writeFileLogToFile()
@@ -2054,6 +2055,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func reloadBrowserWidgets() {
+        reloadHttpProxyServer()
         for browser in browsers {
             browser.browserEffect.reload()
         }
