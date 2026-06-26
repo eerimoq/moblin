@@ -849,6 +849,7 @@ private nonisolated(unsafe) let allBundledAlertsMediaGalleryImages = [
 ]
 
 private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
+    SettingsAlertsMediaGalleryItem(name: "Mute loop"),
     SettingsAlertsMediaGalleryItem(name: "Notification 2"),
     SettingsAlertsMediaGalleryItem(name: "Boing"),
     SettingsAlertsMediaGalleryItem(name: "Cash register"),
@@ -1636,7 +1637,7 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
         existingButton.name = button.name
         existingButton.imageOn = button.imageOn
         existingButton.imageOff = button.imageOff
-        if existingButton.type == .gemini || existingButton.type == .editWidgets, existingButton.page == 3 {
+        if existingButton.type == .editWidgets, existingButton.page == 3 {
             existingButton.page = 1
         }
     } else {
@@ -1725,11 +1726,6 @@ private func addMissingQuickButtonsPageOne(database: Database) {
     button = SettingsQuickButton(type: .editWidgets,
                                  imageOn: "arrow.up.and.down.and.arrow.left.and.right",
                                  imageOff: "arrow.up.and.down.and.arrow.left.and.right",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .gemini,
-                                 imageOn: "mic.fill",
-                                 imageOff: "mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
@@ -2350,5 +2346,17 @@ final class Settings: @unchecked Sendable {
                 sceneWidget.layout.updateSizeString()
             }
         }
+    }
+}
+
+class SettingsGemini: Codable, ObservableObject {
+    var modelName: String = "gemini-3.5-flash"
+    var enabled: Bool = false
+    var remoteControl: Bool = false
+    var systemInstruction: String = ""
+
+    func storeApiKey(key _: String) {}
+    func loadApiKey() -> String {
+        ""
     }
 }

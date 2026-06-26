@@ -37,6 +37,15 @@ class AudioPlayer {
         player.delegate = delegate
     }
 
+    var numberOfLoops: Int {
+        get {
+            player.numberOfLoops
+        }
+        set {
+            player.numberOfLoops = newValue
+        }
+    }
+
     func play() {
         KeepSpeakerAlivePlayer.shared.audioPlayed()
         player.play()

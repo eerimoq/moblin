@@ -415,8 +415,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var geminiOverlayYouTubeWidth: Int = 600
     @Published var geminiOverlayYouTubeHeight: Int = 400
     @Published var geminiOverlayYouTubeOpacity: Double = 1.0
-    let geminiService = GeminiService()
-    let voiceRecognizer = VoiceCommandRecognizer()
     @Published var selectedWidgetForInteraction: WidgetInScene? = nil
     @Published var showBrowser = false
     @Published var showNavigation = false
@@ -557,6 +555,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var bingoCardEffects: [UUID: BingoCardEffect] = [:]
     var pomodoroTimerEffects: [UUID: PomodoroTimerEffect] = [:]
     var pomodoroAudioPlayer: AudioPlayer?
+    var muteAudioPlayer: AudioPlayer?
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
     var enabledChatEmoteComboEffects: [ChatEmoteComboEffect] = []
@@ -953,7 +952,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func updateQuickButtonStates() {
         for page in 0 ..< controlBarPages {
             let states = database.quickButtons.filter { button in
-                button.enabled && button.page == page + 1
+                button.enabled && button.page == page + 1 &&
+                    button.type != .crt &&
+                    button.type != .beauty &&
+                    button.type != .pinch &&
+                    button.type != .whirlpool &&
+                    button.type != .skipCurrentTts &&
+                    button.type != .pauseTts &&
+                    button.type != .pixellate
             }.map { button in
                 if let state = getQuickButtonState(type: button.type) {
                     state.isOn = button.isOn
@@ -3045,6 +3051,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
         remoteControlStateChanged(state: .init(muted: isMuteOn))
+        if isMuteOn {
+            if database.audio.muteSoundEnabled {
+                muteAudioPlayer?.stop()
+                let soundId = database.audio.muteSoundId ?? database.alertsMediaGallery.bundledSounds[0].id
+                if let url = getAlertSoundUrl(soundId: soundId) {
+                    do {
+                        let player = try AudioPlayer(contentsOf: url)
+                        player.numberOfLoops = -1
+                        player.play()
+                        muteAudioPlayer = player
+                    } catch {
+                        logger.info("Failed to play mute loop sound: \(error)")
+                    }
+                }
+            }
+        } else {
+            muteAudioPlayer?.stop()
+            muteAudioPlayer = nil
+        }
     }
 
     private func makeFlameRedToast() {

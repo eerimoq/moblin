@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 private struct MicView: View {
     let model: Model
@@ -145,7 +146,193 @@ struct AudioSettingsView: View {
             } footer: {
                 Text("Mono audio only uses output channel 1. Stereo audio uses both output channels.")
             }
+            Section {
+                Toggle("Mute loop sound", isOn: $audio.muteSoundEnabled)
+                if audio.muteSoundEnabled {
+                    NavigationLink {
+                        MuteSoundSelectorView(
+                            model: model,
+                            soundId: $audio.muteSoundId
+                        )
+                        .environmentObject(model)
+                    } label: {
+                        HStack {
+                            Text("Sound")
+                            Spacer()
+                            GrayTextView(text: getMuteSoundName(model: model, soundId: audio.muteSoundId))
+                        }
+                    }
+                }
+            } header: {
+                Text("Mute feedback")
+            } footer: {
+                Text("Play a looping alert sound while the microphone is muted.")
+            }
         }
         .navigationTitle("Audio")
+    }
+}
+
+@MainActor
+private func getMuteSoundName(model: Model, soundId: UUID?) -> String {
+    if let soundId {
+        model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "-- None --")
+    } else {
+        model.getAllAlertSounds().first?.name ?? String(localized: "Notification 2")
+    }
+}
+
+private struct MuteCustomSoundView: View {
+    let model: Model
+    let media: SettingsAlertsMediaGalleryItem
+    @State var showPicker = false
+    @State var audioPlayer: AudioPlayer?
+
+    private func onUrl(url: URL) {
+        model.alertMediaStorage.add(id: media.id, url: url)
+        if let url = model.getAlertSoundUrl(soundId: media.id) {
+            audioPlayer = try? AudioPlayer(contentsOf: url)
+        }
+        model.updateAlertsSettings()
+        model.objectWillChange.send()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "Name"),
+                    value: media.name,
+                    onSubmit: {
+                        media.name = $0
+                    }
+                )
+            }
+            Section {
+                if let audioPlayer {
+                    TextButtonView("Play") {
+                        audioPlayer.play()
+                    }
+                }
+            }
+            Section {
+                Button {
+                    showPicker = true
+                    model.onDocumentPickerUrl = onUrl
+                } label: {
+                    HCenter {
+                        if audioPlayer != nil {
+                            Text("Select another sound")
+                        } else {
+                            Text("Select sound")
+                        }
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showPicker) {
+            AlertPickerView(type: .audio)
+                .environmentObject(model)
+        }
+        .onAppear {
+            if let url = model.getAlertSoundUrl(soundId: media.id) {
+                audioPlayer = try? AudioPlayer(contentsOf: url)
+            }
+        }
+        .navigationTitle(media.name)
+    }
+}
+
+private struct MuteSoundSelectorView: View {
+    let model: Model
+    @Binding var soundId: UUID?
+    @State private var previewPlayer: AudioPlayer?
+    @State private var showPicker = false
+    @State private var newlyCreatedSound: SettingsAlertsMediaGalleryItem?
+
+    private func onUrl(url: URL) {
+        guard let sound = newlyCreatedSound else { return }
+        model.alertMediaStorage.add(id: sound.id, url: url)
+        let fileName = url.deletingPathExtension().lastPathComponent
+        sound.name = fileName
+        soundId = sound.id
+        model.updateAlertsSettings()
+        model.objectWillChange.send()
+    }
+
+    private func deleteSound(at offsets: IndexSet) {
+        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
+        model.fixAlertMedias()
+        model.objectWillChange.send()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("", selection: $soundId) {
+                    ForEach(model.getAllAlertSounds()) { sound in
+                        HStack {
+                            Text(sound.name)
+                            Spacer()
+                            Button {
+                                guard let url = model.getAlertSoundUrl(soundId: sound.id) else {
+                                    return
+                                }
+                                previewPlayer = try? AudioPlayer(contentsOf: url)
+                                previewPlayer?.play()
+                            } label: {
+                                Image(systemName: "play.fill")
+                            }
+                        }
+                        .tag(sound.id as UUID?)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Select Sound")
+            }
+
+            Section {
+                List {
+                    ForEach(model.database.alertsMediaGallery.customSounds) { sound in
+                        NavigationLink {
+                            MuteCustomSoundView(model: model, media: sound)
+                                .environmentObject(model)
+                        } label: {
+                            Text(sound.name)
+                        }
+                        .contextMenuDeleteButton {
+                            if let offsets = makeOffsets(
+                                model.database.alertsMediaGallery.customSounds,
+                                sound.id
+                            ) {
+                                deleteSound(at: offsets)
+                            }
+                        }
+                    }
+                    .onDelete(perform: deleteSound)
+                }
+                TextButtonView("Add custom sound") {
+                    let sound = SettingsAlertsMediaGalleryItem(name: "Custom Sound")
+                    model.database.alertsMediaGallery.customSounds.append(sound)
+                    newlyCreatedSound = sound
+                    model.onDocumentPickerUrl = onUrl
+                    showPicker = true
+                }
+            } header: {
+                Text("Custom Sounds")
+            } footer: {
+                Text("Add custom sounds and select a file from your device files.")
+            }
+        }
+        .sheet(isPresented: $showPicker) {
+            AlertPickerView(type: .audio)
+                .environmentObject(model)
+        }
+        .onDisappear {
+            previewPlayer = nil
+        }
+        .navigationTitle("Sound")
     }
 }
