@@ -4,7 +4,8 @@ from pathlib import Path
 import systest
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
 
-# from tests.stream import StreamSrtFromMoblinToMediaMtx
+from tests.stream import StreamSrtFromMoblinToMediaMtx
+
 # from tests.ingests import AllIngestsInParallel
 from utils.moblin import Moblin
 
@@ -20,7 +21,7 @@ def main():
     with moblin:
         sequencer.run(
             StreamRtmpFromMoblinToMediaMtx(moblin),
-            # StreamSrtFromMoblinToMediaMtx(moblin),
+            StreamSrtFromMoblinToMediaMtx(moblin),
             # AllIngestsInParallel(moblin),
         )
     sequencer.report_and_exit()

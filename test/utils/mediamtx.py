@@ -4,6 +4,8 @@ import subprocess
 import time
 import requests
 
+from .utils import log_output
+
 LOGGER = logging.getLogger(__name__)
 UTILS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,7 +16,14 @@ class MediaMtx:
 
     def __enter__(self):
         config_path = os.path.join(UTILS_DIR, "mediamtx.yml")
-        self._server = subprocess.Popen(["mediamtx", config_path])
+        self._server = subprocess.Popen(
+            ["mediamtx", config_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        log_output(self._server.stdout, LOGGER)
+        log_output(self._server.stderr, LOGGER)
         try:
             self._wait_until_server_is_ready()
         except BaseException:

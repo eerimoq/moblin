@@ -1,21 +1,9 @@
 import logging
 import subprocess
-import threading
 import time
+from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
-
-
-def _log_stream(stream):
-    try:
-        for line in stream:
-            LOGGER.debug(line.rstrip())
-    except Exception:
-        pass
-
-
-def _log_output(stream):
-    threading.Thread(target=_log_stream, args=(stream,), daemon=True).start()
 
 
 class Moblin:
@@ -38,8 +26,8 @@ class Moblin:
             stderr=subprocess.PIPE,
             text=True,
         )
-        _log_output(self._server.stdout)
-        _log_output(self._server.stderr)
+        log_output(self._server.stdout, LOGGER)
+        log_output(self._server.stderr, LOGGER)
         try:
             self._wait_until_streamer_is_connected()
         except BaseException:
@@ -49,11 +37,15 @@ class Moblin:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         LOGGER.info("exit")
-        self._server.kill()
-        self._server.wait()
+        if self._server is not None:
+            self._server.kill()
+            self._server.wait()
 
     def set_stream(self, name):
-        self._execute(f"set_stream {name}")
+        try:
+            self._execute("set_stream", name)
+        except subprocess.CalledProcessError:
+            time.sleep(3)
 
     def go_live(self):
         self._execute("go_live")
@@ -67,9 +59,15 @@ class Moblin:
     def wait_for_ingests(self, number_of_ingests):
         pass
 
-    def _execute(self, command):
+    def _execute(self, command, *args):
         subprocess.run(
-            ["moblin_assistant", "--port", str(self._remote_control_port), command],
+            [
+                "moblin_assistant",
+                "--port",
+                str(self._remote_control_port),
+                command,
+                *args,
+            ],
             check=True,
             capture_output=True,
         )

@@ -71,6 +71,7 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
+	rm -rf test/logs test/mediamtx.log
 	cd test && python main.py config.toml
 
 machine-translate:

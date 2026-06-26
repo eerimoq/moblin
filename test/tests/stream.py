@@ -12,7 +12,7 @@ class StreamRtmpFromMoblinToMediaMtx(systest.TestCase):
 
     def run(self):
         with MediaMtx() as mediamtx:
-            # self.moblin.set_stream("RTMP")
+            self.moblin.set_stream("RTMP")
             self.moblin.go_live()
             mediamtx.wait_for_rtmp_stream("test", 5000000)
             self.moblin.end()
@@ -27,7 +27,7 @@ class StreamSrtFromMoblinToMediaMtx(systest.TestCase):
 
     def run(self):
         with MediaMtx() as mediamtx:
-            self.moblin.set_stream("SRT test")
+            self.moblin.set_stream("SRT")
             self.moblin.go_live()
             mediamtx.wait_for_srt_stream("test", 5000000)
             self.moblin.end()
