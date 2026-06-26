@@ -670,6 +670,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setHasAudio(value: !on)
     }
 
+    func setMuteLoop(url: URL?, enabled: Bool) {
+        processor?.setMuteLoop(url: url, enabled: enabled)
+    }
+
     func setAudioGain(gain: Float) {
         processor?.setAudioGain(gain: gain)
     }

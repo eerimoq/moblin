@@ -90,11 +90,16 @@ func makeChannelMap(
 }
 
 final class AudioUnit: NSObject, @unchecked Sendable {
+    static var onAudioSample: ((CMSampleBuffer) -> Void)?
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
+    private var muteLoopFileBuffer: AVAudioPCMBuffer?
+    private var resampledMuteLoopBuffer: AVAudioPCMBuffer?
+    private var muteLoopPlayIndex: Int = 0
+    private var muteLoopEnabled = false
     var gain: Float = 1.0
     weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
@@ -279,7 +284,17 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ presentationTimeStamp: CMTime)
     {
-        guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
+        var sampleBuffer = sampleBuffer
+        if muted {
+            if muteLoopEnabled, let loopBuffer = injectMuteLoop(sampleBuffer: sampleBuffer) {
+                sampleBuffer = loopBuffer
+            } else if let silenceBuffer = sampleBuffer.muted(true) {
+                sampleBuffer = silenceBuffer
+            } else {
+                return
+            }
+        }
+        guard let sampleBuffer = sampleBuffer.withGain(gain) else {
             return
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
@@ -360,6 +375,9 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        if let onAudioSample = AudioUnit.onAudioSample {
+            onAudioSample(sampleBuffer)
+        }
         guard let processor else {
             return
         }
@@ -373,6 +391,200 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             return
         }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
+    }
+
+    func setMuteLoop(url: URL?, enabled: Bool) {
+        processorPipelineQueue.async {
+            self.muteLoopEnabled = enabled
+            guard enabled, let url else {
+                self.muteLoopFileBuffer = nil
+                self.resampledMuteLoopBuffer = nil
+                self.muteLoopPlayIndex = 0
+                return
+            }
+            if let file = try? AVAudioFile(forReading: url) {
+                let format = file.processingFormat
+                let frameCount = AVAudioFrameCount(file.length)
+                if let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) {
+                    do {
+                        try file.read(into: buffer)
+                        self.muteLoopFileBuffer = buffer
+                        self.resampledMuteLoopBuffer = nil
+                        self.muteLoopPlayIndex = 0
+                        logger.info("audio-unit: Loaded mute loop file: \(url.lastPathComponent)")
+                    } catch {
+                        logger.info("audio-unit: Failed to read mute loop file: \(error)")
+                    }
+                }
+            } else {
+                logger.info("audio-unit: Failed to open mute loop file: \(url)")
+            }
+        }
+    }
+
+    private func injectMuteLoop(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        guard let fileBuffer = muteLoopFileBuffer else {
+            return sampleBuffer.muted(true)
+        }
+        guard let formatDescription = sampleBuffer.formatDescription else {
+            return sampleBuffer.muted(true)
+        }
+        let targetFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
+
+        if resampledMuteLoopBuffer == nil || resampledMuteLoopBuffer?.format != targetFormat {
+            resampledMuteLoopBuffer = resampleBuffer(from: fileBuffer, to: targetFormat)
+            muteLoopPlayIndex = 0
+        }
+
+        guard let resampled = resampledMuteLoopBuffer else {
+            return sampleBuffer.muted(true)
+        }
+
+        let frameCount = Int(sampleBuffer.numSamples)
+        guard frameCount > 0 else {
+            return sampleBuffer
+        }
+
+        var bufferList = AudioBufferList()
+        var blockBufferOut: CMBlockBuffer?
+        let status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+            sampleBuffer,
+            bufferListSizeNeededOut: nil,
+            bufferListOut: &bufferList,
+            bufferListSize: MemoryLayout<AudioBufferList>.size,
+            blockBufferAllocator: nil,
+            blockBufferMemoryAllocator: nil,
+            flags: 1,
+            blockBufferOut: &blockBufferOut
+        )
+
+        guard status == noErr else {
+            return sampleBuffer.muted(true)
+        }
+
+        let resampledLength = Int(resampled.frameLength)
+        guard resampledLength > 0 else {
+            return sampleBuffer.muted(true)
+        }
+
+        let isFloat = resampled.format.commonFormat == .pcmFormatFloat32
+
+        if isFloat {
+            guard let sourceFloatChannels = resampled.floatChannelData else {
+                return sampleBuffer.muted(true)
+            }
+
+            let buffers = UnsafeBufferPointer(
+                start: &bufferList.mBuffers,
+                count: Int(bufferList.mNumberBuffers)
+            )
+            for (channel, buffer) in buffers.enumerated() {
+                guard let destData = buffer.mData else { continue }
+                let destFloat = destData.assumingMemoryBound(to: Float.self)
+                let numChannels = Int(buffer.mNumberChannels)
+
+                for frame in 0 ..< frameCount {
+                    let sourceFrame = (muteLoopPlayIndex + frame) % resampledLength
+                    for ch in 0 ..< numChannels {
+                        let sourceCh = min(
+                            channel * numChannels + ch,
+                            Int(resampled.format.channelCount) - 1
+                        )
+                        destFloat[frame * numChannels + ch] = sourceFloatChannels[sourceCh][sourceFrame]
+                    }
+                }
+            }
+        } else {
+            guard let sourceInt16Channels = resampled.int16ChannelData else {
+                return sampleBuffer.muted(true)
+            }
+            let buffers = UnsafeBufferPointer(
+                start: &bufferList.mBuffers,
+                count: Int(bufferList.mNumberBuffers)
+            )
+            for (channel, buffer) in buffers.enumerated() {
+                guard let destData = buffer.mData else { continue }
+                let destInt16 = destData.assumingMemoryBound(to: Int16.self)
+                let numChannels = Int(buffer.mNumberChannels)
+
+                for frame in 0 ..< frameCount {
+                    let sourceFrame = (muteLoopPlayIndex + frame) % resampledLength
+                    for ch in 0 ..< numChannels {
+                        let sourceCh = min(
+                            channel * numChannels + ch,
+                            Int(resampled.format.channelCount) - 1
+                        )
+                        destInt16[frame * numChannels + ch] = sourceInt16Channels[sourceCh][sourceFrame]
+                    }
+                }
+            }
+        }
+
+        muteLoopPlayIndex = (muteLoopPlayIndex + frameCount) % resampledLength
+        return sampleBuffer
+    }
+
+    private func resampleBuffer(from sourceBuffer: AVAudioPCMBuffer,
+                                to targetFormat: AVAudioFormat) -> AVAudioPCMBuffer?
+    {
+        let sourceFormat = sourceBuffer.format
+        guard let converter = AVAudioConverter(from: sourceFormat, to: targetFormat) else {
+            logger.info("audio-unit: Failed to create resampler from \(sourceFormat) to \(targetFormat)")
+            return nil
+        }
+
+        let ratio = targetFormat.sampleRate / sourceFormat.sampleRate
+        let targetCapacity = AVAudioFrameCount(Double(sourceBuffer.frameLength) * ratio) + 100
+
+        guard let destBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: targetCapacity) else {
+            return nil
+        }
+
+        var error: NSError?
+        var inputPosition = 0
+
+        let status = converter.convert(to: destBuffer, error: &error) { inNumPackets, outStatus in
+            let remainingFrames = Int(sourceBuffer.frameLength) - inputPosition
+            if remainingFrames <= 0 {
+                outStatus.pointee = .noDataNow
+                return nil
+            }
+
+            let framesToCopy = min(Int(inNumPackets), remainingFrames)
+            outStatus.pointee = .haveData
+
+            guard let tempBuffer = AVAudioPCMBuffer(
+                pcmFormat: sourceFormat,
+                frameCapacity: AVAudioFrameCount(framesToCopy)
+            ) else {
+                outStatus.pointee = .noDataNow
+                return nil
+            }
+            tempBuffer.frameLength = AVAudioFrameCount(framesToCopy)
+
+            if sourceFormat.commonFormat == .pcmFormatFloat32 {
+                if let srcChannels = sourceBuffer.floatChannelData,
+                   let dstChannels = tempBuffer.floatChannelData
+                {
+                    for channel in 0 ..< Int(sourceFormat.channelCount) {
+                        dstChannels[channel].assign(
+                            from: srcChannels[channel].advanced(by: inputPosition),
+                            count: framesToCopy
+                        )
+                    }
+                }
+            }
+
+            inputPosition += framesToCopy
+            return tempBuffer
+        }
+
+        if let error {
+            logger.info("audio-unit: Resampling error: \(error)")
+            return nil
+        }
+
+        return destBuffer
     }
 }
 

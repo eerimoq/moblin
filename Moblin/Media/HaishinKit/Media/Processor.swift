@@ -91,6 +91,12 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func setMuteLoop(url: URL?, enabled: Bool) {
+        processorControlQueue.async {
+            self.audio.setMuteLoop(url: url, enabled: enabled)
+        }
+    }
+
     func setAudioGain(gain: Float) {
         processorControlQueue.async {
             self.audio.gain = gain

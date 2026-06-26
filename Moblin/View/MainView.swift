@@ -265,13 +265,18 @@ private struct MutedView: View {
 
     var body: some View {
         if level.isMuted() {
-            Image(systemName: "microphone.slash")
-                .font(.system(size: 80))
-                .foregroundStyle(.red)
-                .padding(10)
-                .background(.black.opacity(0.75))
-                .cornerRadius(10)
-                .allowsHitTesting(false)
+            VStack(spacing: 8) {
+                Image(systemName: "microphone.slash")
+                    .font(.system(size: 80))
+                    .foregroundStyle(.red)
+                Text(String(localized: "Mute"))
+                    .font(.headline)
+                    .foregroundStyle(.white)
+            }
+            .padding(20)
+            .background(.black.opacity(0.75))
+            .cornerRadius(10)
+            .allowsHitTesting(false)
         }
     }
 }

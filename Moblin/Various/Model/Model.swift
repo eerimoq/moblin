@@ -2952,6 +2952,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
         remoteControlStateChanged(state: .init(muted: isMuteOn))
+        if isMuteOn {
+            if database.audio.muteSoundEnabled {
+                let soundId = database.audio.muteSoundId ?? database.alertsMediaGallery.bundledSounds[0].id
+                if let url = getAlertSoundUrl(soundId: soundId) {
+                    media.setMuteLoop(url: url, enabled: true)
+                } else {
+                    media.setMuteLoop(url: nil, enabled: false)
+                }
+            } else {
+                media.setMuteLoop(url: nil, enabled: false)
+            }
+        } else {
+            media.setMuteLoop(url: nil, enabled: false)
+        }
     }
 
     private func makeFlameRedToast() {

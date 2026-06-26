@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 private struct MicView: View {
     let model: Model
@@ -145,7 +146,81 @@ struct AudioSettingsView: View {
             } footer: {
                 Text("Mono audio only uses output channel 1. Stereo audio uses both output channels.")
             }
+            Section {
+                Toggle("Mute loop sound", isOn: $audio.muteSoundEnabled)
+                if audio.muteSoundEnabled {
+                    NavigationLink {
+                        MuteSoundSelectorView(
+                            model: model,
+                            soundId: $audio.muteSoundId
+                        )
+                        .environmentObject(model)
+                    } label: {
+                        HStack {
+                            Text("Sound")
+                            Spacer()
+                            GrayTextView(text: getMuteSoundName(model: model, soundId: audio.muteSoundId))
+                        }
+                    }
+                }
+            } header: {
+                Text("Mute feedback")
+            } footer: {
+                Text("Play a looping alert sound while the microphone is muted.")
+            }
+        }
+        .onChange(of: audio.muteSoundEnabled) { _ in
+            model.updateMute()
+        }
+        .onChange(of: audio.muteSoundId) { _ in
+            model.updateMute()
         }
         .navigationTitle("Audio")
+    }
+}
+
+@MainActor
+private func getMuteSoundName(model: Model, soundId: UUID?) -> String {
+    if let soundId {
+        model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "-- None --")
+    } else {
+        model.getAllAlertSounds().first?.name ?? String(localized: "Notification 2")
+    }
+}
+
+private struct MuteSoundSelectorView: View {
+    let model: Model
+    @Binding var soundId: UUID?
+    @State private var previewPlayer: AudioPlayer?
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("", selection: $soundId) {
+                    ForEach(model.getAllAlertSounds()) { sound in
+                        HStack {
+                            Text(sound.name)
+                            Spacer()
+                            Button {
+                                guard let url = model.getAlertSoundUrl(soundId: sound.id) else {
+                                    return
+                                }
+                                previewPlayer = try? AudioPlayer(contentsOf: url)
+                                previewPlayer?.play()
+                            } label: {
+                                Image(systemName: "play.fill")
+                            }
+                        }
+                        .tag(sound.id as UUID?)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .onDisappear {
+            previewPlayer = nil
+        }
+        .navigationTitle("Sound")
     }
 }
