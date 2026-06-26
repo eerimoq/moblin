@@ -19,6 +19,7 @@ def create_settings(config):
                 "name": "SRT",
                 "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
                 "srt": {"adaptiveBitrateEnabled": False},
+                "bitrate": 50_000_000,
             },
             {
                 "name": "Multi RTMP",
@@ -54,6 +55,7 @@ def create_settings(config):
         },
         "verboseStatuses": True,
         "showAllSettings": True,
+        "show": {"cpu": True},
     }
 
 

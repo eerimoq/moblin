@@ -14,7 +14,7 @@ class StreamRtmpFromMoblinToMediaMtx(systest.TestCase):
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("RTMP")
             self.moblin.go_live()
-            mediamtx.wait_for_rtmp_stream("test", 5000000)
+            mediamtx.wait_for_rtmp_stream("test", 5_000_000)
             self.moblin.end()
 
 
@@ -29,7 +29,7 @@ class StreamSrtFromMoblinToMediaMtx(systest.TestCase):
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("SRT")
             self.moblin.go_live()
-            mediamtx.wait_for_srt_stream("test", 5000000)
+            mediamtx.wait_for_srt_stream("test", 50_000_000)
             self.moblin.end()
 
 
@@ -44,7 +44,7 @@ class StreamMultiRtmpFromMoblinToMediaMtx(systest.TestCase):
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("Multi RTMP")
             self.moblin.go_live()
-            mediamtx.wait_for_rtmp_stream("test1", 5000000)
-            mediamtx.wait_for_rtmp_stream("test2", 5000000)
-            mediamtx.wait_for_rtmp_stream("test3", 5000000)
+            mediamtx.wait_for_rtmp_stream("test1", 5_000_000)
+            mediamtx.wait_for_rtmp_stream("test2", 5_000_000)
+            mediamtx.wait_for_rtmp_stream("test3", 5_000_000)
             self.moblin.end()
