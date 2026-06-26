@@ -20,6 +20,26 @@ def create_settings(config):
                 "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
                 "srt": {"adaptiveBitrateEnabled": False},
             },
+            {
+                "name": "Multi RTMP",
+                "enabled": True,
+                "url": f"rtmp://{tester_ip_address}:1935/test1",
+                "rtmp": {"adaptiveBitrateEnabled": False},
+                "multiStreaming": {
+                    "destinations": [
+                        {
+                            "name": "Test 2",
+                            "url": f"rtmp://{tester_ip_address}:1935/test2",
+                            "enabled": True,
+                        },
+                        {
+                            "name": "Test 3",
+                            "url": f"rtmp://{tester_ip_address}:1935/test3",
+                            "enabled": True,
+                        },
+                    ]
+                },
+            },
         ],
         "scenes": [{"name": "Front", "cameraPosition": "Front", "enabled": True}],
         "remoteControl": {

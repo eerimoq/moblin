@@ -3,6 +3,7 @@ import tomllib
 from pathlib import Path
 import systest
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
+from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
 
 # from tests.ingests import AllIngestsInParallel
@@ -21,6 +22,14 @@ def main():
         sequencer.run(
             StreamRtmpFromMoblinToMediaMtx(moblin),
             StreamSrtFromMoblinToMediaMtx(moblin),
+            StreamMultiRtmpFromMoblinToMediaMtx(moblin),
+            # RTMP multistream.
+            # Switch scenes fast.
+            # One test per ingest type?
+            # Widgets?
+            # High load tests.
+            # Should we validate the received video and audio somehow? for example validate codecs?
+            # Browser widget access level test.
             # AllIngestsInParallel(moblin),
         )
     sequencer.report_and_exit()
