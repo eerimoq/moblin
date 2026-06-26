@@ -13,16 +13,12 @@ def create_settings(config):
                 "url": f"rtmp://{tester_ip_address}:1935/test",
                 "name": "RTMP",
                 "enabled": True,
-                "rtmp": {
-                    "adaptiveBitrateEnabled": False
-                }
+                "rtmp": {"adaptiveBitrateEnabled": False},
             },
             {
                 "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
                 "name": "SRT",
-                "srt": {
-                    "adaptiveBitrateEnabled": False
-                }
+                "srt": {"adaptiveBitrateEnabled": False},
             },
         ],
         "scenes": [{"name": "Front", "cameraPosition": "Front", "enabled": True}],
