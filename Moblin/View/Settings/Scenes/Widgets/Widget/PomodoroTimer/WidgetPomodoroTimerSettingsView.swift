@@ -91,7 +91,7 @@ struct WidgetPomodoroTimerSettingsView: View {
         }
         Section {
             Picker("Focus", selection: $pomodoroTimer.focusDuration) {
-                ForEach([1, 2, 3, 5, 10, 15, 20, 30, 45, 60, 90, 120], id: \.self) {
+                ForEach([1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120], id: \.self) {
                     Text("\($0) min")
                 }
             }
@@ -101,7 +101,7 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
             }
             Picker("Break", selection: $pomodoroTimer.breakDuration) {
-                ForEach([1, 2, 3, 5, 7, 10, 15, 20, 30], id: \.self) {
+                ForEach([1, 2, 3, 5, 7, 10, 15, 20, 25, 30], id: \.self) {
                     Text("\($0) min")
                 }
             }
