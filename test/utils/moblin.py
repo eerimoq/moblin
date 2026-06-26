@@ -7,10 +7,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Moblin:
-    def __init__(self, remote_control_port, remote_control_password):
+    def __init__(self, remote_control_port, remote_control_password, ip_address):
         self._remote_control_port = remote_control_port
         self._remote_control_password = remote_control_password
         self._server = None
+        self.ip_address = ip_address
 
     def __enter__(self):
         self._server = subprocess.Popen(

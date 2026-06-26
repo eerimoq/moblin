@@ -1,4 +1,8 @@
+import logging
 import subprocess
+from .utils import log_output
+
+LOGGER = logging.getLogger(__name__)
 
 
 class Ffmpeg:
@@ -7,7 +11,28 @@ class Ffmpeg:
         self._server = None
 
     def __enter__(self):
-        self._server = subprocess.Popen(["ffmpeg", "-re", "-i", "video.mp4", self._url])
+        command = [
+            "ffmpeg",
+            "-re",
+            "-i",
+            "video.mp4",
+            "-c:a",
+            "copy",
+            "-c:v",
+            "libx264",
+            "-f",
+            "flv",
+            self._url,
+        ]
+        LOGGER.info("Command: %s", " ".join(command))
+        self._server = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        log_output(self._server.stdout, LOGGER)
+        log_output(self._server.stderr, LOGGER)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

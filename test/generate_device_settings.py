@@ -53,6 +53,7 @@ def create_settings(config):
             },
             "password": general["remote-control-password"],
         },
+        "rtmpServer": {"enabled": True, "port": 11935, "streams": [{"streamKey": "1"}]},
         "verboseStatuses": True,
         "showAllSettings": True,
         "show": {"cpu": True},
