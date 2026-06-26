@@ -7,6 +7,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     func remoteControlStreamerGetSettings() -> RemoteControlSettings
+    func remoteControlStreamerSetStream(id: UUID)
     func remoteControlStreamerSetScene(id: UUID)
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?)
     func remoteControlStreamerSetMic(id: String)
@@ -228,6 +229,9 @@ class RemoteControlStreamer {
         case .getSettings:
             let data = delegate.remoteControlStreamerGetSettings()
             send(message: .response(id: id, result: .ok, data: .getSettings(data: data)))
+        case let .setStream(id: streamId):
+            delegate.remoteControlStreamerSetStream(id: streamId)
+            sendEmptyOkResponse(id: id)
         case let .setScene(id: sceneId):
             delegate.remoteControlStreamerSetScene(id: sceneId)
             sendEmptyOkResponse(id: id)

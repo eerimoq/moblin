@@ -613,6 +613,9 @@ extension Model {
         let scenes = enabledScenes.map {
             RemoteControlSettingsScene(id: $0.id, name: $0.name)
         }
+        let streams = database.streams.map {
+            RemoteControlSettingsStream(id: $0.id, name: $0.name)
+        }
         let autoSceneSwitchers = database.autoSceneSwitchers.switchers.map {
             RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name)
         }
@@ -636,6 +639,7 @@ extension Model {
             RemoteControlSettingsGimbalPreset(id: $0.id, name: $0.name)
         }
         return RemoteControlSettings(
+            streams: streams,
             scenes: scenes,
             autoSceneSwitchers: autoSceneSwitchers,
             bitratePresets: bitratePresets,
@@ -686,6 +690,17 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
         handleGetSettings()
+    }
+
+    func remoteControlStreamerSetStream(id: UUID) {
+        guard let stream = findStream(id: id) else {
+            return
+        }
+        guard !stream.enabled, !isLive, !isRecording else {
+            return
+        }
+        setCurrentStream(stream: stream)
+        reloadStreamIfEnabled(stream: stream)
     }
 
     func remoteControlStreamerSetScene(id: UUID) {

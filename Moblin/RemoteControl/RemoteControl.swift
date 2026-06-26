@@ -22,6 +22,7 @@ enum RemoteControlRequest: Codable {
     case setStealthMode(on: Bool)
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
+    case setStream(id: UUID)
     case setScene(id: UUID)
     case setAutoSceneSwitcher(id: UUID?)
     case setBitratePreset(id: UUID)
@@ -765,6 +766,11 @@ struct RemoteControlStatusTopRight: Codable {
     var systemMonitor: RemoteControlStatusItem?
 }
 
+struct RemoteControlSettingsStream: Codable, Identifiable {
+    let id: UUID
+    let name: String
+}
+
 struct RemoteControlSettingsScene: Codable, Identifiable {
     let id: UUID
     let name: String
@@ -803,6 +809,7 @@ struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
 }
 
 struct RemoteControlSettings: Codable {
+    var streams: [RemoteControlSettingsStream]
     var scenes: [RemoteControlSettingsScene]
     var autoSceneSwitchers: [RemoteControlSettingsAutoSceneSwitcher]?
     var bitratePresets: [RemoteControlSettingsBitratePreset]
