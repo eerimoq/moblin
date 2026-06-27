@@ -7,9 +7,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Moblin:
-    def __init__(self, remote_control_port, remote_control_password, ip_address):
+    def __init__(self, remote_control_port, ip_address):
         self._remote_control_port = remote_control_port
-        self._remote_control_password = remote_control_password
         self._server = None
         self.ip_address = ip_address
 
@@ -21,7 +20,7 @@ class Moblin:
                 str(self._remote_control_port),
                 "run",
                 "--password",
-                self._remote_control_password,
+                "1234",
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
