@@ -76,7 +76,10 @@ extension Model {
     }
 
     func tryToFetchYouTubeVideoId() {
-        guard database.chat.enabled, let youTubeFetchVideoIdStartTime else {
+        guard database.chat.enabled,
+              stream.youTubeAuthState != nil || !stream.youTubeHandle.isEmpty,
+              let youTubeFetchVideoIdStartTime
+        else {
             return
         }
         guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(120) else {
