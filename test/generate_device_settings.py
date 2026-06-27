@@ -71,7 +71,7 @@ def create_settings(config):
         },
         "verboseStatuses": True,
         "showAllSettings": True,
-        "show": {"cpu": True},
+        "show": {"stream": True, "cpu": True},
     }
 
 
