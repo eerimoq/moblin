@@ -2,7 +2,7 @@ import time
 
 import systest
 from utils.moblin import Moblin
-from utils.ffmpeg import Ffmpeg
+from utils.ffmpeg import FfmpegTestStream
 
 
 class StreamToRtmpIngest(systest.TestCase):
@@ -13,7 +13,13 @@ class StreamToRtmpIngest(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
-        rtmp_server = Ffmpeg(f"rtmp://{self.moblin.ip_address}:11935/live/1")
-        with rtmp_server:
-            time.sleep(10)
-            # self.moblin.wait_for_ingests(1)
+        rtmp_stream = FfmpegTestStream(
+            url=f"rtmp://{self.moblin.ip_address}:11935/live/1", video_codec="libx264"
+        )
+        with rtmp_stream:
+            self.moblin.wait_for_ingests(
+                minimim_bitrate=7_000_000,
+                maximum_bitrate=9_000_000,
+                total_bytes=10_000_000,
+                number_of_ingests=1,
+            )

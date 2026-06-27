@@ -1,11 +1,15 @@
+import json
 import logging
 import subprocess
 import time
 from pathlib import Path
+import re
 import requests
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
+LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
+RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 
 
 class Moblin:
@@ -17,6 +21,9 @@ class Moblin:
     def __enter__(self):
         self._server = subprocess.Popen(
             [
+                "python",
+                "-u",
+                "-m",
                 "moblin_assistant",
                 "--port",
                 str(self._remote_control_port),
@@ -28,8 +35,8 @@ class Moblin:
             stderr=subprocess.PIPE,
             text=True,
         )
-        log_output(self._server.stdout, LOGGER)
-        log_output(self._server.stderr, LOGGER)
+        log_output(self._server.stdout, LOGGER_ASSISTANT)
+        log_output(self._server.stderr, LOGGER_ASSISTANT)
         try:
             self._wait_until_streamer_is_connected()
         except BaseException:
@@ -38,7 +45,6 @@ class Moblin:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        LOGGER.info("exit")
         if self._server is not None:
             self._server.kill()
             self._server.wait()
@@ -83,11 +89,34 @@ class Moblin:
     def get_settings(self):
         self._execute("get_settings")
 
-    def wait_for_ingests(self, number_of_ingests):
-        pass
+    def wait_for_ingests(
+        self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests
+    ):
+        end_time = time.monotonic() + 30
+        while time.monotonic() < end_time:
+            time.sleep(1)
+            status = json.loads(self._execute("get_status"))
+            ingests_status = status["topRight"]["rtmpServer"]["message"]
+            mo = RE_INGESTS_STATUS.match(ingests_status)
+            if mo:
+                actual_bitrate = float(mo.group(1).replace(",", "."))
+                if mo.group(2) == "Mbps":
+                    actual_bitrate *= 1_000_000
+                actual_total_bytes = float(mo.group(3).replace(",", "."))
+                if mo.group(4) == "MB":
+                    actual_total_bytes *= 1_000_000
+                actual_number_of_ingests = int(mo.group(5))
+                if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
+                    continue
+                if actual_total_bytes < total_bytes:
+                    continue
+                if actual_number_of_ingests != number_of_ingests:
+                    continue
+                return
+        raise Exception("Timeout waiting for streamer to connect")
 
     def _execute(self, command, *args):
-        subprocess.run(
+        return subprocess.run(
             [
                 "moblin_assistant",
                 "--port",
@@ -97,7 +126,8 @@ class Moblin:
             ],
             check=True,
             capture_output=True,
-        )
+            text=True,
+        ).stdout
 
     def _wait_until_streamer_is_connected(self):
         end_time = time.monotonic() + 15

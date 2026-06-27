@@ -8,9 +8,10 @@ from .utils import log_output
 LOGGER = logging.getLogger(__name__)
 
 
-class Ffmpeg:
-    def __init__(self, url):
+class FfmpegTestStream:
+    def __init__(self, url, video_codec):
         self._url = url
+        self._video_codec = video_codec
         self._server = None
 
     def __enter__(self):
@@ -26,7 +27,7 @@ class Ffmpeg:
             "-i",
             "aevalsrc=exprs='if(lt(mod(t,1),0.015),0.8*sin(2*PI*1800*t)*exp(-80*mod(t,1)),0)':s=48000",
             "-c:v",
-            "libx264",
+            self._video_codec,
             "-b:v",
             "8M",
             "-maxrate",
