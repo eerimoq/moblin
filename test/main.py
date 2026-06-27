@@ -27,6 +27,9 @@ def main():
         device["moblin-ip-address"],
     )
     with moblin:
+        moblin.set_scene("Front")
+        moblin.end()
+        moblin.stop_recording()
         sequencer.run(
             RecordH264(moblin),
             RecordH265(moblin),

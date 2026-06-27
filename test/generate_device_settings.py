@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 import tomllib
 
+RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
+
 
 def create_settings(config):
     general = config["general"]
@@ -47,6 +49,12 @@ def create_settings(config):
         "scenes": [
             {"name": "Front", "cameraPosition": "Front", "enabled": True},
             {"name": "Screen", "cameraPosition": "Screen capture", "enabled": True},
+            {
+                "name": "RTMP",
+                "cameraPosition": "RTMP",
+                "rtmpCameraId": RTMP_STREAM_ID,
+                "enabled": True,
+            },
         ],
         "remoteControl": {
             "server": {
@@ -56,7 +64,11 @@ def create_settings(config):
             "web": {"enabled": True, "port": 1180},
             "password": "1234",
         },
-        "rtmpServer": {"enabled": True, "port": 11935, "streams": [{"streamKey": "1"}]},
+        "rtmpServer": {
+            "enabled": True,
+            "port": 11935,
+            "streams": [{"id": RTMP_STREAM_ID, "streamKey": "1"}],
+        },
         "verboseStatuses": True,
         "showAllSettings": True,
         "show": {"cpu": True},
