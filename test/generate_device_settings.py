@@ -70,7 +70,11 @@ def create_settings(config):
             "port": 11935,
             "streams": [
                 {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
-                {"id": RTMP_TALKBACK_STREAM_ID, "name": "Talkback", "streamKey": "talkback"},
+                {
+                    "id": RTMP_TALKBACK_STREAM_ID,
+                    "name": "Talkback",
+                    "streamKey": "talkback",
+                },
             ],
         },
         "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
