@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FfmpegTestStream:
-    def __init__(self, url, video_codec):
+    def __init__(self, url, video_codec="libx264"):
         self._url = url
         self._video_codec = video_codec
         self._server = None

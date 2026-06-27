@@ -3,6 +3,7 @@ import logging
 import tomllib
 from pathlib import Path
 import systest
+from tests.talkback import Talkback
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
 from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
@@ -38,6 +39,7 @@ def main():
             StreamSrtFromMoblinToMediaMtx(moblin),
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
             StreamToRtmpIngest(moblin),
+            Talkback(moblin),
             # Talkback.
             # One test per ingest type?
             # Widgets?

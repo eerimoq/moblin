@@ -13,7 +13,7 @@ class StreamToRtmpIngest(systest.TestCase):
     def run(self):
         self.moblin.set_scene("RTMP")
         rtmp_stream = FfmpegTestStream(
-            url=f"rtmp://{self.moblin.ip_address}:11935/live/1", video_codec="libx264"
+            url=f"rtmp://{self.moblin.ip_address}:11935/live/1"
         )
         with rtmp_stream:
             self.moblin.wait_for_ingests(

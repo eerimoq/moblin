@@ -4,6 +4,7 @@ from pathlib import Path
 import tomllib
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
+RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 
 
 def create_settings(config):
@@ -67,8 +68,12 @@ def create_settings(config):
         "rtmpServer": {
             "enabled": True,
             "port": 11935,
-            "streams": [{"id": RTMP_STREAM_ID, "streamKey": "1"}],
+            "streams": [
+                {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
+                {"id": RTMP_TALKBACK_STREAM_ID, "name": "Talkback", "streamKey": "talkback"},
+            ],
         },
+        "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
         "verboseStatuses": True,
         "showAllSettings": True,
         "show": {"stream": True, "cpu": True},
