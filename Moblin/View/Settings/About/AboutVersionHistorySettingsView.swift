@@ -8,6 +8,22 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.10.0", date: "2026-06-26", changes: [
+        "• Single line moderator chat messages and less noticeable replies. 💡 Landy's secret streamer",
+        "• Do not include moderator messages in alerts chat filter.",
+        "• Make stream decks easier to configure.",
+        "• Black Stream Deck keys by default. 💡 mikeful",
+        "• Show confirmation before ending/deleting a YouTube stream. 💡 cliffcreates",
+        "• Chat from multiple YouTube video ids at once. 💡 cliffcreates 🧑‍🏭 ParaisosPeloSul",
+        "  • Comma separated list of video ids.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Rename setStream to setLive in remote control protocol.",
+        "  • Breaking change!!!",
+        "• Disable browser bonding by default. 🐛 thomaserlang",
+        "  • Also reload the HTTP proxy when entering foreground and when reloading browser widgets.",
+        "• Finnish translation updated. ✍️ mikeful",
+        "• 25 minutes option in Pomodoro timer. 🧑‍🏭 mikeful",
+    ]),
     Version(version: "33.9.0", date: "2026-06-23", changes: [
         "• Make DJI device auto start on app start when auto IP address is configured. 🐛 schieder-karl",
         "• More options in auto scene switcher time picker. 💡 PIRATO",
