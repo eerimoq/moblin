@@ -1,5 +1,8 @@
+from dataclasses import dataclass
+import json
 import logging
 import subprocess
+from fractions import Fraction
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -39,3 +42,82 @@ class Ffmpeg:
         if self._server is not None:
             self._server.kill()
             self._server.wait()
+
+
+@dataclass
+class FfprobeVideoOutput:
+    codec: str
+    fps: Fraction
+
+
+@dataclass
+class FfprobeAudioOutput:
+    codec: str
+
+
+@dataclass
+class FfprobeFormatOutput:
+    duration: float
+
+
+@dataclass
+class FfprobeOutput:
+    video: FfprobeVideoOutput
+    audio: FfprobeAudioOutput
+    format: FfprobeFormatOutput
+
+
+def ffprobe_run(path, *args):
+    output = subprocess.run(
+        [
+            "ffprobe",
+            "-output_format",
+            "json",
+            *args,
+            path,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return json.loads(output)
+
+
+def ffprobe_video(path):
+    output = ffprobe_run(
+        path,
+        "-select_streams",
+        "v:0",
+        "-show_entries",
+        "stream=codec_name,r_frame_rate,avg_frame_rate",
+    )
+    stream = output["streams"][0]
+    return FfprobeVideoOutput(
+        codec=stream["codec_name"],
+        fps=Fraction(stream["avg_frame_rate"]),
+    )
+
+
+def ffprobe_audio(path):
+    output = ffprobe_run(
+        path,
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "stream=codec_name,profile,sample_rate,channels,channel_layout,bit_rate",
+    )
+    stream = output["streams"][0]
+    return FfprobeAudioOutput(codec=stream["codec_name"])
+
+
+def ffprobe_format(path):
+    output = ffprobe_run(path, "-show_entries", "format=duration")
+    return FfprobeFormatOutput(duration=float(output["format"]["duration"]))
+
+
+def ffprobe(path):
+    return FfprobeOutput(
+        video=ffprobe_video(path),
+        audio=ffprobe_audio(path),
+        format=ffprobe_format(path),
+    )

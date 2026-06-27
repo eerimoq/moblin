@@ -8,6 +8,8 @@ from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
 from tests.scenes import SceneSwitchMultipleTimes
 from tests.ingests import StreamToRtmpIngest
+from tests.record import RecordH264
+from tests.record import RecordH265
 from utils.moblin import Moblin
 
 
@@ -26,6 +28,8 @@ def main():
     )
     with moblin:
         sequencer.run(
+            RecordH264(moblin),
+            RecordH265(moblin),
             SceneSwitchMultipleTimes(moblin),
             StreamRtmpFromMoblinToMediaMtx(moblin),
             StreamSrtFromMoblinToMediaMtx(moblin),

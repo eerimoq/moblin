@@ -1,6 +1,8 @@
 import logging
 import subprocess
 import time
+from pathlib import Path
+import requests
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -55,6 +57,26 @@ class Moblin:
 
     def end(self):
         self._execute("end")
+
+    def start_recording(self):
+        self._execute("start_recording")
+
+    def stop_recording(self):
+        self._execute("stop_recording")
+
+    def download_and_delete_latest_recording(self):
+        response = requests.get(f"http://{self.ip_address}/recordings.json", timeout=15)
+        response.raise_for_status()
+        recordings = response.json()
+        recording_name = recordings[0]["name"]
+        recording_url = f"http://{self.ip_address}/recordings/{recording_name}"
+        response = requests.get(recording_url, timeout=15)
+        response.raise_for_status()
+        recording_file = Path(recording_name)
+        recording_file.write_bytes(response.content)
+        response = requests.delete(recording_url, timeout=15)
+        response.raise_for_status()
+        return recording_file
 
     def get_settings(self):
         self._execute("get_settings")

@@ -106,3 +106,4 @@ test/logs
 test/auto.crt
 test/auto.key
 __pycache__
+test/Recording_*.mp4

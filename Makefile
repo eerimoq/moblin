@@ -16,7 +16,7 @@ PERIPHERY_ARGS = \
 	--index-exclude "**/PrepareLicenseList/**" \
 	--disable-update-check
 CODESPELL_ARGS = \
-	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json" \
+	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 PYLINT_ARGS = \
 	--disable missing-function-docstring \
@@ -71,7 +71,7 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
-	rm -rf test/logs test/mediamtx.log
+	rm -rf test/logs test/mediamtx.log test/Recording_*.mp4
 	cd test && python main.py config.toml
 
 test-generate-device-settings:

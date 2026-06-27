@@ -41,6 +41,8 @@ def create_settings(config):
                     ]
                 },
             },
+            {"name": "Record H.264", "recording": {"videoCodec": "H.264/AVC"}},
+            {"name": "Record H.265", "recording": {"videoCodec": "H.265/HEVC"}},
         ],
         "scenes": [
             {"name": "Front", "cameraPosition": "Front", "enabled": True},
