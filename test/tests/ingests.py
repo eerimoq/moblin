@@ -1,12 +1,10 @@
-import time
-
 import systest
 from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegTestStream
 
 
 class StreamToRtmpIngest(systest.TestCase):
-    """Stream to all kinds of ingests in parallel."""
+    """Stream to the an RTMP server ingest."""
 
     def __init__(self, moblin: Moblin):
         super().__init__()

@@ -96,16 +96,11 @@ class Moblin:
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             time.sleep(1)
-            status = json.loads(self._execute("get_status"))
-            ingests_status = status["topRight"]["rtmpServer"]["message"]
+            ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
             mo = RE_INGESTS_STATUS.match(ingests_status)
             if mo:
-                actual_bitrate = float(mo.group(1).replace(",", "."))
-                if mo.group(2) == "Mbps":
-                    actual_bitrate *= 1_000_000
-                actual_total_bytes = float(mo.group(3).replace(",", "."))
-                if mo.group(4) == "MB":
-                    actual_total_bytes *= 1_000_000
+                actual_bitrate = parse_bitrate(mo.group(1), mo.group(2))
+                actual_total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
                 actual_number_of_ingests = int(mo.group(5))
                 if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
                     continue
@@ -122,17 +117,12 @@ class Moblin:
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             time.sleep(1)
-            status = json.loads(self._execute("get_status"))
-            bitrate_status = status["topRight"]["bitrate"]["message"]
+            bitrate_status = self.get_status_top_right()["bitrate"]["message"]
             mo = RE_BITRATE_STATUS.match(bitrate_status)
             if mo:
-                actual_bitrate = float(mo.group(1).replace(",", "."))
-                if mo.group(2) == "Mbps":
-                    actual_bitrate *= 1_000_000
+                actual_bitrate = parse_bitrate(mo.group(1), mo.group(2))
                 actual_multi_streaming = mo.group(4)
-                actual_total_bytes = float(mo.group(5).replace(",", "."))
-                if mo.group(6) == "MB":
-                    actual_total_bytes *= 1_000_000
+                actual_total_bytes = parse_total_bytes(mo.group(5), mo.group(6))
                 if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
                     continue
                 if actual_multi_streaming != multi_streaming:
@@ -141,6 +131,9 @@ class Moblin:
                     continue
                 return
         raise Exception("Timeout waiting for bitrate to reach wanted value")
+
+    def get_status_top_right(self):
+        return json.loads(self._execute("get_status"))["topRight"]
 
     def _execute(self, command, *args):
         return subprocess.run(
@@ -170,3 +163,17 @@ class Moblin:
                 )
                 time.sleep(1)
         raise Exception("Timeout waiting for streamer to connect")
+
+
+def parse_bitrate(value, unit):
+    bitrate = float(value.replace(",", "."))
+    if unit == "Mbps":
+        bitrate *= 1_000_000
+    return bitrate
+
+
+def parse_total_bytes(value, unit):
+    total_bytes = float(value.replace(",", "."))
+    if unit == "MB":
+        total_bytes *= 1_000_000
+    return total_bytes
