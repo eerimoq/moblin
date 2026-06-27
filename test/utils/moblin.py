@@ -10,6 +10,7 @@ from .utils import log_output
 LOGGER = logging.getLogger(__name__)
 LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
 RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
+RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 
 
 class Moblin:
@@ -113,7 +114,33 @@ class Moblin:
                 if actual_number_of_ingests != number_of_ingests:
                     continue
                 return
-        raise Exception("Timeout waiting for streamer to connect")
+        raise Exception("Timeout waiting for ingests to reach wanted values")
+
+    def wait_for_bitrate(
+        self, minimim_bitrate, maximum_bitrate, multi_streaming, total_bytes
+    ):
+        end_time = time.monotonic() + 30
+        while time.monotonic() < end_time:
+            time.sleep(1)
+            status = json.loads(self._execute("get_status"))
+            bitrate_status = status["topRight"]["bitrate"]["message"]
+            mo = RE_BITRATE_STATUS.match(bitrate_status)
+            if mo:
+                actual_bitrate = float(mo.group(1).replace(",", "."))
+                if mo.group(2) == "Mbps":
+                    actual_bitrate *= 1_000_000
+                actual_multi_streaming = mo.group(4)
+                actual_total_bytes = float(mo.group(5).replace(",", "."))
+                if mo.group(6) == "MB":
+                    actual_total_bytes *= 1_000_000
+                if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
+                    continue
+                if actual_multi_streaming != multi_streaming:
+                    continue
+                if actual_total_bytes < total_bytes:
+                    continue
+                return
+        raise Exception("Timeout waiting for bitrate to reach wanted value")
 
     def _execute(self, command, *args):
         return subprocess.run(
