@@ -27,6 +27,7 @@ PYLINT_ARGS = \
 	--disable too-many-locals \
 	--disable duplicate-code \
 	--disable missing-class-docstring \
+	--disable line-too-long \
 	--recursive yes \
 	$(PYTHON_DIRS)
 

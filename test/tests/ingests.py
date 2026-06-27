@@ -15,5 +15,5 @@ class StreamToRtmpIngest(systest.TestCase):
     def run(self):
         rtmp_server = Ffmpeg(f"rtmp://{self.moblin.ip_address}:11935/live/1")
         with rtmp_server:
-            time.sleep(5)
+            time.sleep(10)
             # self.moblin.wait_for_ingests(1)
