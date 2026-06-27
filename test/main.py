@@ -40,11 +40,8 @@ def main():
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
             StreamToRtmpIngest(moblin),
             Talkback(moblin),
-            # Talkback.
-            # One test per ingest type?
             # Widgets?
             # High load tests.
-            # Should we validate the received video and audio somehow? for example validate codecs?
             # Browser widget access level test.
         )
     sequencer.report_and_exit()
