@@ -376,6 +376,7 @@ extension Model {
         setCleanRecordings()
         setCleanExternalDisplay()
         updateCameraControls()
+        updateTalkback()
     }
 
     private func attachStream() {

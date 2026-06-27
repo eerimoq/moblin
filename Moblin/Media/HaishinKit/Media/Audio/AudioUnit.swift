@@ -239,10 +239,9 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func setTalkbackInternal(cameraId: UUID?) {
         talkbackCameraId = cameraId
-        if talkbackCameraId == nil {
-            talkbackPlayer?.stop()
-            talkbackPlayer = nil
-        } else {
+        talkbackPlayer?.stop()
+        talkbackPlayer = nil
+        if talkbackCameraId != nil {
             talkbackPlayer = TalkbackPlayer()
         }
     }
