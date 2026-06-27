@@ -65,11 +65,13 @@ class Moblin:
         self._execute("stop_recording")
 
     def download_and_delete_latest_recording(self):
-        response = requests.get(f"http://{self.ip_address}/recordings.json", timeout=15)
+        response = requests.get(
+            f"http://{self.ip_address}:1180/recordings.json", timeout=15
+        )
         response.raise_for_status()
         recordings = response.json()
         recording_name = recordings[0]["name"]
-        recording_url = f"http://{self.ip_address}/recordings/{recording_name}"
+        recording_url = f"http://{self.ip_address}:1180/recordings/{recording_name}"
         response = requests.get(recording_url, timeout=15)
         response.raise_for_status()
         recording_file = Path(recording_name)

@@ -53,6 +53,7 @@ def create_settings(config):
                 "enabled": True,
                 "url": f"ws://{tester_ip_address}:{general["remote-control-port"]}",
             },
+            "web": {"enabled": True, "port": 1180},
             "password": "1234",
         },
         "rtmpServer": {"enabled": True, "port": 11935, "streams": [{"streamKey": "1"}]},
