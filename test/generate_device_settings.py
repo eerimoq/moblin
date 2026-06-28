@@ -5,6 +5,7 @@ import tomllib
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
 RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
+RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 
 
 def create_settings(config):
@@ -56,6 +57,12 @@ def create_settings(config):
                 "rtmpCameraId": RTMP_STREAM_ID,
                 "enabled": True,
             },
+            {
+                "name": "RTSP",
+                "cameraPosition": "RTSP",
+                "rtspCameraId": RTSP_STREAM_ID,
+                "enabled": True,
+            },
         ],
         "remoteControl": {
             "server": {
@@ -77,9 +84,20 @@ def create_settings(config):
                 },
             ],
         },
+        "rtspClient": {
+            "streams": [
+                {
+                    "id": RTSP_STREAM_ID,
+                    "name": "1",
+                    "url": f"rtsp://{tester_ip_address}:8554/1",
+                    "enabled": True,
+                },
+            ],
+        },
         "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
         "verboseStatuses": True,
         "showAllSettings": True,
+        "debug": {"logLevel": "Debug"},
         "show": {"stream": True, "cpu": True},
     }
 

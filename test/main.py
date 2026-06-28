@@ -9,6 +9,7 @@ from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
 from tests.scenes import SceneSwitchMultipleTimes
 from tests.ingests import StreamToRtmpServerIngest
+from tests.ingests import StreamToRtspClientIngest
 from tests.record import RecordH264
 from tests.record import RecordH265
 from utils.moblin import Moblin
@@ -42,6 +43,7 @@ def main():
             StreamSrtFromMoblinToMediaMtx(moblin),
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
             StreamToRtmpServerIngest(moblin),
+            StreamToRtspClientIngest(moblin),
             Talkback(moblin),
         )
     sequencer.report_and_exit()
