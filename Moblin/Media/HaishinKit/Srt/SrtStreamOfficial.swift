@@ -71,7 +71,9 @@ class SrtStreamOfficial: @unchecked Sendable {
         }
         self.sendHook = SendHook(closure: sendHook)
         socket = SRT_INVALID_SOCK
-        try connect(sockaddrIn(host, port: UInt16(clamping: port)), SrtSocketOption.from(uri: uri))
+        var options = SrtSocketOption.from(uri: uri)
+        options[.sndsyn] = "0"
+        try connect(sockaddrIn(host, port: UInt16(clamping: port)), options)
     }
 
     func close() {
