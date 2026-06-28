@@ -2,6 +2,7 @@
 
 1. `pip install -r ../requirements.txt`
 2. Install mediamtx.
+3. Install ffmpeg (`brew install ffmpeg-full`) and add it to PATH.
 
 # Moblin device configuration
 
@@ -11,3 +12,5 @@
 # Run the tests
 
 `make -C .. test`
+
+`make -C .. test TEST_ARGS="--device macpro Talkback"`
