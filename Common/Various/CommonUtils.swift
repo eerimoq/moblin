@@ -467,12 +467,15 @@ extension Data {
         ) }
     }
 
-    func makeBlockBuffer(advancedBy: Int = 0) -> CMBlockBuffer? {
+    func makeBlockBuffer(advancedBy: Int = 0, length: Int? = nil) -> CMBlockBuffer? {
         var blockBuffer: CMBlockBuffer?
         guard advancedBy < count else {
             return nil
         }
-        let length = count - advancedBy
+        let length = length ?? (count - advancedBy)
+        guard advancedBy + length <= count else {
+            return nil
+        }
         return withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> CMBlockBuffer? in
             guard let baseAddress = buffer.baseAddress else {
                 return nil

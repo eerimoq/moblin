@@ -1,7 +1,7 @@
 import AVFoundation
 import libsrt
 
-let srtServerClientLatency = 0.5
+let srtServerClientLatency = 0.75
 
 class SrtServerClient {
     private weak var server: SrtServer?
