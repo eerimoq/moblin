@@ -59,10 +59,10 @@ lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYLINT_ARGS) || true
-	python3 utils/xcstringslint.py Common/Localizable.xcstrings
+	python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:
-	python3 utils/xcstringslint.py --fix Common/Localizable.xcstrings
+	python utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
 	periphery scan $(PERIPHERY_ARGS)
@@ -71,20 +71,22 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
-	rm -rf test/logs test/mediamtx.log test/Recording_*.mp4
-	cd test && python main.py config.toml $(TEST_ARGS)
+	cd test && \
+	rm -rf logs mediamtx.log Recording_*.mp4 && \
+	python main.py config.toml $(TEST_ARGS)
 
 test-generate-device-settings:
-	rm -f test/*-settings.json
-	cd test && python generate_device_settings.py config.toml && cat *-settings.json | pbcopy
+	cd test && \
+	rm -f *-settings.json && \
+	python generate_device_settings.py config.toml && cat *-settings.json | pbcopy
 
 machine-translate:
-	python3 utils/translate.py Common/Localizable.xcstrings
+	python utils/translate.py Common/Localizable.xcstrings
 
 pack-exported-localizations:
 	cd Moblin\ Localizations && \
 	for f in * ; do \
-	    python3 ../utils/xliff.py $$f/Localized\ Contents/*.xliff && \
+	    python ../utils/xliff.py $$f/Localized\ Contents/*.xliff && \
 	    zip -qr $$f.zip $$f && \
 	    rm -rf $$f ; \
 	done
