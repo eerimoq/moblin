@@ -7,6 +7,7 @@ RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
 RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
+SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
 
 
 def create_settings(config):
@@ -70,6 +71,12 @@ def create_settings(config):
                 "ristCameraId": RIST_STREAM_ID,
                 "enabled": True,
             },
+            {
+                "name": "SRT",
+                "cameraPosition": "SRT(LA)",
+                "srtlaCameraId": SRT_STREAM_ID,
+                "enabled": True,
+            },
         ],
         "remoteControl": {
             "server": {
@@ -88,6 +95,17 @@ def create_settings(config):
                     "id": RTMP_TALKBACK_STREAM_ID,
                     "name": "Talkback",
                     "streamKey": "talkback",
+                },
+            ],
+        },
+        "srtlaServer": {
+            "enabled": True,
+            "srtPort": 4000,
+            "streams": [
+                {
+                    "id": SRT_STREAM_ID,
+                    "name": "Test",
+                    "streamId": "1",
                 },
             ],
         },

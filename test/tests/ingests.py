@@ -13,10 +13,30 @@ class StreamToRtmpServerIngest(systest.TestCase):
 
     def run(self):
         self.moblin.set_scene("RTMP")
-        rtmp_stream = FfmpegTestStream(
-            url=f"rtmp://{self.moblin.ip_address}:11935/live/1"
+        stream = FfmpegTestStream(url=f"rtmp://{self.moblin.ip_address}:11935/live/1")
+        with stream:
+            self.moblin.wait_for_ingests(
+                minimim_bitrate=7_000_000,
+                maximum_bitrate=9_000_000,
+                total_bytes=10_000_000,
+                number_of_ingests=2,
+            )
+
+
+class StreamToSrtServerIngest(systest.TestCase):
+    """Stream to an SRT server ingest."""
+
+    def __init__(self, moblin: Moblin):
+        super().__init__()
+        self.moblin = moblin
+
+    def run(self):
+        self.moblin.set_scene("SRT")
+        stream = FfmpegTestStream(
+            url=f"srt://{self.moblin.ip_address}:4000?streamid=1",
+            transport_format="mpegts",
         )
-        with rtmp_stream:
+        with stream:
             self.moblin.wait_for_ingests(
                 minimim_bitrate=7_000_000,
                 maximum_bitrate=9_000_000,
@@ -35,8 +55,7 @@ class StreamH264ToRtspClientIngest(systest.TestCase):
     def run(self):
         self.moblin.set_scene("RTSP")
         with MediaMtx():
-            rtmp_stream = FfmpegTestStream(url="rtmp://localhost:1935/1")
-            with rtmp_stream:
+            with FfmpegTestStream(url="rtmp://localhost:1935/1"):
                 self.moblin.wait_for_ingests(
                     minimim_bitrate=7_000_000,
                     maximum_bitrate=9_000_000,
@@ -54,11 +73,11 @@ class StreamToRistServerIngest(systest.TestCase):
 
     def run(self):
         self.moblin.set_scene("RIST")
-        rtmp_stream = FfmpegTestStream(
+        stream = FfmpegTestStream(
             url=f"rist://{self.moblin.ip_address}:6500?virt-dst-port=1",
             transport_format="mpegts",
         )
-        with rtmp_stream:
+        with stream:
             self.moblin.wait_for_ingests(
                 minimim_bitrate=7_000_000,
                 maximum_bitrate=9_000_000,

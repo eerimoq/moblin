@@ -17,6 +17,7 @@ class RecordH264(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
+        self.moblin.set_scene("Front")
         self.moblin.set_stream("Record H.264")
         self.moblin.start_recording()
         time.sleep(10)
@@ -39,6 +40,7 @@ class RecordH265(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
+        self.moblin.set_scene("Front")
         self.moblin.set_stream("Record H.265")
         self.moblin.start_recording()
         time.sleep(10)

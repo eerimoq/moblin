@@ -11,6 +11,7 @@ class StreamRtmpFromMoblinToMediaMtx(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
+        self.moblin.set_scene("Front")
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("RTMP")
             self.moblin.go_live()
@@ -27,6 +28,7 @@ class StreamSrtFromMoblinToMediaMtx(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
+        self.moblin.set_scene("Front")
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("SRT")
             self.moblin.go_live()
@@ -43,6 +45,7 @@ class StreamMultiRtmpFromMoblinToMediaMtx(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
+        self.moblin.set_scene("Front")
         with MediaMtx() as mediamtx:
             self.moblin.set_stream("Multi RTMP")
             self.moblin.go_live()
