@@ -1,16 +1,26 @@
 # Prerequisites
 
-1. `pip install -r ../requirements.txt`
+1. Install Python dependencies.
+   ```bash
+   pip install -r ../requirements.txt
+   ```
 2. Install mediamtx.
-3. Install ffmpeg (`brew install ffmpeg-full`) and add it to PATH.
+3. Install ffmpeg.
+   ```bash
+   brew install ffmpeg-full
+   ```
 
 # Moblin device configuration
 
-1. Generate settings with `make -C .. test-generate-device-settings`.
+1. Generate settings.
+   ```bash
+   make -C .. test-generate-device-settings
+   ```
 2. Import the generated settings into Moblin.
 
 # Run the tests
 
-`make -C .. test`
-
-`make -C .. test TEST_ARGS="--device macpro Talkback"`
+```bash
+make -C .. test
+make -C .. test TEST_ARGS="--device macpro Talkback"
+```
