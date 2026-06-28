@@ -43,3 +43,25 @@ class StreamH264ToRtspClientIngest(systest.TestCase):
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
+
+
+class StreamToRistServerIngest(systest.TestCase):
+    """Stream to an RIST server ingest."""
+
+    def __init__(self, moblin: Moblin):
+        super().__init__()
+        self.moblin = moblin
+
+    def run(self):
+        self.moblin.set_scene("RIST")
+        rtmp_stream = FfmpegTestStream(
+            url=f"rist://{self.moblin.ip_address}:6500?virt-dst-port=1",
+            transport_format="mpegts",
+        )
+        with rtmp_stream:
+            self.moblin.wait_for_ingests(
+                minimim_bitrate=7_000_000,
+                maximum_bitrate=9_000_000,
+                total_bytes=10_000_000,
+                number_of_ingests=2,
+            )

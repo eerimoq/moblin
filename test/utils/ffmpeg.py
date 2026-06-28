@@ -9,14 +9,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FfmpegTestStream:
-    def __init__(self, url, video_codec="libx264"):
+    def __init__(self, url, transport_format="flv", video_codec="libx264"):
         self._url = url
+        self._transport_format = transport_format
         self._video_codec = video_codec
         self._server = None
 
     def __enter__(self):
         command = [
             "ffmpeg",
+            "-nostdin",
             "-re",
             "-f",
             "lavfi",
@@ -47,12 +49,13 @@ class FfmpegTestStream:
             "-b:a",
             "128k",
             "-f",
-            "flv",
+            self._transport_format,
             self._url,
         ]
         LOGGER.debug("Command: %s", " ".join(command))
         self._server = subprocess.Popen(
             command,
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

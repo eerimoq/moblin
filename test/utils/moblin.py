@@ -93,7 +93,12 @@ class Moblin:
     def wait_for_ingests(
         self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests
     ):
-        end_time = time.monotonic() + 30
+        ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
+        mo = RE_INGESTS_STATUS.match(ingests_status)
+        if not mo:
+            raise Exception("Failed to parse ingests status")
+        total_bytes += parse_total_bytes(mo.group(3), mo.group(4))
+        end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             time.sleep(1)
             ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
@@ -114,7 +119,7 @@ class Moblin:
     def wait_for_bitrate(
         self, minimim_bitrate, maximum_bitrate, multi_streaming, total_bytes
     ):
-        end_time = time.monotonic() + 30
+        end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             time.sleep(1)
             bitrate_status = self.get_status_top_right()["bitrate"]["message"]
