@@ -8,17 +8,42 @@ from .utils import log_output
 LOGGER = logging.getLogger(__name__)
 
 
-class FfmpegTestStream:
+class FfmpegBase:
+    def __init__(self):
+        self._server = None
+
+    def args(self):
+        return []
+
+    def __enter__(self):
+        command = [ "ffmpeg", "-nostdin", "-y"] + self.args()
+        LOGGER.debug("Command: %s", " ".join(command))
+        self._server = subprocess.Popen(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        log_output(self._server.stdout, LOGGER)
+        log_output(self._server.stderr, LOGGER)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._server is not None:
+            self._server.kill()
+            self._server.wait()
+
+
+class FfmpegTestStream(FfmpegBase):
     def __init__(self, url, transport_format="flv", video_codec="libx264"):
+        super().__init__()
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
-        self._server = None
 
-    def __enter__(self):
-        command = [
-            "ffmpeg",
-            "-nostdin",
+    def args(self):
+        return [
             "-re",
             "-f",
             "lavfi",
@@ -52,56 +77,21 @@ class FfmpegTestStream:
             self._transport_format,
             self._url,
         ]
-        LOGGER.debug("Command: %s", " ".join(command))
-        self._server = subprocess.Popen(
-            command,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        log_output(self._server.stdout, LOGGER)
-        log_output(self._server.stderr, LOGGER)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self._server is not None:
-            self._server.kill()
-            self._server.wait()
 
 
-class FfmpegServer:
+class FfmpegServer(FfmpegBase):
     def __init__(self, url):
+        super().__init__()
         self._url = url
-        self._server = None
 
-    def __enter__(self):
-        command = [
-            "ffmpeg",
-            "-nostdin",
-            "-y",
+    def args(self):
+        return [
             "-i",
             self._url,
             "-c",
             "copy",
             "received.ts",
         ]
-        LOGGER.debug("Command: %s", " ".join(command))
-        self._server = subprocess.Popen(
-            command,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        log_output(self._server.stdout, LOGGER)
-        log_output(self._server.stderr, LOGGER)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self._server is not None:
-            self._server.kill()
-            self._server.wait()
 
 
 @dataclass
