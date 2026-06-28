@@ -16,7 +16,7 @@ class FfmpegBase:
         return []
 
     def __enter__(self):
-        command = [ "ffmpeg", "-nostdin", "-y"] + self.args()
+        command = ["ffmpeg", "-nostdin", "-y"] + self.args()
         LOGGER.debug("Command: %s", " ".join(command))
         self._server = subprocess.Popen(
             command,
@@ -69,6 +69,29 @@ class FfmpegTestStream(FfmpegBase):
             "60",
             "-keyint_min",
             "60",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "128k",
+            "-f",
+            self._transport_format,
+            self._url,
+        ]
+
+
+class FfmpegAudioTestStream(FfmpegBase):
+    def __init__(self, url, transport_format="flv"):
+        super().__init__()
+        self._url = url
+        self._transport_format = transport_format
+
+    def args(self):
+        return [
+            "-re",
+            "-f",
+            "lavfi",
+            "-i",
+            "aevalsrc=exprs='if(lt(mod(t,1),0.015),0.8*sin(2*PI*1800*t)*exp(-80*mod(t,1)),0)':s=48000",
             "-c:a",
             "aac",
             "-b:a",

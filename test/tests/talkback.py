@@ -3,7 +3,7 @@ import time
 
 import systest
 from utils.moblin import Moblin
-from utils.ffmpeg import FfmpegTestStream
+from utils.ffmpeg import FfmpegAudioTestStream
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ class Talkback(systest.TestCase):
         self.moblin = moblin
 
     def run(self):
-        rtmp_stream = FfmpegTestStream(
+        stream = FfmpegAudioTestStream(
             url=f"rtmp://{self.moblin.ip_address}:11935/live/talkback"
         )
-        with rtmp_stream:
+        with stream:
             time.sleep(10)
