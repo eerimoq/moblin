@@ -93,27 +93,20 @@ class Moblin:
     def wait_for_ingests(
         self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests
     ):
-        ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
-        mo = RE_INGESTS_STATUS.match(ingests_status)
-        if not mo:
-            raise Exception("Failed to parse ingests status")
-        total_bytes += parse_total_bytes(mo.group(3), mo.group(4))
+        total_bytes += self._get_ingests_status()[1]
         end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             time.sleep(1)
-            ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
-            mo = RE_INGESTS_STATUS.match(ingests_status)
-            if mo:
-                actual_bitrate = parse_bitrate(mo.group(1), mo.group(2))
-                actual_total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
-                actual_number_of_ingests = int(mo.group(5))
-                if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
-                    continue
-                if actual_total_bytes < total_bytes:
-                    continue
-                if actual_number_of_ingests != number_of_ingests:
-                    continue
-                return
+            actual_bitrate, actual_total_bytes, actual_number_of_ingests = (
+                self._get_ingests_status()
+            )
+            if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
+                continue
+            if actual_total_bytes < total_bytes:
+                continue
+            if actual_number_of_ingests != number_of_ingests:
+                continue
+            return
         raise Exception("Timeout waiting for ingests to reach wanted values")
 
     def wait_for_bitrate(
@@ -168,6 +161,16 @@ class Moblin:
                 )
                 time.sleep(1)
         raise Exception("Timeout waiting for streamer to connect")
+
+    def _get_ingests_status(self):
+        ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
+        mo = RE_INGESTS_STATUS.match(ingests_status)
+        if not mo:
+            raise Exception(f"Ingests status has wrong format: {ingests_status}")
+        bitrate = parse_bitrate(mo.group(1), mo.group(2))
+        total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
+        number_of_ingests = int(mo.group(5))
+        return bitrate, total_bytes, number_of_ingests
 
 
 def parse_bitrate(value, unit):

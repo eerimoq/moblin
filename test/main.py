@@ -38,15 +38,15 @@ def main():
         moblin.stop_recording()
         sequencer.run(
             Talkback(moblin),
+            StreamToRtmpServerIngest(moblin),
+            StreamH264ToRtspClientIngest(moblin),
+            StreamToRistServerIngest(moblin),
             RecordH264(moblin),
             RecordH265(moblin),
             SceneSwitchMultipleTimes(moblin),
             StreamRtmpFromMoblinToMediaMtx(moblin),
             StreamSrtFromMoblinToMediaMtx(moblin),
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
-            StreamToRtmpServerIngest(moblin),
-            StreamH264ToRtspClientIngest(moblin),
-            StreamToRistServerIngest(moblin),
         )
     sequencer.report_and_exit()
 
