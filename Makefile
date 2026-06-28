@@ -13,7 +13,6 @@ PYTHON_DIRS = \
 BLACK_ARGS = $(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
-	--index-exclude "**/PrepareLicenseList/**" \
 	--disable-update-check
 CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \

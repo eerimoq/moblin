@@ -17,8 +17,4 @@ extension Model {
         }
         faceBackgroundImage = CIImage(cgImage: cgImage)
     }
-
-    func deleteFaceBackgroundImage() {
-        try? FileManager.default.removeItem(at: faceBackgroundImagePath)
-    }
 }

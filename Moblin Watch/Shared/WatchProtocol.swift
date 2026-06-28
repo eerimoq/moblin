@@ -135,10 +135,6 @@ enum WatchProtocolWorkoutType: Codable {
     case cycling
 }
 
-struct WatchProtocolStartWorkout: Codable {
-    var type: WatchProtocolWorkoutType
-}
-
 struct WatchProtocolWorkoutStats: Codable {
     var heartRate: Int?
     var activeEnergyBurned: Int?

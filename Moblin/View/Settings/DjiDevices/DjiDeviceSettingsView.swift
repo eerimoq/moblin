@@ -77,7 +77,7 @@ private struct DjiDeviceWiFiSettingsView: View {
     var body: some View {
         Section {
             NavigationLink {
-                DjiDeviceWiFiSettingsInnerView(model: model, database: model.database, device: device)
+                DjiDeviceWiFiSettingsInnerView(database: model.database, device: device)
             } label: {
                 TextItemLocalizedView(name: "Network", value: device.wifiSsid)
             }
@@ -94,7 +94,6 @@ private struct DjiDeviceWiFiSettingsView: View {
 }
 
 private struct DjiDeviceWiFiSettingsInnerView: View {
-    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var device: SettingsDjiDevice
 

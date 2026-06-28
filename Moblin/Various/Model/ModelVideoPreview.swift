@@ -13,10 +13,6 @@ class VideoPreviewFeed: Identifiable, ObservableObject {
         previewView = PreviewView()
         previewView.videoGravity = .resizeAspect
     }
-
-    func enqueue(_ sampleBuffer: CMSampleBuffer, isFirstAfterAttach: Bool) {
-        previewView.enqueue(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
-    }
 }
 
 class VideoPreviewProvider: ObservableObject {

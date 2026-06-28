@@ -44,7 +44,6 @@ private struct PomodoroSoundSelectorView: View {
 }
 
 struct WidgetPomodoroTimerQuickButtonControlsView: View {
-    let model: Model
     @ObservedObject var pomodoroTimer: SettingsWidgetPomodoroTimer
 
     var body: some View {
@@ -80,12 +79,11 @@ struct WidgetPomodoroTimerQuickButtonControlsView: View {
 
 struct WidgetPomodoroTimerSettingsView: View {
     let model: Model
-    let widget: SettingsWidget
     @ObservedObject var pomodoroTimer: SettingsWidgetPomodoroTimer
 
     var body: some View {
         Section {
-            WidgetPomodoroTimerQuickButtonControlsView(model: model, pomodoroTimer: pomodoroTimer)
+            WidgetPomodoroTimerQuickButtonControlsView(pomodoroTimer: pomodoroTimer)
         } header: {
             Text("Controls")
         }

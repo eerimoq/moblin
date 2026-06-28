@@ -140,7 +140,6 @@ private struct ZoomView: View {
 
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
-    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopLeft
     @ObservedObject var mic: Mic

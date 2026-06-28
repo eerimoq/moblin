@@ -2,7 +2,6 @@ import Network
 import SwiftUI
 
 struct UrlSettingsView: View {
-    let model: Model
     let disabled: Bool
     @Binding var url: String
     @State var value: String
@@ -98,8 +97,7 @@ struct RtspClientStreamSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        UrlSettingsView(model: model,
-                                        disabled: false,
+                        UrlSettingsView(disabled: false,
                                         url: $stream.url,
                                         value: stream.url,
                                         placeholder: "rtsp://192.168.1.83/stream1",

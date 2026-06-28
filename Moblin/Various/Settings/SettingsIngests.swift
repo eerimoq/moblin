@@ -178,8 +178,6 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     }
 }
 
-private let defaultSrtClientLatency: Int32 = 2000
-
 class SettingsSrtClientStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
     var id: UUID = .init()

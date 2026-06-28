@@ -1,4 +1,3 @@
 project: Moblin.xcodeproj
-retain_objc_accessible: true
 schemes:
 - Moblin

@@ -2147,15 +2147,6 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
 enum PomodoroPhase: String, Codable {
     case focus = "Focus"
     case shortBreak = "Break"
-
-    func toString() -> String {
-        switch self {
-        case .focus:
-            String(localized: "Focus")
-        case .shortBreak:
-            String(localized: "Break")
-        }
-    }
 }
 
 enum PomodoroFocusIcon: String, Codable, CaseIterable {

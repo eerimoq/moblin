@@ -245,7 +245,6 @@ private struct VariableWithLengthUnitView: View {
     let description: String
     let variable: String
     @Binding var text: String
-    @State private var presentingPicker: Bool = false
 
     private func units() -> [(String, String)] {
         TextFormatLengthUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }
@@ -265,7 +264,6 @@ private struct VariableWithSpeedUnitView: View {
     let description: String
     let variable: String
     @Binding var text: String
-    @State private var presentingPicker: Bool = false
 
     private func units() -> [(String, String)] {
         TextFormatSpeedUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }
@@ -285,7 +283,6 @@ private struct VariableWithTemperatureUnitView: View {
     let description: String
     let variable: String
     @Binding var text: String
-    @State private var presentingPicker: Bool = false
 
     private func units() -> [(String, String)] {
         TextFormatTemperatureUnit.allCases.filter { $0 != .system }.map { ($0.toString(), $0.symbol()) }

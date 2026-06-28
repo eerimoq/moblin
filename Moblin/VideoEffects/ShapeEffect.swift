@@ -21,10 +21,6 @@ struct ShapeEffectSettings {
 private struct MaskImage {
     var extent: CGRect?
     var cornerRadius: Float?
-    var cornerRadiusTopLeft: Bool?
-    var cornerRadiusTopRight: Bool?
-    var cornerRadiusBottomLeft: Bool?
-    var cornerRadiusBottomRight: Bool?
     var image: CIImage?
 
     func get(extent: CGRect, settings: ShapeEffectSettings) -> CIImage? {

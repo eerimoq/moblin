@@ -506,7 +506,6 @@ private class Rtp {
     private var reorderBuffer: [UInt16: Data] = [:]
     private let reorderBufferMaxSize = 64
     var processor: RtpProcessor?
-    weak var client: RtspClient?
     private let wrappingTimestamp = WrappingTimestamp(
         name: "RTP",
         maximumTimestamp: CMTime(seconds: 0x1_0000_0000)
@@ -664,7 +663,6 @@ class RtspClient: @unchecked Sendable {
         transport?.delegate = self
         transport?.start(host: host, port: port)
         rtpVideo = Rtp()
-        rtpVideo.client = self
         setState(newState: .connecting)
         connectTimer.startSingleShot(timeout: 5) { [weak self] in
             self?.reconnectSoon()

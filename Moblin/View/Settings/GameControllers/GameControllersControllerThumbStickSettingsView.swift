@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ControllerThumbStickView: View {
-    let model: Model
     @Binding var function: SettingsControllerThumbStickFunction
 
     var body: some View {
@@ -16,7 +15,6 @@ struct ControllerThumbStickView: View {
 }
 
 struct GameControllersControllerThumbStickSettingsView: View {
-    let model: Model
     let image: String
     let name: LocalizedStringKey
     @Binding var function: SettingsControllerThumbStickFunction
@@ -25,7 +23,7 @@ struct GameControllersControllerThumbStickSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    ControllerThumbStickView(model: model, function: $function)
+                    ControllerThumbStickView(function: $function)
                 }
             }
             .navigationTitle("Thumb stick")

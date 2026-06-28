@@ -1,6 +1,8 @@
 import StreamDeckKit
 import SwiftUI
 
+#if !targetEnvironment(macCatalyst)
+
 private struct StreamDeckSettingsKeyView: View {
     let model: Model
     @ObservedObject var key: SettingsStreamDeckKey
@@ -291,3 +293,5 @@ struct StreamDecksSettingsView: View {
         .navigationTitle("Stream deck")
     }
 }
+
+#endif

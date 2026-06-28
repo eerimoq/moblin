@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct IngestsSettingsView: View {
+    // periphery: ignore
     let model: Model
     let database: Database
 

@@ -6,7 +6,6 @@ private struct HttpRequestParseResult {
     let path: String
     let version: String
     let headers: [SettingsHttpHeader]
-    // periphery:ignore
     let data: Data
 }
 

@@ -36,6 +36,7 @@ private class PngTuberImage: Decodable {
     let offset: PngCoordinate
     // periphery:ignore
     let parentId: Int?
+    // periphery:ignore
     let pos: PngCoordinate
     let showBlink: BlinkTalkState?
     let showTalk: BlinkTalkState?

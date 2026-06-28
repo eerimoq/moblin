@@ -4,18 +4,6 @@ import Spatial
 private let gimbalAngularVelocity: Double = 0.3
 private let thumbStickDeadZone: Float = 0.1
 
-class GimbalPresetJob {
-    let timer: SimpleTimer?
-
-    init() {
-        timer = SimpleTimer(queue: .main)
-    }
-
-    func wasLongPress() -> Bool {
-        timer == nil
-    }
-}
-
 extension Model {
     func handleControllerFunction(buttonId: String,
                                   function: SettingsControllerFunction,

@@ -271,8 +271,7 @@ struct StreamSettingsView: View {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
                     NavigationLink {
-                        StreamPreviewStreamSettingsView(model: model,
-                                                        previewStream: stream.previewStream)
+                        StreamPreviewStreamSettingsView(previewStream: stream.previewStream)
                     } label: {
                         IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                     }

@@ -29,8 +29,7 @@ struct StreamUrlSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        UrlSettingsView(model: model,
-                        disabled: model.isLive || model.isRecording,
+        UrlSettingsView(disabled: model.isLive || model.isRecording,
                         url: $stream.url,
                         value: stream.url,
                         placeholder: "srtla://foobar.org:4432",
@@ -48,8 +47,7 @@ struct StreamMultiStreamingUrlView: View {
     @ObservedObject var destination: SettingsStreamMultiStreamingDestination
 
     var body: some View {
-        UrlSettingsView(model: model,
-                        disabled: model.isLive || model.isRecording,
+        UrlSettingsView(disabled: model.isLive || model.isRecording,
                         url: $destination.url,
                         value: destination.url,
                         placeholder: "rtmp://foobar.org:3321/app/5678",

@@ -14,7 +14,6 @@ struct SrtClientStreamSettingsView: View {
                 Section {
                     NavigationLink {
                         UrlSettingsView(
-                            model: model,
                             disabled: false,
                             url: $stream.url,
                             value: stream.url,

@@ -218,12 +218,6 @@ extension Model {
         }
     }
 
-    func selectMicById(id: String) {
-        if let mic = getAvailableMicById(id: id) {
-            selectMic(mic: mic)
-        }
-    }
-
     func selectMicDefault(mic: SettingsMicsMic) {
         media.attachBufferedAudio(cameraId: nil)
         let preferStereoMic = database.debug.preferStereoMic
@@ -305,10 +299,6 @@ extension Model {
         let session = AVAudioSession.sharedInstance()
         mic.inputGainSettable = session.isInputGainSettable
         mic.inputGain = session.inputGain
-    }
-
-    @objc func handleAvailableInputsChangeNotification(notification _: NSNotification) {
-        updateMicsListAsync()
     }
 
     private func handleSystemVolumeDidChange(volume: Float, reason: String, sequenceNumber: Int) {

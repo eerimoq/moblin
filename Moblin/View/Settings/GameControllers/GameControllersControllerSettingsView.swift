@@ -13,13 +13,11 @@ struct GameControllersControllerSettingsView: View {
             }
             Section("Thumb sticks") {
                 GameControllersControllerThumbStickSettingsView(
-                    model: model,
                     image: "l.joystick",
                     name: "Left",
                     function: $gameController.leftThumbStickFunction
                 )
                 GameControllersControllerThumbStickSettingsView(
-                    model: model,
                     image: "r.joystick",
                     name: "Right",
                     function: $gameController.rightThumbStickFunction

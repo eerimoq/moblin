@@ -2,10 +2,6 @@ import Foundation
 
 private final class BundleToken {}
 
-func isEqual<T: FloatingPoint>(_ actual: T, _ expected: T, epsilon: T) -> Bool {
-    abs(actual - expected) < epsilon
-}
-
 class MessageQueue<Message> {
     private var buffer: [Message] = []
     private var continuations: [CheckedContinuation<Message, Never>] = []

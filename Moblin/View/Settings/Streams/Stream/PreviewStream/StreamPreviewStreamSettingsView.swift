@@ -9,7 +9,6 @@ private func videoBitrates() -> [UInt32] {
 }
 
 struct StreamPreviewStreamSettingsView: View {
-    let model: Model
     @ObservedObject var previewStream: SettingsStreamPreviewStream
 
     var body: some View {
@@ -23,7 +22,6 @@ struct StreamPreviewStreamSettingsView: View {
             Section {
                 NavigationLink {
                     UrlSettingsView(
-                        model: model,
                         disabled: false,
                         url: $previewStream.url,
                         value: previewStream.url,

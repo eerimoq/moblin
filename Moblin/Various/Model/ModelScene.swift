@@ -89,10 +89,6 @@ extension Model {
         bingoCardEffects[id]
     }
 
-    func getPomodoroTimerEffect(id: UUID) -> PomodoroTimerEffect? {
-        pomodoroTimerEffects[id]
-    }
-
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
         scoreboardEffects[id]
     }
@@ -243,10 +239,6 @@ extension Model {
 
     func getSceneName(id: UUID?) -> String? {
         database.scenes.first { $0.id == id }?.name
-    }
-
-    func getScene(id: UUID?) -> SettingsScene? {
-        database.scenes.first(where: { $0.id == id })
     }
 
     func getWidgetName(id: UUID?) -> String? {

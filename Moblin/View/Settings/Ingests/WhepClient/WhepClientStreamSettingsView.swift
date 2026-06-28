@@ -14,8 +14,7 @@ struct WhepClientStreamSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        UrlSettingsView(model: model,
-                                        disabled: stream.enabled,
+                        UrlSettingsView(disabled: stream.enabled,
                                         url: $stream.url,
                                         value: stream.url,
                                         placeholder: "http://foo.com/whep",

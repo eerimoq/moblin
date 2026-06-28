@@ -119,9 +119,6 @@ extension Model: @preconcurrency MediaPlayerDelegate {
         let latency = mediaPlayerLatency
         media.addBufferedVideo(cameraId: playerId, name: name, latency: latency)
         media.addBufferedAudio(cameraId: playerId, name: name, latency: latency)
-        // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-        //     self.selectMicById(id: "\(playerId) 0")
-        // }
     }
 
     func mediaPlayerFileUnloaded(playerId: UUID) {

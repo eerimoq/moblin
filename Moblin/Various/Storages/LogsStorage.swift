@@ -9,7 +9,6 @@ class LogsStorage: @unchecked Sendable {
     private let fileManager: FileManager
     private var logsUrl: URL
     private var currentFileHandle: FileHandle?
-    private var currentFileUrl: URL?
     private var currentFileSize: UInt64 = 0
 
     init() {
@@ -94,14 +93,12 @@ class LogsStorage: @unchecked Sendable {
     private func closeCurrentFile() {
         try? currentFileHandle?.close()
         currentFileHandle = nil
-        currentFileUrl = nil
         currentFileSize = 0
     }
 
     private func setCurrentFile(url: URL) {
         currentFileHandle = try? FileHandle(forWritingTo: url)
         _ = try? currentFileHandle?.seekToEnd()
-        currentFileUrl = url
         currentFileSize = url.fileSize
     }
 }
