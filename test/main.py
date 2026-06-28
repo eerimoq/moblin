@@ -17,11 +17,14 @@ from utils.moblin import Moblin
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("config_toml", type=Path)
+    parser.add_argument("--device", required=False)
     sequencer = systest.setup("main", parser)
     args = parser.parse_args()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
     config = tomllib.loads(args.config_toml.read_text())
     general = config["general"]
+    if args.device:
+        general["device"] = args.device
     device = config["device"][general["device"]]
     moblin = Moblin(
         general["remote-control-port"],

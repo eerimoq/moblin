@@ -72,7 +72,7 @@ spell-check:
 
 test:
 	rm -rf test/logs test/mediamtx.log test/Recording_*.mp4
-	cd test && python main.py config.toml
+	cd test && python main.py config.toml $(TEST_ARGS)
 
 test-generate-device-settings:
 	rm -f test/*-settings.json
