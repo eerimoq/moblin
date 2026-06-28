@@ -28,6 +28,12 @@ def create_settings(config):
                 "bitrate": 50_000_000,
             },
             {
+                "name": "SRT 5Mbps",
+                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
+                "srt": {"adaptiveBitrateEnabled": False},
+                "bitrate": 5_000_000,
+            },
+            {
                 "name": "Multi RTMP",
                 "enabled": True,
                 "url": f"rtmp://{tester_ip_address}:1935/test1",

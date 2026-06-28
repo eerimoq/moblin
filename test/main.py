@@ -7,6 +7,7 @@ from tests.talkback import Talkback
 from tests.stream import StreamRtmpFromMoblinToMediaMtx
 from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
 from tests.stream import StreamSrtFromMoblinToMediaMtx
+from tests.stream import StreamSrtFromMoblinToFfmpeg
 from tests.scenes import SceneSwitchMultipleTimes
 from tests.ingests import StreamToRtmpServerIngest
 from tests.ingests import StreamToSrtServerIngest
@@ -48,6 +49,7 @@ def main():
             SceneSwitchMultipleTimes(moblin),
             StreamRtmpFromMoblinToMediaMtx(moblin),
             StreamSrtFromMoblinToMediaMtx(moblin),
+            StreamSrtFromMoblinToFfmpeg(moblin),
             StreamMultiRtmpFromMoblinToMediaMtx(moblin),
         )
     sequencer.report_and_exit()

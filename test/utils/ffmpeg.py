@@ -70,6 +70,40 @@ class FfmpegTestStream:
             self._server.wait()
 
 
+class FfmpegServer:
+    def __init__(self, url):
+        self._url = url
+        self._server = None
+
+    def __enter__(self):
+        command = [
+            "ffmpeg",
+            "-nostdin",
+            "-y",
+            "-i",
+            self._url,
+            "-c",
+            "copy",
+            "received.ts",
+        ]
+        LOGGER.debug("Command: %s", " ".join(command))
+        self._server = subprocess.Popen(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        log_output(self._server.stdout, LOGGER)
+        log_output(self._server.stderr, LOGGER)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._server is not None:
+            self._server.kill()
+            self._server.wait()
+
+
 @dataclass
 class FfprobeVideoOutput:
     codec: str
