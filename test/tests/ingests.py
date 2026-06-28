@@ -25,7 +25,7 @@ class StreamToRtmpServerIngest(systest.TestCase):
             )
 
 
-class StreamToRtspClientIngest(systest.TestCase):
+class StreamH264ToRtspClientIngest(systest.TestCase):
     """Stream to an RTSP client ingest."""
 
     def __init__(self, moblin: Moblin):

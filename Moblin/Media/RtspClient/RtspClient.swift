@@ -416,6 +416,8 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         switch type {
         case 1 ... 23:
             try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 24:
+            try processBufferTypeStapA(packet: packet, timestamp: timestamp)
         case rtpH264PacketTypeFuA:
             try processBufferTypeFuA(packet: packet, timestamp: timestamp)
         default:
@@ -426,6 +428,23 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
         decodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
+    }
+
+    private func processBufferTypeStapA(packet: Data, timestamp: Int64) throws {
+        var offset = 13
+        while offset < packet.count {
+            guard offset + 2 <= packet.count else {
+                throw "STAP-A packet short NAL header"
+            }
+            let nalUnitSize = Int(UInt16(packet[offset]) << 8 | UInt16(packet[offset + 1]))
+            offset += 2
+            guard offset + nalUnitSize <= packet.count else {
+                throw "STAP-A packet short NAL data"
+            }
+            decodeFrame()
+            startNewFrame(timestamp: timestamp, first: packet[offset ..< offset + nalUnitSize])
+            offset += nalUnitSize
+        }
     }
 
     private func processBufferTypeFuA(packet: Data, timestamp: Int64) throws {
