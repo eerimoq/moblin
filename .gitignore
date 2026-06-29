@@ -103,7 +103,5 @@ test/*.json
 test/*.png
 test/*.dot
 test/logs
-test/auto.crt
-test/auto.key
+test/files/
 __pycache__
-test/Recording_*.mp4

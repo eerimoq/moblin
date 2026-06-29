@@ -81,7 +81,7 @@ class Moblin:
         recording_url = f"http://{self.ip_address}:1180/recordings/{recording_name}"
         response = requests.get(recording_url, timeout=15)
         response.raise_for_status()
-        recording_file = Path(recording_name)
+        recording_file = Path("files") / recording_name
         recording_file.write_bytes(response.content)
         response = requests.delete(recording_url, timeout=15)
         response.raise_for_status()

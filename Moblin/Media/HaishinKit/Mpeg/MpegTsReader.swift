@@ -347,7 +347,9 @@ class MpegTsReader: @unchecked Sendable {
         _ packetId: UInt16,
         _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     ) {
-        guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream) else {
+        guard let formatDescription = getAacFormatDescription(packetId, packetizedElementaryStream),
+              let sampleRate = formatDescription.audioStreamBasicDescription?.mSampleRate
+        else {
             return
         }
         let reader = ADTSReader(data: packetizedElementaryStream.data)
@@ -370,7 +372,7 @@ class MpegTsReader: @unchecked Sendable {
             ) else {
                 return
             }
-            offset += 1024 / 48000
+            offset += 1024 / sampleRate
             dataOffset += dataLength + AdtsHeader.size
             handleAudioSampleBuffer(sampleBuffer)
         }

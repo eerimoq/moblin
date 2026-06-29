@@ -103,9 +103,10 @@ class FfmpegAudioTestStream(FfmpegBase):
 
 
 class FfmpegServer(FfmpegBase):
-    def __init__(self, url):
+    def __init__(self, url, filename):
         super().__init__()
         self._url = url
+        self._filename = filename
 
     def args(self):
         return [
@@ -113,14 +114,14 @@ class FfmpegServer(FfmpegBase):
             self._url,
             "-c",
             "copy",
-            "received.ts",
+            self._filename,
         ]
 
 
 @dataclass
 class FfprobeVideoOutput:
     codec: str
-    fps: Fraction
+    fps: Fraction | None
 
 
 @dataclass
@@ -165,9 +166,13 @@ def ffprobe_video(path):
         "stream=codec_name,r_frame_rate,avg_frame_rate",
     )
     stream = output["streams"][0]
+    try:
+        fps = Fraction(stream["avg_frame_rate"])
+    except Exception:
+        fps = None
     return FfprobeVideoOutput(
         codec=stream["codec_name"],
-        fps=Fraction(stream["avg_frame_rate"]),
+        fps=fps,
     )
 
 

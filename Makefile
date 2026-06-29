@@ -73,7 +73,8 @@ spell-check:
 
 test:
 	cd test && \
-	rm -rf logs mediamtx.log Recording_*.mp4 && \
+	rm -rf logs files mediamtx.log && \
+	mkdir -p files && \
 	python main.py config.toml $(TEST_ARGS)
 
 test-generate-device-settings:
