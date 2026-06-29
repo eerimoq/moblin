@@ -1,5 +1,3 @@
-from fractions import Fraction
-
 import systest
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe
