@@ -14,7 +14,7 @@ protocol SrtClientDelegate: AnyObject {
                                      _ audioTargetLatency: Double)
 }
 
-let srtClientLatency = 0.75
+let srtClientLatency = 0.5
 private let reconnectDelay = 5.0
 
 class SrtClient: @unchecked Sendable {
