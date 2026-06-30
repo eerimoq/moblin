@@ -1,16 +1,12 @@
-import systest
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe
 from utils.moblin import Moblin
 from utils.mediamtx import MediaMtx
+from utils.test_case import TestCase
 
 
-class StreamRtmpToMediaMtx(systest.TestCase):
+class StreamRtmpToMediaMtx(TestCase):
     """RTMP stream from Moblin to MediaMTX for a few seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("Front")
@@ -22,12 +18,8 @@ class StreamRtmpToMediaMtx(systest.TestCase):
             self.moblin.end()
 
 
-class StreamSrtToMediaMtx(systest.TestCase):
+class StreamSrtToMediaMtx(TestCase):
     """SRT stream from Moblin to MediaMTX for a few seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("Front")
@@ -39,12 +31,8 @@ class StreamSrtToMediaMtx(systest.TestCase):
             self.moblin.end()
 
 
-class StreamSrtToFfmpeg(systest.TestCase):
+class StreamSrtToFfmpeg(TestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         filename = "files/StreamSrtFromMoblinToFfmpeg.ts"
@@ -61,12 +49,8 @@ class StreamSrtToFfmpeg(systest.TestCase):
             self.assert_less(metadata.format.duration, 20)
 
 
-class StreamSrtToFfmpegHighBitrate(systest.TestCase):
+class StreamSrtToFfmpegHighBitrate(TestCase):
     """SRT stream from Moblin to ffmpeg at 50 Mbps for a few seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         filename = "files/StreamSrtFromMoblinToFfmpegHighBitrate.ts"
@@ -83,12 +67,8 @@ class StreamSrtToFfmpegHighBitrate(systest.TestCase):
             self.assert_less(metadata.format.duration, 10)
 
 
-class StreamMultiRtmpToMediaMtx(systest.TestCase):
+class StreamMultiRtmpToMediaMtx(TestCase):
     """Multiple RTMP streams from Moblin to MediaMTX for a few seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("Front")

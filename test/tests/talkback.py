@@ -1,20 +1,16 @@
 import logging
 import time
 
-import systest
 from utils.utils import manual_validation
 from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegAudioTestStream
+from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
 
 
-class Talkback(systest.TestCase):
+class Talkback(TestCase):
     """Play talkback sound through the speaker for 10 seconds."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         stream = FfmpegAudioTestStream(

@@ -1,13 +1,9 @@
-import systest
 from utils.moblin import Moblin
+from utils.test_case import TestCase
 
 
-class SceneSwitchMultipleTimes(systest.TestCase):
+class SceneSwitchMultipleTimes(TestCase):
     """Switch between two scenes a few times."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         for _ in range(10):

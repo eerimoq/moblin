@@ -1,15 +1,11 @@
-import systest
 from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
+from utils.test_case import TestCase
 
 
-class IngestRtmpServer(systest.TestCase):
+class IngestRtmpServer(TestCase):
     """Stream to an RTMP server ingest."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("RTMP")
@@ -23,12 +19,8 @@ class IngestRtmpServer(systest.TestCase):
             )
 
 
-class IngestSrtServer(systest.TestCase):
+class IngestSrtServer(TestCase):
     """Stream to an SRT server ingest."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("SRT")
@@ -45,12 +37,8 @@ class IngestSrtServer(systest.TestCase):
             )
 
 
-class IngestRtspClientH264(systest.TestCase):
+class IngestRtspClientH264(TestCase):
     """Stream to an RTSP client ingest."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("RTSP")
@@ -64,12 +52,8 @@ class IngestRtspClientH264(systest.TestCase):
                 )
 
 
-class IngestRistServer(systest.TestCase):
+class IngestRistServer(TestCase):
     """Stream to an RIST server ingest."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("RIST")

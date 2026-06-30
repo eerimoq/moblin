@@ -2,19 +2,15 @@ from fractions import Fraction
 import logging
 import time
 
-import systest
 from utils.ffmpeg import ffprobe
 from utils.moblin import Moblin
+from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
 
 
-class RecordH264(systest.TestCase):
+class RecordH264(TestCase):
     """Record a 10 seconds H.264 video."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("Front")
@@ -32,12 +28,8 @@ class RecordH264(systest.TestCase):
         self.assert_less(recording_metadata.format.duration, 12)
 
 
-class RecordH265(systest.TestCase):
+class RecordH265(TestCase):
     """Record a 10 seconds H.265 video."""
-
-    def __init__(self, moblin: Moblin):
-        super().__init__()
-        self.moblin = moblin
 
     def run(self):
         self.moblin.set_scene("Front")
