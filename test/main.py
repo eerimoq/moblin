@@ -19,9 +19,7 @@ def main():
     args = parser.parse_args()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
     config = Config(args.config_toml, args.device)
-    moblin = Moblin(
-        config.device_name(), config.remote_control_port(), config.moblin_ip_address()
-    )
+    moblin = Moblin(config)
     with moblin:
         moblin.set_scene("Front")
         moblin.end()

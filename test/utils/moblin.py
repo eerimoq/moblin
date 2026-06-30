@@ -5,6 +5,8 @@ import time
 from pathlib import Path
 import re
 import requests
+
+from .config import Config
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -14,11 +16,11 @@ RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 
 
 class Moblin:
-    def __init__(self, device_name, remote_control_port, ip_address):
-        self._device_name = device_name
-        self._remote_control_port = remote_control_port
+    def __init__(self, config: Config):
+        self._device_name = config.device_name()
+        self._remote_control_port = config.remote_control_port()
         self._server = None
-        self.ip_address = ip_address
+        self.ip_address = config.moblin_ip_address()
 
     def __enter__(self):
         self._server = subprocess.Popen(
