@@ -5,7 +5,7 @@ from utils.moblin import Moblin
 from utils.mediamtx import MediaMtx
 
 
-class StreamRtmpFromMoblinToMediaMtx(systest.TestCase):
+class StreamRtmpToMediaMtx(systest.TestCase):
     """RTMP stream from Moblin to MediaMTX for a few seconds."""
 
     def __init__(self, moblin: Moblin):
@@ -22,7 +22,7 @@ class StreamRtmpFromMoblinToMediaMtx(systest.TestCase):
             self.moblin.end()
 
 
-class StreamSrtFromMoblinToMediaMtx(systest.TestCase):
+class StreamSrtToMediaMtx(systest.TestCase):
     """SRT stream from Moblin to MediaMTX for a few seconds."""
 
     def __init__(self, moblin: Moblin):
@@ -39,7 +39,7 @@ class StreamSrtFromMoblinToMediaMtx(systest.TestCase):
             self.moblin.end()
 
 
-class StreamSrtFromMoblinToFfmpeg(systest.TestCase):
+class StreamSrtToFfmpeg(systest.TestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds."""
 
     def __init__(self, moblin: Moblin):
@@ -61,7 +61,7 @@ class StreamSrtFromMoblinToFfmpeg(systest.TestCase):
             self.assert_less(metadata.format.duration, 20)
 
 
-class StreamSrtFromMoblinToFfmpegHighBitrate(systest.TestCase):
+class StreamSrtToFfmpegHighBitrate(systest.TestCase):
     """SRT stream from Moblin to ffmpeg at 50 Mbps for a few seconds."""
 
     def __init__(self, moblin: Moblin):
@@ -83,7 +83,7 @@ class StreamSrtFromMoblinToFfmpegHighBitrate(systest.TestCase):
             self.assert_less(metadata.format.duration, 10)
 
 
-class StreamMultiRtmpFromMoblinToMediaMtx(systest.TestCase):
+class StreamMultiRtmpToMediaMtx(systest.TestCase):
     """Multiple RTMP streams from Moblin to MediaMTX for a few seconds."""
 
     def __init__(self, moblin: Moblin):
@@ -100,3 +100,13 @@ class StreamMultiRtmpFromMoblinToMediaMtx(systest.TestCase):
             mediamtx.wait_for_rtmp_stream("test2", 10_000_000)
             mediamtx.wait_for_rtmp_stream("test3", 10_000_000)
             self.moblin.end()
+
+
+def tests(moblin: Moblin):
+    return [
+        StreamRtmpToMediaMtx(moblin),
+        StreamSrtToMediaMtx(moblin),
+        StreamSrtToFfmpeg(moblin),
+        StreamSrtToFfmpegHighBitrate(moblin),
+        StreamMultiRtmpToMediaMtx(moblin),
+    ]

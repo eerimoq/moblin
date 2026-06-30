@@ -1,3 +1,4 @@
+from logging import Logger
 import threading
 
 
@@ -11,3 +12,7 @@ def _log_stream(stream, logger):
 
 def log_output(stream, logger):
     threading.Thread(target=_log_stream, args=(stream, logger), daemon=True).start()
+
+
+def manual_validation(logger: Logger, message: str):
+    logger.info("🧪🧪🧪 Manual validation: %s 🧪🧪🧪", message)

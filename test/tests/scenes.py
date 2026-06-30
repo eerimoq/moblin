@@ -13,3 +13,9 @@ class SceneSwitchMultipleTimes(systest.TestCase):
         for _ in range(10):
             self.moblin.set_scene("Screen")
             self.moblin.set_scene("Front")
+
+
+def tests(moblin: Moblin):
+    return [
+        SceneSwitchMultipleTimes(moblin),
+    ]

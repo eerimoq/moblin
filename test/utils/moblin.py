@@ -14,7 +14,8 @@ RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 
 
 class Moblin:
-    def __init__(self, remote_control_port, ip_address):
+    def __init__(self, device_name, remote_control_port, ip_address):
+        self._device_name = device_name
         self._remote_control_port = remote_control_port
         self._server = None
         self.ip_address = ip_address
@@ -93,16 +94,21 @@ class Moblin:
     def wait_for_ingests(
         self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests
     ):
-        total_bytes += self._get_ingests_status()[1]
+        accumulated_total_bytes = 0
+        previous_total_bytes = self._get_ingests_status()[1]
         end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             time.sleep(1)
             actual_bitrate, actual_total_bytes, actual_number_of_ingests = (
                 self._get_ingests_status()
             )
+            total_bytes_delta = actual_total_bytes - previous_total_bytes
+            if total_bytes_delta > 0:
+                accumulated_total_bytes += total_bytes_delta
+            previous_total_bytes = actual_total_bytes
             if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
                 continue
-            if actual_total_bytes < total_bytes:
+            if accumulated_total_bytes < total_bytes:
                 continue
             if actual_number_of_ingests != number_of_ingests:
                 continue
@@ -148,15 +154,17 @@ class Moblin:
         ).stdout
 
     def _wait_until_streamer_is_connected(self):
-        end_time = time.monotonic() + 15
+        end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             try:
                 self.get_settings()
-                LOGGER.info("Remote control streamer to connected")
+                LOGGER.info("Remote control streamer connected")
+                time.sleep(3)
                 return
             except Exception:
                 LOGGER.info(
-                    "Waiting for remote control streamer to connect to port %d",
+                    "Waiting for %s's remote control streamer to connect to port %d",
+                    self._device_name,
                     self._remote_control_port,
                 )
                 time.sleep(1)

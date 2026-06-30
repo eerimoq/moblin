@@ -73,6 +73,8 @@ class FfmpegTestStream(FfmpegBase):
             "aac",
             "-b:a",
             "128k",
+            "-vf",
+            "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=150",
             "-f",
             self._transport_format,
             self._url,

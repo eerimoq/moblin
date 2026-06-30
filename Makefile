@@ -79,8 +79,7 @@ test:
 
 test-generate-device-settings:
 	cd test && \
-	rm -f *-settings.json && \
-	python generate_device_settings.py config.toml && cat *-settings.json | pbcopy
+	python generate_device_settings.py config.toml | pbcopy
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings

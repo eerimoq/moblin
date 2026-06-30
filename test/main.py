@@ -1,21 +1,13 @@
 import argparse
 import logging
-import tomllib
 from pathlib import Path
 import systest
-from tests.talkback import Talkback
-from tests.stream import StreamRtmpFromMoblinToMediaMtx
-from tests.stream import StreamMultiRtmpFromMoblinToMediaMtx
-from tests.stream import StreamSrtFromMoblinToMediaMtx
-from tests.stream import StreamSrtFromMoblinToFfmpeg
-from tests.stream import StreamSrtFromMoblinToFfmpegHighBitrate
-from tests.scenes import SceneSwitchMultipleTimes
-from tests.ingests import StreamToRtmpServerIngest
-from tests.ingests import StreamToSrtServerIngest
-from tests.ingests import StreamH264ToRtspClientIngest
-from tests.ingests import StreamToRistServerIngest
-from tests.record import RecordH264
-from tests.record import RecordH265
+from tests import talkback
+from tests import stream
+from tests import scenes
+from tests import ingests
+from tests import record
+from utils.config import Config
 from utils.moblin import Moblin
 
 
@@ -26,33 +18,20 @@ def main():
     sequencer = systest.setup("main", parser)
     args = parser.parse_args()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
-    config = tomllib.loads(args.config_toml.read_text())
-    general = config["general"]
-    if args.device:
-        general["device"] = args.device
-    device = config["device"][general["device"]]
+    config = Config(args.config_toml, args.device)
     moblin = Moblin(
-        general["remote-control-port"],
-        device["moblin-ip-address"],
+        config.device_name(), config.remote_control_port(), config.moblin_ip_address()
     )
     with moblin:
         moblin.set_scene("Front")
         moblin.end()
         moblin.stop_recording()
         sequencer.run(
-            Talkback(moblin),
-            StreamToRtmpServerIngest(moblin),
-            StreamToSrtServerIngest(moblin),
-            StreamH264ToRtspClientIngest(moblin),
-            StreamToRistServerIngest(moblin),
-            RecordH264(moblin),
-            RecordH265(moblin),
-            SceneSwitchMultipleTimes(moblin),
-            StreamRtmpFromMoblinToMediaMtx(moblin),
-            StreamSrtFromMoblinToMediaMtx(moblin),
-            StreamSrtFromMoblinToFfmpeg(moblin),
-            StreamSrtFromMoblinToFfmpegHighBitrate(moblin),
-            StreamMultiRtmpFromMoblinToMediaMtx(moblin),
+            talkback.tests(moblin),
+            ingests.tests(moblin),
+            record.tests(moblin),
+            scenes.tests(moblin),
+            stream.tests(moblin),
         )
     sequencer.report_and_exit()
 

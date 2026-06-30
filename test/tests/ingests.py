@@ -4,7 +4,7 @@ from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
 
 
-class StreamToRtmpServerIngest(systest.TestCase):
+class IngestRtmpServer(systest.TestCase):
     """Stream to an RTMP server ingest."""
 
     def __init__(self, moblin: Moblin):
@@ -23,7 +23,7 @@ class StreamToRtmpServerIngest(systest.TestCase):
             )
 
 
-class StreamToSrtServerIngest(systest.TestCase):
+class IngestSrtServer(systest.TestCase):
     """Stream to an SRT server ingest."""
 
     def __init__(self, moblin: Moblin):
@@ -45,7 +45,7 @@ class StreamToSrtServerIngest(systest.TestCase):
             )
 
 
-class StreamH264ToRtspClientIngest(systest.TestCase):
+class IngestRtspClientH264(systest.TestCase):
     """Stream to an RTSP client ingest."""
 
     def __init__(self, moblin: Moblin):
@@ -64,7 +64,7 @@ class StreamH264ToRtspClientIngest(systest.TestCase):
                 )
 
 
-class StreamToRistServerIngest(systest.TestCase):
+class IngestRistServer(systest.TestCase):
     """Stream to an RIST server ingest."""
 
     def __init__(self, moblin: Moblin):
@@ -84,3 +84,12 @@ class StreamToRistServerIngest(systest.TestCase):
                 total_bytes=10_000_000,
                 number_of_ingests=2,
             )
+
+
+def tests(moblin: Moblin):
+    return [
+        IngestRtmpServer(moblin),
+        IngestSrtServer(moblin),
+        IngestRtspClientH264(moblin),
+        IngestRistServer(moblin),
+    ]

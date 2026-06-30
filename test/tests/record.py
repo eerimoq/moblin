@@ -53,3 +53,10 @@ class RecordH265(systest.TestCase):
         self.assert_equal(recording_metadata.audio.codec, "aac")
         self.assert_greater(recording_metadata.format.duration, 8)
         self.assert_less(recording_metadata.format.duration, 12)
+
+
+def tests(moblin: Moblin):
+    return [
+        RecordH264(moblin),
+        RecordH265(moblin),
+    ]
