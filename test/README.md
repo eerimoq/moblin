@@ -1,21 +1,13 @@
 # Prerequisites
 
-1. Install Python dependencies.
-   ```bash
-   pip install -r ../requirements.txt
-   ```
-2. Install mediamtx.
-   ```bash
-   brew install mediamtx
-   ```
-3. Install ffmpeg and add it to PATH.
-   ```bash
-   brew install ffmpeg-full
-   ```
-4. Install qrtool.
-   ```bash
-   brew install qrtool
-   ```
+Install Python dependencies and various tools. You might have to add ffmpeg to PATH.
+
+```bash
+pip install -r ../requirements.txt
+brew install mediamtx
+brew install ffmpeg-full
+brew install qrtool
+```
 
 # Moblin device configuration
 
