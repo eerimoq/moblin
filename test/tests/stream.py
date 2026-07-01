@@ -70,7 +70,7 @@ class StreamSrtToFfmpegHighBitrate(TestCase):
 
 
 class StreamSrtToFfmpegEncrypted(TestCase):
-    """SRT encrypted stream from Moblin to ffmpeg for a few seconds."""
+    """Encrypted SRT stream from Moblin to ffmpeg for a few seconds."""
 
     def run(self):
         filename = Path("files/StreamSrtToFfmpegEncryption.ts")
