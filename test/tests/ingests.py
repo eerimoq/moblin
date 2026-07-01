@@ -41,11 +41,15 @@ class RecordTest(TestCase):
             previous_frame_number = qr_codes[frame_index - 1].number
             if current_frame_number == previous_frame_number:
                 if seen_increase:
-                    raise Exception(f"Frame number {current_frame_number} already seen.")
+                    raise Exception(
+                        f"Frame number {current_frame_number} already seen."
+                    )
             elif current_frame_number == previous_frame_number + 1:
                 seen_increase = True
             else:
-                raise Exception(f"Frame number {current_frame_number} is not one higher than {previous_frame_number}.")
+                raise Exception(
+                    f"Frame number {current_frame_number} is not one higher than {previous_frame_number}."
+                )
 
 
 class IngestRtmpServer(RecordTest):
