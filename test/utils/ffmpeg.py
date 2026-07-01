@@ -214,10 +214,16 @@ class QrCode:
     number: int
     pts: float
 
-    def __init__(self, text: str):
+    def __init__(self, proc):
+        text = proc.stdout.read()
         parts = text.split(" ")
-        self.number = int(parts[1])
-        self.pts = float(parts[3])
+        if len(parts) == 4:
+            self.number = int(parts[1])
+            self.pts = float(parts[3])
+        else:
+            LOGGER.info("Failed QR decode of %s. Output: '%s'", proc.args[-1], text)
+            self.number = -1
+            self.pts = -1
 
 
 def read_qr_codes(path: Path):
@@ -244,5 +250,7 @@ def read_qr_codes(path: Path):
     qr_codes = []
     for proc in procs:
         proc.wait()
-        qr_codes.append(QrCode(proc.stdout.read()))
+        qr_code = QrCode(proc)
+        if qr_code.number != -1:
+            qr_codes.append(qr_code)
     return qr_codes

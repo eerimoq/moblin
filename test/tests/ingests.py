@@ -36,6 +36,7 @@ class RecordTest(TestCase):
         qr_codes = read_qr_codes(recording)
         self.assert_greater(len(qr_codes), 0)
         seen_increase = False
+        bad_frame_numbers = set()
         for frame_index in range(1, len(qr_codes)):
             current_frame_number = qr_codes[frame_index].number
             previous_frame_number = qr_codes[frame_index - 1].number
@@ -47,9 +48,14 @@ class RecordTest(TestCase):
             elif current_frame_number == previous_frame_number + 1:
                 seen_increase = True
             else:
-                raise Exception(
-                    f"Frame number {current_frame_number} is not one higher than {previous_frame_number}."
-                )
+                bad_frame_numbers.add((current_frame_number, previous_frame_number))
+        for current_frame_number, previous_frame_number in bad_frame_numbers:
+            LOGGER.info(
+                "Bad frame - Current: %s, Previous: %s",
+                current_frame_number,
+                previous_frame_number,
+            )
+        self.assert_equal(len(bad_frame_numbers), 0)
 
 
 class IngestRtmpServer(RecordTest):
