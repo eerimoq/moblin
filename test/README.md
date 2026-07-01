@@ -11,6 +11,10 @@
 3. Install ffmpeg and add it to PATH.
    ```bash
    brew install ffmpeg-full
+4. Install qrtool.
+   ```bash
+   brew install qrtool
+   ```
    ```
 
 # Moblin device configuration
