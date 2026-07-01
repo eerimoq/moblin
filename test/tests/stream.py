@@ -69,6 +69,27 @@ class StreamSrtToFfmpegHighBitrate(TestCase):
             self.assert_less(metadata.format.duration, 10)
 
 
+class StreamSrtToFfmpegEncrypted(TestCase):
+    """SRT encrypted stream from Moblin to ffmpeg for a few seconds."""
+
+    def run(self):
+        filename = Path("files/StreamSrtToFfmpegEncryption.ts")
+        self.moblin.set_scene("Front")
+        with FfmpegServer(
+            url="srt://0.0.0.0:8890?mode=listener&passphrase=1234567890",
+            filename=filename,
+        ):
+            self.moblin.set_stream("SRT encrypted")
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+            self.moblin.end()
+            metadata = ffprobe(filename)
+            self.assert_equal(metadata.video.codec, "hevc")
+            self.assert_equal(metadata.audio.codec, "aac")
+            self.assert_greater(metadata.format.duration, 10)
+            self.assert_less(metadata.format.duration, 20)
+
+
 class StreamMultiRtmpToMediaMtx(TestCase):
     """Multiple RTMP streams from Moblin to MediaMTX for a few seconds."""
 
@@ -90,5 +111,6 @@ def tests(moblin: Moblin):
         StreamSrtToMediaMtx(moblin),
         StreamSrtToFfmpeg(moblin),
         StreamSrtToFfmpegHighBitrate(moblin),
+        StreamSrtToFfmpegEncrypted(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
     ]

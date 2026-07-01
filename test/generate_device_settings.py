@@ -37,6 +37,13 @@ def create_settings(config):
                 "bitrate": 5_000_000,
             },
             {
+                "name": "SRT encrypted",
+                "bitrateRateControl": "CBR",
+                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test&passphrase=1234567890",
+                "srt": {"adaptiveBitrateEnabled": False, "implementation": "Official"},
+                "bitrate": 5_000_000,
+            },
+            {
                 "name": "Multi RTMP",
                 "bitrateRateControl": "CBR",
                 "url": f"rtmp://{tester_ip_address}:1935/test1",
