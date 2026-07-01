@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe
 from utils.moblin import Moblin
@@ -35,7 +37,7 @@ class StreamSrtToFfmpeg(TestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds."""
 
     def run(self):
-        filename = "files/StreamSrtFromMoblinToFfmpeg.ts"
+        filename = Path("files/StreamSrtFromMoblinToFfmpeg.ts")
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.set_stream("SRT 5Mbps")
@@ -53,7 +55,7 @@ class StreamSrtToFfmpegHighBitrate(TestCase):
     """SRT stream from Moblin to ffmpeg at 50 Mbps for a few seconds."""
 
     def run(self):
-        filename = "files/StreamSrtFromMoblinToFfmpegHighBitrate.ts"
+        filename = Path("files/StreamSrtFromMoblinToFfmpegHighBitrate.ts")
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.set_stream("SRT")

@@ -1,19 +1,21 @@
 from dataclasses import dataclass
 import json
 import logging
+from pathlib import Path
 import subprocess
 from fractions import Fraction
+from typing import List
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
 
 
-class FfmpegBase:
+class FfmpegCommand:
     def __init__(self):
         self._server = None
 
-    def args(self):
-        return []
+    def args(self) -> List[str]:
+        raise NotImplementedError
 
     def __enter__(self):
         command = ["ffmpeg", "-nostdin", "-y"] + self.args()
@@ -35,7 +37,7 @@ class FfmpegBase:
             self._server.wait()
 
 
-class FfmpegTestStream(FfmpegBase):
+class FfmpegTestStream(FfmpegCommand):
     def __init__(self, url, transport_format="flv", video_codec="libx264"):
         super().__init__()
         self._url = url
@@ -74,14 +76,15 @@ class FfmpegTestStream(FfmpegBase):
             "-b:a",
             "128k",
             "-vf",
-            "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=150",
+            "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=150,"
+            "drawtext=fontsize=60:text=%{frame_num}:x=10:y=100",
             "-f",
             self._transport_format,
             self._url,
         ]
 
 
-class FfmpegAudioTestStream(FfmpegBase):
+class FfmpegAudioTestStream(FfmpegCommand):
     def __init__(self, url, transport_format="flv"):
         super().__init__()
         self._url = url
@@ -104,8 +107,8 @@ class FfmpegAudioTestStream(FfmpegBase):
         ]
 
 
-class FfmpegServer(FfmpegBase):
-    def __init__(self, url, filename):
+class FfmpegServer(FfmpegCommand):
+    def __init__(self, url: str, filename: Path):
         super().__init__()
         self._url = url
         self._filename = filename
@@ -116,7 +119,7 @@ class FfmpegServer(FfmpegBase):
             self._url,
             "-c",
             "copy",
-            self._filename,
+            str(self._filename),
         ]
 
 
@@ -143,7 +146,7 @@ class FfprobeOutput:
     format: FfprobeFormatOutput
 
 
-def ffprobe_run(path, *args):
+def ffprobe_run(path: Path, *args):
     output = subprocess.run(
         [
             "ffprobe",
@@ -159,7 +162,7 @@ def ffprobe_run(path, *args):
     return json.loads(output)
 
 
-def ffprobe_video(path):
+def ffprobe_video(path: Path):
     output = ffprobe_run(
         path,
         "-select_streams",
@@ -176,6 +179,7 @@ def ffprobe_video(path):
         codec=stream["codec_name"],
         fps=fps,
     )
+    # ffprobe test/files/Recording_2026-07-01_055731.mp4 -show_frames -select_streams v:0 -output_format json
 
 
 def ffprobe_audio(path):
@@ -195,9 +199,50 @@ def ffprobe_format(path):
     return FfprobeFormatOutput(duration=float(output["format"]["duration"]))
 
 
-def ffprobe(path):
-    return FfprobeOutput(
+def ffprobe(path: Path):
+    metadata = FfprobeOutput(
         video=ffprobe_video(path),
         audio=ffprobe_audio(path),
         format=ffprobe_format(path),
     )
+    LOGGER.debug("File: %s, Metadata: %s", path, metadata)
+    return metadata
+
+
+@dataclass
+class QrCode:
+    number: int
+    pts: float
+
+    def __init__(self, text: str):
+        parts = text.split(" ")
+        self.number = int(parts[1])
+        self.pts = float(parts[3])
+
+
+def read_qr_codes(path: Path):
+    qr_codes_dir = Path(f"{path}-qr-codes")
+    qr_codes_dir.mkdir()
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-i",
+            path,
+            "-vf",
+            "crop=w=400:h=400:x=150:y=0",
+            f"{qr_codes_dir}/%05d.jpg",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    procs = []
+    for file in sorted(qr_codes_dir.iterdir()):
+        proc = subprocess.Popen(
+            ["qrtool", "decode", file], stdout=subprocess.PIPE, text=True
+        )
+        procs.append(proc)
+    qr_codes = []
+    for proc in procs:
+        proc.wait()
+        qr_codes.append(QrCode(proc.stdout.read()))
+    return qr_codes
