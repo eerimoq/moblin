@@ -30,9 +30,22 @@ class RecordTest(TestCase):
         self.assert_equal(recording_metadata.audio.codec, "aac")
         self.assert_greater(recording_metadata.format.duration, 8)
         self.assert_less(recording_metadata.format.duration, 12)
+        self._assert_frame_numbers_increasing(recording)
+
+    def _assert_frame_numbers_increasing(self, recording: Path):
         qr_codes = read_qr_codes(recording)
-        for qr_code in qr_codes:
-            LOGGER.debug("QR code info: %s", qr_code)
+        self.assert_greater(len(qr_codes), 0)
+        seen_increase = False
+        for frame_index in range(1, len(qr_codes)):
+            current_frame_number = qr_codes[frame_index].number
+            previous_frame_number = qr_codes[frame_index - 1].number
+            if current_frame_number == previous_frame_number:
+                if seen_increase:
+                    raise Exception(f"Frame number {current_frame_number} already seen.")
+            elif current_frame_number == previous_frame_number + 1:
+                seen_increase = True
+            else:
+                raise Exception(f"Frame number {current_frame_number} is not one higher than {previous_frame_number}.")
 
 
 class IngestRtmpServer(RecordTest):
