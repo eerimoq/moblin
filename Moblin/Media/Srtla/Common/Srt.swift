@@ -19,6 +19,13 @@ func isSrtDataPacket(packet: Data) -> Bool {
     (packet[0] & 0x80) == 0
 }
 
+func isSrtDataPacketEncrypted(packet: Data) -> Bool {
+    guard packet.count >= 8, isSrtDataPacket(packet: packet) else {
+        return false
+    }
+    return (packet[4] & 0x18) != 0
+}
+
 func getSrtControlPacketType(packet: Data) -> UInt16 {
     packet.getUInt16Be() & 0x7FFF
 }

@@ -1174,9 +1174,11 @@ extension Media: SrtlaDelegate {
                     }
                 }
             } else {
-                self.srtStreamNew?.open(streamId: extractSrtStreamId(url: self.srtUrl),
-                                        latency: UInt16(self.latency),
-                                        experimental: self.experimental)
+                self.srtStreamNew?.open(
+                    streamId: extractSrtStreamId(url: self.srtUrl),
+                    latency: UInt16(self.latency),
+                    experimental: self.experimental
+                )
             }
         }
     }

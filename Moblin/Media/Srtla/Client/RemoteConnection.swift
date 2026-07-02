@@ -360,7 +360,7 @@ class RemoteConnection: @unchecked Sendable {
             packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
             var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
-            if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
+            if !isSrtDataPacketEncrypted(packet: packet), numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                 var paddedPacket = packet
                 while numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                     paddedPacket.append(nullPacket)
