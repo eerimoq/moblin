@@ -430,6 +430,14 @@ func extractSrtStreamId(url: String) -> String? {
     URL(string: url)?.dictionaryFromQuery()["streamid"]
 }
 
+func extractSrtPassphrase(url: String) -> String? {
+    URL(string: url)?.dictionaryFromQuery()["passphrase"]
+}
+
+func extractSrtPbkeylen(url: String) -> String? {
+    URL(string: url)?.dictionaryFromQuery()["pbkeylen"]
+}
+
 extension String {
     init(cArray: [CChar]) {
         self = cArray.withUnsafeBufferPointer {

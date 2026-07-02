@@ -48,6 +48,8 @@ class CreateStreamWizard: ObservableObject {
     @Published var belaboxUrl = ""
     @Published var customSrtUrl = ""
     @Published var customSrtStreamId = ""
+    @Published var customSrtPassphrase = ""
+    @Published var customSrtPbkeylen = ""
     @Published var customRtmpUrl = ""
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""

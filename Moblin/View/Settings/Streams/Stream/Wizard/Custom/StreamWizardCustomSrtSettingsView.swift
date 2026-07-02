@@ -13,6 +13,19 @@ struct StreamWizardSrtUrlSettingsView: View {
         }
     }
 
+    private func changePbkeylen(value: String) -> String? {
+        guard !value.isEmpty else {
+            return nil
+        }
+        guard let pbkeylen = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard [16, 24, 32].contains(pbkeylen) else {
+            return String(localized: "Must be 16, 24 or 32")
+        }
+        return nil
+    }
+
     var body: some View {
         Section {
             TextField(
@@ -24,6 +37,12 @@ struct StreamWizardSrtUrlSettingsView: View {
             .onChange(of: createStreamWizard.customSrtUrl) { _ in
                 updateUrlError()
                 createStreamWizard.customSrtStreamId = extractSrtStreamId(
+                    url: createStreamWizard.customSrtUrl
+                ) ?? ""
+                createStreamWizard.customSrtPassphrase = extractSrtPassphrase(
+                    url: createStreamWizard.customSrtUrl
+                ) ?? ""
+                createStreamWizard.customSrtPbkeylen = extractSrtPbkeylen(
                     url: createStreamWizard.customSrtUrl
                 ) ?? ""
             }
@@ -43,6 +62,36 @@ struct StreamWizardSrtUrlSettingsView: View {
             Text("Stream id")
         } footer: {
             Text("Replaces or adds the stream id to the URL.")
+        }
+        Section {
+            TextField(
+                String("Optional"),
+                text: $createStreamWizard.customSrtPassphrase
+            )
+            .textInputAutocapitalization(.never)
+            .disableAutocorrection(true)
+        } header: {
+            Text("Passphrase (optional)")
+        } footer: {
+            Text("Replaces or adds the passphrase to the URL.")
+        }
+        Section {
+            TextEditNavigationView(
+                title: String(localized: "pbkeylen"),
+                value: createStreamWizard.customSrtPbkeylen,
+                onChange: changePbkeylen,
+                onSubmit: { value in
+                    createStreamWizard.customSrtPbkeylen = value
+                },
+                keyboardType: .numbersAndPunctuation,
+                valueFormat: { value in
+                    value.isEmpty ? String(localized: "Optional") : value
+                }
+            )
+        } header: {
+            Text("pbkeylen (optional)")
+        } footer: {
+            Text("Replaces or adds pbkeylen to the URL.")
         }
     }
 }
