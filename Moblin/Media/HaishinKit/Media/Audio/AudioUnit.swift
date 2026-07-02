@@ -184,9 +184,20 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, audioOffset: Double = 0) {
         processorPipelineQueue.async {
-            self.addBufferedAudioInternal(cameraId: cameraId, name: name, latency: latency)
+            self.addBufferedAudioInternal(
+                cameraId: cameraId,
+                name: name,
+                latency: latency,
+                audioOffset: audioOffset
+            )
+        }
+    }
+
+    func setBufferedAudioOffset(cameraId: UUID, offset: Double) {
+        processorPipelineQueue.async {
+            self.bufferedAudios[cameraId]?.audioOffset = offset
         }
     }
 
@@ -246,7 +257,12 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    private func addBufferedAudioInternal(cameraId: UUID, name: String, latency: Double) {
+    private func addBufferedAudioInternal(
+        cameraId: UUID,
+        name: String,
+        latency: Double,
+        audioOffset: Double = 0
+    ) {
         let bufferedAudio = BufferedAudio(
             cameraId: cameraId,
             name: name,
@@ -254,6 +270,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             processor: processor,
             manualOutput: false
         )
+        bufferedAudio.audioOffset = audioOffset
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
     }

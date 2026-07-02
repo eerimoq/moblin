@@ -37,6 +37,13 @@ struct SrtlaServerStreamSettingsView: View {
         return url
     }
 
+    private var audioOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(stream.audioOffset) },
+            set: { stream.audioOffset = Int32($0.rounded()) }
+        )
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -53,6 +60,21 @@ struct SrtlaServerStreamSettingsView: View {
                     .disabled(srtlaServer.enabled)
                 } footer: {
                     Text("The stream name is shown in the list of cameras in scene settings.")
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Audio offset")
+                        HStack {
+                            Slider(value: audioOffsetBinding, in: -500 ... 2000, step: 10)
+                                .onChange(of: stream.audioOffset) { _ in
+                                    model.setSrtlaStreamAudioOffset(stream: stream)
+                                }
+                            Text("\(stream.audioOffset) ms")
+                                .frame(width: 65)
+                        }
+                    }
+                } footer: {
+                    Text("Adjust to fix audio/video sync. Positive delays audio, negative advances it.")
                 }
                 Section {
                     UrlsView(

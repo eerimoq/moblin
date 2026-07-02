@@ -40,6 +40,10 @@ extension Model {
     func isRistStreamConnected(port: UInt16) -> Bool {
         database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
     }
+
+    func setRistStreamAudioOffset(stream: SettingsRistServerStream) {
+        media.setBufferedAudioOffset(cameraId: stream.id, offset: stream.audioOffsetSeconds())
+    }
 }
 
 extension Model: @preconcurrency RistServerDelegate {
@@ -89,7 +93,12 @@ extension Model: @preconcurrency RistServerDelegate {
         makeToast(title: String(localized: "\(camera) connected"))
         let latency = stream.latencySeconds()
         media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+        media.addBufferedAudio(
+            cameraId: stream.id,
+            name: camera,
+            latency: latency,
+            audioOffset: stream.audioOffsetSeconds()
+        )
     }
 
     private func ristServerOnDisconnectedInternal(virtualDestinationPort: UInt16, reason _: String) {

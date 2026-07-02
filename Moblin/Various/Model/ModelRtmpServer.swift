@@ -37,7 +37,12 @@ extension Model {
             self.makeToast(title: String(localized: "\(camera) connected"))
             let latency = stream.latencySeconds()
             self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+            self.media.addBufferedAudio(
+                cameraId: stream.id,
+                name: camera,
+                latency: latency,
+                audioOffset: stream.audioOffsetSeconds()
+            )
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
         }
     }
@@ -94,6 +99,10 @@ extension Model {
 
     func rtmpServerEnabled() -> Bool {
         database.rtmpServer.enabled
+    }
+
+    func setRtmpStreamAudioOffset(stream: SettingsRtmpServerStream) {
+        media.setBufferedAudioOffset(cameraId: stream.id, offset: stream.audioOffsetSeconds())
     }
 }
 

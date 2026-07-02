@@ -50,6 +50,10 @@ extension Model {
             media.removeBufferedAudio(cameraId: stream.id)
         }
     }
+
+    func setWhepStreamAudioOffset(stream: SettingsWhepClientStream) {
+        media.setBufferedAudioOffset(cameraId: stream.id, offset: stream.audioOffsetSeconds())
+    }
 }
 
 extension Model: @preconcurrency WhepClientDelegate {
@@ -62,7 +66,12 @@ extension Model: @preconcurrency WhepClientDelegate {
             self.makeToast(title: String(localized: "\(camera) connected"))
             let latency = stream.latencySeconds()
             self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+            self.media.addBufferedAudio(
+                cameraId: stream.id,
+                name: camera,
+                latency: latency,
+                audioOffset: stream.audioOffsetSeconds()
+            )
         }
     }
 
