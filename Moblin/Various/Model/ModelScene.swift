@@ -1545,7 +1545,9 @@ extension Model {
                 browserTitle: getBrowserTitle(),
                 gForce: gForceManager?.getLatest(),
                 latestSubscriber: latestSubscriber,
-                latestFollower: latestFollower
+                latestFollower: latestFollower,
+                bonding: bonding.statistics,
+                bondingRtts: bonding.rtts
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
