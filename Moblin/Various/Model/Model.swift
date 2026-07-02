@@ -166,6 +166,27 @@ class Bitrate: ObservableObject {
     @Published var statusIconColor: Color?
 }
 
+class ConnectionTimeline: ObservableObject {
+    let maxSamples = 120
+    let maxEvents = 50
+    @Published var samples: [Bool] = []
+    var events: [Bool] = []
+
+    func appendEvent(event: Bool) {
+        events.append(event)
+        if events.count > maxEvents {
+            events.removeFirst(events.count - maxEvents)
+        }
+    }
+
+    func update(isStreaming: Bool = true, streamState: StreamState = .connected) {
+        let badStatus = isStreaming && (streamState == .disconnected || streamState == .connecting)
+        let sample = events.contains(true) || badStatus
+        events.removeAll(keepingCapacity: true)
+        samples.append(sample)
+    }
+}
+
 class Bonding: ObservableObject {
     @Published var statistics = noValue
     @Published var rtts = noValue
@@ -466,6 +487,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
+    let connectionTimeline = ConnectionTimeline()
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
@@ -1700,6 +1722,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         weatherManager.setLocation(location: latestKnownLocation)
         geographyManager.setLocation(location: latestKnownLocation)
         updateBitrateStatus()
+        connectionTimeline.update(isStreaming: isStreaming(), streamState: streamState)
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
             resourceUsage.update(now: monotonicNow)

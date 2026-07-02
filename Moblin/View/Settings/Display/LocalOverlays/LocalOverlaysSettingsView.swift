@@ -94,6 +94,11 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "speedometer")
                 }
                 Label {
+                    Toggle("Connection status timeline", isOn: $show.connectionTimeline)
+                } icon: {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                }
+                Label {
                     Toggle("Uptime", isOn: $show.uptime)
                 } icon: {
                     Image(systemName: "deskclock")
