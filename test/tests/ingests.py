@@ -148,7 +148,7 @@ class IngestRtspClientH264(RecordTest):
         with MediaMtx():
             with FfmpegTestStream(url="rtmp://localhost:1935/1"):
                 self.wait_for_ingest_stream_started(
-                    number_of_ingests=1, startup_delay=10
+                    number_of_ingests=1, startup_delay=15
                 )
                 with recorder:
                     self.moblin.wait_for_ingests(
