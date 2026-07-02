@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from dataclasses import field
 import json
 import logging
 from pathlib import Path
@@ -155,13 +156,13 @@ class FfprobeAudioOutputFrame:
 
 @dataclass
 class FfprobeAudioOutput:
-    codec: str
-    profile: str
-    sample_rate: int
-    channels: int
-    channel_layout: str
-    bit_rate: int
-    frames: List[FfprobeAudioOutputFrame]
+    codec: str = ""
+    profile: str = ""
+    sample_rate: int = 0
+    channels: int = 0
+    channel_layout: str = ""
+    bit_rate: int = 0
+    frames: List[FfprobeAudioOutputFrame] = field(default_factory=list)
 
 
 @dataclass
@@ -211,7 +212,7 @@ def ffprobe_video(path: Path):
     return FfprobeVideoOutput(codec=stream["codec_name"], fps=fps, frames=frames)
 
 
-def ffprobe_audio(path):
+def ffprobe_audio(path) -> FfprobeAudioOutput:
     output = ffprobe_run(
         path,
         "-select_streams",
@@ -219,7 +220,10 @@ def ffprobe_audio(path):
         "-show_entries",
         "stream=codec_name,profile,sample_rate,channels,channel_layout,bit_rate:frame=nb_samples,pts_time,channels",
     )
-    stream = output["streams"][0]
+    streams = output["streams"]
+    if len(streams) == 0:
+        return FfprobeAudioOutput()
+    stream = streams[0]
     frames = [FfprobeAudioOutputFrame(frame) for frame in output["frames"]]
     return FfprobeAudioOutput(
         codec=stream["codec_name"],
@@ -264,7 +268,7 @@ class QrCode:
             self.pts = -1
 
 
-def read_qr_codes(path: Path):
+def read_qr_codes(path: Path) -> List[QrCode]:
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
     subprocess.run(
@@ -291,3 +295,23 @@ def read_qr_codes(path: Path):
         qr_codes.append(QrCode(proc))
     shutil.rmtree(qr_codes_dir)
     return qr_codes
+
+
+def find_duplicated_frames(path: Path) -> int:
+    filtered_path = path.with_suffix(".filtered.mp4")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-i",
+            path,
+            "-vf",
+            "mpdecimate",
+            "-an",
+            filtered_path,
+        ],
+        check=True,
+        capture_output=True,
+    )
+    original = ffprobe(path)
+    filtered = ffprobe(filtered_path)
+    return len(original.video.frames) - len(filtered.video.frames)
