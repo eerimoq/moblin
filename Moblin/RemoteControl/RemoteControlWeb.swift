@@ -8,6 +8,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetSettings() -> RemoteControlSettings
     func remoteControlWebSetScene(id: UUID)
     func remoteControlWebSetAutoSceneSwitcher(id: UUID?)
+    func remoteControlWebSetAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool)
     func remoteControlWebSetMic(id: String)
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
@@ -368,6 +369,9 @@ class RemoteControlWeb: @unchecked Sendable {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setAutoSceneSwitcher(id: autoSceneSwitcherId):
             delegate.remoteControlWebSetAutoSceneSwitcher(id: autoSceneSwitcherId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setAutoSceneSwitcherShuffle(id: autoSceneSwitcherId, shuffle: shuffle):
+            delegate.remoteControlWebSetAutoSceneSwitcherShuffle(id: autoSceneSwitcherId, shuffle: shuffle)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setMic(id: micId):
             delegate.remoteControlWebSetMic(id: micId)

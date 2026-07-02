@@ -160,6 +160,13 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .setAutoSceneSwitcher(id: id), onSuccess: onSuccess)
     }
 
+    func setAutoSceneSwitcherShuffle(id: UUID, shuffle: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(
+            data: .setAutoSceneSwitcherShuffle(id: id, shuffle: shuffle),
+            onSuccess: onSuccess
+        )
+    }
+
     func setMic(id: String, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setMic(id: id), onSuccess: onSuccess)
     }
