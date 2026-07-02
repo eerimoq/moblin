@@ -33,10 +33,11 @@ class RecordTest(TestCase):
         self._assert_audio(recording_metadata.audio)
 
     def _assert_video(self, video: FfprobeVideoOutput, recording: Path):
+        fps = 30
         self.assert_equal(video.codec, "hevc")
-        self.assert_greater(video.fps, Fraction("29/1"))
-        self.assert_less(video.fps, Fraction("31/1"))
-        self._assert_presentation_time_stamps([frame.pts for frame in video.frames])
+        self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
+        self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
+        self._assert_presentation_time_stamps(1 / fps, [frame.pts for frame in video.frames])
         self._assert_video_frame_numbers_increasing(recording)
         picture_types = {frame.picture_type for frame in video.frames}
         self.assert_equal(len(picture_types), 3)
@@ -45,6 +46,7 @@ class RecordTest(TestCase):
         self.assert_in("B", picture_types)
 
     def _assert_audio(self, audio: FfprobeAudioOutput):
+        expected_samples_per_frame = 1024
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
         self.assert_equal(audio.sample_rate, 48000)
@@ -52,17 +54,22 @@ class RecordTest(TestCase):
         self.assert_equal(audio.channel_layout, "mono")
         self.assert_greater(audio.bit_rate, 124_000)
         self.assert_less(audio.bit_rate, 130_000)
-        self._assert_presentation_time_stamps([frame.pts for frame in audio.frames])
+        self._assert_presentation_time_stamps(expected_samples_per_frame / audio.sample_rate,
+                                              [frame.pts for frame in audio.frames])
         for frame in audio.frames:
             self.assert_equal(frame.channels, 1)
-            self.assert_equal(frame.number_of_samples, 1024)
+            self.assert_equal(frame.number_of_samples, expected_samples_per_frame)
 
-    def _assert_presentation_time_stamps(self, presentation_time_stamps: List[float]):
+    def _assert_presentation_time_stamps(self,
+                                         expected_delta: float,
+                                         presentation_time_stamps: List[float]):
         self.assert_greater(len(presentation_time_stamps), 0)
         for index in range(1, len(presentation_time_stamps)):
             current = presentation_time_stamps[index]
             previous = presentation_time_stamps[index - 1]
-            self.assert_greater(current, previous)
+            delta = current - previous
+            self.assert_greater(delta, expected_delta - 0.001)
+            self.assert_less(delta, expected_delta + 0.001)
 
     def _assert_video_frame_numbers_increasing(self, recording: Path):
         qr_codes = read_qr_codes(recording)
