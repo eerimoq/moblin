@@ -458,6 +458,22 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
         button.text = "R1"
         button.function = .triple
         buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "lt.rectangle.roundedtop"
+        button.text = "LT"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "lb.rectangle.roundedbottom"
+        button.text = "LB"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "rt.rectangle.roundedtop"
+        button.text = "RT"
+        buttons.append(button)
+        button = SettingsGameControllerButton()
+        button.name = "rb.rectangle.roundedbottom"
+        button.text = "RB"
+        buttons.append(button)
     }
 
     enum CodingKeys: CodingKey {
