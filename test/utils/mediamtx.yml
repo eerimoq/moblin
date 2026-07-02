@@ -539,7 +539,7 @@ pathDefaults:
   # Default path settings -> Record
 
   # Record streams to disk.
-  record: true
+  record: false
   # Path of recording segments.
   # Extension is added automatically.
   # Available variables are %path (path name), %Y %m %d (year, month, day),

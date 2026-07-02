@@ -1,9 +1,12 @@
 from fractions import Fraction
 import logging
 from pathlib import Path
+from typing import List
 
 from utils.recorder import Recorder
 from utils.moblin import Moblin
+from utils.ffmpeg import FfprobeAudioOutput
+from utils.ffmpeg import FfprobeVideoOutput
 from utils.ffmpeg import read_qr_codes
 from utils.ffmpeg import FfmpegTestStream
 from utils.ffmpeg import ffprobe
@@ -24,38 +27,60 @@ class RecordTest(TestCase):
 
     def assert_recording(self, recording: Path):
         recording_metadata = ffprobe(recording)
-        self.assert_equal(recording_metadata.video.codec, "hevc")
-        self.assert_greater(recording_metadata.video.fps, Fraction("29/1"))
-        self.assert_less(recording_metadata.video.fps, Fraction("31/1"))
-        self.assert_equal(recording_metadata.audio.codec, "aac")
         self.assert_greater(recording_metadata.format.duration, 8)
         self.assert_less(recording_metadata.format.duration, 12)
-        self._assert_frame_numbers_increasing(recording)
+        self._assert_video(recording_metadata.video, recording)
+        self._assert_audio(recording_metadata.audio)
 
-    def _assert_frame_numbers_increasing(self, recording: Path):
+    def _assert_video(self, video: FfprobeVideoOutput, recording: Path):
+        self.assert_equal(video.codec, "hevc")
+        self.assert_greater(video.fps, Fraction("29/1"))
+        self.assert_less(video.fps, Fraction("31/1"))
+        self._assert_presentation_time_stamps([frame.pts for frame in video.frames])
+        self._assert_video_frame_numbers_increasing(recording)
+        picture_types = {frame.picture_type for frame in video.frames}
+        self.assert_equal(len(picture_types), 3)
+        self.assert_in("I", picture_types)
+        self.assert_in("P", picture_types)
+        self.assert_in("B", picture_types)
+
+    def _assert_audio(self, audio: FfprobeAudioOutput):
+        self.assert_equal(audio.codec, "aac")
+        self.assert_equal(audio.profile, "LC")
+        self.assert_equal(audio.sample_rate, 48000)
+        self.assert_equal(audio.channels, 1)
+        self.assert_equal(audio.channel_layout, "mono")
+        self.assert_greater(audio.bit_rate, 124_000)
+        self.assert_less(audio.bit_rate, 130_000)
+        self._assert_presentation_time_stamps([frame.pts for frame in audio.frames])
+        for frame in audio.frames:
+            self.assert_equal(frame.channels, 1)
+            self.assert_equal(frame.number_of_samples, 1024)
+
+    def _assert_presentation_time_stamps(self, presentation_time_stamps: List[float]):
+        self.assert_greater(len(presentation_time_stamps), 0)
+        for index in range(1, len(presentation_time_stamps)):
+            current = presentation_time_stamps[index]
+            previous = presentation_time_stamps[index - 1]
+            self.assert_greater(current, previous)
+
+    def _assert_video_frame_numbers_increasing(self, recording: Path):
         qr_codes = read_qr_codes(recording)
         self.assert_greater(len(qr_codes), 0)
         seen_increase = False
-        bad_frame_numbers = set()
-        for frame_index in range(1, len(qr_codes)):
-            current_frame_number = qr_codes[frame_index].number
-            previous_frame_number = qr_codes[frame_index - 1].number
-            if current_frame_number == previous_frame_number:
+        bad_frame_numbers = False
+        for index in range(1, len(qr_codes)):
+            current = qr_codes[index].number
+            previous = qr_codes[index - 1].number
+            if current == previous:
                 if seen_increase:
-                    raise Exception(
-                        f"Frame number {current_frame_number} already seen."
-                    )
-            elif current_frame_number == previous_frame_number + 1:
+                    raise Exception(f"Frame number {current} already seen.")
+            elif current == previous + 1:
                 seen_increase = True
             else:
-                bad_frame_numbers.add((current_frame_number, previous_frame_number))
-        for current_frame_number, previous_frame_number in bad_frame_numbers:
-            LOGGER.info(
-                "Bad frame - Current: %s, Previous: %s",
-                current_frame_number,
-                previous_frame_number,
-            )
-        self.assert_equal(len(bad_frame_numbers), 0)
+                LOGGER.info("Bad frame - Current: %s, Previous: %s", current, previous)
+                bad_frame_numbers = True
+        self.assert_false(bad_frame_numbers)
 
 
 class IngestRtmpServer(RecordTest):

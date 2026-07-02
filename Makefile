@@ -28,6 +28,7 @@ PYLINT_ARGS = \
 	--disable missing-class-docstring \
 	--disable line-too-long \
 	--disable too-few-public-methods \
+	--disable consider-using-with \
 	--recursive yes \
 	$(PYTHON_DIRS)
 

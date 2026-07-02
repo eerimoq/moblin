@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import json
 import logging
 from pathlib import Path
+import shutil
 import subprocess
 from fractions import Fraction
 from typing import List
@@ -18,7 +19,7 @@ class FfmpegCommand:
         raise NotImplementedError
 
     def __enter__(self):
-        command = ["ffmpeg", "-nostdin", "-y"] + self.args()
+        command = ["ffmpeg", "-hide_banner", "-nostdin", "-y"] + self.args()
         LOGGER.debug("Command: %s", " ".join(command))
         self._server = subprocess.Popen(
             command,
@@ -124,14 +125,43 @@ class FfmpegServer(FfmpegCommand):
 
 
 @dataclass
+class FfprobeVideoOutputFrame:
+    pts: float
+    picture_type: str
+
+    def __init__(self, frame):
+        self.pts = float(frame["pts_time"])
+        self.picture_type = frame["pict_type"]
+
+
+@dataclass
 class FfprobeVideoOutput:
     codec: str
     fps: Fraction | None
+    frames: List[FfprobeVideoOutputFrame]
+
+
+@dataclass
+class FfprobeAudioOutputFrame:
+    pts: float
+    channels: int
+    number_of_samples: int
+
+    def __init__(self, frame):
+        self.pts = float(frame["pts_time"])
+        self.channels = frame["channels"]
+        self.number_of_samples = frame["nb_samples"]
 
 
 @dataclass
 class FfprobeAudioOutput:
     codec: str
+    profile: str
+    sample_rate: int
+    channels: int
+    channel_layout: str
+    bit_rate: int
+    frames: List[FfprobeAudioOutputFrame]
 
 
 @dataclass
@@ -147,14 +177,16 @@ class FfprobeOutput:
 
 
 def ffprobe_run(path: Path, *args):
+    command = [
+        "ffprobe",
+        "-output_format",
+        "json",
+        *args,
+        str(path),
+    ]
+    LOGGER.debug("Command: %s", " ".join(command))
     output = subprocess.run(
-        [
-            "ffprobe",
-            "-output_format",
-            "json",
-            *args,
-            path,
-        ],
+        command,
         check=True,
         capture_output=True,
         text=True,
@@ -168,18 +200,15 @@ def ffprobe_video(path: Path):
         "-select_streams",
         "v:0",
         "-show_entries",
-        "stream=codec_name,r_frame_rate,avg_frame_rate",
+        "stream=codec_name,r_frame_rate,avg_frame_rate:frame=pict_type,pts_time",
     )
     stream = output["streams"][0]
     try:
         fps = Fraction(stream["avg_frame_rate"])
     except Exception:
         fps = None
-    return FfprobeVideoOutput(
-        codec=stream["codec_name"],
-        fps=fps,
-    )
-    # ffprobe test/files/Recording_2026-07-01_055731.mp4 -show_frames -select_streams v:0 -output_format json
+    frames = [FfprobeVideoOutputFrame(frame) for frame in output["frames"]]
+    return FfprobeVideoOutput(codec=stream["codec_name"], fps=fps, frames=frames)
 
 
 def ffprobe_audio(path):
@@ -188,10 +217,19 @@ def ffprobe_audio(path):
         "-select_streams",
         "a:0",
         "-show_entries",
-        "stream=codec_name,profile,sample_rate,channels,channel_layout,bit_rate",
+        "stream=codec_name,profile,sample_rate,channels,channel_layout,bit_rate:frame=nb_samples,pts_time,channels",
     )
     stream = output["streams"][0]
-    return FfprobeAudioOutput(codec=stream["codec_name"])
+    frames = [FfprobeAudioOutputFrame(frame) for frame in output["frames"]]
+    return FfprobeAudioOutput(
+        codec=stream["codec_name"],
+        profile=stream["profile"],
+        sample_rate=int(stream["sample_rate"]),
+        channels=stream["channels"],
+        channel_layout=stream["channel_layout"],
+        bit_rate=int(stream["bit_rate"]),
+        frames=frames,
+    )
 
 
 def ffprobe_format(path):
@@ -250,7 +288,6 @@ def read_qr_codes(path: Path):
     qr_codes = []
     for proc in procs:
         proc.wait()
-        qr_code = QrCode(proc)
-        if qr_code.number != -1:
-            qr_codes.append(qr_code)
+        qr_codes.append(QrCode(proc))
+    shutil.rmtree(qr_codes_dir)
     return qr_codes
