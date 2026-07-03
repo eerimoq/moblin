@@ -28,10 +28,10 @@ def check_dependencies() -> List[str]:
         text=True,
     ).stdout
     missing_dependencies = []
-    for filter in ["qrencode", "drawtext"]:
-        if f" {filter} " not in output:
+    for video_filter in ["qrencode", "drawtext"]:
+        if f" {video_filter} " not in output:
             missing_dependencies.append(
-                f"The {filter} video filter is not supported by ffmpeg"
+                f"The {video_filter} video filter is not supported by ffmpeg"
             )
     return missing_dependencies
 

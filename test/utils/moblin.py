@@ -21,6 +21,7 @@ class Moblin:
         self._remote_control_port = config.remote_control_port()
         self._server = None
         self.ip_address = config.moblin_ip_address()
+        self.capabilities = config.capabilities()
 
     def __enter__(self):
         self._server = subprocess.Popen(

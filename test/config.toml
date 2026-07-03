@@ -1,8 +1,10 @@
 [device.iphone16pro]
 moblin-ip-address = "iphone16pro.home"
+capabilities = ["pip"]
 
 [device.macpro]
 moblin-ip-address = "macpro.home"
+capabilities = []
 
 [general]
 device = "macpro"

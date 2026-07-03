@@ -9,6 +9,7 @@ RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
 SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
+FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
 
 
 def create_settings(config):
@@ -94,6 +95,34 @@ def create_settings(config):
                 "srtlaCameraId": SRT_STREAM_ID,
                 "enabled": True,
             },
+            {
+                "name": "PiP",
+                "cameraPosition": "Back",
+                "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
+                "widgets": [
+                    {
+                        "widgetId": FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        "alignment": "BottomRight",
+                        "x": 0,
+                        "y": 0,
+                        "size": 50,
+                        "migrated": True,
+                        "migrated2": True,
+                    }
+                ],
+                "enabled": True,
+            },
+        ],
+        "widgets": [
+            {
+                "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
+                "name": "Front",
+                "type": "Video source",
+                "videoSource": {
+                    "cameraPosition": "Front",
+                    "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
+                },
+            }
         ],
         "remoteControl": {
             "server": {

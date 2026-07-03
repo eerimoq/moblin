@@ -21,6 +21,9 @@ class Config:
     def moblin_ip_address(self):
         return self._device()["moblin-ip-address"]
 
+    def capabilities(self):
+        return self._device()["capabilities"]
+
     def _device(self):
         return self._config["device"][self.device_name()]
 
