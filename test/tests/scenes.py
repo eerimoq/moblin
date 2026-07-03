@@ -1,10 +1,12 @@
-from fractions import Fraction
+import logging
 import time
 import systest
 
-from utils.ffmpeg import ffprobe
 from utils.moblin import Moblin
 from utils.test_case import TestCase
+from utils.test_case import RecordTest
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SceneSwitchMultipleTimes(TestCase):
@@ -16,7 +18,7 @@ class SceneSwitchMultipleTimes(TestCase):
             self.moblin.set_scene("Front")
 
 
-class ScenePiPBackFront(TestCase):
+class ScenePiPBackFront(RecordTest):
     """A picture in picture scene with full screen back camera and small front camera in
     bottom right. Record for a few seconds and validate the recording.
 
@@ -33,13 +35,10 @@ class ScenePiPBackFront(TestCase):
         recording_file = self.moblin.download_and_delete_latest_recording(
             "ScenePiPBackFront.mp4"
         )
-        recording_metadata = ffprobe(recording_file)
-        self.assert_equal(recording_metadata.video.codec, "hevc")
-        self.assert_greater(recording_metadata.video.fps, Fraction("29/1"))
-        self.assert_less(recording_metadata.video.fps, Fraction("31/1"))
-        self.assert_equal(recording_metadata.audio.codec, "aac")
-        self.assert_greater(recording_metadata.format.duration, 8)
-        self.assert_less(recording_metadata.format.duration, 12)
+        try:
+            self.assert_recording(recording_file)
+        except systest.TestCaseFailedError as e:
+            raise systest.TestCaseXFailedError(str(e))
 
 
 def tests(moblin: Moblin):
