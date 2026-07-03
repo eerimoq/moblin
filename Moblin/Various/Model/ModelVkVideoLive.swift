@@ -278,6 +278,45 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
         deleteChatMessage(messageId: messageId)
     }
 
+    func vkVideoLiveChatFollow(user: String, userColor: RgbColor?) {
+        latestFollower = user
+        let text = String(localized: "just followed!")
+        if stream.vkVideoLiveToastAlerts.follows {
+            makeToast(title: "\(user) \(text)")
+        }
+        if stream.vkVideoLiveChatAlerts.follows {
+            var id = 0
+            appendVkVideoLiveChatAlertMessage(
+                user: user,
+                userColor: userColor,
+                segments: makeChatPostTextSegments(text: text, id: &id),
+                title: String(localized: "New follower"),
+                color: .pink,
+                image: "medal",
+                kind: .newFollower
+            )
+        }
+    }
+
+    func vkVideoLiveChatRaid(user: String, userColor: RgbColor?, raidersCount: Int) {
+        let text = String(localized: "raided with a party of \(raidersCount)!")
+        if stream.vkVideoLiveToastAlerts.raids {
+            makeToast(title: "\(user) \(text)")
+        }
+        if stream.vkVideoLiveChatAlerts.raids {
+            var id = 0
+            appendVkVideoLiveChatAlertMessage(
+                user: user,
+                userColor: userColor,
+                segments: makeChatPostTextSegments(text: text, id: &id),
+                title: String(localized: "Raid"),
+                color: .pink,
+                image: "person.3",
+                kind: .redemption
+            )
+        }
+    }
+
     func vkVideoLiveChatRewardRedemption(
         messageId: String?,
         user: String,
@@ -285,6 +324,21 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
         userColor: RgbColor?,
         segments: [ChatPostSegment]
     ) {
+        if stream.vkVideoLiveToastAlerts.rewards {
+            let text = segments.compactMap(\.text).joined()
+            makeToast(title: "🎁 \(user) \(text.trim())")
+        }
+        let highlight: ChatHighlight? = if stream.vkVideoLiveChatAlerts.rewards {
+            .init(kind: .redemption,
+                  barColor: .blue,
+                  image: "medal.star",
+                  titleSegments: [ChatPostSegment(
+                      id: 0,
+                      text: String(localized: "Reward redemption")
+                  )])
+        } else {
+            nil
+        }
         appendChatMessage(platform: .vkVideoLive,
                           messageId: messageId,
                           displayName: user,
@@ -300,14 +354,39 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
                           isModerator: false,
                           isOwner: false,
                           bits: nil,
+                          highlight: highlight,
+                          live: true)
+    }
+
+    private func appendVkVideoLiveChatAlertMessage(
+        user: String,
+        userColor: RgbColor?,
+        segments: [ChatPostSegment],
+        title: String,
+        color: Color,
+        image: String,
+        kind: ChatHighlightKind
+    ) {
+        appendChatMessage(platform: .vkVideoLive,
+                          messageId: nil,
+                          displayName: user,
+                          user: user,
+                          userId: nil,
+                          userColor: userColor,
+                          userBadges: [],
+                          segments: segments,
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          isOwner: false,
+                          bits: nil,
                           highlight: .init(
-                              kind: .redemption,
-                              barColor: .blue,
-                              image: "medal.star",
-                              titleSegments: [ChatPostSegment(
-                                  id: 0,
-                                  text: String(localized: "Reward redemption")
-                              )]
+                              kind: kind,
+                              barColor: color,
+                              image: image,
+                              titleSegments: [ChatPostSegment(id: 0, text: title)]
                           ),
                           live: true)
     }

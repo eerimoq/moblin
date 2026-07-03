@@ -70,6 +70,8 @@ private func lookupNickColor(number: Int?) -> RgbColor? {
 // See https://dev.live.vkvideo.ru/docs/pubsub/websocket.
 private let chatMessageSendEventType = "channel_chat_message_send"
 private let chatMessageDeleteEventType = "channel_chat_message_delete"
+private let followCreateEventType = "channel_follow_create"
+private let raidIncomeEventType = "channel_raid_income"
 
 private struct VkVideoLiveEvent: Decodable {
     let type: String?
@@ -86,6 +88,39 @@ private struct VkVideoLiveDeletedChatMessage: Decodable {
 
 private struct VkVideoLiveChatMessageDeleteEventData: Decodable {
     let chat_message: VkVideoLiveDeletedChatMessage
+}
+
+private struct VkVideoLiveFollower: Decodable {
+    let id: Int64?
+    let nick: String
+    let nick_color: Int?
+}
+
+private struct VkVideoLiveFollow: Decodable {
+    let follower: VkVideoLiveFollower
+}
+
+private struct VkVideoLiveFollowEventData: Decodable {
+    let follow: VkVideoLiveFollow
+}
+
+private struct VkVideoLiveRaidOwner: Decodable {
+    let id: Int64?
+    let nick: String
+    let nick_color: Int?
+}
+
+private struct VkVideoLiveRaidSource: Decodable {
+    let owner: VkVideoLiveRaidOwner
+}
+
+private struct VkVideoLiveRaid: Decodable {
+    let source: VkVideoLiveRaidSource
+    let raiders_count: Int?
+}
+
+private struct VkVideoLiveRaidEventData: Decodable {
+    let raid: VkVideoLiveRaid
 }
 
 // Generic JSON value so event payloads can be re-decoded based on event type.
@@ -155,6 +190,8 @@ protocol VkVideoLiveChatDelegate: AnyObject {
         isOwner: Bool
     )
     func vkVideoLiveChatDeleteMessage(messageId: String)
+    func vkVideoLiveChatFollow(user: String, userColor: RgbColor?)
+    func vkVideoLiveChatRaid(user: String, userColor: RgbColor?, raidersCount: Int)
     func vkVideoLiveChatRewardRedemption(
         messageId: String?,
         user: String,
@@ -412,6 +449,27 @@ final class VkVideoLiveChat: NSObject {
                 delegate?.vkVideoLiveChatDeleteMessage(messageId: String(event.chat_message.id))
             } catch {
                 logger.info("vk-video-live: Failed to decode deleted chat message with error \(error)")
+            }
+        case followCreateEventType:
+            do {
+                let event = try JSONDecoder().decode(VkVideoLiveFollowEventData.self, from: data)
+                delegate?.vkVideoLiveChatFollow(
+                    user: event.follow.follower.nick,
+                    userColor: lookupNickColor(number: event.follow.follower.nick_color)
+                )
+            } catch {
+                logger.info("vk-video-live: Failed to decode follow with error \(error)")
+            }
+        case raidIncomeEventType:
+            do {
+                let event = try JSONDecoder().decode(VkVideoLiveRaidEventData.self, from: data)
+                delegate?.vkVideoLiveChatRaid(
+                    user: event.raid.source.owner.nick,
+                    userColor: lookupNickColor(number: event.raid.source.owner.nick_color),
+                    raidersCount: event.raid.raiders_count ?? 0
+                )
+            } catch {
+                logger.info("vk-video-live: Failed to decode raid with error \(error)")
             }
         default:
             logger.debug("""

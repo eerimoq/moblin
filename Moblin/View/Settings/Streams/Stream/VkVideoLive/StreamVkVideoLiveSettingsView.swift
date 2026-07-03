@@ -96,6 +96,22 @@ private struct VkVideoLiveCategoryPickerView: View {
     }
 }
 
+struct VkVideoLiveAlertsSettingsView: View {
+    let title: String
+    @ObservedObject var alerts: SettingsVkVideoLiveAlerts
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Follows", isOn: $alerts.follows)
+                Toggle("Rewards", isOn: $alerts.rewards)
+                Toggle("Raids", isOn: $alerts.raids)
+            }
+        }
+        .navigationTitle(title)
+    }
+}
+
 @MainActor
 func loadVkVideoLiveStreamInfo(model: Model,
                                stream: SettingsStream,
@@ -178,6 +194,22 @@ struct StreamVkVideoLiveSettingsView: View {
                                                       title: $title,
                                                       category: $category)
                 }
+            }
+            Section {
+                NavigationLink {
+                    VkVideoLiveAlertsSettingsView(title: String(localized: "Chat"),
+                                                  alerts: stream.vkVideoLiveChatAlerts)
+                } label: {
+                    Text("Chat")
+                }
+                NavigationLink {
+                    VkVideoLiveAlertsSettingsView(title: String(localized: "Toasts"),
+                                                  alerts: stream.vkVideoLiveToastAlerts)
+                } label: {
+                    Text("Toasts")
+                }
+            } header: {
+                Text("Alerts")
             }
         }
         .navigationTitle("VK Video Live")

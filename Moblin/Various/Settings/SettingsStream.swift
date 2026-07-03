@@ -1129,6 +1129,42 @@ class SettingsKickAlerts: Codable, ObservableObject {
     }
 }
 
+class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
+    @Published var follows: Bool = true
+    @Published var rewards: Bool = true
+    @Published var raids: Bool = true
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case follows
+        case rewards
+        case raids
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.follows, follows)
+        try container.encode(.rewards, rewards)
+        try container.encode(.raids, raids)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        follows = container.decode(.follows, Bool.self, true)
+        rewards = container.decode(.rewards, Bool.self, true)
+        raids = container.decode(.raids, Bool.self, true)
+    }
+
+    func clone() -> SettingsVkVideoLiveAlerts {
+        let new = SettingsVkVideoLiveAlerts()
+        new.follows = follows
+        new.rewards = rewards
+        new.raids = raids
+        return new
+    }
+}
+
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     static let defaultResolution: SettingsStreamResolution = .r1920x1080
@@ -1160,6 +1196,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var vkVideoLiveAccessToken: String = ""
     @Published var vkVideoLiveLoggedIn: Bool = false
     @Published var vkVideoLiveSendMessagesTo: Bool = true
+    var vkVideoLiveChatAlerts: SettingsVkVideoLiveAlerts = .init()
+    var vkVideoLiveToastAlerts: SettingsVkVideoLiveAlerts = .init()
     @Published var youTubeAuthState: OIDAuthState?
     @Published var youTubeVideoIds: String = ""
     @Published var youTubeHandle: String = ""
@@ -1256,6 +1294,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case vkVideoLiveAccessToken
         case vkVideoLiveLoggedIn
         case vkVideoLiveSendMessagesTo
+        case vkVideoLiveChatAlerts
+        case vkVideoLiveToastAlerts
         case youTubeVideoId
         case youTubeHandle
         case youTubeScheduleStreamTitle
@@ -1347,6 +1387,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.vkVideoLiveAccessToken, vkVideoLiveAccessToken)
         try container.encode(.vkVideoLiveLoggedIn, vkVideoLiveLoggedIn)
         try container.encode(.vkVideoLiveSendMessagesTo, vkVideoLiveSendMessagesTo)
+        try container.encode(.vkVideoLiveChatAlerts, vkVideoLiveChatAlerts)
+        try container.encode(.vkVideoLiveToastAlerts, vkVideoLiveToastAlerts)
         if let encoded = encodeYouTubeAuthState() {
             storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
         }
@@ -1444,6 +1486,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         vkVideoLiveAccessToken = container.decode(.vkVideoLiveAccessToken, String.self, "")
         vkVideoLiveLoggedIn = container.decode(.vkVideoLiveLoggedIn, Bool.self, false)
         vkVideoLiveSendMessagesTo = container.decode(.vkVideoLiveSendMessagesTo, Bool.self, true)
+        vkVideoLiveChatAlerts = container.decode(.vkVideoLiveChatAlerts,
+                                                 SettingsVkVideoLiveAlerts.self,
+                                                 .init())
+        vkVideoLiveToastAlerts = container.decode(.vkVideoLiveToastAlerts,
+                                                  SettingsVkVideoLiveAlerts.self,
+                                                  .init())
         if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }
@@ -1562,6 +1610,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.vkVideoLiveAccessToken = vkVideoLiveAccessToken
         new.vkVideoLiveLoggedIn = vkVideoLiveLoggedIn
         new.vkVideoLiveSendMessagesTo = vkVideoLiveSendMessagesTo
+        new.vkVideoLiveChatAlerts = vkVideoLiveChatAlerts.clone()
+        new.vkVideoLiveToastAlerts = vkVideoLiveToastAlerts.clone()
         if vkVideoLiveLoggedIn {
             storeVkVideoLiveAccessTokenInKeychain(streamId: new.id, accessToken: vkVideoLiveAccessToken)
         }
