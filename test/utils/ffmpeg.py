@@ -12,6 +12,13 @@ from .utils import log_output
 LOGGER = logging.getLogger(__name__)
 
 
+def _log_level(line: str) -> int:
+    if line.startswith("Error") or "No such filter" in line:
+        return logging.ERROR
+    else:
+        return logging.DEBUG
+
+
 class FfmpegCommand:
     def __init__(self):
         self._server = None
@@ -29,8 +36,8 @@ class FfmpegCommand:
             stderr=subprocess.PIPE,
             text=True,
         )
-        log_output(self._server.stdout, LOGGER)
-        log_output(self._server.stderr, LOGGER)
+        log_output(self._server.stdout, LOGGER, _log_level)
+        log_output(self._server.stderr, LOGGER, _log_level)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

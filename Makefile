@@ -29,6 +29,7 @@ PYLINT_ARGS = \
 	--disable line-too-long \
 	--disable too-few-public-methods \
 	--disable consider-using-with \
+	--disable no-else-return \
 	--recursive yes \
 	$(PYTHON_DIRS)
 

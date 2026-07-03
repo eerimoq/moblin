@@ -1,17 +1,25 @@
 from logging import Logger
+import logging
 import threading
 
 
-def _log_stream(stream, logger):
+def _log_stream(stream, logger: Logger, log_level):
     try:
         for line in stream:
-            logger.debug(line.rstrip())
+            line = line.rstrip()
+            logger.log(log_level(line), line)
     except Exception:
         pass
 
 
-def log_output(stream, logger):
-    threading.Thread(target=_log_stream, args=(stream, logger), daemon=True).start()
+def _log_level(_line: str) -> int:
+    return logging.DEBUG
+
+
+def log_output(stream, logger, log_level=_log_level):
+    threading.Thread(
+        target=_log_stream, args=(stream, logger, log_level), daemon=True
+    ).start()
 
 
 def manual_validation(logger: Logger, message: str):
