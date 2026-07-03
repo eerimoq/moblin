@@ -18,7 +18,9 @@ class RecordH264(TestCase):
         self.moblin.start_recording()
         time.sleep(10)
         self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording()
+        recording_file = self.moblin.download_and_delete_latest_recording(
+            "RecordH264.mp4"
+        )
         recording_metadata = ffprobe(recording_file)
         self.assert_equal(recording_metadata.video.codec, "h264")
         self.assert_greater(recording_metadata.video.fps, Fraction("29/1"))
@@ -37,7 +39,9 @@ class RecordH265(TestCase):
         self.moblin.start_recording()
         time.sleep(10)
         self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording()
+        recording_file = self.moblin.download_and_delete_latest_recording(
+            "RecordH265.mp4"
+        )
         recording_metadata = ffprobe(recording_file)
         self.assert_equal(recording_metadata.video.codec, "hevc")
         self.assert_greater(recording_metadata.video.fps, Fraction("29/1"))

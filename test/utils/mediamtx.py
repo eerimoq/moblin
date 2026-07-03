@@ -40,15 +40,9 @@ class MediaMtx:
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             response = self._api_get("rtmpconns/list")
-            try:
-                for stream in response["items"]:
-                    if (
-                        stream["path"] == path
-                        and stream["bytesReceived"] > bytes_received
-                    ):
-                        return
-            except Exception:
-                pass
+            for stream in response["items"]:
+                if stream["path"] == path and stream["bytesReceived"] > bytes_received:
+                    return
             time.sleep(1)
         raise Exception("Timeout waiting for RTMP stream to MediaMTX")
 
@@ -56,17 +50,21 @@ class MediaMtx:
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
             response = self._api_get("srtconns/list")
-            try:
-                for stream in response["items"]:
-                    if (
-                        stream["path"] == path
-                        and stream["bytesReceived"] > bytes_received
-                    ):
-                        return
-            except Exception:
-                pass
+            for stream in response["items"]:
+                if stream["path"] == path and stream["bytesReceived"] > bytes_received:
+                    return
             time.sleep(1)
         raise Exception("Timeout waiting for SRT stream to MediaMTX")
+
+    def wait_for_rtsp_stream(self, outbound_bytes):
+        end_time = time.monotonic() + 30
+        while time.monotonic() < end_time:
+            response = self._api_get("rtspconns/list")
+            for stream in response["items"]:
+                if stream["outboundBytes"] > outbound_bytes:
+                    return
+            time.sleep(1)
+        raise Exception("Timeout waiting for RTSP stream from MediaMTX")
 
     def _wait_until_server_is_ready(self):
         end_time = time.monotonic() + 15
