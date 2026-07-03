@@ -3,6 +3,7 @@ import SwiftUI
 struct UrlCopyView: View {
     let url: String
     var image: String?
+    @State private var presentingQrCode = false
 
     init(_ url: String, image: String? = nil) {
         self.url = url
@@ -16,7 +17,31 @@ struct UrlCopyView: View {
             }
             Text(url)
             Spacer()
-            CopyToClipboardButtonView(text: url)
+            VStack(spacing: 11) {
+                CopyToClipboardButtonView(text: url)
+                Button {
+                    presentingQrCode = true
+                } label: {
+                    Image(systemName: "qrcode")
+                }
+                .buttonStyle(.borderless)
+                .font(.system(size: 20))
+            }
+        }
+        .fullScreenCover(isPresented: $presentingQrCode) {
+            Button {
+                presentingQrCode = false
+            } label: {
+                HCenter {
+                    if let image = generateQrCode(from: url) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .interpolation(.none)
+                            .scaledToFit()
+                    }
+                }
+                .background(.white)
+            }
         }
     }
 }
