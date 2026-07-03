@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 import tomllib
+import pyperclip
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
 RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
@@ -156,7 +157,12 @@ def main():
     args = parser.parse_args()
     config = tomllib.loads(args.config_toml.read_text())
     settings = create_settings(config)
-    print(json.dumps(settings, indent=4))
+    settings = json.dumps(settings, indent=4)
+    try:
+        pyperclip.copy(settings)
+        print('Settings copied to clipboard.')
+    except pyperclip.PyperclipException:
+        print(settings)
 
 
 main()

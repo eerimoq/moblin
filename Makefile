@@ -80,7 +80,7 @@ test:
 
 test-generate-device-settings:
 	cd test && \
-	python generate_device_settings.py config.toml | pbcopy
+	python generate_device_settings.py config.toml
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings
