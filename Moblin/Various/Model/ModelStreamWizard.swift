@@ -193,9 +193,6 @@ extension Model {
         stream.chat.ffzEmotes = false
         stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
-        if hasSrtPassphrase(url: stream.url) {
-            stream.srt.implementation = .official
-        }
         if stream.url.starts(with: "rtmp") {
             stream.rateControl = .cbr
         } else {

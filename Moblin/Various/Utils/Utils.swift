@@ -434,13 +434,6 @@ func extractSrtPassphrase(url: String) -> String? {
     URL(string: url)?.dictionaryFromQuery()["passphrase"]
 }
 
-func hasSrtPassphrase(url: String) -> Bool {
-    guard let scheme = URL(string: url)?.scheme, ["srt", "srtla"].contains(scheme) else {
-        return false
-    }
-    return extractSrtPassphrase(url: url)?.isEmpty == false
-}
-
 func extractSrtPbkeylen(url: String) -> String? {
     URL(string: url)?.dictionaryFromQuery()["pbkeylen"]
 }

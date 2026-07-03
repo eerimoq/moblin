@@ -43,14 +43,6 @@ struct StreamSrtSettingsView: View {
         srt.overheadBandwidth = overheadBandwidth
     }
 
-    private func submitImplementation() {
-        if hasSrtPassphrase(url: stream.url), srt.implementation != .official {
-            srt.implementation = .official
-            return
-        }
-        model.reloadStreamIfEnabled(stream: stream)
-    }
-
     var body: some View {
         Form {
             Section {
@@ -132,7 +124,7 @@ struct StreamSrtSettingsView: View {
                         Text($0.rawValue)
                     }
                 }
-                .disabled((stream.enabled && model.isLive) || hasSrtPassphrase(url: stream.url))
+                .disabled(stream.enabled && model.isLive)
             } footer: {
                 Text("System seems to work best for TMobile. IPv4 probably best for IRLToolkit.")
             }
@@ -144,18 +136,13 @@ struct StreamSrtSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isLive)
                 .onChange(of: srt.implementation) { _ in
-                    submitImplementation()
+                    model.reloadStreamIfEnabled(stream: stream)
                 }
             } footer: {
-                VStack(alignment: .leading) {
-                    Text("""
-                    \"Official\" uses the widely supported libSRT (version 1.5.3) and \"Moblin\" uses a \
-                    more energy efficient custom implementation.
-                    """)
-                    if hasSrtPassphrase(url: stream.url) {
-                        Text("Moblin SRT does not support stream encryption.")
-                    }
-                }
+                Text("""
+                \"Official\" uses the widely supported libSRT (version 1.5.3) and \"Moblin\" uses a \
+                more energy efficient custom implementation.
+                """)
             }
         }
         .navigationTitle("SRT(LA)")

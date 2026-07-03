@@ -1478,9 +1478,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                                1)
         adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
-        if hasSrtPassphrase(url: url) {
-            srt.implementation = .official
-        }
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
         whip = container.decode(.whip, SettingsStreamWhip.self, .init())
