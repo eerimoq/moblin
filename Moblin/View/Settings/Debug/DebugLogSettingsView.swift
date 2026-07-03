@@ -8,6 +8,12 @@ struct DebugLogSettingsView: View {
     @Binding var presentingLog: Bool
     let reloadLog: () -> Void
     let clearLog: () -> Void
+    @State private var shareItem: ShareItem?
+
+    private struct ShareItem: Identifiable {
+        let id = UUID()
+        let url: URL
+    }
 
     private func isMessageVisible(message: String) -> Bool {
         debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
@@ -39,10 +45,17 @@ struct DebugLogSettingsView: View {
             }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
+            .sheet(item: $shareItem) { item in
+                ShareSheetView(activityItems: [item.url], applicationActivities: nil)
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    ShareLink(item: model
-                        .formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
+                    Button {
+                        shareItem = ShareItem(url: model
+                            .formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
