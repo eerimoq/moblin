@@ -1,5 +1,6 @@
 import Collections
 import SwiftUI
+import UIKit
 
 struct DebugLogSettingsView: View {
     let model: Model
@@ -11,6 +12,15 @@ struct DebugLogSettingsView: View {
 
     private func isMessageVisible(message: String) -> Bool {
         debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
+    }
+
+    private func share() {
+        let url = model.formatLog(log: log.filter { isMessageVisible(message: $0.message) })
+        let activityViewController = UIActivityViewController(
+            activityItems: [url],
+            applicationActivities: nil
+        )
+        getRootViewController()?.present(activityViewController, animated: true)
     }
 
     var body: some View {
@@ -41,8 +51,11 @@ struct DebugLogSettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    ShareLink(item: model
-                        .formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
+                    Button {
+                        share()
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
