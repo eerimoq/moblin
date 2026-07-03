@@ -153,16 +153,17 @@ def create_settings(config):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--force-stdout", action="store_true")
     parser.add_argument("config_toml", type=Path)
     args = parser.parse_args()
     config = tomllib.loads(args.config_toml.read_text())
     settings = create_settings(config)
     settings = json.dumps(settings, indent=4)
-    try:
+    if args.force_stdout:
+        print(settings)
+    else:
         pyperclip.copy(settings)
         print("Settings copied to clipboard.")
-    except pyperclip.PyperclipException:
-        print(settings)
 
 
 main()

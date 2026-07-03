@@ -11,11 +11,21 @@ brew install qrtool
 
 # Moblin device configuration
 
+## Via clipboard
+
 1. Generate settings into clipboard.
    ```bash
-   make -C .. test-generate-device-settings
+   make -C .. test-generate-device-settings-clipboard
    ```
 2. Import the generated settings from clipboard into Moblin.
+
+## Via standard output
+
+1. Generate settings to standard output.
+   ```bash
+   make -C .. test-generate-device-settings-stdout
+   ```
+2. Import the generated settings somehow.
 
 # Run the tests
 

@@ -79,9 +79,13 @@ test:
 	mkdir -p files && \
 	python main.py config.toml $(TEST_ARGS)
 
-test-generate-device-settings:
+test-generate-device-settings-clipboard:
 	cd test && \
 	python generate_device_settings.py config.toml
+
+test-generate-device-settings-stdout:
+	@cd test && \
+	 python generate_device_settings.py --force-stdout config.toml
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings
