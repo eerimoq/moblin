@@ -724,7 +724,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             TextButtonView("Log") {
                 presentingLog = true
             }
-            .fullScreenCover(isPresented: $presentingLog) {
+            .sheet(isPresented: $presentingLog) {
                 DebugLogSettingsView(model: model,
                                      debug: model.database.debug,
                                      log: $log,
@@ -734,6 +734,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                     .task {
                         reloadLog()
                     }
+                    .presentationDetents([.large])
             }
         }
     }

@@ -38,7 +38,7 @@ struct DebugSettingsView: View {
                 TextButtonView("Log") {
                     presentingLog = true
                 }
-                .fullScreenCover(isPresented: $presentingLog) {
+                .sheet(isPresented: $presentingLog) {
                     DebugLogSettingsView(model: model,
                                          debug: debug,
                                          log: $log,
@@ -48,6 +48,7 @@ struct DebugSettingsView: View {
                         .task {
                             reloadLog()
                         }
+                        .presentationDetents([.large])
                 }
             }
             FilesLocationView(model: model,
