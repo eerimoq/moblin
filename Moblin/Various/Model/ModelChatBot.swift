@@ -802,6 +802,8 @@ extension Model {
             sendTwitchChatMessage(message: message) { _ in }
         case .kick:
             sendKickChatMessage(message: message)
+        case .vkVideoLive:
+            sendVkVideoLiveChatMessage(message: message)
         default:
             break
         }
@@ -903,6 +905,8 @@ extension Model {
             return user.lowercased() == stream.twitchChannelName.lowercased()
         case .kick:
             return user.lowercased() == stream.kickChannelName.lowercased()
+        case .vkVideoLive:
+            return command.message.isOwner
         case .youTube:
             return command.message.isOwner
         default:

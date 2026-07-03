@@ -1155,6 +1155,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
+    @Published var vkVideoLiveChannelUrl: String = ""
+    @Published var vkVideoLiveChannelNick: String = ""
+    var vkVideoLiveAccessToken: String = ""
+    @Published var vkVideoLiveLoggedIn: Bool = false
+    @Published var vkVideoLiveSendMessagesTo: Bool = true
     @Published var youTubeAuthState: OIDAuthState?
     @Published var youTubeVideoIds: String = ""
     @Published var youTubeHandle: String = ""
@@ -1246,6 +1251,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickSendMessagesTo
         case kickChatAlerts
         case kickToastAlerts
+        case vkVideoLiveChannelUrl
+        case vkVideoLiveChannelNick
+        case vkVideoLiveAccessToken
+        case vkVideoLiveLoggedIn
+        case vkVideoLiveSendMessagesTo
         case youTubeVideoId
         case youTubeHandle
         case youTubeScheduleStreamTitle
@@ -1332,6 +1342,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
+        try container.encode(.vkVideoLiveChannelUrl, vkVideoLiveChannelUrl)
+        try container.encode(.vkVideoLiveChannelNick, vkVideoLiveChannelNick)
+        try container.encode(.vkVideoLiveAccessToken, vkVideoLiveAccessToken)
+        try container.encode(.vkVideoLiveLoggedIn, vkVideoLiveLoggedIn)
+        try container.encode(.vkVideoLiveSendMessagesTo, vkVideoLiveSendMessagesTo)
         if let encoded = encodeYouTubeAuthState() {
             storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
         }
@@ -1424,6 +1439,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
+        vkVideoLiveChannelUrl = container.decode(.vkVideoLiveChannelUrl, String.self, "")
+        vkVideoLiveChannelNick = container.decode(.vkVideoLiveChannelNick, String.self, "")
+        vkVideoLiveAccessToken = container.decode(.vkVideoLiveAccessToken, String.self, "")
+        vkVideoLiveLoggedIn = container.decode(.vkVideoLiveLoggedIn, Bool.self, false)
+        vkVideoLiveSendMessagesTo = container.decode(.vkVideoLiveSendMessagesTo, Bool.self, true)
         if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }
@@ -1537,6 +1557,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
+        new.vkVideoLiveChannelUrl = vkVideoLiveChannelUrl
+        new.vkVideoLiveChannelNick = vkVideoLiveChannelNick
+        new.vkVideoLiveAccessToken = vkVideoLiveAccessToken
+        new.vkVideoLiveLoggedIn = vkVideoLiveLoggedIn
+        new.vkVideoLiveSendMessagesTo = vkVideoLiveSendMessagesTo
+        if vkVideoLiveLoggedIn {
+            storeVkVideoLiveAccessTokenInKeychain(streamId: new.id, accessToken: vkVideoLiveAccessToken)
+        }
         new.youTubeAuthState = youTubeAuthState
         new.youTubeVideoIds = youTubeVideoIds
         new.youTubeHandle = youTubeHandle

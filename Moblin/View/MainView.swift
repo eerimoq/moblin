@@ -666,6 +666,9 @@ struct MainView: View {
             .sheet(isPresented: $model.showTwitchAuth) {
                 TwitchLoginView(model: model, presenting: $model.showTwitchAuth)
             }
+            .sheet(isPresented: $model.showVkVideoLiveAuth) {
+                VkVideoLiveLoginView(model: model, presenting: $model.showVkVideoLiveAuth)
+            }
             .sheet(isPresented: $model.presentingModeration) {
                 QuickButtonChatModerationView(model: model, presentingModeration: $model.presentingModeration)
             }
@@ -722,6 +725,9 @@ struct MainView: View {
                         focused = model.isKeyboardActive()
                     }
                     .onChange(of: model.showTwitchAuth) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: model.showVkVideoLiveAuth) { _ in
                         focused = model.isKeyboardActive()
                     }
                     .onChange(of: createStreamWizard.presenting) { _ in

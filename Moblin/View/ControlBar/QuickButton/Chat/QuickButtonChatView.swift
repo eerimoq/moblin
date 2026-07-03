@@ -774,11 +774,15 @@ private struct SendMessagesToSelectorView: View {
     @State var presentingSelector = false
 
     private func isTwitchOnly() -> Bool {
-        stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
+        stream.twitchSendMessagesTo && !stream.kickSendMessagesTo && !stream.vkVideoLiveSendMessagesTo
     }
 
     private func isKickOnly() -> Bool {
-        stream.kickSendMessagesTo && !stream.twitchSendMessagesTo
+        stream.kickSendMessagesTo && !stream.twitchSendMessagesTo && !stream.vkVideoLiveSendMessagesTo
+    }
+
+    private func isVkVideoLiveOnly() -> Bool {
+        stream.vkVideoLiveSendMessagesTo && !stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
     }
 
     var body: some View {
@@ -789,6 +793,8 @@ private struct SendMessagesToSelectorView: View {
                 PlatformIconView(image: "TwitchLogo")
             } else if isKickOnly() {
                 PlatformIconView(image: "KickLogo")
+            } else if isVkVideoLiveOnly() {
+                PlatformIconView(image: "VkVideoLiveLogo")
             } else {
                 Image(systemName: "globe")
                     .font(.title)
@@ -802,6 +808,8 @@ private struct SendMessagesToSelectorView: View {
                 SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
                     .padding(11)
                 SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
+                    .padding(11)
+                SendMessagesToView(platform: .vkVideoLive, enabled: $stream.vkVideoLiveSendMessagesTo)
                     .padding(11)
             }
             .padding(5)
