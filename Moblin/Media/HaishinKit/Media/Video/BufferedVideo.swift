@@ -59,9 +59,6 @@ class BufferedVideo {
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
         while let nextSampleBuffer = sampleBuffers.first {
-            if currentSampleBuffer == nil {
-                currentSampleBuffer = nextSampleBuffer
-            }
             if sampleBuffers.count > 200 {
                 sampleBuffer = nextSampleBuffer
                 consumeBuffer(numberOfBuffersConsumed: &numberOfBuffersConsumed)
