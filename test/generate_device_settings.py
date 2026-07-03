@@ -160,7 +160,7 @@ def main():
     settings = json.dumps(settings, indent=4)
     try:
         pyperclip.copy(settings)
-        print('Settings copied to clipboard.')
+        print("Settings copied to clipboard.")
     except pyperclip.PyperclipException:
         print(settings)
 

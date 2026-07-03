@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("config_toml", type=Path)
     parser.add_argument("--device", required=False)
-    sequencer = systest.setup("main", parser)
+    sequencer = systest.setup("main", parser, add_date_to_log_filename=False)
     args = parser.parse_args()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
     config = Config(args.config_toml, args.device)
