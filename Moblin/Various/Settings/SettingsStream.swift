@@ -491,6 +491,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
     @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     @Published var implementation: SettingsStreamSrtImplementation = .moblin
     @Published var bigPackets: Bool = true
+    @Published var packetPadding: Bool = true
     var bigPacketsMigrated: Bool = false
     var implemenationMigrated: Bool = false
 
@@ -507,6 +508,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         case dnsLookupStrategy
         case implementation
         case bigPackets
+        case packetPadding
         case bigPacketsMigrated
         case implemenationMigrated
     }
@@ -523,6 +525,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
         try container.encode(.implementation, implementation)
         try container.encode(.bigPackets, bigPackets)
+        try container.encode(.packetPadding, packetPadding)
         try container.encode(.bigPacketsMigrated, bigPacketsMigrated)
         try container.encode(.implemenationMigrated, implemenationMigrated)
     }
@@ -541,6 +544,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
         implementation = container.decode(.implementation, SettingsStreamSrtImplementation.self, .moblin)
         bigPackets = container.decode(.bigPackets, Bool.self, true)
+        packetPadding = container.decode(.packetPadding, Bool.self, true)
         bigPacketsMigrated = container.decode(.bigPacketsMigrated, Bool.self, false)
         if !bigPacketsMigrated {
             bigPackets = mpegtsPacketsPerPacketRemove == 7
@@ -575,6 +579,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         new.dnsLookupStrategy = dnsLookupStrategy
         new.implementation = implementation
         new.bigPackets = bigPackets
+        new.packetPadding = packetPadding
         new.bigPacketsMigrated = bigPacketsMigrated
         return new
     }
@@ -1473,6 +1478,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                                1)
         adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
+        if hasSrtPassphrase(url: url) {
+            srt.implementation = .official
+        }
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
         whip = container.decode(.whip, SettingsStreamWhip.self, .init())

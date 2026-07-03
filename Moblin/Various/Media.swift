@@ -199,6 +199,7 @@ final class Media: NSObject, @unchecked Sendable {
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
+        packetPadding: Bool,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities,
         dnsLookupStrategy: SettingsDnsLookupStrategy
@@ -213,6 +214,7 @@ final class Media: NSObject, @unchecked Sendable {
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            packetPadding: packetPadding,
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities
         )
@@ -229,6 +231,7 @@ final class Media: NSObject, @unchecked Sendable {
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
+        packetPadding: Bool,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities
     ) {
@@ -245,6 +248,7 @@ final class Media: NSObject, @unchecked Sendable {
             delegate: self,
             passThrough: !isSrtla,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+            packetPadding: packetPadding,
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities,
             srtImplementation: srtImplementation

@@ -42,6 +42,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
 
     private let networkPathMonitor = NWPathMonitor()
     private let mpegtsPacketsPerPacket: Int
+    private let packetPadding: Bool
     private var host: String = ""
     private var port: Int = 0
     private var groupId: Data?
@@ -56,6 +57,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
         delegate: any SrtlaDelegate,
         passThrough: Bool,
         mpegtsPacketsPerPacket: Int,
+        packetPadding: Bool,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities,
         srtImplementation: SettingsStreamSrtImplementation
@@ -63,6 +65,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
         self.delegate = delegate
         self.passThrough = passThrough
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        self.packetPadding = packetPadding
         networkInterfaces = .init()
         self.connectionPriorities = .init()
         self.srtImplementation = srtImplementation
@@ -74,6 +77,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
             remoteConnections.append(RemoteConnection(
                 type: nil,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                packetPadding: packetPadding,
                 interface: nil,
                 networkInterfaces: networkInterfaces,
                 priority: 1.0
@@ -151,6 +155,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
             let remoteConnection = RemoteConnection(
                 type: .other,
                 mpegtsPacketsPerPacket: self.mpegtsPacketsPerPacket,
+                packetPadding: self.packetPadding,
                 interface: nil,
                 networkInterfaces: self.networkInterfaces,
                 priority: self.getRelayConnectionPriority(relayId: id),
@@ -319,6 +324,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
             newRemoteConnections.append(RemoteConnection(
                 type: interface.type,
                 mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
+                packetPadding: packetPadding,
                 interface: interface,
                 networkInterfaces: networkInterfaces,
                 priority: getConnectionPriority(name: name)

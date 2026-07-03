@@ -43,6 +43,14 @@ struct StreamSrtSettingsView: View {
         srt.overheadBandwidth = overheadBandwidth
     }
 
+    private func submitImplementation() {
+        if hasSrtPassphrase(url: stream.url), srt.implementation != .official {
+            srt.implementation = .official
+            return
+        }
+        model.reloadStreamIfEnabled(stream: stream)
+    }
+
     var body: some View {
         Form {
             Section {
@@ -102,6 +110,11 @@ struct StreamSrtSettingsView: View {
                         model.reloadStreamIfEnabled(stream: stream)
                     }
                     .disabled(stream.enabled && model.isLive)
+                Toggle("Packet Padding", isOn: $srt.packetPadding)
+                    .onChange(of: srt.packetPadding) { _ in
+                        model.reloadStreamIfEnabled(stream: stream)
+                    }
+                    .disabled(stream.enabled && model.isLive)
             } footer: {
                 VStack(alignment: .leading) {
                     Text(
@@ -110,6 +123,7 @@ struct StreamSrtSettingsView: View {
                         Sometimes Android hotspots does not work with big packets.
                         """
                     )
+                    Text("Packet padding fills smaller SRT packets with null MPEG-TS packets.")
                 }
             }
             Section {
@@ -118,7 +132,7 @@ struct StreamSrtSettingsView: View {
                         Text($0.rawValue)
                     }
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabled((stream.enabled && model.isLive) || hasSrtPassphrase(url: stream.url))
             } footer: {
                 Text("System seems to work best for TMobile. IPv4 probably best for IRLToolkit.")
             }
@@ -130,13 +144,18 @@ struct StreamSrtSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isLive)
                 .onChange(of: srt.implementation) { _ in
-                    model.reloadStreamIfEnabled(stream: stream)
+                    submitImplementation()
                 }
             } footer: {
-                Text("""
-                \"Official\" uses the widely supported libSRT (version 1.5.3) and \"Moblin\" uses a \
-                more energy efficient custom implementation.
-                """)
+                VStack(alignment: .leading) {
+                    Text("""
+                    \"Official\" uses the widely supported libSRT (version 1.5.3) and \"Moblin\" uses a \
+                    more energy efficient custom implementation.
+                    """)
+                    if hasSrtPassphrase(url: stream.url) {
+                        Text("Moblin SRT does not support stream encryption.")
+                    }
+                }
             }
         }
         .navigationTitle("SRT(LA)")

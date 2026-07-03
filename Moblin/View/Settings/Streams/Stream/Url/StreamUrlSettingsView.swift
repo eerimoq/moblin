@@ -28,6 +28,13 @@ struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
 
+    private func submitUrl() {
+        if hasSrtPassphrase(url: stream.url) {
+            stream.srt.implementation = .official
+        }
+        model.reloadStreamIfEnabled(stream: stream)
+    }
+
     var body: some View {
         UrlSettingsView(disabled: model.isLive || model.isRecording,
                         url: $stream.url,
@@ -35,9 +42,7 @@ struct StreamUrlSettingsView: View {
                         placeholder: "srtla://foobar.org:4432",
                         allowedSchemes: nil,
                         examples: rtmpExamples + srtExamples + whipExamples,
-                        onSubmitted: {
-                            model.reloadStreamIfEnabled(stream: stream)
-                        })
+                        onSubmitted: submitUrl)
     }
 }
 
