@@ -11,6 +11,16 @@ class SceneSwitchMultipleTimes(TestCase):
             self.moblin.set_scene("Front")
 
 
+class ScenePiPBackFront(TestCase):
+    """A picture in picture scene with full screen back camera and small front camera in
+    bottom right. Record for a few seconds and validate the recording.
+
+    """
+
+    def run(self):
+        pass
+
+
 def tests(moblin: Moblin):
     return [
         SceneSwitchMultipleTimes(moblin),
