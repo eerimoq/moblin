@@ -19,6 +19,23 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
+def check_dependencies() -> List[str]:
+    command = ["ffmpeg", "-filters"]
+    output = subprocess.run(
+        command,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    missing_dependencies = []
+    for filter in ["qrencode", "drawtext"]:
+        if f" {filter} " not in output:
+            missing_dependencies.append(
+                f"The {filter} video filter is not supported by ffmpeg"
+            )
+    return missing_dependencies
+
+
 class FfmpegCommand:
     def __init__(self):
         self._server = None
