@@ -30,7 +30,7 @@ class ScenePiPBackFront(TestCase):
         if "pip" not in self.moblin.capabilities:
             raise systest.TestCaseSkippedError("PiP not supported.")
         self.moblin.set_scene("PiP")
-        time.sleep(1)
+        time.sleep(2)
         self.moblin.start_recording()
         time.sleep(10)
         self.moblin.stop_recording()
