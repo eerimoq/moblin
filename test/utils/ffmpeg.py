@@ -312,7 +312,7 @@ def read_qr_codes(path: Path) -> List[QrCode]:
     return qr_codes
 
 
-def find_duplicated_frames(path: Path, crop: Crop | None = None) -> int:
+def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
     command = ["ffmpeg", "-i", str(path), "-vf"]
     filters = []
     if crop is not None:
@@ -321,6 +321,4 @@ def find_duplicated_frames(path: Path, crop: Crop | None = None) -> int:
     filtered_path = path.with_suffix(f".{"-".join(filters)}-filtered.mp4")
     command += [", ".join(filters), "-an", str(filtered_path)]
     _run(command)
-    original = ffprobe_video(path)
-    filtered = ffprobe_video(filtered_path)
-    return len(original.frames) - len(filtered.frames)
+    return filtered_path

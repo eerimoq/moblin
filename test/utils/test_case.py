@@ -7,10 +7,10 @@ from typing import List
 import systest
 
 from .utils import Crop
-from .ffmpeg import FfprobeAudioOutput
+from .ffmpeg import FfprobeAudioOutput, ffprobe_video
 from .ffmpeg import FfprobeVideoOutput
 from .ffmpeg import ffprobe
-from .ffmpeg import find_duplicated_frames
+from .ffmpeg import remove_duplicated_frames
 from .ffmpeg import read_qr_codes
 
 from .moblin import Moblin
@@ -71,10 +71,14 @@ class TestCase(systest.TestCase):
         self.assert_in("P", picture_types)
         self.assert_in("B", picture_types)
         if duplicated_frames_crops is None:
-            self.assert_equal(find_duplicated_frames(recording), 0)
+            filtered_video = ffprobe_video(remove_duplicated_frames(recording))
+            self.assert_equal(len(filtered_video.frames), len(video.frames))
         else:
             for crop in duplicated_frames_crops:
-                self.assert_equal(find_duplicated_frames(recording, crop), 0)
+                filtered_video = ffprobe_video(
+                    remove_duplicated_frames(recording, crop)
+                )
+                self.assert_equal(len(filtered_video.frames), len(video.frames))
 
     def _assert_audio(self, audio: FfprobeAudioOutput):
         expected_samples_per_frame = 1024
