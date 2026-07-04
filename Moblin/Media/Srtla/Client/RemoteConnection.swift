@@ -77,6 +77,7 @@ class RemoteConnection: @unchecked Sendable {
     private(set) var destinationHost: NWEndpoint.Host?
     private(set) var destinationPort: NWEndpoint.Port?
     private let mpegtsPacketsPerPacket: Int
+    private let packetPadding: Bool
     var typeString: String {
         switch type {
         case .wifi:
@@ -100,6 +101,7 @@ class RemoteConnection: @unchecked Sendable {
     init(
         type: NWInterface.InterfaceType?,
         mpegtsPacketsPerPacket: Int,
+        packetPadding: Bool,
         interface: NWInterface?,
         networkInterfaces: SrtlaNetworkInterfaces,
         priority: Float,
@@ -108,6 +110,7 @@ class RemoteConnection: @unchecked Sendable {
     ) {
         self.type = type
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        self.packetPadding = packetPadding
         self.interface = interface
         self.networkInterfaces = networkInterfaces
         self.priority = priority
@@ -360,7 +363,7 @@ class RemoteConnection: @unchecked Sendable {
             packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
             var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
             numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
-            if numberOfMpegTsPackets < mpegtsPacketsPerPacket {
+            if packetPadding, numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                 var paddedPacket = packet
                 while numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                     paddedPacket.append(nullPacket)

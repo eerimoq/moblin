@@ -121,6 +121,7 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.httpProxy) { _ in
                         model.httpProxyServerChanged()
                     }
+                Toggle("SRT(LA) packet padding", isOn: $debug.packetPadding)
             } header: {
                 Text("Experimental")
             }

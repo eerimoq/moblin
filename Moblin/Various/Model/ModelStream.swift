@@ -213,6 +213,7 @@ extension Model {
             overheadBandwidth: database.debug.srtOverheadBandwidth,
             maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
             mpegtsPacketsPerPacket: srt.mpegtsPacketsPerPacket(),
+            packetPadding: database.debug.packetPadding,
             networkInterfaceNames: database.networkInterfaceNames,
             connectionPriorities: srt.connectionPriorities,
             dnsLookupStrategy: srt.dnsLookupStrategy
