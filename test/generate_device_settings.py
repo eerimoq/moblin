@@ -10,6 +10,7 @@ RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
 SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
 FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
+BROWSER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 
 
 def create_settings(config):
@@ -112,6 +113,22 @@ def create_settings(config):
                 ],
                 "enabled": True,
             },
+            {
+                "name": "Browser widget",
+                "cameraPosition": "Screen capture",
+                "widgets": [
+                    {
+                        "widgetId": BROWSER_WIDGET_ID,
+                        "alignment": "TopLeft",
+                        "x": 0,
+                        "y": 0,
+                        "size": 100,
+                        "migrated": True,
+                        "migrated2": True,
+                    }
+                ],
+                "enabled": True,
+            },
         ],
         "widgets": [
             {
@@ -122,7 +139,18 @@ def create_settings(config):
                     "cameraPosition": "Front",
                     "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
                 },
-            }
+            },
+            {
+                "id": BROWSER_WIDGET_ID,
+                "name": "Browser",
+                "type": "Browser",
+                "browser": {
+                    "url": f"http://{tester_ip_address}:6967/BrowserWidgetHighFpsVideo.html",
+                    "width": 1920,
+                    "height": 1080,
+                    "mode": "audioAndVideoOnly",
+                },
+            },
         ],
         "remoteControl": {
             "server": {

@@ -3,12 +3,27 @@
         window.setTimeout(() => {
             var player = document.getElementById('player'); 
             player.play();
-        }, 5000)
+        }, 6000)
     </script>
-    <body>
-        <img src="BrowserWidgetHighFpsVideo.jpg" width="400"/>
-        <video id="player" width="400">
-            <source src="BrowserWidgetHighFpsVideo.mp4"/>
-        </video>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            width: 1920px;
+            height: 1080px;
+            background-color: #ccc;
+        }
+        .wrapper * {
+            display: block;
+            float: left;
+        }
+    </style>
+    <body class="wrapper">
+            <img src="BrowserWidgetHighFpsVideo.jpg" width="400"/>
+            <video id="player" width="400">
+                <source src="BrowserWidgetHighFpsVideo.mp4"/>
+            </video>
     </body>
 </html>

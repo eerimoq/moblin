@@ -280,12 +280,14 @@ class QrCode:
             self.number = int(parts[1])
             self.pts = float(parts[3])
         else:
-            LOGGER.info("Failed QR decode of %s. Output: '%s'", proc.args[-1], text)
+            LOGGER.debug("Failed QR decode of %s. Output: '%s'", proc.args[-1], text)
             self.number = -1
             self.pts = -1
 
 
-def read_qr_codes(path: Path) -> List[QrCode]:
+def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
+    if crop is None:
+        crop = Crop(x=150, y=0, width=400, height=400)
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
     _run(
@@ -294,7 +296,7 @@ def read_qr_codes(path: Path) -> List[QrCode]:
             "-i",
             str(path),
             "-vf",
-            "crop=w=400:h=400:x=150:y=0",
+            f"crop=w={crop.width}:h={crop.height}:x={crop.x}:y={crop.y}",
             f"{qr_codes_dir}/%05d.jpg",
         ]
     )
