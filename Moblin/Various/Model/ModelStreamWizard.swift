@@ -74,9 +74,10 @@ extension Model {
             break
         case .srt:
             if var urlComponents = URLComponents(string: createStreamWizard.customSrtUrl.trim()) {
-                urlComponents.queryItems = [
-                    URLQueryItem(name: "streamid", value: createStreamWizard.customSrtStreamId.trim()),
-                ]
+                urlComponents.queryItems?.removeAll(where: { $0.name == "streamid" })
+                urlComponents.queryItems?.append(
+                    URLQueryItem(name: "streamid", value: createStreamWizard.customSrtStreamId.trim())
+                )
                 if let fullUrl = urlComponents.url {
                     return fullUrl.absoluteString
                 }
