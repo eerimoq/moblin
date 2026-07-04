@@ -322,3 +322,36 @@ def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
     command += [", ".join(filters), "-an", str(filtered_path)]
     _run(command)
     return filtered_path
+
+
+def create_qr_codes_video(output_file: Path):
+    command = [
+        "ffmpeg",
+        "-hide_banner",
+        "-nostdin",
+        "-y",
+        "-t",
+        "10",
+        "-f",
+        "lavfi",
+        "-i",
+        "nullsrc=size=400x400:rate=30",
+        "-c:v",
+        "libx264",
+        "-b:v",
+        "1M",
+        "-maxrate",
+        "1M",
+        "-preset",
+        "veryfast",
+        "-pix_fmt",
+        "yuv420p",
+        "-g",
+        "60",
+        "-keyint_min",
+        "60",
+        "-vf",
+        "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=0",
+        str(output_file),
+    ]
+    _run(command)

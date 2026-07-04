@@ -105,3 +105,6 @@ test/*.dot
 test/logs
 test/files/
 __pycache__
+
+test/tests/websites/*.jpg
+test/tests/websites/*.mp4

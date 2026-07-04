@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from logging import Logger
 import logging
+from pathlib import Path
 import threading
 
 
@@ -33,3 +34,6 @@ class Crop:
     y: int
     width: int
     height: int
+
+
+WEBSITES_ROOT = Path(__file__).parent.parent.resolve() / "tests" / "websites"

@@ -7,6 +7,7 @@ from tests import stream
 from tests import scenes
 from tests import ingests
 from tests import record
+from tests import browser_widget
 from utils.config import Config
 from utils.moblin import Moblin
 from utils.dependencies import check_dependencies
@@ -32,6 +33,7 @@ def main():
             record.tests(moblin),
             scenes.tests(moblin),
             stream.tests(moblin),
+            browser_widget.tests(moblin),
         )
     sequencer.report_and_exit()
 
