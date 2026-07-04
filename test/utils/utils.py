@@ -1,9 +1,9 @@
-from dataclasses import dataclass
-from logging import Logger
 import logging
-from pathlib import Path
 import subprocess
 import threading
+from dataclasses import dataclass
+from logging import Logger
+from pathlib import Path
 
 
 def _log_stream(stream, logger: Logger, log_level):

@@ -2,8 +2,8 @@ from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe
-from utils.moblin import Moblin
 from utils.mediamtx import MediaMtx
+from utils.moblin import Moblin
 from utils.test_case import TestCase
 
 

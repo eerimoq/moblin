@@ -1,10 +1,10 @@
 import logging
 import time
 
-from utils.utils import manual_validation
-from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegAudioTestStream
+from utils.moblin import Moblin
 from utils.test_case import TestCase
+from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import subprocess
 import argparse
+import subprocess
 
 
 def analyze(video):

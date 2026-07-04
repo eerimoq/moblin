@@ -1,19 +1,19 @@
-from fractions import Fraction
 import logging
-from pathlib import Path
 import time
+from fractions import Fraction
+from pathlib import Path
 from typing import List
 
 import systest
 
-from .utils import Crop
-from .ffmpeg import FfprobeAudioOutput, ffprobe_video
+from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeVideoOutput
 from .ffmpeg import ffprobe
-from .ffmpeg import remove_duplicated_frames
+from .ffmpeg import ffprobe_video
 from .ffmpeg import read_qr_codes
-
+from .ffmpeg import remove_duplicated_frames
 from .moblin import Moblin
+from .utils import Crop
 
 LOGGER = logging.getLogger(__name__)
 

@@ -32,6 +32,9 @@ PYLINT_ARGS = \
 	--disable no-else-return \
 	--recursive yes \
 	$(PYTHON_DIRS)
+ISORT_ARGS = \
+	--force-single-line-imports \
+	$(PYTHON_DIRS)
 
 CODE_DIRS += "Common"
 CODE_DIRS += "Moblin"
@@ -51,17 +54,19 @@ default:
 style:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
-	black $(BLACK_ARGS) || true
+	isort $(ISORT_ARGS)
+	black $(BLACK_ARGS)
 
 style-check:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
+	isort $(ISORT_ARGS) --check
 	black $(BLACK_ARGS) --check
 
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
-	pylint $(PYLINT_ARGS) || true
+	pylint $(PYLINT_ARGS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:

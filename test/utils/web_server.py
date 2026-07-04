@@ -1,6 +1,6 @@
 import logging
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 from .utils import log_output
 

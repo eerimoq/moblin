@@ -1,8 +1,8 @@
-import sys
-import json
-import re
 import argparse
 import itertools
+import json
+import re
+import sys
 from pathlib import Path
 
 # Matches iOS/Swift format specifiers with an optional positional prefix.

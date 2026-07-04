@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import random
-import time
-import subprocess
 import argparse
+import random
+import subprocess
+import time
 
 
 def set_bitrate_and_loss(bitrate, loss):

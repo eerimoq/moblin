@@ -1,7 +1,8 @@
 import argparse
 import json
-from pathlib import Path
 import tomllib
+from pathlib import Path
+
 import pyperclip
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"

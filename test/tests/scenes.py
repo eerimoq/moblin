@@ -1,10 +1,11 @@
 import logging
 import time
+
 import systest
 
-from utils.utils import Crop
 from utils.moblin import Moblin
 from utils.test_case import TestCase
+from utils.utils import Crop
 
 LOGGER = logging.getLogger(__name__)
 

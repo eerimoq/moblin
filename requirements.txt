@@ -6,3 +6,4 @@ moblin_assistant
 requests
 av
 pyperclip
+isort

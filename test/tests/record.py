@@ -1,6 +1,6 @@
-from fractions import Fraction
 import logging
 import time
+from fractions import Fraction
 
 from utils.ffmpeg import ffprobe
 from utils.moblin import Moblin

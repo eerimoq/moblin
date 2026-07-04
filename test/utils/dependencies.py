@@ -1,5 +1,5 @@
-import sys
 import shutil
+import sys
 
 from . import ffmpeg
 

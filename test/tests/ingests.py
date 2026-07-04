@@ -1,9 +1,9 @@
 import logging
 
-from utils.recorder import Recorder
-from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
+from utils.moblin import Moblin
+from utils.recorder import Recorder
 from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)

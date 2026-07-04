@@ -1,16 +1,18 @@
 import argparse
 import logging
 from pathlib import Path
+
 import systest
-from tests import talkback
-from tests import stream
-from tests import scenes
+from tests import browser_widget
 from tests import ingests
 from tests import record
-from tests import browser_widget
+from tests import scenes
+from tests import stream
+from tests import talkback
+
 from utils.config import Config
-from utils.moblin import Moblin
 from utils.dependencies import check_dependencies
+from utils.moblin import Moblin
 
 
 def main():
