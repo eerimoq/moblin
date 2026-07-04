@@ -7,6 +7,7 @@ import shutil
 import subprocess
 from fractions import Fraction
 from typing import List
+from .utils import Crop
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -19,14 +20,14 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
+def _run(command: List[str]):
+    LOGGER.debug("Command: %s", " ".join(command))
+    return subprocess.run(command, check=True, capture_output=True, text=True)
+
+
 def check_dependencies() -> List[str]:
     command = ["ffmpeg", "-filters"]
-    output = subprocess.run(
-        command,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
+    output = _run(command).stdout
     missing_dependencies = []
     for video_filter in ["qrencode", "drawtext"]:
         if f" {video_filter} " not in output:
@@ -209,13 +210,7 @@ def ffprobe_run(path: Path, *args):
         *args,
         str(path),
     ]
-    LOGGER.debug("Command: %s", " ".join(command))
-    output = subprocess.run(
-        command,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
+    output = _run(command).stdout
     return json.loads(output)
 
 
@@ -266,13 +261,11 @@ def ffprobe_format(path):
 
 
 def ffprobe(path: Path):
-    metadata = FfprobeOutput(
+    return FfprobeOutput(
         video=ffprobe_video(path),
         audio=ffprobe_audio(path),
         format=ffprobe_format(path),
     )
-    LOGGER.debug("File: %s, Metadata: %s", path, metadata)
-    return metadata
 
 
 @dataclass
@@ -295,17 +288,15 @@ class QrCode:
 def read_qr_codes(path: Path) -> List[QrCode]:
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
-    subprocess.run(
+    _run(
         [
             "ffmpeg",
             "-i",
-            path,
+            str(path),
             "-vf",
             "crop=w=400:h=400:x=150:y=0",
             f"{qr_codes_dir}/%05d.jpg",
-        ],
-        check=True,
-        capture_output=True,
+        ]
     )
     procs = []
     for file in sorted(qr_codes_dir.iterdir()):
@@ -321,21 +312,15 @@ def read_qr_codes(path: Path) -> List[QrCode]:
     return qr_codes
 
 
-def find_duplicated_frames(path: Path) -> int:
-    filtered_path = path.with_suffix(".filtered.mp4")
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-i",
-            path,
-            "-vf",
-            "mpdecimate",
-            "-an",
-            filtered_path,
-        ],
-        check=True,
-        capture_output=True,
-    )
-    original = ffprobe(path)
-    filtered = ffprobe(filtered_path)
-    return len(original.video.frames) - len(filtered.video.frames)
+def find_duplicated_frames(path: Path, crop: Crop | None = None) -> int:
+    command = ["ffmpeg", "-i", str(path), "-vf"]
+    filters = []
+    if crop is not None:
+        filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")
+    filters.append("mpdecimate")
+    filtered_path = path.with_suffix(f".{"-".join(filters)}-filtered.mp4")
+    command += [", ".join(filters), "-an", str(filtered_path)]
+    _run(command)
+    original = ffprobe_video(path)
+    filtered = ffprobe_video(filtered_path)
+    return len(original.frames) - len(filtered.frames)

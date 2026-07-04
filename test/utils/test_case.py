@@ -6,6 +6,7 @@ from typing import List
 
 import systest
 
+from .utils import Crop
 from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeVideoOutput
 from .ffmpeg import ffprobe
@@ -26,8 +27,6 @@ class TestCase(systest.TestCase):
         self.moblin.end()
         self.moblin.stop_recording()
 
-
-class RecordTest(TestCase):
     def wait_for_ingest_stream_started(self, number_of_ingests=2, startup_delay=1):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(
@@ -37,14 +36,27 @@ class RecordTest(TestCase):
             number_of_ingests=number_of_ingests,
         )
 
-    def assert_recording(self, recording: Path):
+    def assert_recording(
+        self,
+        recording: Path,
+        has_qr_codes: bool = True,
+        duplicated_frames_crops: List[Crop] | None = None,
+    ):
         recording_metadata = ffprobe(recording)
         self.assert_greater(recording_metadata.format.duration, 8)
         self.assert_less(recording_metadata.format.duration, 14)
-        self._assert_video(recording_metadata.video, recording)
+        self._assert_video(
+            recording_metadata.video, recording, has_qr_codes, duplicated_frames_crops
+        )
         self._assert_audio(recording_metadata.audio)
 
-    def _assert_video(self, video: FfprobeVideoOutput, recording: Path):
+    def _assert_video(
+        self,
+        video: FfprobeVideoOutput,
+        recording: Path,
+        has_qr_codes: bool,
+        duplicated_frames_crops: List[Crop] | None,
+    ):
         fps = 30
         self.assert_equal(video.codec, "hevc")
         self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
@@ -52,13 +64,17 @@ class RecordTest(TestCase):
         self._assert_presentation_time_stamps(
             1 / fps, [frame.pts for frame in video.frames]
         )
-        self._assert_video_frame_numbers_increasing(recording)
+        self._assert_video_frame_numbers_increasing(recording, has_qr_codes)
         picture_types = {frame.picture_type for frame in video.frames}
         self.assert_equal(len(picture_types), 3)
         self.assert_in("I", picture_types)
         self.assert_in("P", picture_types)
         self.assert_in("B", picture_types)
-        self.assert_equal(find_duplicated_frames(recording), 0)
+        if duplicated_frames_crops is None:
+            self.assert_equal(find_duplicated_frames(recording), 0)
+        else:
+            for crop in duplicated_frames_crops:
+                self.assert_equal(find_duplicated_frames(recording, crop), 0)
 
     def _assert_audio(self, audio: FfprobeAudioOutput):
         expected_samples_per_frame = 1024
@@ -88,7 +104,11 @@ class RecordTest(TestCase):
             self.assert_greater(delta, expected_delta - 0.001)
             self.assert_less(delta, expected_delta + 0.001)
 
-    def _assert_video_frame_numbers_increasing(self, recording: Path):
+    def _assert_video_frame_numbers_increasing(
+        self, recording: Path, has_qr_codes: bool
+    ):
+        if not has_qr_codes:
+            return
         qr_codes = read_qr_codes(recording)
         self.assert_greater(len(qr_codes), 0)
         seen_increase = False

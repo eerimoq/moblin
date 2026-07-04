@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from logging import Logger
 import logging
 import threading
@@ -24,3 +25,11 @@ def log_output(stream, logger, log_level=_log_level):
 
 def manual_validation(logger: Logger, message: str):
     logger.info("🧪🧪🧪 Manual validation: %s 🧪🧪🧪", message)
+
+
+@dataclass
+class Crop:
+    x: int
+    y: int
+    width: int
+    height: int

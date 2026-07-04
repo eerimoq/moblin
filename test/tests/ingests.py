@@ -4,12 +4,12 @@ from utils.recorder import Recorder
 from utils.moblin import Moblin
 from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
-from utils.test_case import RecordTest
+from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
 
 
-class IngestRtmpServer(RecordTest):
+class IngestRtmpServer(TestCase):
     """Stream to an RTMP server ingest."""
 
     def run(self):
@@ -28,7 +28,7 @@ class IngestRtmpServer(RecordTest):
         self.assert_recording(recorder.recording)
 
 
-class IngestSrtServer(RecordTest):
+class IngestSrtServer(TestCase):
     """Stream to an SRT server ingest."""
 
     def run(self):
@@ -50,7 +50,7 @@ class IngestSrtServer(RecordTest):
         self.assert_recording(recorder.recording)
 
 
-class IngestRtspClientH264(RecordTest):
+class IngestRtspClientH264(TestCase):
     """Stream to an RTSP client ingest."""
 
     def run(self):
@@ -72,7 +72,7 @@ class IngestRtspClientH264(RecordTest):
         self.assert_recording(recorder.recording)
 
 
-class IngestRistServer(RecordTest):
+class IngestRistServer(TestCase):
     """Stream to an RIST server ingest."""
 
     def run(self):
