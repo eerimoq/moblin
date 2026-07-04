@@ -49,8 +49,6 @@ class RemoteConnection: @unchecked Sendable {
     private var latestReceivedTime = ContinuousClock.now
     private var packetsInFlight: Set<UInt32> = []
     private var windowSize: Int = 0
-    private var numberOfNullPacketsSent: UInt64 = 0
-    private var numberOfNonNullPacketsSent: UInt64 = 0
     private var hasFullGroupId: Bool = false
     private var groupId = Data()
     private var priority: Float
@@ -243,22 +241,13 @@ class RemoteConnection: @unchecked Sendable {
         guard state == .registered else {
             return
         }
-        var overhead = 0
-        let total = numberOfNullPacketsSent + numberOfNonNullPacketsSent
-        if total > 0 {
-            overhead = Int(100 * Double(numberOfNullPacketsSent) / Double(total))
-        }
-        numberOfNullPacketsSent = 0
-        numberOfNonNullPacketsSent = 0
-        if type == nil {
-            logger.debug("srtla: \(typeString): Overhead: \(overhead)%")
-        } else {
+        if type != nil {
             logger
                 .debug(
                     """
                     srtla: \(typeString): Score: \(score()), In flight: \
                     \(packetsInFlight.count), Window size: \(windowSize), \
-                    Priority: \(priority), Overhead: \(overhead) %
+                    Priority: \(priority)
                     """
                 )
         }
@@ -362,13 +351,11 @@ class RemoteConnection: @unchecked Sendable {
         if isSrtDataPacket(packet: packet) {
             packetsInFlight.insert(getSrtSequenceNumber(packet: packet))
             var numberOfMpegTsPackets = (packet.count - 16) / MpegTsPacket.size
-            numberOfNonNullPacketsSent += UInt64(numberOfMpegTsPackets)
             if packetPadding, numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                 var paddedPacket = packet
                 while numberOfMpegTsPackets < mpegtsPacketsPerPacket {
                     paddedPacket.append(nullPacket)
                     numberOfMpegTsPackets += 1
-                    numberOfNullPacketsSent += 1
                 }
                 sendDataPacketInternal(packet: paddedPacket)
                 totalDataSentByteCount += UInt64(paddedPacket.count)
