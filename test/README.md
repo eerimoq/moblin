@@ -9,6 +9,14 @@ brew install ffmpeg-full
 brew install qrtool
 ```
 
+# Configuration
+
+Copy `config.example.toml` to `config.toml` and modify it to match your test setup.
+
+```bash
+cp config.example.toml config.toml
+```
+
 # Moblin device configuration
 
 ## Via clipboard

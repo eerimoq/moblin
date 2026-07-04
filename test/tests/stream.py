@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
@@ -5,6 +6,8 @@ from utils.ffmpeg import ffprobe
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
+
+LOGGER = logging.getLogger(__name__)
 
 
 class StreamRtmpToMediaMtx(TestCase):
@@ -105,6 +108,19 @@ class StreamMultiRtmpToMediaMtx(TestCase):
             self.moblin.end()
 
 
+class StreamToGenericUrls(TestCase):
+    """Stream to each generic URL for a few seconds."""
+
+    def run(self):
+        self.moblin.set_scene("Front")
+        for generic_stream in self.moblin.generic_streams:
+            LOGGER.info("Stream: %s", generic_stream)
+            self.moblin.set_stream(generic_stream)
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+            self.moblin.end()
+
+
 def tests(moblin: Moblin):
     return [
         StreamRtmpToMediaMtx(moblin),
@@ -113,4 +129,5 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
+        StreamToGenericUrls(moblin),
     ]

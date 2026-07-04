@@ -108,3 +108,4 @@ __pycache__
 
 test/tests/websites/*.jpg
 test/tests/websites/*.mp4
+test/config.toml

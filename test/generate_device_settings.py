@@ -17,59 +17,69 @@ BROWSER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 def create_settings(config):
     general = config["general"]
     tester_ip_address = general["tester-ip-address"]
+    streams = [
+        {
+            "name": "RTMP",
+            "enabled": True,
+            "bitrateRateControl": "CBR",
+            "url": f"rtmp://{tester_ip_address}:1935/test",
+            "rtmp": {"adaptiveBitrateEnabled": False},
+        },
+        {
+            "name": "SRT",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 50_000_000,
+        },
+        {
+            "name": "SRT 5Mbps",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT encrypted",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{tester_ip_address}:8890?streamid=publish:test&passphrase=1234567890",
+            "srt": {"adaptiveBitrateEnabled": False, "implementation": "Official"},
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "Multi RTMP",
+            "bitrateRateControl": "CBR",
+            "url": f"rtmp://{tester_ip_address}:1935/test1",
+            "rtmp": {"adaptiveBitrateEnabled": False},
+            "multiStreaming": {
+                "destinations": [
+                    {
+                        "name": "Test 2",
+                        "url": f"rtmp://{tester_ip_address}:1935/test2",
+                        "enabled": True,
+                    },
+                    {
+                        "name": "Test 3",
+                        "url": f"rtmp://{tester_ip_address}:1935/test3",
+                        "enabled": True,
+                    },
+                ]
+            },
+        },
+        {"name": "Record H.264", "recording": {"videoCodec": "H.264/AVC"}},
+        {"name": "Record H.265", "recording": {"videoCodec": "H.265/HEVC"}},
+    ]
+    for number, generic_stream_url in enumerate(general["generic-stream-urls"], 1):
+        streams.append(
+            {
+                "name": f"Generic {number}",
+                "bitrateRateControl": "CBR",
+                "url": generic_stream_url,
+                "bitrate": 5_000_000,
+            }
+        )
     return {
-        "streams": [
-            {
-                "name": "RTMP",
-                "enabled": True,
-                "bitrateRateControl": "CBR",
-                "url": f"rtmp://{tester_ip_address}:1935/test",
-                "rtmp": {"adaptiveBitrateEnabled": False},
-            },
-            {
-                "name": "SRT",
-                "bitrateRateControl": "CBR",
-                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
-                "srt": {"adaptiveBitrateEnabled": False},
-                "bitrate": 50_000_000,
-            },
-            {
-                "name": "SRT 5Mbps",
-                "bitrateRateControl": "CBR",
-                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test",
-                "srt": {"adaptiveBitrateEnabled": False},
-                "bitrate": 5_000_000,
-            },
-            {
-                "name": "SRT encrypted",
-                "bitrateRateControl": "CBR",
-                "url": f"srt://{tester_ip_address}:8890?streamid=publish:test&passphrase=1234567890",
-                "srt": {"adaptiveBitrateEnabled": False, "implementation": "Official"},
-                "bitrate": 5_000_000,
-            },
-            {
-                "name": "Multi RTMP",
-                "bitrateRateControl": "CBR",
-                "url": f"rtmp://{tester_ip_address}:1935/test1",
-                "rtmp": {"adaptiveBitrateEnabled": False},
-                "multiStreaming": {
-                    "destinations": [
-                        {
-                            "name": "Test 2",
-                            "url": f"rtmp://{tester_ip_address}:1935/test2",
-                            "enabled": True,
-                        },
-                        {
-                            "name": "Test 3",
-                            "url": f"rtmp://{tester_ip_address}:1935/test3",
-                            "enabled": True,
-                        },
-                    ]
-                },
-            },
-            {"name": "Record H.264", "recording": {"videoCodec": "H.264/AVC"}},
-            {"name": "Record H.265", "recording": {"videoCodec": "H.265/HEVC"}},
-        ],
+        "streams": streams,
         "scenes": [
             {"name": "Front", "cameraPosition": "Front", "enabled": True},
             {"name": "Screen", "cameraPosition": "Screen capture", "enabled": True},

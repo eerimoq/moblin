@@ -1,5 +1,6 @@
 import tomllib
 from pathlib import Path
+from typing import List
 
 
 class Config:
@@ -23,6 +24,12 @@ class Config:
 
     def capabilities(self):
         return self._device()["capabilities"]
+
+    def generic_streams(self) -> List[str]:
+        streams = []
+        for index in range(len(self.general()["generic-stream-urls"])):
+            streams.append(f"Generic {index + 1}")
+        return streams
 
     def _device(self):
         return self._config["device"][self.device_name()]

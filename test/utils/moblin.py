@@ -23,6 +23,7 @@ class Moblin:
         self._server = None
         self.ip_address = config.moblin_ip_address()
         self.capabilities = config.capabilities()
+        self.generic_streams = config.generic_streams()
 
     def __enter__(self):
         self._server = subprocess.Popen(

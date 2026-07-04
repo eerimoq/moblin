@@ -2,10 +2,6 @@
 moblin-ip-address = "iphone16pro.home"
 capabilities = ["pip"]
 
-[device.ipadair]
-moblin-ip-address = "ipadair.home"
-capabilities = ["pip"]
-
 [device.macpro]
 moblin-ip-address = "macpro.home"
 capabilities = []
@@ -14,3 +10,6 @@ capabilities = []
 device = "macpro"
 tester-ip-address = "macpro.home"
 remote-control-port = 2345
+generic-stream-urls = [
+    "srt://eu.srt.belabox.net:4000?streamid=275092837459082734590872345"
+]
