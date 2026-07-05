@@ -87,23 +87,25 @@ class BrowserWidgetModes(TestCase):
         self.assert_no_qr_codes_found(qr_codes)
 
     def assert_qr_codes_found(self, qr_codes: List[QrCode]):
-        for qr_code in qr_codes:
-            self.assert_not_equal(qr_code.number, -1)
+        for index, qr_code in enumerate(qr_codes):
+            self.assert_not_equal(qr_code.number, -1, f"Index {index}")
 
     def assert_no_qr_codes_found(self, qr_codes: List[QrCode]):
-        for qr_code in qr_codes:
-            self.assert_equal(qr_code.number, -1)
+        for index, qr_code in enumerate(qr_codes):
+            self.assert_equal(qr_code.number, -1, f"Index {index}")
 
     def assert_high_fps_qr_codes_found(self, qr_codes: List[QrCode]):
         previous_frame_number = qr_codes[0].number
         seen_frame_number_count = 1
-        for qr_code in qr_codes[1:]:
+        for index, qr_code in enumerate(qr_codes[1:]):
             if qr_code.number == previous_frame_number:
                 seen_frame_number_count += 1
             else:
                 seen_frame_number_count = 1
-            self.assert_greater_equal(qr_code.number, previous_frame_number)
-            self.assert_less(seen_frame_number_count, 4)
+            self.assert_greater_equal(
+                qr_code.number, previous_frame_number, f"Index {index}"
+            )
+            self.assert_less(seen_frame_number_count, 4, f"Index {index}")
             previous_frame_number = qr_code.number
 
 
