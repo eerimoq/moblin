@@ -111,14 +111,16 @@ class StreamMultiRtmpToMediaMtx(TestCase):
 class StreamToGenericUrls(TestCase):
     """Stream to each generic URL for a few seconds."""
 
+    def __init__(self, moblin: Moblin, generic_stream: str):
+        super().__init__(moblin, f"StreamToGenericUrls({generic_stream})")
+        self._generic_stream = generic_stream
+
     def run(self):
         self.moblin.set_scene("Front")
-        for generic_stream in self.moblin.generic_streams:
-            LOGGER.info("Stream: %s", generic_stream)
-            self.moblin.set_stream(generic_stream)
-            self.moblin.go_live()
-            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
-            self.moblin.end()
+        self.moblin.set_stream(self._generic_stream)
+        self.moblin.go_live()
+        self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+        self.moblin.end()
 
 
 def tests(moblin: Moblin):
@@ -129,5 +131,7 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
-        StreamToGenericUrls(moblin),
+    ] + [
+        StreamToGenericUrls(moblin, generic_stream=generic_stream)
+        for generic_stream in moblin.generic_streams
     ]

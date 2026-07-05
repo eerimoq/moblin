@@ -7,6 +7,7 @@ pip install -r ../requirements.txt
 brew install mediamtx
 brew install ffmpeg-full
 brew install qrtool
+brew install ltc-tools
 ```
 
 # Configuration

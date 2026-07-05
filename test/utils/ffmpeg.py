@@ -71,6 +71,23 @@ class FfmpegTestStream(FfmpegCommand):
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
+        self._audio_file = Path("FfmpegTestStream.wav")
+        self.enusure_audio_file_exists()
+
+    def enusure_audio_file_exists(self):
+        if not self._audio_file.exists():
+            _run(
+                [
+                    "ltcgen",
+                    "--fps",
+                    "30",
+                    "--timecode",
+                    "00:00:00:00",
+                    "--duration",
+                    "00:05:00:00",
+                    str(self._audio_file),
+                ]
+            )
 
     def args(self):
         return [
@@ -79,10 +96,8 @@ class FfmpegTestStream(FfmpegCommand):
             "lavfi",
             "-i",
             "testsrc2=size=1920x1080:rate=30",
-            "-f",
-            "lavfi",
             "-i",
-            "aevalsrc=exprs='if(lt(mod(t,1),0.015),0.8*sin(2*PI*1800*t)*exp(-80*mod(t,1)),0)':s=48000",
+            str(self._audio_file),
             "-c:v",
             self._video_codec,
             "-b:v",
@@ -293,6 +308,8 @@ def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
     _run(
         [
             "ffmpeg",
+            "-hide_banner",
+            "-nostdin",
             "-i",
             str(path),
             "-vf",
@@ -314,8 +331,27 @@ def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
     return qr_codes
 
 
+def extract_ltc_wav(path: Path, output: Path):
+    _run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-nostdin",
+            "-y",
+            "-i",
+            str(path),
+            "-vn",
+            "-map",
+            "0:a:0",
+            "-c:a",
+            "pcm_s16le",
+            str(output),
+        ]
+    )
+
+
 def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
-    command = ["ffmpeg", "-i", str(path), "-vf"]
+    command = ["ffmpeg", "-hide_banner", "-nostdin", "-i", str(path), "-vf"]
     filters = []
     if crop is not None:
         filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")

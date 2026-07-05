@@ -96,6 +96,8 @@ def create_settings(config):
                 "cameraPosition": "RTMP",
                 "rtmpCameraId": RTMP_STREAM_ID,
                 "enabled": True,
+                "overrideMic": True,
+                "micId": f"{RTMP_STREAM_ID} 0",
             },
             {
                 "name": "RTSP",

@@ -1,4 +1,6 @@
 import logging
+import re
+import subprocess
 import time
 from fractions import Fraction
 from pathlib import Path
@@ -8,6 +10,7 @@ import systest
 
 from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeVideoOutput
+from .ffmpeg import extract_ltc_wav
 from .ffmpeg import ffprobe
 from .ffmpeg import ffprobe_video
 from .ffmpeg import read_qr_codes
@@ -16,11 +19,12 @@ from .moblin import Moblin
 from .utils import Crop
 
 LOGGER = logging.getLogger(__name__)
+RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
 
 
 class TestCase(systest.TestCase):
-    def __init__(self, moblin: Moblin):
-        super().__init__()
+    def __init__(self, moblin: Moblin, name: str | None = None):
+        super().__init__(name)
         self.moblin = moblin
 
     def teardown(self):
@@ -41,6 +45,7 @@ class TestCase(systest.TestCase):
         recording: Path,
         has_qr_codes: bool = True,
         duplicated_frames_crops: List[Crop] | None = None,
+        has_audio_time_codes: bool = False,
     ):
         recording_metadata = ffprobe(recording)
         self.assert_greater(recording_metadata.format.duration, 8)
@@ -48,7 +53,7 @@ class TestCase(systest.TestCase):
         self._assert_video(
             recording_metadata.video, recording, has_qr_codes, duplicated_frames_crops
         )
-        self._assert_audio(recording, recording_metadata.audio)
+        self._assert_audio(recording, recording_metadata.audio, has_audio_time_codes)
 
     def _assert_video(
         self,
@@ -89,7 +94,9 @@ class TestCase(systest.TestCase):
         )
         self.assert_equal(len(filtered_video.frames), len(video.frames))
 
-    def _assert_audio(self, recording: Path, audio: FfprobeAudioOutput):
+    def _assert_audio(
+        self, recording: Path, audio: FfprobeAudioOutput, has_audio_time_codes: bool
+    ):
         expected_samples_per_frame = 1024
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
@@ -103,6 +110,7 @@ class TestCase(systest.TestCase):
             expected_samples_per_frame / audio.sample_rate,
             [frame.pts for frame in audio.frames],
         )
+        self._assert_audio_time_codes(recording, has_audio_time_codes)
         for frame in audio.frames:
             self.assert_equal(frame.channels, 1)
             self.assert_equal(frame.number_of_samples, expected_samples_per_frame)
@@ -147,6 +155,33 @@ class TestCase(systest.TestCase):
                 LOGGER.info("Bad frame - Current: %s, Previous: %s", current, previous)
                 bad_frame_numbers = True
         self.assert_false(bad_frame_numbers)
+
+    def _assert_audio_time_codes(self, recording: Path, has_audio_time_codes: bool):
+        if not has_audio_time_codes:
+            return
+        ltc_wav = Path("ltc.wav")
+        extract_ltc_wav(recording, ltc_wav)
+        output = subprocess.run(
+            ["ltcdump", "--fps", "30", ltc_wav],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+        has_seen_start_time = False
+        has_seen_end_time = False
+        for line in output.splitlines():
+            mo = RE_LTCDUMP.match(line)
+            if mo:
+                seconds = 60 * int(mo.group(1)) + int(mo.group(2))
+                if seconds < 3:
+                    has_seen_start_time = True
+                if seconds > 9:
+                    has_seen_end_time = True
+            elif "#DISCONTINUITY" in line:
+                if has_seen_start_time and not has_seen_end_time:
+                    raise Exception("Discontinuity in audio!")
+        self.assert_true(has_seen_start_time)
+        self.assert_true(has_seen_end_time)
 
 
 def find_missing_presentation_time_stamps(

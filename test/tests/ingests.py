@@ -25,7 +25,7 @@ class IngestRtmpServer(TestCase):
                     total_bytes=10_000_000,
                     number_of_ingests=2,
                 )
-        self.assert_recording(recorder.recording)
+        self.assert_recording(recorder.recording, has_audio_time_codes=True)
 
 
 class IngestSrtServer(TestCase):
