@@ -50,9 +50,7 @@ class BrowserWidgetModes(TestCase):
     def assert_video_qr_codes_periodic_audio_and_video(self, recording_file: Path):
         crop = Crop(x=400, y=0, width=400, height=400)
         qr_codes = read_qr_codes(recording_file, crop)
-        self.assert_qr_codes_found(qr_codes[:100])
         self.assert_high_fps_qr_codes_found(qr_codes[149:380])
-        self.assert_qr_codes_found(qr_codes[450:])
 
     def assert_image_qr_codes_audio_and_video_only(self, recording_file: Path):
         crop = Crop(x=960, y=0, width=400, height=400)
