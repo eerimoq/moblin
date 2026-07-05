@@ -2,6 +2,8 @@ import tomllib
 from pathlib import Path
 from typing import List
 
+from utils.utils import format_generic_stream_url_stream_name
+
 
 class Config:
     def __init__(self, config_toml: Path, device: str):
@@ -27,8 +29,11 @@ class Config:
 
     def generic_streams(self) -> List[str]:
         streams = []
-        for index in range(len(self.general()["generic-stream-urls"])):
-            streams.append(f"Generic {index + 1}")
+        generic_stream_urls = self.general()["generic-stream-urls"]
+        for number, generic_stream_url in enumerate(generic_stream_urls, 1):
+            streams.append(
+                format_generic_stream_url_stream_name(number, generic_stream_url)
+            )
         return streams
 
     def _device(self):

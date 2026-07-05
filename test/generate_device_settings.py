@@ -5,13 +5,18 @@ from pathlib import Path
 
 import pyperclip
 
+from utils.utils import format_generic_stream_url_stream_name
+
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
 RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
 SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
 FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
-BROWSER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1312"
+BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
+BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
+BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
+BROWSER_WIDGET_LOCAL_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1315"
 
 
 def create_settings(config):
@@ -72,9 +77,12 @@ def create_settings(config):
     for number, generic_stream_url in enumerate(general["generic-stream-urls"], 1):
         streams.append(
             {
-                "name": f"Generic {number}",
+                "name": format_generic_stream_url_stream_name(
+                    number, generic_stream_url
+                ),
                 "bitrateRateControl": "CBR",
                 "url": generic_stream_url,
+                "codec": "H.264/AVC",
                 "bitrate": 5_000_000,
             }
         )
@@ -125,18 +133,45 @@ def create_settings(config):
                 "enabled": True,
             },
             {
-                "name": "Browser widget",
+                "name": "Browser widgets",
                 "cameraPosition": "Screen capture",
                 "widgets": [
                     {
-                        "widgetId": BROWSER_WIDGET_ID,
+                        "widgetId": BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID,
                         "alignment": "TopLeft",
                         "x": 0,
                         "y": 0,
                         "size": 100,
                         "migrated": True,
                         "migrated2": True,
-                    }
+                    },
+                    {
+                        "widgetId": BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID,
+                        "alignment": "TopLeft",
+                        "x": 50,
+                        "y": 0,
+                        "size": 100,
+                        "migrated": True,
+                        "migrated2": True,
+                    },
+                    {
+                        "widgetId": BROWSER_WIDGET_AUDIO_ONLY_ID,
+                        "alignment": "TopLeft",
+                        "x": 0,
+                        "y": 50,
+                        "size": 100,
+                        "migrated": True,
+                        "migrated2": True,
+                    },
+                    {
+                        "widgetId": BROWSER_WIDGET_LOCAL_ONLY_ID,
+                        "alignment": "TopLeft",
+                        "x": 50,
+                        "y": 50,
+                        "size": 100,
+                        "migrated": True,
+                        "migrated2": True,
+                    },
                 ],
                 "enabled": True,
             },
@@ -152,14 +187,47 @@ def create_settings(config):
                 },
             },
             {
-                "id": BROWSER_WIDGET_ID,
-                "name": "Browser",
+                "id": BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID,
+                "name": "Browser periodic audio and video",
+                "type": "Browser",
+                "browser": {
+                    "url": f"http://{tester_ip_address}:6967/BrowserWidgetHighFpsVideo.html",
+                    "width": 1920,
+                    "height": 1080,
+                    "mode": "periodicAudioAndVideo",
+                },
+            },
+            {
+                "id": BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID,
+                "name": "Browser audio and video only",
                 "type": "Browser",
                 "browser": {
                     "url": f"http://{tester_ip_address}:6967/BrowserWidgetHighFpsVideo.html",
                     "width": 1920,
                     "height": 1080,
                     "mode": "audioAndVideoOnly",
+                },
+            },
+            {
+                "id": BROWSER_WIDGET_AUDIO_ONLY_ID,
+                "name": "Browser audio only",
+                "type": "Browser",
+                "browser": {
+                    "url": f"http://{tester_ip_address}:6967/BrowserWidgetHighFpsVideo.html",
+                    "width": 1920,
+                    "height": 1080,
+                    "mode": "audioOnly",
+                },
+            },
+            {
+                "id": BROWSER_WIDGET_LOCAL_ONLY_ID,
+                "name": "Browser local only",
+                "type": "Browser",
+                "browser": {
+                    "url": f"http://{tester_ip_address}:6967/BrowserWidgetHighFpsVideo.html",
+                    "width": 1920,
+                    "height": 1080,
+                    "localOnly": True,
                 },
             },
         ],

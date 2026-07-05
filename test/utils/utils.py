@@ -4,6 +4,7 @@ import threading
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
+from urllib.parse import urlsplit
 
 
 def _log_stream(stream, logger: Logger, log_level):
@@ -49,3 +50,8 @@ def create_qr_code_image(text: str, output_image: Path):
         text,
     ]
     subprocess.run(command, check=True)
+
+
+def format_generic_stream_url_stream_name(number: int, url: str) -> str:
+    urlparts = urlsplit(url)
+    return f"Generic {number} ({urlparts.scheme}://{urlparts.netloc})"
