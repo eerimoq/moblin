@@ -139,7 +139,7 @@ class TestCase(systest.TestCase):
     ):
         if not has_qr_codes:
             return
-        qr_codes = read_qr_codes(recording)
+        qr_codes = read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))
         self.assert_greater(len(qr_codes), 0)
         seen_increase = False
         bad_frame_numbers = False

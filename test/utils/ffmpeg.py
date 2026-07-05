@@ -12,6 +12,7 @@ from .utils import Crop
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
+FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 
 
 def _log_level(line: str) -> int:
@@ -26,6 +27,22 @@ def _run(command: List[str]):
     return subprocess.run(command, check=True, capture_output=True, text=True)
 
 
+def ffprobe_run(path: Path, *args):
+    command = [
+        "ffprobe",
+        "-output_format",
+        "json",
+        *args,
+        str(path),
+    ]
+    output = _run(command).stdout
+    return json.loads(output)
+
+
+def ffmpeg_run(*args):
+    return _run(FFMPEG_COMMAND + [*args])
+
+
 def check_dependencies() -> List[str]:
     output = ffmpeg_run("-filters").stdout
     missing_dependencies = []
@@ -35,9 +52,6 @@ def check_dependencies() -> List[str]:
                 f"The {video_filter} video filter is not supported by ffmpeg"
             )
     return missing_dependencies
-
-
-FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 
 
 class FfmpegCommand:
@@ -220,22 +234,6 @@ class FfprobeOutput:
     format: FfprobeFormatOutput
 
 
-def ffprobe_run(path: Path, *args):
-    command = [
-        "ffprobe",
-        "-output_format",
-        "json",
-        *args,
-        str(path),
-    ]
-    output = _run(command).stdout
-    return json.loads(output)
-
-
-def ffmpeg_run(*args):
-    return _run(FFMPEG_COMMAND + [*args])
-
-
 def ffprobe_video(path: Path):
     output = ffprobe_run(
         path,
@@ -306,9 +304,7 @@ class QrCode:
             self.pts = -1
 
 
-def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
-    if crop is None:
-        crop = Crop(x=150, y=0, width=400, height=400)
+def read_qr_codes(path: Path, crop: Crop) -> List[QrCode]:
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
     ffmpeg_run(
