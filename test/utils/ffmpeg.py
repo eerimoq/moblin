@@ -27,8 +27,7 @@ def _run(command: List[str]):
 
 
 def check_dependencies() -> List[str]:
-    command = ["ffmpeg", "-filters"]
-    output = _run(command).stdout
+    output = ffmpeg_run("-filters").stdout
     missing_dependencies = []
     for video_filter in ["qrencode", "drawtext"]:
         if f" {video_filter} " not in output:
@@ -36,6 +35,9 @@ def check_dependencies() -> List[str]:
                 f"The {video_filter} video filter is not supported by ffmpeg"
             )
     return missing_dependencies
+
+
+FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 
 
 class FfmpegCommand:
@@ -46,7 +48,7 @@ class FfmpegCommand:
         raise NotImplementedError
 
     def __enter__(self):
-        command = ["ffmpeg", "-hide_banner", "-nostdin", "-y"] + self.args()
+        command = FFMPEG_COMMAND + self.args()
         LOGGER.debug("Command: %s", " ".join(command))
         self._server = subprocess.Popen(
             command,
@@ -230,6 +232,10 @@ def ffprobe_run(path: Path, *args):
     return json.loads(output)
 
 
+def ffmpeg_run(*args):
+    return _run(FFMPEG_COMMAND + [*args])
+
+
 def ffprobe_video(path: Path):
     output = ffprobe_run(
         path,
@@ -305,17 +311,12 @@ def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
         crop = Crop(x=150, y=0, width=400, height=400)
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
-    _run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-nostdin",
-            "-i",
-            str(path),
-            "-vf",
-            f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
-            f"{qr_codes_dir}/%05d.jpg",
-        ]
+    ffmpeg_run(
+        "-i",
+        str(path),
+        "-vf",
+        f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
+        f"{qr_codes_dir}/%05d.jpg",
     )
     procs = []
     for file in sorted(qr_codes_dir.iterdir()):
@@ -332,42 +333,25 @@ def read_qr_codes(path: Path, crop: Crop | None = None) -> List[QrCode]:
 
 
 def extract_ltc_wav(path: Path, output: Path):
-    _run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-nostdin",
-            "-y",
-            "-i",
-            str(path),
-            "-vn",
-            "-map",
-            "0:a:0",
-            "-c:a",
-            "pcm_s16le",
-            str(output),
-        ]
+    ffmpeg_run(
+        "-i", str(path), "-vn", "-map", "0:a:0", "-c:a", "pcm_s16le", str(output)
     )
 
 
 def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
-    command = ["ffmpeg", "-hide_banner", "-nostdin", "-i", str(path), "-vf"]
+    args = ["-i", str(path), "-vf"]
     filters = []
     if crop is not None:
         filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")
     filters.append("mpdecimate")
     filtered_path = path.with_suffix(f".{"-".join(filters)}-filtered.mp4")
-    command += [", ".join(filters), "-an", str(filtered_path)]
-    _run(command)
+    args += [", ".join(filters), "-an", str(filtered_path)]
+    ffmpeg_run(*args)
     return filtered_path
 
 
 def create_qr_codes_video(output_file: Path):
-    command = [
-        "ffmpeg",
-        "-hide_banner",
-        "-nostdin",
-        "-y",
+    ffmpeg_run(
         "-t",
         "10",
         "-f",
@@ -391,5 +375,4 @@ def create_qr_codes_video(output_file: Path):
         "-vf",
         "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=0",
         str(output_file),
-    ]
-    _run(command)
+    )
