@@ -8,6 +8,20 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.11.0", date: "2026-07-05", changes: [
+        "- Only show \"Failed to fetch youtube video ids\" toast when youtube is configured.",
+        "- Make talkback work after app has been in background. 🐛 Rick9K",
+        "- Better audio handling in MPEG-TS reader. 🐛 Testlin",
+        "- Non-blocking official SRT send so app does not hang when pushing lots of data. 🐛 Testlin",
+        "- Chinese Taiwan translation updated. ✍️ 一人HitoriGS",
+        "- Russian translation updated. ✍️ Murrito",
+        "- Do not show frozen first frame when ingest connects.",
+        "- Replace copy button with share and/or QR code buttons. 💡 JohannesLiv, codemonkeybb and others",
+        "- Scrollable debug log share view. 🐛🧑‍🏭 xcopy94",
+        "- Debug toggle to enable/disable SRT(LA) packet padding. 💡🧑‍🏭 grimfoss",
+        "  - Disabled by default.",
+        "- Keep SRT(LA) URL query parameters entered in create stream wizard. 🐛 grimfoss",
+    ]),
     Version(version: "33.10.0", date: "2026-06-26", changes: [
         "• Single line moderator chat messages and less noticeable replies. 💡 Landy's secret streamer",
         "• Do not include moderator messages in alerts chat filter.",
