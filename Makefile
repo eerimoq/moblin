@@ -45,6 +45,8 @@ CODE_DIRS += "Moblin Screen Recording"
 CODE_DIRS += "MoblinTests"
 CODE_DIRS += "WebRemoteControlFrontend"
 
+CONFIG_TOML ?= config.toml
+
 SHELL = /usr/bin/env bash
 
 .PHONY: test
@@ -82,7 +84,7 @@ test:
 	cd test && \
 	rm -rf logs files mediamtx.log && \
 	mkdir -p files && \
-	python main.py config.toml $(TEST_ARGS)
+	python main.py $(CONFIG_TOML) $(TEST_ARGS)
 
 test-generate-device-settings-clipboard:
 	cd test && \
