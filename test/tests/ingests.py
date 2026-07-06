@@ -5,6 +5,9 @@ from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.recorder import Recorder
 from utils.test_case import TestCase
+from utils.utils import RIST_SERVER_PORT
+from utils.utils import RTMP_SERVER_PORT
+from utils.utils import SRTLA_SERVER_PORT
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +17,9 @@ class IngestRtmpServer(TestCase):
 
     def run(self):
         self.moblin.set_scene("RTMP")
-        stream = FfmpegTestStream(url=f"rtmp://{self.moblin.ip_address}:11935/live/1")
+        stream = FfmpegTestStream(
+            url=f"rtmp://{self.moblin.ip_address}:{RTMP_SERVER_PORT}/live/1"
+        )
         recorder = Recorder(self.moblin, "IngestRtmpServer.mp4")
         with stream:
             self.wait_for_ingest_stream_started()
@@ -34,7 +39,7 @@ class IngestSrtServer(TestCase):
     def run(self):
         self.moblin.set_scene("SRT")
         stream = FfmpegTestStream(
-            url=f"srt://{self.moblin.ip_address}:4000?streamid=1",
+            url=f"srt://{self.moblin.ip_address}:{SRTLA_SERVER_PORT}?streamid=1",
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestSrtServer.mp4")
@@ -78,7 +83,7 @@ class IngestRistServer(TestCase):
     def run(self):
         self.moblin.set_scene("RIST")
         stream = FfmpegTestStream(
-            url=f"rist://{self.moblin.ip_address}:6500?virt-dst-port=1",
+            url=f"rist://{self.moblin.ip_address}:{RIST_SERVER_PORT}?virt-dst-port=1",
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestRistServer.mp4")
