@@ -111,3 +111,4 @@ test/tests/websites/*.mp4
 test/config.toml
 FfmpegTestStream.wav
 test/ltc.wav
+*~
