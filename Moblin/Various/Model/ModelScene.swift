@@ -338,12 +338,30 @@ extension Model {
         scene.fillFrame
     }
 
+    func widgetsInCurrentSceneOrRemoteScene(onlyEnabled: Bool) -> [WidgetInScene] {
+        var widgets: [WidgetInScene] = []
+        if let scene = getSelectedScene() {
+            widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
+        }
+        if let remoteSceneId = database.remoteSceneId,
+           let scene = database.scenes.first(where: { $0.id == remoteSceneId })
+        {
+            widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
+        }
+        return removeDuplicatedWidgets(widgets: widgets)
+    }
+
     func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
         guard let scene = getSelectedScene() else {
             return []
         }
+        let widgets = getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
+        return removeDuplicatedWidgets(widgets: widgets)
+    }
+
+    private func removeDuplicatedWidgets(widgets: [WidgetInScene]) -> [WidgetInScene] {
         var found: [UUID] = []
-        return getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled).filter {
+        return widgets.filter {
             if found.contains($0.widget.id) {
                 return false
             } else {

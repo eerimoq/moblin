@@ -1228,7 +1228,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGForceManagerNeeded() -> Bool {
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
+        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
             guard widget.widget.type == .text else {
                 continue
             }
@@ -1286,7 +1286,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWeatherNeeded() -> Bool {
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
+        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
             switch widget.widget.type {
             case .text:
                 if widget.widget.text.needsWeather {
@@ -1311,7 +1311,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGeographyNeeded() -> Bool {
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
+        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
             switch widget.widget.type {
             case .text:
                 if widget.widget.text.needsGeography {
