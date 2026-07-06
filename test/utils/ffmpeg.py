@@ -87,7 +87,7 @@ class FfmpegTestStream(FfmpegCommand):
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
-        self._audio_file = Path("FfmpegTestStream.wav")
+        self._audio_file = Path("files/FfmpegTestStream.wav")
         self.enusure_audio_file_exists()
 
     def enusure_audio_file_exists(self):

@@ -159,7 +159,7 @@ class TestCase(systest.TestCase):
     def _assert_audio_time_codes(self, recording: Path, has_audio_time_codes: bool):
         if not has_audio_time_codes:
             return
-        ltc_wav = Path("ltc.wav")
+        ltc_wav = Path("files/ltc.wav")
         extract_ltc_wav(recording, ltc_wav)
         output = subprocess.run(
             ["ltcdump", "--fps", "30", ltc_wav],
