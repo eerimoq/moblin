@@ -37,7 +37,7 @@ def main():
             stream.tests(moblin),
             browser_widget.tests(moblin),
         )
-    sequencer.report_and_exit()
+    sequencer.report_and_exit(json=False, dot=False)
 
 
 main()
