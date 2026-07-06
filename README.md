@@ -431,11 +431,24 @@ Roughly the steps to setup Moblin's developement environment.
 
 1. Install tools.
 
-    `brew install swiftlint swiftformat periphery codespell oxfmt oxlint`
+   ```
+   brew install swiftlint
+   brew install swiftformat
+   brew install codespell
+   brew install oxfmt
+   brew install oxlint
+   brew install python3.14
+   python3.14 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt -U
+   ```
 
 2. Perform styling, linting and more.
 
-   `make style lint spell-check periphery`
+   ```
+   source .venv/bin/activate       # Once per shell is enough.
+   make style lint spell-check
+   ```
 
 3. Done!
 
