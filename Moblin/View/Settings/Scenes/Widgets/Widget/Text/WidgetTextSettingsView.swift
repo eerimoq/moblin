@@ -1520,17 +1520,19 @@ struct WidgetTextSettingsView: View {
                         .lineLimit(1)
                 }
             }
-            Picker("Design", selection: $text.fontDesign) {
-                ForEach(SettingsFontDesign.allCases, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
+            if text.fontFamily.isEmpty {
+                Picker("Design", selection: $text.fontDesign) {
+                    ForEach(SettingsFontDesign.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
+                    }
                 }
-            }
-            .onChange(of: text.fontDesign) { _ in
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setFontDesign(design: text.fontDesign.toSystem())
+                .onChange(of: text.fontDesign) { _ in
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setFontDesign(design: text.fontDesign.toSystem())
+                    }
+                    model.remoteSceneSettingsUpdated()
                 }
-                model.remoteSceneSettingsUpdated()
             }
             Picker("Weight", selection: $text.fontWeight) {
                 ForEach(SettingsFontWeight.allCases, id: \.self) {
