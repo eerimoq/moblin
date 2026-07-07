@@ -1,3 +1,4 @@
+import CoreText
 import PhotosUI
 import SwiftUI
 @preconcurrency import Translation
@@ -1504,9 +1505,11 @@ struct WidgetTextSettingsView: View {
             NavigationLink {
                 FontFamilyPickerView(
                     selectedFontFamily: $text.fontFamily,
+                    selectedFontStyle: $text.fontStyle,
                     onChange: {
                         for effect in model.getTextEffects(id: widget.id) {
                             effect.setFontFamily(family: text.fontFamily)
+                            effect.setFontStyle(style: text.fontStyle)
                         }
                         model.remoteSceneSettingsUpdated()
                     }
@@ -1518,6 +1521,28 @@ struct WidgetTextSettingsView: View {
                     Text(text.fontFamily.isEmpty ? String(localized: "System") : text.fontFamily)
                         .foregroundColor(.secondary)
                         .lineLimit(1)
+                }
+            }
+            if !text.fontFamily.isEmpty {
+                NavigationLink {
+                    FontStylePickerView(
+                        fontFamily: text.fontFamily,
+                        selectedFontStyle: $text.fontStyle,
+                        onChange: {
+                            for effect in model.getTextEffects(id: widget.id) {
+                                effect.setFontStyle(style: text.fontStyle)
+                            }
+                            model.remoteSceneSettingsUpdated()
+                        }
+                    )
+                } label: {
+                    HStack {
+                        Text("Style")
+                        Spacer()
+                        Text(text.fontStyle.isEmpty ? String(localized: "Default") : text.fontStyle)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
                 }
             }
             if text.fontFamily.isEmpty {
@@ -1534,17 +1559,19 @@ struct WidgetTextSettingsView: View {
                     model.remoteSceneSettingsUpdated()
                 }
             }
-            Picker("Weight", selection: $text.fontWeight) {
-                ForEach(SettingsFontWeight.allCases, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
+            if text.fontStyle.isEmpty {
+                Picker("Weight", selection: $text.fontWeight) {
+                    ForEach(SettingsFontWeight.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
+                    }
                 }
-            }
-            .onChange(of: text.fontWeight) { _ in
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setFontWeight(weight: text.fontWeight.toSystem())
+                .onChange(of: text.fontWeight) { _ in
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setFontWeight(weight: text.fontWeight.toSystem())
+                    }
+                    model.remoteSceneSettingsUpdated()
                 }
-                model.remoteSceneSettingsUpdated()
             }
             Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
                 .onChange(of: text.fontMonospacedDigits) { _ in
@@ -1625,11 +1652,24 @@ struct WidgetTextSettingsView: View {
 
 private struct FontFamilyPickerView: View {
     @Binding var selectedFontFamily: String
+    @Binding var selectedFontStyle: String
     var onChange: () -> Void
     @State private var searchText = ""
 
     private var fontFamilies: [String] {
-        UIFont.familyNames.sorted()
+        var families = Set(UIFont.familyNames)
+        let collection = CTFontCollectionCreateFromAvailableFonts(nil)
+        if let descriptors = CTFontCollectionCreateMatchingFontDescriptors(collection) as? [CTFontDescriptor] {
+            for descriptor in descriptors {
+                if let family = CTFontDescriptorCopyAttribute(
+                    descriptor,
+                    kCTFontFamilyNameAttribute
+                ) as? String {
+                    families.insert(family)
+                }
+            }
+        }
+        return families.sorted()
     }
 
     private var filteredFontFamilies: [String] {
@@ -1643,6 +1683,7 @@ private struct FontFamilyPickerView: View {
         List {
             Button {
                 selectedFontFamily = ""
+                selectedFontStyle = ""
                 onChange()
             } label: {
                 HStack {
@@ -1656,6 +1697,7 @@ private struct FontFamilyPickerView: View {
             ForEach(filteredFontFamilies, id: \.self) { family in
                 Button {
                     selectedFontFamily = family
+                    selectedFontStyle = ""
                     onChange()
                 } label: {
                     HStack {
@@ -1671,5 +1713,58 @@ private struct FontFamilyPickerView: View {
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Font family")
+    }
+}
+
+private struct FontStylePickerView: View {
+    var fontFamily: String
+    @Binding var selectedFontStyle: String
+    var onChange: () -> Void
+
+    private var fontStyles: [String] {
+        UIFont.fontNames(forFamilyName: fontFamily).sorted()
+    }
+
+    var body: some View {
+        List {
+            Button {
+                selectedFontStyle = ""
+                onChange()
+            } label: {
+                HStack {
+                    Text("Default")
+                    Spacer()
+                    if selectedFontStyle.isEmpty {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+            ForEach(fontStyles, id: \.self) { style in
+                Button {
+                    selectedFontStyle = style
+                    onChange()
+                } label: {
+                    HStack {
+                        Text(styleName(style))
+                            .font(.custom(style, size: 17))
+                        Spacer()
+                        if selectedFontStyle == style {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Font style")
+    }
+
+    private func styleName(_ fontName: String) -> String {
+        let prefix = fontFamily.replacingOccurrences(of: " ", with: "")
+        let name = fontName.replacingOccurrences(of: "-", with: "")
+        if name.hasPrefix(prefix) {
+            let suffix = String(name.dropFirst(prefix.count))
+            return suffix.isEmpty ? "Regular" : suffix
+        }
+        return fontName
     }
 }
