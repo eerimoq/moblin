@@ -443,6 +443,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     let foregroundColor: RgbColor
     let clearForegroundColor: Bool
     let fontSize: Int
+    let fontFamily: String?
     let fontDesign: SettingsFontDesign
     let fontWeight: SettingsFontWeight
     let fontMonospacedDigits: Bool
@@ -456,6 +457,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         foregroundColor = text.foregroundColor
         clearForegroundColor = text.clearForegroundColor
         fontSize = text.fontSize
+        fontFamily = text.fontFamily
         fontDesign = text.fontDesign
         fontWeight = text.fontWeight
         fontMonospacedDigits = text.fontMonospacedDigits
@@ -471,6 +473,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         text.foregroundColor = foregroundColor
         text.clearForegroundColor = clearForegroundColor
         text.fontSize = fontSize
+        text.fontFamily = fontFamily ?? ""
         text.fontDesign = fontDesign
         text.fontWeight = fontWeight
         text.fontMonospacedDigits = fontMonospacedDigits

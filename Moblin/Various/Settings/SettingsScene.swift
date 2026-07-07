@@ -755,6 +755,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     var clearForegroundColor: Bool = false
     var fontSize: Int = 30
     @Published var fontSizeFloat: Float
+    @Published var fontFamily: String = ""
     @Published var fontDesign: SettingsFontDesign = .default
     @Published var fontWeight: SettingsFontWeight = .regular
     @Published var fontMonospacedDigits: Bool = false
@@ -783,6 +784,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         case foregroundColor
         case clearForegroundColor
         case fontSize
+        case fontFamily
         case fontDesign
         case fontWeight
         case fontMonospacedDigits
@@ -819,6 +821,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.foregroundColor, foregroundColor)
         try container.encode(.clearForegroundColor, clearForegroundColor)
         try container.encode(.fontSize, fontSize)
+        try container.encode(.fontFamily, fontFamily)
         try container.encode(.fontDesign, fontDesign)
         try container.encode(.fontWeight, fontWeight)
         try container.encode(.fontMonospacedDigits, fontMonospacedDigits)
@@ -860,6 +863,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
         fontSize = container.decode(.fontSize, Int.self, 30)
         fontSizeFloat = Float(fontSize)
+        fontFamily = container.decode(.fontFamily, String.self, "")
         fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .default)
         fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
         fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)

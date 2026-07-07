@@ -48,6 +48,7 @@ struct TextEffectStats {
 
 private class TextViewState: ObservableObject {
     @Published var fontSize: CGFloat
+    @Published var fontFamily: String
     @Published var fontDesign: Font.Design
     @Published var fontWeight: Font.Weight
     @Published var fontMonospacedDigits: Bool
@@ -60,6 +61,7 @@ private class TextViewState: ObservableObject {
     @Published var lines: [TextEffectLine]
 
     init(fontSize: CGFloat,
+         fontFamily: String,
          fontDesign: Font.Design,
          fontWeight: Font.Weight,
          fontMonospacedDigits: Bool,
@@ -71,6 +73,7 @@ private class TextViewState: ObservableObject {
          lines: [TextEffectLine])
     {
         self.fontSize = fontSize
+        self.fontFamily = fontFamily
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
         self.fontMonospacedDigits = fontMonospacedDigits
@@ -140,11 +143,10 @@ private struct TextView: View {
                     .cornerRadius(state.cornerRadius)
                 }
             }
-            .font(.system(
-                size: fontSize,
-                weight: state.fontWeight,
-                design: state.fontDesign
-            ))
+            .font(state.fontFamily.isEmpty
+                ? .system(size: fontSize, weight: state.fontWeight, design: state.fontDesign)
+                : .custom(state.fontFamily, size: fontSize))
+            .fontWeight(state.fontFamily.isEmpty ? nil : state.fontWeight)
             if state.fontMonospacedDigits {
                 stack.monospacedDigit()
             } else {
@@ -173,6 +175,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         backgroundColor: RgbColor,
         foregroundColor: RgbColor,
         fontSize: CGFloat,
+        fontFamily: String,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
         fontMonospacedDigits: Bool,
@@ -194,6 +197,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
                                         lapTimes: lapTimes)
         sceneWidget = SettingsSceneWidget(widgetId: .init())
         state = TextViewState(fontSize: fontSize,
+                              fontFamily: fontFamily,
                               fontDesign: fontDesign,
                               fontWeight: fontWeight,
                               fontMonospacedDigits: fontMonospacedDigits,
@@ -248,6 +252,10 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
 
     func setFontSize(size: CGFloat) {
         state.fontSize = size
+    }
+
+    func setFontFamily(family: String) {
+        state.fontFamily = family
     }
 
     func setFontDesign(design: Font.Design) {

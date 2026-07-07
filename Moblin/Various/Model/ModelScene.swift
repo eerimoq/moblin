@@ -722,6 +722,7 @@ extension Model {
             backgroundColor: widget.text.backgroundColor,
             foregroundColor: widget.text.foregroundColor,
             fontSize: CGFloat(widget.text.fontSize),
+            fontFamily: widget.text.fontFamily,
             fontDesign: widget.text.fontDesign.toSystem(),
             fontWeight: widget.text.fontWeight.toSystem(),
             fontMonospacedDigits: widget.text.fontMonospacedDigits,

@@ -1,6 +1,7 @@
 import PhotosUI
 import SwiftUI
 @preconcurrency import Translation
+import UIKit
 
 private struct Suggestion: Identifiable {
     let id: Int
@@ -1500,6 +1501,25 @@ struct WidgetTextSettingsView: View {
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
+            NavigationLink {
+                FontFamilyPickerView(
+                    selectedFontFamily: $text.fontFamily,
+                    onChange: {
+                        for effect in model.getTextEffects(id: widget.id) {
+                            effect.setFontFamily(family: text.fontFamily)
+                        }
+                        model.remoteSceneSettingsUpdated()
+                    }
+                )
+            } label: {
+                HStack {
+                    Text("Family")
+                    Spacer()
+                    Text(text.fontFamily.isEmpty ? String(localized: "System") : text.fontFamily)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
             Picker("Design", selection: $text.fontDesign) {
                 ForEach(SettingsFontDesign.allCases, id: \.self) {
                     Text($0.toString())
@@ -1598,5 +1618,56 @@ struct WidgetTextSettingsView: View {
         } footer: {
             Text("To show the widget in sync with high latency cameras.")
         }
+    }
+}
+
+private struct FontFamilyPickerView: View {
+    @Binding var selectedFontFamily: String
+    var onChange: () -> Void
+    @State private var searchText = ""
+
+    private var fontFamilies: [String] {
+        UIFont.familyNames.sorted()
+    }
+
+    private var filteredFontFamilies: [String] {
+        if searchText.isEmpty {
+            return fontFamilies
+        }
+        return fontFamilies.filter { $0.localizedCaseInsensitiveContains(searchText) }
+    }
+
+    var body: some View {
+        List {
+            Button {
+                selectedFontFamily = ""
+                onChange()
+            } label: {
+                HStack {
+                    Text("System")
+                    Spacer()
+                    if selectedFontFamily.isEmpty {
+                        Image(systemName: "checkmark")
+                    }
+                }
+            }
+            ForEach(filteredFontFamilies, id: \.self) { family in
+                Button {
+                    selectedFontFamily = family
+                    onChange()
+                } label: {
+                    HStack {
+                        Text(family)
+                            .font(.custom(family, size: 17))
+                        Spacer()
+                        if selectedFontFamily == family {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        }
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+        .navigationTitle("Font family")
     }
 }
