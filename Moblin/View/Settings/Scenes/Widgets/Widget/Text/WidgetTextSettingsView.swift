@@ -1,6 +1,8 @@
+import CoreText
 import PhotosUI
 import SwiftUI
 @preconcurrency import Translation
+import UIKit
 
 private struct Suggestion: Identifiable {
     let id: Int
@@ -1302,6 +1304,113 @@ struct TextWidgetSuggestionsView: View {
     }
 }
 
+private struct FontFamilyPickerView: View {
+    @Binding var selectedFontFamily: String?
+    var onChange: () -> Void
+    @State private var fontFamilies: [String] = []
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    HStack {
+                        Text("System")
+                        Spacer()
+                        Button {
+                            selectedFontFamily = nil
+                            onChange()
+                        } label: {
+                            if selectedFontFamily == nil {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                    ForEach(fontFamilies, id: \.self) { family in
+                        HStack {
+                            Text(family)
+                                .font(.custom(family, size: 17))
+                            Spacer()
+                            Button {
+                                selectedFontFamily = family
+                                onChange()
+                            } label: {
+                                if selectedFontFamily == family {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Family")
+        .onAppear {
+            if fontFamilies.isEmpty {
+                fontFamilies = Self.loadFontFamilies()
+            }
+        }
+    }
+
+    private static func loadFontFamilies() -> [String] {
+        var families = Set(UIFont.familyNames)
+        let collection = CTFontCollectionCreateFromAvailableFonts(nil)
+        if let descriptors =
+            CTFontCollectionCreateMatchingFontDescriptors(collection) as? [CTFontDescriptor]
+        {
+            for descriptor in descriptors {
+                if let family = CTFontDescriptorCopyAttribute(
+                    descriptor,
+                    kCTFontFamilyNameAttribute
+                ) as? String {
+                    families.insert(family)
+                }
+            }
+        }
+        return families.sorted()
+    }
+}
+
+func fontStyleName(family: String, fontName: String) -> String {
+    let prefix = family.replacingOccurrences(of: " ", with: "")
+    let name = fontName.replacingOccurrences(of: "-", with: "")
+    if name.hasPrefix(prefix) {
+        let suffix = String(name.dropFirst(prefix.count))
+        return suffix.isEmpty ? "Regular" : suffix
+    }
+    return fontName
+}
+
+private struct FontStylePickerView: View {
+    var fontFamily: String
+    @Binding var selectedFontStyle: String
+    var onChange: () -> Void
+
+    private func fontStyles() -> [String] {
+        UIFont.fontNames(forFamilyName: fontFamily)
+    }
+
+    var body: some View {
+        List {
+            ForEach(fontStyles(), id: \.self) { style in
+                HStack {
+                    Text(fontStyleName(family: fontFamily, fontName: style))
+                        .font(.custom(style, size: 17))
+                    Spacer()
+                    Button {
+                        selectedFontStyle = style
+                        onChange()
+                    } label: {
+                        if selectedFontStyle == style {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Style")
+    }
+}
+
 struct WidgetTextSettingsView: View {
     @EnvironmentObject var model: Model
     let widget: SettingsWidget
@@ -1500,37 +1609,80 @@ struct WidgetTextSettingsView: View {
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
-            Picker("Design", selection: $text.fontDesign) {
-                ForEach(SettingsFontDesign.allCases, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
+            NavigationLink {
+                FontFamilyPickerView(
+                    selectedFontFamily: $text.fontFamily,
+                    onChange: {
+                        if let fontFamily = text.fontFamily {
+                            text.fontStyle = UIFont.fontNames(forFamilyName: fontFamily).first ?? ""
+                        }
+                        for effect in model.getTextEffects(id: widget.id) {
+                            effect.setFontFamily(family: text.fontFamily)
+                            effect.setFontStyle(style: text.fontStyle)
+                        }
+                        model.remoteSceneSettingsUpdated()
+                    }
+                )
+            } label: {
+                HStack {
+                    Text("Family")
+                    Spacer()
+                    GrayTextView(text: text.fontFamilyString())
                 }
             }
-            .onChange(of: text.fontDesign) { _ in
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setFontDesign(design: text.fontDesign.toSystem())
+            if let fontFamily = text.fontFamily {
+                NavigationLink {
+                    FontStylePickerView(
+                        fontFamily: fontFamily,
+                        selectedFontStyle: $text.fontStyle,
+                        onChange: {
+                            for effect in model.getTextEffects(id: widget.id) {
+                                effect.setFontStyle(style: text.fontStyle)
+                            }
+                            model.remoteSceneSettingsUpdated()
+                        }
+                    )
+                } label: {
+                    HStack {
+                        Text("Style")
+                        Spacer()
+                        GrayTextView(text: text.fontStyleString())
+                    }
                 }
-                model.remoteSceneSettingsUpdated()
-            }
-            Picker("Weight", selection: $text.fontWeight) {
-                ForEach(SettingsFontWeight.allCases, id: \.self) {
-                    Text($0.toString())
-                        .tag($0)
+                .disabled(UIFont.fontNames(forFamilyName: fontFamily).count == 1)
+            } else {
+                Picker("Design", selection: $text.fontDesign) {
+                    ForEach(SettingsFontDesign.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
+                    }
                 }
-            }
-            .onChange(of: text.fontWeight) { _ in
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setFontWeight(weight: text.fontWeight.toSystem())
-                }
-                model.remoteSceneSettingsUpdated()
-            }
-            Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
-                .onChange(of: text.fontMonospacedDigits) { _ in
+                .onChange(of: text.fontDesign) { _ in
                     for effect in model.getTextEffects(id: widget.id) {
-                        effect.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
+                        effect.setFontDesign(design: text.fontDesign.toSystem())
                     }
                     model.remoteSceneSettingsUpdated()
                 }
+                Picker("Weight", selection: $text.fontWeight) {
+                    ForEach(SettingsFontWeight.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
+                    }
+                }
+                .onChange(of: text.fontWeight) { _ in
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setFontWeight(weight: text.fontWeight.toSystem())
+                    }
+                    model.remoteSceneSettingsUpdated()
+                }
+                Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
+                    .onChange(of: text.fontMonospacedDigits) { _ in
+                        for effect in model.getTextEffects(id: widget.id) {
+                            effect.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
+                        }
+                        model.remoteSceneSettingsUpdated()
+                    }
+            }
         } header: {
             Text("Font")
         }
