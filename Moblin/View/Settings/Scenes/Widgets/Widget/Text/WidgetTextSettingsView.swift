@@ -1655,22 +1655,7 @@ private struct FontFamilyPickerView: View {
     @Binding var selectedFontStyle: String
     var onChange: () -> Void
     @State private var searchText = ""
-
-    private var fontFamilies: [String] {
-        var families = Set(UIFont.familyNames)
-        let collection = CTFontCollectionCreateFromAvailableFonts(nil)
-        if let descriptors = CTFontCollectionCreateMatchingFontDescriptors(collection) as? [CTFontDescriptor] {
-            for descriptor in descriptors {
-                if let family = CTFontDescriptorCopyAttribute(
-                    descriptor,
-                    kCTFontFamilyNameAttribute
-                ) as? String {
-                    families.insert(family)
-                }
-            }
-        }
-        return families.sorted()
-    }
+    @State private var fontFamilies: [String] = []
 
     private var filteredFontFamilies: [String] {
         if searchText.isEmpty {
@@ -1713,6 +1698,27 @@ private struct FontFamilyPickerView: View {
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Font family")
+        .onAppear {
+            if fontFamilies.isEmpty {
+                fontFamilies = Self.loadFontFamilies()
+            }
+        }
+    }
+
+    private static func loadFontFamilies() -> [String] {
+        var families = Set(UIFont.familyNames)
+        let collection = CTFontCollectionCreateFromAvailableFonts(nil)
+        if let descriptors = CTFontCollectionCreateMatchingFontDescriptors(collection) as? [CTFontDescriptor] {
+            for descriptor in descriptors {
+                if let family = CTFontDescriptorCopyAttribute(
+                    descriptor,
+                    kCTFontFamilyNameAttribute
+                ) as? String {
+                    families.insert(family)
+                }
+            }
+        }
+        return families.sorted()
     }
 }
 
