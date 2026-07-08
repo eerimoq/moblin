@@ -559,6 +559,10 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     let altitude: Double
     let distance: Double
     let splitDistance: Double
+    let altitudeAscent: Double
+    let altitudeDescent: Double
+    let splitAltitudeAscent: Double
+    let splitAltitudeDescent: Double
     let slope: String
     let conditions: String?
     let temperature: Measurement<UnitTemperature>?
@@ -600,6 +604,10 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         altitude = stats.altitude
         distance = stats.distance
         splitDistance = stats.splitDistance
+        altitudeAscent = stats.altitudeAscent
+        altitudeDescent = stats.altitudeDescent
+        splitAltitudeAscent = stats.splitAltitudeAscent
+        splitAltitudeDescent = stats.splitAltitudeDescent
         slope = stats.slope
         conditions = stats.conditions
         temperature = stats.temperature
@@ -643,6 +651,10 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                         altitude: altitude,
                         distance: distance,
                         splitDistance: splitDistance,
+                        altitudeAscent: altitudeAscent,
+                        altitudeDescent: altitudeDescent,
+                        splitAltitudeAscent: splitAltitudeAscent,
+                        splitAltitudeDescent: splitAltitudeDescent,
                         slope: slope,
                         conditions: conditions,
                         temperature: temperature,

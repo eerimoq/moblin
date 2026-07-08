@@ -24,11 +24,17 @@ extension Model {
     private func resetDistance() {
         database.location.distance = 0.0
         database.location.splitDistance = 0.0
+        database.location.altitudeAscent = 0.0
+        database.location.altitudeDescent = 0.0
+        database.location.splitAltitudeAscent = 0.0
+        database.location.splitAltitudeDescent = 0.0
         latestKnownLocation = nil
     }
 
     func resetSplitDistance() {
         database.location.splitDistance = 0.0
+        database.location.splitAltitudeAscent = 0.0
+        database.location.splitAltitudeDescent = 0.0
     }
 
     func resetLocationData() {
@@ -88,10 +94,28 @@ extension Model {
             if distance > latestKnownLocation.horizontalAccuracy {
                 database.location.distance += distance
                 database.location.splitDistance += distance
+                updateAltitude(from: latestKnownLocation, to: location)
                 self.latestKnownLocation = location
             }
         } else {
             latestKnownLocation = location
+        }
+    }
+
+    private func updateAltitude(from: CLLocation, to: CLLocation?) {
+        guard let to, from.verticalAccuracy >= 0, to.verticalAccuracy >= 0 else {
+            return
+        }
+        let deltaAltitude = to.altitude - from.altitude
+        guard abs(deltaAltitude) > max(from.verticalAccuracy, to.verticalAccuracy) else {
+            return
+        }
+        if deltaAltitude > 0 {
+            database.location.altitudeAscent += deltaAltitude
+            database.location.splitAltitudeAscent += deltaAltitude
+        } else {
+            database.location.altitudeDescent += -deltaAltitude
+            database.location.splitAltitudeDescent += -deltaAltitude
         }
     }
 

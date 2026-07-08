@@ -121,6 +121,14 @@ class TextEffectFormatter {
                 formatDistance(stats: stats, unit: unit)
             case let .splitDistance(unit):
                 formatSplitDistance(stats: stats, unit: unit)
+            case let .altitudeAscent(unit):
+                formatAltitudeAscent(stats: stats, unit: unit)
+            case let .altitudeDescent(unit):
+                formatAltitudeDescent(stats: stats, unit: unit)
+            case let .splitAltitudeAscent(unit):
+                formatSplitAltitudeAscent(stats: stats, unit: unit)
+            case let .splitAltitudeDescent(unit):
+                formatSplitAltitudeDescent(stats: stats, unit: unit)
             case .slope:
                 formatSlope(stats: stats)
             case .timer:
@@ -264,7 +272,27 @@ class TextEffectFormatter {
     }
 
     private func formatAltitude(stats: TextEffectStats, unit: TextFormatLengthUnit) {
-        var measurement = Measurement(value: stats.altitude, unit: UnitLength.meters)
+        formatAltitude(altitude: stats.altitude, unit: unit)
+    }
+
+    private func formatAltitudeAscent(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        formatAltitude(altitude: stats.altitudeAscent, unit: unit)
+    }
+
+    private func formatAltitudeDescent(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        formatAltitude(altitude: stats.altitudeDescent, unit: unit)
+    }
+
+    private func formatSplitAltitudeAscent(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        formatAltitude(altitude: stats.splitAltitudeAscent, unit: unit)
+    }
+
+    private func formatSplitAltitudeDescent(stats: TextEffectStats, unit: TextFormatLengthUnit) {
+        formatAltitude(altitude: stats.splitAltitudeDescent, unit: unit)
+    }
+
+    private func formatAltitude(altitude: Double, unit: TextFormatLengthUnit) {
+        var measurement = Measurement(value: altitude, unit: UnitLength.meters)
         switch unit {
         case .system:
             if UnitLength(forLocale: .current) == .feet {

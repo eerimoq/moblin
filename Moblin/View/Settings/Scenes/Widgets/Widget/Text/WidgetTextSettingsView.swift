@@ -883,6 +883,50 @@ private struct LocationVariablesView: View {
                                                ),
                                                variable: "splitDistance",
                                                text: $value)
+                    VariableView(
+                        title: "{altitudeAscent}",
+                        description: String(localized: "Show altitude ascent"),
+                        text: $value
+                    )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(
+                                                   localized: "Show altitude ascent in given unit"
+                                               ),
+                                               variable: "altitudeAscent",
+                                               text: $value)
+                    VariableView(
+                        title: "{altitudeDescent}",
+                        description: String(localized: "Show altitude descent"),
+                        text: $value
+                    )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(
+                                                   localized: "Show altitude descent in given unit"
+                                               ),
+                                               variable: "altitudeDescent",
+                                               text: $value)
+                    VariableView(
+                        title: "{splitAltitudeAscent}",
+                        description: String(localized: "Show split altitude ascent"),
+                        text: $value
+                    )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(
+                                                   localized: "Show split altitude ascent in given unit"
+                                               ),
+                                               variable: "splitAltitudeAscent",
+                                               text: $value)
+                    VariableView(
+                        title: "{splitAltitudeDescent}",
+                        description: String(localized: "Show split altitude descent"),
+                        text: $value
+                    )
+                    VariableWithLengthUnitView(model: model,
+                                               description: String(
+                                                   localized: "Show split altitude descent in given unit"
+                                               ),
+                                               variable: "splitAltitudeDescent",
+                                               text: $value)
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
                 }
             }
