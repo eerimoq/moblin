@@ -269,7 +269,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.location,
             command: command
         ) {
-            self.resetSplitDistance()
+            self.resetSplitLocationData()
         }
     }
 

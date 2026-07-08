@@ -21,34 +21,20 @@ extension Model {
         reloadRealtimeIrl()
     }
 
-    private func resetDistance() {
-        database.location.distance = 0.0
-        database.location.splitDistance = 0.0
-        latestKnownLocation = nil
-    }
-
-    func resetSplitDistance() {
-        database.location.splitDistance = 0.0
-    }
-
     func resetLocationData() {
         resetDistance()
+        resetAltitude()
         resetAverageSpeed()
         resetSlope()
     }
 
-    func isLocationEnabled() -> Bool {
-        database.location.enabled
+    func resetSplitLocationData() {
+        resetSplitDistance()
+        resetSplitAltitude()
     }
 
-    private func handleLocationUpdate(location: CLLocation) {
-        guard isLive else {
-            return
-        }
-        guard !isLocationInPrivacyRegion(location: location) else {
-            return
-        }
-        realtimeIrl?.update(location: location)
+    func isLocationEnabled() -> Bool {
+        database.location.enabled
     }
 
     func isLocationInPrivacyRegion(location: CLLocation) -> Bool {
@@ -95,6 +81,28 @@ extension Model {
         }
     }
 
+    func updateAltitude() {
+        guard let location = locationManager.getLatestKnownLocation(), location.verticalAccuracy > 0 else {
+            return
+        }
+        guard let altitudeReference else {
+            altitudeReference = location.altitude
+            return
+        }
+        let deltaAltitude = location.altitude - altitudeReference
+        guard abs(deltaAltitude) >= max(location.verticalAccuracy, 3.0) else {
+            return
+        }
+        if deltaAltitude > 0 {
+            database.location.altitudeAscent += deltaAltitude
+            database.location.splitAltitudeAscent += deltaAltitude
+        } else {
+            database.location.altitudeDescent += -deltaAltitude
+            database.location.splitAltitudeDescent += -deltaAltitude
+        }
+        self.altitudeReference = location.altitude
+    }
+
     func resetSlope() {
         slopePercent = 0.0
         previousSlopeAltitude = nil
@@ -129,5 +137,37 @@ extension Model {
 
     func isShowingStatusLocation() -> Bool {
         database.show.location && isLocationEnabled()
+    }
+
+    private func resetDistance() {
+        database.location.distance = 0.0
+        latestKnownLocation = nil
+        resetSplitDistance()
+    }
+
+    private func resetSplitDistance() {
+        database.location.splitDistance = 0.0
+    }
+
+    private func resetAltitude() {
+        database.location.altitudeAscent = 0.0
+        database.location.altitudeDescent = 0.0
+        altitudeReference = nil
+        resetSplitAltitude()
+    }
+
+    private func resetSplitAltitude() {
+        database.location.splitAltitudeAscent = 0.0
+        database.location.splitAltitudeDescent = 0.0
+    }
+
+    private func handleLocationUpdate(location: CLLocation) {
+        guard isLive else {
+            return
+        }
+        guard !isLocationInPrivacyRegion(location: location) else {
+            return
+        }
+        realtimeIrl?.update(location: location)
     }
 }

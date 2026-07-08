@@ -239,6 +239,10 @@ enum TextFormatPart: Equatable {
     case altitude(TextFormatLengthUnit)
     case distance(TextFormatLengthUnit)
     case splitDistance(TextFormatLengthUnit)
+    case altitudeAscent(TextFormatLengthUnit)
+    case altitudeDescent(TextFormatLengthUnit)
+    case splitAltitudeAscent(TextFormatLengthUnit)
+    case splitAltitudeDescent(TextFormatLengthUnit)
     case slope
     case timer
     case stopwatch
@@ -314,6 +318,10 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendSplitDistanceIfPresent(formatFromIndex: formatFromIndex) {
@@ -415,6 +423,34 @@ class TextFormatLoader {
                                "{altitude}",
                                /{altitude:([^}]+)}/,
                                TextFormatLengthUnit.init) { .altitude($0 ?? .system) }
+    }
+
+    private func appendAltitudeAscentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{altitudeascent}",
+                               /{altitudeascent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .altitudeAscent($0 ?? .system) }
+    }
+
+    private func appendAltitudeDescentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{altitudedescent}",
+                               /{altitudedescent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .altitudeDescent($0 ?? .system) }
+    }
+
+    private func appendSplitAltitudeAscentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{splitaltitudeascent}",
+                               /{splitaltitudeascent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .splitAltitudeAscent($0 ?? .system) }
+    }
+
+    private func appendSplitAltitudeDescentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{splitaltitudedescent}",
+                               /{splitaltitudedescent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .splitAltitudeDescent($0 ?? .system) }
     }
 
     private func appendTemperatureIfPresent(formatFromIndex: String) -> Bool {
@@ -610,6 +646,16 @@ extension [TextFormatPart] {
             case .altitude:
                 return true
             case .distance:
+                return true
+            case .splitDistance:
+                return true
+            case .altitudeAscent:
+                return true
+            case .altitudeDescent:
+                return true
+            case .splitAltitudeAscent:
+                return true
+            case .splitAltitudeDescent:
                 return true
             case .slope:
                 return true
