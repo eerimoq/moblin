@@ -1,5 +1,9 @@
 import CoreLocation
 
+// GPS altitude noise is typically several meters even when verticalAccuracy is reported
+// as small, so enforce a floor on top of the reported accuracy.
+private let minimumAltitudeThreshold = 3.0
+
 extension Model {
     func updateLocation() {
         var location = locationManager.status()
@@ -29,6 +33,7 @@ extension Model {
         database.location.splitAltitudeAscent = 0.0
         database.location.splitAltitudeDescent = 0.0
         latestKnownLocation = nil
+        altitudeReference = nil
     }
 
     func resetSplitDistance() {
@@ -89,12 +94,12 @@ extension Model {
 
     func updateDistance() {
         let location = locationManager.getLatestKnownLocation()
+        updateAltitude(location: location)
         if let latestKnownLocation {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
                 database.location.distance += distance
                 database.location.splitDistance += distance
-                updateAltitude(from: latestKnownLocation, to: location)
                 self.latestKnownLocation = location
             }
         } else {
@@ -102,12 +107,20 @@ extension Model {
         }
     }
 
-    private func updateAltitude(from: CLLocation, to: CLLocation?) {
-        guard let to, from.verticalAccuracy >= 0, to.verticalAccuracy >= 0 else {
+    // Reference/threshold (hysteresis) algorithm: GPS altitude is noisy, so only commit a
+    // climb/descent once it moves past the reference point by more than the accuracy-based
+    // threshold, then move the reference. Sub-threshold jitter is ignored instead of accumulating.
+    private func updateAltitude(location: CLLocation?) {
+        guard let location, location.verticalAccuracy >= 0 else {
             return
         }
-        let deltaAltitude = to.altitude - from.altitude
-        guard abs(deltaAltitude) > max(from.verticalAccuracy, to.verticalAccuracy) else {
+        guard let altitudeReference else {
+            altitudeReference = location.altitude
+            return
+        }
+        let threshold = max(location.verticalAccuracy, minimumAltitudeThreshold)
+        let deltaAltitude = location.altitude - altitudeReference
+        guard abs(deltaAltitude) >= threshold else {
             return
         }
         if deltaAltitude > 0 {
@@ -117,6 +130,7 @@ extension Model {
             database.location.altitudeDescent += -deltaAltitude
             database.location.splitAltitudeDescent += -deltaAltitude
         }
+        self.altitudeReference = location.altitude
     }
 
     func resetSlope() {

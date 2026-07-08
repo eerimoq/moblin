@@ -651,6 +651,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var slopePercent = 0.0
     var previousSlopeAltitude: Double? = 0.0
     var previousSlopeDistance = 0.0
+    var altitudeReference: Double?
     var averageSpeed = 0.0
     var averageSpeedStartTime: ContinuousClock.Instant = .now
     var averageSpeedStartDistance = 0.0
