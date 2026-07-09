@@ -104,6 +104,7 @@ struct VkVideoLiveAlertsSettingsView: View {
         Form {
             Section {
                 Toggle("Follows", isOn: $alerts.follows)
+                Toggle("Subscriptions", isOn: $alerts.subscriptions)
                 Toggle("Rewards", isOn: $alerts.rewards)
                 Toggle("Raids", isOn: $alerts.raids)
             }

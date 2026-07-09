@@ -1131,6 +1131,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
 
 class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
     @Published var follows: Bool = true
+    @Published var subscriptions: Bool = true
     @Published var rewards: Bool = true
     @Published var raids: Bool = true
 
@@ -1138,6 +1139,7 @@ class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case follows
+        case subscriptions
         case rewards
         case raids
     }
@@ -1145,6 +1147,7 @@ class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.follows, follows)
+        try container.encode(.subscriptions, subscriptions)
         try container.encode(.rewards, rewards)
         try container.encode(.raids, raids)
     }
@@ -1152,6 +1155,7 @@ class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         follows = container.decode(.follows, Bool.self, true)
+        subscriptions = container.decode(.subscriptions, Bool.self, true)
         rewards = container.decode(.rewards, Bool.self, true)
         raids = container.decode(.raids, Bool.self, true)
     }
@@ -1159,6 +1163,7 @@ class SettingsVkVideoLiveAlerts: Codable, ObservableObject {
     func clone() -> SettingsVkVideoLiveAlerts {
         let new = SettingsVkVideoLiveAlerts()
         new.follows = follows
+        new.subscriptions = subscriptions
         new.rewards = rewards
         new.raids = raids
         return new

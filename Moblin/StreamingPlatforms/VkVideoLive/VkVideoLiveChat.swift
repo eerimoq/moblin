@@ -72,6 +72,8 @@ private let chatMessageSendEventType = "channel_chat_message_send"
 private let chatMessageDeleteEventType = "channel_chat_message_delete"
 private let followCreateEventType = "channel_follow_create"
 private let raidIncomeEventType = "channel_raid_income"
+private let subscriptionCreateEventType = "channel_subscription_create"
+private let subscriberBadgeAchievementNamePrefix = "subscription"
 
 private struct VkVideoLiveEvent: Decodable {
     let type: String?
@@ -121,6 +123,27 @@ private struct VkVideoLiveRaid: Decodable {
 
 private struct VkVideoLiveRaidEventData: Decodable {
     let raid: VkVideoLiveRaid
+}
+
+private struct VkVideoLiveSubscriber: Decodable {
+    let id: Int64?
+    let nick: String
+    let nick_color: Int?
+}
+
+private struct VkVideoLiveSubscriptionLevel: Decodable {
+    let id: String?
+    let name: String?
+    let price: Int?
+}
+
+private struct VkVideoLiveSubscription: Decodable {
+    let subscriber: VkVideoLiveSubscriber
+    let level: VkVideoLiveSubscriptionLevel?
+}
+
+private struct VkVideoLiveSubscriptionEventData: Decodable {
+    let subscription: VkVideoLiveSubscription
 }
 
 // Generic JSON value so event payloads can be re-decoded based on event type.
@@ -186,12 +209,14 @@ protocol VkVideoLiveChatDelegate: AnyObject {
         userColor: RgbColor?,
         userBadges: [URL],
         segments: [ChatPostSegment],
+        isSubscriber: Bool,
         isModerator: Bool,
         isOwner: Bool
     )
     func vkVideoLiveChatDeleteMessage(messageId: String)
     func vkVideoLiveChatFollow(user: String, userColor: RgbColor?)
     func vkVideoLiveChatRaid(user: String, userColor: RgbColor?, raidersCount: Int)
+    func vkVideoLiveChatSubscription(user: String, userColor: RgbColor?, levelName: String?)
     func vkVideoLiveChatRewardRedemption(
         messageId: String?,
         user: String,
@@ -471,6 +496,17 @@ final class VkVideoLiveChat: NSObject {
             } catch {
                 logger.info("vk-video-live: Failed to decode raid with error \(error)")
             }
+        case subscriptionCreateEventType:
+            do {
+                let event = try JSONDecoder().decode(VkVideoLiveSubscriptionEventData.self, from: data)
+                delegate?.vkVideoLiveChatSubscription(
+                    user: event.subscription.subscriber.nick,
+                    userColor: lookupNickColor(number: event.subscription.subscriber.nick_color),
+                    levelName: event.subscription.level?.name
+                )
+            } catch {
+                logger.info("vk-video-live: Failed to decode subscription with error \(error)")
+            }
         default:
             logger.debug("""
             vk-video-live: Unsupported event of type \(event.type ?? "-") with data \
@@ -494,9 +530,16 @@ final class VkVideoLiveChat: NSObject {
             userColor: makeNickColor(author: message.author),
             userBadges: makeBadgeUrls(author: message.author),
             segments: segments,
+            isSubscriber: isSubscriber(author: message.author),
             isModerator: message.author.is_moderator == true,
             isOwner: message.author.is_owner == true
         )
+    }
+
+    private func isSubscriber(author: VkVideoLiveMessageAuthor) -> Bool {
+        author.badges?.contains(where: {
+            $0.achievement_name?.hasPrefix(subscriberBadgeAchievementNamePrefix) == true
+        }) == true
     }
 
     // Reward redemptions are posted into the chat by the platform's internal

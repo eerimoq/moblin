@@ -252,6 +252,7 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
         userColor: RgbColor?,
         userBadges: [URL],
         segments: [ChatPostSegment],
+        isSubscriber: Bool,
         isModerator: Bool,
         isOwner: Bool
     ) {
@@ -266,7 +267,7 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
                           timestamp: statusOther.digitalClock,
                           timestampTime: .now,
                           isAction: false,
-                          isSubscriber: false,
+                          isSubscriber: isSubscriber,
                           isModerator: isModerator,
                           isOwner: isOwner,
                           bits: nil,
@@ -294,6 +295,30 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
                 color: .pink,
                 image: "medal",
                 kind: .newFollower
+            )
+        }
+    }
+
+    func vkVideoLiveChatSubscription(user: String, userColor: RgbColor?, levelName: String?) {
+        latestSubscriber = user
+        let text = if let levelName, !levelName.isEmpty {
+            String(localized: "just subscribed (\(levelName))!")
+        } else {
+            String(localized: "just subscribed!")
+        }
+        if stream.vkVideoLiveToastAlerts.subscriptions {
+            makeToast(title: "\(user) \(text)")
+        }
+        if stream.vkVideoLiveChatAlerts.subscriptions {
+            var id = 0
+            appendVkVideoLiveChatAlertMessage(
+                user: user,
+                userColor: userColor,
+                segments: makeChatPostTextSegments(text: text, id: &id),
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper",
+                kind: .redemption
             )
         }
     }
