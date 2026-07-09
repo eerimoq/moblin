@@ -107,7 +107,7 @@ extension Model {
             return
         }
         guard let altitudeReference else {
-            altitudeReference = location.altitude
+            self.altitudeReference = location.altitude
             return
         }
         let threshold = max(location.verticalAccuracy, 3.0)
@@ -115,11 +115,11 @@ extension Model {
         if deltaAltitude > threshold {
             database.location.altitudeAscent += deltaAltitude
             database.location.splitAltitudeAscent += deltaAltitude
-            altitudeReference = location.altitude
+            self.altitudeReference = location.altitude
         } else if deltaAltitude < -threshold {
             database.location.altitudeDescent += -deltaAltitude
             database.location.splitAltitudeDescent += -deltaAltitude
-            altitudeReference = location.altitude
+            self.altitudeReference = location.altitude
         }
     }
 
