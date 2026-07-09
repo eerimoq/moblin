@@ -1691,6 +1691,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         logStatus()
         updateDebugOverlay()
         updateDistance()
+        updateAltitude()
         updateSlope()
         updateAverageSpeed(now: monotonicNow)
         updateTextEffects(now: now, timestamp: monotonicNow)

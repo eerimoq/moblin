@@ -318,10 +318,10 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
-                } else if appendSplitAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
-                } else if appendSplitAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendSplitDistanceIfPresent(formatFromIndex: formatFromIndex) {
