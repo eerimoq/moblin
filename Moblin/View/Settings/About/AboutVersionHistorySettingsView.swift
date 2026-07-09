@@ -21,6 +21,8 @@ private let versions = [
         "• Debug toggle to enable/disable SRT(LA) packet padding. 💡🧑‍🏭 grimfoss",
         "  • Disabled by default.",
         "• Keep SRT(LA) URL query parameters entered in create stream wizard. 🐛 grimfoss",
+        "• Show weather and location data in text widget in remote scene. 🐛 Someone watching my stream",
+        "• Font picker in text widget.",
     ]),
     Version(version: "33.10.0", date: "2026-06-26", changes: [
         "• Single line moderator chat messages and less noticeable replies. 💡 Landy's secret streamer",
