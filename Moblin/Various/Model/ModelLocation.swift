@@ -106,20 +106,20 @@ extension Model {
         guard let location = locationManager.getLatestKnownLocation() else {
             return
         }
-        guard let altitudeReference else {
-            self.altitudeReference = location.altitude
+        guard let reference = altitudeReference else {
+            altitudeReference = location.altitude
             return
         }
         let threshold = max(location.verticalAccuracy, 3.0)
-        let deltaAltitude = location.altitude - altitudeReference
+        let deltaAltitude = location.altitude - reference
         if deltaAltitude > threshold {
             database.location.altitudeAscent += deltaAltitude
             database.location.splitAltitudeAscent += deltaAltitude
-            self.altitudeReference = location.altitude
+            altitudeReference = location.altitude
         } else if deltaAltitude < -threshold {
             database.location.altitudeDescent += -deltaAltitude
             database.location.splitAltitudeDescent += -deltaAltitude
-            self.altitudeReference = location.altitude
+            altitudeReference = location.altitude
         }
     }
 
