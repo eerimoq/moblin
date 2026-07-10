@@ -36,6 +36,8 @@
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
+		03D9A2273000B33100F462A3 /* DynamicColor in Frameworks */ = {isa = PBXBuildFile; productRef = 03D9A2263000B33100F462A3 /* DynamicColor */; };
+		03D9A2293000B41B00F462A3 /* DynamicColor in Frameworks */ = {isa = PBXBuildFile; productRef = 03D9A2283000B41B00F462A3 /* DynamicColor */; };
 		03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03DC6B162F8A1D6700E12FAB /* DockKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
@@ -311,6 +313,7 @@
 				0375F6E62F5354BE005BE7A8 /* Rist in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
+				03D9A2273000B33100F462A3 /* DynamicColor in Frameworks */,
 				035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */,
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
@@ -346,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */,
+				03D9A2293000B41B00F462A3 /* DynamicColor in Frameworks */,
 				03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -466,6 +470,7 @@
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
+				03D9A2263000B33100F462A3 /* DynamicColor */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -557,6 +562,7 @@
 			packageProductDependencies = (
 				03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */,
 				03A707B02B8EBE4D003BB7BE /* Collections */,
+				03D9A2283000B41B00F462A3 /* DynamicColor */,
 			);
 			productName = "MoblinWatch Watch App";
 			productReference = 03ECDF462B8E4E5E00BD920E /* Moblin.app */;
@@ -647,6 +653,7 @@
 				0375FD792F539AAC005BE7A8 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 				03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */,
 				035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */,
+				03D9A2253000B33100F462A3 /* XCRemoteSwiftPackageReference "DynamicColor" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1586,6 +1593,14 @@
 				minimumVersion = 0.14.0;
 			};
 		};
+		03D9A2253000B33100F462A3 /* XCRemoteSwiftPackageReference "DynamicColor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yannickl/DynamicColor.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
+			};
+		};
 		03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/CrcSwift.git";
@@ -1717,6 +1732,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */;
 			productName = SDWebImageWebPCoder;
+		};
+		03D9A2263000B33100F462A3 /* DynamicColor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D9A2253000B33100F462A3 /* XCRemoteSwiftPackageReference "DynamicColor" */;
+			productName = DynamicColor;
+		};
+		03D9A2283000B41B00F462A3 /* DynamicColor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D9A2253000B33100F462A3 /* XCRemoteSwiftPackageReference "DynamicColor" */;
+			productName = DynamicColor;
 		};
 		03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */ = {
 			isa = XCSwiftPackageProductDependency;

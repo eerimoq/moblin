@@ -5,9 +5,9 @@ import Testing
 struct UtilsSuite {
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func fullDuration() {
-        #expect(formatShortDuration(seconds: 0) == "0 sec")
+        #expect(formatShortDuration(seconds: 0) == "0 secs")
         #expect(formatShortDuration(seconds: 1) == "1 sec")
-        #expect(formatShortDuration(seconds: 30) == "30 sec")
+        #expect(formatShortDuration(seconds: 30) == "30 secs")
         #expect(formatShortDuration(seconds: 60) == "1 min")
         #expect(formatShortDuration(seconds: 120) == "2 min")
         #expect(formatShortDuration(seconds: 3600) == "1 hr")
@@ -112,5 +112,15 @@ struct UtilsSuite {
         df
         df
         """.removeAllWhitespaces() == "fdsdfdf")
+    }
+    
+    @Test
+    func isColorDark() {
+        #expect(RgbColor(red: 0, green: 0, blue: 0).isDark())
+        #expect(!RgbColor(red: 255, green: 255, blue: 255).isDark())
+        #expect(RgbColor(red: 255, green: 0, blue: 0).isDark())
+        #expect(!RgbColor(red: 0, green: 255, blue: 0).isDark())
+        #expect(RgbColor(red: 0, green: 0, blue: 255).isDark())
+        #expect(!RgbColor(red: 95, green: 134, blue: 255).isDark())
     }
 }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "d72ccb679b9bf13f273787251b7ae9687c7d12fa789914ce9187ed9a0ab1bbd4",
+  "originHash" : "a1c51e67ca98db09d9182e342ce368b47226f1d4efd415b421f88c18d8f656ff",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -44,6 +44,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "85316be8ab11dd0e76e2df604d685934ab697ee7"
+      }
+    },
+    {
+      "identity" : "dynamiccolor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yannickl/DynamicColor.git",
+      "state" : {
+        "revision" : "d9beca13ca85baa50ee29832d0db5129fba69630",
+        "version" : "5.0.1"
       }
     },
     {

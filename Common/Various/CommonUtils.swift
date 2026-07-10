@@ -657,6 +657,79 @@ extension String {
     }
 }
 
+private func moda(_ x: CGFloat, m: CGFloat) -> CGFloat {
+  return (x.truncatingRemainder(dividingBy: m) + m).truncatingRemainder(dividingBy: m)
+}
+
+struct HSL {
+    var h: CGFloat = 0.0
+    var s: CGFloat = 0.0
+    var l: CGFloat = 0.0
+    
+    init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
+        h = hue.truncatingRemainder(dividingBy: 360.0) / 360.0
+        s = saturation.clamped(to: 0 ... 1)
+        l = lightness.clamped(to: 0...1)
+    }
+    
+    init(color: RgbColor) {
+        let red = CGFloat(color.red) / 255
+        let green = CGFloat(color.green) / 255
+        let blue = CGFloat(color.blue) / 255
+        let maximum = max(red, max(green, blue))
+        let minimum = min(red, min(green, blue))
+        let delta = maximum - minimum
+        h = 0.0
+        s = 0.0
+        l = (maximum + minimum) / 2.0
+        
+        if delta != 0.0 {
+            if l < 0.5 {
+                s = delta / (maximum + minimum)
+            }
+            else {
+                s = delta / (2.0 - maximum - minimum)
+            }
+            
+            if red == maximum {
+                h = ((green - blue) / delta) + (green < blue ? 6.0 : 0.0)
+            }
+            else if green == maximum {
+                h = ((blue - red) / delta) + 2.0
+            }
+            else if blue == maximum {
+                h = ((red - green) / delta) + 4.0
+            }
+        }
+        h /= 6.0
+    }
+    
+    func lighter(amount: CGFloat) -> HSL {
+      return HSL(hue: h * 360.0, saturation: s, lightness: l + amount)
+    }
+    
+    func toRgbColor() -> RgbColor {
+      let m2 = l <= 0.5 ? l * (s + 1.0) : (l + s) - (l * s)
+      let m1 = (l * 2.0) - m2
+      let r = hueToRGB(m1: m1, m2: m2, h: h + (1.0 / 3.0))
+      let g = hueToRGB(m1: m1, m2: m2, h: h)
+      let b = hueToRGB(m1: m1, m2: m2, h: h - (1.0 / 3.0))
+      return RgbColor(red: Int(r*255), green: Int(g*255), blue: Int(b*255), opacity: nil)
+    }
+
+    private func hueToRGB(m1: CGFloat, m2: CGFloat, h: CGFloat) -> CGFloat {
+      let hue = moda(h, m: 1)
+      if hue * 6 < 1.0 {
+        return m1 + ((m2 - m1) * hue * 6.0)
+      }      else if hue * 2.0 < 1.0 {
+        return m2
+      }      else if hue * 3.0 < 1.9999 {
+        return m1 + ((m2 - m1) * ((2.0 / 3.0) - hue) * 6.0)
+      }
+      return m1
+    }
+}
+
 struct RgbColor: Codable, Equatable {
     static let white = RgbColor(red: 255, green: 255, blue: 255)
     static let black = RgbColor(red: 0, green: 0, blue: 0)
@@ -664,7 +737,6 @@ struct RgbColor: Codable, Equatable {
     let red: Int
     let green: Int
     let blue: Int
-    // May be nil
     let opacity: Double?
 
     init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
@@ -673,13 +745,17 @@ struct RgbColor: Codable, Equatable {
         self.blue = blue
         self.opacity = opacity
     }
+    
+    func isDark() -> Bool {
+      return (red * 299) + (green * 587) + (blue * 114) < 500 * 255
+    }
 
     func makeReadableOnDarkBackground() -> RgbColor {
-        let threshold = 100
-        guard red < threshold, green < threshold, blue < threshold else {
+        if isDark() {
+            return HSL(color: self).lighter(amount: 0.2).toRgbColor()
+        } else {
             return self
         }
-        return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
     }
 
     func withOpacity(opacity: Double?) -> RgbColor {
