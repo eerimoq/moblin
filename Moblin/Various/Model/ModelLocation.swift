@@ -21,25 +21,37 @@ extension Model {
         reloadRealtimeIrl()
     }
 
-    private func resetDistance() {
-        database.location.distance = 0.0
-        database.location.splitDistance = 0.0
+    private func resetAltitude() {
         database.location.altitudeAscent = 0.0
         database.location.altitudeDescent = 0.0
         database.location.splitAltitudeAscent = 0.0
         database.location.splitAltitudeDescent = 0.0
-        latestKnownLocation = nil
         altitudeReference = nil
     }
 
-    func resetSplitDistance() {
+    private func resetDistance() {
+        database.location.distance = 0.0
         database.location.splitDistance = 0.0
+        latestKnownLocation = nil
+    }
+
+    private func resetSplitAltitude() {
         database.location.splitAltitudeAscent = 0.0
         database.location.splitAltitudeDescent = 0.0
     }
 
+    private func resetSplitDistance() {
+        database.location.splitDistance = 0.0
+    }
+
+    func resetSplitLocationData() {
+        resetSplitDistance()
+        resetSplitAltitude()
+    }
+
     func resetLocationData() {
         resetDistance()
+        resetAltitude()
         resetAverageSpeed()
         resetSlope()
     }
