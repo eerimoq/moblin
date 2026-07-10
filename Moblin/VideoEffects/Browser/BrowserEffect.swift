@@ -136,6 +136,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         server.sendSpeechToTextClear()
     }
 
+    @MainActor
+    func sendTelemetry(_ data: TelemetryData) {
+        server.sendTelemetry(data)
+    }
+
     var host: String {
         url.host() ?? "?"
     }

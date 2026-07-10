@@ -12,12 +12,44 @@ private enum PublishMessage: Codable {
 private enum SubscribeTopic: Codable {
     case chat(prefix: String?)
     case speechToText
+    case telemetry
 }
 
 private enum Message: Codable {
     case chat(message: ChatMessage)
     case speechToText(position: Int, text: String)
     case speechToTextClear
+    case telemetry(data: TelemetryData)
+}
+
+struct TelemetryData: Codable {
+    var speed: Double
+    var averageSpeed: Double
+    var altitude: Double
+    var latitude: Double?
+    var longitude: Double?
+    var distance: Double
+    var splitDistance: Double
+    var slopePercent: Double
+    var temperature: Double?
+    var feelsLikeTemperature: Double?
+    var windSpeed: Double?
+    var windGust: Double?
+    var country: String?
+    var countryFlag: String?
+    var state: String?
+    var area: String?
+    var city: String?
+    var neighborhood: String?
+    var heartRates: [String: Int?]
+    var activeEnergyBurned: Int?
+    var workoutDistance: Int?
+    var power: Int?
+    var stepCount: Int?
+    var cyclingPower: Int
+    var cyclingCadence: Int
+    var runningMetrics: [String: WorkoutDeviceRunningMetrics]
+    var gForce: GForce?
 }
 
 private struct ChatMessage: Codable {
@@ -60,6 +92,7 @@ private struct Chat {
 private class Subscriptions {
     var chat: Chat?
     var speechToText: Bool = false
+    var telemetry: Bool = false
 }
 
 @MainActor
@@ -124,6 +157,13 @@ class BrowserEffectServer: NSObject {
         send(message: .message(data: .speechToTextClear))
     }
 
+    func sendTelemetry(_ data: TelemetryData) {
+        guard subscriptions.telemetry else {
+            return
+        }
+        send(message: .message(data: .telemetry(data: data)))
+    }
+
     private func handlePingTimer() {
         if !gotPing {
             logger.info("browser-effect-server: Ping timeout")
@@ -184,6 +224,8 @@ class BrowserEffectServer: NSObject {
             subscriptions.chat = .init(prefix: prefix)
         case .speechToText:
             subscriptions.speechToText = true
+        case .telemetry:
+            subscriptions.telemetry = true
         }
     }
 }
