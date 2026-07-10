@@ -657,6 +657,82 @@ extension String {
     }
 }
 
+private func moda(_ x: CGFloat, m: CGFloat) -> CGFloat {
+    (x.truncatingRemainder(dividingBy: m) + m).truncatingRemainder(dividingBy: m)
+}
+
+private struct HSL {
+    var hue: CGFloat = 0.0
+    var saturation: CGFloat = 0.0
+    var lightness: CGFloat = 0.0
+
+    init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
+        self.hue = hue.truncatingRemainder(dividingBy: 360.0) / 360.0
+        self.saturation = saturation.clamped(to: 0 ... 1)
+        self.lightness = lightness.clamped(to: 0 ... 1)
+    }
+
+    init(color: RgbColor) {
+        let red = CGFloat(color.red) / 255
+        let green = CGFloat(color.green) / 255
+        let blue = CGFloat(color.blue) / 255
+        let maximum = max(red, max(green, blue))
+        let minimum = min(red, min(green, blue))
+        let delta = maximum - minimum
+        hue = 0.0
+        saturation = 0.0
+        lightness = (maximum + minimum) / 2.0
+
+        if delta != 0.0 {
+            if lightness < 0.5 {
+                saturation = delta / (maximum + minimum)
+            } else {
+                saturation = delta / (2.0 - maximum - minimum)
+            }
+            if red == maximum {
+                hue = (green - blue) / delta
+                if green < blue {
+                    hue += 6.0
+                }
+            } else if green == maximum {
+                hue = ((blue - red) / delta) + 2.0
+            } else if blue == maximum {
+                hue = ((red - green) / delta) + 4.0
+            }
+        }
+        hue /= 6.0
+    }
+
+    func lighter(amount: CGFloat) -> HSL {
+        HSL(hue: hue * 360.0, saturation: saturation, lightness: lightness + amount)
+    }
+
+    func toRgbColor() -> RgbColor {
+        let m2 = if lightness <= 0.5 {
+            lightness * (saturation + 1.0)
+        } else {
+            (lightness + saturation) - (lightness * saturation)
+        }
+        let m1 = (lightness * 2.0) - m2
+        let r = hueToRGB(m1: m1, m2: m2, h: hue + (1.0 / 3.0))
+        let g = hueToRGB(m1: m1, m2: m2, h: hue)
+        let b = hueToRGB(m1: m1, m2: m2, h: hue - (1.0 / 3.0))
+        return RgbColor(red: Int(r * 255), green: Int(g * 255), blue: Int(b * 255), opacity: nil)
+    }
+
+    private func hueToRGB(m1: CGFloat, m2: CGFloat, h: CGFloat) -> CGFloat {
+        let hue = moda(h, m: 1)
+        if hue * 6 < 1.0 {
+            return m1 + ((m2 - m1) * hue * 6.0)
+        } else if hue * 2.0 < 1.0 {
+            return m2
+        } else if hue * 3.0 < 1.9999 {
+            return m1 + ((m2 - m1) * ((2.0 / 3.0) - hue) * 6.0)
+        }
+        return m1
+    }
+}
+
 struct RgbColor: Codable, Equatable {
     static let white = RgbColor(red: 255, green: 255, blue: 255)
     static let black = RgbColor(red: 0, green: 0, blue: 0)
@@ -664,7 +740,6 @@ struct RgbColor: Codable, Equatable {
     let red: Int
     let green: Int
     let blue: Int
-    // May be nil
     let opacity: Double?
 
     init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
@@ -674,12 +749,24 @@ struct RgbColor: Codable, Equatable {
         self.opacity = opacity
     }
 
+    func isDark() -> Bool {
+        (red * 299) + (green * 587) + (blue * 114) < 500 * 255 / 2
+    }
+
     func makeReadableOnDarkBackground() -> RgbColor {
-        let threshold = 100
-        guard red < threshold, green < threshold, blue < threshold else {
-            return self
+        if true {
+            if isDark() {
+                return HSL(color: self).lighter(amount: 0.45).toRgbColor()
+            } else {
+                return self
+            }
+        } else {
+            let threshold = 100
+            guard red < threshold, green < threshold, blue < threshold else {
+                return self
+            }
+            return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
         }
-        return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
     }
 
     func withOpacity(opacity: Double?) -> RgbColor {
