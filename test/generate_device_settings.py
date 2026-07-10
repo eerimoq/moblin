@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pyperclip
 
+from utils.config import RIST_SERVER_PORT
+from utils.config import RTMP_SERVER_PORT
+from utils.config import SRTLA_SERVER_PORT
+from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
-from utils.utils import RIST_SERVER_PORT
-from utils.utils import RTMP_SERVER_PORT
-from utils.utils import SRTLA_SERVER_PORT
-from utils.utils import WEB_REMOTE_CONTROL_PORT
 from utils.utils import format_generic_stream_url_stream_name
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"

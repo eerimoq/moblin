@@ -7,10 +7,6 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 WEBSITES_ROOT = Path(__file__).parent.parent.resolve() / "tests" / "websites"
-WEB_REMOTE_CONTROL_PORT = 1180
-RTMP_SERVER_PORT = 11935
-SRTLA_SERVER_PORT = 4000
-RIST_SERVER_PORT = 6500
 
 
 def _log_stream(stream, logger: Logger, log_level):

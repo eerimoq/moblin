@@ -1,13 +1,13 @@
 import logging
 
+from utils.config import RIST_SERVER_PORT
+from utils.config import RTMP_SERVER_PORT
+from utils.config import SRTLA_SERVER_PORT
 from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.recorder import Recorder
 from utils.test_case import TestCase
-from utils.utils import RIST_SERVER_PORT
-from utils.utils import RTMP_SERVER_PORT
-from utils.utils import SRTLA_SERVER_PORT
 
 LOGGER = logging.getLogger(__name__)
 

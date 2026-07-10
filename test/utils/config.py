@@ -4,6 +4,11 @@ from typing import List
 
 from utils.utils import format_generic_stream_url_stream_name
 
+WEB_REMOTE_CONTROL_PORT = 1180
+RTMP_SERVER_PORT = 11935
+SRTLA_SERVER_PORT = 4000
+RIST_SERVER_PORT = 6500
+
 
 class Config:
     def __init__(self, config_toml: Path, device: str):

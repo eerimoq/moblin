@@ -1,10 +1,10 @@
 import logging
 import time
 
+from utils.config import RTMP_SERVER_PORT
 from utils.ffmpeg import FfmpegAudioTestStream
 from utils.moblin import Moblin
 from utils.test_case import TestCase
-from utils.utils import RTMP_SERVER_PORT
 from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
