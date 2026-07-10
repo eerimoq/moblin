@@ -112,15 +112,17 @@ extension Model {
         }
         let threshold = max(location.verticalAccuracy, 3.0)
         let deltaAltitude = location.altitude - reference
-        if deltaAltitude > threshold {
+        guard abs(deltaAltitude) >= threshold else {
+            return
+        }
+        if deltaAltitude > 0 {
             database.location.altitudeAscent += deltaAltitude
             database.location.splitAltitudeAscent += deltaAltitude
-            altitudeReference = location.altitude
-        } else if deltaAltitude < -threshold {
+        } else {
             database.location.altitudeDescent += -deltaAltitude
             database.location.splitAltitudeDescent += -deltaAltitude
-            altitudeReference = location.altitude
         }
+        altitudeReference = location.altitude
     }
 
     func resetSlope() {
