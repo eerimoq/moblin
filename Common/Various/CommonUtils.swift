@@ -675,16 +675,59 @@ struct RgbColor: Codable, Equatable {
     }
 
     func makeReadableOnDarkBackground() -> RgbColor {
-        let luminance = 0.2126 * Double(red) + 0.7152 * Double(green) + 0.0722 * Double(blue)
-        let minLuminance = 100.0
-        guard luminance < minLuminance else {
+        let r = Double(red) / 255.0
+        let g = Double(green) / 255.0
+        let b = Double(blue) / 255.0
+        let maxC = max(r, g, b)
+        let minC = min(r, g, b)
+        var h = 0.0
+        var s = 0.0
+        var l = (maxC + minC) / 2.0
+        if maxC != minC {
+            let d = maxC - minC
+            s = l > 0.5 ? d / (2.0 - maxC - minC) : d / (maxC + minC)
+            if maxC == r {
+                h = (g - b) / d + (g < b ? 6.0 : 0.0)
+            } else if maxC == g {
+                h = (b - r) / d + 2.0
+            } else {
+                h = (r - g) / d + 4.0
+            }
+            h /= 6.0
+        }
+        let minLightness = 0.5
+        guard l < minLightness else {
             return self
         }
-        let boost = (minLuminance - luminance) / 255.0
-        let newRed = min(Int(Double(red) + boost * Double(255 - red)), 255)
-        let newGreen = min(Int(Double(green) + boost * Double(255 - green)), 255)
-        let newBlue = min(Int(Double(blue) + boost * Double(255 - blue)), 255)
-        return .init(red: newRed, green: newGreen, blue: newBlue)
+        l = minLightness
+        let q = l <= 0.5 ? l * (1.0 + s) : l + s - l * s
+        let p = 2.0 * l - q
+        func hue2rgb(_ p: Double, _ q: Double, _ t: Double) -> Double {
+            var t = t
+            if t < 0 { t += 1 }
+            if t > 1 { t -= 1 }
+            if t < 1.0 / 6.0 { return p + (q - p) * 6.0 * t }
+            if t < 1.0 / 2.0 { return q }
+            if t < 2.0 / 3.0 { return p + (q - p) * (2.0 / 3.0 - t) * 6.0 }
+            return p
+        }
+        let newR: Double
+        let newG: Double
+        let newB: Double
+        if s == 0 {
+            newR = l
+            newG = l
+            newB = l
+        } else {
+            newR = hue2rgb(p, q, h + 1.0 / 3.0)
+            newG = hue2rgb(p, q, h)
+            newB = hue2rgb(p, q, h - 1.0 / 3.0)
+        }
+        return .init(
+            red: min(Int(round(newR * 255.0)), 255),
+            green: min(Int(round(newG * 255.0)), 255),
+            blue: min(Int(round(newB * 255.0)), 255)
+        )
     }
 
     func withOpacity(opacity: Double?) -> RgbColor {
