@@ -675,11 +675,16 @@ struct RgbColor: Codable, Equatable {
     }
 
     func makeReadableOnDarkBackground() -> RgbColor {
-        let threshold = 100
-        guard red < threshold, green < threshold, blue < threshold else {
+        let luminance = 0.2126 * Double(red) + 0.7152 * Double(green) + 0.0722 * Double(blue)
+        let minLuminance = 100.0
+        guard luminance < minLuminance else {
             return self
         }
-        return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
+        let boost = (minLuminance - luminance) / 255.0
+        let newRed = min(Int(Double(red) + boost * Double(255 - red)), 255)
+        let newGreen = min(Int(Double(green) + boost * Double(255 - green)), 255)
+        let newBlue = min(Int(Double(blue) + boost * Double(255 - blue)), 255)
+        return .init(red: newRed, green: newGreen, blue: newBlue)
     }
 
     func withOpacity(opacity: Double?) -> RgbColor {
