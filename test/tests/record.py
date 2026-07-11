@@ -10,13 +10,17 @@ LOGGER = logging.getLogger(__name__)
 class Record(TestCase):
     """Record a 10 seconds video."""
 
-    def __init__(self, moblin: Moblin, video_codec: str):
-        super().__init__(moblin, f"Record{video_codec}")
+    def __init__(self, moblin: Moblin, video_codec: str, resolution: str, fps: int):
+        super().__init__(moblin, f"Record{video_codec}-{resolution}@{fps}")
         self._video_codec = video_codec
+        self._resolution = resolution
+        self._fps = fps
 
     def run(self):
         self.moblin.set_scene("Front")
-        self.moblin.set_stream(f"Record {self._video_codec}")
+        self.moblin.set_stream(
+            f"Record {self._video_codec} {self._resolution}@{self._fps}"
+        )
         time.sleep(1)
         self.moblin.start_recording()
         time.sleep(10)
@@ -27,6 +31,7 @@ class Record(TestCase):
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
+            fps=self._fps,
             video_codec=self._get_ffmpeg_video_codec(),
         )
 
@@ -38,7 +43,12 @@ class Record(TestCase):
 
 
 def tests(moblin: Moblin):
-    return [
-        Record(moblin, video_codec="H.264"),
-        Record(moblin, video_codec="H.265"),
+    test_cases = [
+        Record(moblin, video_codec="H.264", resolution="1920x1080", fps=30),
     ]
+    for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
+        for fps in [30, 60]:
+            test_cases.append(
+                Record(moblin, video_codec="H.265", resolution=resolution, fps=fps)
+            )
+    return test_cases

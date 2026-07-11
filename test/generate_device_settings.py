@@ -100,8 +100,7 @@ def create_streams_settings(config: Config):
                 ]
             },
         },
-        {"name": "Record H.264", "recording": {"videoCodec": "H.264/AVC"}},
-        {"name": "Record H.265", "recording": {"videoCodec": "H.265/HEVC"}},
+        {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
     ]
     for number, generic_stream_url in enumerate(
         config.general()["generic-stream-urls"], 1
@@ -117,6 +116,16 @@ def create_streams_settings(config: Config):
                 "bitrate": 5_000_000,
             }
         )
+    for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
+        for fps in [30, 60]:
+            streams.append(
+                {
+                    "name": f"Record H.265 {resolution}@{fps}",
+                    "fps": fps,
+                    "resolution": resolution,
+                    "recording": {"videoCodec": "H.265/HEVC"},
+                }
+            )
     return streams
 
 
