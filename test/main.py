@@ -9,6 +9,7 @@ from tests import record
 from tests import scenes
 from tests import stream
 from tests import talkback
+from tests import web_remote_control
 
 from utils.config import Config
 from utils.dependencies import check_dependencies
@@ -36,6 +37,7 @@ def main():
             scenes.tests(moblin),
             stream.tests(moblin),
             browser_widget.tests(moblin),
+            web_remote_control.tests(moblin),
         )
     sequencer.report_and_exit(json=False, dot=False)
 

@@ -2,6 +2,7 @@ import logging
 import re
 import subprocess
 import time
+from collections.abc import Callable
 from fractions import Fraction
 from pathlib import Path
 from typing import List
@@ -54,6 +55,14 @@ class TestCase(systest.TestCase):
             recording_metadata.video, recording, has_qr_codes, duplicated_frames_crops
         )
         self._assert_audio(recording, recording_metadata.audio, has_audio_time_codes)
+
+    def wait_until(self, check: Callable[[], bool]):
+        end_time = time.monotonic() + 15
+        while time.monotonic() < end_time:
+            if check():
+                return
+            time.sleep(0.1)
+        raise Exception("Timeout waiting for condition to be true")
 
     def _assert_video(
         self,
