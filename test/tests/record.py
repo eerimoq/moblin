@@ -7,40 +7,38 @@ from utils.test_case import TestCase
 LOGGER = logging.getLogger(__name__)
 
 
-class RecordH264(TestCase):
-    """Record a 10 seconds H.264 video."""
+class Record(TestCase):
+    """Record a 10 seconds video."""
+
+    def __init__(self, moblin: Moblin, video_codec: str):
+        super().__init__(moblin, f"Record{video_codec}")
+        self._video_codec = video_codec
 
     def run(self):
         self.moblin.set_scene("Front")
-        self.moblin.set_stream("Record H.264")
+        self.moblin.set_stream(f"Record {self._video_codec}")
         time.sleep(1)
         self.moblin.start_recording()
         time.sleep(10)
         self.moblin.stop_recording()
         recording_file = self.moblin.download_and_delete_latest_recording(
-            "RecordH264.mp4"
+            f"Record-{self._video_codec}.mp4"
         )
-        self.assert_recording(recording_file, has_qr_codes=False, video_codec="h264")
-
-
-class RecordH265(TestCase):
-    """Record a 10 seconds H.265 video."""
-
-    def run(self):
-        self.moblin.set_scene("Front")
-        self.moblin.set_stream("Record H.265")
-        time.sleep(1)
-        self.moblin.start_recording()
-        time.sleep(10)
-        self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording(
-            "RecordH265.mp4"
+        self.assert_recording(
+            recording_file,
+            has_qr_codes=False,
+            video_codec=self._get_ffmpeg_video_codec(),
         )
-        self.assert_recording(recording_file, has_qr_codes=False)
+
+    def _get_ffmpeg_video_codec(self):
+        if self._video_codec == "H.264":
+            return "h264"
+        else:
+            return "hevc"
 
 
 def tests(moblin: Moblin):
     return [
-        RecordH264(moblin),
-        RecordH265(moblin),
+        Record(moblin, video_codec="H.264"),
+        Record(moblin, video_codec="H.265"),
     ]
