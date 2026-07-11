@@ -6,7 +6,7 @@ from utils.utils import format_generic_stream_url_stream_name
 
 WEB_REMOTE_CONTROL_PORT = 1180
 RTMP_SERVER_PORT = 11935
-SRTLA_SERVER_PORT = 4000
+SRT_SERVER_PORT = 4000
 RIST_SERVER_PORT = 6500
 
 

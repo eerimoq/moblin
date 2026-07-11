@@ -27,6 +27,7 @@ enum RemoteControlRequest: Codable {
     case setAutoSceneSwitcher(id: UUID?)
     case setBitratePreset(id: UUID)
     case setMic(id: String)
+    case setTalkbackMic(id: String)
     case setSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
     case setSrtConnectionPrioritiesEnabled(enabled: Bool)
     case reloadBrowserWidgets

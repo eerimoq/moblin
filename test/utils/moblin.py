@@ -65,6 +65,9 @@ class Moblin:
     def set_scene(self, name):
         self._execute("set_scene", name)
 
+    def set_talkback_mic(self, name):
+        self._execute("set_talkback_mic", name)
+
     def go_live(self):
         self._execute("go_live")
 

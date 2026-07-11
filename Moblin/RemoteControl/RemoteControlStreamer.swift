@@ -11,6 +11,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetScene(id: UUID)
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?)
     func remoteControlStreamerSetMic(id: String)
+    func remoteControlStreamerSetTalkbackMic(id: String)
     func remoteControlStreamerSetBitratePreset(id: UUID)
     func remoteControlStreamerSetRecord(on: Bool)
     func remoteControlStreamerSetLive(on: Bool)
@@ -240,6 +241,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setMic(id: micId):
             delegate.remoteControlStreamerSetMic(id: micId)
+            sendEmptyOkResponse(id: id)
+        case let .setTalkbackMic(id: micId):
+            delegate.remoteControlStreamerSetTalkbackMic(id: micId)
             sendEmptyOkResponse(id: id)
         case let .setBitratePreset(id: bitratePresetId):
             delegate.remoteControlStreamerSetBitratePreset(id: bitratePresetId)

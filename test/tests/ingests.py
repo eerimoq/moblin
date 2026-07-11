@@ -2,7 +2,7 @@ import logging
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
-from utils.config import SRTLA_SERVER_PORT
+from utils.config import SRT_SERVER_PORT
 from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
@@ -39,7 +39,7 @@ class IngestSrtServer(TestCase):
     def run(self):
         self.moblin.set_scene("SRT")
         stream = FfmpegTestStream(
-            url=f"srt://{self.moblin.ip_address}:{SRTLA_SERVER_PORT}?streamid=1",
+            url=f"srt://{self.moblin.ip_address}:{SRT_SERVER_PORT}?streamid=1",
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestSrtServer.mp4")

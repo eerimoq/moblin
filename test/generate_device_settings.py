@@ -6,7 +6,7 @@ import pyperclip
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
-from utils.config import SRTLA_SERVER_PORT
+from utils.config import SRT_SERVER_PORT
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
 from utils.utils import format_generic_stream_url_stream_name
@@ -16,6 +16,7 @@ RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
 SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
+SRT_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-135572CA1389"
 FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
 BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
@@ -279,12 +280,17 @@ def create_settings(config: Config):
         },
         "srtlaServer": {
             "enabled": True,
-            "srtPort": SRTLA_SERVER_PORT,
+            "srtPort": SRT_SERVER_PORT,
             "streams": [
                 {
                     "id": SRT_STREAM_ID,
                     "name": "Test",
                     "streamId": "1",
+                },
+                {
+                    "id": SRT_TALKBACK_STREAM_ID,
+                    "name": "Talkback",
+                    "streamId": "talkback",
                 },
             ],
         },

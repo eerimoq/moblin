@@ -715,6 +715,10 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         manualSelectMicById(id: id)
     }
 
+    func remoteControlStreamerSetTalkbackMic(id: String) {
+        setTalkbackMic(id: id)
+    }
+
     func remoteControlStreamerSetBitratePreset(id: UUID) {
         guard let preset = database.bitratePresets.first(where: { preset in
             preset.id == id

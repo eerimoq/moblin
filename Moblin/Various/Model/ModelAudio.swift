@@ -269,6 +269,11 @@ extension Model {
         }
     }
 
+    func setTalkbackMic(id: String) {
+        database.talkback.micId = id
+        updateTalkback()
+    }
+
     func updateTalkback() {
         if database.talkback.enabled, let mic = getMicById(id: database.talkback.micId) {
             startTalkback(mic: mic)
