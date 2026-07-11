@@ -27,16 +27,21 @@ class ScenePiPBackFront(TestCase):
 
     """
 
+    def __init__(self, moblin: Moblin, fps: int):
+        super().__init__(moblin, f"ScenePiPBackFront{fps}Fps")
+        self._fps = fps
+
     def run(self):
         if "pip" not in self.moblin.capabilities:
             raise systest.TestCaseSkippedError("PiP not supported.")
+        self.moblin.set_stream(f"SRT 5Mbps 1080@{self._fps}")
         self.moblin.set_scene("PiP")
         time.sleep(2)
         self.moblin.start_recording()
         time.sleep(10)
         self.moblin.stop_recording()
         recording_file = self.moblin.download_and_delete_latest_recording(
-            "ScenePiPBackFront.mp4"
+            f"ScenePiPBackFront{self._fps}.mp4"
         )
         self.assert_recording(
             recording_file,
@@ -47,8 +52,13 @@ class ScenePiPBackFront(TestCase):
                 # Bottom right
                 Crop(x=1120, y=580, width=800, height=500),
             ],
+            fps=self._fps,
         )
 
 
 def tests(moblin: Moblin):
-    return [SceneSwitchMultipleTimes(moblin), ScenePiPBackFront(moblin)]
+    return [
+        SceneSwitchMultipleTimes(moblin),
+        ScenePiPBackFront(moblin, fps=30),
+        ScenePiPBackFront(moblin, fps=60),
+    ]

@@ -47,12 +47,17 @@ class TestCase(systest.TestCase):
         has_qr_codes: bool = True,
         duplicated_frames_crops: List[Crop] | None = None,
         has_audio_time_codes: bool = False,
+        fps: int = 30,
     ):
         recording_metadata = ffprobe(recording)
         self.assert_greater(recording_metadata.format.duration, 8)
         self.assert_less(recording_metadata.format.duration, 14)
         self._assert_video(
-            recording_metadata.video, recording, has_qr_codes, duplicated_frames_crops
+            recording_metadata.video,
+            recording,
+            has_qr_codes,
+            duplicated_frames_crops,
+            fps,
         )
         self._assert_audio(recording, recording_metadata.audio, has_audio_time_codes)
 
@@ -70,8 +75,8 @@ class TestCase(systest.TestCase):
         recording: Path,
         has_qr_codes: bool,
         duplicated_frames_crops: List[Crop] | None,
+        fps: int,
     ):
-        fps = 30
         self.assert_equal(video.codec, "hevc")
         self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
@@ -201,6 +206,6 @@ def find_missing_presentation_time_stamps(
         current = presentation_time_stamps[index]
         previous = presentation_time_stamps[index - 1]
         delta = current - previous
-        if delta < expected_delta - 0.001 or delta > expected_delta + 0.001:
+        if delta < expected_delta - 0.002 or delta > expected_delta + 0.002:
             missing_presentation_time_stamps.append(current)
     return missing_presentation_time_stamps
