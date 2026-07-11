@@ -63,6 +63,24 @@ def create_streams_settings(config: Config):
             "bitrate": 5_000_000,
         },
         {
+            "name": "SRT adaptive CBR",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT adaptive ABR",
+            "bitrateRateControl": "ABR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT adaptive VBR",
+            "bitrateRateControl": "VBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
             "name": "Multi RTMP",
             "bitrateRateControl": "CBR",
             "url": f"rtmp://{config.tester_ip_address()}:1935/test1",

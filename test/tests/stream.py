@@ -97,6 +97,28 @@ class StreamSrtToFfmpegEncrypted(TestCase):
             self.assert_less(metadata.format.duration, 20)
 
 
+class StreamSrtToFfmpegVideoRateControl(TestCase):
+    """SRT stream from Moblin to ffmpeg for a few seconds using given video rate control."""
+
+    def __init__(self, moblin: Moblin, rate_control: str):
+        super().__init__(moblin, f"StreamSrtToFfmpegVideoRateControl{rate_control}")
+        self._rate_control = rate_control
+
+    def run(self):
+        filename = Path(f"files/{self.name}.ts")
+        self.moblin.set_scene("PiP")
+        with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
+            self.moblin.set_stream(f"SRT adaptive {self._rate_control}")
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 5_000_000)
+            self.moblin.end()
+            metadata = ffprobe(filename)
+            self.assert_equal(metadata.video.codec, "hevc")
+            self.assert_equal(metadata.audio.codec, "aac")
+            self.assert_greater(metadata.format.duration, 10)
+            self.assert_less(metadata.format.duration, 20)
+
+
 class StreamMultiRtmpToMediaMtx(TestCase):
     """Multiple RTMP streams from Moblin to MediaMTX for a few seconds."""
 
@@ -135,6 +157,9 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpeg(moblin, fps=60),
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
+        StreamSrtToFfmpegVideoRateControl(moblin, "ABR"),
+        StreamSrtToFfmpegVideoRateControl(moblin, "CBR"),
+        StreamSrtToFfmpegVideoRateControl(moblin, "VBR"),
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
         StreamToGenericUrls(moblin, generic_stream=generic_stream)
