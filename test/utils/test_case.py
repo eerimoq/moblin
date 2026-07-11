@@ -48,6 +48,7 @@ class TestCase(systest.TestCase):
         duplicated_frames_crops: List[Crop] | None = None,
         has_audio_time_codes: bool = False,
         fps: int = 30,
+        video_codec: str = "hevc",
     ):
         recording_metadata = ffprobe(recording)
         self.assert_greater(recording_metadata.format.duration, 8)
@@ -58,6 +59,7 @@ class TestCase(systest.TestCase):
             has_qr_codes,
             duplicated_frames_crops,
             fps,
+            video_codec,
         )
         self._assert_audio(recording, recording_metadata.audio, has_audio_time_codes)
 
@@ -76,8 +78,9 @@ class TestCase(systest.TestCase):
         has_qr_codes: bool,
         duplicated_frames_crops: List[Crop] | None,
         fps: int,
+        video_codec: str,
     ):
-        self.assert_equal(video.codec, "hevc")
+        self.assert_equal(video.codec, video_codec)
         self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
         self._assert_presentation_time_stamps(

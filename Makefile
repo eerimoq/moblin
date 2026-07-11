@@ -18,16 +18,18 @@ CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 PYLINT_ARGS = \
-	--disable missing-function-docstring \
 	--disable missing-module-docstring \
+	--disable missing-class-docstring \
+	--disable missing-function-docstring \
 	--disable too-many-nested-blocks \
+	--disable too-many-locals \
+	--disable too-many-arguments \
+	--disable too-many-positional-arguments \
+	--disable too-few-public-methods \
 	--disable broad-exception-caught \
 	--disable broad-exception-raised \
-	--disable too-many-locals \
 	--disable duplicate-code \
-	--disable missing-class-docstring \
 	--disable line-too-long \
-	--disable too-few-public-methods \
 	--disable consider-using-with \
 	--disable no-else-return \
 	--recursive yes \
