@@ -88,11 +88,11 @@ test:
 
 test-generate-device-settings-clipboard:
 	cd test && \
-	python generate_device_settings.py config.toml
+	python generate_device_settings.py $(CONFIG_TOML)
 
 test-generate-device-settings-stdout:
 	@cd test && \
-	 python generate_device_settings.py --force-stdout config.toml
+	 python generate_device_settings.py --force-stdout $(CONFIG_TOML)
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings
