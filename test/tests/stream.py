@@ -39,11 +39,15 @@ class StreamSrtToMediaMtx(TestCase):
 class StreamSrtToFfmpeg(TestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds."""
 
+    def __init__(self, moblin: Moblin, fps: int):
+        super().__init__(moblin, f"StreamSrtToFfmpeg{fps}Fps")
+        self._fps = fps
+
     def run(self):
-        filename = Path("files/StreamSrtFromMoblinToFfmpeg.ts")
+        filename = Path(f"files/{self.name}.ts")
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
-            self.moblin.set_stream("SRT 5Mbps")
+            self.moblin.set_stream(f"SRT 5Mbps 1080@{self._fps}")
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
             self.moblin.end()
@@ -127,7 +131,8 @@ def tests(moblin: Moblin):
     return [
         StreamRtmpToMediaMtx(moblin),
         StreamSrtToMediaMtx(moblin),
-        StreamSrtToFfmpeg(moblin),
+        StreamSrtToFfmpeg(moblin, fps=30),
+        StreamSrtToFfmpeg(moblin, fps=60),
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
