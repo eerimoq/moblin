@@ -331,7 +331,7 @@ export class WebSocketConnection {
   onConnected(): void {}
 
   setLive(on: boolean): void {
-    this.sendRequest({ setStream: { on } });
+    this.sendRequest({ setLive: { on } });
   }
 
   setRecording(on: boolean): void {
