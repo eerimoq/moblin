@@ -1520,6 +1520,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopSrtClient()
         stopRtspClient()
         stopWhepClient()
+        stopWhipServer()
         teardownAudioSession()
         chatTextToSpeech.reset(running: false)
         locationManager.stop()
