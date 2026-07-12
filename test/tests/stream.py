@@ -106,7 +106,7 @@ class StreamSrtToFfmpegVideoRateControl(TestCase):
 
     def run(self):
         filename = Path(f"files/{self.name}.ts")
-        self.moblin.set_scene("PiP")
+        self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.set_stream(f"SRT adaptive {self._rate_control}")
             self.moblin.go_live()

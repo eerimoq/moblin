@@ -32,7 +32,7 @@ class TestCase(systest.TestCase):
         self.moblin.end()
         self.moblin.stop_recording()
 
-    def wait_for_ingest_stream_started(self, number_of_ingests=2, startup_delay=1):
+    def wait_for_ingest_stream_started(self, number_of_ingests=4, startup_delay=1):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(
             minimim_bitrate=0,
