@@ -22,7 +22,7 @@ class Moblin:
         self._remote_control_port = config.remote_control_port()
         self._server = None
         self.ip_address = config.moblin_ip_address()
-        self.capabilities = config.capabilities()
+        self._capabilities = config.capabilities()
         self.generic_streams = config.generic_streams()
 
     def __enter__(self):
@@ -99,6 +99,9 @@ class Moblin:
 
     def get_settings(self):
         self._execute("get_settings")
+
+    def has_capability(self, name: str):
+        return name in self._capabilities
 
     def wait_for_ingests(
         self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests

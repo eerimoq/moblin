@@ -32,6 +32,10 @@ class TestCase(systest.TestCase):
         self.moblin.end()
         self.moblin.stop_recording()
 
+    def skip_if_missing_capability(self, name):
+        if not self.moblin.has_capability(name):
+            raise systest.TestCaseSkippedError(f"{name} capability missing.")
+
     def wait_for_ingest_stream_started(self, number_of_ingests=4, startup_delay=1):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(

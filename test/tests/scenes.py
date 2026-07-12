@@ -1,8 +1,6 @@
 import logging
 import time
 
-import systest
-
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import Crop
@@ -31,9 +29,10 @@ class ScenePiPBackFront(TestCase):
         super().__init__(moblin, f"ScenePiPBackFront{fps}Fps")
         self._fps = fps
 
+    def setup(self):
+        self.skip_if_missing_capability("pip")
+
     def run(self):
-        if "pip" not in self.moblin.capabilities:
-            raise systest.TestCaseSkippedError("PiP not supported.")
         self.moblin.set_stream(f"SRT 5Mbps 1080@{self._fps}")
         self.moblin.set_scene("PiP")
         time.sleep(2)
