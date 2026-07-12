@@ -2870,6 +2870,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,
+            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
