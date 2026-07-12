@@ -589,6 +589,8 @@ extension Model {
             attachBufferedAudio(cameraId: getRtmpMicCameraId(mic: mic), micId: mic.id)
         } else if isSrtlaMic(mic: mic) {
             attachBufferedAudio(cameraId: getSrtlaMicCameraId(mic: mic), micId: mic.id)
+        } else if isSrtClientMic(mic: mic) {
+            attachBufferedAudio(cameraId: getSrtClientCameraId(mic: mic), micId: mic.id)
         } else if isRistMic(mic: mic) {
             attachBufferedAudio(cameraId: getRistMicCameraId(mic: mic), micId: mic.id)
         } else if isWhipMic(mic: mic) {
@@ -620,6 +622,13 @@ extension Model {
             return false
         }
         return getSrtlaStream(id: id) != nil
+    }
+
+    private func isSrtClientMic(mic: SettingsMicsMic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getSrtClientStream(id: id) != nil
     }
 
     private func isRistMic(mic: SettingsMicsMic) -> Bool {
@@ -658,6 +667,10 @@ extension Model {
         getSrtlaStream(idString: mic.inputUid)?.id
     }
 
+    private func getSrtClientCameraId(mic: SettingsMicsMic) -> UUID? {
+        getSrtClientStream(idString: mic.inputUid)?.id
+    }
+
     private func getRistMicCameraId(mic: SettingsMicsMic) -> UUID? {
         getRistStream(idString: mic.inputUid)?.id
     }
@@ -688,6 +701,8 @@ extension Model {
             media.setTalkback(cameraId: getRtmpMicCameraId(mic: mic))
         } else if isSrtlaMic(mic: mic) {
             media.setTalkback(cameraId: getSrtlaMicCameraId(mic: mic))
+        } else if isSrtClientMic(mic: mic) {
+            media.setTalkback(cameraId: getSrtClientCameraId(mic: mic))
         } else if isRistMic(mic: mic) {
             media.setTalkback(cameraId: getRistMicCameraId(mic: mic))
         } else if isWhipMic(mic: mic) {
