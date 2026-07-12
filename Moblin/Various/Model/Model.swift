@@ -1517,6 +1517,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopPreviewStream()
         stopRtmpServer()
         stopSrtlaServer()
+        stopSrtClient()
         stopRtspClient()
         stopWhepClient()
         teardownAudioSession()
