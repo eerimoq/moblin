@@ -25,7 +25,7 @@ class SrtClient: @unchecked Sendable {
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
     private var bitrateStats: Atomic<BitrateStats> = .init(.init())
     private let reconnectTimer = SimpleTimer(queue: srtClientQueue)
-    private let reader: MpegTsReader
+    private var reader: MpegTsReader
 
     init(cameraId: UUID, url: URL, delegate: any SrtClientDelegate) {
         self.cameraId = cameraId
@@ -120,6 +120,12 @@ class SrtClient: @unchecked Sendable {
         if !postFailures.isEmpty {
             logger.info("srt-client: \(cameraId): Failed to set post-bind options: \(postFailures).")
         }
+        reader = MpegTsReader(
+            decoderQueue: srtClientQueue,
+            timecodesEnabled: false,
+            targetLatency: srtClientLatency
+        )
+        reader.delegate = self
         delegate?.srtClientConnected(cameraId: cameraId)
         receive(socket: socket)
         delegate?.srtClientDisconnected(cameraId: cameraId)
