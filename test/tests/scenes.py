@@ -1,6 +1,8 @@
 import logging
 import time
+from pathlib import Path
 
+from utils.ffmpeg import FfmpegServer
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import Crop
@@ -55,9 +57,29 @@ class ScenePiPBackFront(TestCase):
         )
 
 
+class ScenewidgetsInBackground(TestCase):
+    """Stream in background mode with various widgets showing."""
+
+    def setup(self):
+        self.skip_if_missing_capability("background-streaming")
+
+    def run(self):
+        filename = Path("files/ScenewidgetsInBackground.ts")
+        self.moblin.set_scene("Background streaming")
+        with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
+            self.moblin.set_stream("Background streaming")
+            self.moblin.go_live()
+            input("Put the app in background and press enter")
+            LOGGER.info("Streaming in background for 10 seconds...")
+            time.sleep(10)
+            self.moblin.end()
+            input("Put the app in foreground and press enter")
+
+
 def tests(moblin: Moblin):
     return [
         SceneSwitchMultipleTimes(moblin),
         ScenePiPBackFront(moblin, fps=30),
         ScenePiPBackFront(moblin, fps=60),
+        ScenewidgetsInBackground(moblin),
     ]

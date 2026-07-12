@@ -26,6 +26,7 @@ BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA13
 BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
 BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
 BROWSER_WIDGET_LOCAL_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1315"
+TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
 
 
 def create_streams_settings(config: Config):
@@ -105,6 +106,15 @@ def create_streams_settings(config: Config):
             },
         },
         {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
+        {
+            "name": "Background streaming",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 5_000_000,
+            "backgroundStreaming": True,
+            "backgroundStreamingPiP": False,
+        },
     ]
     for number, generic_stream_url in enumerate(
         config.general()["generic-stream-urls"], 1
@@ -237,6 +247,22 @@ def create_scenes_settings():
             ],
             "enabled": True,
         },
+        {
+            "name": "Background streaming",
+            "cameraPosition": "Screen capture",
+            "widgets": [
+                {
+                    "widgetId": TEXT_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
     ]
 
 
@@ -294,6 +320,12 @@ def create_widgets_settings(config: Config):
                 "height": 1080,
                 "localOnly": True,
             },
+        },
+        {
+            "id": TEXT_WIDGET_ID,
+            "name": "Background streaming",
+            "type": "Text",
+            "text": {"formatString": "Time: {time}"},
         },
     ]
 
