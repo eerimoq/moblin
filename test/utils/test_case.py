@@ -229,18 +229,24 @@ class TestCase(systest.TestCase):
             mo = RE_LTCDUMP.match(line)
             if mo:
                 seconds = 60 * int(mo.group(1)) + int(mo.group(2))
-                if seconds < 3:
+                if 2 <= seconds <= 3:
                     has_seen_start_time = True
-                if seconds > 9:
+                if 9 <= seconds <= 10:
                     has_seen_end_time = True
             elif "#DISCONTINUITY" in line:
                 if has_seen_start_time and not has_seen_end_time:
-                    for line in output.splitlines():
-                        LOGGER.info("ltcdump: %s", line)
+                    self._log_output(output)
                     raise Exception("Discontinuity in audio!")
-        self.assert_true(has_seen_start_time)
-        self.assert_true(has_seen_end_time)
+        if not has_seen_start_time:
+            self._log_output(output)
+            raise Exception("Start time not found in audio!")
+        if not has_seen_end_time:
+            self._log_output(output)
+            raise Exception("End time not found in audio!")
 
+    def _log_output(self, output: str):
+        for line in output.splitlines():
+                LOGGER.info("ltcdump: %s", line)
 
 def find_missing_presentation_time_stamps(
     expected_delta: float, presentation_time_stamps: List[float], delta_error: float
