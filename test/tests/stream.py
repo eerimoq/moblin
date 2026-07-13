@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
-from utils.ffmpeg import ffprobe
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
@@ -51,11 +50,7 @@ class StreamSrtToFfmpeg(TestCase):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
             self.moblin.end()
-            metadata = ffprobe(filename)
-            self.assert_equal(metadata.video.codec, "hevc")
-            self.assert_equal(metadata.audio.codec, "aac")
-            self.assert_greater(metadata.format.duration, 10)
-            self.assert_less(metadata.format.duration, 20)
+        self.assert_live_stream(filename)
 
 
 class StreamSrtToFfmpegHighBitrate(TestCase):
@@ -69,11 +64,7 @@ class StreamSrtToFfmpegHighBitrate(TestCase):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(49_000_000, 51_000_000, None, 50_000_000)
             self.moblin.end()
-            metadata = ffprobe(filename)
-            self.assert_equal(metadata.video.codec, "hevc")
-            self.assert_equal(metadata.audio.codec, "aac")
-            self.assert_greater(metadata.format.duration, 1)
-            self.assert_less(metadata.format.duration, 10)
+        self.assert_live_stream(filename, minimum_length=1, maximum_length=10)
 
 
 class StreamSrtToFfmpegEncrypted(TestCase):
@@ -90,11 +81,7 @@ class StreamSrtToFfmpegEncrypted(TestCase):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
             self.moblin.end()
-            metadata = ffprobe(filename)
-            self.assert_equal(metadata.video.codec, "hevc")
-            self.assert_equal(metadata.audio.codec, "aac")
-            self.assert_greater(metadata.format.duration, 10)
-            self.assert_less(metadata.format.duration, 20)
+        self.assert_live_stream(filename)
 
 
 class StreamSrtToFfmpegVideoRateControl(TestCase):
@@ -112,11 +99,7 @@ class StreamSrtToFfmpegVideoRateControl(TestCase):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 5_000_000)
             self.moblin.end()
-            metadata = ffprobe(filename)
-            self.assert_equal(metadata.video.codec, "hevc")
-            self.assert_equal(metadata.audio.codec, "aac")
-            self.assert_greater(metadata.format.duration, 10)
-            self.assert_less(metadata.format.duration, 20)
+        self.assert_live_stream(filename)
 
 
 class StreamMultiRtmpToMediaMtx(TestCase):

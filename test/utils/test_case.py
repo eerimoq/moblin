@@ -45,6 +45,29 @@ class TestCase(systest.TestCase):
             number_of_ingests=number_of_ingests,
         )
 
+    def assert_live_stream(
+        self,
+        recording: Path,
+        minimum_length: int = 8,
+        maximum_length: int = 20,
+        fps: int = 30,
+    ):
+        metadata = ffprobe(recording)
+        self.assert_greater(metadata.format.duration, minimum_length)
+        self.assert_less(metadata.format.duration, maximum_length)
+        self._assert_live_stream_video(metadata.video, fps)
+        self._assert_live_stream_audio(metadata.audio)
+
+    def _assert_live_stream_video(self, video: FfprobeVideoOutput, fps: int):
+        self.assert_equal(video.codec, "hevc")
+        self.assert_equal(video.width, 1920)
+        self.assert_equal(video.height, 1080)
+        self.assert_greater(video.real_base_fps, Fraction(f"{fps - 1}/1"))
+        self.assert_less(video.real_base_fps, Fraction(f"{fps + 1}/1"))
+
+    def _assert_live_stream_audio(self, audio: FfprobeAudioOutput):
+        self.assert_equal(audio.codec, "aac")
+
     def assert_recording(
         self,
         recording: Path,
@@ -56,11 +79,11 @@ class TestCase(systest.TestCase):
         fps: int = 30,
         video_codec: str = "hevc",
     ):
-        recording_metadata = ffprobe(recording)
-        self.assert_greater(recording_metadata.format.duration, 8)
-        self.assert_less(recording_metadata.format.duration, 14)
+        metadata = ffprobe(recording)
+        self.assert_greater(metadata.format.duration, 8)
+        self.assert_less(metadata.format.duration, 14)
         self._assert_video(
-            recording_metadata.video,
+            metadata.video,
             recording,
             has_qr_codes,
             duplicated_frames_crops,
@@ -69,7 +92,7 @@ class TestCase(systest.TestCase):
             fps,
             video_codec,
         )
-        self._assert_audio(recording, recording_metadata.audio, has_audio_time_codes)
+        self._assert_audio(recording, metadata.audio, has_audio_time_codes)
 
     def wait_until(self, check: Callable[[], bool]):
         end_time = time.monotonic() + 15
@@ -93,8 +116,8 @@ class TestCase(systest.TestCase):
         self.assert_equal(video.codec, video_codec)
         self.assert_equal(video.width, width)
         self.assert_equal(video.height, height)
-        self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
-        self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
+        self.assert_greater(video.average_fps, Fraction(f"{fps - 1}/1"))
+        self.assert_less(video.average_fps, Fraction(f"{fps + 1}/1"))
         self.assert_presentation_time_stamps(
             recording, 1 / fps, [frame.pts for frame in video.frames]
         )
@@ -209,6 +232,8 @@ class TestCase(systest.TestCase):
                     has_seen_end_time = True
             elif "#DISCONTINUITY" in line:
                 if has_seen_start_time and not has_seen_end_time:
+                    for line in output.splitlines():
+                        LOGGER.info("ltcdump: %s", line)
                     raise Exception("Discontinuity in audio!")
         self.assert_true(has_seen_start_time)
         self.assert_true(has_seen_end_time)

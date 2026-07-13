@@ -197,7 +197,8 @@ class FfprobeVideoOutput:
     codec: str
     width: int
     height: int
-    fps: Fraction | None
+    real_base_fps: Fraction | None
+    average_fps: Fraction | None
     frames: List[FfprobeVideoOutputFrame]
 
 
@@ -245,18 +246,24 @@ def ffprobe_video(path: Path):
         "stream=codec_name,width,height,r_frame_rate,avg_frame_rate:frame=pict_type,pts_time",
     )
     stream = output["streams"][0]
-    try:
-        fps = Fraction(stream["avg_frame_rate"])
-    except Exception:
-        fps = None
+    real_base_fps = _get_fps(stream, "r_frame_rate")
+    average_fps = _get_fps(stream, "avg_frame_rate")
     frames = [FfprobeVideoOutputFrame(frame) for frame in output["frames"]]
     return FfprobeVideoOutput(
         codec=stream["codec_name"],
         width=stream["width"],
         height=stream["height"],
-        fps=fps,
+        real_base_fps=real_base_fps,
+        average_fps=average_fps,
         frames=frames,
     )
+
+
+def _get_fps(stream, name: str) -> Fraction | None:
+    try:
+        return Fraction(stream[name])
+    except Exception:
+        return None
 
 
 def ffprobe_audio(path) -> FfprobeAudioOutput:
