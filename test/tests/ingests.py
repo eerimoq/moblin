@@ -8,6 +8,7 @@ from utils.ffmpeg import FfmpegTestStream
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.recorder import Recorder
+from utils.test_case import NUMBER_OF_INGESTS_BASE
 from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class IngestRtmpServer(TestCase):
                     minimim_bitrate=7_000_000,
                     maximum_bitrate=9_000_000,
                     total_bytes=10_000_000,
-                    number_of_ingests=4,
+                    number_of_ingests=NUMBER_OF_INGESTS_BASE + 1,
                 )
         self.assert_recording(recorder.recording, has_audio_time_codes=True)
 
@@ -51,7 +52,7 @@ class IngestSrtServer(TestCase):
                     minimim_bitrate=7_000_000,
                     maximum_bitrate=9_000_000,
                     total_bytes=10_000_000,
-                    number_of_ingests=4,
+                    number_of_ingests=NUMBER_OF_INGESTS_BASE + 1,
                 )
         self.assert_recording(recorder.recording)
 
@@ -67,13 +68,15 @@ class IngestSrtClient(TestCase):
         )
         recorder = Recorder(self.moblin, "IngestSrtClient.mp4")
         with stream:
-            self.wait_for_ingest_stream_started(number_of_ingests=3)
+            self.wait_for_ingest_stream_started(
+                number_of_ingests=NUMBER_OF_INGESTS_BASE
+            )
             with recorder:
                 self.moblin.wait_for_ingests(
                     minimim_bitrate=7_000_000,
                     maximum_bitrate=9_000_000,
                     total_bytes=10_000_000,
-                    number_of_ingests=3,
+                    number_of_ingests=NUMBER_OF_INGESTS_BASE,
                 )
         self.assert_recording(recorder.recording)
 
@@ -88,14 +91,14 @@ class IngestRtspClientH264(TestCase):
             with FfmpegTestStream(url="rtmp://localhost:1935/1"):
                 mediamtx.wait_for_rtsp_stream(2_000_000)
                 self.wait_for_ingest_stream_started(
-                    number_of_ingests=3, startup_delay=5
+                    number_of_ingests=NUMBER_OF_INGESTS_BASE, startup_delay=5
                 )
                 with recorder:
                     self.moblin.wait_for_ingests(
                         minimim_bitrate=7_000_000,
                         maximum_bitrate=9_000_000,
                         total_bytes=10_000_000,
-                        number_of_ingests=3,
+                        number_of_ingests=NUMBER_OF_INGESTS_BASE,
                     )
         self.assert_recording(recorder.recording)
 
@@ -117,7 +120,7 @@ class IngestRistServer(TestCase):
                     minimim_bitrate=7_000_000,
                     maximum_bitrate=9_000_000,
                     total_bytes=10_000_000,
-                    number_of_ingests=4,
+                    number_of_ingests=NUMBER_OF_INGESTS_BASE + 1,
                 )
         self.assert_recording(recorder.recording)
 
