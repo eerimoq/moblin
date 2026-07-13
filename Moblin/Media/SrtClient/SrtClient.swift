@@ -110,7 +110,7 @@ class SrtClient: @unchecked Sendable {
             }
         }
         guard result != SRT_ERROR else {
-            logger.info("srt-client: \(cameraId): Connect failed: \(lastSrtError())")
+            logger.debug("srt-client: \(cameraId): Connect failed: \(lastSrtError())")
             srtClientQueue.async {
                 self.connectSoon(delay: reconnectDelay)
             }
