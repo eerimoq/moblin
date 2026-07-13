@@ -246,7 +246,8 @@ class TestCase(systest.TestCase):
 
     def _log_output(self, output: str):
         for line in output.splitlines():
-                LOGGER.info("ltcdump: %s", line)
+            LOGGER.info("ltcdump: %s", line)
+
 
 def find_missing_presentation_time_stamps(
     expected_delta: float, presentation_time_stamps: List[float], delta_error: float
