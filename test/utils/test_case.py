@@ -87,7 +87,7 @@ class TestCase(systest.TestCase):
         self.assert_equal(video.codec, video_codec)
         self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
-        self._assert_presentation_time_stamps(
+        self.assert_presentation_time_stamps(
             recording, 1 / fps, [frame.pts for frame in video.frames]
         )
         self._assert_video_frame_numbers_increasing(recording, has_qr_codes)
@@ -110,7 +110,7 @@ class TestCase(systest.TestCase):
         crop: Crop | None = None,
     ):
         filtered_video = ffprobe_video(remove_duplicated_frames(recording, crop))
-        self._assert_presentation_time_stamps(
+        self.assert_presentation_time_stamps(
             recording, 1 / fps, [frame.pts for frame in filtered_video.frames]
         )
         self.assert_equal(len(filtered_video.frames), len(video.frames))
@@ -126,7 +126,7 @@ class TestCase(systest.TestCase):
         self.assert_equal(audio.channel_layout, "mono")
         self.assert_greater(audio.bit_rate, 120_000)
         self.assert_less(audio.bit_rate, 136_000)
-        self._assert_presentation_time_stamps(
+        self.assert_presentation_time_stamps(
             recording,
             expected_samples_per_frame / audio.sample_rate,
             [frame.pts for frame in audio.frames],
@@ -136,15 +136,16 @@ class TestCase(systest.TestCase):
             self.assert_equal(frame.channels, 1)
             self.assert_equal(frame.number_of_samples, expected_samples_per_frame)
 
-    def _assert_presentation_time_stamps(
+    def assert_presentation_time_stamps(
         self,
         recording: Path,
         expected_delta: float,
         presentation_time_stamps: List[float],
+        delta_error: float = 0.002,
     ):
         self.assert_greater(len(presentation_time_stamps), 0)
         missing_presentation_time_stamps = find_missing_presentation_time_stamps(
-            expected_delta, presentation_time_stamps
+            expected_delta, presentation_time_stamps, delta_error
         )
         if len(missing_presentation_time_stamps) > 0:
             LOGGER.info(
@@ -206,13 +207,13 @@ class TestCase(systest.TestCase):
 
 
 def find_missing_presentation_time_stamps(
-    expected_delta: float, presentation_time_stamps: List[float]
+    expected_delta: float, presentation_time_stamps: List[float], delta_error: float
 ) -> List[float]:
     missing_presentation_time_stamps = []
     for index in range(1, len(presentation_time_stamps)):
         current = presentation_time_stamps[index]
         previous = presentation_time_stamps[index - 1]
         delta = current - previous
-        if delta < expected_delta - 0.002 or delta > expected_delta + 0.002:
+        if delta < expected_delta - delta_error or delta > expected_delta + delta_error:
             missing_presentation_time_stamps.append(current)
     return missing_presentation_time_stamps

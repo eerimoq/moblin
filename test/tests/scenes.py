@@ -3,9 +3,12 @@ import time
 from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
+from utils.ffmpeg import ffprobe_video
+from utils.ffmpeg import remove_duplicated_frames
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import Crop
+from utils.utils import manual_confirmation
 
 LOGGER = logging.getLogger(__name__)
 
@@ -69,11 +72,18 @@ class ScenewidgetsInBackground(TestCase):
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.set_stream("Background streaming")
             self.moblin.go_live()
-            input("Put the app in background and press enter")
-            LOGGER.info("Streaming in background for 10 seconds...")
+            manual_confirmation("Put the app in background.")
+            LOGGER.info("Streaming in background for 10 more seconds")
             time.sleep(10)
             self.moblin.end()
-            input("Put the app in foreground and press enter")
+            manual_confirmation("Put the app in foreground.")
+        crop = Crop(x=0, y=0, width=400, height=100)
+        filtered_video = ffprobe_video(remove_duplicated_frames(filename, crop))
+        for frame in filtered_video.frames:
+            print(frame.pts)
+        self.assert_presentation_time_stamps(
+            filename, 1, [frame.pts for frame in filtered_video.frames[-8:]], 0.25
+        )
 
 
 def tests(moblin: Moblin):

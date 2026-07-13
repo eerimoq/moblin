@@ -32,6 +32,10 @@ def manual_validation(logger: Logger, message: str):
     logger.info("🧪🧪🧪 Manual validation: %s 🧪🧪🧪", message)
 
 
+def manual_confirmation(message: str):
+    input(f"🧑‍🔧🧑‍🔧🧑‍🔧 {message} Press ENTER to continue. 🧑‍🔧🧑‍🔧🧑‍🔧")
+
+
 @dataclass
 class Crop:
     x: int

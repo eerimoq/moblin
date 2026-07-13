@@ -325,7 +325,7 @@ def create_widgets_settings(config: Config):
             "id": TEXT_WIDGET_ID,
             "name": "Background streaming",
             "type": "Text",
-            "text": {"formatString": "Time: {time}"},
+            "text": {"formatString": "{time}", "fontSize": 80},
         },
     ]
 
