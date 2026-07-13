@@ -51,6 +51,8 @@ class TestCase(systest.TestCase):
         has_qr_codes: bool = True,
         duplicated_frames_crops: List[Crop] | None = None,
         has_audio_time_codes: bool = False,
+        width: int = 1920,
+        height: int = 1080,
         fps: int = 30,
         video_codec: str = "hevc",
     ):
@@ -62,6 +64,8 @@ class TestCase(systest.TestCase):
             recording,
             has_qr_codes,
             duplicated_frames_crops,
+            width,
+            height,
             fps,
             video_codec,
         )
@@ -81,10 +85,14 @@ class TestCase(systest.TestCase):
         recording: Path,
         has_qr_codes: bool,
         duplicated_frames_crops: List[Crop] | None,
+        width,
+        height,
         fps: int,
         video_codec: str,
     ):
         self.assert_equal(video.codec, video_codec)
+        self.assert_equal(video.width, width)
+        self.assert_equal(video.height, height)
         self.assert_greater(video.fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.fps, Fraction(f"{fps + 1}/1"))
         self.assert_presentation_time_stamps(

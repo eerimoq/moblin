@@ -195,6 +195,8 @@ class FfprobeVideoOutputFrame:
 @dataclass
 class FfprobeVideoOutput:
     codec: str
+    width: int
+    height: int
     fps: Fraction | None
     frames: List[FfprobeVideoOutputFrame]
 
@@ -240,7 +242,7 @@ def ffprobe_video(path: Path):
         "-select_streams",
         "v:0",
         "-show_entries",
-        "stream=codec_name,r_frame_rate,avg_frame_rate:frame=pict_type,pts_time",
+        "stream=codec_name,width,height,r_frame_rate,avg_frame_rate:frame=pict_type,pts_time",
     )
     stream = output["streams"][0]
     try:
@@ -248,7 +250,13 @@ def ffprobe_video(path: Path):
     except Exception:
         fps = None
     frames = [FfprobeVideoOutputFrame(frame) for frame in output["frames"]]
-    return FfprobeVideoOutput(codec=stream["codec_name"], fps=fps, frames=frames)
+    return FfprobeVideoOutput(
+        codec=stream["codec_name"],
+        width=stream["width"],
+        height=stream["height"],
+        fps=fps,
+        frames=frames,
+    )
 
 
 def ffprobe_audio(path) -> FfprobeAudioOutput:

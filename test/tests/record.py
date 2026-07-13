@@ -30,11 +30,13 @@ class Record(TestCase):
         time.sleep(10)
         self.moblin.stop_recording()
         recording_file = self.moblin.download_and_delete_latest_recording(
-            f"Record-{self._video_codec}.mp4"
+            f"Record-{self._video_codec}-{self._resolution}@{self._fps}.mp4"
         )
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
+            width=self._get_width(),
+            height=self._get_height(),
             fps=self._fps,
             video_codec=self._get_ffmpeg_video_codec(),
         )
@@ -44,6 +46,16 @@ class Record(TestCase):
             return "h264"
         else:
             return "hevc"
+
+    def _get_width(self):
+        return {"1920x1080": 1920, "2560x1440": 2560, "3840x2160": 3840}[
+            self._resolution
+        ]
+
+    def _get_height(self):
+        return {"1920x1080": 1080, "2560x1440": 1440, "3840x2160": 2160}[
+            self._resolution
+        ]
 
 
 def tests(moblin: Moblin):
