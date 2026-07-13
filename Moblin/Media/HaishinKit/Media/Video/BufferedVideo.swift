@@ -130,7 +130,7 @@ class BufferedVideo {
         guard delta > 0 else {
             return false
         }
-        if candidateSampleBuffer != nil || abs(delta) > 0.01 {
+        if candidateSampleBuffer != nil || delta > 0.01 {
             return true
         }
         return false
