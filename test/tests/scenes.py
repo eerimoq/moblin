@@ -60,7 +60,7 @@ class ScenePiPBackFront(TestCase):
         )
 
 
-class ScenewidgetsInBackground(TestCase):
+class SceneWidgetsInBackground(TestCase):
     """Stream in background mode with various widgets showing."""
 
     def setup(self):
@@ -91,5 +91,5 @@ def tests(moblin: Moblin):
         SceneSwitchMultipleTimes(moblin),
         ScenePiPBackFront(moblin, fps=30),
         ScenePiPBackFront(moblin, fps=60),
-        ScenewidgetsInBackground(moblin),
+        SceneWidgetsInBackground(moblin),
     ]
