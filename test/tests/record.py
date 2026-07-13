@@ -17,7 +17,8 @@ class Record(TestCase):
         self._fps = fps
 
     def setup(self):
-        self.skip_if_missing_capability("record")
+        if self._fps != 30:
+            self.skip_if_missing_capability("record")
 
     def run(self):
         self.moblin.set_scene("Front")
