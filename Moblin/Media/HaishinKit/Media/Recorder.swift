@@ -12,7 +12,8 @@ protocol RecorderDelegate: AnyObject {
     func recorderFinished()
 }
 
-private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
+private let queue = DispatchQueue(label: "com.eerimoq.recorder")
+private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder-file-writer")
 
 final class Recorder: NSObject, @unchecked Sendable {
     private var replay = false
@@ -27,10 +28,11 @@ final class Recorder: NSObject, @unchecked Sendable {
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
+    private var isRecording: Bool = false
     weak var delegate: (any RecorderDelegate)?
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        processorPipelineQueue.async {
+        queue.async {
             self.outputChannelsMap = map
         }
     }
@@ -45,7 +47,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         let audioOutputSettings = audioOutputSettings
         nonisolated(unsafe)
         let videoOutputSettings = videoOutputSettings
-        processorPipelineQueue.async {
+        queue.async {
             self.startRunningInternal(
                 url: url,
                 replay: replay,
@@ -53,11 +55,17 @@ final class Recorder: NSObject, @unchecked Sendable {
                 videoOutputSettings: videoOutputSettings
             )
         }
+        processorPipelineQueue.async {
+            self.isRecording = true
+        }
     }
 
     func stopRunning() {
-        processorPipelineQueue.async {
+        queue.async {
             self.stopRunningInternal()
+        }
+        processorPipelineQueue.async {
+            self.isRecording = false
         }
     }
 
@@ -85,6 +93,24 @@ final class Recorder: NSObject, @unchecked Sendable {
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        guard isRecording else {
+            return
+        }
+        queue.async {
+            self.appendAudioInternal(sampleBuffer, presentationTimeStamp)
+        }
+    }
+
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        guard isRecording else {
+            return
+        }
+        queue.async {
+            self.appendVideoInternal(sampleBuffer)
+        }
+    }
+
+    private func appendAudioInternal(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
               let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
@@ -104,7 +130,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         }
     }
 
-    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+    private func appendVideoInternal(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
               let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
               isReadyForStartWriting(writer: writer),
