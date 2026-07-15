@@ -75,6 +75,9 @@ class Spotify: NSObject {
     }
 
     func enqueue(track: String) {
+        guard let track = makeSpotifyTrack(value: track) else {
+            return
+        }
         player()?.enqueueTrackUri(track)
     }
 
@@ -106,3 +109,15 @@ extension Spotify: SPTAppRemoteDelegate {
 }
 
 #endif
+
+func makeSpotifyTrack(value: String) -> String? {
+    if value.isEmpty {
+        nil
+    } else if value.starts(with: "spotify:track:") {
+        value
+    } else if let track = URL(string: value)?.pathComponents.last {
+        "spotify:track:\(track)"
+    } else {
+        "spotify:track:\(value)"
+    }
+}
