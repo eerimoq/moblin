@@ -19,6 +19,8 @@ class Record(TestCase):
     def setup(self):
         if self._fps != 30:
             self.skip_if_missing_capability("record")
+        self.skip_if_no_moving_picture()
+        self.moving_picture_on()
 
     def run(self):
         self.moblin.set_scene("Front")

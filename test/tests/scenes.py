@@ -36,6 +36,8 @@ class ScenePiPBackFront(TestCase):
 
     def setup(self):
         self.skip_if_missing_capability("pip")
+        self.skip_if_no_moving_picture()
+        self.moving_picture_on()
 
     def run(self):
         self.moblin.set_stream(f"SRT 5Mbps 1080@{self._fps}")

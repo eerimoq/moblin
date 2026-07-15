@@ -91,6 +91,11 @@ class StreamSrtToFfmpegVideoRateControl(TestCase):
         super().__init__(moblin, f"StreamSrtToFfmpegVideoRateControl{rate_control}")
         self._rate_control = rate_control
 
+    def setup(self):
+        if self._rate_control == "ABR":
+            self.skip_if_no_moving_picture()
+            self.moving_picture_on()
+
     def run(self):
         filename = Path(f"files/{self.name}.ts")
         self.moblin.set_scene("Front")

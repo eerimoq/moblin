@@ -8,3 +8,4 @@ av
 pyperclip
 isort
 playwright
+simba_soam

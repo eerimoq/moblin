@@ -7,6 +7,7 @@ from pathlib import Path
 
 import requests
 
+from .arduino import Arduino
 from .config import Config
 from .utils import log_output
 
@@ -17,13 +18,15 @@ RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 
 
 class Moblin:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
+        self.arduino = arduino
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
         self._server = None
         self.ip_address = config.moblin_ip_address()
         self._capabilities = config.capabilities()
         self.generic_streams = config.generic_streams()
+        self._moving_picture = moving_picture
 
     def __enter__(self):
         self._server = subprocess.Popen(
@@ -100,8 +103,11 @@ class Moblin:
     def get_settings(self):
         self._execute("get_settings")
 
-    def has_capability(self, name: str):
+    def has_capability(self, name: str) -> bool:
         return name in self._capabilities
+
+    def has_moving_picture(self) -> bool:
+        return self._moving_picture
 
     def wait_for_ingests(
         self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests

@@ -32,10 +32,27 @@ class TestCase(systest.TestCase):
     def teardown(self):
         self.moblin.end()
         self.moblin.stop_recording()
+        self.moving_picture_off()
 
     def skip_if_missing_capability(self, name):
         if not self.moblin.has_capability(name):
             raise systest.TestCaseSkippedError(f"{name} capability missing.")
+
+    def skip_if_no_moving_picture(self):
+        if not self.moblin.has_moving_picture():
+            raise systest.TestCaseSkippedError("No moving picture.")
+
+    def moving_picture_on(self):
+        if self.moblin.arduino is None:
+            return
+        self.moblin.arduino.back_motor_on()
+        self.moblin.arduino.front_motor_on()
+
+    def moving_picture_off(self):
+        if self.moblin.arduino is None:
+            return
+        self.moblin.arduino.back_motor_off()
+        self.moblin.arduino.front_motor_off()
 
     def wait_for_ingest_stream_started(
         self, number_of_ingests=NUMBER_OF_INGESTS_BASE + 1, startup_delay=1
