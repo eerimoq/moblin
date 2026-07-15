@@ -1,4 +1,5 @@
 import Foundation
+import SpotifyiOS
 
 private struct SearchTracksResponse: Codable {
     let tracks: SearchTracksResult
@@ -19,19 +20,68 @@ private struct SpotifyArtist: Codable {
 }
 
 @MainActor
-class Spotify {
-    private let accessToken: String
-
-    init(accessToken: String) {
-        self.accessToken = accessToken
+class Spotify: NSObject {
+    private var appRemote: SPTAppRemote?
+    private var accessToken: String?
+    var isConnected: Bool {
+        appRemote?.isConnected ?? false
     }
 
-    private func authorization() -> String {
-        "Bearer \(accessToken)"
+    private let clientID: String
+    private let redirectURL: URL
+
+    init?(clientID: String, redirectURLString: String) {
+        guard !clientID.isEmpty,
+              !redirectURLString.isEmpty,
+              let redirectURL = URL(string: redirectURLString)
+        else {
+            return nil
+        }
+        self.clientID = clientID
+        self.redirectURL = redirectURL
+        super.init()
+        let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
+        appRemote = SPTAppRemote(configuration: configuration, logLevel: .none)
+        appRemote?.delegate = self
+    }
+
+    func authorize() {
+        appRemote?.authorizeAndPlayURI("")
+    }
+
+    func handleOpenURL(_ url: URL) -> Bool {
+        guard let appRemote else {
+            return false
+        }
+        let parameters = appRemote.authorizationParameters(from: url)
+        if let token = parameters?[SPTAppRemoteAccessTokenKey] {
+            accessToken = token
+            appRemote.connectionParameters.accessToken = token
+            connect()
+            return true
+        }
+        return false
+    }
+
+    func connect() {
+        guard let accessToken, !accessToken.isEmpty else {
+            return
+        }
+        appRemote?.connectionParameters.accessToken = accessToken
+        appRemote?.connect()
+    }
+
+    func disconnect() {
+        appRemote?.disconnect()
+        accessToken = nil
     }
 
     func addToQueue(_ query: String, onComplete: @escaping (String?) -> Void) {
-        searchTrack(query) { track in
+        guard let accessToken else {
+            onComplete(nil)
+            return
+        }
+        searchTrack(query, accessToken: accessToken) { track in
             guard let track else {
                 onComplete(nil)
                 return
@@ -47,7 +97,11 @@ class Spotify {
         }
     }
 
-    private func searchTrack(_ query: String, onComplete: @escaping (SpotifyTrack?) -> Void) {
+    private func searchTrack(
+        _ query: String,
+        accessToken: String,
+        onComplete: @escaping (SpotifyTrack?) -> Void
+    ) {
         guard var components = URLComponents(string: "https://api.spotify.com/v1/search") else {
             onComplete(nil)
             return
@@ -62,10 +116,7 @@ class Spotify {
             return
         }
         var request = URLRequest(url: url)
-        request.setAuthorization(authorization())
-        httpRequest(request: request) { data, response, error in
-            guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil)
+        request.setAuthorization(bearerAuthorization(accessToken))
                 return
             }
             let result = try? JSONDecoder().decode(SearchTracksResponse.self, from: data)
@@ -74,6 +125,24 @@ class Spotify {
     }
 
     private func enqueueTrack(uri: String, onComplete: @escaping (Bool) -> Void) {
+        guard let appRemote, appRemote.isConnected else {
+            enqueueTrackViaWebApi(uri: uri, onComplete: onComplete)
+            return
+        }
+        appRemote.playerAPI?.enqueueTrackUri(uri) { _, error in
+            if error != nil {
+                self.enqueueTrackViaWebApi(uri: uri, onComplete: onComplete)
+            } else {
+                onComplete(true)
+            }
+        }
+    }
+
+    private func enqueueTrackViaWebApi(uri: String, onComplete: @escaping (Bool) -> Void) {
+        guard let accessToken else {
+            onComplete(false)
+            return
+        }
         guard var components = URLComponents(
             string: "https://api.spotify.com/v1/me/player/queue"
         ) else {
@@ -89,9 +158,17 @@ class Spotify {
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setAuthorization(authorization())
+        request.setAuthorization("******")
         httpRequest(request: request) { _, response, error in
             onComplete(error == nil && response?.http?.isSuccessful == true)
         }
     }
+}
+
+extension Spotify: SPTAppRemoteDelegate {
+    nonisolated func appRemoteDidEstablishConnection(_: SPTAppRemote) {}
+
+    nonisolated func appRemote(_: SPTAppRemote, didFailConnectionAttemptWithError _: any Error) {}
+
+    nonisolated func appRemote(_: SPTAppRemote, didDisconnectWithError _: any Error?) {}
 }

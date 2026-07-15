@@ -41,6 +41,7 @@
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
 		882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */ = {isa = PBXBuildFile; productRef = 882D0C152DF76F5B0035BFAF /* BlackSharkLib */; };
+		03SP0T022000000000000002 /* SpotifyiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 03SP0T012000000000000001 /* SpotifyiOS */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -315,6 +316,7 @@
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
+				03SP0T022000000000000002 /* SpotifyiOS in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +468,7 @@
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
+				03SP0T012000000000000001 /* SpotifyiOS */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -647,8 +650,8 @@
 				0375FD792F539AAC005BE7A8 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 				03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */,
 				035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */,
-			);
-			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
+				03SP0T002000000000000000 /* XCRemoteSwiftPackageReference "ios-sdk" */,
+			); = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1602,6 +1605,14 @@
 				minimumVersion = 1.1.1;
 			};
 		};
+		03SP0T002000000000000000 /* XCRemoteSwiftPackageReference "ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/spotify/ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1732,6 +1743,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */;
 			productName = BlackSharkLib;
+		};
+		03SP0T012000000000000001 /* SpotifyiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03SP0T002000000000000000 /* XCRemoteSwiftPackageReference "ios-sdk" */;
+			productName = SpotifyiOS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
