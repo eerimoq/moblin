@@ -90,7 +90,6 @@ class Spotify {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setAuthorization(authorization())
-        request.setContentType("application/json")
         httpRequest(request: request) { _, response, error in
             onComplete(error == nil && response?.http?.isSuccessful == true)
         }
