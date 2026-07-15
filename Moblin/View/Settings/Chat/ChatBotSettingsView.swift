@@ -468,6 +468,10 @@ private struct ChatBotCommandsSettingsView: View {
             ReactionPermissionsSettingsView(permissions: permissions.reaction)
             ScenePermissionsSettingsView(permissions: permissions.scene)
             SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
+            SpotifyPermissionsSettingsView(
+                permissions: permissions.spotify,
+                spotify: model.database.chat.botCommandSpotify
+            )
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             SendPermissionsSettingsView(permissions: permissions.send)
@@ -580,6 +584,36 @@ private struct ChatBotAliasesSettingsView: View {
             }
         }
         .navigationTitle("Aliases")
+    }
+}
+
+private struct SpotifyPermissionsSettingsView: View {
+    @ObservedObject var permissions: SettingsChatBotPermissionsCommand
+    let spotify: SettingsSpotify
+
+    var body: some View {
+        Section {
+            NavigationLink {
+                Form {
+                    Section {
+                        TextEditNavigationView(
+                            title: String(localized: "Access token"),
+                            value: spotify.accessToken,
+                            onSubmit: { spotify.accessToken = $0 },
+                            sensitive: true
+                        )
+                    } header: {
+                        Text("Spotify")
+                    }
+                    PermissionsSettingsInnerView(permissions: permissions)
+                }
+                .navigationTitle("!moblin spotify add <song>")
+            } label: {
+                Text("!moblin spotify add <song>")
+            }
+        } footer: {
+            Text("Add a song to the Spotify queue.")
+        }
     }
 }
 

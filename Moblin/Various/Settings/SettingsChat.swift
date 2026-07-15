@@ -170,6 +170,7 @@ class SettingsChatBotPermissions: Codable {
     var gimbal: SettingsChatBotPermissionsCommand = .init()
     var macro: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var send: SettingsChatBotPermissionsCommand = .init()
+    var spotify: SettingsChatBotPermissionsCommand = .init()
     var migrated: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -193,6 +194,7 @@ class SettingsChatBotPermissions: Codable {
         case gimbal
         case macro
         case send
+        case spotify
         case migrated
     }
 
@@ -218,6 +220,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.gimbal, gimbal)
         try container.encode(.macro, macro)
         try container.encode(.send, send)
+        try container.encode(.spotify, spotify)
         try container.encode(.migrated, migrated)
     }
 
@@ -247,6 +250,7 @@ class SettingsChatBotPermissions: Codable {
                                  SettingsChatBotPermissionsCommand.self,
                                  .init(moderatorsEnabled: false))
         send = container.decode(.send, SettingsChatBotPermissionsCommand.self, .init())
+        spotify = container.decode(.spotify, SettingsChatBotPermissionsCommand.self, .init())
         migrated = container.decode(.migrated, Bool.self, false)
         if !migrated {
             scene.moderatorsEnabled = false
@@ -506,6 +510,30 @@ class SettingsOpenAi: Codable, ObservableObject {
     }
 }
 
+class SettingsSpotify: Codable, ObservableObject {
+    @Published var accessToken: String = ""
+
+    enum CodingKeys: CodingKey {
+        case accessToken
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.accessToken, accessToken)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        accessToken = container.decode(.accessToken, String.self, "")
+    }
+
+    func isConfigured() -> Bool {
+        !accessToken.isEmpty
+    }
+}
+
 enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
     case internationalName
     case internationalNameAndUsername
@@ -589,6 +617,7 @@ class SettingsChat: Codable, ObservableObject {
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
     var botCommandAi: SettingsOpenAi = .init()
+    var botCommandSpotify: SettingsSpotify = .init()
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
@@ -640,6 +669,7 @@ class SettingsChat: Codable, ObservableObject {
         case botCommandPermissions
         case botSendLowBatteryWarning
         case botCommandAi
+        case botCommandSpotify
         case badges
         case showFirstTimeChatterMessage
         case showNewFollowerMessage
@@ -694,6 +724,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.botCommandPermissions, botCommandPermissions)
         try container.encode(.botSendLowBatteryWarning, botSendLowBatteryWarning)
         try container.encode(.botCommandAi, botCommandAi)
+        try container.encode(.botCommandSpotify, botCommandSpotify)
         try container.encode(.badges, badges)
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
@@ -777,6 +808,7 @@ class SettingsChat: Codable, ObservableObject {
         )
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
         botCommandAi = container.decode(.botCommandAi, SettingsOpenAi.self, .init())
+        botCommandSpotify = container.decode(.botCommandSpotify, SettingsSpotify.self, .init())
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)

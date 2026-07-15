@@ -149,6 +149,8 @@ extension Model {
                 handleChatBotMessageWidget(command: command)
             case "ai":
                 handleChatBotMessageAi(command: command)
+            case "spotify":
+                handleChatBotMessageSpotify(command: command)
             case "twitch":
                 handleChatBotMessageTwitch(command: command)
             case "gimbal":
@@ -392,6 +394,49 @@ extension Model {
                 }
                 let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
                 self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
+            }
+    }
+
+    private func handleChatBotMessageSpotify(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.spotify,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "add":
+                self.handleChatBotMessageSpotifyAdd(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageSpotifyAdd(command: ChatBotCommand) {
+        let query = command.rest()
+        guard !query.isEmpty else {
+            return
+        }
+        let spotify = database.chat.botCommandSpotify
+        guard spotify.isConfigured() else {
+            return
+        }
+        Spotify(accessToken: spotify.accessToken)
+            .addToQueue(query) { trackDescription in
+                guard let trackDescription else {
+                    if let user = command.message.user {
+                        self.sendChatBotReply(
+                            message: String(localized: "\(user) Sorry, could not add that song. 😢"),
+                            platform: command.message.platform
+                        )
+                    }
+                    return
+                }
+                if let user = command.message.user {
+                    self.sendChatBotReply(
+                        message: String(localized: "\(user) Added \(trackDescription) to the queue! 🎵"),
+                        platform: command.message.platform
+                    )
+                }
             }
     }
 
