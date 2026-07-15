@@ -73,7 +73,7 @@ class Spotify: NSObject {
     func pause() {
         player()?.pause()
     }
-    
+
     func enqueue(track: String) {
         player()?.enqueueTrackUri(track)
     }

@@ -458,14 +458,19 @@ private struct SpotifyPermissionsSettingsView: View {
         } footer: {
             VStack(alignment: .leading) {
                 Text(String("!moblin spotify play"))
+                Text("Play.")
                 Text("")
                 Text(String("!moblin spotify pause"))
+                Text("Pause.")
                 Text("")
                 Text("!moblin spotify add <track>")
+                Text("Add given track to the queue.")
                 Text("")
                 Text(String("!moblin spotify next"))
+                Text("Next track.")
                 Text("")
                 Text(String("!moblin spotify previous"))
+                Text("Previous track.")
                 Text("")
             }
         }
