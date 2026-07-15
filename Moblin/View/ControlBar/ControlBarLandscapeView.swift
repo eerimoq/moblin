@@ -235,20 +235,18 @@ private struct ControlBarPageScrollTargetBehavior: @preconcurrency ScrollTargetB
 private struct PageIndicatorView: View {
     @ObservedObject var quickButtons: QuickButtons
 
-    private var visiblePageIds: [Int] {
-        var ids: [Int] = [1]
-        for page in 1 ..< controlBarPages {
-            if !quickButtons.pairs[page].isEmpty {
-                ids.append(page + 1)
-            }
+    private var visiblePages: [Int] {
+        var pages: [Int] = [1]
+        for page in 1 ..< controlBarPages where !quickButtons.pairs[page].isEmpty {
+            pages.append(page + 1)
         }
-        return ids
+        return pages
     }
 
     var body: some View {
         HStack(spacing: 3) {
-            ForEach(visiblePageIds, id: \.self) { pageId in
-                Image(systemName: quickButtons.activePage == pageId ? "circle.fill" : "circle")
+            ForEach(visiblePages, id: \.self) { page in
+                Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
                     .font(.system(size: 5))
                     .padding(.bottom, 0)
                     .foregroundStyle(.white)
