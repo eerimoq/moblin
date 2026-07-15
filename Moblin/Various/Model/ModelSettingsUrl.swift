@@ -200,8 +200,10 @@ extension Model {
             return
         }
         for url in urls {
-            if url.url.isFileURL,
-               url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
+            if url.url.host() == "spotify" {
+                handleSpotifyAuthenticationUrl(url: url.url)
+            } else if url.url.isFileURL,
+                      url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
             {
                 importSettingsWithConfirmation {
                     self.handleSettingsFileImport(url: url.url)

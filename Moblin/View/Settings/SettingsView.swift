@@ -158,6 +158,11 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
+                        SpotifySettingsView(model: model, spotify: database.spotify)
+                    } label: {
+                        Label("Spotify", systemImage: "music.note")
+                    }
+                    NavigationLink {
                         CatPrintersSettingsView(catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")

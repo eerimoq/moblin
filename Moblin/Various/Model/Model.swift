@@ -712,6 +712,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var httpProxyServer: HttpProxyServer?
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
+    let spotify = Spotify()
 
     weak var processor: Processor? {
         didSet {
@@ -1203,6 +1204,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         setupStreamDeck()
         setSelectedStreamDeck()
+        startSpotify()
     }
 
     func reloadIngests() {
@@ -1475,6 +1477,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadTeslaVehicle()
             reloadMoblinkRelay()
             reloadMoblinkStreamer()
+            // startSpotify()
             updateOrientation()
             autoStartCatPrinters()
             autoStartWorkoutDevices()
@@ -1514,6 +1517,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             suspendRecording()
         }
         showBackgroundStreamingDisabledToast = stopStream()
+        // stopSpotify()
         stopPreviewStream()
         stopRtmpServer()
         stopSrtlaServer()

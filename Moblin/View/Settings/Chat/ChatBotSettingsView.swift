@@ -446,6 +446,32 @@ private struct SendPermissionsSettingsView: View {
     }
 }
 
+private struct SpotifyPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin spotify ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin spotify play"))
+                Text("")
+                Text(String("!moblin spotify pause"))
+                Text("")
+                Text("!moblin spotify add <track>")
+                Text("")
+                Text(String("!moblin spotify next"))
+                Text("")
+                Text(String("!moblin spotify previous"))
+                Text("")
+            }
+        }
+    }
+}
+
 private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -471,6 +497,7 @@ private struct ChatBotCommandsSettingsView: View {
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             SendPermissionsSettingsView(permissions: permissions.send)
+            SpotifyPermissionsSettingsView(permissions: permissions.spotify)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
             TwitchPermissionsSettingsView(permissions: permissions.twitch)

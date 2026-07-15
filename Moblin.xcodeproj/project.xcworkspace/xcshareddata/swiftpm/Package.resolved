@@ -1,5 +1,5 @@
 {
-  "originHash" : "d72ccb679b9bf13f273787251b7ae9687c7d12fa789914ce9187ed9a0ab1bbd4",
+  "originHash" : "87e6eb34025fd0af2a0f14d2f94dc06ceafef035332335a620000ab4189978ee",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -44,6 +44,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "85316be8ab11dd0e76e2df604d685934ab697ee7"
+      }
+    },
+    {
+      "identity" : "ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/spotify/ios-sdk",
+      "state" : {
+        "branch" : "master",
+        "revision" : "8d3a71dc25282072f8aa8bb0611cea2324e18f28"
       }
     },
     {
