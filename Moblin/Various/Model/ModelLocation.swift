@@ -115,7 +115,7 @@ extension Model {
     }
 
     func updateAltitude() {
-        guard let location = locationManager.getLatestKnownLocation() else {
+        guard let location = locationManager.getLatestKnownLocation(), location.verticalAccuracy >= 0 else {
             return
         }
         guard let reference = altitudeReference else {
