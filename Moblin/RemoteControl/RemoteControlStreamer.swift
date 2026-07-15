@@ -121,6 +121,13 @@ class RemoteControlStreamer {
         send(message: .event(data: .scoreboard(config: config)))
     }
 
+    func sendTelemetryUpdate(data: TelemetryData) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .telemetry(data: data)))
+    }
+
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
     }

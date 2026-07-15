@@ -75,6 +75,39 @@ enum RemoteControlEvent: Codable {
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
     case golfScoreboard(data: RemoteControlGolfScoreboard)
+    case telemetry(data: TelemetryData)
+}
+
+struct TelemetryData: Codable {
+    var speed: Double
+    var averageSpeed: Double
+    var altitude: Double
+    var latitude: Double?
+    var longitude: Double?
+    var distance: Double
+    var splitDistance: Double
+    var slopePercent: Double
+    var altitudeAscent: Double
+    var altitudeDescent: Double
+    var splitAltitudeAscent: Double
+    var splitAltitudeDescent: Double
+    var temperature: Double?
+    var feelsLikeTemperature: Double?
+    var windSpeed: Double?
+    var windGust: Double?
+    var country: String?
+    var countryFlag: String?
+    var state: String?
+    var area: String?
+    var city: String?
+    var neighborhood: String?
+    var heartRates: [String: Int?]
+    var activeEnergyBurned: Int?
+    var workoutDistance: Int?
+    var power: Int?
+    var stepCount: Int?
+    var cyclingPower: Int
+    var cyclingCadence: Int
 }
 
 struct RemoteControlChatMessage: Codable {
