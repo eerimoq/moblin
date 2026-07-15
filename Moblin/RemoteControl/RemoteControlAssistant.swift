@@ -479,6 +479,8 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
             break
         case .golfScoreboard:
             break
+        case .telemetry:
+            break
         }
     }
 
