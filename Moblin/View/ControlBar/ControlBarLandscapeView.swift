@@ -236,7 +236,7 @@ private struct PageIndicatorView: View {
     @ObservedObject var quickButtons: QuickButtons
 
     private func visiblePages() -> [Int] {
-        var pages: [Int] = [1]
+        var pages = [1]
         for page in 1 ..< controlBarPages where !quickButtons.pairs[page].isEmpty {
             pages.append(page + 1)
         }
