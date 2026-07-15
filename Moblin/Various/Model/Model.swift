@@ -601,8 +601,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlWeb: RemoteControlWeb?
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
+    var isRemoteControlAssistantRequestingStats = false
     var isRemoteControlWebRequestingPreview = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
+    var remoteControlAssistantRequestingStatsFilter = RemoteControlStartStatsFilter()
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
     var remoteControlStreamerLatestReceivedChatMessageId = -1
@@ -1240,6 +1242,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             return true
         }
+        if isRemoteControlStreamerGForceStatsFilterEnabled() {
+            return true
+        }
         return false
     }
 
@@ -1305,6 +1310,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 break
             }
         }
+        if isRemoteControlStreamerWeatherStatsFilterEnabled() {
+            return true
+        }
         return false
     }
 
@@ -1329,6 +1337,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             default:
                 break
             }
+        }
+        if isRemoteControlStreamerGeographyStatsFilterEnabled() {
+            return true
         }
         return false
     }
@@ -1717,6 +1728,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateStatusChatText()
         updateAutoSceneSwitcher(now: monotonicNow)
         sendPeriodicRemoteControlStreamerStatus()
+        sendPeriodicRemoteControlStreamerStats(now: now)
         speechToTextProcess()
         updateTwitchRaid()
     }

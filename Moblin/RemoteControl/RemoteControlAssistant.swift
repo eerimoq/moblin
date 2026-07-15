@@ -12,6 +12,7 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantStatus(general: RemoteControlStatusGeneral?,
                                       topLeft: RemoteControlStatusTopLeft?,
                                       topRight: RemoteControlStatusTopRight?)
+    func remoteControlAssistantStats(data: RemoteControlStats)
 }
 
 private struct RemoteControlRequestResponse {
@@ -225,6 +226,14 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
 
     func stopStatus() {
         performRequestNoResponseData(data: .stopStatus, onSuccess: {})
+    }
+
+    func startStats(filter: RemoteControlStartStatsFilter? = nil) {
+        performRequestNoResponseData(data: .startStats(filter: filter), onSuccess: {})
+    }
+
+    func stopStats() {
+        performRequestNoResponseData(data: .stopStats, onSuccess: {})
     }
 
     func whipPerform(url: String,
@@ -487,6 +496,8 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
             break
         case .golfScoreboard:
             break
+        case let .stats(data: data):
+            delegate?.remoteControlAssistantStats(data: data)
         }
     }
 

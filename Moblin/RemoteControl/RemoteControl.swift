@@ -5,9 +5,20 @@ import Foundation
 import WeatherKit
 
 let remoteControlApiVersion = "0.1"
+let remoteControlStartStatsFilterAllEnabled = RemoteControlStartStatsFilter(
+    weather: true,
+    geography: true,
+    gForce: true
+)
 
 class RemoteControlStartStatusFilter: Codable {
     var topRight: Bool = true
+}
+
+struct RemoteControlStartStatsFilter: Codable {
+    var weather: Bool?
+    var geography: Bool?
+    var gForce: Bool?
 }
 
 enum RemoteControlRequest: Codable {
@@ -54,6 +65,8 @@ enum RemoteControlRequest: Codable {
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
     case importSettings(data: Data)
+    case startStats(filter: RemoteControlStartStatsFilter?)
+    case stopStats
 }
 
 enum RemoteControlResponse: Codable {
@@ -76,6 +89,42 @@ enum RemoteControlEvent: Codable {
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
     case golfScoreboard(data: RemoteControlGolfScoreboard)
+    case stats(data: RemoteControlStats)
+}
+
+struct RemoteControlStats: Codable {
+    var date: Date
+    var timeZone: String
+    var speed: Double
+    var averageSpeed: Double
+    var altitude: Double
+    var latitude: Double?
+    var longitude: Double?
+    var distance: Double
+    var splitDistance: Double
+    var slopePercent: Double
+    var altitudeAscent: Double
+    var altitudeDescent: Double
+    var splitAltitudeAscent: Double
+    var splitAltitudeDescent: Double
+    var temperature: Double?
+    var feelsLikeTemperature: Double?
+    var windSpeed: Double?
+    var windGust: Double?
+    var country: String?
+    var countryFlag: String?
+    var state: String?
+    var area: String?
+    var city: String?
+    var neighborhood: String?
+    var heartRates: [String: Int?]
+    var activeEnergyBurned: Int?
+    var workoutDistance: Int?
+    var power: Int?
+    var stepCount: Int?
+    var cyclingPower: Int
+    var cyclingCadence: Int
+    var gForce: GForce?
 }
 
 struct RemoteControlChatMessage: Codable {
