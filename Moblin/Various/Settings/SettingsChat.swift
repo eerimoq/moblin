@@ -171,6 +171,7 @@ class SettingsChatBotPermissions: Codable {
     var macro: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var send: SettingsChatBotPermissionsCommand = .init()
     var spotify: SettingsChatBotPermissionsCommand = .init()
+    var music: SettingsChatBotPermissionsCommand = .init()
     var migrated: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -195,6 +196,7 @@ class SettingsChatBotPermissions: Codable {
         case macro
         case send
         case spotify
+        case music
         case migrated
     }
 
@@ -221,6 +223,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.macro, macro)
         try container.encode(.send, send)
         try container.encode(.spotify, spotify)
+        try container.encode(.music, music)
         try container.encode(.migrated, migrated)
     }
 
@@ -251,6 +254,7 @@ class SettingsChatBotPermissions: Codable {
                                  .init(moderatorsEnabled: false))
         send = container.decode(.send, SettingsChatBotPermissionsCommand.self, .init())
         spotify = container.decode(.spotify, SettingsChatBotPermissionsCommand.self, .init())
+        music = container.decode(.music, SettingsChatBotPermissionsCommand.self, .init())
         migrated = container.decode(.migrated, Bool.self, false)
         if !migrated {
             scene.moderatorsEnabled = false

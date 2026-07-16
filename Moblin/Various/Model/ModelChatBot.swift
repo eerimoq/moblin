@@ -159,6 +159,8 @@ extension Model {
                 handleChatBotMessageSend(command: command)
             case "spotify":
                 handleChatBotMessageSpotify(command: command)
+            case "music":
+                handleChatBotMessageMusic(command: command)
             default:
                 break
             }
@@ -496,7 +498,6 @@ extension Model {
             permissions: database.chat.botCommandPermissions.spotify,
             command: command
         ) {
-            logger.info("xxx \(command.rest())")
             switch command.popFirst() {
             case "play":
                 self.handleChatBotMessageSpotifyPlay()
@@ -535,6 +536,91 @@ extension Model {
 
     private func handleChatBotMessageSpotifyPrevious() {
         spotify.previous()
+    }
+
+    private func handleChatBotMessageMusic(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.music,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "play":
+                self.handleChatBotMessageMusicPlay()
+            case "pause":
+                self.handleChatBotMessageMusicPause()
+            case "add":
+                self.handleChatBotMessageMusicAdd(command: command)
+            case "next":
+                self.handleChatBotMessageMusicNext()
+            case "previous":
+                self.handleChatBotMessageMusicPrevious()
+            case "status":
+                self.handleChatBotMessageMusicStatus(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageMusicPlay() {
+        playMusic()
+    }
+
+    private func handleChatBotMessageMusicPause() {
+        pauseMusic()
+    }
+
+    private func handleChatBotMessageMusicAdd(command: ChatBotCommand) {
+        let title = command.rest()
+        guard !title.isEmpty else {
+            return
+        }
+        addMusic(title: title) { message in
+            self.sendChatBotReply(message: message, platform: command.message.platform)
+        }
+    }
+
+    private func handleChatBotMessageMusicNext() {
+        nextMusic()
+    }
+
+    private func handleChatBotMessageMusicPrevious() {
+        previousMusic()
+    }
+
+    private func handleChatBotMessageMusicStatus(command: ChatBotCommand) {
+        statusMusic { status in
+            var songs: [String] = []
+            var numberOfSongsNotShown = 0
+            if let currentSongIndex = status.currentSongIndex {
+                for (index, song) in status.songs.enumerated() {
+                    var title = String(song.title.prefix(50))
+                    if title != song.title {
+                        title += "..."
+                    }
+                    if index >= currentSongIndex, index <= currentSongIndex + 2 {
+                        if index == currentSongIndex {
+                            if status.playing {
+                                songs.append("▶️ \(title)")
+                            } else {
+                                songs.append("⏸️ \(title)")
+                            }
+                        } else {
+                            songs.append(title)
+                        }
+                    } else if index > currentSongIndex + 2 {
+                        numberOfSongsNotShown += 1
+                    }
+                }
+                if numberOfSongsNotShown > 0 {
+                    songs.append("\(numberOfSongsNotShown) more")
+                }
+            } else {
+                songs.append("Current song not found")
+            }
+            self.sendChatBotReply(message: songs.joined(separator: " | "),
+                                  platform: command.message.platform)
+        }
     }
 
     private func handleChatBotMessageMacroRun(macro: SettingsMacrosMacro) {

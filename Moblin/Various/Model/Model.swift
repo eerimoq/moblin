@@ -1205,6 +1205,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setupStreamDeck()
         setSelectedStreamDeck()
         startSpotify()
+        setupMusic()
     }
 
     func reloadIngests() {
@@ -1477,7 +1478,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadTeslaVehicle()
             reloadMoblinkRelay()
             reloadMoblinkStreamer()
-            // startSpotify()
             updateOrientation()
             autoStartCatPrinters()
             autoStartWorkoutDevices()
@@ -1517,7 +1517,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             suspendRecording()
         }
         showBackgroundStreamingDisabledToast = stopStream()
-        // stopSpotify()
         stopPreviewStream()
         stopRtmpServer()
         stopSrtlaServer()

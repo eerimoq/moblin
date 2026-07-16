@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Moblin uses Apple Music to play music on your stream.</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
         <string>elgato-device-driver</string>

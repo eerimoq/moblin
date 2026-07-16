@@ -446,6 +446,37 @@ private struct SendPermissionsSettingsView: View {
     }
 }
 
+private struct MusicPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin music ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("!moblin music add <song>")
+                Text("Add given song to the queue.")
+                Text("<song> is either a share link or text search.")
+                Text("")
+                Text(String("!moblin music play"))
+                Text("Play.")
+                Text("")
+                Text(String("!moblin music pause"))
+                Text("Pause.")
+                Text("")
+                Text(String("!moblin spotify next"))
+                Text("Next song.")
+                Text("")
+                Text(String("!moblin spotify previous"))
+                Text("Previous song.")
+            }
+        }
+    }
+}
+
 private struct SpotifyPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -463,15 +494,14 @@ private struct SpotifyPermissionsSettingsView: View {
                 Text(String("!moblin spotify pause"))
                 Text("Pause.")
                 Text("")
-                Text("!moblin spotify add <track>")
-                Text("Add given track to the queue.")
+                Text("!moblin spotify add <song>")
+                Text("Add given song to the queue.")
                 Text("")
                 Text(String("!moblin spotify next"))
-                Text("Next track.")
+                Text("Next song.")
                 Text("")
                 Text(String("!moblin spotify previous"))
-                Text("Previous track.")
-                Text("")
+                Text("Previous song.")
             }
         }
     }
@@ -502,6 +532,7 @@ private struct ChatBotCommandsSettingsView: View {
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             SendPermissionsSettingsView(permissions: permissions.send)
+            MusicPermissionsSettingsView(permissions: permissions.music)
             SpotifyPermissionsSettingsView(permissions: permissions.spotify)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
