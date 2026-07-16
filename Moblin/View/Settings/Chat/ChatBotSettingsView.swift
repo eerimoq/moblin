@@ -467,11 +467,14 @@ private struct MusicPermissionsSettingsView: View {
                 Text(String("!moblin music pause"))
                 Text("Pause.")
                 Text("")
-                Text(String("!moblin spotify next"))
+                Text(String("!moblin music next"))
                 Text("Next song.")
                 Text("")
-                Text(String("!moblin spotify previous"))
+                Text(String("!moblin music previous"))
                 Text("Previous song.")
+                Text("")
+                Text(String("!moblin music status"))
+                Text("Show status.")
             }
         }
     }
