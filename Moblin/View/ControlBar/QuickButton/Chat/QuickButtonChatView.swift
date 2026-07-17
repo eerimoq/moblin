@@ -54,6 +54,7 @@ private struct HighlightMessageView: View {
                 }
             }
             .foregroundStyle(highlight.messageColor())
+            .font(.system(size: CGFloat(chat.fontSize)))
             .padding(.leading, 5)
         }
     }
@@ -158,6 +159,7 @@ private struct LineView: View {
             }
         }
         .padding(.leading, 5)
+        .font(.system(size: CGFloat(chat.fontSize)))
         .onTapGesture {
             selectedPost = post
         }
