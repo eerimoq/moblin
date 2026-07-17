@@ -162,45 +162,43 @@ struct QuickButtonsButtonSettingsView: View {
         model.updateQuickButtonStates()
     }
 
+    @ViewBuilder
     private func positionPortrait() -> some View {
-        Group {
-            PositionButtonView(image: "arrow.up.circle") {
+        PositionButtonView(image: "arrow.up.circle") {
+            moveLeftRight()
+        }
+        .disabled(!quickButtonsSettings.twoColumns)
+        HStack {
+            PositionButtonView(image: "arrow.left.circle") {
+                moveUp()
+            }
+            PositionButtonView(image: "arrow.down.circle") {
                 moveLeftRight()
             }
             .disabled(!quickButtonsSettings.twoColumns)
-            HStack {
-                PositionButtonView(image: "arrow.left.circle") {
-                    moveUp()
-                }
-                PositionButtonView(image: "arrow.down.circle") {
-                    moveLeftRight()
-                }
-                .disabled(!quickButtonsSettings.twoColumns)
-                PositionButtonView(image: "arrow.right.circle") {
-                    moveDown()
-                }
+            PositionButtonView(image: "arrow.right.circle") {
+                moveDown()
             }
         }
     }
 
+    @ViewBuilder
     private func positionLandscape() -> some View {
-        Group {
-            PositionButtonView(image: "arrow.up.circle") {
-                moveUp()
+        PositionButtonView(image: "arrow.up.circle") {
+            moveUp()
+        }
+        HStack {
+            PositionButtonView(image: "arrow.left.circle") {
+                moveLeftRight()
             }
-            HStack {
-                PositionButtonView(image: "arrow.left.circle") {
-                    moveLeftRight()
-                }
-                .disabled(!quickButtonsSettings.twoColumns)
-                PositionButtonView(image: "arrow.down.circle") {
-                    moveDown()
-                }
-                PositionButtonView(image: "arrow.right.circle") {
-                    moveLeftRight()
-                }
-                .disabled(!quickButtonsSettings.twoColumns)
+            .disabled(!quickButtonsSettings.twoColumns)
+            PositionButtonView(image: "arrow.down.circle") {
+                moveDown()
             }
+            PositionButtonView(image: "arrow.right.circle") {
+                moveLeftRight()
+            }
+            .disabled(!quickButtonsSettings.twoColumns)
         }
     }
 

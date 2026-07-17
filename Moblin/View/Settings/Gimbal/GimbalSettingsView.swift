@@ -37,21 +37,20 @@ private struct GimbalPresetView: View {
     @State private var y: Float = 0
     @State private var zoomX: Float = 1
 
+    @ViewBuilder
     private func position() -> some View {
-        Group {
-            PositionButtonView(image: "arrow.up.circle") {
-                x += Float(0.1).toRadians()
+        PositionButtonView(image: "arrow.up.circle") {
+            x += Float(0.1).toRadians()
+        }
+        HStack {
+            PositionButtonView(image: "arrow.left.circle") {
+                y += Float(0.1).toRadians()
             }
-            HStack {
-                PositionButtonView(image: "arrow.left.circle") {
-                    y += Float(0.1).toRadians()
-                }
-                PositionButtonView(image: "arrow.down.circle") {
-                    x -= Float(0.1).toRadians()
-                }
-                PositionButtonView(image: "arrow.right.circle") {
-                    y -= Float(0.1).toRadians()
-                }
+            PositionButtonView(image: "arrow.down.circle") {
+                x -= Float(0.1).toRadians()
+            }
+            PositionButtonView(image: "arrow.right.circle") {
+                y -= Float(0.1).toRadians()
             }
         }
     }

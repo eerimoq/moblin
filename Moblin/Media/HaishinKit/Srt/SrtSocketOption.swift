@@ -436,7 +436,9 @@ enum SrtSocketOption: String {
     {
         var failures: [String] = []
         for (key, value) in options where key.binding == binding {
-            if !key.setOption(socket, value: value) { failures.append(key.rawValue) }
+            if !key.setOption(socket, value: value) {
+                failures.append(key.rawValue)
+            }
         }
         return failures
     }
