@@ -79,6 +79,8 @@ enum RemoteControlEvent: Codable {
 }
 
 struct TelemetryData: Codable {
+    var date: Date
+    var timeZone: String
     var speed: Double
     var averageSpeed: Double
     var altitude: Double
