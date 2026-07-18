@@ -13,7 +13,7 @@ private enum Action {
 }
 
 private var songs: [Song] = []
-private let player = ApplicationMusicPlayer.shared
+let musicPlayer = ApplicationMusicPlayer.shared
 private var isActionRunning = false
 private var actions: Deque<Action> = []
 private var playRequested = true
@@ -100,22 +100,22 @@ extension Model {
             logger.debug("music: Adding song \(song)")
             onCompleted("\(song.artistName) - \(song.title) added to the queue.")
             songs.append(song)
-            if !player.isPreparedToPlay {
+            if !musicPlayer.isPreparedToPlay {
                 logger.debug("music: Creating queue")
-                player.queue = .init(for: songs)
+                musicPlayer.queue = .init(for: songs)
                 if playRequested {
-                    try await player.play()
+                    try await musicPlayer.play()
                 } else {
-                    try await player.prepareToPlay()
+                    try await musicPlayer.prepareToPlay()
                 }
             } else {
-                if playRequested, player.state.playbackStatus == .paused {
+                if playRequested, musicPlayer.state.playbackStatus == .paused {
                     logger.debug("music: New queue")
-                    player.queue = .init(for: songs, startingAt: song)
-                    try await player.play()
+                    musicPlayer.queue = .init(for: songs, startingAt: song)
+                    try await musicPlayer.play()
                 } else {
                     logger.debug("music: Appending to queue")
-                    try await player.queue.insert(song, position: .tail)
+                    try await musicPlayer.queue.insert(song, position: .tail)
                 }
             }
         } else {
@@ -143,37 +143,37 @@ extension Model {
 
     private func playAction() async throws {
         playRequested = true
-        try await player.play()
+        try await musicPlayer.play()
     }
 
     private func pauseAction() {
         playRequested = false
-        player.pause()
+        musicPlayer.pause()
     }
 
     private func nextAction(count: Int) async throws {
         for _ in 0 ..< min(count, songs.count) {
-            try await player.skipToNextEntry()
+            try await musicPlayer.skipToNextEntry()
         }
     }
 
     private func previousAction(count: Int) async throws {
         for _ in 0 ..< min(count, songs.count) {
-            try await player.skipToPreviousEntry()
+            try await musicPlayer.skipToPreviousEntry()
         }
     }
 
     private func statusAction(onCompleted: (MusicStatus) -> Void) async throws {
-        let currentSong = player.queue.currentEntry
+        let currentSong = musicPlayer.queue.currentEntry
         var currentSongIndex: Int?
         var songs: [MusicStatusSong] = []
-        for (index, entry) in player.queue.entries.enumerated() {
+        for (index, entry) in musicPlayer.queue.entries.enumerated() {
             if entry.id == currentSong?.id {
                 currentSongIndex = index
             }
             songs.append(MusicStatusSong(title: entry.title))
         }
-        onCompleted(MusicStatus(playing: player.state.playbackStatus == .playing,
+        onCompleted(MusicStatus(playing: musicPlayer.state.playbackStatus == .playing,
                                 currentSongIndex: currentSongIndex,
                                 songs: songs))
     }

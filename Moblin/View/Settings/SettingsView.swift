@@ -104,6 +104,11 @@ struct SettingsView: View {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }
                 }
+                NavigationLink {
+                    MusicSettingsView(model: model)
+                } label: {
+                    Label("Music", systemImage: "music.note")
+                }
             }
             if database.showAllSettings {
                 Section {
@@ -156,11 +161,6 @@ struct SettingsView: View {
                         GoProSettingsView()
                     } label: {
                         Label("GoPro", systemImage: "appletvremote.gen1")
-                    }
-                    NavigationLink {
-                        SpotifySettingsView(model: model, spotify: database.spotify)
-                    } label: {
-                        Label("Spotify", systemImage: "music.note")
                     }
                     NavigationLink {
                         CatPrintersSettingsView(catPrinters: database.catPrinters)

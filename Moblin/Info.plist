@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>NSAppleMusicUsageDescription</key>
-    <string>Moblin uses Apple Music to play music on your stream.</string>
+    <string>Moblin uses Apple Music to play music while you stream.</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
         <string>elgato-device-driver</string>
