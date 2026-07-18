@@ -551,9 +551,9 @@ extension Model {
             case "add":
                 self.handleChatBotMessageMusicAdd(command: command)
             case "next":
-                self.handleChatBotMessageMusicNext()
+                self.handleChatBotMessageMusicNext(command: command)
             case "previous":
-                self.handleChatBotMessageMusicPrevious()
+                self.handleChatBotMessageMusicPrevious(command: command)
             case "status":
                 self.handleChatBotMessageMusicStatus(command: command)
             default:
@@ -580,12 +580,20 @@ extension Model {
         }
     }
 
-    private func handleChatBotMessageMusicNext() {
-        nextMusic()
+    private func handleChatBotMessageMusicNext(command: ChatBotCommand) {
+        if let count = command.popFirst(), let count = Int(count) {
+            nextMusic(count: count)
+        } else {
+            nextMusic(count: 1)
+        }
     }
 
-    private func handleChatBotMessageMusicPrevious() {
-        previousMusic()
+    private func handleChatBotMessageMusicPrevious(command: ChatBotCommand) {
+        if let count = command.popFirst(), let count = Int(count) {
+            previousMusic(count: count)
+        } else {
+            previousMusic(count: 1)
+        }
     }
 
     private func handleChatBotMessageMusicStatus(command: ChatBotCommand) {
@@ -593,12 +601,13 @@ extension Model {
             var songs: [String] = []
             var numberOfSongsNotShown = 0
             if let currentSongIndex = status.currentSongIndex {
+                let lastSongToShowIndex = currentSongIndex + 4
                 for (index, song) in status.songs.enumerated() {
-                    var title = String(song.title.prefix(50))
-                    if title != song.title {
-                        title += "..."
-                    }
-                    if index >= currentSongIndex, index <= currentSongIndex + 2 {
+                    if index >= currentSongIndex, index <= lastSongToShowIndex {
+                        var title = String(song.title.prefix(50)).trim()
+                        if title != song.title {
+                            title += "…"
+                        }
                         if index == currentSongIndex {
                             if status.playing {
                                 songs.append("▶️ \(title)")
@@ -608,7 +617,7 @@ extension Model {
                         } else {
                             songs.append(title)
                         }
-                    } else if index > currentSongIndex + 2 {
+                    } else if index > lastSongToShowIndex {
                         numberOfSongsNotShown += 1
                     }
                 }

@@ -7,14 +7,13 @@ private enum Action {
     case add(title: String, onCompleted: (String) -> Void)
     case play
     case pause
-    case next
-    case previous
+    case next(count: Int)
+    case previous(count: Int)
     case status(onCompleted: (MusicStatus) -> Void)
 }
 
 private var songs: [Song] = []
 private let player = ApplicationMusicPlayer.shared
-private var cancellables = Set<AnyCancellable>()
 private var isActionRunning = false
 private var actions: Deque<Action> = []
 private var playRequested = true
@@ -30,15 +29,6 @@ struct MusicStatus {
 }
 
 extension Model {
-    func setupMusic() {
-        player.state.objectWillChange
-            .sink {
-                let status = player.state.playbackStatus
-                logger.info("music: Status \(status)")
-            }
-            .store(in: &cancellables)
-    }
-
     func addMusic(title: String, onCompleted: @escaping (String) -> Void) {
         actions.append(.add(title: title, onCompleted: onCompleted))
         tryRunNextAction()
@@ -54,13 +44,13 @@ extension Model {
         tryRunNextAction()
     }
 
-    func nextMusic() {
-        actions.append(.next)
+    func nextMusic(count: Int) {
+        actions.append(.next(count: count))
         tryRunNextAction()
     }
 
-    func previousMusic() {
-        actions.append(.previous)
+    func previousMusic(count: Int) {
+        actions.append(.previous(count: count))
         tryRunNextAction()
     }
 
@@ -74,7 +64,7 @@ extension Model {
             return
         }
         isActionRunning = true
-        logger.info("music: Running action: \(action)")
+        logger.debug("music: Running action: \(action)")
         Task {
             do {
                 switch action {
@@ -84,15 +74,16 @@ extension Model {
                     try await playAction()
                 case .pause:
                     pauseAction()
-                case .next:
-                    try await nextAction()
-                case .previous:
-                    try await previousAction()
+                case let .next(count: count):
+                    try await nextAction(count: count)
+                case let .previous(count: count):
+                    try await previousAction(count: count)
                 case let .status(onCompleted: onCompleted):
                     try await statusAction(onCompleted: onCompleted)
                 }
             } catch {
-                logger.info("music: Error \(error)")
+                self.makeErrorToast(title: String(localized: "Music player error"),
+                                    subTitle: error.localizedDescription)
             }
             isActionRunning = false
             tryRunNextAction()
@@ -106,12 +97,12 @@ extension Model {
             return
         }
         if let song = try await findSong(title: title) {
-            logger.info("music: Adding song \(song)")
+            logger.debug("music: Adding song \(song)")
             onCompleted("\(song.artistName) - \(song.title) added to the queue.")
             songs.append(song)
             if !player.isPreparedToPlay {
-                logger.info("music: Creating queue")
-                player.queue = .init(for: [song])
+                logger.debug("music: Creating queue")
+                player.queue = .init(for: songs)
                 if playRequested {
                     try await player.play()
                 } else {
@@ -119,16 +110,17 @@ extension Model {
                 }
             } else {
                 if playRequested, player.state.playbackStatus == .paused {
-                    logger.info("music: New queue")
+                    logger.debug("music: New queue")
                     player.queue = .init(for: songs, startingAt: song)
                     try await player.play()
                 } else {
-                    logger.info("music: Appending to queue")
+                    logger.debug("music: Appending to queue")
                     try await player.queue.insert(song, position: .tail)
                 }
             }
         } else {
-            logger.info("music: Song '\(title)' not found")
+            logger.debug("music: Song '\(title)' not found")
+            onCompleted("\(title) not found.")
         }
     }
 
@@ -159,12 +151,16 @@ extension Model {
         player.pause()
     }
 
-    private func nextAction() async throws {
-        try await player.skipToNextEntry()
+    private func nextAction(count: Int) async throws {
+        for _ in 0 ..< min(count, songs.count) {
+            try await player.skipToNextEntry()
+        }
     }
 
-    private func previousAction() async throws {
-        try await player.skipToPreviousEntry()
+    private func previousAction(count: Int) async throws {
+        for _ in 0 ..< min(count, songs.count) {
+            try await player.skipToPreviousEntry()
+        }
     }
 
     private func statusAction(onCompleted: (MusicStatus) -> Void) async throws {

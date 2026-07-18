@@ -19,6 +19,12 @@
 | !moblin ai ask \<question> | Ask AI a question. |
 | !moblin mute | Mute audio. |
 | !moblin unmute | Unmute audio. |
+| !moblin music add <song> | Add a song. Free text search or share link. |
+| !moblin music play | Play. |
+| !moblin music pause | Pause. |
+| !moblin music next | Next song. |
+| !moblin music previous | Precisou song. |
+| !moblin music status | Show status. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
 | !moblin tesla media next | Next track. |

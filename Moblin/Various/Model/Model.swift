@@ -1206,7 +1206,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setupStreamDeck()
         setSelectedStreamDeck()
         startSpotify()
-        setupMusic()
     }
 
     func reloadIngests() {
