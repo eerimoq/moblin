@@ -1574,6 +1574,8 @@ extension Model {
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
             if remoteControlStreamer?.isConnected() == true {
                 remoteControlStreamer?.sendTelemetryUpdate(data: TelemetryData(
+                    date: now,
+                    timeZone: TimeZone.current.identifier,
                     speed: location?.speed ?? 0,
                     averageSpeed: averageSpeed,
                     altitude: location?.altitude ?? 0,
