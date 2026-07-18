@@ -22,8 +22,8 @@
 | !moblin music add <song> | Add a song. Free text search or share link. |
 | !moblin music play | Play. |
 | !moblin music pause | Pause. |
-| !moblin music next | Next song. |
-| !moblin music previous | Precisou song. |
+| !moblin music next [\<count>] | Next song(s). |
+| !moblin music previous [\<count>] | Previous song(s). |
 | !moblin music status | Show status. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
