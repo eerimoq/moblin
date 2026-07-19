@@ -18,6 +18,8 @@ Github: https://github.com/eerimoq/moblin
 
 TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
+Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
+
 # Features
 
 ## Main app
