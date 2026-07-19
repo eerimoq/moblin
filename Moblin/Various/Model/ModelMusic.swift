@@ -91,6 +91,7 @@ extension Model {
     }
 
     private func addAction(title: String, onCompleted: (String) -> Void) async throws {
+        let title = title.trim()
         let authStatus = await MusicAuthorization.request()
         guard authStatus == .authorized else {
             logger.info("music: Not authorized")
@@ -120,11 +121,14 @@ extension Model {
             }
         } else {
             logger.debug("music: Song '\(title)' not found")
-            onCompleted("\(title) not found.")
+            onCompleted("'\(title)' not found.")
         }
     }
 
     private func findSong(title: String) async throws -> Song? {
+        guard !title.isEmpty else {
+            return nil
+        }
         if let url = URL(string: title), url.scheme == "https" {
             guard let id = url.dictionaryFromQuery()["i"] else {
                 return nil
