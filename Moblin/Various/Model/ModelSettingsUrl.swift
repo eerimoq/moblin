@@ -201,7 +201,7 @@ extension Model {
         }
         for url in urls {
             if url.url.isFileURL,
-                      url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
+               url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
             {
                 importSettingsWithConfirmation {
                     self.handleSettingsFileImport(url: url.url)
