@@ -1710,6 +1710,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
     }
 
+    func isYouTubeAuthorized() -> Bool {
+        youTubeAuthState?.isAuthorized == true
+    }
+
     private func encodeYouTubeAuthState() -> Data? {
         if let youTubeAuthState {
             try? NSKeyedArchiver.archivedData(withRootObject: youTubeAuthState,

@@ -77,18 +77,18 @@ extension Model {
 
     func tryToFetchYouTubeVideoId() {
         guard database.chat.enabled,
-              stream.youTubeAuthState != nil || !stream.youTubeHandle.isEmpty,
+              stream.isYouTubeAuthorized() || !stream.youTubeHandle.isEmpty,
               let youTubeFetchVideoIdStartTime
         else {
             return
         }
-        guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(120) else {
+        guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(60) else {
             stopFetchingYouTubeChatVideoId()
             makeErrorToast(title: String(localized: "Failed to fetch YouTube Video ID"),
                            subTitle: String(localized: "You must be live on YouTube for this to work."))
             return
         }
-        if stream.youTubeAuthState != nil {
+        if stream.isYouTubeAuthorized() {
             getYouTubeApi(stream: stream) { youTubeApi in
                 guard let youTubeApi else {
                     return
@@ -131,7 +131,7 @@ extension Model {
     }
 
     func isYouTubeViewersConfigured() -> Bool {
-        stream.youTubeAuthState != nil && !stream.youTubeVideoIds.isEmpty
+        stream.isYouTubeAuthorized() && !stream.youTubeVideoIds.isEmpty
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
