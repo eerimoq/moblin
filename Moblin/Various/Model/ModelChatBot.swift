@@ -157,8 +157,6 @@ extension Model {
                 handleChatBotMessageMacro(command: command)
             case "send":
                 handleChatBotMessageSend(command: command)
-            case "spotify":
-                handleChatBotMessageSpotify(command: command)
             case "music":
                 handleChatBotMessageMusic(command: command)
             default:
@@ -491,51 +489,6 @@ extension Model {
             self.sendChatBotReply(message: command.rest(),
                                   platform: command.message.platform)
         }
-    }
-
-    private func handleChatBotMessageSpotify(command: ChatBotCommand) {
-        executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.spotify,
-            command: command
-        ) {
-            switch command.popFirst() {
-            case "play":
-                self.handleChatBotMessageSpotifyPlay()
-            case "pause":
-                self.handleChatBotMessageSpotifyPause()
-            case "add":
-                self.handleChatBotMessageSpotifyAdd(command: command)
-            case "next":
-                self.handleChatBotMessageSpotifyNext()
-            case "previous":
-                self.handleChatBotMessageSpotifyPrevious()
-            default:
-                break
-            }
-        }
-    }
-
-    private func handleChatBotMessageSpotifyPlay() {
-        spotify.play(track: nil)
-    }
-
-    private func handleChatBotMessageSpotifyPause() {
-        spotify.pause()
-    }
-
-    private func handleChatBotMessageSpotifyAdd(command: ChatBotCommand) {
-        guard let track = command.popFirst() else {
-            return
-        }
-        spotify.enqueue(track: track)
-    }
-
-    private func handleChatBotMessageSpotifyNext() {
-        spotify.next()
-    }
-
-    private func handleChatBotMessageSpotifyPrevious() {
-        spotify.previous()
     }
 
     private func handleChatBotMessageMusic(command: ChatBotCommand) {

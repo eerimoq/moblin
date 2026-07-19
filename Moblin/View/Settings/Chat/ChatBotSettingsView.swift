@@ -446,7 +446,7 @@ private struct SendPermissionsSettingsView: View {
     }
 }
 
-private struct MusicPermissionsSettingsView: View {
+private struct AppleMusicPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
@@ -480,36 +480,6 @@ private struct MusicPermissionsSettingsView: View {
     }
 }
 
-private struct SpotifyPermissionsSettingsView: View {
-    let permissions: SettingsChatBotPermissionsCommand
-
-    var body: some View {
-        Section {
-            PermissionsSettingsView(
-                title: "!moblin spotify ...",
-                permissions: permissions
-            )
-        } footer: {
-            VStack(alignment: .leading) {
-                Text(String("!moblin spotify play"))
-                Text("Play.")
-                Text("")
-                Text(String("!moblin spotify pause"))
-                Text("Pause.")
-                Text("")
-                Text("!moblin spotify add <song>")
-                Text("Add given song to the queue.")
-                Text("")
-                Text(String("!moblin spotify next"))
-                Text("Next song.")
-                Text("")
-                Text(String("!moblin spotify previous"))
-                Text("Previous song.")
-            }
-        }
-    }
-}
-
 private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -535,8 +505,7 @@ private struct ChatBotCommandsSettingsView: View {
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             SendPermissionsSettingsView(permissions: permissions.send)
-            MusicPermissionsSettingsView(permissions: permissions.music)
-            SpotifyPermissionsSettingsView(permissions: permissions.spotify)
+            AppleMusicPermissionsSettingsView(permissions: permissions.music)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
             TwitchPermissionsSettingsView(permissions: permissions.twitch)

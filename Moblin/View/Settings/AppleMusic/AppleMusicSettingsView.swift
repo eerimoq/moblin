@@ -1,7 +1,7 @@
 import MusicKit
 import SwiftUI
 
-struct MusicAppleMusicSettingsView: View {
+struct AppleMusicSettingsView: View {
     let model: Model
     @State private var searchText: String = ""
     @ObservedObject private var playerState = musicPlayer.state

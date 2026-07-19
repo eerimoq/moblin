@@ -105,9 +105,9 @@ struct SettingsView: View {
                     }
                 }
                 NavigationLink {
-                    MusicSettingsView(model: model)
+                    AppleMusicSettingsView(model: model)
                 } label: {
-                    Label("Music", systemImage: "music.note")
+                    Label("Apple Music", systemImage: "music.note")
                 }
             }
             if database.showAllSettings {

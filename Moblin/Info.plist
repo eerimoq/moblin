@@ -7,7 +7,6 @@
     <key>LSApplicationQueriesSchemes</key>
     <array>
         <string>elgato-device-driver</string>
-        <string>spotify</string>
     </array>
         <key>CFBundleURLTypes</key>
         <array>
