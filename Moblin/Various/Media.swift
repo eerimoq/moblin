@@ -734,6 +734,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
+    func takePhoto() {
+        processor?.takePhoto()
+    }
+
     func takeVideoSourceSnapshot(videoSourceId: UUID,
                                  onComplete: @escaping @MainActor (UIImage?) -> Void)
     {
@@ -923,7 +927,8 @@ final class Media: NSObject, @unchecked Sendable {
         fillFrame: Bool,
         isLandscapeStreamAndPortraitUi: Bool,
         forceSceneTransition: Bool,
-        macScreenCapture: Bool
+        macScreenCapture: Bool,
+        photoShoot: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -936,7 +941,8 @@ final class Media: NSObject, @unchecked Sendable {
                                            fillFrame: fillFrame,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                            forceSceneTransition: forceSceneTransition,
-                                           macScreenCapture: macScreenCapture)
+                                           macScreenCapture: macScreenCapture,
+                                           photoShoot: photoShoot)
         processor?.attachCamera(params: params)
     }
 

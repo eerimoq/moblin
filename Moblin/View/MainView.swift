@@ -276,6 +276,27 @@ private struct MutedView: View {
     }
 }
 
+private struct PhotoShootView: View {
+    let enabled: Bool
+
+    var body: some View {
+        if enabled {
+            VStack {
+                Image(systemName: "person.crop.square.badge.camera")
+                    .font(.system(size: 60))
+                Text("Photo shoot")
+                    .font(.system(size: 30))
+                Text("Taking photos periodically")
+            }
+            .foregroundStyle(.white)
+            .padding(20)
+            .background(.black.opacity(0.75))
+            .cornerRadius(10)
+            .allowsHitTesting(false)
+        }
+    }
+}
+
 private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
@@ -494,6 +515,7 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(level: model.audio.level)
+                PhotoShootView(enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,
@@ -571,6 +593,7 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(level: model.audio.level)
+                PhotoShootView(enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,

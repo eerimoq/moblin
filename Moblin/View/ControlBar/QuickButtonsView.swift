@@ -295,6 +295,7 @@ struct QuickButtonsInnerView: View {
 
     private func snapshotAction() {
         model.takeSnapshot()
+        model.media.takePhoto()
     }
 
     private func widgetsAction() {
@@ -431,6 +432,19 @@ struct QuickButtonsInnerView: View {
 
     private func previewStreamAction() {
         model.togglePreviewStream()
+    }
+
+    private func photoShootAction(state: ButtonState) {
+        state.button.isOn.toggle()
+        model.photoShootEnabled = state.button.isOn
+        if model.photoShootEnabled {
+            model.startPhotoShoot()
+        } else {
+            model.stopPhotoShoot()
+        }
+        model.setQuickButton(type: .photoShoot, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.reattachCamera()
     }
 
     var body: some View {
@@ -1007,6 +1021,14 @@ struct QuickButtonsInnerView: View {
                             Button(state.isOn ? "Stop preview stream" : "Start preview stream") {
                                 previewStreamAction()
                             }
+                        }
+                    case .photoShoot:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            photoShootAction(state: state)
                         }
                     }
                 }
