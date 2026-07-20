@@ -52,6 +52,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var highQualityDownsampling: Bool = false
     @Published var httpProxy: Bool = false
     @Published var packetPadding: Bool = false
+    @Published var metalPetalFastPaths: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -96,6 +97,7 @@ class SettingsDebug: Codable, ObservableObject {
         case highQualityDownsampling
         case httpProxy3
         case packetPadding
+        case metalPetalFastPaths
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -135,6 +137,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.highQualityDownsampling, highQualityDownsampling)
         try container.encode(.httpProxy3, httpProxy)
         try container.encode(.packetPadding, packetPadding)
+        try container.encode(.metalPetalFastPaths, metalPetalFastPaths)
     }
 
     init() {}
@@ -188,5 +191,6 @@ class SettingsDebug: Codable, ObservableObject {
         highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
         httpProxy = container.decode(.httpProxy3, Bool.self, false)
         packetPadding = container.decode(.packetPadding, Bool.self, false)
+        metalPetalFastPaths = container.decode(.metalPetalFastPaths, Bool.self, false)
     }
 }

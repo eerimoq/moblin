@@ -122,6 +122,10 @@ struct DebugSettingsView: View {
                         model.httpProxyServerChanged()
                     }
                 Toggle("SRT(LA) packet padding", isOn: $debug.packetPadding)
+                Toggle("MetalPetal fast paths", isOn: $debug.metalPetalFastPaths)
+                    .onChange(of: debug.metalPetalFastPaths) { _ in
+                        model.setMetalPetalFastPaths()
+                    }
             } header: {
                 Text("Experimental")
             }
