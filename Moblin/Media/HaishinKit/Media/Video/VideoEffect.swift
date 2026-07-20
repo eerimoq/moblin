@@ -32,6 +32,19 @@ struct VideoEffectInfo {
         }
         return CIImage(cvPixelBuffer: imageBuffer)
     }
+
+    // Mirrors getCiImage(_:), but wraps the pixel buffer directly as an MTIImage instead
+    // of going through CIImage/CoreImage. For a live per-frame video source, that avoids
+    // paying a CoreImage render cost every frame just to bridge into MetalPetal.
+    func getMetalPetalImage(_ videoSourceId: UUID) -> MTIImage? {
+        guard let imageBuffer = detectionJobs
+            .first(where: { $0.videoSourceId == videoSourceId })?
+            .imageBuffer
+        else {
+            return videoUnit.getMetalPetalImage(videoSourceId, presentationTimeStamp)
+        }
+        return MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+    }
 }
 
 enum VideoEffectDetectionsMode {
@@ -63,8 +76,19 @@ class VideoEffect: NSObject, @unchecked Sendable {
         image
     }
 
-    func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        image
+    // Default bridge for effects that only implement the CoreImage execute(_:_:): without
+    // this, an effect not natively ported to MetalPetal would silently be skipped whenever
+    // the MetalPetal path is used (e.g. because Beauty or another ported effect is also
+    // active). Effects that implement executeMetalPetal natively override this instead.
+    func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let ciImage = info.videoUnit.bridgeMetalPetalImageToCoreImage(image) else {
+            return image
+        }
+        let result = execute(ciImage, info)
+        guard result !== ciImage else {
+            return image
+        }
+        return MTIImage(ciImage: result)
     }
 
     func isMetalPetal() -> Bool {

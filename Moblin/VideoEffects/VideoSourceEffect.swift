@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 import Vision
 
 struct VideoSourceEffectSettings {
@@ -181,5 +182,58 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
                                             backgroundImage.extent,
                                             info)
             .composited(over: backgroundImage)
+    }
+
+    // Only the simple, common case is natively implemented here: no rotation, no
+    // face-tracking crop, no attached sub-effects. Rotation and face-tracking both involve
+    // coordinate-system conventions (content-region cropping, discrete rotation direction)
+    // that can't be visually verified from here, and sub-effects are arbitrary CIFilter
+    // chains that aren't natively portable without a lot more work. All of those fall back
+    // to the exact existing, unchanged CoreImage execute(_:_:) via the base class bridge.
+    override func executeMetalPetal(_ backgroundImage: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard metalPetalFastPaths,
+              let sceneWidget,
+              settings.rotation == 0,
+              !settings.trackFaceEnabled,
+              effects.isEmpty
+        else {
+            return super.executeMetalPetal(backgroundImage, info)
+        }
+        guard let widgetImage = info.getMetalPetalImage(videoSourceId) else {
+            return backgroundImage
+        }
+        let canvasSize = backgroundImage.extent.size
+        let scaleX = toPixels(sceneWidget.layout.size, canvasSize.width) / widgetImage.extent.width
+        let scaleY = toPixels(sceneWidget.layout.size, canvasSize.height) / widgetImage.extent.height
+        let scale = min(scaleX, scaleY)
+        let scaledSize = CGSize(
+            width: widgetImage.extent.width * scale,
+            height: widgetImage.extent.height * scale
+        )
+        // move(_:_:) is CIImage's existing, proven alignment math (bottom-left origin, Y
+        // up); applied to a zero-cost placeholder (never rendered) purely to reuse it, then
+        // converted into MetalPetal's Layer.position convention (top-left origin, Y down,
+        // position is the center) -- same conversion validated for TextEffect.
+        let movedExtent = CIImage.black
+            .cropped(to: CGRect(origin: .zero, size: scaledSize))
+            .move(sceneWidget.layout, canvasSize)
+            .extent
+        let position = CGPoint(
+            x: movedExtent.minX + movedExtent.width / 2,
+            y: canvasSize.height - movedExtent.minY - movedExtent.height / 2
+        )
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = backgroundImage
+        filter.layers = [
+            .content(widgetImage, modifier: { layer in
+                layer.layoutUnit = .pixel
+                layer.size = scaledSize
+                layer.position = position
+                if self.settings.mirror {
+                    layer.contentFlipOptions = .flipHorizontally
+                }
+            }),
+        ]
+        return filter.outputImage ?? backgroundImage
     }
 }

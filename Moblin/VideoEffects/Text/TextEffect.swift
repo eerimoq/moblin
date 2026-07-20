@@ -1,5 +1,6 @@
 import Collections
 import Combine
+import MetalPetal
 import SwiftUI
 import WeatherKit
 
@@ -175,6 +176,8 @@ private struct TextView: View {
 final class TextEffect: VideoEffect, @unchecked Sendable {
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
+    private var cachedOverlayForMetalPetal: CIImage?
+    private var overlayMetalPetal: MTIImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
     private let formatter: TextEffectFormatter
@@ -392,6 +395,45 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard metalPetalFastPaths else {
+            return super.executeMetalPetal(image, info)
+        }
+        let canvasSize = image.extent.size
+        updateOverlayIfNeeded(size: canvasSize)
+        guard let overlay else {
+            return image
+        }
+        if overlay !== cachedOverlayForMetalPetal {
+            overlayMetalPetal = info.videoUnit.renderCoreImageToMetalPetalImage(overlay)
+            cachedOverlayForMetalPetal = overlay
+        }
+        guard let overlayMetalPetal else {
+            return image
+        }
+        // move(_:_:) is CIImage's existing, proven alignment math (bottom-left origin, Y
+        // up). Reuse it as-is (it's a lazy/free transform, no rendering happens) and only
+        // read its resulting origin, then convert that single point into MetalPetal's
+        // Layer.position convention (top-left origin, Y down, position is the center) --
+        // confirmed from MTIMultilayerCompositeKernel.m, which negates the Y position
+        // component when building its transform.
+        let movedExtent = overlay.move(sceneWidget.layout, canvasSize).extent
+        let position = CGPoint(
+            x: movedExtent.minX + movedExtent.width / 2,
+            y: canvasSize.height - movedExtent.minY - movedExtent.height / 2
+        )
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .content(overlayMetalPetal, modifier: { layer in
+                layer.layoutUnit = .pixel
+                layer.size = movedExtent.size
+                layer.position = position
+            }),
+        ]
+        return filter.outputImage ?? image
     }
 
     override func prepare(_ image: CIImage, _: VideoEffectInfo) {
