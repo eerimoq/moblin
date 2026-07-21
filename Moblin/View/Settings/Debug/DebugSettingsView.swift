@@ -113,6 +113,7 @@ struct DebugSettingsView: View {
                     }
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
+                Toggle("Timecode clock drift fix", isOn: $debug.timecodeClockDriftFix)
             } header: {
                 Text("Experimental")
             }

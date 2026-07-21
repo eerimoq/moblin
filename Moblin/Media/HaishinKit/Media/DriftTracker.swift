@@ -36,13 +36,14 @@ class DriftTracker {
     }
 
     func setDrift(drift: Double) {
+        let clamped = clampDrift(drift)
         logger.debug("""
         buffered-\(media): drift-tracker: \(name): Other media set drift. \
         Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
         (target \(formatThreeDecimals(targetFillLevel))), \
-        Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
+        Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(clamped))
         """)
-        self.drift = drift
+        self.drift = clamped
         adjustDriftDirection = .none
     }
 
@@ -85,7 +86,7 @@ class DriftTracker {
     }
 
     private func adjustDrift(adjustment: Double) {
-        let drift = drift + adjustment
+        let drift = clampDrift(self.drift + adjustment)
         logger.debug("""
         buffered-\(media): drift-tracker: \(name): \
         Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
@@ -93,6 +94,13 @@ class DriftTracker {
         Drift \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift
+    }
+
+    // Prevent unbounded drift growth when fill stays below the low-water mark for
+    // long periods (would otherwise ratchet delay higher every 20s without recovery).
+    private func clampDrift(_ value: Double) -> Double {
+        let maxAbsDrift = max(1.0, targetFillLevel * 4)
+        return min(max(value, -maxAbsDrift), maxAbsDrift)
     }
 
     private func lowWaterMark() -> Double {

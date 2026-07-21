@@ -317,8 +317,14 @@ class SrtSender: @unchecked Sendable {
             return
         }
         latestOutputPacketsTime = now
-        var numberOfPacketsToSend = numberOfPacketsToRetransmit() + packetsToSend.count
-        numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
+        let pending = numberOfPacketsToRetransmit() + packetsToSend.count
+        // Previously min(pending, 10) capped drain to ~10 packets per write/2ms tick.
+        // At higher bitrates a single video frame can produce more than 10 MPEG-TS
+        // packets, so the queue grew until the latency drop threshold (seconds of
+        // delay) and only cleared on stream restart. Allow larger bursts when
+        // backlogged while keeping a small cap for the normal low-queue case.
+        let maxBurst = pending > 20 ? 64 : 10
+        var numberOfPacketsToSend = max(pending / 5, min(pending, maxBurst))
         var numberOfRetransmittedPackets = 0
         for _ in 0 ..< numberOfPacketsToSend {
             if !experimental || (numberOfRetransmittedPackets < (numberOfPacketsToSend + 1) / 2) {

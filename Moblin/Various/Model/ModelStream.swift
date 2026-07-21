@@ -362,6 +362,7 @@ extension Model {
             proto: stream.getProtocol(),
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
+            timecodeClockDriftFix: database.debug.timecodeClockDriftFix,
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
             destinations: stream.multiStreaming.destinations,
             srtImplementation: stream.srt.implementation,
