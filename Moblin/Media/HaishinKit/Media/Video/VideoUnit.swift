@@ -1904,7 +1904,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
-                device.setAutoFps()
+                device.setAutoFps(maxFrameRate: fps)
                 processor?.delegate.streamSelectedFps(auto: true)
             } else {
                 device.setFps(frameRate: fps)

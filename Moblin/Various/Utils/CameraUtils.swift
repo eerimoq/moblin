@@ -39,8 +39,8 @@ extension AVCaptureDevice {
         activeVideoMaxFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * frameRate))
     }
 
-    func setAutoFps() {
-        activeVideoMinFrameDuration = .invalid
+    func setAutoFps(maxFrameRate: Float64) {
+        activeVideoMinFrameDuration = CMTime(value: 100, timescale: CMTimeScale(100 * maxFrameRate))
         activeVideoMaxFrameDuration = .invalid
         if #available(iOS 18, *) {
             isAutoVideoFrameRateEnabled = true
