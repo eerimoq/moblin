@@ -110,9 +110,15 @@ class RistStream: @unchecked Sendable {
     private let processor: Processor
     private var totalByteCount = Atomic<Int64>(0)
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: any RistStreamDelegate) {
+    init(processor: Processor,
+         timecodesEnabled: Bool,
+         timecodeClockDriftFix: Bool = false,
+         delegate: any RistStreamDelegate)
+    {
         self.processor = processor
-        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled,
+                              newSrt: false,
+                              timecodeClockDriftFix: timecodeClockDriftFix)
         ristDelegate = delegate
         writer.delegate = self
     }

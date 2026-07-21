@@ -127,6 +127,7 @@ final class Media: NSObject, @unchecked Sendable {
     func setNetStream(proto: SettingsStreamProtocol,
                       portrait: Bool,
                       timecodesEnabled: Bool,
+                      timecodeClockDriftFix: Bool,
                       builtinAudioDelay: Double,
                       destinations: [SettingsStreamMultiStreamingDestination],
                       srtImplementation: SettingsStreamSrtImplementation,
@@ -157,17 +158,24 @@ final class Media: NSObject, @unchecked Sendable {
                 srtStreamNew = SrtStreamMoblin(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
+                    timecodeClockDriftFix: timecodeClockDriftFix,
                     delegate: self
                 )
             case .official:
                 srtStreamOld = SrtStreamOfficial(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
+                    timecodeClockDriftFix: timecodeClockDriftFix,
                     delegate: self
                 )
             }
         case .rist:
-            ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+            ristStream = RistStream(
+                processor: processor,
+                timecodesEnabled: timecodesEnabled,
+                timecodeClockDriftFix: timecodeClockDriftFix,
+                delegate: self
+            )
         case .whip:
             whipStream = WhipStream(delegate: self)
         }

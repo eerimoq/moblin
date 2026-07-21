@@ -43,15 +43,16 @@ class MpegTsWriter {
     private var videoConfig: MpegTsVideoConfig?
     private var programClockReferenceTimestamp: CMTime?
     private let timecodesEnabled: Bool
-    private var presentationTimeStampBase: Double?
+    private var timecodeNtpOffsetTracker: TimecodeNtpOffsetTracker
     private var previousDecodeTimeStamp: Double?
     private var estimatedFrameDuration: Double = 0.033
     private var offsetingFrames: Bool = false
     private let newSrt: Bool
 
-    init(timecodesEnabled: Bool, newSrt: Bool) {
+    init(timecodesEnabled: Bool, newSrt: Bool, timecodeClockDriftFix: Bool = false) {
         self.timecodesEnabled = timecodesEnabled
         self.newSrt = newSrt
+        timecodeNtpOffsetTracker = TimecodeNtpOffsetTracker(continuousCorrection: timecodeClockDriftFix)
     }
 
     func startRunning() {
@@ -74,7 +75,7 @@ class MpegTsWriter {
         videoDataOffset = 0
         videoData = [nil, nil]
         programClockReferenceTimestamp = nil
-        presentationTimeStampBase = nil
+        timecodeNtpOffsetTracker.reset()
         previousDecodeTimeStamp = nil
         isRunning = false
     }
@@ -523,23 +524,37 @@ extension MpegTsWriter: VideoEncoderDelegate {
     }
 
     private func updateTimecodeReference() {
-        guard timecodesEnabled, presentationTimeStampBase == nil else {
+        guard timecodesEnabled else {
             return
         }
-        guard let now = TrueTimeClient.sharedInstance.referenceTime?.now().timeIntervalSince1970 else {
+        let hostNow = currentPresentationTimeStamp().seconds
+        guard timecodeNtpOffsetTracker.needsSample(hostSeconds: hostNow) else {
+            return
+        }
+        guard let ntpNow = TrueTimeClient.sharedInstance.referenceTime?.now().timeIntervalSince1970 else {
             // logger.info("timecode: Failed to get NTP time")
             return
         }
-        let presentationTimeStamp = currentPresentationTimeStamp().seconds
-        presentationTimeStampBase = now - presentationTimeStamp
-        logger.info("""
-        timecode: Updated base time - NTP: \(now) PTS: \(presentationTimeStamp) \
-        BASE: \(presentationTimeStampBase!)
-        """)
+        let firstSample = timecodeNtpOffsetTracker.offset == nil
+        let (offset, didWrite) = timecodeNtpOffsetTracker.update(ntpSeconds: ntpNow, hostSeconds: hostNow)
+        guard didWrite else {
+            return
+        }
+        if firstSample {
+            logger.info("""
+            timecode: Updated base time - NTP: \(ntpNow) PTS: \(hostNow) \
+            BASE: \(offset)
+            """)
+        } else {
+            logger.debug("""
+            timecode: Updated NTP/host offset \(formatThreeDecimals(offset)) \
+            (delta \(formatThreeDecimals(timecodeNtpOffsetTracker.lastCorrectionDelta ?? 0)))
+            """)
+        }
     }
 
     private func makeTimecode(_ presentationTimeStamp: CMTime, _ decodeTimeStamp: CMTime) -> MpegTsTimecode? {
-        guard timecodesEnabled, let presentationTimeStampBase else {
+        guard timecodesEnabled, let presentationTimeStampBase = timecodeNtpOffsetTracker.offset else {
             return nil
         }
         let presentationTimeStamp = presentationTimeStamp.seconds

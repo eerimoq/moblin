@@ -53,9 +53,15 @@ class SrtStreamOfficial: @unchecked Sendable {
         }
     }
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: any SrtStreamOfficialDelegate) {
+    init(processor: Processor,
+         timecodesEnabled: Bool,
+         timecodeClockDriftFix: Bool = false,
+         delegate: any SrtStreamOfficialDelegate)
+    {
         self.processor = processor
-        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled,
+                              newSrt: false,
+                              timecodeClockDriftFix: timecodeClockDriftFix)
         srtStreamDelegate = delegate
         writer.delegate = self
         srt_startup()
