@@ -156,9 +156,53 @@ private struct FrontTorchView: View {
     }
 }
 
+private struct WarningHaloView: View {
+    private static let edgeColor = Color(red: 0.12, green: 0.0, blue: 0.01)
+    private static let centerColor = Color(red: 0.46, green: 0.04, blue: 0.05)
+    private static let edgeOpacity = 0.22
+    private static let centerOpacity = 0.20
+
+    var body: some View {
+        GeometryReader { proxy in
+            let diameter = hypot(proxy.size.width, proxy.size.height) * 1.05
+
+            ZStack {
+                Rectangle()
+                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
+
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(
+                                    color: Self.centerColor.opacity(Self.centerOpacity * 0.75),
+                                    location: 0.0
+                                ),
+                                .init(
+                                    color: Self.centerColor.opacity(Self.centerOpacity * 0.45),
+                                    location: 0.50
+                                ),
+                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: diameter * 0.5
+                        )
+                    )
+                    .frame(width: diameter, height: diameter)
+                    .blur(radius: diameter * 0.03)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .ignoresSafeArea()
+        }
+    }
+}
+
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
+    @ObservedObject var bitrate: Bitrate
+    @ObservedObject var show: SettingsShow
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var orientation: Orientation
     let width: CGFloat
@@ -172,44 +216,49 @@ struct StreamOverlayView: View {
     }
 
     var body: some View {
+        let showWarningHalo = show.showWarningHalo && bitrate.statusColor == .red
+        if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
+            FrontTorchView(orientation: orientation)
+        }
         ZStack {
-            if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
-                FrontTorchView(orientation: orientation)
+            if model.showingPanel != .chat {
+                ChatOverlayView(chatSettings: chatSettings,
+                                chat: model.chat,
+                                orientation: orientation,
+                                quickButtons: model.database.quickButtonsGeneral,
+                                fullSize: false)
+                    .opacity(chatSettings.enabled ? 1 : 0)
             }
-            ZStack {
-                if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: chatSettings,
-                                    chat: model.chat,
-                                    orientation: orientation,
-                                    quickButtons: model.database.quickButtonsGeneral,
-                                    fullSize: false)
-                        .opacity(chatSettings.enabled ? 1 : 0)
-                }
-                HStack {
-                    Spacer()
-                    RightOverlayBottomView(database: model.database,
-                                           show: model.database.show,
-                                           streamOverlay: model.streamOverlay,
-                                           zoom: model.zoom,
-                                           width: width)
-                }
-                HStack {
-                    LeftOverlayView(model: model, database: model.database)
-                        .padding(.leading, leadingPadding())
-                    Spacer()
-                }
-                HStack {
-                    Spacer()
-                    RightOverlayTopView(model: model, database: model.database)
-                }
-                HStack {
-                    StreamOverlayDebugView(debugOverlay: model.debugOverlay)
-                        .padding(.leading, leadingPadding())
-                    Spacer()
-                }
+            HStack {
+                Spacer()
+                RightOverlayBottomView(database: model.database,
+                                       show: model.database.show,
+                                       streamOverlay: model.streamOverlay,
+                                       zoom: model.zoom,
+                                       width: width)
+            }
+            HStack {
+                LeftOverlayView(model: model, database: model.database)
+                    .padding(.leading, leadingPadding())
+                Spacer()
+            }
+            HStack {
+                Spacer()
+                RightOverlayTopView(model: model, database: model.database)
+            }
+            HStack {
+                StreamOverlayDebugView(debugOverlay: model.debugOverlay)
+                    .padding(.leading, leadingPadding())
+                Spacer()
+            }
+            .allowsHitTesting(false)
+        }
+        .padding([.trailing, .top])
+        .overlay {
+            WarningHaloView()
+                .opacity(showWarningHalo ? 1 : 0)
+                .animation(.easeInOut(duration: 0.25), value: showWarningHalo)
                 .allowsHitTesting(false)
-            }
-            .padding([.trailing, .top])
         }
     }
 }

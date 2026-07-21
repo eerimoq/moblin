@@ -5,6 +5,7 @@ import WebKit
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
+    @ObservedObject var show: SettingsShow
     @State var presentingLog: Bool = false
     @State var log: Deque<LogEntry> = []
 
@@ -68,6 +69,7 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.debugOverlay) { _ in
                         model.updateDebugOverlay()
                     }
+                Toggle("Show warning halo", isOn: $show.showWarningHalo)
             }
             Section {
                 NavigationLink {
