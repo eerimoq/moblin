@@ -528,8 +528,18 @@ extension Model {
         guard !title.isEmpty else {
             return
         }
-        addMusic(title: title) { message in
-            self.sendChatBotReply(message: message, platform: command.message.platform)
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
+        addMusic(title: title) { result in
+            switch result {
+            case let .success(song):
+                self.sendChatBotReply(
+                    message: String(localized: "\(song) added to the queue by \(user)."),
+                    platform: platform
+                )
+            case let .failure(message):
+                self.sendChatBotReply(message: message, platform: platform)
+            }
         }
     }
 
