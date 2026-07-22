@@ -295,7 +295,6 @@ struct QuickButtonsInnerView: View {
 
     private func snapshotAction() {
         model.takeSnapshot()
-        model.media.takePhoto()
     }
 
     private func widgetsAction() {
