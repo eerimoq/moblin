@@ -60,6 +60,10 @@ class ChatBotCommand {
         return nil
     }
 
+    func popFirstLowerCased() -> String? {
+        popFirst()?.lowercased()
+    }
+
     func popAll() -> [String] {
         var parts: [String] = []
         while let part = popFirst() {
