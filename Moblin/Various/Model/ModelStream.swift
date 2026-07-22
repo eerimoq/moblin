@@ -1012,8 +1012,12 @@ extension Model: @preconcurrency MediaDelegate {
         handleFps(fps: fps)
     }
 
-    func mediaStrlaRelayDestinationAddress(address: String, port: UInt16) {
+    func mediaMoblinkStreamerDestinationAddress(address: String, port: UInt16) {
         moblink.streamer?.startTunnels(address: address, port: port)
+    }
+
+    func mediaMoblinkStreamerRestartTunnel(relayId: UUID) {
+        moblink.streamer?.restartTunnel(relayId: relayId)
     }
 
     func mediaSetZoomX(x: Float) {

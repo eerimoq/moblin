@@ -33,6 +33,7 @@ protocol RemoteConnectionDelegate: AnyObject {
     func remoteConnectionOnSrtAck(sn: UInt32)
     func remoteConnectionOnSrtNak(sn: UInt32)
     func remoteConnectionOnSrtlaAck(sn: UInt32)
+    func remoteConnectionOnMoblinkReconnect(connection: RemoteConnection)
 }
 
 class RemoteConnection: @unchecked Sendable {
@@ -91,7 +92,6 @@ class RemoteConnection: @unchecked Sendable {
 
     let relayId: UUID?
     private let relayName: String?
-    private var localEndpoint: NWEndpoint?
 
     weak var delegate: (any RemoteConnectionDelegate)?
     private var networkInterfaces: SrtlaNetworkInterfaces
@@ -138,10 +138,6 @@ class RemoteConnection: @unchecked Sendable {
         let params = NWParameters(dtls: .none)
         params.prohibitExpensivePaths = false
         params.requiredInterface = interface
-        if let localEndpoint = getLocalEndpointIfMoblink() {
-            params.requiredLocalEndpoint = localEndpoint
-            params.allowLocalEndpointReuse = true
-        }
         connection = NWConnection(host: destinationHost, port: destinationPort, using: params)
         connection!.stateUpdateHandler = handleStateUpdate(to:)
         connection!.start(queue: srtlaClientQueue)
@@ -272,31 +268,10 @@ class RemoteConnection: @unchecked Sendable {
         relayId != nil
     }
 
-    private func setLocalEndpointIfMoblink() {
-        guard isMoblink() else {
-            return
-        }
-        guard let localEndpoint = connection?.currentPath?.localEndpoint else {
-            logger.info("srtla: \(typeString): Local endpoint missing")
-            return
-        }
-        self.localEndpoint = localEndpoint
-        logger.debug("srtla: \(typeString): Set local endpoint \(localEndpoint)")
-    }
-
-    private func getLocalEndpointIfMoblink() -> NWEndpoint? {
-        guard isMoblink(), let localEndpoint else {
-            return nil
-        }
-        logger.debug("srtla: \(typeString): Has local endpoint \(localEndpoint)")
-        return localEndpoint
-    }
-
     private func handleStateUpdate(to state: NWConnection.State) {
         logger.debug("srtla: \(typeString): State change to \(state)")
         switch state {
         case .ready:
-            setLocalEndpointIfMoblink()
             cancelAllTimers()
             connectTimer.startSingleShot(timeout: 5) {
                 self.reconnect(reason: "Connection timeout")
@@ -323,8 +298,12 @@ class RemoteConnection: @unchecked Sendable {
     }
 
     private func reconnect(reason: String) {
-        stop(reason: reason)
-        startInternal()
+        if isMoblink() {
+            delegate?.remoteConnectionOnMoblinkReconnect(connection: self)
+        } else {
+            stop(reason: reason)
+            startInternal()
+        }
     }
 
     private func receivePackets() {

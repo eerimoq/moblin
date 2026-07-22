@@ -42,7 +42,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
     func mediaOnFps(fps: Int)
-    func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
+    func mediaMoblinkStreamerDestinationAddress(address: String, port: UInt16)
+    func mediaMoblinkStreamerRestartTunnel(relayId: UUID)
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(auto: Bool)
@@ -1199,14 +1200,20 @@ extension Media: SrtlaDelegate {
         }
     }
 
+    func srtlaReceivedPacket(packet: Data) {
+        srtStreamNew?.inputPacket(packet: packet)
+    }
+
     func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
-            self.delegate.mediaStrlaRelayDestinationAddress(address: address, port: port)
+            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
         }
     }
 
-    func srtlaReceivedPacket(packet: Data) {
-        srtStreamNew?.inputPacket(packet: packet)
+    func moblinkStreamerRestartTunnel(relayId: UUID) {
+        DispatchQueue.main.async {
+            self.delegate.mediaMoblinkStreamerRestartTunnel(relayId: relayId)
+        }
     }
 }
 
@@ -1228,7 +1235,7 @@ extension Media: RistStreamDelegate {
 
     func ristStreamRelayDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
-            self.delegate.mediaStrlaRelayDestinationAddress(address: address, port: port)
+            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
         }
     }
 }
