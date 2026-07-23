@@ -318,7 +318,7 @@ class SrtSender: @unchecked Sendable {
         }
         latestOutputPacketsTime = now
         var numberOfPacketsToSend = numberOfPacketsToRetransmit() + packetsToSend.count
-        numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
+        numberOfPacketsToSend = max(numberOfPacketsToSend / 5, min(numberOfPacketsToSend, 64))
         var numberOfRetransmittedPackets = 0
         for _ in 0 ..< numberOfPacketsToSend {
             if !experimental || (numberOfRetransmittedPackets < (numberOfPacketsToSend + 1) / 2) {

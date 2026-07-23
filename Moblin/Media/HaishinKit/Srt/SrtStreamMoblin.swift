@@ -13,9 +13,15 @@ class SrtStreamMoblin: @unchecked Sendable {
     private let processor: Processor
     private var srtSender: SrtSender?
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: any SrtStreamMoblinDelegate) {
+    init(processor: Processor,
+         timecodesEnabled: Bool,
+         timecodeClockDriftFix: Bool = false,
+         delegate: any SrtStreamMoblinDelegate)
+    {
         self.processor = processor
-        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: true)
+        writer = MpegTsWriter(timecodesEnabled: timecodesEnabled,
+                              newSrt: true,
+                              timecodeClockDriftFix: timecodeClockDriftFix)
         self.delegate = delegate
         writer.delegate = self
     }

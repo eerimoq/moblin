@@ -48,6 +48,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManSpeed: Double = 1.0
     @Published var cameraManAlwaysMove: Bool = false
     @Published var enhancedMoblinSrt: Bool = false
+    @Published var timecodeClockDriftFix: Bool = false
     @Published var videoBitrateChange: Bool = false
     @Published var highQualityDownsampling: Bool = false
     @Published var httpProxy: Bool = false
@@ -92,6 +93,7 @@ class SettingsDebug: Codable, ObservableObject {
         case cameraManSpeed
         case cameraManAlwaysMove
         case enhancedMoblinSrt
+        case timecodeClockDriftFix
         case videoBitrateChangeEnabled
         case highQualityDownsampling
         case httpProxy3
@@ -131,6 +133,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManSpeed, cameraManSpeed)
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
+        try container.encode(.timecodeClockDriftFix, timecodeClockDriftFix)
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
         try container.encode(.highQualityDownsampling, highQualityDownsampling)
         try container.encode(.httpProxy3, httpProxy)
@@ -184,6 +187,7 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
+        timecodeClockDriftFix = container.decode(.timecodeClockDriftFix, Bool.self, false)
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
         highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
         httpProxy = container.decode(.httpProxy3, Bool.self, false)
