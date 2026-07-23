@@ -103,11 +103,11 @@ struct SettingsView: View {
                     } label: {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }
-                }
-                NavigationLink {
-                    AppleMusicSettingsView(model: model)
-                } label: {
-                    Label("Apple Music", systemImage: "music.note")
+                    NavigationLink {
+                        AppleMusicSettingsView(model: model)
+                    } label: {
+                        Label("Apple Music", systemImage: "music.note")
+                    }
                 }
             }
             if database.showAllSettings {
