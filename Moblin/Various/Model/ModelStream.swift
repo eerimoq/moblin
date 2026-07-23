@@ -877,6 +877,7 @@ extension Model {
         if newBitrateStatusColor != bitrate.statusColor {
             bitrate.statusColor = newBitrateStatusColor
         }
+        connectionTimeline.appendEvent(event: newBitrateStatusColor == .red)
     }
 
     func updateAdaptiveBitrate() {
