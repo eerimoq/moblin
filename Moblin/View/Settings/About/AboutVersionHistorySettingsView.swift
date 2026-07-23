@@ -27,6 +27,7 @@ private let versions = [
         "  • Pictures saved to Photos (not uploaded to Discord).",
         "• Try to make Moblink reconnection work better. 🐛 AUTdany",
         "• Case-insensitive chat bot commands. 💡 Real Life Doomer",
+        "• Chinese Taiwan translation updated. ✍️ 一人HitoriGS —",
     ]),
     Version(version: "33.11.0", date: "2026-07-05", changes: [
         "• Only show \"Failed to fetch youtube video ids\" toast when youtube is configured.",
