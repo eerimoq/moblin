@@ -102,7 +102,7 @@ extension Model {
         guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
         }
-        switch command.rest() {
+        switch command.rest().lowercased() {
         case "help":
             handleChatBotMessageHelp(platform: message.platform)
         case "tts on":
@@ -124,7 +124,7 @@ extension Model {
         case "unmute":
             handleChatBotMessageUnmute(command: command)
         default:
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "alert":
                 handleChatBotMessageAlert(command: command)
             case "fax":
@@ -359,7 +359,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.ai,
             command: command
         ) {
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "ask":
                 self.handleChatBotMessageAiAsk(command: command)
             default:
@@ -403,7 +403,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.twitch,
             command: command
         ) {
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "raid":
                 self.handleChatBotMessageTwitchRaid(command: command)
             default:
@@ -436,7 +436,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.gimbal,
             command: command
         ) {
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "preset":
                 self.handleChatBotMessageGimbalPreset(command: command)
             default:
@@ -446,11 +446,11 @@ extension Model {
     }
 
     private func handleChatBotMessageGimbalPreset(command: ChatBotCommand) {
-        guard let presetName = command.popFirst() else {
+        guard let presetName = command.popFirstLowerCased() else {
             return
         }
         guard let preset = database.gimbal.presets.first(where: {
-            $0.name.lowercased() == presetName.lowercased()
+            $0.name.lowercased() == presetName
         }) else {
             return
         }
@@ -462,10 +462,10 @@ extension Model {
             permissions: database.chat.botCommandPermissions.macro,
             command: command
         ) {
-            guard let subcommand = command.popFirst(),
-                  let macroName = command.popFirst(),
+            guard let subcommand = command.popFirstLowerCased(),
+                  let macroName = command.popFirstLowerCased(),
                   let macro = self.database.macros.macros.first(where: {
-                      $0.name.lowercased() == macroName.lowercased()
+                      $0.name.lowercased() == macroName
                   })
             else {
                 return
@@ -496,7 +496,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.music,
             command: command
         ) {
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "play":
                 self.handleChatBotMessageMusicPlay()
             case "pause":
@@ -528,8 +528,18 @@ extension Model {
         guard !title.isEmpty else {
             return
         }
-        addMusic(title: title) { message in
-            self.sendChatBotReply(message: message, platform: command.message.platform)
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
+        addMusic(title: title) { result in
+            switch result {
+            case let .success(song):
+                self.sendChatBotReply(
+                    message: String(localized: "\(song) added to the queue by \(user)."),
+                    platform: platform
+                )
+            case let .failure(message):
+                self.sendChatBotReply(message: message, platform: platform)
+            }
         }
     }
 
@@ -602,7 +612,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
-            guard let reaction = SettingsReaction(value: command.popFirst()) else {
+            guard let reaction = SettingsReaction(value: command.popFirstLowerCased()) else {
                 return
             }
             self.triggerReaction(reaction: reaction)
@@ -655,7 +665,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.stream,
             command: command
         ) {
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "start":
                 self.handleChatBotMessageStreamStart()
             case "stop":
@@ -703,7 +713,7 @@ extension Model {
             guard let widget = self.findWidget(name: name) else {
                 return
             }
-            switch command.popFirst() {
+            switch command.popFirstLowerCased() {
             case "enable":
                 self.handleChatBotMessageWidgetEnable(widget: widget)
             case "disable":
@@ -743,7 +753,7 @@ extension Model {
             return
         }
         let timer = widget.text.timers[index]
-        switch command.popFirst() {
+        switch command.popFirstLowerCased() {
         case "add":
             guard let delta = command.popFirst(), let delta = Double(delta) else {
                 return
@@ -761,7 +771,7 @@ extension Model {
         guard let effect = getWheelOfLuckEffect(id: widget.id) else {
             return
         }
-        switch command.popFirst() {
+        switch command.popFirstLowerCased() {
         case "spin":
             effect.spin()
         case "options":
@@ -802,7 +812,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.filter,
             command: command
         ) {
-            guard let filter = command.popFirst(), let state = command.popFirst() else {
+            guard let filter = command.popFirstLowerCased(), let state = command.popFirstLowerCased() else {
                 return
             }
             let on = state == "on"
@@ -869,7 +879,7 @@ extension Model {
     }
 
     private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
-        switch command.popFirst() {
+        switch command.popFirstLowerCased() {
         case "open":
             tesla.vehicle?.openTrunk()
         case "close":
@@ -880,7 +890,7 @@ extension Model {
     }
 
     private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
-        switch command.popFirst() {
+        switch command.popFirstLowerCased() {
         case "next":
             tesla.vehicle?.mediaNextTrack()
         case "previous":

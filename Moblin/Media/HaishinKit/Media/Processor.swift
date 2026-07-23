@@ -192,8 +192,8 @@ final class Processor: @unchecked Sendable {
         video.unregisterAllEffects()
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
+        video.setPendingAfterAttachEffects(effects: effects, rotation: rotation, mirror: mirror)
     }
 
     func usePendingAfterAttachEffects() {
@@ -226,6 +226,10 @@ final class Processor: @unchecked Sendable {
 
     func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         video.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func takePhoto() {
+        video.takePhoto()
     }
 
     func takeVideoSourceSnapshot(videoSourceId: UUID, onComplete: @escaping @MainActor (UIImage?) -> Void) {

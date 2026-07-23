@@ -82,6 +82,10 @@ private class Relay {
         reportTunnelRemoved()
     }
 
+    func restartTunnel() {
+        startTunnelInternal()
+    }
+
     func updateStatus() {
         performRequest(data: .status) { response in
             guard case let .status(batteryPercentage, thermalState) = response else {
@@ -266,6 +270,13 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
         }
         relays.removeAll()
         delegate = nil
+    }
+
+    func restartTunnel(relayId: UUID) {
+        guard let relay = relays.first(where: { $0.relayId == relayId }) else {
+            return
+        }
+        relay.restartTunnel()
     }
 
     func startTunnels(address: String, port: UInt16) {

@@ -2,6 +2,7 @@ import AVFoundation
 import Collections
 import CoreImage
 import MetalPetal
+import Photos
 import SwiftUI
 import VideoToolbox
 @preconcurrency import Vision
@@ -28,6 +29,7 @@ struct VideoUnitAttachParams: @unchecked Sendable {
     let isLandscapeStreamAndPortraitUi: Bool
     let forceSceneTransition: Bool
     let macScreenCapture: Bool
+    let photoShoot: Bool
 
     func canQuickSwitchTo(other: VideoUnitAttachParams) -> Bool {
         if devices.devices.count != other.devices.devices.count {
@@ -58,6 +60,9 @@ struct VideoUnitAttachParams: @unchecked Sendable {
             return false
         }
         if macScreenCapture != other.macScreenCapture {
+            return false
+        }
+        if photoShoot != other.photoShoot {
             return false
         }
         return true
@@ -147,6 +152,16 @@ private struct CaptureSessionDevice {
     let input: AVCaptureInput
     let output: AVCaptureVideoDataOutput
     let connection: AVCaptureConnection
+    let photoOutput: AVCapturePhotoOutput?
+    let photoConnection: AVCaptureConnection?
+
+    func connections() -> [AVCaptureConnection] {
+        if let photoConnection {
+            [connection, photoConnection]
+        } else {
+            [connection]
+        }
+    }
 }
 
 private func makeCaptureSession() -> AVCaptureSession {
@@ -182,6 +197,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
+    private var pendingAfterAttachMirror: Bool?
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
@@ -198,6 +214,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var ignoreFramesAfterAttachSeconds = 0.0
     private var configuredIgnoreFramesAfterAttachSeconds = 0.0
     private var rotation: Double = 0.0
+    private var mirror: Bool = false
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var lowFpsImageEnabled: Bool = false
     private var lowFpsImageInterval: Double = 1.0
@@ -244,7 +261,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             session.beginConfiguration()
             for device in captureSessionDevices {
-                for connection in device.output.connections.filter(\.isVideoOrientationSupported) {
+                for connection in device.connections().filter(\.isVideoOrientationSupported) {
                     setOrientation(device: device.device.device,
                                    isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                    connection: connection,
@@ -350,10 +367,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.setPendingAfterAttachEffectsInternal(effects: effects, rotation: rotation)
+                self.setPendingAfterAttachEffectsInternal(effects: effects,
+                                                          rotation: rotation,
+                                                          mirror: mirror)
             }
         }
     }
@@ -428,6 +447,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             let uiImage = UIImage(cgImage: cgImage)
             DispatchQueue.main.async { onComplete(uiImage) }
+        }
+    }
+
+    func takePhoto() {
+        processorPipelineQueue.async {
+            self.takePhotoInternal()
         }
     }
 
@@ -617,7 +642,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
         removeDevices(session)
         for device in params.devices.devices {
-            try attachDevice(device, session)
+            try attachDevice(device, session, params.photoShoot)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
@@ -626,15 +651,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 if connection.isVideoMirroringSupported {
                     connection.isVideoMirrored = device.device.isVideoMirrored
                 }
-                if connection.isVideoOrientationSupported {
-                    setOrientation(device: device.device.device,
-                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                                   connection: connection,
-                                   orientation: videoOrientation)
-                }
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
                 }
+            }
+            for connection in device.connections() where connection.isVideoOrientationSupported {
+                setOrientation(device: device.device.device,
+                               isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                               connection: connection,
+                               orientation: videoOrientation)
             }
         }
         for device in captureSessionDevices {
@@ -1057,6 +1082,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    private func mirrorCoreImage(_ image: CIImage) -> CIImage {
+        image.scaled(x: -1, y: 1).translated(x: image.extent.width, y: 0)
+    }
+
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ enabledEffects: [VideoEffect],
@@ -1069,6 +1098,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             image = image.oriented(.left)
         }
         image = rotateCoreImage(image, rotation)
+        if mirror {
+            image = mirrorCoreImage(image)
+        }
         if image.extent.size != canvasSize {
             image = scaleImage(image)
         }
@@ -1224,9 +1256,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         effects.removeAll()
     }
 
-    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect], rotation: Double) {
+    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect],
+                                                      rotation: Double,
+                                                      mirror: Bool)
+    {
         pendingAfterAttachEffects = effects
         pendingAfterAttachRotation = rotation
+        pendingAfterAttachMirror = mirror
     }
 
     private func usePendingAfterAttachEffectsInternal() {
@@ -1239,12 +1275,31 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             rotation = pendingAfterAttachRotation
             self.pendingAfterAttachRotation = nil
         }
+        if let pendingAfterAttachMirror {
+            mirror = pendingAfterAttachMirror
+            self.pendingAfterAttachMirror = nil
+        }
     }
 
     private func setLowFpsImageInternal(fps: Float) {
         lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
         lowFpsImageEnabled = fps != 0.0
         lowFpsImageLatest = 0.0
+    }
+
+    private func takePhotoInternal() {
+        for device in captureSessionDevices {
+            guard let photoOutput = device.photoOutput else {
+                continue
+            }
+            let settings = AVCapturePhotoSettings()
+            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
+            settings.photoQualityPrioritization = .balanced
+            if #available(iOS 18, *) {
+                settings.isShutterSoundSuppressionEnabled = true
+            }
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
 
     private func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -1471,6 +1526,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             || isSceneSwitchTransition
             || imageBuffer.size != canvasSize
             || rotation != 0.0
+            || mirror
         {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
@@ -1923,7 +1979,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    private func attachDevice(_ device: CaptureDevice, _ session: AVCaptureSession) throws {
+    private func attachDevice(_ device: CaptureDevice,
+                              _ session: AVCaptureSession,
+                              _ photoShoot: Bool) throws
+    {
         let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
         output.videoSettings = [
@@ -1949,6 +2008,26 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         } else {
             failed = true
         }
+        var photoOutput: AVCapturePhotoOutput?
+        var photoConnection: AVCaptureConnection?
+        if photoShoot {
+            photoOutput = AVCapturePhotoOutput()
+            if let port = input.ports.first(where: { $0.mediaType == .video }) {
+                photoConnection = AVCaptureConnection(inputPorts: [port], output: photoOutput!)
+            }
+            if session.canAddOutput(photoOutput!) {
+                session.addOutputWithNoConnections(photoOutput!)
+            } else {
+                failed = true
+            }
+            if let photoConnection, session.canAddConnection(photoConnection) {
+                session.addConnection(photoConnection)
+            } else {
+                failed = true
+            }
+            photoOutput!.maxPhotoDimensions = device.device.activeFormat.supportedMaxPhotoDimensions.last!
+            photoOutput!.maxPhotoQualityPrioritization = .balanced
+        }
         if failed {
             processor?.delegate.streamVideoAttachCameraError()
         } else {
@@ -1956,7 +2035,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 device: device,
                 input: input,
                 output: output,
-                connection: connection!
+                connection: connection!,
+                photoOutput: photoOutput,
+                photoConnection: photoConnection
             ))
         }
     }
@@ -2204,3 +2285,23 @@ extension VideoUnit: MacScreenCaptureDelegate {
     }
 }
 #endif
+
+extension VideoUnit: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error {
+            logger.info("Photo error: \(error)")
+            return
+        }
+        if let photoData = photo.fileDataRepresentation() {
+            PHPhotoLibrary.shared().performChanges {
+                let creationRequest = PHAssetCreationRequest.forAsset()
+                creationRequest.addResource(with: .photo, data: photoData, options: nil)
+            } completionHandler: { _, error in
+                if let error {
+                    logger.info("Error saving photo: \(error.localizedDescription)")
+                    return
+                }
+            }
+        }
+    }
+}

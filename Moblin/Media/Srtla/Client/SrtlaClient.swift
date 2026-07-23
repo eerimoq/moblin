@@ -8,8 +8,9 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
-    func moblinkStreamerDestinationAddress(address: String, port: UInt16)
     func srtlaReceivedPacket(packet: Data)
+    func moblinkStreamerDestinationAddress(address: String, port: UInt16)
+    func moblinkStreamerRestartTunnel(relayId: UUID)
 }
 
 private enum State {
@@ -499,6 +500,13 @@ extension SrtlaClient: RemoteConnectionDelegate {
         for connection in remoteConnections {
             connection.handleSrtlaAckSn(sn: sn)
         }
+    }
+
+    func remoteConnectionOnMoblinkReconnect(connection: RemoteConnection) {
+        guard let relayId = connection.relayId else {
+            return
+        }
+        delegate?.moblinkStreamerRestartTunnel(relayId: relayId)
     }
 }
 

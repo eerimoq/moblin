@@ -8,6 +8,27 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.12.0", date: "2026-07-23", changes: [
+        "• Try to make chat usernames more readable on dark background. 💡 Tican",
+        "• Set talkback mic in remote control. Streamer side only.",
+        "• Make SRT client ingest work when reconnecting. 🐛 iesv",
+        "• Make audio work in SRT client ingest. 🐛 iesv",
+        "• Stop SRT clients when entering background when not streaming, otherwise crash when entering foreground. 🐛 iesv",
+        "• Stop WHIP server when entering background when not streaming.",
+        "• Make image stabilization work when scene video source is not a builtin camera. 🐛 MikeV",
+        "• Recording on separate dispatch queue not to block pipeline queue when starting recording.",
+        "• Experimental Apple Music control via chat bot and player.",
+        "• Altitude ascent and descent in text widget. 🧑‍🏭 NoFuture",
+        "• Apply font size setting to quick button chat. 💡 G",
+        "• YouTube stream management and viewers tweaks.",
+        "  • May slightly reduce number of requests. Almost reached quota limit.",
+        "• Photo shoot quick button for taking highish resolution clean pictures periodically. 💡 G",
+        "  • One picture per active builtin/UVC camera per second.",
+        "  • Pictures saved to Photos (not uploaded to Discord).",
+        "• Try to make Moblink reconnection work better. 🐛 AUTdany",
+        "• Case-insensitive chat bot commands. 💡 Real Life Doomer",
+        "• Chinese Taiwan translation updated. ✍️ 一人HitoriGS —",
+    ]),
     Version(version: "33.11.0", date: "2026-07-05", changes: [
         "• Only show \"Failed to fetch youtube video ids\" toast when youtube is configured.",
         "• Make talkback work after app has been in background. 🐛 Rick9K",

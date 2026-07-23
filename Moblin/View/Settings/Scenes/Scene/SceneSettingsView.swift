@@ -159,6 +159,10 @@ private struct VideoSourceView: View {
                             model.sceneUpdated(updateRemoteScene: false)
                         }
                 }
+                Toggle("Mirror", isOn: $scene.mirror)
+                    .onChange(of: scene.mirror) { _ in
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                    }
                 Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
                     .onChange(of: scene.overrideVideoStabilizationMode) { _ in
                         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)

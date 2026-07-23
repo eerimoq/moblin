@@ -4,7 +4,7 @@ import Foundation
 import MusicKit
 
 private enum Action {
-    case add(title: String, onCompleted: (String) -> Void)
+    case add(title: String, onCompleted: (Result<String, String>) -> Void)
     case play
     case pause
     case next(count: Int)
@@ -29,7 +29,7 @@ struct MusicStatus {
 }
 
 extension Model {
-    func addMusic(title: String, onCompleted: @escaping (String) -> Void) {
+    func addMusic(title: String, onCompleted: @escaping (Result<String, String>) -> Void) {
         actions.append(.add(title: title, onCompleted: onCompleted))
         tryRunNextAction()
     }
@@ -90,7 +90,7 @@ extension Model {
         }
     }
 
-    private func addAction(title: String, onCompleted: (String) -> Void) async throws {
+    private func addAction(title: String, onCompleted: (Result<String, String>) -> Void) async throws {
         let title = title.trim()
         let authStatus = await MusicAuthorization.request()
         guard authStatus == .authorized else {
@@ -99,7 +99,7 @@ extension Model {
         }
         if let song = try await findSong(title: title) {
             logger.debug("music: Adding song \(song)")
-            onCompleted("\(song.artistName) - \(song.title) added to the queue.")
+            onCompleted(.success("\(song.artistName) - \(song.title)"))
             songs.append(song)
             if !musicPlayer.isPreparedToPlay {
                 logger.debug("music: Creating queue")
@@ -121,7 +121,7 @@ extension Model {
             }
         } else {
             logger.debug("music: Song '\(title)' not found")
-            onCompleted("'\(title)' not found.")
+            onCompleted(.failure("'\(title)' not found."))
         }
     }
 
