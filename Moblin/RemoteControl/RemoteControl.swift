@@ -592,6 +592,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     let gForce: GForce?
     let latestSubscriber: String
     let latestFollower: String
+    let bonding: String
+    let bondingRtts: String
 
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
@@ -637,6 +639,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         gForce = stats.gForce
         latestSubscriber = stats.latestSubscriber
         latestFollower = stats.latestFollower
+        bonding = stats.bonding
+        bondingRtts = stats.bondingRtts
     }
 
     func toStats() -> TextEffectStats {
@@ -683,7 +687,9 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                         browserTitle: browserTitle,
                         gForce: gForce,
                         latestSubscriber: latestSubscriber,
-                        latestFollower: latestFollower)
+                        latestFollower: latestFollower,
+                        bonding: bonding,
+                        bondingRtts: bondingRtts)
     }
 }
 

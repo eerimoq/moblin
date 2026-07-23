@@ -1162,6 +1162,18 @@ private struct DebugVariablesView: View {
                     text: $value
                 )
                 VariableView(
+                    title: "{bonding}",
+                    description: String(
+                        localized: "Show bonding statistics (e.g. 19% en8, 72% AT&T, 9% T-mobile)"
+                    ),
+                    text: $value
+                )
+                VariableView(
+                    title: "{bondingRtts}",
+                    description: String(localized: "Show bonding RTTs (round-trip times)"),
+                    text: $value
+                )
+                VariableView(
                     title: "{resolution}",
                     description: String(localized: "Show resolution"),
                     text: $value

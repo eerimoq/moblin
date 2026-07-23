@@ -350,7 +350,9 @@ struct TextEffectSuite {
                         browserTitle: "",
                         gForce: gForce,
                         latestSubscriber: "",
-                        latestFollower: "")
+                        latestFollower: "",
+                        bonding: "",
+                        bondingRtts: "")
     }
 
     private func createLine(data: TextEffectPartData) -> [TextEffectLine] {

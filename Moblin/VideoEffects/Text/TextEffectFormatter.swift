@@ -203,6 +203,10 @@ class TextEffectFormatter {
                 formatLatestSubscriber(stats: stats)
             case .latestFollower:
                 formatLatestFollower(stats: stats)
+            case .bonding:
+                formatBonding(stats: stats)
+            case .bondingRtts:
+                formatBondingRtts(stats: stats)
             }
             partId += 1
         }
@@ -564,6 +568,14 @@ class TextEffectFormatter {
 
     private func formatLatestFollower(stats: TextEffectStats) {
         appendTextPart(value: stats.latestFollower)
+    }
+
+    private func formatBonding(stats: TextEffectStats) {
+        appendTextPart(value: stats.bonding)
+    }
+
+    private func formatBondingRtts(stats: TextEffectStats) {
+        appendTextPart(value: stats.bondingRtts)
     }
 
     private func formatOptional(value: Int?) -> String {

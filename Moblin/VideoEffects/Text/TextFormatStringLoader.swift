@@ -280,6 +280,8 @@ enum TextFormatPart: Equatable {
     case gForceMax(String?)
     case latestSubscriber
     case latestFollower
+    case bonding
+    case bondingRtts
 }
 
 @MainActor
@@ -316,6 +318,10 @@ class TextFormatLoader {
                     loadItem(part: .fps, offsetBy: 5)
                 } else if formatFromIndex.hasPrefix("{debugoverlay}") {
                     loadItem(part: .debugOverlay, offsetBy: 14)
+                } else if formatFromIndex.hasPrefix("{bonding}") {
+                    loadItem(part: .bonding, offsetBy: 9)
+                } else if formatFromIndex.hasPrefix("{bondingrtts}") {
+                    loadItem(part: .bondingRtts, offsetBy: 13)
                 } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
