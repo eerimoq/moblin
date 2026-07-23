@@ -245,7 +245,10 @@ struct SettingsView: View {
                 Toggle("Show all settings", isOn: $database.showAllSettings)
             }
             Section {
-                ResetSettingsView()
+                SettingsSaveView(model: model)
+            }
+            Section {
+                SettingsResetView()
             }
         }
         .navigationTitle("Settings")
