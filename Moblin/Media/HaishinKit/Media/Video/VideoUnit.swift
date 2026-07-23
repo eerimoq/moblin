@@ -197,6 +197,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
+    private var pendingAfterAttachMirror: Bool?
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
@@ -213,6 +214,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var ignoreFramesAfterAttachSeconds = 0.0
     private var configuredIgnoreFramesAfterAttachSeconds = 0.0
     private var rotation: Double = 0.0
+    private var mirror: Bool = false
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var lowFpsImageEnabled: Bool = false
     private var lowFpsImageInterval: Double = 1.0
@@ -365,10 +367,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.setPendingAfterAttachEffectsInternal(effects: effects, rotation: rotation)
+                self.setPendingAfterAttachEffectsInternal(effects: effects,
+                                                          rotation: rotation,
+                                                          mirror: mirror)
             }
         }
     }
@@ -1078,6 +1082,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    private func mirrorCoreImage(_ image: CIImage) -> CIImage {
+        image.scaled(x: -1, y: 1).translated(x: image.extent.width, y: 0)
+    }
+
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ enabledEffects: [VideoEffect],
@@ -1090,6 +1098,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             image = image.oriented(.left)
         }
         image = rotateCoreImage(image, rotation)
+        if mirror {
+            image = mirrorCoreImage(image)
+        }
         if image.extent.size != canvasSize {
             image = scaleImage(image)
         }
@@ -1245,9 +1256,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         effects.removeAll()
     }
 
-    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect], rotation: Double) {
+    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect],
+                                                      rotation: Double,
+                                                      mirror: Bool)
+    {
         pendingAfterAttachEffects = effects
         pendingAfterAttachRotation = rotation
+        pendingAfterAttachMirror = mirror
     }
 
     private func usePendingAfterAttachEffectsInternal() {
@@ -1259,6 +1274,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         if let pendingAfterAttachRotation {
             rotation = pendingAfterAttachRotation
             self.pendingAfterAttachRotation = nil
+        }
+        if let pendingAfterAttachMirror {
+            mirror = pendingAfterAttachMirror
+            self.pendingAfterAttachMirror = nil
         }
     }
 
@@ -1507,6 +1526,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             || isSceneSwitchTransition
             || imageBuffer.size != canvasSize
             || rotation != 0.0
+            || mirror
         {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,

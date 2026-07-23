@@ -1011,7 +1011,9 @@ extension Model {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation)
+        media.setPendingAfterAttachEffects(effects: effects,
+                                           rotation: scene.videoSourceRotation,
+                                           mirror: scene.mirror)
         for effect in browserEffects.values where !effects.contains(effect) {
             effect.setSceneWidget(sceneWidget: nil, crops: [])
         }

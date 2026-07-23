@@ -3887,6 +3887,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var overrideMic: Bool = false
     @Published var micId: String = ""
     @Published var quickSwitchGroup: Int?
+    @Published var mirror: Bool = false
 
     init(name: String) {
         self.name = name
@@ -3922,6 +3923,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         case overrideMic
         case micId
         case quickSwitchGroup
+        case mirror
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -3950,6 +3952,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.overrideMic, overrideMic)
         try container.encode(.micId, micId)
         try container.encode(.quickSwitchGroup, quickSwitchGroup)
+        try container.encode(.mirror, mirror)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -3986,6 +3989,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         overrideMic = container.decode(.overrideMic, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
         quickSwitchGroup = container.decode(.quickSwitchGroup, Int?.self, nil)
+        mirror = container.decode(.mirror, Bool.self, false)
     }
 
     func clone() -> SettingsScene {
@@ -4002,6 +4006,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         new.overrideMic = overrideMic
         new.micId = micId
         new.quickSwitchGroup = quickSwitchGroup
+        new.mirror = mirror
         return new
     }
 

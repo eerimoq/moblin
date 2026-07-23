@@ -695,8 +695,8 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.unregisterAllVideoEffects()
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        processor?.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
+        processor?.setPendingAfterAttachEffects(effects: effects, rotation: rotation, mirror: mirror)
     }
 
     func usePendingAfterAttachEffects() {
