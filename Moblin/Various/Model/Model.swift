@@ -391,6 +391,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var portraitVideoOffsetFromTop = 0.0
     @Published var currentStreamId = UUID()
     @Published var showTwitchAuth = false
+    @Published var showVkVideoLiveAuth = false
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
@@ -491,6 +492,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickPlatformStatus: KickPlatformStatus?
+    var vkVideoLiveChat: VkVideoLiveChat?
+    var vkVideoLivePlatformStatus: VkVideoLivePlatformStatus?
     var youTubeLiveChats: [String: YouTubeLiveChat] = [:]
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
@@ -581,11 +584,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
+    let vkVideoLiveAuth = VkVideoLiveAuth()
+    var vkVideoLiveAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
     let twitchSearchChannelsTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
     let kickSearchChannelsTimer = SimpleTimer(queue: .main)
+    let vkVideoLiveSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()
@@ -1161,6 +1167,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startWeatherManager()
         startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
+        vkVideoLiveAuth.setOnAccessToken(onAccessToken: handleVkVideoLiveAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
@@ -1847,6 +1854,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 updateViewersTwitch()
             case .kick:
                 updateViewersKick()
+            case .vkVideoLive:
+                updateViewersVkVideoLive()
             case .youTube:
                 updateViewersYouTube()
             case .soop:
@@ -2224,6 +2233,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRemoteControlRelay()
         reloadRemoteControlWeb()
         reloadKickViewers()
+        reloadVkVideoLiveViewers()
         reloadSoopPlatformStatus()
         reloadNtpClient()
     }
@@ -2258,8 +2268,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isViewersConfigured() -> Bool {
-        isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
-            isSoopViewersConfigured()
+        isTwitchViewersConfigured() || isKickViewersConfigured() || isVkVideoLiveViewersConfigured() ||
+            isYouTubeViewersConfigured() || isSoopViewersConfigured()
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2348,6 +2358,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isKickViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .kick, status: .unknown))
+        }
+        if isVkVideoLiveViewersConfigured() {
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .vkVideoLive, status: .unknown))
         }
         if isYouTubeViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .youTube, status: .unknown))
