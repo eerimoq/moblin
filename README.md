@@ -413,10 +413,7 @@ Roughly the steps to setup Moblin's developement environment.
 
    `open Moblin.xcodeproj`
 
-6. Modify `Config/User.xcconfig` in Xcode. Find your Team ID at
-   https://developer.apple.com/account. Set `DEVELOPMENT_TEAM` to your
-   Team ID. Set `BASE_PRODUCT_BUNDLE_IDENTIFIER` to something unique
-   (typically replace `eerimoq` with your name).
+6. Modify `Config/User.xcconfig` in Xcode.
 
 7. Press `Command + B` to build Moblin.
 
