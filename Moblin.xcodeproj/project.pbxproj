@@ -36,7 +36,6 @@
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
-		03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03DC6B162F8A1D6700E12FAB /* DockKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
@@ -126,7 +125,6 @@
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		03AA0006000000000000AA02 /* MoblinLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		03DC6B162F8A1D6700E12FAB /* DockKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DockKit.framework; path = System/Library/Frameworks/DockKit.framework; sourceTree = SDKROOT; };
 		03E649432E634D2800728501 /* MoblinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -290,7 +288,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */,
 				032303212F671CC600790A63 /* ZipArchive in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
@@ -359,7 +356,6 @@
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
 				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
-				03DC6B162F8A1D6700E12FAB /* DockKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -67,7 +67,7 @@ extension Model {
             if !pressed {
                 if #available(iOS 18.0, *) {
                     DispatchQueue.main.async {
-                        Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
+                        Gimbal.shared?.animate(motion: functionData.gimbalMotion)
                     }
                 }
             }

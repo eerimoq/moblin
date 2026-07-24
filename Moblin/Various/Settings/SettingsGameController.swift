@@ -1,4 +1,3 @@
-import DockKit
 import Foundation
 import SwiftUI
 
@@ -23,20 +22,6 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
             String(localized: "No")
         case .wakeup:
             String(localized: "Wakeup")
-        }
-    }
-
-    @available(iOS 18, *)
-    func toSystem() -> DockAccessory.Animation {
-        switch self {
-        case .kapow:
-            .kapow
-        case .yes:
-            .yes
-        case .no:
-            .no
-        case .wakeup:
-            .wakeup
         }
     }
 }

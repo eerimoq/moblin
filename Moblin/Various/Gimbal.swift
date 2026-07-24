@@ -1,6 +1,7 @@
-import DockKit
 import Foundation
 import Spatial
+#if canImport(DockKit)
+import DockKit
 
 @available(iOS 18.0, *)
 @MainActor
@@ -44,7 +45,17 @@ class Gimbal {
         _ = try? await accessory?.setOrientation(angles)
     }
 
-    func animate(motion: DockAccessory.Animation) {
+    func animate(motion: SettingsGimbalMotion) {
+        let motion: DockAccessory.Animation = switch motion {
+        case .kapow:
+            .kapow
+        case .yes:
+            .yes
+        case .no:
+            .no
+        case .wakeup:
+            .wakeup
+        }
         Task { @MainActor [weak self] in
             guard let self, !tracking else {
                 return
@@ -160,3 +171,31 @@ class Gimbal {
         }
     }
 }
+
+#else
+
+@MainActor
+class Gimbal {
+    static var shared: Gimbal?
+
+    init(model _: Model) {}
+
+    func isConnected() -> Bool {
+        false
+    }
+
+    func setTracking(on _: Bool) {}
+
+    func setOrientation(angles _: Vector3D) async {}
+
+    func animate(motion _: SettingsGimbalMotion) {}
+
+    func setMovement(velocity _: Vector3D) {}
+
+    func cancelMovement() {}
+
+    func getCurrentOrientation() async throws -> Vector3D? {
+        nil
+    }
+}
+#endif
