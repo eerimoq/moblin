@@ -201,6 +201,9 @@ struct QuickButtonGoProView: View {
                                 Image(systemName: activeIndex == index ? "circle.fill" : "circle")
                                     .font(.system(size: 10))
                                     .padding(.bottom, 10)
+                                    .onTapGesture {
+                                        activeIndex = index
+                                    }
                             }
                         }
                     }

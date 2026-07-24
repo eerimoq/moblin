@@ -233,6 +233,8 @@ private struct ControlBarPageScrollTargetBehavior: @preconcurrency ScrollTargetB
 }
 
 private struct PageIndicatorView: View {
+    let model: Model
+    let size: CGFloat
     @ObservedObject var quickButtons: QuickButtons
 
     private func visiblePages() -> [Int] {
@@ -247,9 +249,14 @@ private struct PageIndicatorView: View {
         HStack(spacing: 3) {
             ForEach(visiblePages(), id: \.self) { page in
                 Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
-                    .font(.system(size: 5))
+                    .font(.system(size: size))
                     .padding(.bottom, 0)
                     .foregroundStyle(.white)
+                    .onTapGesture {
+                        quickButtons.page = page
+                        quickButtons.activePage = page
+                        model.updateQuickButtonStates()
+                    }
             }
         }
     }
@@ -303,12 +310,12 @@ private struct PagesView: View {
                 .ignoresSafeArea(.all, edges: edgesToIgnore())
                 .overlay(alignment: .bottom) {
                     if !isMac() {
-                        PageIndicatorView(quickButtons: quickButtons)
+                        PageIndicatorView(model: model, size: 5, quickButtons: quickButtons)
                             .offset(.init(width: offsetX(), height: 13))
                     }
                 }
                 if isMac() {
-                    PageIndicatorView(quickButtons: quickButtons)
+                    PageIndicatorView(model: model, size: 9, quickButtons: quickButtons)
                         .padding(.top, 1)
                 }
             }
