@@ -2,6 +2,7 @@ import CoreImage
 import Vision
 
 nonisolated(unsafe) var highQualityDownsampling = false
+nonisolated(unsafe) var metalPetalFastPaths = false
 
 func toPixels(_ percentage: Double, _ total: Double) -> Double {
     (percentage * total) / 100

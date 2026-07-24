@@ -178,7 +178,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
-    private let context = CIContext()
+    private let context: CIContext
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
@@ -244,6 +244,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
     private var blackImage: CIImage?
+    private var blackImageMetalPetal: MTIImage?
+    private var blackImageMetalPetalSize: CGSize = .zero
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
@@ -251,7 +253,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var latestReportedFps = -1
     private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
-    private var isMetalPetalGraphics: Bool = false
     private var macScreenCaptureActive = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -285,9 +286,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     override init() {
+        let contextOptions: [CIContextOption: Any] = [
+            .cacheIntermediates: false,
+            .useSoftwareRenderer: false,
+        ]
         if let metalDevice = MTLCreateSystemDefaultDevice() {
+            context = CIContext(mtlDevice: metalDevice, options: contextOptions)
             metalPetalContext = try? MTIContext(device: metalDevice)
         } else {
+            context = CIContext(options: contextOptions)
             metalPetalContext = nil
         }
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
@@ -550,6 +557,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             return nil
         }
         return CIImage(cvPixelBuffer: imageBuffer)
+    }
+
+    func getMetalPetalImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> MTIImage? {
+        guard let sampleBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
+              let imageBuffer = sampleBuffer.imageBuffer
+        else {
+            return nil
+        }
+        return MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
     }
 
     func attach(params: VideoUnitAttachParams) throws {
@@ -1014,8 +1030,19 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             videoUnit: self,
             isFirstAfterAttach: isFirstAfterAttach
         )
-        if isMetalPetalGraphics {
-            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, enabledEffects, info)
+        let effectsNeedMetalPetal = enabledEffects.contains(where: { $0.isMetalPetal() })
+        let canApplyMetalPetalFastTransform = canUseMetalPetalFastTransform(
+            imageBuffer,
+            isSceneSwitchTransition
+        )
+        if effectsNeedMetalPetal || canApplyMetalPetalFastTransform {
+            return applyEffectsMetalPetal(
+                imageBuffer,
+                sampleBuffer,
+                enabledEffects,
+                canApplyMetalPetalFastTransform,
+                info
+            )
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
@@ -1025,6 +1052,29 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 info
             )
         }
+    }
+
+    // Only the simple, common geometry (no discrete rotation, no capture/output
+    // orientation mismatch, no scene-switch transition) is implemented natively in the
+    // MetalPetal path so far. Everything else keeps using the existing, unchanged
+    // CoreImage path exactly as before, to avoid any risk of getting rotation/orientation
+    // sign conventions wrong in code that cannot be visually verified here.
+    private func canUseMetalPetalFastTransform(_ imageBuffer: CVImageBuffer,
+                                               _ isSceneSwitchTransition: Bool) -> Bool
+    {
+        guard metalPetalFastPaths else {
+            return false
+        }
+        guard metalPetalContext != nil else {
+            return false
+        }
+        guard rotation == 0 else {
+            return false
+        }
+        guard videoOrientation == .portrait || !imageBuffer.isPortrait() else {
+            return false
+        }
+        return !isSceneSwitchTransition
     }
 
     private func removeEffects() {
@@ -1042,6 +1092,45 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             blackImage = createBlackImage(width: width, height: height)
         }
         return blackImage!
+    }
+
+    private func getBlackImageMetalPetal() -> MTIImage {
+        if blackImageMetalPetal == nil || blackImageMetalPetalSize != canvasSize {
+            blackImageMetalPetal = MTIImage(
+                color: MTIColor(red: 0, green: 0, blue: 0, alpha: 1),
+                sRGB: false,
+                size: canvasSize
+            )
+            blackImageMetalPetalSize = canvasSize
+        }
+        return blackImageMetalPetal!
+    }
+
+    // MetalPetal equivalent of scaleImage(_:). Only handles scale-to-fit/fill + centering
+    // (matching fillFrame); rotation is intentionally not handled here, see
+    // canUseMetalPetalFastTransform.
+    private func scaleImageMetalPetal(_ image: MTIImage) -> MTIImage {
+        let imageRatio = image.extent.height / image.extent.width
+        let canvasRatio = canvasSize.height / canvasSize.width
+        let scaleFactor = if (fillFrame && (canvasRatio < imageRatio)) ||
+            (!fillFrame && (canvasRatio > imageRatio))
+        {
+            Double(canvasSize.width) / image.extent.width
+        } else {
+            Double(canvasSize.height) / image.extent.height
+        }
+        let scaledWidth = image.extent.width * scaleFactor
+        let scaledHeight = image.extent.height * scaleFactor
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = getBlackImageMetalPetal()
+        filter.layers = [
+            .content(image, modifier: { layer in
+                layer.layoutUnit = .pixel
+                layer.size = CGSize(width: scaledWidth, height: scaledHeight)
+                layer.position = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+            }),
+        ]
+        return filter.outputImage ?? image
     }
 
     private func scaleImage(_ image: CIImage) -> CIImage {
@@ -1140,15 +1229,37 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
+    // Lets an effect that only implements the CoreImage execute(_:_:) run correctly from
+    // within the MetalPetal path, instead of being silently skipped. Used by
+    // VideoEffect.executeMetalPetal's default implementation.
+    func bridgeMetalPetalImageToCoreImage(_ image: MTIImage) -> CIImage? {
+        try? metalPetalContext?.makeCIImage(from: image)
+    }
+
+    // Renders a CIImage to a real texture-backed MTIImage (via CGImage), instead of
+    // wrapping it as a lazy MTIImage(ciImage:) promise that would re-run CoreImage every
+    // time the MetalPetal graph renders. Intended for infrequently-changing overlays
+    // (e.g. TextEffect's rendered text) that effects cache and reuse across many frames.
+    func renderCoreImageToMetalPetalImage(_ image: CIImage) -> MTIImage? {
+        guard let cgImage = context.createCGImage(image, from: image.extent) else {
+            return nil
+        }
+        return MTIImage(cgImage: cgImage, isOpaque: false)
+    }
+
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _ enabledEffects: [VideoEffect],
+                                        _ canApplyFastTransform: Bool,
                                         _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
         guard var image else {
             return (nil, nil)
+        }
+        if canApplyFastTransform, image.extent.size != canvasSize {
+            image = scaleImageMetalPetal(image)
         }
         for effect in enabledEffects {
             image = effect.executeMetalPetal(image, info)
@@ -1268,7 +1379,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private func usePendingAfterAttachEffectsInternal() {
         if let pendingAfterAttachEffects {
             effects = pendingAfterAttachEffects
-            isMetalPetalGraphics = effects.contains(where: { $0.isMetalPetal() })
             self.pendingAfterAttachEffects = nil
         }
         if let pendingAfterAttachRotation {
