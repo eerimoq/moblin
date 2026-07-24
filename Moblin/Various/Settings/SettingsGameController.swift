@@ -1,6 +1,9 @@
-import DockKit
 import Foundation
 import SwiftUI
+
+#if canImport(DockKit)
+import DockKit
+#endif
 
 enum SettingsControllerFunctionSection {
     case general
@@ -26,6 +29,7 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
         }
     }
 
+    #if canImport(DockKit)
     @available(iOS 18, *)
     func toSystem() -> DockAccessory.Animation {
         switch self {
@@ -39,6 +43,7 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
             .wakeup
         }
     }
+    #endif
 }
 
 enum SettingsControllerThumbStickFunction: String, Codable, CaseIterable {

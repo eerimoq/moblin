@@ -1,6 +1,8 @@
-import DockKit
 import Foundation
 import Spatial
+
+#if canImport(DockKit)
+import DockKit
 
 @available(iOS 18.0, *)
 @MainActor
@@ -160,3 +162,31 @@ class Gimbal {
         }
     }
 }
+
+#else
+
+// DockKit is not part of the iOS Simulator SDK.
+@available(iOS 18.0, *)
+@MainActor
+class Gimbal {
+    static var shared: Gimbal?
+
+    init(model _: Model) {}
+
+    func isConnected() -> Bool {
+        false
+    }
+
+    func setTracking(on _: Bool) {}
+
+    func setOrientation(angles _: Vector3D) async {}
+
+    func setMovement(velocity _: Vector3D) {}
+
+    func cancelMovement() {}
+
+    func getCurrentOrientation() async throws -> Vector3D? {
+        nil
+    }
+}
+#endif

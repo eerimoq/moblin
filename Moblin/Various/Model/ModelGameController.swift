@@ -65,11 +65,13 @@ extension Model {
             }
         case .gimbalAnimate:
             if !pressed {
+                #if canImport(DockKit)
                 if #available(iOS 18.0, *) {
                     DispatchQueue.main.async {
                         Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
                     }
                 }
+                #endif
             }
         case .torch:
             if !pressed {
