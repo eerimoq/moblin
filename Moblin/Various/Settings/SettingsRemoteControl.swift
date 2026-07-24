@@ -37,25 +37,59 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, N
     }
 }
 
+class SettingsRemoteControlStreamerUrl: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var name: String = ""
+    @Published var url: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+        case url
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        url = container.decode(.url, String.self, "")
+    }
+}
+
 class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var enabled: Bool = false
+    @Published var name: String = ""
     @Published var url: String = ""
     @Published var previewFps: Float = 1.0
     @Published var reliableChatAndEvents: Bool = false
+    @Published var savedUrls: [SettingsRemoteControlStreamerUrl] = []
 
     enum CodingKeys: CodingKey {
         case enabled
+        case name
         case url
         case previewFps
         case reliableChatAndEvents
+        case savedUrls
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
+        try container.encode(.name, name)
         try container.encode(.url, url)
         try container.encode(.previewFps, previewFps)
         try container.encode(.reliableChatAndEvents, reliableChatAndEvents)
+        try container.encode(.savedUrls, savedUrls)
     }
 
     init() {}
@@ -63,9 +97,11 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
+        name = container.decode(.name, String.self, "")
         url = container.decode(.url, String.self, "")
         previewFps = container.decode(.previewFps, Float.self, 1.0)
         reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, false)
+        savedUrls = container.decode(.savedUrls, [SettingsRemoteControlStreamerUrl].self, [])
     }
 }
 

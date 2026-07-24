@@ -41,9 +41,49 @@ private struct PasswordView: View {
     }
 }
 
-private struct RemoteControlSettingsStreamerView: View {
+private struct AssistantUrlSettingsView: View {
     let model: Model
     @ObservedObject var streamer: SettingsRemoteControlStreamer
+    @ObservedObject var url: SettingsRemoteControlStreamerUrl
+
+    var body: some View {
+        Button {
+            streamer.name = url.name
+            streamer.url = url.url
+            model.reloadRemoteControlStreamer()
+            model.reloadConnections()
+        } label: {
+            HStack {
+                Text(url.name)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text(url.url)
+                    .foregroundColor(.primary)
+                if streamer.url == url.url {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .contextMenu {
+            if isMac() {
+                ContextMenuDeleteButtonView {
+                    streamer.savedUrls.removeAll(where: { $0 === url })
+                }
+            }
+        }
+    }
+}
+
+private struct UrlSettingsInnerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
+
+    private func submitStreamerName(name: String) {
+        streamer.name = name
+        streamer.savedUrls.first(where: { $0.url == streamer.url })?.name = name
+    }
 
     private func submitStreamerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -52,7 +92,55 @@ private struct RemoteControlSettingsStreamerView: View {
         streamer.url = value
         model.reloadRemoteControlStreamer()
         model.reloadConnections()
+        guard !streamer.savedUrls.contains(where: { $0.url == value }) else {
+            return
+        }
+        let url = SettingsRemoteControlStreamerUrl()
+        url.name = streamer.name
+        url.url = value
+        streamer.savedUrls.append(url)
     }
+
+    var body: some View {
+        Form {
+            Section {
+                NameEditView(name: $streamer.name)
+                    .onChange(of: streamer.name) { name in
+                        submitStreamerName(name: name)
+                    }
+                TextEditNavigationView(
+                    title: String(localized: "URL"),
+                    value: streamer.url,
+                    onChange: isValidWebSocketUrl,
+                    onSubmit: submitStreamerUrl,
+                    footers: [
+                        String(
+                            localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
+                        ),
+                    ],
+                    placeholder: "ws://32.143.32.12:2345"
+                )
+            }
+            Section {
+                ForEach(streamer.savedUrls) { url in
+                    AssistantUrlSettingsView(model: model, streamer: streamer, url: url)
+                }
+                .onDelete { offsets in
+                    streamer.savedUrls.remove(atOffsets: offsets)
+                }
+            } header: {
+                Text("Saved URLs")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a URL"))
+            }
+        }
+        .navigationTitle("Assistant")
+    }
+}
+
+private struct RemoteControlSettingsStreamerView: View {
+    let model: Model
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
 
     private func submitStreamerPreviewFps(value: Float) {
         streamer.previewFps = value
@@ -70,18 +158,14 @@ private struct RemoteControlSettingsStreamerView: View {
                     model.reloadRemoteControlStreamer()
                     model.reloadConnections()
                 }
-            TextEditNavigationView(
-                title: String(localized: "Assistant URL"),
-                value: streamer.url,
-                onChange: isValidWebSocketUrl,
-                onSubmit: submitStreamerUrl,
-                footers: [
-                    String(
-                        localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
-                    ),
-                ],
-                placeholder: "ws://32.143.32.12:2345"
-            )
+            NavigationLink {
+                UrlSettingsInnerView(model: model,
+                                     database: model.database,
+                                     streamer: streamer)
+            } label: {
+                TextItemLocalizedView(name: "Assistant",
+                                      value: streamer.name.isEmpty ? streamer.url : streamer.name)
+            }
         } footer: {
             Text("""
             Enable to allow an assistant to monitor and control this device from a \
