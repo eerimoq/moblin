@@ -9,6 +9,8 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "33.12.0", date: "2026-07-23", changes: [
+        "• Support for cycling speed and cadence (CSC) sensors.",
+        "  • Shows up as workout devices. Use {cyclingCadence} in text widget.",
         "• Try to make chat usernames more readable on dark background. 💡 Tican",
         "• Set talkback mic in remote control. Streamer side only.",
         "• Make SRT client ingest work when reconnecting. 🐛 iesv",
