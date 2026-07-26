@@ -1083,6 +1083,16 @@ private struct WorkoutVariablesView: View {
                         description: String(localized: "Show cycling cadence"),
                         text: $value
                     )
+                    VariableView(
+                        title: "{cyclingSpeed}",
+                        description: String(localized: "Show cycling speed from CSC sensor"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{cyclingSpeed:km/h}",
+                        description: String(localized: "Show cycling speed in km/h"),
+                        text: $value
+                    )
                 }
             }
             .navigationTitle("Workout")

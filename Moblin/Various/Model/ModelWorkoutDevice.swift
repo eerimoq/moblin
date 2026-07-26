@@ -85,8 +85,9 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, cadence: Int) {
+    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double, cadence: Int) {
         DispatchQueue.main.async {
+            self.cyclingSpeed = speed
             self.cyclingCadence = cadence
         }
     }

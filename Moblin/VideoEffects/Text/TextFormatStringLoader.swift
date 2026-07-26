@@ -270,6 +270,7 @@ enum TextFormatPart: Equatable {
     case teslaMedia
     case cyclingPower
     case cyclingCadence
+    case cyclingSpeed(TextFormatSpeedUnit)
     case runningPace(String)
     case runningCadence(String)
     case runningDistance(String)
@@ -377,6 +378,7 @@ class TextFormatLoader {
                     loadItem(part: .cyclingPower, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
+                } else if appendCyclingSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {
@@ -409,6 +411,13 @@ class TextFormatLoader {
                                "{speed}",
                                /{speed:([^}]+)}/,
                                TextFormatSpeedUnit.init) { .speed($0 ?? .system) }
+    }
+
+    private func appendCyclingSpeedIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{cyclingspeed}",
+                               /{cyclingspeed:([^}]+)}/,
+                               TextFormatSpeedUnit.init) { .cyclingSpeed($0 ?? .system) }
     }
 
     private func appendAverageSpeedIfPresent(formatFromIndex: String) -> Bool {

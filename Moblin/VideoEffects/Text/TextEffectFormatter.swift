@@ -183,6 +183,8 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
+            case let .cyclingSpeed(unit):
+                formatCyclingSpeed(stats: stats, unit: unit)
             case let .runningPace(deviceName):
                 formatRunningPace(stats: stats, deviceName: deviceName)
             case let .runningCadence(deviceName):
@@ -483,6 +485,10 @@ class TextEffectFormatter {
 
     private func formatCyclingCadence(stats: TextEffectStats) {
         appendTextPart(value: stats.cyclingCadence)
+    }
+
+    private func formatCyclingSpeed(stats: TextEffectStats, unit: TextFormatSpeedUnit) {
+        appendTextPart(value: formatSpeed(speed: stats.cyclingSpeed, unit: unit))
     }
 
     private func formatRunningPace(stats: TextEffectStats, deviceName: String) {

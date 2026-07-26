@@ -43,6 +43,7 @@ struct TextEffectStats {
     let teslaMedia: String
     let cyclingPower: String
     let cyclingCadence: String
+    let cyclingSpeed: Double
     let runningMetrics: [String: WorkoutDeviceRunningMetrics]
     let browserTitle: String
     let gForce: GForce?

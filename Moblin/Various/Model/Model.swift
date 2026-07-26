@@ -615,6 +615,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
+    var cyclingSpeed = 0.0
     var latestSubscriber = ""
     var latestFollower = ""
     private let periodicTimer20ms = SimpleTimer(queue: .main)
