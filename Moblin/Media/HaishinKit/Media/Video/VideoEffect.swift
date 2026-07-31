@@ -32,6 +32,16 @@ struct VideoEffectInfo {
         }
         return CIImage(cvPixelBuffer: imageBuffer)
     }
+
+    func getMetalPetalImage(_ videoSourceId: UUID) -> MTIImage? {
+        guard let imageBuffer = detectionJobs
+            .first(where: { $0.videoSourceId == videoSourceId })?
+            .imageBuffer
+        else {
+            return videoUnit.getMetalPetalImage(videoSourceId, presentationTimeStamp)
+        }
+        return MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+    }
 }
 
 enum VideoEffectDetectionsMode {

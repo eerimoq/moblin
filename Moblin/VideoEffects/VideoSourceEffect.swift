@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 import Vision
 
 struct VideoSourceEffectSettings {
@@ -181,5 +182,43 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
                                             backgroundImage.extent,
                                             info)
             .composited(over: backgroundImage)
+    }
+
+    override func executeMetalPetal(_ backgroundImage: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let sceneWidget else {
+            return backgroundImage
+        }
+        guard let widgetImage = info.getMetalPetalImage(videoSourceId) else {
+            return backgroundImage
+        }
+        let canvasSize = backgroundImage.extent.size
+        let scaleX = toPixels(sceneWidget.layout.size, canvasSize.width) / widgetImage.extent.width
+        let scaleY = toPixels(sceneWidget.layout.size, canvasSize.height) / widgetImage.extent.height
+        let scale = min(scaleX, scaleY)
+        let scaledSize = CGSize(
+            width: widgetImage.extent.width * scale,
+            height: widgetImage.extent.height * scale
+        )
+        let movedExtent = CIImage.black
+            .cropped(to: CGRect(origin: .zero, size: scaledSize))
+            .move(sceneWidget.layout, canvasSize)
+            .extent
+        let position = CGPoint(
+            x: movedExtent.minX + movedExtent.width / 2,
+            y: canvasSize.height - movedExtent.minY - movedExtent.height / 2
+        )
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = backgroundImage
+        filter.layers = [
+            .content(widgetImage, modifier: { layer in
+                layer.layoutUnit = .pixel
+                layer.size = scaledSize
+                layer.position = position
+                if self.settings.mirror {
+                    layer.contentFlipOptions = .flipHorizontally
+                }
+            }),
+        ]
+        return filter.outputImage ?? backgroundImage
     }
 }

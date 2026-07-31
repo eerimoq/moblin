@@ -564,6 +564,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return CIImage(cvPixelBuffer: imageBuffer)
     }
 
+    func getMetalPetalImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> MTIImage? {
+        guard let sampleBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp),
+              let imageBuffer = sampleBuffer.imageBuffer
+        else {
+            return nil
+        }
+        return MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+    }
+
     func attach(params: VideoUnitAttachParams) throws {
         if currentAttachParams?.canQuickSwitchTo(other: params) == true {
             attachQuickSwitch(params: params)
