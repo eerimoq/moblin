@@ -4103,3 +4103,17 @@ class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
         switchers = container.decode(.switchers, [SettingsAutoSceneSwitcher].self, [])
     }
 }
+
+enum SettingsGraphicsImplementation: String, Codable, CaseIterable {
+    case coreImage
+    case metalPetal
+
+    func toString() -> String {
+        switch self {
+        case .coreImage:
+            "Core Image"
+        case .metalPetal:
+            "MetalPetal"
+        }
+    }
+}

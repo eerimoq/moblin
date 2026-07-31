@@ -332,6 +332,7 @@ extension Model {
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
         setStreamRateControl(stream: stream)
+        setGraphicsImplementation()
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: stream.audioCodec.toEncoder())
         setAudioChannelsMap(channelsMap: [
@@ -815,6 +816,10 @@ extension Model {
 
     func setStreamRateControl(stream: SettingsStream) {
         media.setVideoStreamRateControl(rateControl: stream.rateControl)
+    }
+
+    func setGraphicsImplementation() {
+        media.setGraphicsImplementation(database.graphicsImplementation)
     }
 
     func getBitratePresetByBitrate(bitrate: UInt32) -> SettingsBitratePreset? {

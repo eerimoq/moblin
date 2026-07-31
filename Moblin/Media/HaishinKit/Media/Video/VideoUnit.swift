@@ -251,6 +251,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var latestReportedFps = -1
     private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
+    private var isMetalPetalGraphicsForcedByEffects: Bool = false
     private var isMetalPetalGraphics: Bool = false
     private var macScreenCaptureActive = false
 
@@ -541,6 +542,17 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             self.bufferedPool = nil
         }
         processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
+    }
+
+    func setGraphicsImplementation(value: SettingsGraphicsImplementation) {
+        processorPipelineQueue.async {
+            switch value {
+            case .coreImage:
+                self.isMetalPetalGraphics = false
+            case .metalPetal:
+                self.isMetalPetalGraphics = true
+            }
+        }
     }
 
     func getCiImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -1014,7 +1026,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             videoUnit: self,
             isFirstAfterAttach: isFirstAfterAttach
         )
-        if isMetalPetalGraphics {
+        if isMetalPetalGraphics || isMetalPetalGraphicsForcedByEffects {
             return applyEffectsMetalPetal(imageBuffer, sampleBuffer, enabledEffects, info)
         } else {
             return applyEffectsCoreImage(
@@ -1268,7 +1280,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private func usePendingAfterAttachEffectsInternal() {
         if let pendingAfterAttachEffects {
             effects = pendingAfterAttachEffects
-            isMetalPetalGraphics = effects.contains(where: { $0.isMetalPetal() })
+            isMetalPetalGraphicsForcedByEffects = effects.contains(where: { $0.isMetalPetal() })
             self.pendingAfterAttachEffects = nil
         }
         if let pendingAfterAttachRotation {

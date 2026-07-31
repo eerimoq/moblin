@@ -869,6 +869,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setVideoOrientation(value: value)
     }
 
+    func setGraphicsImplementation(_ value: SettingsGraphicsImplementation) {
+        processor?.setGraphicsImplementation(value: value)
+    }
+
     func setCameraZoomLevel(device: AVCaptureDevice?, level: Float, rate: Float?) -> Float? {
         guard let device else {
             logger.info("Device not ready to zoom")

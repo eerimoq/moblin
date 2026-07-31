@@ -156,6 +156,38 @@ private struct RemoteSceneView: View {
     }
 }
 
+private struct GraphicsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    Picker(selection: $database.graphicsImplementation) {
+                        ForEach(SettingsGraphicsImplementation.allCases, id: \.self) { implementation in
+                            Text(implementation.toString())
+                        }
+                    } label: {
+                        Text("Implementation")
+                    }
+                    .onChange(of: database.graphicsImplementation) { _ in
+                        model.setGraphicsImplementation()
+                    }
+                } footer: {
+                    Text("""
+                    Core Image is Apple's image processing framework. MetalPetal provides similar \
+                    image processing, and hopefully uses less system resources.
+                    """)
+                }
+            }
+            .navigationTitle("Graphics")
+        } label: {
+            Text("Graphics")
+        }
+    }
+}
+
 struct SceneNameView: View {
     @ObservedObject var scene: SettingsScene
 
@@ -177,6 +209,7 @@ struct ScenesSettingsView: View {
                 DisconnectProtectionSettingsView(database: database,
                                                  disconnectProtection: database.disconnectProtection)
                 RemoteSceneView(selectedSceneId: database.remoteSceneId)
+                GraphicsView(database: database)
             }
         }
         .navigationTitle("Scenes")

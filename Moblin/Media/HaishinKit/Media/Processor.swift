@@ -85,6 +85,12 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func setGraphicsImplementation(value: SettingsGraphicsImplementation) {
+        processorControlQueue.async {
+            self.video.setGraphicsImplementation(value: value)
+        }
+    }
+
     func setHasAudio(value: Bool) {
         processorControlQueue.async {
             self.audio.muted = !value
