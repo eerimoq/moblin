@@ -176,8 +176,9 @@ private struct GraphicsView: View {
                     }
                 } footer: {
                     Text("""
-                    Core Image is Apple's image processing framework. MetalPetal provides similar \
-                    image processing, and hopefully uses less system resources.
+                    Core Image is Apple's image processing framework. MetalPetal is experimental. \
+                    MetalPetal provides similar image processing, and hopefully uses less system \
+                    resources.
                     """)
                 }
             }
