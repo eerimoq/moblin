@@ -2,12 +2,22 @@ import AVFoundation
 import Collections
 import CoreImage
 import MetalPetal
+import os
 import Photos
 import SwiftUI
+import UIKit
 import VideoToolbox
 @preconcurrency import Vision
 
 private let deltaLimit = 0.03
+private let enhancedVideoStabilizationRestoreFrameCount = 15
+
+private enum EnhancedVideoStabilizationState {
+    case enabled
+    case disabled
+    case waitingForFrames(Int)
+    case restoring
+}
 
 struct DetectionJob {
     let videoSourceId: UUID
@@ -253,6 +263,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var currentAttachParams: VideoUnitAttachParams?
     private var isMetalPetalGraphicsForcedByEffects: Bool = false
     private var isMetalPetalGraphics: Bool = false
+    private let enhancedVideoStabilizationState = OSAllocatedUnfairLock(
+        initialState: EnhancedVideoStabilizationState.enabled
+    )
+    private let discardCaptureFramesDuringEnhancedStabilizationTransition = Atomic(false)
+    private let isApplicationActive = Atomic(true)
     private var macScreenCaptureActive = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -297,6 +312,16 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
+        #if !targetEnvironment(macCatalyst)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationWillResignActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+        #endif
         startFrameTimer()
     }
 
@@ -872,7 +897,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
             return sampleBuffer
         }
-        if isMetalPetalGraphicsEnabled() {
+        if isMetalPetalGraphicsEnabled(), isApplicationActive.value {
             let image = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
             do {
                 try metalPetalContext?.render(applySceneSwitchTransitionMetalPetal(image),
@@ -1048,7 +1073,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             videoUnit: self,
             isFirstAfterAttach: isFirstAfterAttach
         )
-        if isMetalPetalGraphicsEnabled() {
+        if isMetalPetalGraphicsEnabled(), isApplicationActive.value || !isSceneSwitchTransition {
             return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
@@ -1913,14 +1938,122 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     @objc
     private func sessionWasInterrupted(_: Notification) {
         logger.debug("Video session interruption started")
-        processorPipelineQueue.async {
-            self.prepareFirstFrame()
+        if !freezeLastGoodFrameAndDisableEnhancedVideoStabilization() {
+            processorPipelineQueue.async {
+                self.prepareFirstFrame()
+            }
         }
     }
 
     @objc
     private func sessionInterruptionEnded(_: Notification) {
         logger.debug("Video session interruption ended")
+        discardCaptureFramesDuringEnhancedStabilizationTransition.mutate { $0 = false }
+        scheduleEnhancedVideoStabilizationRestore()
+    }
+
+    #if !targetEnvironment(macCatalyst)
+    @objc
+    private func applicationWillResignActive() {
+        isApplicationActive.mutate { $0 = false }
+        _ = freezeLastGoodFrameAndDisableEnhancedVideoStabilization()
+    }
+
+    @objc
+    private func applicationDidBecomeActive() {
+        isApplicationActive.mutate { $0 = true }
+        discardCaptureFramesDuringEnhancedStabilizationTransition.mutate { $0 = false }
+        scheduleEnhancedVideoStabilizationRestore()
+    }
+    #endif
+
+    private func freezeLastGoodFrameAndDisableEnhancedVideoStabilization() -> Bool {
+        guard usesEnhancedVideoStabilization() else {
+            return false
+        }
+        guard !discardCaptureFramesDuringEnhancedStabilizationTransition.value else {
+            return true
+        }
+        discardCaptureFramesDuringEnhancedStabilizationTransition.mutate { $0 = true }
+        processorPipelineQueue.async {
+            if let latestSampleBuffer = self.latestSampleBuffer,
+               let copiedSampleBuffer = self.makeCopy(sampleBuffer: latestSampleBuffer)
+            {
+                self.latestSampleBuffer = copiedSampleBuffer
+            }
+            self.prepareFirstFrame()
+            self.disableEnhancedVideoStabilizationDuringInterruption()
+        }
+        return true
+    }
+
+    private func scheduleEnhancedVideoStabilizationRestore() {
+        processorControlQueue.async {
+            self.enhancedVideoStabilizationState.withLock { state in
+                guard case .disabled = state else {
+                    return
+                }
+                state = .waitingForFrames(enhancedVideoStabilizationRestoreFrameCount)
+            }
+        }
+    }
+
+    private func disableEnhancedVideoStabilizationDuringInterruption() {
+        processorControlQueue.async {
+            guard self.usesEnhancedVideoStabilization() else {
+                return
+            }
+            var didDisable = false
+            for device in self.captureSessionDevices {
+                for connection in device.output.connections where connection.isVideoStabilizationSupported {
+                    connection.preferredVideoStabilizationMode = .off
+                    didDisable = true
+                }
+            }
+            guard didDisable else {
+                return
+            }
+            self.enhancedVideoStabilizationState.withLock { $0 = .disabled }
+        }
+    }
+
+    private func usesEnhancedVideoStabilization() -> Bool {
+        if #available(iOS 18.0, macCatalyst 18.0, *) {
+            currentAttachParams?.preferredVideoStabilizationMode == .cinematicExtendedEnhanced
+        } else {
+            false
+        }
+    }
+
+    private func restoreEnhancedVideoStabilizationAfterFreshFramesIfNeeded() {
+        let shouldRestore = enhancedVideoStabilizationState.withLock { state in
+            guard case let .waitingForFrames(frames) = state else {
+                return false
+            }
+            if frames > 1 {
+                state = .waitingForFrames(frames - 1)
+                return false
+            }
+            state = .restoring
+            return true
+        }
+        guard shouldRestore else {
+            return
+        }
+        processorControlQueue.async {
+            guard self.usesEnhancedVideoStabilization() else {
+                self.enhancedVideoStabilizationState.withLock { $0 = .enabled }
+                return
+            }
+            for device in self.captureSessionDevices {
+                for connection in device.output.connections where connection.isVideoStabilizationSupported {
+                    if #available(iOS 18.0, macCatalyst 18.0, *) {
+                        connection.preferredVideoStabilizationMode = .cinematicExtendedEnhanced
+                    }
+                }
+            }
+            self.enhancedVideoStabilizationState.withLock { $0 = .enabled }
+        }
     }
 
     private func findVideoFormat(
@@ -2179,11 +2312,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let imageBufferCopy = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
             return nil
         }
-        VTPixelTransferSessionTransferImage(
+        let status = VTPixelTransferSessionTransferImage(
             pixelTransferSession!,
             from: sampleBuffer.imageBuffer!,
             to: imageBufferCopy
         )
+        guard status == noErr else {
+            return nil
+        }
         return CMSampleBuffer.create(
             imageBufferCopy,
             sampleBuffer.formatDescription!,
@@ -2288,6 +2424,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        guard !discardCaptureFramesDuringEnhancedStabilizationTransition.value else {
+            return
+        }
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
@@ -2295,6 +2434,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
             enqueueVideoPreview(device: input.device, sampleBuffer: sampleBuffer)
         }
         if isSceneVideoSource(device: input.device) {
+            restoreEnhancedVideoStabilizationAfterFreshFramesIfNeeded()
             var sampleBuffer = sampleBuffer
             if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
                 for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
