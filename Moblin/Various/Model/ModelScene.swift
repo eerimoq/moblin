@@ -542,7 +542,7 @@ extension Model {
         pinchEffect = PinchEffect(scale: database.pinchScale)
         fixedHorizonEffect = FixedHorizonEffect()
         glassesEffect = createGlassesEffect()
-        sparkleEffect = createStarEffect()
+        sparkleEffect = createSparkleEffect()
         beautyEffect = BeautyEffect(fps: Float(stream.fps))
         beautyEffect.setSmoothnessSettings(radius: database.beauty.smoothnessRadius,
                                            strength: database.beauty.smoothnessStrength)
@@ -569,7 +569,7 @@ extension Model {
                             bundledSounds: database.alertsMediaGallery.bundledSounds)
     }
 
-    private func createStarEffect() -> AlertsEffect {
+    private func createSparkleEffect() -> AlertsEffect {
         let settings = SettingsWidgetAlerts()
         settings.disableAll()
         settings.quickButton.enabled = true
