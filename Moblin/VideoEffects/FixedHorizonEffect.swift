@@ -1,5 +1,6 @@
 import CoreImage
 import CoreMotion
+import MetalPetal
 
 private func minimalBoundingRectWithAspect(width: CGFloat, height: CGFloat, angle: CGFloat) -> CGSize {
     let cosAngle = cos(angle)
@@ -64,9 +65,9 @@ final class FixedHorizonEffect: VideoEffect, @unchecked Sendable {
         motionManager = nil
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    private func calcScale(_ size: CGSize) -> Double? {
         guard let targetAngle else {
-            return image
+            return nil
         }
         let targetWeight: Double = if abs(targetAngle) < 0.1 {
             2 * abs(targetAngle)
@@ -75,16 +76,40 @@ final class FixedHorizonEffect: VideoEffect, @unchecked Sendable {
         }
         currentAngle = targetWeight * targetAngle + (1 - targetWeight) * currentAngle
         let boundingSize = minimalBoundingRectWithAspect(
-            width: image.extent.width,
-            height: image.extent.height,
+            width: size.width,
+            height: size.height,
             angle: currentAngle
         )
-        let scale = boundingSize.width / image.extent.width
+        return boundingSize.width / size.width
+    }
+
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        guard let scale = calcScale(image.extent.size) else {
+            return image
+        }
         return image
             .translated(x: -image.extent.width / 2, y: -image.extent.height / 2)
             .transformed(by: CGAffineTransform(rotationAngle: currentAngle))
             .scaled(x: scale, y: scale)
             .translated(x: image.extent.width / 2, y: image.extent.height / 2)
             .cropped(to: image.extent)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        let size = image.extent.size
+        guard let scale = calcScale(size) else {
+            return image
+        }
+        let rotation = Float(-currentAngle)
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .content(image, modifier: { layer in
+                layer.size = CGSize(width: size.width * scale, height: size.height * scale)
+                layer.position = CGPoint(x: size.width / 2, y: size.height / 2)
+                layer.rotation = rotation
+            }),
+        ]
+        return filter.outputImage ?? image
     }
 }

@@ -81,7 +81,7 @@ class VideoEffect: NSObject, @unchecked Sendable {
         false
     }
 
-    func prepare(_: CIImage, _: VideoEffectInfo) {}
+    func prepare(_: CGSize, _: VideoEffectInfo) {}
 
     func removed() {}
 

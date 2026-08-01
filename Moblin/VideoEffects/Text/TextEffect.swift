@@ -400,8 +400,8 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         return overlay?.getMetalPetalImage().moveComposited(sceneWidget.layout, image) ?? image
     }
 
-    override func prepare(_ image: CIImage, _: VideoEffectInfo) {
-        updateOverlayIfNeeded(size: image.extent.size)
+    override func prepare(_ size: CGSize, _: VideoEffectInfo) {
+        updateOverlayIfNeeded(size: size)
     }
 
     private func formatted(now: ContinuousClock.Instant) -> [TextEffectLine] {
