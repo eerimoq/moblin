@@ -4,713 +4,183 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Moblin is a free iOS/iPadOS IRL streaming app (Swift/SwiftUI) targeting Twitch, YouTube, Kick, Facebook, and OBS Studio. Includes an Apple Watch companion app, Live Activity extension, home screen widget, screen recording extension, and a SolidJS web remote control frontend.
+Moblin is a free iOS/iPadOS IRL streaming app (Swift/SwiftUI) targeting Twitch, YouTube, Kick, Facebook
+and OBS Studio. It streams over RTMP(S), SRT(LA), RIST and WHIP/WebRTC, with SRTLA/RIST bonding over
+multiple network interfaces. The repo also contains an Apple Watch companion, a Live Activity extension,
+a home screen widget, a screen recording broadcast extension, and a SolidJS web remote control frontend.
 
-## Building
+## Setup
 
-1. Copy `User.template.xcconfig` → `Config/User.xcconfig`, set `DEVELOPMENT_TEAM` and `BASE_PRODUCT_BUNDLE_IDENTIFIER`.
-2. `open Moblin.xcodeproj` — wait for SPM packages to resolve.
-3. `Command + B` to build; `Command + R` to run on device.
+1. `cp User.template.xcconfig Config/User.xcconfig`, then set `DEVELOPMENT_TEAM` and
+   `BASE_PRODUCT_BUNDLE_IDENTIFIER`. `CAPABILITIES` selects which entitlements file each target uses
+   (`Moblin/Moblin.$(CAPABILITIES).entitlements`) — use `free` unless you know you need `all`.
+2. `open Moblin.xcodeproj` and wait for SPM packages to resolve. `Command + B` builds, `Command + R` runs.
+3. Python tooling lives in a venv — `make style`, `make lint` and `make test` fail with "command not found"
+   without it:
+   ```sh
+   python3.14 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt -U
+   ```
+4. Swift/JS tooling: `brew install swiftlint swiftformat codespell oxfmt oxlint`.
 
-Tests run via Xcode (`Command + U`). Test files live in `MoblinTests/` named `*Suite.swift`.
+Several SPM dependencies are `eerimoq` forks pinned to a branch (MetalPetal, Srt, Rist, DataChannel,
+SwiftCube, VRMKit, CrcSwift, NWWebSocket, AlertToast). Bumping one is a commit of its own — see the
+"Bump metal petal" commits.
 
-## Make targets
+## Commands
 
 ```sh
-make style           # swiftformat + oxfmt (auto-fix)
-make style-check     # lint-only, no writes
-make lint            # swiftlint + oxlint + xcstringslint
+make style           # swiftformat + oxfmt + isort + black (auto-fix)
+make style-check     # same, lint-only
+make lint            # swiftlint --strict + oxlint + pylint + xcstringslint
+make lint-fix        # auto-fix Localizable.xcstrings issues
 make spell-check     # codespell
-make periphery       # dead code detection
+make periphery       # dead code detection (needs full index; slow)
 
 make web-remote-control-frontend-prepare   # npm install
-make web-remote-control-frontend-build     # tsc check + vite build → embeds into Moblin/RemoteControl/Web/
+make web-remote-control-frontend-build     # tsc --noEmit + vite build → Moblin/RemoteControl/Web/
+
+make machine-translate                     # fill missing translations in Localizable.xcstrings
 ```
 
-Required tools: `swiftlint swiftformat periphery codespell oxfmt oxlint` (Homebrew).
+CI (`.github/workflows/all.yml`) runs `style-check`, `lint`, `spell-check`, the web frontend build followed
+by `git diff --exit-code`, and an `xcodebuild build` of the `Moblin` scheme. Two consequences: **the built
+web assets in `Moblin/RemoteControl/Web/` are committed and must be regenerated whenever
+`WebRemoteControlFrontend/` changes**, and **CI never runs the unit tests** — run them yourself.
 
-## Key conventions
+### Unit tests
 
-- `swiftformat` line width: 110 chars, Swift 5.9 mode.
-- `swiftlint --strict`. Many rules disabled — see `.swiftlint.yml`. `force_cast` and `force_try` are disabled.
-- Tesla Protobuf files (`Moblin/Integrations/Tesla/Protobuf/`) excluded from formatting and periphery.
-- All localizations in `Common/Localizable.xcstrings` (not `.strings` files). Lint target: `xcstringslint`.
-- `moblin://` URL scheme used for settings import — spec in README.
+Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `@Test` and `#expect`.
 
----
-
-## Full codebase map
-
-### Top-level targets
-
-| Directory | Target |
-|-----------|--------|
-| `Moblin/` | Main iOS/iPadOS app |
-| `Moblin Watch/` | watchOS companion |
-| `Moblin Widget/` | Home screen widget |
-| `Moblin Live Activity/` | Live Activity extension |
-| `Moblin Screen Recording/` | Screen recording broadcast extension |
-| `Common/` | Shared Swift + SwiftUI across all targets |
-| `MoblinTests/` | Unit/integration tests |
-| `WebRemoteControlFrontend/` | SolidJS web remote control |
-| `Config/` | Xcode build configs (`*.xcconfig`) |
-| `utils/` | Python utility scripts (translations, xliff, xcstringslint) |
-| `docs/` | Documentation and screenshots |
-
----
-
-### `Common/`
-
-```
-Localizable.xcstrings                  # All app strings / translations
-Various/
-  AudioLevel.swift
-  AVAudioPCMBuffer+Extension.swift
-  CMBlockBuffer+Extension.swift
-  CMFormatDescription+Extension.swift
-  CMSampleBuffer+Extension.swift
-  CommonUtils.swift
-  Validate.swift
-View/
-  StreamOverlayIconAndTextView.swift
-  StreamOverlayTextView.swift
-  ThermalStateView.swift
+```sh
+# Command + U in Xcode, or:
+xcodebuild test -scheme Moblin -destination 'platform=iOS Simulator,name=iPhone 16' \
+    -only-testing:MoblinTests/UtilsSuite/fullDuration
 ```
 
----
+A handful of formatting tests in `UtilsSuite` and `TextEffectSuite` are gated on
+`@Test(.enabled(if: Locale.current.identifier == "en_SE"))` and silently skip under any other locale.
 
-### `Moblin/` — Main app
+### Integration tests
 
-#### Entry point
-```
-MoblinApp.swift                        # @main SwiftUI app entry
-```
+`test/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. It needs
+`config.toml` (copy `config.example.toml`) and settings imported into the device — see `test/README.md`.
 
-#### `Moblin/Various/Model/` — Central state (all @Observable extensions on Model)
-```
-Model.swift                            # Root @Observable class
-ModelAppIntents.swift
-ModelAppleWatch.swift
-ModelAudio.swift
-ModelAutoSceneSwitcher.swift
-ModelBlackSharkCoolerDevice.swift
-ModelBluetooth.swift
-ModelCamera.swift
-ModelCatPrinters.swift
-ModelChat.swift
-ModelChatBot.swift
-ModelDisconnectProtection.swift
-ModelDjiDevice.swift
-ModelFaceBackgroundImage.swift
-ModelGameController.swift
-ModelGimbal.swift
-ModelKeyboard.swift
-ModelKick.swift
-ModelLiveActivity.swift
-ModelLocation.swift
-ModelMacros.swift
-ModelMediaPlayer.swift
-ModelMoblink.swift
-ModelNavigation.swift
-ModelObs.swift
-ModelPictureInPicture.swift
-ModelRecording.swift
-ModelRemoteControl.swift
-ModelReplay.swift
-ModelRistServer.swift
-ModelRtmpServer.swift
-ModelRtspClient.swift
-ModelScene.swift
-ModelScoreboard.swift
-ModelScreenCapture.swift
-ModelSettingsImportExport.swift
-ModelSettingsUrl.swift
-ModelSnapshot.swift
-ModelSoop.swift
-ModelSpeechToText.swift
-ModelSrtlaServer.swift
-ModelStealthMode.swift
-ModelStore.swift
-ModelStream.swift
-ModelStreamWizard.swift
-ModelTesla.swift
-ModelTextToSpeech.swift
-ModelTwitch.swift
-ModelVideoPreview.swift
-ModelWebBrowser.swift
-ModelWhepClient.swift
-ModelWhipServer.swift
-ModelWiFiAware.swift
-ModelWorkout.swift
-ModelWorkoutDevice.swift
-ModelYouTube.swift
-ModelZoom.swift
-Chat/
-  ChatProvider.swift
+```sh
+make test
+make test TEST_ARGS="--device macpro Talkback"
 ```
 
-#### `Moblin/Various/Settings/` — JSON-serializable persistent settings (separate from runtime state)
-```
-Settings.swift                         # Root settings object
-SettingsAudio.swift
-SettingsCatPrinter.swift
-SettingsChat.swift
-SettingsDebug.swift
-SettingsDeepLinkCreator.swift
-SettingsDjiDevice.swift
-SettingsGameController.swift
-SettingsGimbal.swift
-SettingsGoPro.swift
-SettingsIngests.swift
-SettingsKeyboard.swift
-SettingsLocation.swift
-SettingsMacros.swift
-SettingsMoblink.swift
-SettingsNavigation.swift
-SettingsQuickButtons.swift
-SettingsRemoteControl.swift
-SettingsScene.swift
-SettingsSelfieStick.swift
-SettingsStream.swift
-SettingsTalkback.swift
+## Architecture
+
+### Settings vs Model — the central split
+
+Two parallel object graphs, and picking the wrong one is the most common mistake:
+
+- **`Moblin/Various/Settings/`** — persisted user configuration. `Settings` owns a `Database` serialized to
+  JSON on disk; `Settings.store()` writes it. Everything here is `Codable`.
+- **`Moblin/Various/Model/`** — runtime state (is live, current bitrate, connected devices, active effects).
+  Not persisted.
+
+Settings classes are `Codable, Identifiable, ObservableObject` with `@Published` properties and
+**hand-written `encode(to:)`/`init(from:)`**. Decoding goes through the helper in
+`Common/Various/CommonUtils.swift`:
+
+```swift
+name = container.decode(.name, String.self, "")   // never throws; falls back to the default
 ```
 
-#### `Moblin/Various/Storages/` — File-backed asset storage
-```
-AlertMediaStorage.swift
-FileStorage.swift
-ImageStorage.swift
-LogsStorage.swift
-MediaPlayerStorage.swift
-PngTuberStorage.swift
-RecordingsStorage.swift
-ReplaysStorage.swift
-ReplayTransitionsStorage.swift
-StreamingHistory.swift
-VTuberStorage.swift
+This is what makes old settings files forward-compatible, so a new property needs a `CodingKey`, an
+`encode` line and a `decode` line with a sensible default — omitting them silently drops the value on
+reload. Enum raw values (`case text = "Text"`) are the persisted representation and must not be renamed;
+`toString()` supplies the localized display string instead.
+
+Structural changes that defaults cannot express go in `Settings.migrateFromOlderVersions()`
+(`Settings.swift`), which uses per-object `migrated` boolean flags and calls `store()` as it goes.
+
+Secrets are kept out of the JSON: `store()` calls `extractSensitiveData` to null out tokens before
+writing and `insertSensitiveData` to restore them, with the real values living in the Keychain
+(`Keychain.swift`, `addSensitiveData` on load).
+
+### Model — one class, ~100 extensions
+
+`Model` (`Moblin/Various/Model/Model.swift`) is a single `final class Model: NSObject, ObservableObject`
+split across ~60 `ModelXxx.swift` files, each an `extension Model` for one feature area (`ModelChat`,
+`ModelTwitch`, `ModelRecording`, …). New feature code belongs in its own `extension Model` file, not in
+`Model.swift`.
+
+This codebase uses **`ObservableObject`/`@Published`, not the `@Observable` macro** — there are zero uses
+of `@Observable`. Because a single `@Published` change on a class this large would invalidate every
+observing view, `Model.swift` declares many small `ObservableObject` "provider" classes (`Bitrate`,
+`Bonding`, `Battery`, `StatusTopLeft`, `Toast`, `StreamOverlay`, `SceneSelector`, …). Views observe the
+narrow provider they need. Put frequently-changing state on a provider, not on `Model` directly.
+
+### Media pipeline
+
+`Moblin/Media/HaishinKit/` is a heavily modified fork of HaishinKit, embedded rather than depended on —
+treat it as project source. `Moblin/Various/Media.swift` is the facade the `Model` talks to; it wraps a
+`Processor` and reports back through the fat `MediaDelegate` protocol (`mediaOnSrtConnected`,
+`mediaOnFps`, `mediaOnRecorderDataSegment`, …), which `Model` implements.
+
+Capture and composition happen in `VideoUnit`/`AudioUnit`; encoding in `Codec/`; transports live beside
+the fork in `Srtla/`, `RistServer/`, `RtmpServer/`, `RtspClient/`, `Webrtc/`, `WiFiAware/`. Adaptive
+bitrate algorithms are pluggable under `AdaptiveBitrate/` (Belabox, Fight, RIST experiment).
+
+**Moblink** (`Moblin/Moblink/`) is Moblin's own protocol for borrowing other phones' network connections
+as extra bonding links — a streamer/relay pair over the local network.
+
+### Video effects — two rendering backends
+
+`Moblin/VideoEffects/` holds everything drawn on the stream. Each subclasses `VideoEffect`
+(`Moblin/Media/HaishinKit/Media/Video/VideoEffect.swift`), which exposes **parallel CoreImage and
+MetalPetal paths**:
+
+```swift
+func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage           // CoreImage
+func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage // MetalPetal
 ```
 
-#### `Moblin/Various/Managers/`
-```
-GeographyManager.swift
-GForceManager.swift
-Location.swift
-WeatherManager.swift
-```
+`VideoUnit` picks the backend at runtime (`isMetalPetalGraphics`), and an effect overriding
+`isMetalPetal() -> true` forces the whole pipeline onto MetalPetal
+(`isMetalPetalGraphicsForcedByEffects`). A new effect should therefore implement both paths; implementing
+only one makes it silently a no-op under the other backend. `VideoEffectInfo` carries the frame's
+timestamp plus cached Vision results — request them via `needsFaceDetections`/`needsTextDetections`
+rather than running Vision inside `execute`.
 
-#### `Moblin/Various/Network/`
-```
-DnsLookup.swift
-HttpClient.swift
-HttpServer.swift
-IpMonitor.swift
-NetworkInterfaceTypeSelector.swift
-NetworkUtils.swift
-WebSocketClient.swift
-```
+Effects reach the pipeline through `Media.registerEffect`/`unregisterEffect` for standalone effects, and
+`Media.setPendingAfterAttachEffects` for the ordered per-scene list that `ModelScene` rebuilds on every
+scene change.
 
-#### `Moblin/Various/Subtitles/`
-```
-Subtitles.swift
-TextAligner.swift
-Translator.swift
-```
+### Adding a widget type
 
-#### `Moblin/Various/Utils/`
-```
-CameraUtils.swift
-FileSystemUtils.swift
-LocationUtils.swift
-UiUtils.swift
-Utils.swift
-```
+A widget is a `SettingsWidgetType` case whose raw value is persisted, so a new one has to be wired through
+several files that a single-file search will not reveal:
 
-#### `Moblin/Various/` — Top-level utilities
-```
-BluetoothScanner.swift
-BondingStatisticsFormatter.swift
-CacheAsyncImage.swift
-ChatBotCommand.swift
-ChatPost.swift
-ChatTextToSpeech.swift
-Detection.swift
-FaxReceiver.swift
-Gimbal.swift
-KeepSpeakerAlive.swift
-Keychain.swift
-Log.swift
-Media.swift
-MediaPlayer.swift
-MoblinSettingsUrl.swift
-ReplayFrameExtractor.swift
-SimpleTimer.swift
-SpeechToText.swift
-WebBrowserController.swift
-```
+- `SettingsScene.swift` — the enum case, its `toString()` localization, and the settings class
+- `ModelScene.swift` — the `switch` that maps the widget to its `addScene*Effects` call
+- `VideoEffects/` — the effect itself (both rendering backends)
+- `View/Settings/Scenes/Widgets/Widget/` — `WidgetSettingsView` and `WidgetWizardSettingsView`
+- `RemoteControl/RemoteControl.swift` — if the widget is controllable remotely
 
----
+### Remote control and companions
 
-#### `Moblin/Media/` — Media pipeline
+`Moblin/RemoteControl/` implements a streamer/assistant pair over WebSocket, with `RemoteControlRelay`
+for traversal and `RemoteControlWeb` serving the built SolidJS frontend from `Web/`.
 
-##### `HaishinKit/` — Forked/embedded media engine
-```
-Codec/Audio/
-  AudioEncoder.swift
-  AudioEncoderRingBuffer.swift
-  AudioEncoderSettings.swift
-Codec/Video/
-  VideoDecoder.swift
-  VideoEncoder.swift
-  VideoEncoderSettings.swift
-  VTSessionProperty.swift
-Extension/
-  AudioStreamBasicDescription+Extension.swift
-  AVCaptureColorSpace+Extension.swift
-  AVCaptureDevice.Format+Extension.swift
-  AVFrameRateRange+Extension.swift
-  Bool+Extension.swift
-  Data+Extension.swift
-  ExpressibleByIntegerLiteral+Extension.swift
-  URL+Extension.swift
-  VTCompressionSession+Extension.swift
-  VTDecompressionSession+Extension.swift
-Flv/
-  Flv.swift
-Media/Audio/
-  AudioMixer.swift
-  AudioUnit.swift
-  BufferedAudio.swift
-Media/
-  BufferedStats.swift
-  DriftTracker.swift
-  MacScreenCapture.swift
-  Processor.swift
-  Recorder.swift
-  TargetLatenciesSynchronizer.swift
-Media/Video/
-  BufferedVideo.swift
-  PreviewView.swift
-  VideoEffect.swift
-  VideoUnit.swift
-Mpeg/
-  Adts.swift
-  AudioSpecificConfig.swift
-  Avc/AvcNalUnit.swift
-  Avc/AvcNalUnitPps.swift
-  Avc/AvcNalUnitSei.swift
-  Avc/AvcNalUnitSps.swift
-  Avc/MpegTsVideoConfigAvc.swift
-  (+ more MPEG-TS types)
-```
+The Watch app talks to the phone over `WatchConnectivity` using the string-keyed message envelope in
+`Moblin Watch/Shared/WatchProtocol.swift` (`WatchMessageToWatch`/`WatchMessageFromWatch` plus
+`pack`/`unpack`). Both sides of a new message must be added there.
 
-##### `AdaptiveBitrate/`
-```
-AdaptiveBitrateRistExperiment.swift
-AdaptiveBitrateSrtBelabox.swift
-AdaptiveBitrateSrtFight.swift
-```
+## Conventions
 
-##### Transport servers/clients
-```
-RistServer/
-RtmpServer/
-RtspClient/
-Srtla/
-Webrtc/
-WiFiAware/
-```
-
-##### Other
-```
-Wav.swift
-WrappingTimestamp.swift
-```
-
----
-
-#### `Moblin/VideoEffects/` — Video effect processors
-```
-Alerts/
-  AlertsEffect.swift
-  AlertsEffectFace.swift
-  AlertsEffectMedia.swift
-  AlertsEffectVideoReader.swift
-AnamorphicLensEffect.swift
-BeautyEffect.swift
-BingoCardEffect.swift
-Blur/
-  BlurFilter.swift
-  BlurKernel.swift
-Browser/
-  BrowserEffect.swift
-  BrowserEffectServer.swift          # Defines JS API topics + messages
-CameraManEffect.swift
-ChatEffect.swift
-Crt/
-  CrtBarrelDistortionFilter.swift
-  CrtEffect.swift
-Dewarp360/
-  Dewarp360Effect.swift
-  Dewarp360Filter.swift
-DrawOnStreamEffect.swift
-EffectUtils.swift
-FaceEffect.swift
-FixedHorizonEffect.swift
-FourThreeEffect.swift
-GrayScaleEffect.swift
-ImageEffect.swift
-LutEffect.swift
-MapEffect.swift
-MovieEffect.swift
-OpacityEffect.swift
-PinchEffect.swift
-PixellateEffect.swift
-PngTuberEffect.swift
-PollEffect.swift
-QrCodeEffect.swift
-RemoveBackgroundEffect.swift
-Replay/
-  ReplayEffect.swift
-  ReplayEffectReplayReader.swift
-  ReplayEffectStingerReader.swift
-Scoreboard/
-  ScoreboardEffect.swift
-  ScoreboardEffectGenericView.swift
-  ScoreboardEffectGolfFullScorecardView.swift
-  ScoreboardEffectGolfView.swift
-  ScoreboardEffectModularView.swift
-  ScoreboardEffectPadelView.swift
-SepiaEffect.swift
-ShapeEffect.swift
-SlideshowEffect.swift
-SnapshotEffect.swift
-Text/
-  TextEffect.swift
-  TextEffectFormatter.swift
-  TextFormatStringLoader.swift
-TripleEffect.swift
-TwinEffect.swift
-VideoSourceEffect.swift
-VTuberEffect.swift
-WheelOfLuckEffect.swift
-WhirlpoolEffect.swift
-```
-
----
-
-#### `Moblin/Integrations/`
-```
-BlackSharkCooler/
-  BlackSharkCoolerDevice.swift
-CatPrinter/
-  AtkinsonDithering.swift
-  CatPrinter.swift
-  CatPrinterCommands.swift
-  CatPrinterCommandsMxw01.swift
-  FloydSteinbergDithering.swift
-Dji/
-  DjiDevice/
-    DjiDevice.swift
-    DjiDeviceMessage.swift
-    DjiDeviceModel.swift
-    DjiDeviceScanner.swift
-  DjiMessage.swift
-Emotes/
-  Bttv.swift
-  Emotes.swift
-  Ffz.swift
-  Seventv.swift
-GoPro/
-  GoPro.swift
-OpenAi/
-  OpenAi.swift
-RealtimeIrl/
-  RealtimeIrl.swift
-Tesla/
-  Protobuf/                          # Generated protobuf files — excluded from lint/format
-    car_server.pb.swift
-    common.pb.swift
-    errors.pb.swift
-    keys.pb.swift
-    managed_charging.pb.swift
-    signatures.pb.swift
-    universal_message.pb.swift
-    vcsec.pb.swift
-    vehicle.pb.swift
-  TeslaVehicle.swift
-TtsMonster/
-  TtsMonster.swift
-WorkoutDevice/
-  WorkoutDevice.swift
-  WorkoutDeviceCyclingPower.swift
-  WorkoutDeviceHeartRate.swift
-  WorkoutDeviceRunning.swift
-```
-
----
-
-#### `Moblin/RemoteControl/` — Web remote control (Swift side + embedded web assets)
-```
-(Swift server/client files)
-Web/                                   # Built output from WebRemoteControlFrontend — do not edit directly
-```
-
----
-
-#### `Moblin/View/` — SwiftUI views
-
-##### Entry
-```
-MainView.swift
-```
-
-##### `Main/`
-```
-LockScreenView.swift
-MacKeyPressView.swift
-SnapshotCountdownView.swift
-StealthModeView.swift
-```
-
-##### `Stream/` — Live streaming screen
-```
-StreamView.swift
-StreamOverlayView.swift
-StreamGridView.swift
-CameraLevelView.swift
-DrawOnStreamView.swift
-Overlay/StreamOverlayChatView.swift
-Overlay/StreamOverlayDebugView.swift
-Overlay/StreamOverlayLeftView.swift
-Overlay/StreamOverlayNavigationView.swift
-Overlay/StreamOverlayRightView.swift
-Overlay/Right/
-  AudioLevelView.swift
-  CameraSettingsControlView.swift
-  MediaPlayerControlsView.swift
-  ReplayView.swift
-  SceneSelectorView.swift
-  SegmentedPicker.swift
-  StreamOverlayRightBeautyView.swift
-  StreamOverlayRightFaceView.swift
-  StreamOverlayRightPinchView.swift
-  StreamOverlayRightPixellateView.swift
-  StreamOverlayRightWhirlpoolView.swift
-  VideoPreviewView.swift
-  ZoomPresetSelctorView.swift
-```
-
-##### `ControlBar/`
-```
-ControlBarLandscapeView.swift
-ControlBarPortraitView.swift
-ControlBarUtils.swift
-BatteryView.swift
-StreamButton.swift
-ThermalStateSheetView.swift
-QuickButtonsView.swift
-QuickButton/
-  QuickButtonAutoSceneSwitcherView.swift
-  QuickButtonBitrateView.swift
-  QuickButtonDjiDevicesView.swift
-  QuickButtonGoProView.swift
-  QuickButtonLiveView.swift
-  QuickButtonLutsView.swift
-  QuickButtonMacrosView.swift
-  QuickButtonMicView.swift
-  QuickButtonObsView.swift
-  QuickButtonSceneWidgetsView.swift
-  QuickButtonStreamSwitcherView.swift
-  Chat/
-    QuickButtonChatChatterInfoView.swift
-    QuickButtonChatModerationView.swift
-    QuickButtonChatUrlView.swift
-    QuickButtonChatView.swift
-RemoteControlAssistant/
-  ControlBarRemoteControlAssistantView.swift
-```
-
-##### `ExternalDisplay/`
-```
-ExternalDisplayView.swift
-```
-
-##### `Settings/` — Settings navigation tree (deep hierarchy, representative structure)
-```
-SettingsView.swift                     # Root settings sheet
-About/
-Audio/
-BitratePresets/
-BlackSharkCoolers/
-Camera/                                # Zoom, stabilization, focus, fixed horizon, controls
-CatPrinters/
-Chat/                                  # Appearance, layout, TTS, bot, filters, nicknames
-Debug/
-DeepLinkCreator/
-Display/                               # Quick buttons, overlays, network interface names, stream button
-DjiDevices/
-GameControllers/
-Gimbal/
-GoPro/
-HelpAndSupport/
-ImportExport/
-Ingests/                               # RIST server, RTMP server, RTSP client, SRTla server, WHEP client, WHIP server
-Keyboard/
-Location/
-Macros/
-MediaPlayer/
-Moblink/
-Recordings/
-RemoteControl/
-Reset/
-Scenes/                                # Scene list, auto-switchers, disconnect protection, widgets
-  Widgets/Widget/
-    Alerts/                            # Twitch, Kick, ChatBot, sound, image, text, speech-to-text
-    BingoCard/
-    Browser/
-    Chat/
-    Crop/
-    Effects/                           # LUT, opacity, anamorphic, dewarp360, remove background, shape
-    Image/
-    Map/
-    PngTuber/
-    QrCode/
-    Scene/
-    Scoreboard/                        # Generic, golf, padel, modular, full scorecard
-    Slideshow/
-    Snapshot/
-    Text/
-    VideoSource/
-    VTuber/
-    WheelOfLuck/
-SelfieStick/
-Store/
-StreamingHistory/
-Streams/Stream/                        # Per-stream settings
-  Audio/
-  Chat/
-  GoLiveNotification/
-  Kick/
-  MultiStreaming/
-  ObsRemoteControl/
-  OpenStreamingPlatform/
-  RealtimeIrl/
-  Recording/
-  Replay/
-  Rist/
-  Rtmp/
-  Snapshot/
-  Soop/
-  Srt/                                 # Adaptive bitrate, connection priority
-  Twitch/
-  Url/
-  Video/
-  Whip/
-  Wizard/                              # Platform (Twitch/YouTube/Kick/Soop/OBS) + network setup + custom protocols
-```
-
----
-
-### `Moblin Watch/` — watchOS companion
-```
-MoblinWatchApp.swift
-Shared/
-  WatchProtocol.swift                  # iOS ↔ Watch communication protocol
-  WatchSettings.swift
-Various/
-  CacheImage.swift
-  ModelScoreboard.swift
-  WatchModel.swift
-View/
-  WatchMainView.swift
-  Chat/ChatView.swift
-  Control/ControlView.swift
-  Preview/PreviewView.swift
-  Scoreboard/
-    GenericScoreboardView.swift
-    PadelScoreboardView.swift
-    ScoreboardView.swift
-```
-
----
-
-### `Moblin Widget/`
-```
-MoblinWidgetApp.swift
-```
-
-### `Moblin Live Activity/`
-```
-MoblinLiveActivityApp.swift
-Shared/MoblinLiveActivity.swift
-```
-
-### `Moblin Screen Recording/`
-```
-SampleHandler.swift
-Shared/
-  SampleBufferCommon.swift
-  SampleBufferReceiver.swift
-  SampleBufferSender.swift
-```
-
----
-
-### `MoblinTests/` — Test suites
-```
-AdaptiveBitrateSuite.swift
-AmfSuite.swift
-AudioMixerSuite.swift
-BufferedAudioSuite.swift
-ChatBotCommandSuite.swift
-HttpClientSuite.swift
-LutEffectSuite.swift
-Md5Suite.swift
-NetworkUtilsSuite.swift
-RistSuite.swift
-RtmpStreamInfoSuite.swift
-RtmpStreamSuite.swift
-RtmpSuite.swift
-SettingsSuite.swift
-SrtSenderSuite.swift
-SubtitlesSuite.swift
-TextAlignerSuite.swift
-TextEffectSuite.swift
-TwitchChatSuite.swift
-UtilsSuite.swift
-ValidateSuite.swift
-VideoDimensionsSuite.swift
-WavSuite.swift
-WrappingTimestampSuite.swift
-TestUtils.swift
-```
-
----
-
-### `WebRemoteControlFrontend/` — SolidJS web remote control
-
-Stack: SolidJS + TypeScript + Tailwind CSS v4 + Vite. Built output goes to `Moblin/RemoteControl/Web/` — run `make web-remote-control-frontend-build` after any change.
-
-```
-src/
-  components.tsx                       # Shared UI components
-  config.d.ts
-  utils.ts
-  index.tsx                            # Main remote control app
-  remote.tsx                           # Stream remote control page
-  recordings.tsx                       # Recordings browser
-  scoreboard.tsx                       # Scoreboard overlay
-  golf.tsx                             # Golf scoreboard
-  css/
-    app.css
-    common.css
-    golf.css
-    recordings.css
-    remote.css
-    scoreboard.css
-index.html
-remote.html
-recordings.html
-scoreboard.html
-golf.html
-```
+- `swiftformat` at 110 columns, Swift 5.9 mode, `--disable docComments --ifdef no-indent`.
+- `swiftlint --strict`. Many rules are off (see `.swiftlint.yml`) — notably `force_cast`, `force_try`,
+  `identifier_name`, `cyclomatic_complexity` and `function_body_length`, so long `switch`-heavy functions
+  and `try!` are idiomatic here.
+- All user-facing strings go through `String(localized:)` and live in `Common/Localizable.xcstrings` —
+  never `.strings` files. `utils/xcstringslint.py` (part of `make lint`) checks that format specifiers
+  match across translations and that multi-specifier strings use positional `%1$@` forms.
+- `Moblin/Integrations/Tesla/Protobuf/` is generated and excluded from formatting and periphery.
+- `Moblin/RemoteControl/Web/` is build output — edit `WebRemoteControlFrontend/` instead.
+- Code shared between the app, watch, and extensions goes in `Common/`.
+- The `moblin://?<url-encoded JSON>` settings import format is defined by `MoblinSettingsUrl.swift`; its
+  members are the JSON keys, and the README documents it for users.
