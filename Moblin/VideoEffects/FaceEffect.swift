@@ -1,6 +1,27 @@
 import AVFoundation
+import MetalPetal
 import SwiftUI
 import Vision
+
+private func makeFaceMask(_ ratio: Float) -> MTIMask? {
+    let side = 256.0
+    let filter = CIFilter.radialGradient()
+    filter.center = CGPoint(x: side / 2, y: side / 2)
+    filter.radius0 = Float(side / 2) / ratio
+    filter.radius1 = Float(side / 2)
+    filter.color0 = .white
+    filter.color1 = .black
+    guard let image = filter.outputImage?
+        .cropped(to: CGRect(x: 0, y: 0, width: side, height: side))
+    else {
+        return nil
+    }
+    return MTIMask(
+        content: image.toEffectImage(isOpaque: true).getMetalPetalImage(),
+        component: .red,
+        mode: .normal
+    )
+}
 
 struct FaceEffectSettings {
     var blurFaces = true
@@ -19,19 +40,29 @@ enum FaceEffectPrivacyMode {
 
 final class FaceEffect: VideoEffect, @unchecked Sendable {
     private var settings = FaceEffectSettings()
-    let moblinImage: CIImage?
+    private let moblinImage: EffectImageCgImage?
+    private var backgroundImage: EffectImageCiImage?
+    private var faceMasks: [Float: MTIMask?] = [:]
 
     override init() {
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
-            moblinImage = CIImage(cgImage: image)
+            moblinImage = image.toEffectImage()
         } else {
             moblinImage = nil
         }
     }
 
     func setSettings(settings: FaceEffectSettings) {
+        let backgroundImage: EffectImageCiImage? = if case let .backgroundImage(image) = settings
+            .privacyMode
+        {
+            image?.toEffectImage(isOpaque: true)
+        } else {
+            nil
+        }
         processorPipelineQueue.async {
             self.settings = settings
+            self.backgroundImage = backgroundImage
         }
     }
 
@@ -72,6 +103,147 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             outputImage = addMouth(image: outputImage, detections: detections.face)
         }
         return outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let detections = info.sceneDetections() else {
+            return image
+        }
+        let blurFaces = settings.blurFaces && !detections.face.isEmpty
+        let blurText = settings.blurText && !detections.text.isEmpty
+        guard blurFaces || blurText || settings.blurBackground || settings.showMouth else {
+            return image
+        }
+        guard let privacyImage = makePrivacyImageMetalPetal(image: image) else {
+            return image
+        }
+        let backgroundImage = settings.blurBackground ? privacyImage : image
+        var layers: [MultilayerCompositingFilter.Layer] = []
+        if blurFaces || settings.blurBackground {
+            let facesImage = settings.blurBackground ? image : privacyImage
+            layers += makeFaceLayers(image, facesImage, detections.face)
+        }
+        if blurText {
+            layers += makeTextLayers(image, privacyImage, detections.text)
+        }
+        if settings.showMouth {
+            layers += makeMouthLayers(image, detections.face)
+        }
+        guard !layers.isEmpty || settings.blurBackground else {
+            return image
+        }
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = backgroundImage
+        filter.layers = layers
+        return filter.outputImage ?? image
+    }
+
+    private func makePrivacyImageMetalPetal(image: MTIImage) -> MTIImage? {
+        switch settings.privacyMode {
+        case let .blur(strength: strength):
+            let filter = MTIMPSGaussianBlurFilter()
+            filter.inputImage = image
+            filter.radius = Float(image.extent.width / 50.0) * strength
+            return filter.outputImage
+        case let .pixellate(strength: strength):
+            let filter = MTIPixellateFilter()
+            filter.inputImage = image
+            let scale = Double(pixellateCalcScale(size: image.extent.size, strength: strength))
+            filter.scale = CGSize(width: scale, height: scale)
+            return filter.outputImage
+        case .backgroundImage:
+            guard let backgroundImage = backgroundImage?.getMetalPetalImage() else {
+                return nil
+            }
+            let size = image.extent.size
+            let scale = max(size.width / backgroundImage.extent.width,
+                            size.height / backgroundImage.extent.height)
+            return backgroundImage.positionComposited(
+                CGPoint(x: size.width / 2, y: size.height / 2),
+                image,
+                CGSize(width: backgroundImage.extent.width * scale,
+                       height: backgroundImage.extent.height * scale)
+            )
+        case .faceImage:
+            return nil
+        }
+    }
+
+    private func makeFaceLayers(_ image: MTIImage,
+                                _ facesImage: MTIImage,
+                                _ detections: [VNFaceObservation]) -> [MultilayerCompositingFilter.Layer]
+    {
+        let ratio: Float = switch settings.privacyMode {
+        case .blur, .pixellate:
+            1.5
+        case .backgroundImage:
+            1.2
+        case .faceImage:
+            1
+        }
+        if faceMasks[ratio] == nil {
+            faceMasks[ratio] = makeFaceMask(ratio)
+        }
+        guard let mask = faceMasks[ratio] ?? nil else {
+            return []
+        }
+        let size = image.extent.size
+        return detections.compactMap { detection in
+            guard let boundingBox = detection.stableBoundingBox(imageSize: size) else {
+                return nil
+            }
+            let side = 2 * Double(ratio) * boundingBox.height / 1.7
+            let position = CGPoint(x: boundingBox.midX, y: size.height - boundingBox.midY)
+            return .content(facesImage, modifier: { layer in
+                layer.contentRegion = CGRect(x: position.x - side / 2,
+                                             y: position.y - side / 2,
+                                             width: side,
+                                             height: side)
+                layer.size = CGSize(width: side, height: side)
+                layer.position = position
+                layer.mask = mask
+            })
+        }
+    }
+
+    private func makeTextLayers(_ image: MTIImage,
+                                _ privacyImage: MTIImage,
+                                _ detections: [TextDetection]) -> [MultilayerCompositingFilter.Layer]
+    {
+        let size = image.extent.size
+        return detections.map { detection in
+            let boundingBox = CGRect(x: detection.boundingBox.origin.x * 1920,
+                                     y: detection.boundingBox.origin.y * 1080,
+                                     width: detection.boundingBox.width * 1920,
+                                     height: detection.boundingBox.height * 1080)
+            let contentRegion = CGRect(x: boundingBox.minX,
+                                       y: size.height - boundingBox.maxY,
+                                       width: boundingBox.width,
+                                       height: boundingBox.height)
+            return .content(privacyImage, modifier: { layer in
+                layer.contentRegion = contentRegion
+                layer.size = contentRegion.size
+                layer.position = CGPoint(x: contentRegion.midX, y: contentRegion.midY)
+            })
+        }
+    }
+
+    private func makeMouthLayers(_ image: MTIImage,
+                                 _ detections: [VNFaceObservation]) -> [MultilayerCompositingFilter.Layer]
+    {
+        guard let moblinImage = moblinImage?.getMetalPetalImage() else {
+            return []
+        }
+        let size = image.extent.size
+        return detections.compactMap { detection in
+            guard let mouth = calcMouth(detection, size, moblinImage.extent.size) else {
+                return nil
+            }
+            return .content(moblinImage, modifier: { layer in
+                layer.size = mouth.size
+                layer.position = CGPoint(x: mouth.midX, y: size.height - mouth.midY)
+            })
+        }
     }
 
     private func makePrivacyImage(image: CIImage) -> CIImage? {
@@ -180,39 +352,49 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         return outputImage
     }
 
+    private func calcMouth(_ detection: VNFaceObservation,
+                           _ imageSize: CGSize,
+                           _ moblinImageSize: CGSize) -> CGRect?
+    {
+        guard let innerLips = detection.landmarks?.innerLips else {
+            return nil
+        }
+        let points = innerLips.pointsInImage(imageSize: imageSize)
+        guard let firstPoint = points.first else {
+            return nil
+        }
+        var minX = firstPoint.x
+        var maxX = firstPoint.x
+        var minY = firstPoint.y
+        var maxY = firstPoint.y
+        for point in points {
+            minX = min(point.x, minX)
+            maxX = max(point.x, maxX)
+            minY = min(point.y, minY)
+            maxY = max(point.y, maxY)
+        }
+        let diffX = maxX - minX
+        let diffY = maxY - minY
+        guard diffY > diffX else {
+            return nil
+        }
+        let height = moblinImageSize.height * (diffX / moblinImageSize.width)
+        return CGRect(x: minX, y: minY + (diffY - height) / 2, width: diffX, height: height)
+    }
+
     private func addMouth(image: CIImage?, detections: [VNFaceObservation]?) -> CIImage? {
-        guard let image, let detections, let moblinImage else {
+        guard let image, let detections, let moblinImage = moblinImage?.getCiImage() else {
             return image
         }
         var outputImage = image
         for detection in detections {
-            guard let innerLips = detection.landmarks?.innerLips else {
+            guard let mouth = calcMouth(detection, image.extent.size, moblinImage.extent.size) else {
                 continue
             }
-            let points = innerLips.pointsInImage(imageSize: image.extent.size)
-            guard let firstPoint = points.first else {
-                continue
-            }
-            var minX = firstPoint.x
-            var maxX = firstPoint.x
-            var minY = firstPoint.y
-            var maxY = firstPoint.y
-            for point in points {
-                minX = min(point.x, minX)
-                maxX = max(point.x, maxX)
-                minY = min(point.y, minY)
-                maxY = max(point.y, maxY)
-            }
-            let diffX = maxX - minX
-            let diffY = maxY - minY
-            if diffY <= diffX {
-                continue
-            }
-            let moblinImage = moblinImage
-                .scaled(x: diffX / moblinImage.extent.width, y: diffX / moblinImage.extent.width)
-            let offsetY = minY + (diffY - moblinImage.extent.height) / 2
+            let scale = mouth.width / moblinImage.extent.width
             outputImage = moblinImage
-                .translated(x: minX, y: offsetY)
+                .scaled(x: scale, y: scale)
+                .translated(x: mouth.minX, y: mouth.minY)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)

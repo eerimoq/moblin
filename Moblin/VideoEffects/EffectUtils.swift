@@ -105,12 +105,18 @@ extension MTIImage {
                           .init(contentRegion: contentRegion))
     }
 
-    func positionComposited(_ position: CGPoint, _ backgroundImage: MTIImage) -> MTIImage {
+    func positionComposited(_ position: CGPoint,
+                            _ backgroundImage: MTIImage,
+                            _ size: CGSize? = nil) -> MTIImage
+    {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = backgroundImage
         filter.layers = [
             .content(self, modifier: { layer in
                 layer.position = position
+                if let size {
+                    layer.size = size
+                }
             }),
         ]
         return filter.outputImage ?? backgroundImage
