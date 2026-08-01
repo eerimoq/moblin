@@ -1,4 +1,13 @@
 import CoreImage
+import MetalPetal
+
+private func shapeBorderWidthPixels(_ borderWidth: Double, _ size: CGSize) -> Double {
+    0.025 * borderWidth * min(size.height, size.width)
+}
+
+private func shapeCornerRadiusPixels(_ cornerRadius: Float, _ size: CGSize) -> Float {
+    Float(min(size.height, size.width)) / 2 * cornerRadius
+}
 
 struct ShapeEffectSettings {
     var cornerRadius: Float = 0
@@ -11,10 +20,50 @@ struct ShapeEffectSettings {
     var cropHeight: Double = 1.0
 
     func borderWidthAndScale(_ image: CGRect) -> (Double, Double, Double) {
-        let borderWidth = 0.025 * borderWidth * min(image.height, image.width)
+        let borderWidth = shapeBorderWidthPixels(borderWidth, image.size)
         let scaleX = (image.width + 2 * borderWidth) / image.width
         let scaleY = (image.height + 2 * borderWidth) / image.height
         return (borderWidth, scaleX, scaleY)
+    }
+}
+
+struct MetalPetalWidgetShape {
+    var contentRegion: CGRect
+    var cornerRadius: Float = 0
+    var borderWidth: Double = 0
+    var borderColor: MTIColor = .black
+    var rotation: Double = 0
+
+    func borderWidthPixels(_ size: CGSize) -> Double {
+        shapeBorderWidthPixels(borderWidth, size)
+    }
+
+    func cornerRadius(_ size: CGSize) -> MTICornerRadius {
+        MTICornerRadius(shapeCornerRadiusPixels(cornerRadius, size))
+    }
+
+    func rotated(_ size: CGSize) -> CGSize {
+        if isQuarterTurn() {
+            CGSize(width: size.height, height: size.width)
+        } else {
+            size
+        }
+    }
+
+    func rotationRadians() -> Float {
+        Float(rotation * .pi / 180)
+    }
+
+    func mirrorFlipOptions() -> MTILayer.FlipOptions {
+        if isQuarterTurn() {
+            .flipVertically
+        } else {
+            .flipHorizontally
+        }
+    }
+
+    private func isQuarterTurn() -> Bool {
+        rotation == 90 || rotation == 270
     }
 }
 
@@ -144,5 +193,21 @@ final class ShapeEffect: VideoEffect, @unchecked Sendable {
         } else {
             makeRoundedCornersImage(image, settings)
         }
+    }
+
+    override func modifyMetalPetalWidgetShape(_ shape: inout MetalPetalWidgetShape) {
+        if settings.cropEnabled {
+            let region = shape.contentRegion
+            shape.contentRegion = CGRect(x: region.minX + settings.cropX * region.width,
+                                         y: region.minY + settings.cropY * region.height,
+                                         width: settings.cropWidth * region.width,
+                                         height: settings.cropHeight * region.height)
+        }
+        shape.cornerRadius = settings.cornerRadius
+        shape.borderWidth = settings.borderWidth
+        shape.borderColor = MTIColor(red: Float(settings.borderColor.red),
+                                     green: Float(settings.borderColor.green),
+                                     blue: Float(settings.borderColor.blue),
+                                     alpha: Float(settings.borderColor.alpha))
     }
 }

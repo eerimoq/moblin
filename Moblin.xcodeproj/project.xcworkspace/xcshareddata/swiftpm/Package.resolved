@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eerimoq/MetalPetal",
       "state" : {
-        "branch" : "master",
-        "revision" : "f9b78897bd4214bb097f352a1bde0a4f4a1e2ddb"
+        "branch" : "main",
+        "revision" : "63c1885c21a5f48227c3831bc07a55a497b3f79a"
       }
     },
     {

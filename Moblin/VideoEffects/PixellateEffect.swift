@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 
 func pixellateCalcScale(size: CGSize, strength: Float) -> Float {
     let maximum = Float(size.maximum())
@@ -8,6 +9,7 @@ func pixellateCalcScale(size: CGSize, strength: Float) -> Float {
 
 final class PixellateEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.pixellate()
+    private let filterMetalPetal = MTIPixellateFilter()
     private var strength: Float
 
     init(strength: Float) {
@@ -25,5 +27,12 @@ final class PixellateEffect: VideoEffect, @unchecked Sendable {
         filter.center = .zero
         filter.scale = pixellateCalcScale(size: image.extent.size, strength: strength)
         return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        let scale = Double(pixellateCalcScale(size: image.extent.size, strength: strength))
+        filterMetalPetal.inputImage = image
+        filterMetalPetal.scale = CGSize(width: scale, height: scale)
+        return filterMetalPetal.outputImage ?? image
     }
 }

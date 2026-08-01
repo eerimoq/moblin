@@ -1,8 +1,10 @@
 import CoreImage
+import MetalPetal
 
 final class ImageEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var originalImage: CIImage?
+    private var originalImageMetalPetal: MTIImage?
     private var sceneWidget: SettingsSceneWidget?
 
     init(imageStorage: ImageStorage, widgetId: UUID) {
@@ -18,8 +20,10 @@ final class ImageEffect: VideoEffect, @unchecked Sendable {
             guard let image = CIImage(data: data, options: [.applyOrientationProperty: true]) else {
                 return
             }
+            let imageMetalPetal = MTIImage(ciImage: image)
             processorPipelineQueue.async {
                 self.originalImage = image
+                self.originalImageMetalPetal = imageMetalPetal
             }
         }
     }
@@ -43,5 +47,16 @@ final class ImageEffect: VideoEffect, @unchecked Sendable {
         )
         filter.backgroundImage = image
         return filter.outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let originalImageMetalPetal, let sceneWidget else {
+            return image
+        }
+        return applyEffectsResizeMirrorMoveMetalPetal(originalImageMetalPetal,
+                                                      sceneWidget,
+                                                      false,
+                                                      image,
+                                                      info)
     }
 }

@@ -1,10 +1,94 @@
 import CoreImage
+import MetalPetal
 import Vision
 
 nonisolated(unsafe) var highQualityDownsampling = false
 
 func toPixels(_ percentage: Double, _ total: Double) -> Double {
     (percentage * total) / 100
+}
+
+func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
+                             _ size: CGSize,
+                             _ streamSize: CGSize) -> CGPoint
+{
+    var x: Double
+    var y: Double
+    if layout.alignment.isHorizontalCenter() {
+        x = (streamSize.width - size.width) / 2
+    } else if layout.alignment.isLeft() {
+        x = toPixels(layout.x, streamSize.width)
+    } else {
+        x = streamSize.width - toPixels(layout.x, streamSize.width) - size.width
+    }
+    if layout.alignment.isVerticalCenter() {
+        y = (streamSize.height - size.height) / 2
+    } else if layout.alignment.isTop() {
+        y = toPixels(layout.y, streamSize.height)
+    } else {
+        y = streamSize.height - toPixels(layout.y, streamSize.height) - size.height
+    }
+    return CGPoint(x: x + size.width / 2, y: y + size.height / 2)
+}
+
+extension MTIImage {
+    func moveComposited(_ layout: SettingsWidgetLayout, _ backgroundImage: MTIImage) -> MTIImage {
+        composited(layout, extent.size, false, backgroundImage, .init(contentRegion: extent))
+    }
+
+    func resizeMirrorMoveComposited(_ layout: SettingsWidgetLayout,
+                                    _ mirror: Bool,
+                                    _ backgroundImage: MTIImage,
+                                    _ shape: MetalPetalWidgetShape) -> MTIImage
+    {
+        let backgroundImageSize = backgroundImage.extent.size
+        let rotatedSize = shape.rotated(shape.contentRegion.size)
+        let scaleX = toPixels(layout.size, backgroundImageSize.width) / rotatedSize.width
+        let scaleY = toPixels(layout.size, backgroundImageSize.height) / rotatedSize.height
+        let scale = min(scaleX, scaleY)
+        let size = CGSize(width: shape.contentRegion.width * scale,
+                          height: shape.contentRegion.height * scale)
+        return composited(layout, size, mirror, backgroundImage, shape)
+    }
+
+    private func composited(_ layout: SettingsWidgetLayout,
+                            _ size: CGSize,
+                            _ mirror: Bool,
+                            _ backgroundImage: MTIImage,
+                            _ shape: MetalPetalWidgetShape) -> MTIImage
+    {
+        let borderWidth = shape.borderWidthPixels(size)
+        let borderSize = CGSize(width: size.width + 2 * borderWidth,
+                                height: size.height + 2 * borderWidth)
+        let position = metalPetalLayerPosition(layout,
+                                               shape.rotated(borderSize),
+                                               backgroundImage.extent.size)
+        let rotation = shape.rotationRadians()
+        var layers: [MultilayerCompositingFilter.Layer] = []
+        if borderWidth > 0 {
+            layers.append(.content(.white, modifier: { layer in
+                layer.size = borderSize
+                layer.position = position
+                layer.rotation = rotation
+                layer.tintColor = shape.borderColor
+                layer.cornerRadius = shape.cornerRadius(borderSize)
+            }))
+        }
+        layers.append(.content(self, modifier: { layer in
+            layer.contentRegion = shape.contentRegion
+            layer.size = size
+            layer.position = position
+            layer.rotation = rotation
+            layer.cornerRadius = shape.cornerRadius(size)
+            if mirror {
+                layer.contentFlipOptions = shape.mirrorFlipOptions()
+            }
+        }))
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = backgroundImage
+        filter.layers = layers
+        return filter.outputImage ?? backgroundImage
+    }
 }
 
 extension CIImage {

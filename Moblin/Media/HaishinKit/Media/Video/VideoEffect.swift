@@ -102,6 +102,23 @@ class VideoEffect: NSObject, @unchecked Sendable {
             .cropped(to: backgroundImageExtent)
     }
 
+    func applyEffectsResizeMirrorMoveMetalPetal(_ image: MTIImage,
+                                                _ sceneWidget: SettingsSceneWidget,
+                                                _ mirror: Bool,
+                                                _ backgroundImage: MTIImage,
+                                                _ info: VideoEffectInfo,
+                                                _ widgetShape: MetalPetalWidgetShape? = nil) -> MTIImage
+    {
+        let image = applyEffectsMetalPetal(image, info)
+        var shape = widgetShape ?? MetalPetalWidgetShape(contentRegion: image.extent)
+        for effect in effects {
+            effect.modifyMetalPetalWidgetShape(&shape)
+        }
+        return image.resizeMirrorMoveComposited(sceneWidget.layout, mirror, backgroundImage, shape)
+    }
+
+    func modifyMetalPetalWidgetShape(_: inout MetalPetalWidgetShape) {}
+
     private func applyEarlyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         var image = image
         for effect in effects {
@@ -116,5 +133,13 @@ class VideoEffect: NSObject, @unchecked Sendable {
             image = effect.execute(image, info)
         }
         return image.cropped(to: image.extent.insetBy(dx: graphicsEpsilon, dy: graphicsEpsilon))
+    }
+
+    private func applyEffectsMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        var image = image
+        for effect in effects {
+            image = effect.executeMetalPetal(image, info)
+        }
+        return image
     }
 }

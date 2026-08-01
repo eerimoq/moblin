@@ -1482,7 +1482,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/MetalPetal";
 			requirement = {
-				branch = master;
+				branch = main;
 				kind = branch;
 			};
 		};

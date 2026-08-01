@@ -1,5 +1,6 @@
 import Collections
 import Combine
+import MetalPetal
 import SwiftUI
 import WeatherKit
 
@@ -175,6 +176,7 @@ private struct TextView: View {
 final class TextEffect: VideoEffect, @unchecked Sendable {
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
+    private var overlayMetalPetal: MTIImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
     private let formatter: TextEffectFormatter
@@ -233,9 +235,9 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
                 guard let self else {
                     return
                 }
-                setOverlay(image: renderer?.ciImage())
+                setOverlay(image: renderer?.cgImage)
             }
-            self.setOverlay(image: self.renderer?.ciImage())
+            self.setOverlay(image: self.renderer?.cgImage)
         }
     }
 
@@ -394,6 +396,11 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
             .composited(over: image) ?? image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        updateOverlayIfNeeded(size: image.extent.size)
+        return overlayMetalPetal?.moveComposited(sceneWidget.layout, image) ?? image
+    }
+
     override func prepare(_ image: CIImage, _: VideoEffectInfo) {
         updateOverlayIfNeeded(size: image.extent.size)
     }
@@ -435,9 +442,12 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         state.lines = lines
     }
 
-    private func setOverlay(image: CIImage?) {
+    private func setOverlay(image: CGImage?) {
+        let overlay = image.map { CIImage(cgImage: $0) }
+        let overlayMetalPetal = image.map { MTIImage(cgImage: $0) }
         processorPipelineQueue.async {
-            self.overlay = image
+            self.overlay = overlay
+            self.overlayMetalPetal = overlayMetalPetal
         }
     }
 }

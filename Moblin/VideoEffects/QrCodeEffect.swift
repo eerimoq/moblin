@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 
 final class QrCodeEffect: VideoEffect, @unchecked Sendable {
     private let widget: SettingsWidgetQrCode
@@ -6,6 +7,7 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget: SettingsSceneWidget?
     private var size: CGSize = .zero
     private var qrCodeImage: CIImage?
+    private var qrCodeImageMetalPetal: MTIImage?
 
     init(widget: SettingsWidgetQrCode) {
         self.widget = widget
@@ -30,6 +32,21 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
             .composited(over: image)
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let newSceneWidget else {
+            return image
+        }
+        update(newSceneWidget: newSceneWidget, size: image.extent.size)
+        guard let qrCodeImageMetalPetal else {
+            return image
+        }
+        return applyEffectsResizeMirrorMoveMetalPetal(qrCodeImageMetalPetal,
+                                                      newSceneWidget,
+                                                      false,
+                                                      image,
+                                                      info)
+    }
+
     private func update(newSceneWidget: SettingsSceneWidget, size: CGSize) {
         guard newSceneWidget.layout.extent() != sceneWidget?.layout.extent() || size != self.size else {
             return
@@ -46,6 +63,8 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
             return
         }
         let scale = 400 / image.extent.size.width
-        qrCodeImage = image.scaled(x: scale, y: scale)
+        let qrCodeImage = image.scaled(x: scale, y: scale)
+        self.qrCodeImage = qrCodeImage
+        qrCodeImageMetalPetal = MTIImage(ciImage: qrCodeImage, isOpaque: true)
     }
 }

@@ -848,6 +848,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         )
     }
 
+    private func isMetalPetalGraphicsEnabled() -> Bool {
+        isMetalPetalGraphics || isMetalPetalGraphicsForcedByEffects
+    }
+
     private func isAtEndOfSceneSwitchTransition() -> Bool {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
@@ -865,15 +869,24 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return sampleBuffer
         }
-        var image = CIImage(cvPixelBuffer: imageBuffer)
-        image = applySceneSwitchTransition(image)
         guard let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
             return sampleBuffer
         }
-        if let poolColorSpace {
-            context.render(image, to: outputImageBuffer, bounds: image.extent, colorSpace: poolColorSpace)
+        if isMetalPetalGraphicsEnabled() {
+            let image = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+            do {
+                try metalPetalContext?.render(applySceneSwitchTransitionMetalPetal(image),
+                                              to: outputImageBuffer)
+            } catch {
+                return sampleBuffer
+            }
         } else {
-            context.render(image, to: outputImageBuffer)
+            let image = applySceneSwitchTransition(CIImage(cvPixelBuffer: imageBuffer))
+            if let poolColorSpace {
+                context.render(image, to: outputImageBuffer, bounds: image.extent, colorSpace: poolColorSpace)
+            } else {
+                context.render(image, to: outputImageBuffer)
+            }
         }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
         else {
@@ -1035,8 +1048,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             videoUnit: self,
             isFirstAfterAttach: isFirstAfterAttach
         )
-        if isMetalPetalGraphics || isMetalPetalGraphicsForcedByEffects {
-            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, enabledEffects, info)
+        if isMetalPetalGraphicsEnabled() {
+            return applyEffectsMetalPetal(
+                imageBuffer,
+                sampleBuffer,
+                enabledEffects,
+                isSceneSwitchTransition,
+                info
+            )
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
@@ -1164,12 +1183,16 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
                                         _ enabledEffects: [VideoEffect],
+                                        _ isSceneSwitchTransition: Bool,
                                         _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
         let originalImage = image
         guard var image else {
             return (nil, nil)
+        }
+        if isSceneSwitchTransition {
+            image = applySceneSwitchTransitionMetalPetal(image)
         }
         for effect in enabledEffects {
             image = effect.executeMetalPetal(image, info)
@@ -1248,6 +1271,32 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 .translated(x: -smallOffsetX, y: -smallOffsetY)
                 .scaled(x: scaleUpFactor, y: scaleUpFactor)
                 .cropped(to: image.extent) ?? image
+        }
+    }
+
+    private func blurMetalPetal(_ image: MTIImage) -> MTIImage {
+        let filter = MTIMPSGaussianBlurFilter()
+        filter.inputImage = image
+        filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
+        return filter.outputImage ?? image
+    }
+
+    private func applySceneSwitchTransitionMetalPetal(_ image: MTIImage) -> MTIImage {
+        switch sceneSwitchTransition {
+        case .blur:
+            return blurMetalPetal(image)
+        case .freeze:
+            return image
+        case .blurAndZoom:
+            let cropScaleDownFactor = calcBlurScale()
+            let filter = MTICropFilter()
+            filter.inputImage = blurMetalPetal(image)
+            filter.cropRegion = .fractional(CGRect(x: (1 - cropScaleDownFactor) / 2,
+                                                   y: (1 - cropScaleDownFactor) / 2,
+                                                   width: cropScaleDownFactor,
+                                                   height: cropScaleDownFactor))
+            filter.scale = Float(1 / cropScaleDownFactor)
+            return filter.outputImage ?? image
         }
     }
 
