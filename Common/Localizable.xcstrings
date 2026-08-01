@@ -4870,6 +4870,12 @@
             "state" : "translated",
             "value" : "{%@:<unit>}"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{%@:<unit>}"
+          }
         }
       }
     },
@@ -6470,6 +6476,12 @@
             "state" : "translated",
             "value" : "%@ 互動式瀏覽器小工具"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 互動瀏覽器小工具"
+          }
         }
       }
     },
@@ -7178,6 +7190,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 設定"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 設定"
@@ -10464,6 +10482,12 @@
             "state" : "translated",
             "value" : "<song> 是共享連結或文字搜尋。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<歌曲> 可以是連結或文字搜尋"
+          }
         }
       }
     },
@@ -11454,6 +11478,12 @@
             "state" : "translated",
             "value" : "⚠️ 從 App Store 下載並安裝 Stream Deck Connect，然後在其設定中啟用 Stream Deck 裝置驅動程式。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 到App Store下載及安裝Stream Deck Connect，然後在設定啟用Stream Deck裝置驅動程式"
+          }
         }
       }
     },
@@ -11876,6 +11906,12 @@
             "state" : "translated",
             "value" : "⚠️ 輸入 DJI 裝置要連接的 Wi-Fi SSID。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 輸入DJI裝置要連接的WiFi網絡SSID"
+          }
         }
       }
     },
@@ -12013,6 +12049,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⚠️ 輸入 DJI 裝置要推流的目標 URL。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 輸入DJI裝置要直播到的URL"
           }
         }
       }
@@ -12580,6 +12622,12 @@
             "state" : "translated",
             "value" : "⚠️ 未連線到 IPv4 WiFi 網路。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 未連接擁有IPv4的WiFi網絡"
+          }
         }
       }
     },
@@ -13001,6 +13049,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⚠️ 輕點 %@ 互動式瀏覽器小工具快速按鈕隱藏/顯示瀏覽器，或啟用上面的切換。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 點擊 %@ 互動瀏覽器小工具的快捷按鈕以顯示或隱藏, 或者在上面切換啟用"
           }
         }
       }
@@ -18821,6 +18875,12 @@
             "state" : "translated",
             "value" : "當觀眾持續發送相同表情時，聊天表情連擊小工具會顯示連擊數。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天圖示combo小工具顯示圖示連續被聊天室發送"
+          }
         }
       }
     },
@@ -20521,6 +20581,12 @@
             "state" : "translated",
             "value" : "傳送到 WHIP 伺服器的低品質低延遲串流。可用於預覽來自其他裝置的串流。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一個低畫質低延遲串流發送到WHIP伺服器，可以用來給其他裝置預覽串流"
+          }
         }
       }
     },
@@ -20659,6 +20725,12 @@
             "state" : "translated",
             "value" : "一個巨集"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "巨集"
+          }
         }
       }
     },
@@ -20796,6 +20868,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "巨集是一系列操作，只需輕點一下按鈕即可變更設定、濾鏡等。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "巨集是一組動作，點擊按鈕就可以更改設定、濾鏡等等"
           }
         }
       }
@@ -21218,6 +21296,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "網路"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "網絡"
           }
         }
       }
@@ -24193,6 +24277,12 @@
             "state" : "translated",
             "value" : "名為“%@”的串流已存在。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流名稱 %@ 已存在"
+          }
         }
       }
     },
@@ -25891,6 +25981,12 @@
             "state" : "translated",
             "value" : "ABR"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自適性位元率(ABR)"
+          }
         }
       }
     },
@@ -26451,6 +26547,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動作"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "動作"
@@ -27302,6 +27404,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將指定歌曲新增至佇列。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加選定歌曲到序列"
           }
         }
       }
@@ -29580,6 +29688,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一個動作"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動作"
           }
         }
       }
@@ -35397,6 +35511,12 @@
             "state" : "translated",
             "value" : "自動 IP 位址"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動IP地址"
+          }
         }
       }
     },
@@ -40219,6 +40339,12 @@
             "state" : "translated",
             "value" : "氣球"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "氣球"
+          }
         }
       }
     },
@@ -42914,6 +43040,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "大型音量表"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "巨型音量表"
           }
         }
       }
@@ -49279,6 +49411,12 @@
             "state" : "translated",
             "value" : "按鈕"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鈕"
+          }
         }
       }
     },
@@ -50695,6 +50833,12 @@
             "state" : "translated",
             "value" : "取消指定的巨集。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消選定巨集"
+          }
         }
       }
     },
@@ -52107,6 +52251,12 @@
             "state" : "translated",
             "value" : "CBR"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "固定位元率(CBR)"
+          }
         }
       }
     },
@@ -52386,6 +52536,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "攝氏度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "攝氏"
           }
         }
       }
@@ -54229,6 +54385,12 @@
             "state" : "translated",
             "value" : "聊天表情組合"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天圖示combo"
+          }
         }
       }
     },
@@ -54503,6 +54665,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聊天訊息"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "聊天訊息"
@@ -55070,6 +55238,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "棋盤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "格仔"
           }
         }
       }
@@ -56351,6 +56525,12 @@
             "state" : "translated",
             "value" : "經典"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "經典"
+          }
         }
       }
     },
@@ -57199,6 +57379,12 @@
             "state" : "translated",
             "value" : "執行時關閉巨集面板"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行時關閉巨集面板"
+          }
         }
       }
     },
@@ -57904,6 +58090,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顏色 2"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顏色2"
           }
         }
       }
@@ -59036,6 +59228,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "彩色紙屑"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "五彩紙屑"
           }
         }
       }
@@ -62161,6 +62359,12 @@
             "state" : "translated",
             "value" : "控制"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制"
+          }
         }
       }
     },
@@ -64007,6 +64211,12 @@
             "state" : "translated",
             "value" : "次數"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "計數"
+          }
         }
       }
     },
@@ -64711,6 +64921,12 @@
             "state" : "translated",
             "value" : "新建"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建立新"
+          }
         }
       }
     },
@@ -64848,6 +65064,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新增錨點"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "建立點"
           }
         }
       }
@@ -66264,6 +66486,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "杯子"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "杯"
           }
         }
       }
@@ -68103,6 +68331,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "舞蹈"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "舞蹈"
@@ -70087,6 +70321,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除點"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "刪除點"
@@ -77318,6 +77558,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "持續時間"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時長"
           }
         }
       }
@@ -84827,6 +85073,12 @@
             "state" : "translated",
             "value" : "華氏度"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "華氏"
+          }
         }
       }
     },
@@ -85817,6 +86069,12 @@
             "state" : "translated",
             "value" : "無法取得 YouTube 影片 ID"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "獲取影片ID失敗"
+          }
         }
       }
     },
@@ -86664,6 +86922,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法取得雲台方向"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "獲取穩定器方向失敗"
           }
         }
       }
@@ -88789,6 +89053,12 @@
             "state" : "translated",
             "value" : "家庭"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家庭"
+          }
         }
       }
     },
@@ -89495,6 +89765,12 @@
             "state" : "translated",
             "value" : "英尺"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英尺"
+          }
         }
       }
     },
@@ -89632,6 +89908,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "取得影片 ID"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "獲取影片ID"
           }
         }
       }
@@ -91191,6 +91473,12 @@
             "state" : "translated",
             "value" : "已完成"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
         }
       }
     },
@@ -91328,6 +91616,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "煙火"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "煙花"
           }
         }
       }
@@ -92034,6 +92328,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "固定 IP 位址"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "固定IP地址"
           }
         }
       }
@@ -95427,6 +95727,12 @@
             "state" : "translated",
             "value" : "永遠"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永遠"
+          }
         }
       }
     },
@@ -95561,6 +95867,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刀叉"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "刀叉"
@@ -99405,6 +99717,12 @@
             "state" : "translated",
             "value" : "雲台平移與俯仰"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "穩定器水平與垂直旋轉"
+          }
         }
       }
     },
@@ -99686,6 +100004,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已更新雲台預設位置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "穩定器設定更新"
           }
         }
       }
@@ -100112,6 +100436,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "雲台追蹤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "穩定器追蹤"
           }
         }
       }
@@ -101247,6 +101577,12 @@
             "state" : "translated",
             "value" : "高爾夫球"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高爾夫"
+          }
         }
       }
     },
@@ -101384,6 +101720,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "高爾夫完整記分板"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高爾夫記分牌"
           }
         }
       }
@@ -102521,6 +102863,12 @@
             "state" : "translated",
             "value" : "紅心"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "心臟"
+          }
         }
       }
     },
@@ -103511,6 +103859,12 @@
             "state" : "translated",
             "value" : "高品質降採樣"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高品質下採樣"
+          }
         }
       }
     },
@@ -104217,6 +104571,12 @@
             "state" : "translated",
             "value" : "第 %lld 洞"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 洞"
+          }
         }
       }
     },
@@ -104495,6 +104855,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "洞"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "洞"
@@ -106623,6 +106989,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圖示"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖示"
@@ -109323,6 +109695,12 @@
             "state" : "translated",
             "value" : "輸入"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入"
+          }
         }
       }
     },
@@ -110451,6 +110829,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "反轉"
@@ -112871,6 +113255,12 @@
             "state" : "translated",
             "value" : "開爾文"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelvin"
+          }
         }
       }
     },
@@ -113863,6 +114253,12 @@
             "state" : "translated",
             "value" : "公里"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公里"
+          }
         }
       }
     },
@@ -113995,6 +114391,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公里每小時"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "公里每小時"
@@ -114559,6 +114961,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雷射"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "雷射"
@@ -115411,6 +115819,12 @@
             "state" : "translated",
             "value" : "版面配置"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "佈局"
+          }
         }
       }
     },
@@ -115687,6 +116101,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "葉子"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "葉子"
@@ -116251,6 +116671,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光年"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "光年"
@@ -117102,6 +117528,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "僅限本機"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本機限定"
           }
         }
       }
@@ -118376,6 +118808,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "記錄檔目錄"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記錄資料夾"
           }
         }
       }
@@ -120769,6 +121207,12 @@
             "state" : "translated",
             "value" : "巨集"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "巨集"
+          }
         }
       }
     },
@@ -120903,6 +121347,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "巨集"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "巨集"
@@ -122038,6 +122488,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RTSP URL 格式錯誤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTSP URL錯誤"
           }
         }
       }
@@ -124159,6 +124615,12 @@
             "state" : "translated",
             "value" : "遮罩"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遮罩"
+          }
         }
       }
     },
@@ -126143,6 +126605,12 @@
             "state" : "translated",
             "value" : "合併"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合併"
+          }
         }
       }
     },
@@ -126709,6 +127177,12 @@
             "state" : "translated",
             "value" : "公尺"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公尺"
+          }
         }
       }
     },
@@ -126846,6 +127320,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "公尺每秒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公尺每小時"
           }
         }
       }
@@ -127411,6 +127891,12 @@
             "state" : "translated",
             "value" : "英里"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英里"
+          }
         }
       }
     },
@@ -127549,6 +128035,12 @@
             "state" : "translated",
             "value" : "英里每小時"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "英里每小時"
+          }
         }
       }
     },
@@ -127683,6 +128175,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "迷你"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "迷你"
@@ -128250,6 +128748,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最少連擊數"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最少combo"
           }
         }
       }
@@ -133081,6 +133585,12 @@
             "state" : "translated",
             "value" : "移動至雲台預設位置"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移到穩定器配置"
+          }
         }
       }
     },
@@ -133785,6 +134295,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音樂"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "音樂"
@@ -136345,6 +136861,12 @@
             "state" : "translated",
             "value" : "我的巨集"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我的巨集"
+          }
         }
       }
     },
@@ -138613,6 +139135,12 @@
             "state" : "translated",
             "value" : "名稱"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名稱"
+          }
         }
       }
     },
@@ -139036,6 +139564,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "海浬"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "海里"
           }
         }
       }
@@ -139600,6 +140134,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "網路"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WiFi網絡"
           }
         }
       }
@@ -140874,6 +141414,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下一首。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一首歌"
           }
         }
       }
@@ -153786,6 +154332,12 @@
             "state" : "translated",
             "value" : "暫停。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫停"
+          }
         }
       }
     },
@@ -153924,6 +154476,12 @@
             "state" : "translated",
             "value" : "鉛筆"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆"
+          }
         }
       }
     },
@@ -154061,6 +154619,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "執行反應特效。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行反應"
           }
         }
       }
@@ -156054,6 +156618,12 @@
             "state" : "translated",
             "value" : "播放。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放"
+          }
         }
       }
     },
@@ -157611,6 +158181,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "蕃茄鐘"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "番茄鐘"
           }
         }
       }
@@ -160456,6 +161032,12 @@
             "state" : "translated",
             "value" : "預覽串流"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預覽串流"
+          }
         }
       }
     },
@@ -160593,6 +161175,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "預覽串流尚未設定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定預覽串流"
           }
         }
       }
@@ -160873,6 +161461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上一首。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一首歌"
           }
         }
       }
@@ -165272,6 +165866,12 @@
             "state" : "translated",
             "value" : "雨"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雨"
+          }
         }
       }
     },
@@ -165834,6 +166434,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反應"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "反應"
@@ -170522,6 +171128,12 @@
             "state" : "translated",
             "value" : "將 stream id 取代或新增至 URL。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在URL取代或添加stream id"
+          }
         }
       }
     },
@@ -172364,6 +172976,12 @@
             "state" : "translated",
             "value" : "重置分段距離。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置分段距離"
+          }
         }
       }
     },
@@ -172785,6 +173403,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重置距離、平均速度和坡度。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置距離、平均速度及坡度"
           }
         }
       }
@@ -173633,6 +174257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "還原購買失敗"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回復購買失敗"
           }
         }
       }
@@ -177746,6 +178376,12 @@
             "state" : "translated",
             "value" : "執行"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行"
+          }
         }
       }
     },
@@ -177883,6 +178519,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "執行並關閉"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行及關閉"
           }
         }
       }
@@ -178164,6 +178806,12 @@
             "state" : "translated",
             "value" : "執行指定的巨集。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行選定巨集"
+          }
         }
       }
     },
@@ -178298,6 +178946,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行巨集"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "執行巨集"
@@ -178581,6 +179235,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "儲存目前位置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存現在位置"
           }
         }
       }
@@ -179011,6 +179671,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已儲存的網路"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已儲存的WiFi網絡"
           }
         }
       }
@@ -179718,6 +180384,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "場景媒體來源"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "場景媒體來源"
@@ -182133,6 +182805,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "可捲動聊天"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑動聊天"
           }
         }
       }
@@ -185409,6 +186087,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "傳送指定訊息。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "發出選定訊息"
           }
         }
       }
@@ -190246,6 +190930,12 @@
             "state" : "translated",
             "value" : "顯示海拔上升"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示海拔上昇"
+          }
         }
       }
     },
@@ -190384,6 +191074,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示海拔上升"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示海拔上昇"
+          }
         }
       }
     },
@@ -190518,6 +191214,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示海拔下降"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示海拔下降"
@@ -190660,6 +191362,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示海拔下降"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示海拔下降"
+          }
         }
       }
     },
@@ -190798,6 +191506,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示高度"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示海拔"
+          }
         }
       }
     },
@@ -190930,6 +191644,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示區域"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示區域"
@@ -191213,6 +191933,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以指定單位顯示平均速度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示平均速度"
           }
         }
       }
@@ -193198,6 +193924,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示距離"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示距離"
+          }
         }
       }
     },
@@ -193619,6 +194351,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以指定單位顯示體感溫度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示體感溫度"
           }
         }
       }
@@ -194468,6 +195206,12 @@
             "state" : "translated",
             "value" : "顯示最新追蹤者"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示最新追隨者"
+          }
         }
       }
     },
@@ -194602,6 +195346,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示最新訂閱者"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示最新訂閱者"
@@ -195169,6 +195919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示鄰近區域"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示鄰里"
           }
         }
       }
@@ -196866,6 +197622,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示速度"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示速度"
+          }
         }
       }
     },
@@ -197003,6 +197765,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示分段海拔上升"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示分段海拔下降"
           }
         }
       }
@@ -197142,6 +197910,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示分段海拔上升"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示分段海拔上昇"
+          }
         }
       }
     },
@@ -197276,6 +198050,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示分段海拔下降"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示分段海拔下降"
@@ -197418,6 +198198,12 @@
             "state" : "translated",
             "value" : "以指定單位顯示分段海拔下降"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示分段海拔下降"
+          }
         }
       }
     },
@@ -197552,6 +198338,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示分段距離"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示分段距離"
@@ -197693,6 +198485,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以指定單位顯示分段距離"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示分段距離"
           }
         }
       }
@@ -197973,6 +198771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顯示狀態。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示狀態"
           }
         }
       }
@@ -198398,7 +199202,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以指定語言顯示字幕"
+            "value" : "以選定語言顯示字幕"
           }
         }
       }
@@ -198679,6 +199483,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以指定單位顯示溫度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示溫度"
           }
         }
       }
@@ -199386,6 +200196,12 @@
             "state" : "translated",
             "value" : "顯示頻道的觀看次數"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示頻道觀看人數"
+          }
         }
       }
     },
@@ -199665,6 +200481,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "以指定單位顯示風速"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以選定單位顯示風度"
           }
         }
       }
@@ -202220,6 +203042,12 @@
             "state" : "translated",
             "value" : "純色"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "實心"
+          }
         }
       }
     },
@@ -204204,6 +205032,12 @@
             "state" : "translated",
             "value" : "分段"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分段"
+          }
         }
       }
     },
@@ -204767,6 +205601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT 用戶端"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT客戶端"
           }
         }
       }
@@ -206047,6 +206887,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT(LA) 封包填充"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA)封包填充"
           }
         }
       }
@@ -207736,6 +208582,12 @@
             "state" : "translated",
             "value" : "開始"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始"
+          }
         }
       }
     },
@@ -208294,6 +209146,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始預覽串流"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "開始預覽串流"
@@ -210132,6 +210990,12 @@
             "state" : "translated",
             "value" : "停止"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
         }
       }
     },
@@ -210406,6 +211270,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止預覽串流"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "停止預覽串流"
@@ -212534,6 +213404,12 @@
             "state" : "translated",
             "value" : "Stream Deck"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream deck"
+          }
         }
       }
     },
@@ -212672,6 +213548,12 @@
             "state" : "translated",
             "value" : "Stream Deck 版面配置"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream Deck佈局"
+          }
         }
       }
     },
@@ -212807,6 +213689,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stream Deck"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stream decks"
           }
         }
       }
@@ -215360,6 +216248,12 @@
             "state" : "translated",
             "value" : "名為 %@ 的串流已存在。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流名稱 %@ 已存在"
+          }
         }
       }
     },
@@ -215776,6 +216670,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "風格"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "風格"
@@ -217334,6 +218234,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太陽"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "太陽"
@@ -219748,6 +220654,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "系統"
@@ -222304,6 +223216,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目標"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "目標"
@@ -230546,6 +231464,12 @@
             "state" : "translated",
             "value" : "類比搖桿"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "方向桿"
+          }
         }
       }
     },
@@ -230683,6 +231607,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "類比搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "方向桿"
           }
         }
       }
@@ -234372,6 +235302,12 @@
             "state" : "translated",
             "value" : "TP-Link"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TP-Link"
+          }
         }
       }
     },
@@ -234506,6 +235442,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追蹤"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "追蹤"
@@ -234928,6 +235870,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透明"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "透明"
@@ -239474,6 +240422,12 @@
             "state" : "translated",
             "value" : "單位"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "單位"
+          }
         }
       }
     },
@@ -242452,6 +243406,12 @@
             "state" : "translated",
             "value" : "使用高爾夫記分板小工具來控制此小工具。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用高爾夫記分牌小工具去控制"
+          }
         }
       }
     },
@@ -245428,6 +246388,12 @@
             "state" : "translated",
             "value" : "VBR"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "變動位元率(VBR)"
+          }
         }
       }
     },
@@ -245568,7 +246534,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "VBR (變動碼率)"
+            "value" : "VBR (變動位元率)"
           }
         }
       }
@@ -247411,6 +248377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "影片 ID"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影片ID"
           }
         }
       }
@@ -249824,6 +250796,12 @@
             "state" : "translated",
             "value" : "散步"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "步行"
+          }
         }
       }
     },
@@ -251097,6 +252075,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Web 瀏覽器綁定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "網絡瀏覽器Bonding"
           }
         }
       }
@@ -256360,6 +257344,12 @@
             "state" : "translated",
             "value" : "x%lld 連擊！"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "x%lld combo!"
+          }
         }
       }
     },
@@ -256494,6 +257484,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "XL"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "XL"
@@ -256774,6 +257770,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "碼"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "碼"
