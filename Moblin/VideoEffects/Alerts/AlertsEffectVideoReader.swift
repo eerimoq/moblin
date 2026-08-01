@@ -3,7 +3,7 @@ import Collections
 import CoreImage
 
 private struct VideoImage {
-    let image: CIImage
+    let image: EffectImageCiImage
     let offset: Double
 }
 
@@ -29,7 +29,7 @@ class AlertsEffectVideoReader: @unchecked Sendable {
         }
     }
 
-    func getImage(presentationTimeStamp: Double) -> CIImage? {
+    func getImage(presentationTimeStamp: Double) -> EffectImageCiImage? {
         if basePresentationTimeStamp == nil {
             basePresentationTimeStamp = presentationTimeStamp
         }
@@ -45,7 +45,7 @@ class AlertsEffectVideoReader: @unchecked Sendable {
         fillEnded && images.isEmpty
     }
 
-    private func findImage(offset: Double) -> CIImage? {
+    private func findImage(offset: Double) -> EffectImageCiImage? {
         while let image = images.first {
             if offset <= image.offset {
                 return image.image
@@ -71,8 +71,10 @@ class AlertsEffectVideoReader: @unchecked Sendable {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(),
                let imageBuffer = sampleBuffer.imageBuffer
             {
-                newImages.append(VideoImage(image: CIImage(cvImageBuffer: imageBuffer),
-                                            offset: sampleBuffer.presentationTimeStamp.seconds))
+                newImages.append(VideoImage(
+                    image: CIImage(cvImageBuffer: imageBuffer).toEffectImage(isOpaque: true),
+                    offset: sampleBuffer.presentationTimeStamp.seconds
+                ))
             }
         }
         processorPipelineQueue.async {

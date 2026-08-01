@@ -1,5 +1,6 @@
 import AVFoundation
 import Collections
+import MetalPetal
 import SwiftUI
 import Vision
 import WrappingHStack
@@ -33,13 +34,13 @@ protocol AlertsEffectDelegate: AnyObject {
 
 private struct Pipeline {
     var playing: Bool = false
-    var messageImage: CIImage?
+    var messageImage: EffectImageCiImage?
     var images: any AlertsEffectImages = AlertsEffectGifImages()
     var x: Double = 0
     var y: Double = 0
     var landmarkSettings: AlertsEffectLandmarkSettings?
 
-    mutating func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    mutating func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         defer {
             playing = !images.isEmpty()
         }
@@ -106,9 +107,35 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         if let landmarkSettings = pipeline.landmarkSettings {
-            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
+            return executePositionFace(image,
+                                       info.sceneFaceDetections(),
+                                       alertImage.getCiImage(),
+                                       landmarkSettings)
         } else {
-            return executePositionScene(image, alertImage, messageImage, pipeline.x, pipeline.y)
+            return executePositionScene(image,
+                                        alertImage.getCiImage(),
+                                        messageImage.getCiImage(),
+                                        pipeline.x,
+                                        pipeline.y)
+        }
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        let (alertImage, messageImage) = getNext(info.presentationTimeStamp.seconds)
+        guard let alertImage, let messageImage else {
+            return image
+        }
+        if let landmarkSettings = pipeline.landmarkSettings {
+            return executePositionFaceMetalPetal(image,
+                                                 info.sceneFaceDetections(),
+                                                 alertImage.getMetalPetalImage(),
+                                                 landmarkSettings)
+        } else {
+            return executePositionSceneMetalPetal(image,
+                                                  alertImage.getMetalPetalImage(),
+                                                  messageImage.getMetalPetalImage(),
+                                                  pipeline.x,
+                                                  pipeline.y)
         }
     }
 
@@ -293,7 +320,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private func play(player: AlertsEffectPlayer,
                       username: String,
                       message: String,
-                      messageImage: CIImage?,
+                      messageImage: EffectImageCiImage?,
                       landmarkSettings: AlertsEffectLandmarkSettings?,
                       settings: SettingsWidgetAlertsAlert)
     {
@@ -344,7 +371,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     @MainActor
     private func renderMessage(username: String,
                                message: String,
-                               settings: SettingsWidgetAlertsAlert) -> CIImage?
+                               settings: SettingsWidgetAlertsAlert) -> EffectImageCiImage?
     {
         let words = message.split(separator: " ").map { Word(text: String($0)) }
         let message = WrappingHStack(
@@ -368,10 +395,10 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         .stroke(color: .black, width: 2)
         .frame(width: 1000)
         let renderer = ImageRenderer(content: message)
-        guard let image = renderer.uiImage else {
+        guard let image = renderer.uiImage, let image = CIImage(image: image) else {
             return nil
         }
-        return CIImage(image: image)
+        return image.toEffectImage(isOpaque: false)
     }
 
     private func isInRectangle(_ x: Double,
@@ -422,7 +449,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?) {
+    private func getNext(_ presentationTimeStamp: Double) -> (EffectImageCiImage?, EffectImageCiImage?) {
         defer {
             if !pipeline.playing {
                 pipeline.landmarkSettings = nil
@@ -439,6 +466,68 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    private func calcFacePlacement(
+        _ detection: VNFaceObservation,
+        _ imageSize: CGSize,
+        _ landmarkSettings: AlertsEffectLandmarkSettings
+    ) -> (center: CGPoint, height: Double, rotation: CGFloat)? {
+        guard let rotationAngle = detection.calcFaceAngle(imageSize: imageSize) else {
+            return nil
+        }
+        guard let boundingBox = detection.stableBoundingBox(
+            imageSize: imageSize,
+            rotationAngle: rotationAngle
+        ) else {
+            return nil
+        }
+        let faceMinX = boundingBox.minX
+        let faceMaxY = boundingBox.maxY
+        let faceWidth = boundingBox.width
+        let faceHeight = boundingBox.height
+        let alertImageHeight = faceHeight * landmarkSettings.height
+        var centerX: Double
+        var centerY: Double
+        switch landmarkSettings.landmark {
+        case .face:
+            centerX = faceMinX + landmarkSettings.centerX * faceWidth
+            centerY = faceMaxY - landmarkSettings.centerY * faceHeight
+        case .leftEye:
+            guard let leftEye = detection.landmarks?.leftEye else {
+                return nil
+            }
+            var points = leftEye.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        case .rightEye:
+            guard let rightEye = detection.landmarks?.rightEye else {
+                return nil
+            }
+            var points = rightEye.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        case .mouth:
+            guard let outerLips = detection.landmarks?.outerLips else {
+                return nil
+            }
+            var points = outerLips.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        }
+        return (CGPoint(x: centerX, y: centerY), alertImageHeight, rotationAngle)
+    }
+
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -450,73 +539,62 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
         var outputImage = image
         for detection in faceDetections {
-            guard let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size) else {
+            guard let placement = calcFacePlacement(detection, image.extent.size, landmarkSettings) else {
                 continue
             }
-            guard let boundingBox = detection.stableBoundingBox(
-                imageSize: image.extent.size,
-                rotationAngle: rotationAngle
-            ) else {
-                continue
-            }
-            let faceMinX = boundingBox.minX
-            let faceMaxY = boundingBox.maxY
-            let faceWidth = boundingBox.width
-            let faceHeight = boundingBox.height
-            let alertImageHeight = faceHeight * landmarkSettings.height
-            var centerX: Double
-            var centerY: Double
-            switch landmarkSettings.landmark {
-            case .face:
-                centerX = faceMinX + landmarkSettings.centerX * faceWidth
-                centerY = faceMaxY - landmarkSettings.centerY * faceHeight
-            case .leftEye:
-                guard let leftEye = detection.landmarks?.leftEye else {
-                    continue
-                }
-                var points = leftEye.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            case .rightEye:
-                guard let rightEye = detection.landmarks?.rightEye else {
-                    continue
-                }
-                var points = rightEye.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            case .mouth:
-                guard let outerLips = detection.landmarks?.outerLips else {
-                    continue
-                }
-                var points = outerLips.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            }
-            let moblinImage = alertImage
-                .scaled(x: alertImageHeight / alertImage.extent.height,
-                        y: alertImageHeight / alertImage.extent.height)
+            let scale = placement.height / alertImage.extent.height
+            let moblinImage = alertImage.scaled(x: scale, y: scale)
             let centerPoint = rotatePoint(
-                point: .init(x: centerX - moblinImage.extent.midX, y: centerY - moblinImage.extent.midY),
-                alpha: rotationAngle
+                point: .init(x: placement.center.x - moblinImage.extent.midX,
+                             y: placement.center.y - moblinImage.extent.midY),
+                alpha: placement.rotation
             )
             outputImage = moblinImage
-                .transformed(by: CGAffineTransform(rotationAngle: rotationAngle))
+                .transformed(by: CGAffineTransform(rotationAngle: placement.rotation))
                 .translated(x: centerPoint.x, y: centerPoint.y)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
+    }
+
+    private func executePositionFaceMetalPetal(
+        _ image: MTIImage,
+        _ faceDetections: [VNFaceObservation]?,
+        _ alertImage: MTIImage,
+        _ landmarkSettings: AlertsEffectLandmarkSettings
+    ) -> MTIImage {
+        guard let faceDetections else {
+            return image
+        }
+        let imageSize = image.extent.size
+        let layers: [MultilayerCompositingFilter.Layer] = faceDetections.compactMap { detection in
+            guard let placement = calcFacePlacement(detection, imageSize, landmarkSettings) else {
+                return nil
+            }
+            let scale = placement.height / alertImage.extent.height
+            let size = CGSize(width: alertImage.extent.width * scale, height: placement.height)
+            // Core Image rotates the alert image around the origin and then translates it, so its
+            // center ends up as the sum of the two.
+            let centerPoint = rotatePoint(point: .init(x: placement.center.x - size.width / 2,
+                                                       y: placement.center.y - size.height / 2),
+                                          alpha: placement.rotation)
+            let rotatedCenter = rotatePoint(point: .init(x: size.width / 2, y: size.height / 2),
+                                            alpha: placement.rotation)
+            let center = CGPoint(x: rotatedCenter.x + centerPoint.x, y: rotatedCenter.y + centerPoint.y)
+            return .content(alertImage, modifier: { layer in
+                layer.size = size
+                layer.position = CGPoint(x: center.x, y: imageSize.height - center.y)
+                // Core Image rotates counter clockwise for positive angles, MetalPetal clockwise.
+                layer.rotation = Float(-placement.rotation)
+            })
+        }
+        guard !layers.isEmpty else {
+            return image
+        }
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = layers
+        return filter.outputImage ?? image
     }
 
     private func executePositionScene(
@@ -535,6 +613,31 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             .translated(x: xPos, y: yPos)
             .composited(over: image)
             .cropped(to: image.extent)
+    }
+
+    private func executePositionSceneMetalPetal(
+        _ image: MTIImage,
+        _ alertImage: MTIImage,
+        _ messageImage: MTIImage,
+        _ x: Double,
+        _ y: Double
+    ) -> MTIImage {
+        let alertSize = alertImage.extent.size
+        let messageSize = messageImage.extent.size
+        let xPos = toPixels(x, image.extent.width)
+        let yPos = toPixels(y, image.extent.height)
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .content(alertImage, modifier: { layer in
+                layer.position = CGPoint(x: xPos + alertSize.width / 2, y: yPos + alertSize.height / 2)
+            }),
+            .content(messageImage, modifier: { layer in
+                layer.position = CGPoint(x: xPos + alertSize.width / 2,
+                                         y: yPos + alertSize.height + messageSize.height / 2)
+            }),
+        ]
+        return filter.outputImage ?? image
     }
 }
 

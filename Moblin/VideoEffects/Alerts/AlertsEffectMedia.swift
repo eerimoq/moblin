@@ -9,7 +9,7 @@ enum AlertsEffectMediaItem {
 }
 
 struct AlertsEffectGifImage {
-    let image: CIImage
+    let image: EffectImageCiImage
     let timeOffset: Double
 }
 
@@ -138,8 +138,10 @@ class AlertsEffectMedia: @unchecked Sendable {
                 for index in 0 ..< animatedImage.animatedImageFrameCount {
                     if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
                         timeOffset += animatedImage.animatedImageDuration(at: index)
-                        images.append(AlertsEffectGifImage(image: CIImage(cgImage: cgImage),
-                                                           timeOffset: timeOffset))
+                        images.append(AlertsEffectGifImage(
+                            image: CIImage(cgImage: cgImage).toEffectImage(isOpaque: false),
+                            timeOffset: timeOffset
+                        ))
                     }
                 }
             }
@@ -150,16 +152,17 @@ class AlertsEffectMedia: @unchecked Sendable {
     private func loadGifImages(image: CIImage, loopCount: Int) -> Deque<AlertsEffectGifImage> {
         var timeOffset = 0.0
         var images: Deque<AlertsEffectGifImage> = []
+        let effectImage = image.toEffectImage(isOpaque: false)
         for _ in 0 ..< loopCount {
             timeOffset += 1
-            images.append(AlertsEffectGifImage(image: image, timeOffset: timeOffset))
+            images.append(AlertsEffectGifImage(image: effectImage, timeOffset: timeOffset))
         }
         return images
     }
 }
 
 protocol AlertsEffectImages {
-    func getImage(_ presentationTimeStamp: Double) -> CIImage?
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage?
     func isEmpty() -> Bool
 }
 
@@ -173,7 +176,7 @@ class AlertsEffectGifImages: AlertsEffectImages {
         self.images = images
     }
 
-    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         if basePresentationTimeStamp == nil {
             basePresentationTimeStamp = presentationTimeStamp
         }
@@ -204,7 +207,7 @@ class AlertsEffectVideoImages: AlertsEffectImages {
         }
     }
 
-    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         reader?.getImage(presentationTimeStamp: presentationTimeStamp)
     }
 
