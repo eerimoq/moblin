@@ -46,8 +46,7 @@ struct PoweredByMoblinView: View {
 
 final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
     private let canvasSize: CGSize
-    private var scoreboardImage: CIImage?
-    private var scoreboardImageMetalPetal: MTIImage?
+    private var scoreboardImage: EffectImageCgImage?
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
 
@@ -101,22 +100,21 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        scoreboardImage?
+        scoreboardImage?.getCiImage()
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        scoreboardImageMetalPetal?.moveComposited(sceneWidgetPipeline.layout, image) ?? image
+        scoreboardImage?.getMetalPetalImage()
+            .moveComposited(sceneWidgetPipeline.layout, image) ?? image
     }
 
     private func setScoreboardImage(image: CGImage?) {
-        let scoreboardImage = image.map { CIImage(cgImage: $0) }
-        let scoreboardImageMetalPetal = image.map { MTIImage(cgImage: $0) }
+        let scoreboardImage = image?.toEffectImage()
         processorPipelineQueue.async {
             self.scoreboardImage = scoreboardImage
-            self.scoreboardImageMetalPetal = scoreboardImageMetalPetal
         }
     }
 

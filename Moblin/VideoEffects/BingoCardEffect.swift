@@ -59,8 +59,7 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
     private var renderer: ImageRenderer<BingoView>?
     private var cancellable: AnyCancellable?
-    private var bingoImage: CIImage?
-    private var bingoImageMetalPetal: MTIImage?
+    private var bingoImage: EffectImageCgImage?
 
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
@@ -85,13 +84,14 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         bingoImage?
+            .getCiImage()
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        bingoImageMetalPetal?.moveComposited(sceneWidgetPipeline.layout, image) ?? image
+        bingoImage?.getMetalPetalImage().moveComposited(sceneWidgetPipeline.layout, image) ?? image
     }
 
     @MainActor
@@ -110,11 +110,9 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setBingoImage(image: CGImage?) {
-        let bingoImage = image.map { CIImage(cgImage: $0) }
-        let bingoImageMetalPetal = image.map { MTIImage(cgImage: $0) }
+        let bingoImage = image?.toEffectImage()
         processorPipelineQueue.async {
             self.bingoImage = bingoImage
-            self.bingoImageMetalPetal = bingoImageMetalPetal
         }
     }
 }

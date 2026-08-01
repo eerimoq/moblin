@@ -40,8 +40,7 @@ private func transformPoint(
 
 final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
-    private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
+    private var overlay: EffectImageCgImage?
 
     func updateOverlay(videoSize: CGSize, size: CGSize, lines: [DrawOnStreamLine], mirror: Bool) {
         DispatchQueue.main.async {
@@ -91,26 +90,23 @@ final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
             guard let uiImage = renderer.uiImage else {
                 return
             }
-            let image = CIImage(image: uiImage)
-            let imageMetalPetal = uiImage.cgImage.map { MTIImage(cgImage: $0) }
+            let overlay = uiImage.cgImage?.toEffectImage()
             processorPipelineQueue.async {
-                self.overlay = image
-                self.overlayMetalPetal = imageMetalPetal
+                self.overlay = overlay
             }
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        filter.inputImage = overlay
+        filter.inputImage = overlay?.getCiImage()
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        guard let overlayMetalPetal else {
+        guard let overlay = overlay?.getMetalPetalImage() else {
             return image
         }
-        return overlayMetalPetal.positionComposited(CGPoint(x: image.extent.midX, y: image.extent.midY),
-                                                    image)
+        return overlay.positionComposited(CGPoint(x: image.extent.midX, y: image.extent.midY), image)
     }
 }

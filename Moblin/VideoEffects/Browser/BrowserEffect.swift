@@ -42,8 +42,7 @@ private func addScript(_ configuration: WKWebViewConfiguration,
 
 final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     let webView: WKWebView
-    private var snapshot: CIImage?
-    private var snapshotMetalPetal: MTIImage?
+    private var snapshot: EffectImageCgImage?
     let width: Double
     let height: Double
     private let url: URL
@@ -174,7 +173,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let snapshot else {
+        guard let snapshot = snapshot?.getCiImage() else {
             return image
         }
         var image = image
@@ -199,12 +198,12 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
-        guard let snapshotMetalPetal else {
+        guard let snapshot = snapshot?.getMetalPetalImage() else {
             return image
         }
         var image = image
         if let sceneWidget {
-            image = applyEffectsResizeMirrorMoveMetalPetal(snapshotMetalPetal,
+            image = applyEffectsResizeMirrorMoveMetalPetal(snapshot,
                                                            sceneWidget,
                                                            false,
                                                            image,
@@ -215,10 +214,10 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
                                        y: crop.crop.y,
                                        width: crop.crop.width,
                                        height: crop.crop.height)
-            image = snapshotMetalPetal.resizeMirrorMoveComposited(crop.sceneWidget.layout,
-                                                                  false,
-                                                                  image,
-                                                                  .init(contentRegion: contentRegion))
+            image = snapshot.resizeMirrorMoveComposited(crop.sceneWidget.layout,
+                                                        false,
+                                                        image,
+                                                        .init(contentRegion: contentRegion))
         }
         return image
     }
@@ -292,11 +291,9 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
                 guard let image else {
                     return
                 }
-                let snapshot = CIImage(image: image)
-                let snapshotMetalPetal = image.cgImage.map { MTIImage(cgImage: $0) }
+                let snapshot = image.cgImage?.toEffectImage()
                 processorPipelineQueue.async {
                     self.snapshot = snapshot
-                    self.snapshotMetalPetal = snapshotMetalPetal
                 }
             }
         }

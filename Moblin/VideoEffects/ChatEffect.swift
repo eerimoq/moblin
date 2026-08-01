@@ -237,8 +237,7 @@ private struct ChatView: View {
 
 final class ChatEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
-    private var chatImage: CIImage?
-    private var chatImageMetalPetal: MTIImage?
+    private var chatImage: EffectImageCgImage?
     private var renderer: ImageRenderer<ChatView>?
     private var settings = SettingsWidgetChat()
     private var height: Double = 1
@@ -302,16 +301,14 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setChatImage(image: CGImage?) {
-        let chatImage = image.map { CIImage(cgImage: $0) }
-        let chatImageMetalPetal = image.map { MTIImage(cgImage: $0) }
+        let chatImage = image?.toEffectImage()
         processorPipelineQueue.async {
             self.chatImage = chatImage
-            self.chatImageMetalPetal = chatImageMetalPetal
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard var chatImage else {
+        guard var chatImage = chatImage?.getCiImage() else {
             return image
         }
         let height = Double(image.extent.height) * height
@@ -330,10 +327,10 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        guard let chatImageMetalPetal else {
+        guard let chatImage = chatImage?.getMetalPetalImage() else {
             return image
         }
-        var contentRegion = chatImageMetalPetal.extent
+        var contentRegion = chatImage.extent
         let height = Double(image.extent.height) * height
         if contentRegion.height > height {
             contentRegion = CGRect(x: contentRegion.minX,
@@ -341,6 +338,6 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
                                    width: contentRegion.width,
                                    height: height)
         }
-        return chatImageMetalPetal.moveComposited(sceneWidget.layout, image, contentRegion)
+        return chatImage.moveComposited(sceneWidget.layout, image, contentRegion)
     }
 }

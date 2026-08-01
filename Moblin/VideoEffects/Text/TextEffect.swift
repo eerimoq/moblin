@@ -175,8 +175,7 @@ private struct TextView: View {
 
 final class TextEffect: VideoEffect, @unchecked Sendable {
     private var stats: Deque<TextEffectStats> = []
-    private var overlay: CIImage?
-    private var overlayMetalPetal: MTIImage?
+    private var overlay: EffectImageCgImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
     private let formatter: TextEffectFormatter
@@ -390,7 +389,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         updateOverlayIfNeeded(size: image.extent.size)
-        return overlay?
+        return overlay?.getCiImage()
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
@@ -398,7 +397,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
         updateOverlayIfNeeded(size: image.extent.size)
-        return overlayMetalPetal?.moveComposited(sceneWidget.layout, image) ?? image
+        return overlay?.getMetalPetalImage().moveComposited(sceneWidget.layout, image) ?? image
     }
 
     override func prepare(_ image: CIImage, _: VideoEffectInfo) {
@@ -443,11 +442,9 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setOverlay(image: CGImage?) {
-        let overlay = image.map { CIImage(cgImage: $0) }
-        let overlayMetalPetal = image.map { MTIImage(cgImage: $0) }
+        let overlay = image?.toEffectImage()
         processorPipelineQueue.async {
             self.overlay = overlay
-            self.overlayMetalPetal = overlayMetalPetal
         }
     }
 }

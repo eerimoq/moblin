@@ -5,8 +5,7 @@ import MetalPetal
 final class SnapshotEffect: VideoEffect, @unchecked Sendable {
     private var snapshots: Deque<CIImage> = []
     private var sceneWidget: SettingsSceneWidget?
-    private var currentSnapshot: CIImage?
-    private var currentSnapshotMetalPetal: MTIImage?
+    private var currentSnapshot: EffectImageCiImage?
     private var hideSnapshotTime: Double?
     private var showtime: Double
 
@@ -41,7 +40,11 @@ final class SnapshotEffect: VideoEffect, @unchecked Sendable {
         guard let currentSnapshot else {
             return image
         }
-        return applyEffectsResizeMirrorMove(currentSnapshot, sceneWidget, false, image.extent, info)
+        return applyEffectsResizeMirrorMove(currentSnapshot.getCiImage(),
+                                            sceneWidget,
+                                            false,
+                                            image.extent,
+                                            info)
             .composited(over: image)
     }
 
@@ -50,10 +53,10 @@ final class SnapshotEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         updateCurrentSnapshot(info: info)
-        guard let currentSnapshotMetalPetal else {
+        guard let currentSnapshot else {
             return image
         }
-        return applyEffectsResizeMirrorMoveMetalPetal(currentSnapshotMetalPetal,
+        return applyEffectsResizeMirrorMoveMetalPetal(currentSnapshot.getMetalPetalImage(),
                                                       sceneWidget,
                                                       false,
                                                       image,
@@ -75,8 +78,7 @@ final class SnapshotEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setCurrentSnapshot(image: CIImage?) {
-        currentSnapshot = image
-        currentSnapshotMetalPetal = image.map { MTIImage(ciImage: $0, isOpaque: true) }
+        currentSnapshot = image?.toEffectImage(isOpaque: true)
     }
 
     private func appendSnapshotInternal(image: CIImage) {

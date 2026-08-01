@@ -8,6 +8,67 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
     (percentage * total) / 100
 }
 
+final class EffectImageCgImage: @unchecked Sendable {
+    private let source: CGImage
+    private var ciImage: CIImage?
+    private var metalPetalImage: MTIImage?
+
+    init(image: CGImage) {
+        source = image
+    }
+
+    func getCiImage() -> CIImage {
+        if let ciImage {
+            return ciImage
+        }
+        ciImage = CIImage(cgImage: source)
+        return ciImage!
+    }
+
+    func getMetalPetalImage() -> MTIImage {
+        if let metalPetalImage {
+            return metalPetalImage
+        }
+        metalPetalImage = MTIImage(cgImage: source)
+        return metalPetalImage!
+    }
+}
+
+final class EffectImageCiImage: @unchecked Sendable {
+    private let source: CIImage
+    private let isOpaque: Bool
+    private var metalPetalImage: MTIImage?
+
+    init(image: CIImage, isOpaque: Bool) {
+        source = image
+        self.isOpaque = isOpaque
+    }
+
+    func getCiImage() -> CIImage {
+        source
+    }
+
+    func getMetalPetalImage() -> MTIImage {
+        if let metalPetalImage {
+            return metalPetalImage
+        }
+        metalPetalImage = MTIImage(ciImage: source, isOpaque: isOpaque)
+        return metalPetalImage!
+    }
+}
+
+extension CIImage {
+    func toEffectImage(isOpaque: Bool) -> EffectImageCiImage {
+        EffectImageCiImage(image: self, isOpaque: isOpaque)
+    }
+}
+
+extension CGImage {
+    func toEffectImage() -> EffectImageCgImage {
+        EffectImageCgImage(image: self)
+    }
+}
+
 func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
                              _ size: CGSize,
                              _ streamSize: CGSize) -> CGPoint

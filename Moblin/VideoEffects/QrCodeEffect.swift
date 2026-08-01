@@ -6,8 +6,7 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
     private var newSceneWidget: SettingsSceneWidget?
     private var sceneWidget: SettingsSceneWidget?
     private var size: CGSize = .zero
-    private var qrCodeImage: CIImage?
-    private var qrCodeImageMetalPetal: MTIImage?
+    private var qrCodeImage: EffectImageCiImage?
 
     init(widget: SettingsWidgetQrCode) {
         self.widget = widget
@@ -28,7 +27,11 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
         guard let qrCodeImage else {
             return image
         }
-        return applyEffectsResizeMirrorMove(qrCodeImage, newSceneWidget, false, image.extent, info)
+        return applyEffectsResizeMirrorMove(qrCodeImage.getCiImage(),
+                                            newSceneWidget,
+                                            false,
+                                            image.extent,
+                                            info)
             .composited(over: image)
     }
 
@@ -37,10 +40,10 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         update(newSceneWidget: newSceneWidget, size: image.extent.size)
-        guard let qrCodeImageMetalPetal else {
+        guard let qrCodeImage else {
             return image
         }
-        return applyEffectsResizeMirrorMoveMetalPetal(qrCodeImageMetalPetal,
+        return applyEffectsResizeMirrorMoveMetalPetal(qrCodeImage.getMetalPetalImage(),
                                                       newSceneWidget,
                                                       false,
                                                       image,
@@ -63,8 +66,6 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
             return
         }
         let scale = 400 / image.extent.size.width
-        let qrCodeImage = image.scaled(x: scale, y: scale)
-        self.qrCodeImage = qrCodeImage
-        qrCodeImageMetalPetal = MTIImage(ciImage: qrCodeImage, isOpaque: true)
+        qrCodeImage = image.scaled(x: scale, y: scale).toEffectImage(isOpaque: true)
     }
 }
