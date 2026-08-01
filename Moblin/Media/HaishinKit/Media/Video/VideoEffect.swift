@@ -109,8 +109,8 @@ class VideoEffect: NSObject, @unchecked Sendable {
                                                 _ info: VideoEffectInfo,
                                                 _ widgetShape: MetalPetalWidgetShape? = nil) -> MTIImage
     {
-        let image = applyEffectsMetalPetal(image, info)
         var shape = widgetShape ?? MetalPetalWidgetShape(contentRegion: image.extent)
+        let image = applyEffectsMetalPetal(image, info)
         for effect in effects {
             effect.modifyMetalPetalWidgetShape(&shape)
         }

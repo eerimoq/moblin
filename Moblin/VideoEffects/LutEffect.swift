@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 import SwiftCube
 import SwiftUI
 
@@ -120,8 +121,56 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
 }
 
+private func makeLutImage(dimension: Int, cubeData: Data) -> MTIImage? {
+    let pixelsCount = dimension * dimension * dimension
+    guard cubeData.count == pixelsCount * 4 * 4 else {
+        return nil
+    }
+    var pixels = [UInt8](repeating: 0, count: pixelsCount * 4)
+    cubeData.withUnsafeBytes { rawCube in
+        let cube = rawCube.bindMemory(to: Float.self)
+        for blue in 0 ..< dimension {
+            for green in 0 ..< dimension {
+                for red in 0 ..< dimension {
+                    let cubeIndex = 4 * ((blue * dimension + green) * dimension + red)
+                    let pixelIndex = 4 * (green * dimension * dimension + blue * dimension + red)
+                    for component in 0 ..< 4 {
+                        pixels[pixelIndex + component] = UInt8(
+                            min(max((cube[cubeIndex + component] * 255).rounded(), 0), 255)
+                        )
+                    }
+                }
+            }
+        }
+    }
+    let context = CGContext(data: &pixels,
+                            width: dimension * dimension,
+                            height: dimension,
+                            bitsPerComponent: 8,
+                            bytesPerRow: dimension * dimension * 4,
+                            space: CGColorSpaceCreateDeviceRGB(),
+                            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+    guard let cgImage = context?.makeImage() else {
+        return nil
+    }
+    return MTIImage(cgImage: cgImage, options: [.SRGB: false], isOpaque: true)
+}
+
+private func makeCubeData(_ entries: [LutEntry]) -> Data {
+    var cube: [Float] = []
+    cube.reserveCapacity(entries.count * 4)
+    for entry in entries {
+        cube.append(entry.red)
+        cube.append(entry.green)
+        cube.append(entry.blue)
+        cube.append(1)
+    }
+    return Data(bytes: cube, count: cube.count * 4)
+}
+
 final class LutEffect: VideoEffect, @unchecked Sendable {
     private var filter: (any CIFilter & CIColorCubeWithColorSpace)?
+    private let filterMetalPetal = MTIColorLookupFilter()
 
     func setLut(
         lut: SettingsColorLut?,
@@ -172,6 +221,14 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
         return filter?.outputImage ?? image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        guard filterMetalPetal.inputColorLookupTable != nil else {
+            return image
+        }
+        filterMetalPetal.inputImage = image
+        return filterMetalPetal.outputImage ?? image
+    }
+
     private func loadLut(lut: SettingsColorLut?, imageStorage: ImageStorage) throws {
         if let lut {
             switch lut.type {
@@ -185,6 +242,7 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
         } else {
             processorPipelineQueue.async {
                 self.filter = nil
+                self.filterMetalPetal.inputColorLookupTable = nil
             }
         }
     }
@@ -218,8 +276,11 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
         }
         nonisolated(unsafe)
         let filter = try sc3dLut.ciFilter()
+        nonisolated(unsafe)
+        let lutImage = makeLutImage(dimension: sc3dLut.size, cubeData: makeCubeData(sc3dLut.entries))
         processorPipelineQueue.async {
             self.filter = filter
+            self.filterMetalPetal.inputColorLookupTable = lutImage
         }
     }
 
@@ -230,8 +291,11 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
         filter.cubeData = data
         filter.cubeDimension = dimension
         filter.colorSpace = CGColorSpaceCreateDeviceRGB()
+        nonisolated(unsafe)
+        let lutImage = makeLutImage(dimension: Int(dimension), cubeData: data)
         processorPipelineQueue.async {
             self.filter = filter
+            self.filterMetalPetal.inputColorLookupTable = lutImage
         }
     }
 }
