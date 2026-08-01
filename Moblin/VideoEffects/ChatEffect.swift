@@ -1,5 +1,6 @@
 import Collections
 import Combine
+import MetalPetal
 import SwiftUI
 import WrappingHStack
 
@@ -237,6 +238,7 @@ private struct ChatView: View {
 final class ChatEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var chatImage: CIImage?
+    private var chatImageMetalPetal: MTIImage?
     private var renderer: ImageRenderer<ChatView>?
     private var settings = SettingsWidgetChat()
     private var height: Double = 1
@@ -289,9 +291,9 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            setChatImage(image: renderer?.ciImage())
+            setChatImage(image: renderer?.cgImage)
         }
-        setChatImage(image: renderer?.ciImage())
+        setChatImage(image: renderer?.cgImage)
     }
 
     private func stopInternal() {
@@ -299,9 +301,12 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
         cancellable = nil
     }
 
-    private func setChatImage(image: CIImage?) {
+    private func setChatImage(image: CGImage?) {
+        let chatImage = image.map { CIImage(cgImage: $0) }
+        let chatImageMetalPetal = image.map { MTIImage(cgImage: $0) }
         processorPipelineQueue.async {
-            self.chatImage = image
+            self.chatImage = chatImage
+            self.chatImageMetalPetal = chatImageMetalPetal
         }
     }
 
@@ -322,5 +327,20 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        guard let chatImageMetalPetal else {
+            return image
+        }
+        var contentRegion = chatImageMetalPetal.extent
+        let height = Double(image.extent.height) * height
+        if contentRegion.height > height {
+            contentRegion = CGRect(x: contentRegion.minX,
+                                   y: contentRegion.maxY - height,
+                                   width: contentRegion.width,
+                                   height: height)
+        }
+        return chatImageMetalPetal.moveComposited(sceneWidget.layout, image, contentRegion)
     }
 }

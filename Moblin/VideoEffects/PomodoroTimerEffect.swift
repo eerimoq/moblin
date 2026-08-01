@@ -1,4 +1,5 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
 private struct PomodoroTimerView: View {
@@ -101,6 +102,7 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
     private var renderer: ImageRenderer<PomodoroTimerView>?
     private var cancellable: AnyCancellable?
     private var timerImage: CIImage?
+    private var timerImageMetalPetal: MTIImage?
 
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
@@ -130,6 +132,10 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
             .composited(over: image) ?? image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        timerImageMetalPetal?.moveComposited(sceneWidgetPipeline.layout, image) ?? image
+    }
+
     @MainActor
     private func setup() {
         cancellable?.cancel()
@@ -140,14 +146,17 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            setTimerImage(image: renderer?.ciImage())
+            setTimerImage(image: renderer?.cgImage)
         }
-        setTimerImage(image: renderer?.ciImage())
+        setTimerImage(image: renderer?.cgImage)
     }
 
-    private func setTimerImage(image: CIImage?) {
+    private func setTimerImage(image: CGImage?) {
+        let timerImage = image.map { CIImage(cgImage: $0) }
+        let timerImageMetalPetal = image.map { MTIImage(cgImage: $0) }
         processorPipelineQueue.async {
-            self.timerImage = image
+            self.timerImage = timerImage
+            self.timerImageMetalPetal = timerImageMetalPetal
         }
     }
 }

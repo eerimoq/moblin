@@ -1,3 +1,4 @@
+import MetalPetal
 import SwiftUI
 import Vision
 import WebKit
@@ -42,6 +43,7 @@ private func addScript(_ configuration: WKWebViewConfiguration,
 final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     let webView: WKWebView
     private var snapshot: CIImage?
+    private var snapshotMetalPetal: MTIImage?
     let width: Double
     let height: Double
     private let url: URL
@@ -196,6 +198,31 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         return image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let snapshotMetalPetal else {
+            return image
+        }
+        var image = image
+        if let sceneWidget {
+            image = applyEffectsResizeMirrorMoveMetalPetal(snapshotMetalPetal,
+                                                           sceneWidget,
+                                                           false,
+                                                           image,
+                                                           info)
+        }
+        for crop in crops {
+            let contentRegion = CGRect(x: crop.crop.x,
+                                       y: crop.crop.y,
+                                       width: crop.crop.width,
+                                       height: crop.crop.height)
+            image = snapshotMetalPetal.resizeMirrorMoveComposited(crop.sceneWidget.layout,
+                                                                  false,
+                                                                  image,
+                                                                  .init(contentRegion: contentRegion))
+        }
+        return image
+    }
+
     @MainActor
     private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         processorPipelineQueue.async {
@@ -265,8 +292,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
                 guard let image else {
                     return
                 }
+                let snapshot = CIImage(image: image)
+                let snapshotMetalPetal = image.cgImage.map { MTIImage(cgImage: $0) }
                 processorPipelineQueue.async {
-                    self.snapshot = CIImage(image: image)
+                    self.snapshot = snapshot
+                    self.snapshotMetalPetal = snapshotMetalPetal
                 }
             }
         }

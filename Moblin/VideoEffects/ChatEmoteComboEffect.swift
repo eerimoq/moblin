@@ -1,4 +1,5 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
 private let borderWidth = 1.5
@@ -43,6 +44,7 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
     private var comboImage: CIImage?
+    private var comboImageMetalPetal: MTIImage?
     private var renderer: ImageRenderer<EmoteComboView>?
     private var cancellable: AnyCancellable?
     private let state = EmoteComboState()
@@ -105,18 +107,21 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            let image = renderer?.ciImage()
+            let image = renderer?.cgImage
             if comboCount > 0 {
                 setComboImage(image: image)
             }
         }
-        _ = renderer?.ciImage()
+        _ = renderer?.cgImage
         setComboImage(image: nil)
     }
 
-    private func setComboImage(image: CIImage?) {
+    private func setComboImage(image: CGImage?) {
+        let comboImage = image.map { CIImage(cgImage: $0) }
+        let comboImageMetalPetal = image.map { MTIImage(cgImage: $0) }
         processorPipelineQueue.async {
-            self.comboImage = image
+            self.comboImage = comboImage
+            self.comboImageMetalPetal = comboImageMetalPetal
         }
     }
 
@@ -128,5 +133,9 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        comboImageMetalPetal?.moveComposited(sceneWidgetPipeline.layout, image) ?? image
     }
 }

@@ -1,4 +1,5 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
 private struct BingoView: View {
@@ -59,6 +60,7 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     private var renderer: ImageRenderer<BingoView>?
     private var cancellable: AnyCancellable?
     private var bingoImage: CIImage?
+    private var bingoImageMetalPetal: MTIImage?
 
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
@@ -88,6 +90,10 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
             .composited(over: image) ?? image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        bingoImageMetalPetal?.moveComposited(sceneWidgetPipeline.layout, image) ?? image
+    }
+
     @MainActor
     private func setup() {
         cancellable?.cancel()
@@ -98,14 +104,17 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            setBingoImage(image: renderer?.ciImage())
+            setBingoImage(image: renderer?.cgImage)
         }
-        setBingoImage(image: renderer?.ciImage())
+        setBingoImage(image: renderer?.cgImage)
     }
 
-    private func setBingoImage(image: CIImage?) {
+    private func setBingoImage(image: CGImage?) {
+        let bingoImage = image.map { CIImage(cgImage: $0) }
+        let bingoImageMetalPetal = image.map { MTIImage(cgImage: $0) }
         processorPipelineQueue.async {
-            self.bingoImage = image
+            self.bingoImage = bingoImage
+            self.bingoImageMetalPetal = bingoImageMetalPetal
         }
     }
 }

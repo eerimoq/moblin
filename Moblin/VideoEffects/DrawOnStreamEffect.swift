@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 import SwiftUI
 
 func drawOnStreamCreatePath(points: [CGPoint]) -> Path {
@@ -40,6 +41,7 @@ private func transformPoint(
 final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
+    private var overlayMetalPetal: MTIImage?
 
     func updateOverlay(videoSize: CGSize, size: CGSize, lines: [DrawOnStreamLine], mirror: Bool) {
         DispatchQueue.main.async {
@@ -90,8 +92,10 @@ final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
                 return
             }
             let image = CIImage(image: uiImage)
+            let imageMetalPetal = uiImage.cgImage.map { MTIImage(cgImage: $0) }
             processorPipelineQueue.async {
                 self.overlay = image
+                self.overlayMetalPetal = imageMetalPetal
             }
         }
     }
@@ -100,5 +104,13 @@ final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
         filter.inputImage = overlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        guard let overlayMetalPetal else {
+            return image
+        }
+        return overlayMetalPetal.positionComposited(CGPoint(x: image.extent.midX, y: image.extent.midY),
+                                                    image)
     }
 }

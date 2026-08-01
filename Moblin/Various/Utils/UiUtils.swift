@@ -53,16 +53,6 @@ func isMac() -> Bool {
     ProcessInfo().isMacCatalystApp
 }
 
-extension ImageRenderer {
-    @MainActor
-    func ciImage() -> CIImage? {
-        guard let image = cgImage else {
-            return nil
-        }
-        return CIImage(cgImage: image)
-    }
-}
-
 @MainActor
 func getWindow() -> UIWindow? {
     guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {

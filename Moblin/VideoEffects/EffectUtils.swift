@@ -32,8 +32,27 @@ func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
 }
 
 extension MTIImage {
-    func moveComposited(_ layout: SettingsWidgetLayout, _ backgroundImage: MTIImage) -> MTIImage {
-        composited(layout, extent.size, false, backgroundImage, .init(contentRegion: extent))
+    func moveComposited(_ layout: SettingsWidgetLayout,
+                        _ backgroundImage: MTIImage,
+                        _ contentRegion: CGRect? = nil) -> MTIImage
+    {
+        let contentRegion = contentRegion ?? extent
+        return composited(layout,
+                          contentRegion.size,
+                          false,
+                          backgroundImage,
+                          .init(contentRegion: contentRegion))
+    }
+
+    func positionComposited(_ position: CGPoint, _ backgroundImage: MTIImage) -> MTIImage {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = backgroundImage
+        filter.layers = [
+            .content(self, modifier: { layer in
+                layer.position = position
+            }),
+        ]
+        return filter.outputImage ?? backgroundImage
     }
 
     func resizeMirrorMoveComposited(_ layout: SettingsWidgetLayout,
