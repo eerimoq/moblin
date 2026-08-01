@@ -1,5 +1,6 @@
 @preconcurrency import CoreImage
 import MetalPetal
+import simd
 
 private struct HsvColor {
     let hue: CGFloat
@@ -85,82 +86,54 @@ private func makeFilter(settings: FilterSettings) -> (any CIColorCubeWithColorSp
     return filter
 }
 
-// Same green screen matching as the Core Image color cube above, but evaluated per pixel. The pixel
-// buffers are sampled without sRGB decoding, just as the color cube is looked up in device RGB, so
-// both implementations work on the same color values.
-private let metalPetalShaderSource = """
-#include <metal_stdlib>
+private let chromaKeySmoothing: Float = 0.1
+private let chromaKeyNeutralAxisMargin: Float = 0.8
 
-using namespace metal;
-
-constant float hueSectorCount = \(hueSectorCount);
-constant float greenHueSectorOffset = \(greenHueSectorOffset);
-constant float blueHueSectorOffset = \(blueHueSectorOffset);
-
-typedef struct {
-    float4 position [[position]];
-    float2 textureCoordinate;
-} VertexOut;
-
-static float3 rgbToHsv(float3 color) {
-    float maxColor = max(color.r, max(color.g, color.b));
-    float minColor = min(color.r, min(color.g, color.b));
-    float delta = maxColor - minColor;
-    if (delta <= 0) {
-        return float3(0, 0, maxColor);
-    }
-    float hue;
-    if (maxColor == color.r) {
-        float rawHueSector = (color.g - color.b) / delta;
-        hue = rawHueSector < 0 ? rawHueSector + hueSectorCount : rawHueSector;
-    } else if (maxColor == color.g) {
-        hue = ((color.b - color.r) / delta) + greenHueSectorOffset;
-    } else {
-        hue = ((color.r - color.g) / delta) + blueHueSectorOffset;
-    }
-    return float3(hue / hueSectorCount,
-                  maxColor == 0 ? 0 : delta / maxColor,
-                  maxColor);
+private struct ChromaKeySettings {
+    let color: MTIColor
+    let thresholdSensitivity: Float
 }
 
-static bool isHueInRange(float hue, float fromHue, float toHue) {
-    if (fromHue <= toHue) {
-        return hue >= fromHue && hue <= toHue;
-    } else {
-        return hue >= fromHue || hue <= toHue;
+private func toChroma(_ color: MTIColor) -> SIMD2<Float> {
+    let luma = 0.2989 * color.red + 0.5866 * color.green + 0.1145 * color.blue
+    return .init(0.7132 * (color.red - luma), 0.5647 * (color.blue - luma))
+}
+
+private func makeSaturatedColor(hue: Double) -> MTIColor {
+    let sector = Float(hue) * Float(hueSectorCount)
+    let secondary = 1 - abs(fmod(sector, 2) - 1)
+    let (red, green, blue): (Float, Float, Float) = switch Int(sector) {
+    case 0:
+        (1, secondary, 0)
+    case 1:
+        (secondary, 1, 0)
+    case 2:
+        (0, 1, secondary)
+    case 3:
+        (0, secondary, 1)
+    case 4:
+        (secondary, 0, 1)
+    default:
+        (1, 0, secondary)
     }
+    return MTIColor(red: red, green: green, blue: blue, alpha: 1)
 }
 
-fragment float4 removeBackground(VertexOut vertexIn [[stage_in]],
-                                 texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                 sampler sourceSampler [[sampler(0)]],
-                                 constant float &fromHue [[buffer(0)]],
-                                 constant float &toHue [[buffer(1)]],
-                                 constant float &minimumSaturation [[buffer(2)]],
-                                 constant float &minimumBrightness [[buffer(3)]]) {
-    float4 color = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-    float3 hsv = rgbToHsv(color.rgb);
-    bool matchesGreenScreen = isHueInRange(hsv.x, fromHue, toHue)
-        && hsv.y >= minimumSaturation
-        && hsv.z >= minimumBrightness;
-    return matchesGreenScreen ? float4(color.rgb, 0) : color;
+private func makeChromaKeySettings(from: RgbColor, to: RgbColor) -> ChromaKeySettings {
+    let fromHue = from.hue()
+    let toHue = to.hue()
+    let hueSpan = toHue < fromHue ? toHue - fromHue + 1 : toHue - fromHue
+    let color = makeSaturatedColor(hue: (fromHue + hueSpan / 2).truncatingRemainder(dividingBy: 1))
+    let chroma = toChroma(color)
+    let thresholdSensitivity = min(distance(chroma, toChroma(makeSaturatedColor(hue: fromHue))),
+                                   length(chroma) * chromaKeyNeutralAxisMargin)
+    return .init(color: color, thresholdSensitivity: thresholdSensitivity)
 }
-"""
-
-private let metalPetalKernel: MTIRenderPipelineKernel = {
-    let libraryUrl = MTILibrarySourceRegistration.shared.registerLibrary(
-        source: metalPetalShaderSource,
-        compileOptions: nil
-    )
-    return MTIRenderPipelineKernel(
-        vertexFunctionDescriptor: .passthroughVertex,
-        fragmentFunctionDescriptor: .init(name: "removeBackground", libraryURL: libraryUrl)
-    )
-}()
 
 final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
     private var filter: (any CIColorCubeWithColorSpace)?
-    private var metalPetalSettings: FilterSettings?
+    private let filterMetalPetal = MTIChromaKeyBlendFilter()
+    private var chromaKeySettings: ChromaKeySettings?
     private var pendingSettings: FilterSettings?
     private var updating = false
 
@@ -183,14 +156,14 @@ final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
             minimumBrightnessFloor,
             Double(min(fromHsv.brightness, toHsv.brightness)) * adaptiveThresholdMultiplier
         )
-        let settings = FilterSettings(fromHue: from.hue(),
-                                      toHue: to.hue(),
-                                      minimumSaturation: minimumSaturation,
-                                      minimumBrightness: minimumBrightness)
+        let chromaKeySettings = makeChromaKeySettings(from: from, to: to)
         processorPipelineQueue.async {
-            self.metalPetalSettings = settings
+            self.chromaKeySettings = chromaKeySettings
         }
-        pendingSettings = settings
+        pendingSettings = FilterSettings(fromHue: from.hue(),
+                                         toHue: to.hue(),
+                                         minimumSaturation: minimumSaturation,
+                                         minimumBrightness: minimumBrightness)
         tryUpdateFilter()
     }
 
@@ -223,17 +196,14 @@ final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        guard let metalPetalSettings else {
+        guard let chromaKeySettings else {
             return image
         }
-        return metalPetalKernel.apply(
-            to: MTIUnpremultiplyAlphaFilter.image(byProcessingImage: image),
-            parameters: [
-                "fromHue": Float(metalPetalSettings.fromHue),
-                "toHue": Float(metalPetalSettings.toHue),
-                "minimumSaturation": Float(metalPetalSettings.minimumSaturation),
-                "minimumBrightness": Float(metalPetalSettings.minimumBrightness),
-            ]
-        )
+        filterMetalPetal.inputImage = image
+        filterMetalPetal.inputBackgroundImage = .transparent
+        filterMetalPetal.color = chromaKeySettings.color
+        filterMetalPetal.thresholdSensitivity = chromaKeySettings.thresholdSensitivity
+        filterMetalPetal.smoothing = chromaKeySmoothing
+        return filterMetalPetal.outputImage ?? image
     }
 }
