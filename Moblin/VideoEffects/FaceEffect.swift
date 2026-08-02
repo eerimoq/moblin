@@ -148,8 +148,8 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         case let .pixellate(strength: strength):
             let filter = MTIPixellateFilter()
             filter.inputImage = image
-            let scale = Double(pixellateCalcScale(size: image.extent.size, strength: strength))
-            filter.scale = CGSize(width: scale, height: scale)
+            let scale = pixellateCalcScale(size: image.extent.size, strength: strength)
+            filter.scale = simd_make_float2(scale, scale)
             return filter.outputImage
         case .backgroundImage:
             guard let backgroundImage = backgroundImage?.getMetalPetalImage() else {
