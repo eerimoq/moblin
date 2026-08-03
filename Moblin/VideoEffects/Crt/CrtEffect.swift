@@ -1,9 +1,11 @@
 import CoreImage
+import MetalPetal
 
 final class CrtEffect: VideoEffect, @unchecked Sendable {
     private let barrelFilter = CrtBarrelDistortionFilter()
     private let colorControls = CIFilter.colorControls()
     private let vignette = CIFilter.vignette()
+    private let metalPetalFilter = CrtMetalPetalFilter()
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let extent = image.extent
@@ -35,6 +37,11 @@ final class CrtEffect: VideoEffect, @unchecked Sendable {
         vignette.intensity = 1.5
         vignette.radius = 1.5
         return vignette.outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        metalPetalFilter.inputImage = image
+        return metalPetalFilter.outputImage ?? image
     }
 
     private func applyScanlines(_ image: CIImage, _ cropRect: CGRect) -> CIImage {
