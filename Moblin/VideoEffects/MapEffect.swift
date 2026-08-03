@@ -1,16 +1,17 @@
 import Collections
 import CoreImage
 import MapKit
+import MetalPetal
 
 final class MapEffect: VideoEffect, @unchecked Sendable {
-    private var mapSnapshot: CIImage?
+    private var mapSnapshot: EffectImageCiImage?
     private let widget: SettingsWidgetMap
     private var sceneWidget: SettingsSceneWidget?
     private var location: CLLocation = .init()
     private var size: CGSize = .zero
     private var newLocations: Deque<CLLocation> = [.init()]
     private var mapSnapshotter: MKMapSnapshotter?
-    private let dot: CIImage?
+    private let dot: EffectImageCgImage?
     private var dotOffsetRatio = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
@@ -18,7 +19,7 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
         if let image = UIImage(named: "MapDot"), let image = image.cgImage {
-            dot = CIImage(cgImage: image)
+            dot = image.toEffectImage()
         } else {
             dot = nil
         }
@@ -55,16 +56,49 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
         guard let sceneWidget, let dot, let mapSnapshot else {
             return image
         }
+        let dotImage = dot.getCiImage()
+        let mapImage = mapSnapshot.getCiImage()
         let height = toPixels(sceneWidget.layout.size, size.height)
         let width = toPixels(sceneWidget.layout.size, size.width)
         let side = CGFloat(max(40, min(height, width)))
-        let mapWithDotImage = dot
+        let mapWithDotImage = dotImage
             .translated(x: (side - 30) / 2, y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2))
-            .composited(over: mapSnapshot
-                .scaled(x: side / CGFloat(mapSnapshot.extent.width),
-                        y: side / CGFloat(mapSnapshot.extent.width)))
+            .composited(over: mapImage
+                .scaled(x: side / CGFloat(mapImage.extent.width),
+                        y: side / CGFloat(mapImage.extent.width)))
         return applyEffectsResizeMirrorMove(mapWithDotImage, sceneWidget, false, image.extent, info)
             .composited(over: image)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        let size = image.extent.size
+        update(size: size)
+        guard let sceneWidget, let dot, let mapSnapshot else {
+            return image
+        }
+        let mapImage = mapSnapshot.getMetalPetalImage()
+        let dotImage = dot.getMetalPetalImage()
+        let mapWidth = mapImage.size.width
+        let mapHeight = mapImage.size.height
+        let dotSize = CGSize(width: 30, height: 30)
+        let dotX = mapWidth / 2
+        let dotY = mapHeight / 2 + CGFloat(dotOffsetRatio) * mapHeight / 2
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = mapImage
+        filter.layers = [
+            .content(dotImage, modifier: { layer in
+                layer.size = dotSize
+                layer.position = CGPoint(x: dotX, y: dotY)
+            }),
+        ]
+        guard let mapWithDotImage = filter.outputImage else {
+            return image
+        }
+        return applyEffectsResizeMirrorMoveMetalPetal(mapWithDotImage,
+                                                      sceneWidget,
+                                                      false,
+                                                      image,
+                                                      info)
     }
 
     private func nextNewLocation() -> CLLocation {
@@ -97,8 +131,9 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
+            let mapSnapshot = CIImage(cgImage: image).toEffectImage(isOpaque: true)
             processorPipelineQueue.async {
-                self.mapSnapshot = CIImage(cgImage: image)
+                self.mapSnapshot = mapSnapshot
                 self.dotOffsetRatio = dotOffsetRatio
             }
         })
