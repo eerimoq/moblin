@@ -690,14 +690,24 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
 struct RemoteControlRemoteSceneDataLocation: Codable {
     let latitude: Double
     let longitude: Double
+    let course: Double
+    let speed: Double
 
     init(location: CLLocation) {
         latitude = location.coordinate.latitude
         longitude = location.coordinate.longitude
+        course = location.course
+        speed = location.speed
     }
 
     func toLocation() -> CLLocation {
-        CLLocation(latitude: latitude, longitude: longitude)
+        CLLocation(coordinate: .init(latitude: latitude, longitude: longitude),
+                   altitude: 0,
+                   horizontalAccuracy: 0,
+                   verticalAccuracy: 0,
+                   course: course,
+                   speed: speed,
+                   timestamp: .now)
     }
 }
 
