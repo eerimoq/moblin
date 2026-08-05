@@ -1,3 +1,4 @@
+import MetalPetal
 import SceneKit
 import SwiftUI
 import Vision
@@ -19,7 +20,7 @@ final class VTuberEffect: VideoEffect, @unchecked Sendable {
     private var cameraNode: SCNNode?
     private var sceneWidget: SettingsSceneWidget?
     private var renderedImagePresentationTimeStamp = 0.0
-    private var renderedImage: CIImage?
+    private var renderedImage: EffectImageCgImage?
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         super.init()
@@ -81,32 +82,50 @@ final class VTuberEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let presentationTimeStamp = info.presentationTimeStamp.seconds
-        guard let time = timeStampRebaser.rebase(presentationTimeStamp), let node = scene?.vrmNode else {
+        guard let renderedImage = update(size: image.extent.size, info: info)?.getCiImage(),
+              let sceneWidget
+        else {
             return image
         }
-        let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
-        previousPresentationTimeStamp = presentationTimeStamp
-        updateModelPose(node: node, image: image, info: info, time: time, timeDelta: timeDelta)
-        renderIfNeeded(node: node, image: image, presentationTimeStamp: presentationTimeStamp, time: time)
-        guard let sceneWidget else {
-            return image
-        }
-        return renderedImage?
+        return renderedImage
             .resizeMirror(sceneWidget.layout, image.extent.size, mirror)
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
-            .composited(over: image) ?? image
+            .composited(over: image)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let renderedImage = update(size: image.extent.size, info: info)?.getMetalPetalImage(),
+              let sceneWidget
+        else {
+            return image
+        }
+        return renderedImage.resizeMirrorMoveComposited(sceneWidget.layout,
+                                                        mirror,
+                                                        image,
+                                                        .init(contentRegion: renderedImage.extent))
+    }
+
+    private func update(size: CGSize, info: VideoEffectInfo) -> EffectImageCgImage? {
+        let presentationTimeStamp = info.presentationTimeStamp.seconds
+        guard let time = timeStampRebaser.rebase(presentationTimeStamp), let node = scene?.vrmNode else {
+            return nil
+        }
+        let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
+        previousPresentationTimeStamp = presentationTimeStamp
+        updateModelPose(node: node, size: size, info: info, time: time, timeDelta: timeDelta)
+        renderIfNeeded(node: node, size: size, presentationTimeStamp: presentationTimeStamp, time: time)
+        return renderedImage
     }
 
     private func updateModelPose(node: VRMNode,
-                                 image: CIImage,
+                                 size: CGSize,
                                  info: VideoEffectInfo,
                                  time: Double,
                                  timeDelta: Double)
     {
         if let detection = info.faceDetections(videoSourceId)?.first,
-           let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
+           let rotationAngle = detection.calcFaceAngle(imageSize: size),
            let sideAngle = detection.calcFaceAngleSide()
         {
             let isMouthOpen = detection.isMouthOpen(
@@ -139,19 +158,19 @@ final class VTuberEffect: VideoEffect, @unchecked Sendable {
         node.humanoid.node(for: .rightUpperArm)?.eulerAngles = SCNVector3(0, 0, -armAngle)
     }
 
-    private func renderIfNeeded(node: VRMNode, image: CIImage, presentationTimeStamp: Double, time: Double) {
+    private func renderIfNeeded(node: VRMNode, size: CGSize, presentationTimeStamp: Double, time: Double) {
         guard presentationTimeStamp - renderedImagePresentationTimeStamp > 0.025 else {
             return
         }
         node.update(at: time)
-        let factor = (max(image.extent.width, image.extent.height) / 1920)
+        let factor = (max(size.width, size.height) / 1920)
         let width = 600.0 * factor
         let height = 600.0 * factor
         let vTuberImage = renderer.snapshot(atTime: time,
                                             with: CGSize(width: width, height: height),
                                             antialiasingMode: .none)
-        if let vTuberImage = CIImage(image: vTuberImage) {
-            renderedImage = vTuberImage
+        if let vTuberImage = vTuberImage.cgImage {
+            renderedImage = vTuberImage.toEffectImage()
             renderedImagePresentationTimeStamp = presentationTimeStamp
         }
     }

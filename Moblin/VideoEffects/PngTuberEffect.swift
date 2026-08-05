@@ -1,3 +1,4 @@
+import MetalPetal
 import SceneKit
 import SwiftUI
 import Vision
@@ -31,7 +32,7 @@ private class PngTuberImage: Decodable {
     // periphery:ignore
     let identification: Int
     // var ignoreBounce: Bool
-    let imageData: CIImage
+    let imageData: EffectImageCgImage
     // periphery:ignore
     let offset: PngCoordinate
     // periphery:ignore
@@ -68,7 +69,7 @@ private class PngTuberImage: Decodable {
         else {
             throw "Failed to decode image data"
         }
-        imageData = CIImage(cgImage: cgImage)
+        imageData = cgImage.toEffectImage()
         offset = try container.decode(PngCoordinate.self, forKey: .offset)
         parentId = try container.decode(Int?.self, forKey: .parentId)
         pos = try container.decode(PngCoordinate.self, forKey: .pos)
@@ -132,16 +133,14 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
         guard let sceneWidget else {
             return image
         }
-        updateModelPose(image: image, info: info)
+        updateModelPose(size: image.extent.size, info: info)
         var pngTuberImage: CIImage?
-        for image in currentCostumeImages {
-            guard shouldShowImage(image: image) else {
-                continue
-            }
-            if pngTuberImage != nil {
-                pngTuberImage = image.imageData.composited(over: pngTuberImage!)
+        for costumeImage in visibleCostumeImages() {
+            let layerImage = costumeImage.imageData.getCiImage()
+            if let currentImage = pngTuberImage {
+                pngTuberImage = layerImage.composited(over: currentImage)
             } else {
-                pngTuberImage = image.imageData
+                pngTuberImage = layerImage
             }
         }
         return pngTuberImage?
@@ -149,6 +148,49 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
             .move(sceneWidget.layout, image.extent.size)
             .composited(over: image)
             .cropped(to: image.extent) ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let sceneWidget else {
+            return image
+        }
+        updateModelPose(size: image.extent.size, info: info)
+        let layerImages = visibleCostumeImages().map { $0.imageData.getMetalPetalImage() }
+        guard !layerImages.isEmpty else {
+            return image
+        }
+        let backgroundSize = image.extent.size
+        let contentSize = layerImages.reduce(CGSize.zero) {
+            CGSize(width: max($0.width, $1.extent.width), height: max($0.height, $1.extent.height))
+        }
+        let scale = min(toPixels(sceneWidget.layout.size, backgroundSize.width) / contentSize.width,
+                        toPixels(sceneWidget.layout.size, backgroundSize.height) / contentSize.height)
+        let size = CGSize(width: contentSize.width * scale, height: contentSize.height * scale)
+        let position = metalPetalLayerPosition(sceneWidget.layout, size, backgroundSize)
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = layerImages.map { layerImage in
+            let layerSize = CGSize(width: layerImage.extent.width * scale,
+                                   height: layerImage.extent.height * scale)
+            let x = if mirror {
+                position.x + size.width / 2 - layerSize.width / 2
+            } else {
+                position.x - size.width / 2 + layerSize.width / 2
+            }
+            let y = position.y + size.height / 2 - layerSize.height / 2
+            return .content(layerImage, modifier: { layer in
+                layer.size = layerSize
+                layer.position = CGPoint(x: x, y: y)
+                if mirror {
+                    layer.contentFlipOptions = .flipHorizontally
+                }
+            })
+        }
+        return filter.outputImage ?? image
+    }
+
+    private func visibleCostumeImages() -> [PngTuberImage] {
+        currentCostumeImages.filter { shouldShowImage(image: $0) }
     }
 
     private func shouldShowImage(image: PngTuberImage) -> Bool {
@@ -179,9 +221,9 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
         return true
     }
 
-    private func updateModelPose(image: CIImage, info: VideoEffectInfo) {
+    private func updateModelPose(size: CGSize, info: VideoEffectInfo) {
         if let detection = info.faceDetections(videoSourceId)?.first,
-           let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size)
+           let rotationAngle = detection.calcFaceAngle(imageSize: size)
         {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle,
                                                 sensitivity: sensitivity.mouth) > 0.15
