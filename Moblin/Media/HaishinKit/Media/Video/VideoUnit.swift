@@ -244,6 +244,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
     private var blackImage: CIImage?
+    private var blackImageMetalPetal: MTIImage?
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
@@ -538,6 +539,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         updateDevicesFormat()
         processorPipelineQueue.async {
             self.blackImage = nil
+            self.blackImageMetalPetal = nil
             self.pool = nil
             self.bufferedPool = nil
         }
@@ -1109,6 +1111,45 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             ))
     }
 
+    private func getBlackImageMetalPetal(size: CGSize) -> MTIImage {
+        if blackImageMetalPetal == nil {
+            blackImageMetalPetal = MTIImage(color: .black, sRGB: false, size: size)
+        }
+        return blackImageMetalPetal!
+    }
+
+    private func calcScaleFactor(_ size: CGSize) -> Double {
+        let imageRatio = size.height / size.width
+        let canvasRatio = canvasSize.height / canvasSize.width
+        if (fillFrame && (canvasRatio < imageRatio)) || (!fillFrame && (canvasRatio > imageRatio)) {
+            return canvasSize.width / size.width
+        } else {
+            return canvasSize.height / size.height
+        }
+    }
+
+    private func scaleImageMetalPetal(_ image: MTIImage, _ rotation: Double) -> MTIImage {
+        var shape = MetalPetalWidgetShape(contentRegion: image.extent)
+        shape.rotation = rotation
+        let scaleFactor = calcScaleFactor(shape.rotated(image.size))
+        let size = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
+        let position = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+        let mirror = mirror
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = getBlackImageMetalPetal(size: canvasSize)
+        filter.layers = [
+            .content(image, modifier: { layer in
+                layer.size = size
+                layer.position = position
+                layer.rotation = shape.rotationRadians()
+                if mirror {
+                    layer.contentFlipOptions = shape.mirrorFlipOptions()
+                }
+            }),
+        ]
+        return filter.outputImage ?? image
+    }
+
     private func rotateCoreImage(_ image: CIImage, _ rotation: Double) -> CIImage {
         switch rotation {
         case 90:
@@ -1190,6 +1231,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         let originalImage = image
         guard var image else {
             return (nil, nil)
+        }
+        var rotation = rotation
+        if videoOrientation != .portrait, imageBuffer.isPortrait() {
+            rotation = (rotation + 270).truncatingRemainder(dividingBy: 360)
+        }
+        if image.size != canvasSize || rotation != 0 || mirror {
+            image = scaleImageMetalPetal(image, rotation)
         }
         if isSceneSwitchTransition {
             image = applySceneSwitchTransitionMetalPetal(image)

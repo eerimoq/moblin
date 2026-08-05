@@ -15,12 +15,7 @@ a home screen widget, a screen recording broadcast extension, and a SolidJS web 
    `BASE_PRODUCT_BUNDLE_IDENTIFIER`. `CAPABILITIES` selects which entitlements file each target uses
    (`Moblin/Moblin.$(CAPABILITIES).entitlements`) — use `free` unless you know you need `all`.
 2. `open Moblin.xcodeproj` and wait for SPM packages to resolve. `Command + B` builds, `Command + R` runs.
-3. Python tooling lives in a venv — `make style`, `make lint` and `make test` fail with "command not found"
-   without it:
-   ```sh
-   python3.14 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt -U
-   ```
-4. Swift/JS tooling: `brew install swiftlint swiftformat codespell oxfmt oxlint`.
+3. Swift/JS tooling: `brew install swiftlint swiftformat codespell oxfmt oxlint`.
 
 Several SPM dependencies are `eerimoq` forks pinned to a branch (MetalPetal, Srt, Rist, DataChannel,
 SwiftCube, VRMKit, CrcSwift, NWWebSocket, AlertToast). Bumping one is a commit of its own — see the
