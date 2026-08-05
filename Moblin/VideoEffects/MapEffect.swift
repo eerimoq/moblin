@@ -80,7 +80,11 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
         let dotImage = dot.getMetalPetalImage()
         let mapWidth = mapImage.size.width
         let mapHeight = mapImage.size.height
-        let dotSize = CGSize(width: 30, height: 30)
+        let height = toPixels(sceneWidget.layout.size, size.height)
+        let width = toPixels(sceneWidget.layout.size, size.width)
+        let side = CGFloat(max(40, min(height, width)))
+        let dotSide = 30 * mapWidth / side
+        let dotSize = CGSize(width: dotSide, height: dotSide)
         let dotX = mapWidth / 2
         let dotY = mapHeight / 2 + CGFloat(dotOffsetRatio) * mapHeight / 2
         let filter = MultilayerCompositingFilter()
