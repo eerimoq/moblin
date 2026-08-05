@@ -1087,20 +1087,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func scaleImage(_ image: CIImage) -> CIImage {
-        let imageRatio = image.extent.height / image.extent.width
-        let canvasRatio = canvasSize.height / canvasSize.width
-        var scaleFactor: Double
-        var x: Double
-        var y: Double
-        if (fillFrame && (canvasRatio < imageRatio)) || (!fillFrame && (canvasRatio > imageRatio)) {
-            scaleFactor = Double(canvasSize.width) / image.extent.width
-            x = 0
-            y = (Double(canvasSize.height) - image.extent.height * scaleFactor) / 2
-        } else {
-            scaleFactor = Double(canvasSize.height) / image.extent.height
-            x = (Double(canvasSize.width) - image.extent.width * scaleFactor) / 2
-            y = 0
-        }
+        let scaleFactor = calcScaleFactor(image.extent.size)
+        let x = (canvasSize.width - image.extent.width * scaleFactor) / 2
+        let y = (canvasSize.height - image.extent.height * scaleFactor) / 2
         return image
             .scaled(x: scaleFactor, y: scaleFactor)
             .translated(x: x, y: y)
