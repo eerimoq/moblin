@@ -1,0 +1,533 @@
+import argparse
+import json
+import zipfile
+from pathlib import Path
+
+import requests
+
+from utils.config import RIST_SERVER_PORT
+from utils.config import RTMP_SERVER_PORT
+from utils.config import SRT_CLIENT_1_SERVER_PORT
+from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
+from utils.config import SRT_SERVER_PORT
+from utils.config import WEB_REMOTE_CONTROL_PORT
+from utils.config import Config
+from utils.utils import format_generic_stream_url_stream_name
+
+RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
+RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
+RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
+RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
+SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
+SRT_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-135572CA1389"
+SRT_CLIENT_STREAM_ID = "F3868489-D301-422D-A7DD-334572CA1387"
+SRT_CLIENT_TALKBACK_STREAM_ID = "F3868489-D301-522D-A7DD-135572CA1389"
+FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
+BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
+BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
+BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
+BROWSER_WIDGET_LOCAL_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1315"
+TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
+MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
+MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
+PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
+V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
+PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
+V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
+V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
+PNG_TUBER_MODEL_NAME = "moblin.save"
+MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
+
+
+def download_model(cache_dir: Path, name: str):
+    path = cache_dir / name
+    if not path.exists():
+        url = f"{MODELS_BASE_URL}/{name}"
+        print(f"Downloading '{url}'...")
+        response = requests.get(url, timeout=60)
+        response.raise_for_status()
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(response.content)
+    return path
+
+
+def create_streams_settings(config: Config):
+    streams = [
+        {
+            "name": "RTMP",
+            "enabled": True,
+            "bitrateRateControl": "CBR",
+            "url": f"rtmp://{config.tester_ip_address()}:1935/test",
+            "rtmp": {"adaptiveBitrateEnabled": False},
+        },
+        {
+            "name": "SRT",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 50_000_000,
+        },
+        {
+            "name": "SRT 5Mbps 1080@30",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT 5Mbps 1080@60",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 5_000_000,
+            "fps": 60,
+        },
+        {
+            "name": "SRT encrypted",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test&passphrase=1234567890",
+            "srt": {"adaptiveBitrateEnabled": False, "implementation": "Official"},
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT adaptive CBR",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT adaptive ABR",
+            "bitrateRateControl": "ABR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "SRT adaptive VBR",
+            "bitrateRateControl": "VBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "bitrate": 5_000_000,
+        },
+        {
+            "name": "Multi RTMP",
+            "bitrateRateControl": "CBR",
+            "url": f"rtmp://{config.tester_ip_address()}:1935/test1",
+            "rtmp": {"adaptiveBitrateEnabled": False},
+            "multiStreaming": {
+                "destinations": [
+                    {
+                        "name": "Test 2",
+                        "url": f"rtmp://{config.tester_ip_address()}:1935/test2",
+                        "enabled": True,
+                    },
+                    {
+                        "name": "Test 3",
+                        "url": f"rtmp://{config.tester_ip_address()}:1935/test3",
+                        "enabled": True,
+                    },
+                ]
+            },
+        },
+        {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
+        {
+            "name": "Background streaming",
+            "bitrateRateControl": "CBR",
+            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
+            "srt": {"adaptiveBitrateEnabled": False},
+            "bitrate": 5_000_000,
+            "backgroundStreaming": True,
+            "backgroundStreamingPiP": False,
+        },
+    ]
+    for number, generic_stream_url in enumerate(
+        config.general()["generic-stream-urls"], 1
+    ):
+        streams.append(
+            {
+                "name": format_generic_stream_url_stream_name(
+                    number, generic_stream_url
+                ),
+                "bitrateRateControl": "CBR",
+                "url": generic_stream_url,
+                "codec": "H.264/AVC",
+                "bitrate": 5_000_000,
+            }
+        )
+    for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
+        for fps in [30, 60]:
+            streams.append(
+                {
+                    "name": f"Record H.265 {resolution}@{fps}",
+                    "fps": fps,
+                    "resolution": resolution,
+                    "recording": {"videoCodec": "H.265/HEVC"},
+                }
+            )
+    return streams
+
+
+def create_scenes_settings():
+    return [
+        {"name": "Front", "cameraPosition": "Front", "enabled": True},
+        {"name": "Screen", "cameraPosition": "Screen capture", "enabled": True},
+        {
+            "name": "RTMP server ingest",
+            "cameraPosition": "RTMP",
+            "rtmpCameraId": RTMP_STREAM_ID,
+            "enabled": True,
+            "overrideMic": True,
+            "micId": f"{RTMP_STREAM_ID} 0",
+        },
+        {
+            "name": "RTSP client ingest",
+            "cameraPosition": "RTSP",
+            "rtspCameraId": RTSP_STREAM_ID,
+            "enabled": True,
+            "overrideMic": True,
+            "micId": f"{RTSP_STREAM_ID} 0",
+        },
+        {
+            "name": "RIST server ingest",
+            "cameraPosition": "RIST",
+            "ristCameraId": RIST_STREAM_ID,
+            "enabled": True,
+            "overrideMic": True,
+            "micId": f"{RIST_STREAM_ID} 0",
+        },
+        {
+            "name": "SRT server ingest",
+            "cameraPosition": "SRT(LA)",
+            "srtlaCameraId": SRT_STREAM_ID,
+            "enabled": True,
+            "overrideMic": True,
+            "micId": f"{SRT_STREAM_ID} 0",
+        },
+        {
+            "name": "SRT client ingest",
+            "cameraPosition": "SRT client",
+            "srtClientCameraId": SRT_CLIENT_STREAM_ID,
+            "enabled": True,
+            "overrideMic": True,
+            "micId": f"{SRT_CLIENT_STREAM_ID} 0",
+        },
+        {
+            "name": "PiP",
+            "cameraPosition": "Back",
+            "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
+            "widgets": [
+                {
+                    "widgetId": FRONT_VIDEO_SOURCE_WIDGET_ID,
+                    "alignment": "BottomRight",
+                    "x": 0,
+                    "y": 0,
+                    "size": 50,
+                    "migrated": True,
+                    "migrated2": True,
+                }
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "Browser widgets",
+            "cameraPosition": "Screen capture",
+            "widgets": [
+                {
+                    "widgetId": BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+                {
+                    "widgetId": BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID,
+                    "alignment": "TopLeft",
+                    "x": 50,
+                    "y": 0,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+                {
+                    "widgetId": BROWSER_WIDGET_AUDIO_ONLY_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 50,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+                {
+                    "widgetId": BROWSER_WIDGET_LOCAL_ONLY_ID,
+                    "alignment": "TopLeft",
+                    "x": 50,
+                    "y": 50,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "Background streaming",
+            "cameraPosition": "Screen capture",
+            "widgets": [
+                {
+                    "widgetId": TEXT_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 100,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "Map",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": MAP_SMALL_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 20,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+                {
+                    "widgetId": MAP_LARGE_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 30,
+                    "y": 0,
+                    "size": 40,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "PNGTuber",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": PNG_TUBER_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 50,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "VTuber",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": V_TUBER_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 50,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+    ]
+
+
+def create_widgets_settings(config: Config):
+    return [
+        {
+            "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
+            "name": "Front",
+            "type": "Video source",
+            "videoSource": {
+                "cameraPosition": "Front",
+                "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
+            },
+        },
+        {
+            "id": BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID,
+            "name": "Browser periodic audio and video",
+            "type": "Browser",
+            "browser": {
+                "url": f"http://{config.tester_ip_address()}:6967/BrowserWidgetHighFpsVideo.html",
+                "width": 1920,
+                "height": 1080,
+                "mode": "periodicAudioAndVideo",
+            },
+        },
+        {
+            "id": BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID,
+            "name": "Browser audio and video only",
+            "type": "Browser",
+            "browser": {
+                "url": f"http://{config.tester_ip_address()}:6967/BrowserWidgetHighFpsVideo.html",
+                "width": 1920,
+                "height": 1080,
+                "mode": "audioAndVideoOnly",
+            },
+        },
+        {
+            "id": BROWSER_WIDGET_AUDIO_ONLY_ID,
+            "name": "Browser audio only",
+            "type": "Browser",
+            "browser": {
+                "url": f"http://{config.tester_ip_address()}:6967/BrowserWidgetHighFpsVideo.html",
+                "width": 1920,
+                "height": 1080,
+                "mode": "audioOnly",
+            },
+        },
+        {
+            "id": BROWSER_WIDGET_LOCAL_ONLY_ID,
+            "name": "Browser local only",
+            "type": "Browser",
+            "browser": {
+                "url": f"http://{config.tester_ip_address()}:6967/BrowserWidgetHighFpsVideo.html",
+                "width": 1920,
+                "height": 1080,
+                "localOnly": True,
+            },
+        },
+        {
+            "id": TEXT_WIDGET_ID,
+            "name": "Background streaming",
+            "type": "Text",
+            "text": {"formatString": "{time}", "fontSize": 80},
+        },
+        {
+            "id": MAP_SMALL_WIDGET_ID,
+            "name": "Map small",
+            "type": "Map",
+        },
+        {
+            "id": MAP_LARGE_WIDGET_ID,
+            "name": "Map large",
+            "type": "Map",
+        },
+        {
+            "id": PNG_TUBER_WIDGET_ID,
+            "name": "PNGTuber",
+            "type": "PNGTuber",
+            "pngTuber": {
+                "id": PNG_TUBER_MODEL_ID,
+                "cameraPosition": "Front",
+                "modelName": PNG_TUBER_MODEL_NAME,
+            },
+        },
+        {
+            "id": V_TUBER_WIDGET_ID,
+            "name": "VTuber",
+            "type": "VTuber",
+            "vTuber": {
+                "id": V_TUBER_MODEL_ID,
+                "cameraPosition": "Front",
+                "modelName": V_TUBER_MODEL_NAME,
+            },
+        },
+    ]
+
+
+def create_settings(config: Config):
+    return {
+        "streams": create_streams_settings(config),
+        "scenes": create_scenes_settings(),
+        "widgets": create_widgets_settings(config),
+        "remoteControl": {
+            "server": {
+                "enabled": True,
+                "url": f"ws://{config.tester_ip_address()}:{config.remote_control_port()}",
+            },
+            "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
+            "password": "1234",
+        },
+        "rtmpServer": {
+            "enabled": True,
+            "port": RTMP_SERVER_PORT,
+            "streams": [
+                {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
+                {
+                    "id": RTMP_TALKBACK_STREAM_ID,
+                    "name": "Talkback",
+                    "streamKey": "talkback",
+                },
+            ],
+        },
+        "srtlaServer": {
+            "enabled": True,
+            "srtPort": SRT_SERVER_PORT,
+            "streams": [
+                {
+                    "id": SRT_STREAM_ID,
+                    "name": "Test",
+                    "streamId": "1",
+                },
+                {
+                    "id": SRT_TALKBACK_STREAM_ID,
+                    "name": "Talkback",
+                    "streamId": "talkback",
+                },
+            ],
+        },
+        "rtspClient": {
+            "streams": [
+                {
+                    "id": RTSP_STREAM_ID,
+                    "name": "1",
+                    "url": f"rtsp://{config.tester_ip_address()}:8554/1",
+                    "enabled": True,
+                },
+            ],
+        },
+        "ristServer": {
+            "enabled": True,
+            "port": RIST_SERVER_PORT,
+            "streams": [
+                {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}
+            ],
+        },
+        "srtClient": {
+            "streams": [
+                {
+                    "id": SRT_CLIENT_STREAM_ID,
+                    "name": "1",
+                    "url": f"srt://{config.tester_ip_address()}:{SRT_CLIENT_1_SERVER_PORT}",
+                    "enabled": True,
+                },
+                {
+                    "id": SRT_CLIENT_TALKBACK_STREAM_ID,
+                    "name": "Talkback",
+                    "url": f"srt://{config.tester_ip_address()}:{SRT_CLIENT_TALKBACK_SERVER_PORT}",
+                    "enabled": True,
+                },
+            ],
+        },
+        "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
+        "location": {"enabled": True},
+        "verboseStatuses": True,
+        "showAllSettings": True,
+        "debug": {"logLevel": "Debug"},
+        "show": {"stream": True, "cpu": True, "microphone": True},
+    }
+
+
+def generate_initial_settings(config_toml: Path, output_file: Path):
+    cache_dir = Path('cache')
+    v_tuber_model_path = download_model(cache_dir, V_TUBER_MODEL_NAME)
+    png_tuber_model_path = download_model(cache_dir, PNG_TUBER_MODEL_NAME)
+    settings = create_settings(Config(config_toml, ""))
+    with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("settings.json", json.dumps(settings, indent=4))
+        archive.write(v_tuber_model_path, f"VTuber/{V_TUBER_MODEL_ID}")
+        archive.write(png_tuber_model_path, f"PNGTuber/{PNG_TUBER_MODEL_ID}")
