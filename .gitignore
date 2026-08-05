@@ -112,3 +112,5 @@ test/config.toml
 FfmpegTestStream.wav
 test/ltc.wav
 *~
+test/device.moblinSettings
+test/cache/

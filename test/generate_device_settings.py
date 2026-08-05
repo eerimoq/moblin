@@ -1,8 +1,9 @@
 import argparse
 import json
+import zipfile
 from pathlib import Path
 
-import pyperclip
+import requests
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
@@ -33,6 +34,21 @@ PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
 V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
 PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
 V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
+V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
+PNG_TUBER_MODEL_NAME = "moblin.save"
+MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
+
+
+def download_model(cache_dir: Path, name: str):
+    path = cache_dir / name
+    if not path.exists():
+        url = f"{MODELS_BASE_URL}/{name}"
+        print(f"Downloading '{url}'...")
+        response = requests.get(url, timeout=60)
+        response.raise_for_status()
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(response.content)
+    return path
 
 
 def create_streams_settings(config: Config):
@@ -394,25 +410,31 @@ def create_widgets_settings(config: Config):
             "id": MAP_SMALL_WIDGET_ID,
             "name": "Map small",
             "type": "Map",
-            "map": {"northUp": True, "delay": 0, "scale": 1000},
         },
         {
             "id": MAP_LARGE_WIDGET_ID,
             "name": "Map large",
             "type": "Map",
-            "map": {"northUp": True, "delay": 0, "scale": 1000},
         },
         {
             "id": PNG_TUBER_WIDGET_ID,
             "name": "PNGTuber",
             "type": "PNGTuber",
-            "pngTuber": {"id": PNG_TUBER_MODEL_ID, "cameraPosition": "None"},
+            "pngTuber": {
+                "id": PNG_TUBER_MODEL_ID,
+                "cameraPosition": "Front",
+                "modelName": PNG_TUBER_MODEL_NAME,
+            },
         },
         {
             "id": V_TUBER_WIDGET_ID,
             "name": "VTuber",
             "type": "VTuber",
-            "vTuber": {"id": V_TUBER_MODEL_ID, "cameraPosition": "None"},
+            "vTuber": {
+                "id": V_TUBER_MODEL_ID,
+                "cameraPosition": "Front",
+                "modelName": V_TUBER_MODEL_NAME,
+            },
         },
     ]
 
@@ -502,16 +524,18 @@ def create_settings(config: Config):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--force-stdout", action="store_true")
     parser.add_argument("config_toml", type=Path)
     args = parser.parse_args()
+    output_file = Path("device.moblinSettings")
+    cache_dir = Path("cache")
+    v_tuber_model_path = download_model(cache_dir, V_TUBER_MODEL_NAME)
+    png_tuber_model_path = download_model(cache_dir, PNG_TUBER_MODEL_NAME)
     settings = create_settings(Config(args.config_toml, ""))
-    settings = json.dumps(settings, indent=4)
-    if args.force_stdout:
-        print(settings)
-    else:
-        pyperclip.copy(settings)
-        print("Settings copied to clipboard.")
+    with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("settings.json", json.dumps(settings, indent=4))
+        archive.write(v_tuber_model_path, f"VTuber/{V_TUBER_MODEL_ID}")
+        archive.write(png_tuber_model_path, f"PNGTuber/{PNG_TUBER_MODEL_ID}")
+    print(f"Settings written to '{output_file.absolute()}'.")
 
 
 main()

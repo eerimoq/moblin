@@ -4,8 +4,6 @@ capabilities = [
     "pip",
     "record",
     "background-streaming",
-    "png-tuber",
-    "v-tuber",
 ]
 
 [device.macpro]

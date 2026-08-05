@@ -182,9 +182,6 @@ class ScenePngTuberWidget(WidgetTestCase):
 
     """
 
-    def setup(self):
-        self.skip_if_missing_capability("png-tuber")
-
     def run(self):
         recording_file = self.record("PNGTuber", "PngTuberWidget.mp4")
         self.assert_widget_rendered(recording_file, TUBER_CROP)
@@ -196,9 +193,6 @@ class SceneVTuberWidget(WidgetTestCase):
     rendered.
 
     """
-
-    def setup(self):
-        self.skip_if_missing_capability("v-tuber")
 
     def run(self):
         recording_file = self.record("VTuber", "VTuberWidget.mp4")
