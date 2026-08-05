@@ -1,4 +1,3 @@
-import argparse
 import json
 import zipfile
 from pathlib import Path
@@ -523,7 +522,7 @@ def create_settings(config: Config):
 
 
 def generate_initial_settings(config_toml: Path, output_file: Path):
-    cache_dir = Path('cache')
+    cache_dir = Path("cache")
     v_tuber_model_path = download_model(cache_dir, V_TUBER_MODEL_NAME)
     png_tuber_model_path = download_model(cache_dir, PNG_TUBER_MODEL_NAME)
     settings = create_settings(Config(config_toml, ""))
