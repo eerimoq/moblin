@@ -63,7 +63,7 @@ class ReplayEffectStingerReader: @unchecked Sendable {
                     .scaledTo(size: size)
                     .centered(size: size)
                     .composited(over: CIImage.clear.cropped(to: CGRect(origin: .zero, size: size)))
-                newImages.append(ReplayImage(image: image,
+                newImages.append(ReplayImage(image: image.toEffectImage(isOpaque: false),
                                              offset: sampleBuffer.presentationTimeStamp.seconds,
                                              isLast: false))
             } else {

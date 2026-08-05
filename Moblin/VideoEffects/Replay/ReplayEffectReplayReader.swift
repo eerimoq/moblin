@@ -4,7 +4,7 @@ import CoreImage
 import SwiftUI
 
 struct ReplayImage {
-    let image: CIImage?
+    let image: EffectImageCiImage?
     let offset: Double?
     let isLast: Bool
 }
@@ -113,7 +113,7 @@ class ReplayEffectReplayReader: @unchecked Sendable {
                     image = overlay.composited(over: image)
                 }
                 newImages.append(ReplayImage(
-                    image: image,
+                    image: image.toEffectImage(isOpaque: true),
                     offset: sampleBuffer.presentationTimeStamp.seconds - startTime,
                     isLast: false
                 ))
