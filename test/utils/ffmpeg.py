@@ -7,8 +7,10 @@ from dataclasses import field
 from fractions import Fraction
 from pathlib import Path
 from typing import List
+from typing import Tuple
 
 from .utils import Crop
+from .utils import Image
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +27,11 @@ def _log_level(line: str) -> int:
 def _run(command: List[str]):
     LOGGER.debug("Command: %s", " ".join(command))
     return subprocess.run(command, check=True, capture_output=True, text=True)
+
+
+def _run_binary(command: List[str]) -> bytes:
+    LOGGER.debug("Command: %s", " ".join(command))
+    return subprocess.run(command, check=True, capture_output=True).stdout
 
 
 def ffprobe_run(path: Path, *args):
@@ -259,6 +266,14 @@ def ffprobe_video(path: Path):
     )
 
 
+def ffprobe_video_size(path: Path) -> Tuple[int, int]:
+    output = ffprobe_run(
+        path, "-select_streams", "v:0", "-show_entries", "stream=width,height"
+    )
+    stream = output["streams"][0]
+    return stream["width"], stream["height"]
+
+
 def _get_fps(stream, name: str) -> Fraction | None:
     try:
         return Fraction(stream[name])
@@ -341,6 +356,18 @@ def read_qr_codes(path: Path, crop: Crop) -> List[QrCode]:
         qr_codes.append(QrCode(proc))
     shutil.rmtree(qr_codes_dir)
     return qr_codes
+
+
+def read_video_frame(path: Path, timestamp: float, crop: Crop | None = None) -> Image:
+    args = ["-ss", str(timestamp), "-i", str(path), "-frames:v", "1"]
+    if crop is None:
+        width, height = ffprobe_video_size(path)
+    else:
+        width, height = crop.width, crop.height
+        args += ["-vf", f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}"]
+    args += ["-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+    data = _run_binary(FFMPEG_COMMAND + args)
+    return Image(width, height, data)
 
 
 def extract_ltc_wav(path: Path, output: Path):

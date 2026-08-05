@@ -27,6 +27,12 @@ BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
 BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
 BROWSER_WIDGET_LOCAL_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1315"
 TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
+MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
+MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
+PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
+V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
+PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
+V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
 
 
 def create_streams_settings(config: Config):
@@ -263,6 +269,63 @@ def create_scenes_settings():
             ],
             "enabled": True,
         },
+        {
+            "name": "Map",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": MAP_SMALL_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 20,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+                {
+                    "widgetId": MAP_LARGE_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 30,
+                    "y": 0,
+                    "size": 40,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "PNGTuber",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": PNG_TUBER_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 50,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
+        {
+            "name": "VTuber",
+            "cameraPosition": "None",
+            "widgets": [
+                {
+                    "widgetId": V_TUBER_WIDGET_ID,
+                    "alignment": "TopLeft",
+                    "x": 0,
+                    "y": 0,
+                    "size": 50,
+                    "migrated": True,
+                    "migrated2": True,
+                },
+            ],
+            "enabled": True,
+        },
     ]
 
 
@@ -326,6 +389,30 @@ def create_widgets_settings(config: Config):
             "name": "Background streaming",
             "type": "Text",
             "text": {"formatString": "{time}", "fontSize": 80},
+        },
+        {
+            "id": MAP_SMALL_WIDGET_ID,
+            "name": "Map small",
+            "type": "Map",
+            "map": {"northUp": True, "delay": 0, "scale": 1000},
+        },
+        {
+            "id": MAP_LARGE_WIDGET_ID,
+            "name": "Map large",
+            "type": "Map",
+            "map": {"northUp": True, "delay": 0, "scale": 1000},
+        },
+        {
+            "id": PNG_TUBER_WIDGET_ID,
+            "name": "PNGTuber",
+            "type": "PNGTuber",
+            "pngTuber": {"id": PNG_TUBER_MODEL_ID, "cameraPosition": "None"},
+        },
+        {
+            "id": V_TUBER_WIDGET_ID,
+            "name": "VTuber",
+            "type": "VTuber",
+            "vTuber": {"id": V_TUBER_MODEL_ID, "cameraPosition": "None"},
         },
     ]
 
@@ -405,6 +492,7 @@ def create_settings(config: Config):
             ],
         },
         "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
+        "location": {"enabled": True},
         "verboseStatuses": True,
         "showAllSettings": True,
         "debug": {"logLevel": "Debug"},

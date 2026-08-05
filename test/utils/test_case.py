@@ -14,10 +14,12 @@ from .ffmpeg import FfprobeVideoOutput
 from .ffmpeg import extract_ltc_wav
 from .ffmpeg import ffprobe
 from .ffmpeg import ffprobe_video
+from .ffmpeg import ffprobe_video_size
 from .ffmpeg import read_qr_codes
 from .ffmpeg import remove_duplicated_frames
 from .moblin import Moblin
 from .utils import Crop
+from .utils import Image
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
@@ -113,6 +115,20 @@ class TestCase(systest.TestCase):
             video_codec,
         )
         self._assert_audio(recording, metadata.audio, has_audio_time_codes)
+
+    def assert_video_size(self, recording: Path, width: int, height: int):
+        self.assert_equal(ffprobe_video_size(recording), (width, height))
+
+    def assert_all_black(self, image: Image):
+        if image.is_all_black():
+            return
+        position = image.find_non_black_pixel()
+        raise Exception(
+            f"Pixel at {position} is {image.pixel(*position)}, but expected it to be black."
+        )
+
+    def assert_not_all_black(self, image: Image, minimum_ratio: float = 0.01):
+        self.assert_greater(image.non_black_ratio(), minimum_ratio)
 
     def wait_until(self, check: Callable[[], bool]):
         end_time = time.monotonic() + 15

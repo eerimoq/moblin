@@ -1,6 +1,12 @@
 [device.iphone16pro]
 moblin-ip-address = "iphone16pro.home"
-capabilities = ["pip", "record", "background-streaming"]
+capabilities = [
+    "pip",
+    "record",
+    "background-streaming",
+    "png-tuber",
+    "v-tuber",
+]
 
 [device.macpro]
 moblin-ip-address = "macpro.home"
