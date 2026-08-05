@@ -220,7 +220,7 @@ extension Model {
             return
         }
         _ = url.startAccessingSecurityScopedResource()
-        importSettingsFromFile(url: url) {
+        importSettingsFromFile(url: url) { _ in
             url.stopAccessingSecurityScopedResource()
         }
     }

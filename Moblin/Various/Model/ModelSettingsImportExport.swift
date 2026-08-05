@@ -7,12 +7,24 @@ extension Model {
         presentingSettingsImportConfirmation = true
     }
 
-    func importSettingsFromFile(url: URL, completion: @escaping @MainActor () -> Void) {
+    func importSettingsFromFile(url: URL, completion: @escaping @MainActor (Bool) -> Void) {
         settings.importFromFile(url: url) {
             self.importDone(message: $0)
+            let succeeded = $0 == nil
             DispatchQueue.main.async {
-                completion()
+                completion(succeeded)
             }
+        }
+    }
+
+    func importSettingsFromData(settings: Data, completion: @escaping @MainActor (Bool) -> Void) {
+        let settingsUrl = FileManager.default.temporaryDirectory
+            .appendingPathComponent("data_import")
+            .appendingPathExtension("moblinSettings")
+        try? settings.write(to: settingsUrl)
+        importSettingsFromFile(url: settingsUrl) {
+            try? FileManager.default.removeItem(at: settingsUrl)
+            completion($0)
         }
     }
 
@@ -28,12 +40,7 @@ extension Model {
                         completion()
                         return
                     }
-                    let settingsUrl = FileManager.default.temporaryDirectory
-                        .appendingPathComponent("clipboard_import")
-                        .appendingPathExtension("moblinSettings")
-                    try? settings.write(to: settingsUrl)
-                    self.importSettingsFromFile(url: settingsUrl) {
-                        try? FileManager.default.removeItem(at: settingsUrl)
+                    self.importSettingsFromData(settings: settings) { _ in
                         completion()
                     }
                 }

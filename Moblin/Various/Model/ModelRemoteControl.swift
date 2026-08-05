@@ -973,6 +973,16 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
     func remoteControlStreamerMoveToGimbalPreset(id: UUID) {
         moveToGimbalPreset(id: id)
     }
+
+    func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void) {
+        guard !isLive, !isRecording else {
+            onCompleted(false)
+            return
+        }
+        importSettingsFromData(settings: settings) {
+            onCompleted($0)
+        }
+    }
 }
 
 extension Model: @preconcurrency RemoteControlAssistantDelegate {

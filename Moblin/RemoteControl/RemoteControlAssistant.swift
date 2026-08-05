@@ -184,6 +184,14 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .setRemoteSceneData(data: data), onSuccess: onSuccess)
     }
 
+    func importSettings(data: Data, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequest(data: .importSettings(data: data)) { _ in
+            onSuccess()
+        } onError: { error in
+            onError(error)
+        }
+    }
+
     func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }

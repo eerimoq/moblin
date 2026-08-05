@@ -39,7 +39,7 @@ struct ImportSettingsView: View {
                     model.onDocumentPickerUrl = { url in
                         model.importSettingsWithConfirmation {
                             importState = .fromFile
-                            model.importSettingsFromFile(url: url) {
+                            model.importSettingsFromFile(url: url) { _ in
                                 importState = .idle
                             }
                         }

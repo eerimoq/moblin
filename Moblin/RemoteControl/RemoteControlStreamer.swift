@@ -49,6 +49,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
+    func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
 }
 
 private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
@@ -360,6 +361,10 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case .updateGolfScoreboard:
             sendEmptyOkResponse(id: id)
+        case let .importSettings(data: data):
+            delegate.remoteControlStreamerImportSettings(settings: data) { succeeded in
+                self.send(message: .response(id: id, result: succeeded ? .ok : .error, data: nil))
+            }
         }
     }
 

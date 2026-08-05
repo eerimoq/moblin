@@ -53,6 +53,7 @@ enum RemoteControlRequest: Codable {
     case moveToGimbalPreset(id: UUID)
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
+    case importSettings(data: Data)
 }
 
 enum RemoteControlResponse: Codable {
