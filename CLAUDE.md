@@ -46,19 +46,9 @@ web assets in `Moblin/RemoteControl/Web/` are committed and must be regenerated 
 
 Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `@Test` and `#expect`.
 
-```sh
-# Command + U in Xcode, or:
-xcodebuild test -scheme Moblin -destination 'platform=iOS Simulator,name=iPhone 16' \
-    -only-testing:MoblinTests/UtilsSuite/fullDuration
-```
+### System tests
 
-A handful of formatting tests in `UtilsSuite` and `TextEffectSuite` are gated on
-`@Test(.enabled(if: Locale.current.identifier == "en_SE"))` and silently skip under any other locale.
-
-### Integration tests
-
-`test/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. It needs
-`config.toml` (copy `config.example.toml`) and settings imported into the device — see `test/README.md`.
+`test/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`.
 
 ```sh
 make test
