@@ -20,11 +20,21 @@ cp config.example.toml config.toml
 
 # Moblin device configuration
 
-1. Generate `device.moblinSettings`.
+## Via clipboard
+
+1. Generate settings into clipboard.
    ```bash
-   make -C .. test-generate-device-settings
+   make -C .. test-generate-device-settings-clipboard
    ```
-2. Transfer the generated file to the device and import it into Moblin.
+2. Import the generated settings from clipboard into Moblin.
+
+## Via standard output
+
+1. Generate settings to standard output.
+   ```bash
+   make -C .. test-generate-device-settings-stdout
+   ```
+2. Import the generated settings somehow.
 
 # Run the tests
 

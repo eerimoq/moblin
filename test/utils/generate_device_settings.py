@@ -72,7 +72,3 @@ def create_settings_file(
         archive.writestr("settings.json", json.dumps(settings, indent=4))
         for name, path in (files or {}).items():
             archive.write(path, name)
-
-
-def generate_initial_settings(config_toml: Path, output_file: Path):
-    create_settings_file(base_settings(config_toml), output_file)

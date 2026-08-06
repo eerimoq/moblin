@@ -5,6 +5,7 @@ deep_translator
 moblin_assistant
 requests
 av
+pyperclip
 isort
 playwright
 simba_soam
