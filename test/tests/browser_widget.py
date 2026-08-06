@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 from typing import List
 
+from tests.scenes import scene_widget_settings
 from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
@@ -21,19 +22,7 @@ AUDIO_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1314"
 LOCAL_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1315"
 
 
-def _scene_widget_settings(widget_id: str, x: int, y: int):
-    return {
-        "widgetId": widget_id,
-        "alignment": "TopLeft",
-        "x": x,
-        "y": y,
-        "size": 100,
-        "migrated": True,
-        "migrated2": True,
-    }
-
-
-def _widget_settings(widget_id: str, name: str, url: str, **browser):
+def widget_settings(widget_id: str, name: str, url: str, **browser):
     return {
         "id": widget_id,
         "name": name,
@@ -57,38 +46,38 @@ class BrowserWidgetModes(TestCase):
                     {
                         "cameraPosition": "Screen capture",
                         "widgets": [
-                            _scene_widget_settings(
-                                PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, x=0, y=0
+                            scene_widget_settings(
+                                PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100
                             ),
-                            _scene_widget_settings(
-                                AUDIO_AND_VIDEO_ONLY_WIDGET_ID, x=50, y=0
+                            scene_widget_settings(
+                                AUDIO_AND_VIDEO_ONLY_WIDGET_ID, 50, 0, 100
                             ),
-                            _scene_widget_settings(AUDIO_ONLY_WIDGET_ID, x=0, y=50),
-                            _scene_widget_settings(LOCAL_ONLY_WIDGET_ID, x=50, y=50),
+                            scene_widget_settings(AUDIO_ONLY_WIDGET_ID, 0, 50, 100),
+                            scene_widget_settings(LOCAL_ONLY_WIDGET_ID, 50, 50, 100),
                         ],
                         "enabled": True,
                     }
                 ],
                 "widgets": [
-                    _widget_settings(
+                    widget_settings(
                         PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID,
                         "Browser periodic audio and video",
                         url,
                         mode="periodicAudioAndVideo",
                     ),
-                    _widget_settings(
+                    widget_settings(
                         AUDIO_AND_VIDEO_ONLY_WIDGET_ID,
                         "Browser audio and video only",
                         url,
                         mode="audioAndVideoOnly",
                     ),
-                    _widget_settings(
+                    widget_settings(
                         AUDIO_ONLY_WIDGET_ID,
                         "Browser audio only",
                         url,
                         mode="audioOnly",
                     ),
-                    _widget_settings(
+                    widget_settings(
                         LOCAL_ONLY_WIDGET_ID,
                         "Browser local only",
                         url,

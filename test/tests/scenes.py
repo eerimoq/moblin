@@ -47,7 +47,7 @@ SCREEN_SCENE_SETTINGS = {
 }
 
 
-def _scene_widget_settings(
+def scene_widget_settings(
     widget_id: str, x: int, y: int, size: int, alignment: str = "TopLeft"
 ):
     return {
@@ -61,7 +61,7 @@ def _scene_widget_settings(
     }
 
 
-def _is_map_dot(pixel: Pixel) -> bool:
+def is_map_dot(pixel: Pixel) -> bool:
     """The map dot is much bluer than water, roads and other blueish map features."""
 
     return (
@@ -71,14 +71,14 @@ def _is_map_dot(pixel: Pixel) -> bool:
     )
 
 
-def _measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
+def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
     """Number of map dot pixels in a line through the middle of the map."""
 
     length = 1
     for direction in [1, -1]:
         x = image.width // 2 + direction * x_step
         y = image.height // 2 + direction * y_step
-        while image.contains(x, y) and _is_map_dot(image.pixel(x, y)):
+        while image.contains(x, y) and is_map_dot(image.pixel(x, y)):
             length += 1
             x += direction * x_step
             y += direction * y_step
@@ -136,7 +136,7 @@ class ScenePiPBackFront(TestCase):
                         "cameraPosition": "Back",
                         "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
                         "widgets": [
-                            _scene_widget_settings(
+                            scene_widget_settings(
                                 FRONT_VIDEO_SOURCE_WIDGET_ID,
                                 x=0,
                                 y=0,
@@ -203,7 +203,7 @@ class SceneWidgetsInBackground(TestCase):
                     {
                         "cameraPosition": "Screen capture",
                         "widgets": [
-                            _scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
+                            scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
                         ],
                         "enabled": True,
                     }
@@ -284,8 +284,8 @@ class SceneMapWidget(WidgetTestCase):
     def setup(self):
         self.import_settings(
             scene_widgets=[
-                _scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20),
-                _scene_widget_settings(MAP_LARGE_WIDGET_ID, x=30, y=0, size=40),
+                scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20),
+                scene_widget_settings(MAP_LARGE_WIDGET_ID, x=30, y=0, size=40),
             ],
             widgets=[
                 {"id": MAP_SMALL_WIDGET_ID, "name": "Map small", "type": "Map"},
@@ -303,11 +303,11 @@ class SceneMapWidget(WidgetTestCase):
         image = read_video_frame(recording_file, FRAME_TIMESTAMP, crop)
         self.assert_not_all_black(image)
         self.assert_true(
-            _is_map_dot(image.pixel(image.width // 2, image.height // 2)),
+            is_map_dot(image.pixel(image.width // 2, image.height // 2)),
             f"No blue dot in the middle of the {name} map",
         )
-        width = _measure_map_dot(image, x_step=1, y_step=0)
-        height = _measure_map_dot(image, x_step=0, y_step=1)
+        width = measure_map_dot(image, x_step=1, y_step=0)
+        height = measure_map_dot(image, x_step=0, y_step=1)
         self.assert_in(width, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot width")
         self.assert_in(height, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot height")
 
@@ -321,7 +321,7 @@ class ScenePngTuberWidget(WidgetTestCase):
     def setup(self):
         self.import_settings(
             scene_widgets=[
-                _scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)
+                scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)
             ],
             widgets=[
                 {
@@ -352,7 +352,7 @@ class SceneVTuberWidget(WidgetTestCase):
     def setup(self):
         self.import_settings(
             scene_widgets=[
-                _scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)
+                scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)
             ],
             widgets=[
                 {
