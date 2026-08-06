@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from dataclasses import field
 from fractions import Fraction
 from pathlib import Path
-from typing import List
-from typing import Tuple
 
 from .utils import Crop
 from .utils import Image
@@ -24,12 +22,12 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
-def _run(command: List[str]):
+def _run(command: list[str]):
     LOGGER.debug("Command: %s", " ".join(command))
     return subprocess.run(command, check=True, capture_output=True, text=True)
 
 
-def _run_binary(command: List[str]) -> bytes:
+def _run_binary(command: list[str]) -> bytes:
     LOGGER.debug("Command: %s", " ".join(command))
     return subprocess.run(command, check=True, capture_output=True).stdout
 
@@ -50,7 +48,7 @@ def ffmpeg_run(*args):
     return _run(FFMPEG_COMMAND + [*args])
 
 
-def check_dependencies() -> List[str]:
+def check_dependencies() -> list[str]:
     output = ffmpeg_run("-filters").stdout
     missing_dependencies = []
     for video_filter in ["qrencode", "drawtext"]:
@@ -65,7 +63,7 @@ class FfmpegCommand:
     def __init__(self):
         self._server = None
 
-    def args(self) -> List[str]:
+    def args(self) -> list[str]:
         raise NotImplementedError
 
     def __enter__(self):
@@ -206,7 +204,7 @@ class FfprobeVideoOutput:
     height: int
     real_base_fps: Fraction | None
     average_fps: Fraction | None
-    frames: List[FfprobeVideoOutputFrame]
+    frames: list[FfprobeVideoOutputFrame]
 
 
 @dataclass
@@ -229,7 +227,7 @@ class FfprobeAudioOutput:
     channels: int = 0
     channel_layout: str = ""
     bit_rate: int = 0
-    frames: List[FfprobeAudioOutputFrame] = field(default_factory=list)
+    frames: list[FfprobeAudioOutputFrame] = field(default_factory=list)
 
 
 @dataclass
@@ -266,7 +264,7 @@ def ffprobe_video(path: Path):
     )
 
 
-def ffprobe_video_size(path: Path) -> Tuple[int, int]:
+def ffprobe_video_size(path: Path) -> tuple[int, int]:
     output = ffprobe_run(
         path, "-select_streams", "v:0", "-show_entries", "stream=width,height"
     )
@@ -334,7 +332,7 @@ class QrCode:
             self.pts = -1
 
 
-def read_qr_codes(path: Path, crop: Crop) -> List[QrCode]:
+def read_qr_codes(path: Path, crop: Crop) -> list[QrCode]:
     qr_codes_dir = Path(f"{path}-qr-codes")
     qr_codes_dir.mkdir()
     ffmpeg_run(

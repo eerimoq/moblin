@@ -294,5 +294,7 @@ def tests(moblin: Moblin):
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
         StreamToGenericUrls(moblin, number, generic_stream_url)
-        for number, generic_stream_url in enumerate(moblin.generic_stream_urls, 1)
+        for number, generic_stream_url in enumerate(
+            moblin.config.generic_stream_urls(), 1
+        )
     ]

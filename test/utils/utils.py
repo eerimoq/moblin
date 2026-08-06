@@ -4,7 +4,6 @@ import threading
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
-from typing import Tuple
 from urllib.parse import urlsplit
 
 WEBSITES_ROOT = Path(__file__).parent.parent.resolve() / "tests" / "websites"
@@ -75,7 +74,7 @@ class Image:
     def is_all_black(self) -> bool:
         return max(self._data, default=0) <= BLACK_MAXIMUM_VALUE
 
-    def find_non_black_pixel(self) -> Tuple[int, int] | None:
+    def find_non_black_pixel(self) -> tuple[int, int] | None:
         for y in range(self.height):
             for x in range(self.width):
                 if not self.pixel(x, y).is_black():

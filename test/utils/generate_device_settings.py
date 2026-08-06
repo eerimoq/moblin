@@ -1,7 +1,6 @@
 import json
 import zipfile
 from pathlib import Path
-from typing import Dict
 
 import requests
 
@@ -66,7 +65,7 @@ def base_settings(config_toml: Path):
 
 
 def create_settings_file(
-    settings, output_file: Path, files: Dict[str, Path] | None = None
+    settings, output_file: Path, files: dict[str, Path] | None = None
 ):
     with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("settings.json", json.dumps(settings, indent=4))

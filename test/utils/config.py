@@ -1,6 +1,5 @@
 import tomllib
 from pathlib import Path
-from typing import List
 
 WEB_REMOTE_CONTROL_PORT = 1180
 RTMP_SERVER_PORT = 11935
@@ -36,7 +35,7 @@ class Config:
     def capabilities(self):
         return self._device()["capabilities"]
 
-    def generic_stream_urls(self) -> List[str]:
+    def generic_stream_urls(self) -> list[str]:
         return self.general()["generic-stream-urls"]
 
     def _device(self):

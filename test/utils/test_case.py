@@ -5,7 +5,6 @@ import time
 from collections.abc import Callable
 from fractions import Fraction
 from pathlib import Path
-from typing import List
 
 import systest
 
@@ -91,7 +90,7 @@ class TestCase(systest.TestCase):
         self,
         recording: Path,
         has_qr_codes: bool = True,
-        duplicated_frames_crops: List[Crop] | None = None,
+        duplicated_frames_crops: list[Crop] | None = None,
         has_audio_time_codes: bool = False,
         width: int = 1920,
         height: int = 1080,
@@ -140,7 +139,7 @@ class TestCase(systest.TestCase):
         video: FfprobeVideoOutput,
         recording: Path,
         has_qr_codes: bool,
-        duplicated_frames_crops: List[Crop] | None,
+        duplicated_frames_crops: list[Crop] | None,
         width,
         height,
         fps: int,
@@ -204,7 +203,7 @@ class TestCase(systest.TestCase):
         self,
         recording: Path,
         expected_delta: float,
-        presentation_time_stamps: List[float],
+        presentation_time_stamps: list[float],
         delta_error: float = 0.002,
     ):
         self.assert_greater(len(presentation_time_stamps), 0)
@@ -280,8 +279,8 @@ class TestCase(systest.TestCase):
 
 
 def find_missing_presentation_time_stamps(
-    expected_delta: float, presentation_time_stamps: List[float], delta_error: float
-) -> List[float]:
+    expected_delta: float, presentation_time_stamps: list[float], delta_error: float
+) -> list[float]:
     missing_presentation_time_stamps = []
     for index in range(1, len(presentation_time_stamps)):
         current = presentation_time_stamps[index]

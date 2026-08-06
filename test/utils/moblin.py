@@ -5,7 +5,6 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
-from typing import Dict
 
 import requests
 
@@ -30,7 +29,6 @@ class Moblin:
         self._server = None
         self.ip_address = config.moblin_ip_address()
         self._capabilities = config.capabilities()
-        self.generic_stream_urls = config.generic_stream_urls()
         self._moving_picture = moving_picture
 
     def __enter__(self):
@@ -64,7 +62,7 @@ class Moblin:
             self._server.kill()
             self._server.wait()
 
-    def import_settings(self, overrides, files: Dict[str, Path] | None = None):
+    def import_settings(self, overrides, files: dict[str, Path] | None = None):
         settings = base_settings(self.config.config_toml)
         settings.update(overrides)
         with tempfile.TemporaryDirectory() as settings_dir:

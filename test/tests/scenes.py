@@ -1,7 +1,6 @@
 import logging
 import time
 from pathlib import Path
-from typing import Dict
 
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
@@ -48,8 +47,6 @@ PNG_TUBER_MODEL_NAME = "moblin.save"
 
 
 def is_map_dot(pixel: Pixel) -> bool:
-    """The map dot is much bluer than water, roads and other blueish map features."""
-
     return (
         pixel.blue > 180
         and pixel.blue - pixel.red > 80
@@ -58,8 +55,6 @@ def is_map_dot(pixel: Pixel) -> bool:
 
 
 def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
-    """Number of map dot pixels in a line through the middle of the map."""
-
     length = 1
     for direction in [1, -1]:
         x = image.width // 2 + direction * x_step
@@ -224,7 +219,7 @@ class SceneWidgetsInBackground(TestCase):
 
 class WidgetTestCase(TestCase):
     def import_settings(
-        self, scene_widgets, widgets, files: Dict[str, Path] | None = None
+        self, scene_widgets, widgets, files: dict[str, Path] | None = None
     ):
         self.moblin.import_settings(
             overrides={
