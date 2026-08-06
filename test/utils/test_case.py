@@ -23,7 +23,6 @@ from .utils import Image
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
-NUMBER_OF_INGESTS_BASE = 3
 
 
 class TestCase(systest.TestCase):
@@ -56,9 +55,7 @@ class TestCase(systest.TestCase):
         self.moblin.arduino.back_motor_off()
         self.moblin.arduino.front_motor_off()
 
-    def wait_for_ingest_stream_started(
-        self, number_of_ingests=NUMBER_OF_INGESTS_BASE + 1, startup_delay=1
-    ):
+    def wait_for_ingest_stream_started(self, number_of_ingests=1, startup_delay=1):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(
             minimim_bitrate=0,

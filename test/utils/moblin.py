@@ -207,12 +207,15 @@ class Moblin:
     def _get_ingests_status(self):
         ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
         mo = RE_INGESTS_STATUS.match(ingests_status)
-        if not mo:
-            raise Exception(f"Ingests status has wrong format: {ingests_status}")
-        bitrate = parse_bitrate(mo.group(1), mo.group(2))
-        total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
-        number_of_ingests = int(mo.group(5))
-        return bitrate, total_bytes, number_of_ingests
+        if mo:
+            bitrate = parse_bitrate(mo.group(1), mo.group(2))
+            total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
+            number_of_ingests = int(mo.group(5))
+            return bitrate, total_bytes, number_of_ingests
+        if ingests_status.isdigit():
+            # Only the number of ingests is shown when no ingest is connected.
+            return 0, 0, int(ingests_status)
+        raise Exception(f"Ingests status has wrong format: {ingests_status}")
 
 
 def parse_bitrate(value, unit):

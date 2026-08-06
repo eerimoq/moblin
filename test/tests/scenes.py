@@ -10,6 +10,7 @@ from utils.ffmpeg import remove_duplicated_frames
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import PNG_TUBER_MODEL_ID
 from utils.generate_device_settings import PNG_TUBER_MODEL_NAME
+from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import V_TUBER_MODEL_ID
 from utils.generate_device_settings import V_TUBER_MODEL_NAME
 from utils.generate_device_settings import png_tuber_model_files
@@ -43,12 +44,6 @@ SCREEN_SCENE_SETTINGS = {
     "name": "Screen",
     "cameraPosition": "Screen capture",
     "enabled": True,
-}
-RECORD_STREAM_SETTINGS = {
-    "enabled": True,
-    "fps": 30,
-    "resolution": f"{WIDTH}x{HEIGHT}",
-    "recording": {"videoCodec": "H.265/HEVC"},
 }
 
 

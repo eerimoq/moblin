@@ -5,18 +5,9 @@ from typing import Dict
 
 import requests
 
-from utils.config import RIST_SERVER_PORT
-from utils.config import RTMP_SERVER_PORT
-from utils.config import SRT_CLIENT_1_SERVER_PORT
-from utils.config import SRT_SERVER_PORT
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
 
-RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
-RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
-RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
-SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
-SRT_CLIENT_STREAM_ID = "F3868489-D301-422D-A7DD-334572CA1387"
 BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
 BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
@@ -28,6 +19,12 @@ PNG_TUBER_MODEL_NAME = "moblin.save"
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
 CACHE_DIR = Path("cache")
 FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
+RECORD_STREAM_SETTINGS = {
+    "enabled": True,
+    "fps": 30,
+    "resolution": "1920x1080",
+    "recording": {"videoCodec": "H.265/HEVC"},
+}
 
 
 def download_model(name: str) -> Path:
@@ -69,46 +66,6 @@ def create_streams_settings(config: Config):
 def create_scenes_settings():
     return [
         FRONT_SCENE_SETTINGS,
-        {
-            "name": "RTMP server ingest",
-            "cameraPosition": "RTMP",
-            "rtmpCameraId": RTMP_STREAM_ID,
-            "enabled": True,
-            "overrideMic": True,
-            "micId": f"{RTMP_STREAM_ID} 0",
-        },
-        {
-            "name": "RTSP client ingest",
-            "cameraPosition": "RTSP",
-            "rtspCameraId": RTSP_STREAM_ID,
-            "enabled": True,
-            "overrideMic": True,
-            "micId": f"{RTSP_STREAM_ID} 0",
-        },
-        {
-            "name": "RIST server ingest",
-            "cameraPosition": "RIST",
-            "ristCameraId": RIST_STREAM_ID,
-            "enabled": True,
-            "overrideMic": True,
-            "micId": f"{RIST_STREAM_ID} 0",
-        },
-        {
-            "name": "SRT server ingest",
-            "cameraPosition": "SRT(LA)",
-            "srtlaCameraId": SRT_STREAM_ID,
-            "enabled": True,
-            "overrideMic": True,
-            "micId": f"{SRT_STREAM_ID} 0",
-        },
-        {
-            "name": "SRT client ingest",
-            "cameraPosition": "SRT client",
-            "srtClientCameraId": SRT_CLIENT_STREAM_ID,
-            "enabled": True,
-            "overrideMic": True,
-            "micId": f"{SRT_CLIENT_STREAM_ID} 0",
-        },
         {
             "name": "Browser widgets",
             "cameraPosition": "Screen capture",
@@ -216,51 +173,6 @@ def create_settings(config: Config):
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
             "password": "1234",
-        },
-        "rtmpServer": {
-            "enabled": True,
-            "port": RTMP_SERVER_PORT,
-            "streams": [
-                {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
-            ],
-        },
-        "srtlaServer": {
-            "enabled": True,
-            "srtPort": SRT_SERVER_PORT,
-            "streams": [
-                {
-                    "id": SRT_STREAM_ID,
-                    "name": "Test",
-                    "streamId": "1",
-                },
-            ],
-        },
-        "rtspClient": {
-            "streams": [
-                {
-                    "id": RTSP_STREAM_ID,
-                    "name": "1",
-                    "url": f"rtsp://{config.tester_ip_address()}:8554/1",
-                    "enabled": True,
-                },
-            ],
-        },
-        "ristServer": {
-            "enabled": True,
-            "port": RIST_SERVER_PORT,
-            "streams": [
-                {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}
-            ],
-        },
-        "srtClient": {
-            "streams": [
-                {
-                    "id": SRT_CLIENT_STREAM_ID,
-                    "name": "1",
-                    "url": f"srt://{config.tester_ip_address()}:{SRT_CLIENT_1_SERVER_PORT}",
-                    "enabled": True,
-                },
-            ],
         },
         "location": {"enabled": True},
         "verboseStatuses": True,
