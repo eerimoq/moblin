@@ -8,10 +8,6 @@ import requests
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
 
-PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
-V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
-V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
-PNG_TUBER_MODEL_NAME = "moblin.save"
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
 CACHE_DIR = Path("cache")
 FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
@@ -35,24 +31,24 @@ def download_model(name: str) -> Path:
     return path
 
 
-def png_tuber_model_files() -> Dict[str, Path]:
-    """The PNGTuber model, as stored in a settings file."""
-
-    return {f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)}
-
-
-def v_tuber_model_files() -> Dict[str, Path]:
-    """The VTuber model, as stored in a settings file."""
-
-    return {f"VTuber/{V_TUBER_MODEL_ID}": download_model(V_TUBER_MODEL_NAME)}
+def scene_widget_settings(
+    widget_id: str, x: int, y: int, size: int, alignment: str = "TopLeft"
+):
+    return {
+        "widgetId": widget_id,
+        "alignment": alignment,
+        "x": x,
+        "y": y,
+        "size": size,
+        "migrated": True,
+        "migrated2": True,
+    }
 
 
 def base_settings(config_toml: Path):
     config = Config(config_toml, "")
     return {
-        "streams": [],
         "scenes": [FRONT_SCENE_SETTINGS],
-        "widgets": [],
         "remoteControl": {
             "server": {
                 "enabled": True,

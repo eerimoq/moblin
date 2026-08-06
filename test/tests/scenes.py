@@ -8,13 +8,9 @@ from utils.ffmpeg import ffprobe_video
 from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
-from utils.generate_device_settings import PNG_TUBER_MODEL_ID
-from utils.generate_device_settings import PNG_TUBER_MODEL_NAME
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
-from utils.generate_device_settings import V_TUBER_MODEL_ID
-from utils.generate_device_settings import V_TUBER_MODEL_NAME
-from utils.generate_device_settings import png_tuber_model_files
-from utils.generate_device_settings import v_tuber_model_files
+from utils.generate_device_settings import download_model
+from utils.generate_device_settings import scene_widget_settings
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import Crop
@@ -45,20 +41,10 @@ SCREEN_SCENE_SETTINGS = {
     "cameraPosition": "Screen capture",
     "enabled": True,
 }
-
-
-def scene_widget_settings(
-    widget_id: str, x: int, y: int, size: int, alignment: str = "TopLeft"
-):
-    return {
-        "widgetId": widget_id,
-        "alignment": alignment,
-        "x": x,
-        "y": y,
-        "size": size,
-        "migrated": True,
-        "migrated2": True,
-    }
+PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
+V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
+V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
+PNG_TUBER_MODEL_NAME = "moblin.save"
 
 
 def is_map_dot(pixel: Pixel) -> bool:
@@ -334,7 +320,9 @@ class ScenePngTuberWidget(WidgetTestCase):
                     },
                 }
             ],
-            files=png_tuber_model_files(),
+            files={
+                f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)
+            },
         )
 
     def run(self):
@@ -363,7 +351,7 @@ class SceneVTuberWidget(WidgetTestCase):
                     },
                 }
             ],
-            files=v_tuber_model_files(),
+            files={f"VTuber/{V_TUBER_MODEL_ID}": download_model(V_TUBER_MODEL_NAME)},
         )
 
     def run(self):

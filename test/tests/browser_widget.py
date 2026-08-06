@@ -3,12 +3,11 @@ import time
 from pathlib import Path
 from typing import List
 
-from tests.scenes import scene_widget_settings
-
 from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import scene_widget_settings
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import WEBSITES_ROOT
