@@ -1,11 +1,11 @@
 import logging
-from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
+from utils.utils import FILES_DIR
 from utils.utils import format_generic_stream_url_stream_name
 
 LOGGER = logging.getLogger(__name__)
@@ -91,7 +91,7 @@ class StreamSrtToFfmpeg(TestCase):
         )
 
     def run(self):
-        filename = Path(f"files/{self.name}.ts")
+        filename = FILES_DIR / f"{self.name}.ts"
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.go_live()
@@ -120,7 +120,7 @@ class StreamSrtToFfmpegHighBitrate(TestCase):
         )
 
     def run(self):
-        filename = Path("files/StreamSrtFromMoblinToFfmpegHighBitrate.ts")
+        filename = FILES_DIR / "StreamSrtFromMoblinToFfmpegHighBitrate.ts"
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.go_live()
@@ -156,7 +156,7 @@ class StreamSrtToFfmpegEncrypted(TestCase):
         )
 
     def run(self):
-        filename = Path("files/StreamSrtToFfmpegEncryption.ts")
+        filename = FILES_DIR / "StreamSrtToFfmpegEncryption.ts"
         self.moblin.set_scene("Front")
         with FfmpegServer(
             url="srt://0.0.0.0:8890?mode=listener&passphrase=1234567890",
@@ -194,7 +194,7 @@ class StreamSrtToFfmpegVideoRateControl(TestCase):
         )
 
     def run(self):
-        filename = Path(f"files/{self.name}.ts")
+        filename = FILES_DIR / f"{self.name}.ts"
         self.moblin.set_scene("Front")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.go_live()

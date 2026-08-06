@@ -1,14 +1,14 @@
 import logging
-import os
 import subprocess
 import time
+from pathlib import Path
 
 import requests
 
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
-UTILS_DIR = os.path.dirname(os.path.abspath(__file__))
+UTILS_DIR = Path(__file__).parent.resolve()
 
 
 class MediaMtx:
@@ -16,9 +16,9 @@ class MediaMtx:
         self._server = None
 
     def __enter__(self):
-        config_path = os.path.join(UTILS_DIR, "mediamtx.yml")
+        config_path = UTILS_DIR / "mediamtx.yml"
         self._server = subprocess.Popen(
-            ["mediamtx", config_path],
+            ["mediamtx", str(config_path)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

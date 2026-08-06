@@ -9,9 +9,11 @@ from pathlib import Path
 import requests
 
 from .arduino import Arduino
+from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .generate_device_settings import base_settings
 from .generate_device_settings import create_settings_file
+from .utils import FILES_DIR
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -73,12 +75,6 @@ class Moblin:
             except subprocess.CalledProcessError:
                 time.sleep(2)
 
-    def set_stream(self, name):
-        try:
-            self._execute("set_stream", name)
-        except subprocess.CalledProcessError:
-            time.sleep(3)
-
     def set_scene(self, name):
         self._execute("set_scene", name)
 
@@ -98,23 +94,20 @@ class Moblin:
         self._execute("stop_recording")
 
     def download_and_delete_latest_recording(self, filename: str) -> Path:
-        response = requests.get(
-            f"http://{self.ip_address}:1180/recordings.json", timeout=15
-        )
+        base_url = f"http://{self.ip_address}:{WEB_REMOTE_CONTROL_PORT}"
+        response = requests.get(f"{base_url}/recordings.json", timeout=15)
         response.raise_for_status()
         recordings = response.json()
-        recording_url = (
-            f"http://{self.ip_address}:1180/recordings/{recordings[0]["name"]}"
-        )
+        recording_url = f"{base_url}/recordings/{recordings[0]["name"]}"
         response = requests.get(recording_url, timeout=15)
         response.raise_for_status()
-        recording_file = Path("files") / filename
+        recording_file = FILES_DIR / filename
         recording_file.write_bytes(response.content)
         response = requests.delete(recording_url, timeout=15)
         response.raise_for_status()
         return recording_file
 
-    def get_settings(self):
+    def ping(self):
         self._execute("get_settings")
 
     def has_capability(self, name: str) -> bool:
@@ -189,7 +182,7 @@ class Moblin:
         end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             try:
-                self.get_settings()
+                self.ping()
                 LOGGER.info("Remote control streamer connected")
                 time.sleep(3)
                 return

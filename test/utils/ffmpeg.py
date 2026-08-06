@@ -7,6 +7,7 @@ from dataclasses import field
 from fractions import Fraction
 from pathlib import Path
 
+from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
 from .utils import log_output
@@ -92,10 +93,10 @@ class FfmpegTestStream(FfmpegCommand):
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
-        self._audio_file = Path("files/FfmpegTestStream.wav")
-        self.enusure_audio_file_exists()
+        self._audio_file = FILES_DIR / "FfmpegTestStream.wav"
+        self._ensure_audio_file_exists()
 
-    def enusure_audio_file_exists(self):
+    def _ensure_audio_file_exists(self):
         if not self._audio_file.exists():
             _run(
                 [

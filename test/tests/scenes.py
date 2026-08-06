@@ -12,6 +12,7 @@ from utils.generate_device_settings import download_model
 from utils.generate_device_settings import scene_widget_settings
 from utils.moblin import Moblin
 from utils.test_case import TestCase
+from utils.utils import FILES_DIR
 from utils.utils import Crop
 from utils.utils import Image
 from utils.utils import Pixel
@@ -200,7 +201,7 @@ class SceneWidgetsInBackground(TestCase):
         )
 
     def run(self):
-        filename = Path("files/ScenewidgetsInBackground.ts")
+        filename = FILES_DIR / "ScenewidgetsInBackground.ts"
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
             self.moblin.go_live()
             manual_confirmation("Put the app in background.")

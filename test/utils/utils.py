@@ -6,8 +6,9 @@ from logging import Logger
 from pathlib import Path
 from urllib.parse import urlsplit
 
-WEBSITES_ROOT = Path(__file__).parent.parent.resolve() / "tests" / "websites"
-# Video encoding never makes black pixels perfectly black.
+TEST_DIR = Path(__file__).parent.parent.resolve()
+WEBSITES_DIR = TEST_DIR / "tests" / "websites"
+FILES_DIR = TEST_DIR / "files"
 BLACK_MAXIMUM_VALUE = 40
 
 

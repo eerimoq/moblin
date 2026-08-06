@@ -9,7 +9,7 @@ from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import scene_widget_settings
 from utils.moblin import Moblin
 from utils.test_case import TestCase
-from utils.utils import WEBSITES_ROOT
+from utils.utils import WEBSITES_DIR
 from utils.utils import Crop
 from utils.utils import create_qr_code_image
 from utils.web_server import WebServer
@@ -88,10 +88,10 @@ class BrowserWidgetModes(TestCase):
 
     def run(self):
         create_qr_code_image(
-            "n 1 pts 999.0", WEBSITES_ROOT / "BrowserWidgetHighFpsVideo.jpg"
+            "n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg"
         )
-        create_qr_codes_video(WEBSITES_ROOT / "BrowserWidgetHighFpsVideo.mp4")
-        with WebServer(WEBSITES_ROOT):
+        create_qr_codes_video(WEBSITES_DIR / "BrowserWidgetHighFpsVideo.mp4")
+        with WebServer(WEBSITES_DIR):
             self.import_settings()
             self.moblin.start_recording()
             time.sleep(16)

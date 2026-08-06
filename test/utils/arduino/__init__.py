@@ -1,6 +1,9 @@
 import sys
+from pathlib import Path
 
 from simba_soam.soam import SlipSerialClient
+
+ARDUINO_DIR = Path(__file__).parent.resolve()
 
 
 class Arduino:
@@ -8,7 +11,7 @@ class Arduino:
         self.client = SlipSerialClient(
             serial_port=serial_port,
             baudrate=38400,
-            database="utils/arduino/soam.soamdb",
+            database=str(ARDUINO_DIR / "soam.soamdb"),
             ostream=sys.stdout,
             debug=False,
         )

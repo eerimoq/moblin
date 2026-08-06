@@ -6,9 +6,10 @@ import requests
 
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
+from utils.utils import TEST_DIR
 
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
-CACHE_DIR = Path("cache")
+CACHE_DIR = TEST_DIR / "cache"
 FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
 RECORD_STREAM_SETTINGS = {
     "enabled": True,

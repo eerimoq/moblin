@@ -17,6 +17,7 @@ from .ffmpeg import ffprobe_video_size
 from .ffmpeg import read_qr_codes
 from .ffmpeg import remove_duplicated_frames
 from .moblin import Moblin
+from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
 
@@ -244,10 +245,10 @@ class TestCase(systest.TestCase):
     def _assert_audio_time_codes(self, recording: Path, has_audio_time_codes: bool):
         if not has_audio_time_codes:
             return
-        ltc_wav = Path("files/ltc.wav")
+        ltc_wav = FILES_DIR / "ltc.wav"
         extract_ltc_wav(recording, ltc_wav)
         output = subprocess.run(
-            ["ltcdump", "--fps", "30", ltc_wav],
+            ["ltcdump", "--fps", "30", str(ltc_wav)],
             check=True,
             capture_output=True,
             text=True,
