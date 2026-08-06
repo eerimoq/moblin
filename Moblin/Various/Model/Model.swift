@@ -3106,6 +3106,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             || !ingests.rtsp.isEmpty
             || whipServerEnabled()
             || !ingests.whep.isEmpty
+            || !ingests.srt.isEmpty
     }
 
     func isShowingStatusMoblink() -> Bool {
