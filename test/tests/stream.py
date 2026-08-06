@@ -2,14 +2,13 @@ import logging
 from pathlib import Path
 
 from utils.ffmpeg import FfmpegServer
+from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import format_generic_stream_url_stream_name
 
 LOGGER = logging.getLogger(__name__)
-
-FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
 
 
 class StreamRtmpToMediaMtx(TestCase):

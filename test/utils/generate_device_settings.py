@@ -31,6 +31,7 @@ V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
 CACHE_DIR = Path("cache")
+FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
 
 
 def download_model(name: str) -> Path:
@@ -58,7 +59,7 @@ def v_tuber_model_files() -> Dict[str, Path]:
 
 
 def create_streams_settings(config: Config):
-    streams = [
+    return [
         {
             "name": "RTMP",
             "enabled": True,
@@ -66,24 +67,12 @@ def create_streams_settings(config: Config):
             "url": f"rtmp://{config.tester_ip_address()}:1935/test",
             "rtmp": {"adaptiveBitrateEnabled": False},
         },
-        {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
     ]
-    for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
-        for fps in [30, 60]:
-            streams.append(
-                {
-                    "name": f"Record H.265 {resolution}@{fps}",
-                    "fps": fps,
-                    "resolution": resolution,
-                    "recording": {"videoCodec": "H.265/HEVC"},
-                }
-            )
-    return streams
 
 
 def create_scenes_settings():
     return [
-        {"name": "Front", "cameraPosition": "Front", "enabled": True},
+        FRONT_SCENE_SETTINGS,
         {
             "name": "RTMP server ingest",
             "cameraPosition": "RTMP",

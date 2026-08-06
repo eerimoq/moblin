@@ -1,6 +1,7 @@
 import logging
 import time
 
+from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 
@@ -21,12 +22,22 @@ class Record(TestCase):
             self.skip_if_missing_capability("record")
         self.skip_if_no_moving_picture()
         self.moving_picture_on()
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "enabled": True,
+                        "fps": self._fps,
+                        "resolution": self._resolution,
+                        "recording": {"videoCodec": self._get_video_codec()},
+                    }
+                ],
+                "scenes": [FRONT_SCENE_SETTINGS],
+                "widgets": [],
+            }
+        )
 
     def run(self):
-        self.moblin.set_scene("Front")
-        self.moblin.set_stream(
-            f"Record {self._video_codec} {self._resolution}@{self._fps}"
-        )
         time.sleep(1)
         self.moblin.start_recording()
         time.sleep(10)
@@ -42,6 +53,12 @@ class Record(TestCase):
             fps=self._fps,
             video_codec=self._get_ffmpeg_video_codec(),
         )
+
+    def _get_video_codec(self):
+        if self._video_codec == "H.264":
+            return "H.264/AVC"
+        else:
+            return "H.265/HEVC"
 
     def _get_ffmpeg_video_codec(self):
         if self._video_codec == "H.264":

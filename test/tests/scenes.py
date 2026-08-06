@@ -7,6 +7,7 @@ from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
 from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
+from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import PNG_TUBER_MODEL_ID
 from utils.generate_device_settings import PNG_TUBER_MODEL_NAME
 from utils.generate_device_settings import V_TUBER_MODEL_ID
@@ -38,7 +39,6 @@ MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
 MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
 PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
 V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
-FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
 SCREEN_SCENE_SETTINGS = {
     "name": "Screen",
     "cameraPosition": "Screen capture",
