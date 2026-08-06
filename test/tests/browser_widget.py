@@ -94,7 +94,6 @@ class BrowserWidgetModes(TestCase):
         create_qr_codes_video(WEBSITES_ROOT / "BrowserWidgetHighFpsVideo.mp4")
         with WebServer(WEBSITES_ROOT):
             self.import_settings()
-            time.sleep(2)
             self.moblin.start_recording()
             time.sleep(16)
             self.moblin.stop_recording()

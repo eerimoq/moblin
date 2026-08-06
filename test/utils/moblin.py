@@ -73,7 +73,7 @@ class Moblin:
             try:
                 self._execute("import_settings", settings_file)
             except subprocess.CalledProcessError:
-                time.sleep(3)
+                time.sleep(2)
 
     def set_stream(self, name):
         try:
