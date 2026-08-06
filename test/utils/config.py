@@ -14,6 +14,7 @@ RIST_SERVER_PORT = 6500
 
 class Config:
     def __init__(self, config_toml: Path, device: str):
+        self.config_toml = config_toml
         self._config = tomllib.loads(config_toml.read_text())
         if device:
             self.general()["device"] = device

@@ -12,6 +12,24 @@ LOGGER = logging.getLogger(__name__)
 class StreamRtmpToMediaMtx(TestCase):
     """RTMP stream from Moblin to MediaMTX for a few seconds."""
 
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "name": "RTMP",
+                        "enabled": True,
+                        "bitrateRateControl": "CBR",
+                        "url": f"rtmp://{self.moblin.config.tester_ip_address()}:1935/test",
+                        "rtmp": {"adaptiveBitrateEnabled": False},
+                    }
+                ],
+                "scenes": [
+                    {"name": "Front", "cameraPosition": "Front", "enabled": True},
+                ],
+            }
+        )
+
     def run(self):
         self.moblin.set_scene("Front")
         with MediaMtx() as mediamtx:

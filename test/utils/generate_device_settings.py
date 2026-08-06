@@ -521,6 +521,15 @@ def create_settings(config: Config):
     }
 
 
+def base_settings(config_toml: Path):
+    return create_settings(Config(config_toml, ""))
+
+
+def create_settings_file(settings, output_file: Path):
+    with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("settings.json", json.dumps(settings, indent=4))
+
+
 def generate_initial_settings(config_toml: Path, output_file: Path):
     cache_dir = Path("cache")
     v_tuber_model_path = download_model(cache_dir, V_TUBER_MODEL_NAME)

@@ -2,6 +2,7 @@ import json
 import logging
 import re
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -9,6 +10,8 @@ import requests
 
 from .arduino import Arduino
 from .config import Config
+from .generate_device_settings import base_settings
+from .generate_device_settings import create_settings_file
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -19,6 +22,7 @@ RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 
 class Moblin:
     def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
+        self.config = config
         self.arduino = arduino
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
@@ -59,11 +63,16 @@ class Moblin:
             self._server.kill()
             self._server.wait()
 
-    def import_settings(self, path: Path):
-        try:
-            self._execute("import_settings", path)
-        except subprocess.CalledProcessError:
-            time.sleep(3)
+    def import_settings(self, overrides):
+        settings = base_settings(self.config.config_toml)
+        settings.update(overrides)
+        with tempfile.TemporaryDirectory() as settings_dir:
+            settings_file = Path(settings_dir) / "settings.zip"
+            create_settings_file(settings, settings_file)
+            try:
+                self._execute("import_settings", settings_file)
+            except subprocess.CalledProcessError:
+                time.sleep(3)
 
     def set_stream(self, name):
         try:
