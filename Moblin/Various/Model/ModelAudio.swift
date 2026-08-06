@@ -163,7 +163,7 @@ extension Model {
         database.mics.mics.first(where: { $0.id == id })?.connected = false
     }
 
-    private func updateMicsList() {
+    func updateMicsList() {
         updateMicsListDatabase(foundMics: listMics())
     }
 

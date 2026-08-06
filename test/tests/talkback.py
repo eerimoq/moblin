@@ -41,13 +41,13 @@ class TalkbackRtmpServer(TestCase):
                 },
             }
         )
+        time.sleep(1)
 
     def run(self):
         stream = FfmpegAudioTestStream(
             url=f"rtmp://{self.moblin.ip_address}:{RTMP_SERVER_PORT}/live/talkback"
         )
         with stream:
-            self.moblin.set_talkback_mic("Talkback (RTMP)")
             manual_validation(LOGGER, "Listen for periodic beeps")
             time.sleep(10)
 
@@ -77,6 +77,7 @@ class TalkbackSrtlaServer(TestCase):
                 },
             }
         )
+        time.sleep(1)
 
     def run(self):
         stream = FfmpegAudioTestStream(
@@ -84,7 +85,6 @@ class TalkbackSrtlaServer(TestCase):
             transport_format="mpegts",
         )
         with stream:
-            self.moblin.set_talkback_mic("Talkback (SRT(LA))")
             manual_validation(LOGGER, "Listen for periodic beeps")
             time.sleep(10)
 
@@ -117,6 +117,7 @@ class TalkbackSrtClient(TestCase):
                 },
             }
         )
+        time.sleep(1)
 
     def run(self):
         stream = FfmpegAudioTestStream(
@@ -124,7 +125,6 @@ class TalkbackSrtClient(TestCase):
             transport_format="mpegts",
         )
         with stream:
-            self.moblin.set_talkback_mic("Talkback (SRT client)")
             manual_validation(LOGGER, "Listen for periodic beeps")
             time.sleep(10)
 

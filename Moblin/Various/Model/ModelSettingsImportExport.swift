@@ -75,6 +75,7 @@ extension Model {
     private func importSucceeded() {
         setCurrentStream()
         updateIconImageFromDatabase()
+        updateMicsList()
         reloadStream()
         resetSelectedScene()
         updateQuickButtonStates()

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 
 from tests.scenes import scene_widget_settings
+
 from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes

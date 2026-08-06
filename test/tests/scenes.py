@@ -351,9 +351,7 @@ class SceneVTuberWidget(WidgetTestCase):
 
     def setup(self):
         self.import_settings(
-            scene_widgets=[
-                scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)
-            ],
+            scene_widgets=[scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)],
             widgets=[
                 {
                     "id": V_TUBER_WIDGET_ID,
