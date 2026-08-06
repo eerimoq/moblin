@@ -8,19 +8,15 @@ import requests
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
-from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
-RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
 RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
 RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
 SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
-SRT_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-135572CA1389"
 SRT_CLIENT_STREAM_ID = "F3868489-D301-422D-A7DD-334572CA1387"
-SRT_CLIENT_TALKBACK_STREAM_ID = "F3868489-D301-522D-A7DD-135572CA1389"
 BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
 BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
@@ -226,11 +222,6 @@ def create_settings(config: Config):
             "port": RTMP_SERVER_PORT,
             "streams": [
                 {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
-                {
-                    "id": RTMP_TALKBACK_STREAM_ID,
-                    "name": "Talkback",
-                    "streamKey": "talkback",
-                },
             ],
         },
         "srtlaServer": {
@@ -241,11 +232,6 @@ def create_settings(config: Config):
                     "id": SRT_STREAM_ID,
                     "name": "Test",
                     "streamId": "1",
-                },
-                {
-                    "id": SRT_TALKBACK_STREAM_ID,
-                    "name": "Talkback",
-                    "streamId": "talkback",
                 },
             ],
         },
@@ -274,15 +260,8 @@ def create_settings(config: Config):
                     "url": f"srt://{config.tester_ip_address()}:{SRT_CLIENT_1_SERVER_PORT}",
                     "enabled": True,
                 },
-                {
-                    "id": SRT_CLIENT_TALKBACK_STREAM_ID,
-                    "name": "Talkback",
-                    "url": f"srt://{config.tester_ip_address()}:{SRT_CLIENT_TALKBACK_SERVER_PORT}",
-                    "enabled": True,
-                },
             ],
         },
-        "talkBack": {"enabled": True, "micId": f"{RTMP_TALKBACK_STREAM_ID} 0"},
         "location": {"enabled": True},
         "verboseStatuses": True,
         "showAllSettings": True,
