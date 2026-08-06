@@ -2,8 +2,6 @@ import tomllib
 from pathlib import Path
 from typing import List
 
-from utils.utils import format_generic_stream_url_stream_name
-
 WEB_REMOTE_CONTROL_PORT = 1180
 RTMP_SERVER_PORT = 11935
 SRT_SERVER_PORT = 4000
@@ -38,14 +36,8 @@ class Config:
     def capabilities(self):
         return self._device()["capabilities"]
 
-    def generic_streams(self) -> List[str]:
-        streams = []
-        generic_stream_urls = self.general()["generic-stream-urls"]
-        for number, generic_stream_url in enumerate(generic_stream_urls, 1):
-            streams.append(
-                format_generic_stream_url_stream_name(number, generic_stream_url)
-            )
-        return streams
+    def generic_stream_urls(self) -> List[str]:
+        return self.general()["generic-stream-urls"]
 
     def _device(self):
         return self._config["device"][self.device_name()]

@@ -29,7 +29,7 @@ class Moblin:
         self._server = None
         self.ip_address = config.moblin_ip_address()
         self._capabilities = config.capabilities()
-        self.generic_streams = config.generic_streams()
+        self.generic_stream_urls = config.generic_stream_urls()
         self._moving_picture = moving_picture
 
     def __enter__(self):

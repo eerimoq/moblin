@@ -11,7 +11,6 @@ from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.config import Config
-from utils.utils import format_generic_stream_url_stream_name
 
 RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
 RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
@@ -60,13 +59,6 @@ def create_streams_settings(config: Config):
             "rtmp": {"adaptiveBitrateEnabled": False},
         },
         {
-            "name": "SRT",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "srt": {"adaptiveBitrateEnabled": False},
-            "bitrate": 50_000_000,
-        },
-        {
             "name": "SRT 5Mbps 1080@30",
             "bitrateRateControl": "CBR",
             "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
@@ -81,51 +73,6 @@ def create_streams_settings(config: Config):
             "bitrate": 5_000_000,
             "fps": 60,
         },
-        {
-            "name": "SRT encrypted",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test&passphrase=1234567890",
-            "srt": {"adaptiveBitrateEnabled": False, "implementation": "Official"},
-            "bitrate": 5_000_000,
-        },
-        {
-            "name": "SRT adaptive CBR",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "bitrate": 5_000_000,
-        },
-        {
-            "name": "SRT adaptive ABR",
-            "bitrateRateControl": "ABR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "bitrate": 5_000_000,
-        },
-        {
-            "name": "SRT adaptive VBR",
-            "bitrateRateControl": "VBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "bitrate": 5_000_000,
-        },
-        {
-            "name": "Multi RTMP",
-            "bitrateRateControl": "CBR",
-            "url": f"rtmp://{config.tester_ip_address()}:1935/test1",
-            "rtmp": {"adaptiveBitrateEnabled": False},
-            "multiStreaming": {
-                "destinations": [
-                    {
-                        "name": "Test 2",
-                        "url": f"rtmp://{config.tester_ip_address()}:1935/test2",
-                        "enabled": True,
-                    },
-                    {
-                        "name": "Test 3",
-                        "url": f"rtmp://{config.tester_ip_address()}:1935/test3",
-                        "enabled": True,
-                    },
-                ]
-            },
-        },
         {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
         {
             "name": "Background streaming",
@@ -137,20 +84,6 @@ def create_streams_settings(config: Config):
             "backgroundStreamingPiP": False,
         },
     ]
-    for number, generic_stream_url in enumerate(
-        config.general()["generic-stream-urls"], 1
-    ):
-        streams.append(
-            {
-                "name": format_generic_stream_url_stream_name(
-                    number, generic_stream_url
-                ),
-                "bitrateRateControl": "CBR",
-                "url": generic_stream_url,
-                "codec": "H.264/AVC",
-                "bitrate": 5_000_000,
-            }
-        )
     for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
         for fps in [30, 60]:
             streams.append(
