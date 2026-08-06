@@ -1,6 +1,7 @@
 import json
 import zipfile
 from pathlib import Path
+from typing import Dict
 
 import requests
 
@@ -20,33 +21,40 @@ SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
 SRT_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-135572CA1389"
 SRT_CLIENT_STREAM_ID = "F3868489-D301-422D-A7DD-334572CA1387"
 SRT_CLIENT_TALKBACK_STREAM_ID = "F3868489-D301-522D-A7DD-135572CA1389"
-FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
 BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID = "F3868489-D301-422D-A7DD-335572CA1312"
 BROWSER_WIDGET_AUDIO_AND_VIDEO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1313"
 BROWSER_WIDGET_AUDIO_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1314"
 BROWSER_WIDGET_LOCAL_ONLY_ID = "F3868489-D301-422D-A7DD-335572CA1315"
-TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
-MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
-MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
-PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
-V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
 PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
 V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
+CACHE_DIR = Path("cache")
 
 
-def download_model(cache_dir: Path, name: str):
-    path = cache_dir / name
+def download_model(name: str) -> Path:
+    path = CACHE_DIR / name
     if not path.exists():
         url = f"{MODELS_BASE_URL}/{name}"
         print(f"Downloading '{url}'...")
         response = requests.get(url, timeout=60)
         response.raise_for_status()
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
         path.write_bytes(response.content)
     return path
+
+
+def png_tuber_model_files() -> Dict[str, Path]:
+    """The PNGTuber model, as stored in a settings file."""
+
+    return {f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)}
+
+
+def v_tuber_model_files() -> Dict[str, Path]:
+    """The VTuber model, as stored in a settings file."""
+
+    return {f"VTuber/{V_TUBER_MODEL_ID}": download_model(V_TUBER_MODEL_NAME)}
 
 
 def create_streams_settings(config: Config):
@@ -58,31 +66,7 @@ def create_streams_settings(config: Config):
             "url": f"rtmp://{config.tester_ip_address()}:1935/test",
             "rtmp": {"adaptiveBitrateEnabled": False},
         },
-        {
-            "name": "SRT 5Mbps 1080@30",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "srt": {"adaptiveBitrateEnabled": False},
-            "bitrate": 5_000_000,
-        },
-        {
-            "name": "SRT 5Mbps 1080@60",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "srt": {"adaptiveBitrateEnabled": False},
-            "bitrate": 5_000_000,
-            "fps": 60,
-        },
         {"name": "Record H.264 1920x1080@30", "recording": {"videoCodec": "H.264/AVC"}},
-        {
-            "name": "Background streaming",
-            "bitrateRateControl": "CBR",
-            "url": f"srt://{config.tester_ip_address()}:8890?streamid=publish:test",
-            "srt": {"adaptiveBitrateEnabled": False},
-            "bitrate": 5_000_000,
-            "backgroundStreaming": True,
-            "backgroundStreamingPiP": False,
-        },
     ]
     for resolution in ["1920x1080", "2560x1440", "3840x2160"]:
         for fps in [30, 60]:
@@ -100,7 +84,6 @@ def create_streams_settings(config: Config):
 def create_scenes_settings():
     return [
         {"name": "Front", "cameraPosition": "Front", "enabled": True},
-        {"name": "Screen", "cameraPosition": "Screen capture", "enabled": True},
         {
             "name": "RTMP server ingest",
             "cameraPosition": "RTMP",
@@ -140,23 +123,6 @@ def create_scenes_settings():
             "enabled": True,
             "overrideMic": True,
             "micId": f"{SRT_CLIENT_STREAM_ID} 0",
-        },
-        {
-            "name": "PiP",
-            "cameraPosition": "Back",
-            "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
-            "widgets": [
-                {
-                    "widgetId": FRONT_VIDEO_SOURCE_WIDGET_ID,
-                    "alignment": "BottomRight",
-                    "x": 0,
-                    "y": 0,
-                    "size": 50,
-                    "migrated": True,
-                    "migrated2": True,
-                }
-            ],
-            "enabled": True,
         },
         {
             "name": "Browser widgets",
@@ -201,93 +167,11 @@ def create_scenes_settings():
             ],
             "enabled": True,
         },
-        {
-            "name": "Background streaming",
-            "cameraPosition": "Screen capture",
-            "widgets": [
-                {
-                    "widgetId": TEXT_WIDGET_ID,
-                    "alignment": "TopLeft",
-                    "x": 0,
-                    "y": 0,
-                    "size": 100,
-                    "migrated": True,
-                    "migrated2": True,
-                },
-            ],
-            "enabled": True,
-        },
-        {
-            "name": "Map",
-            "cameraPosition": "None",
-            "widgets": [
-                {
-                    "widgetId": MAP_SMALL_WIDGET_ID,
-                    "alignment": "TopLeft",
-                    "x": 0,
-                    "y": 0,
-                    "size": 20,
-                    "migrated": True,
-                    "migrated2": True,
-                },
-                {
-                    "widgetId": MAP_LARGE_WIDGET_ID,
-                    "alignment": "TopLeft",
-                    "x": 30,
-                    "y": 0,
-                    "size": 40,
-                    "migrated": True,
-                    "migrated2": True,
-                },
-            ],
-            "enabled": True,
-        },
-        {
-            "name": "PNGTuber",
-            "cameraPosition": "None",
-            "widgets": [
-                {
-                    "widgetId": PNG_TUBER_WIDGET_ID,
-                    "alignment": "TopLeft",
-                    "x": 0,
-                    "y": 0,
-                    "size": 50,
-                    "migrated": True,
-                    "migrated2": True,
-                },
-            ],
-            "enabled": True,
-        },
-        {
-            "name": "VTuber",
-            "cameraPosition": "None",
-            "widgets": [
-                {
-                    "widgetId": V_TUBER_WIDGET_ID,
-                    "alignment": "TopLeft",
-                    "x": 0,
-                    "y": 0,
-                    "size": 50,
-                    "migrated": True,
-                    "migrated2": True,
-                },
-            ],
-            "enabled": True,
-        },
     ]
 
 
 def create_widgets_settings(config: Config):
     return [
-        {
-            "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
-            "name": "Front",
-            "type": "Video source",
-            "videoSource": {
-                "cameraPosition": "Front",
-                "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
-            },
-        },
         {
             "id": BROWSER_WIDGET_PERIODIC_AUDIO_AND_VIDEO_ID,
             "name": "Browser periodic audio and video",
@@ -330,42 +214,6 @@ def create_widgets_settings(config: Config):
                 "width": 1920,
                 "height": 1080,
                 "localOnly": True,
-            },
-        },
-        {
-            "id": TEXT_WIDGET_ID,
-            "name": "Background streaming",
-            "type": "Text",
-            "text": {"formatString": "{time}", "fontSize": 80},
-        },
-        {
-            "id": MAP_SMALL_WIDGET_ID,
-            "name": "Map small",
-            "type": "Map",
-        },
-        {
-            "id": MAP_LARGE_WIDGET_ID,
-            "name": "Map large",
-            "type": "Map",
-        },
-        {
-            "id": PNG_TUBER_WIDGET_ID,
-            "name": "PNGTuber",
-            "type": "PNGTuber",
-            "pngTuber": {
-                "id": PNG_TUBER_MODEL_ID,
-                "cameraPosition": "Front",
-                "modelName": PNG_TUBER_MODEL_NAME,
-            },
-        },
-        {
-            "id": V_TUBER_WIDGET_ID,
-            "name": "VTuber",
-            "type": "VTuber",
-            "vTuber": {
-                "id": V_TUBER_MODEL_ID,
-                "cameraPosition": "Front",
-                "modelName": V_TUBER_MODEL_NAME,
             },
         },
     ]
@@ -458,17 +306,16 @@ def base_settings(config_toml: Path):
     return create_settings(Config(config_toml, ""))
 
 
-def create_settings_file(settings, output_file: Path):
+def create_settings_file(
+    settings, output_file: Path, files: Dict[str, Path] | None = None
+):
     with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("settings.json", json.dumps(settings, indent=4))
+        for name, path in (files or {}).items():
+            archive.write(path, name)
 
 
 def generate_initial_settings(config_toml: Path, output_file: Path):
-    cache_dir = Path("cache")
-    v_tuber_model_path = download_model(cache_dir, V_TUBER_MODEL_NAME)
-    png_tuber_model_path = download_model(cache_dir, PNG_TUBER_MODEL_NAME)
     settings = create_settings(Config(config_toml, ""))
-    with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("settings.json", json.dumps(settings, indent=4))
-        archive.write(v_tuber_model_path, f"VTuber/{V_TUBER_MODEL_ID}")
-        archive.write(png_tuber_model_path, f"PNGTuber/{PNG_TUBER_MODEL_ID}")
+    files = v_tuber_model_files() | png_tuber_model_files()
+    create_settings_file(settings, output_file, files)

@@ -1,11 +1,18 @@
 import logging
 import time
 from pathlib import Path
+from typing import Dict
 
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
 from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
+from utils.generate_device_settings import PNG_TUBER_MODEL_ID
+from utils.generate_device_settings import PNG_TUBER_MODEL_NAME
+from utils.generate_device_settings import V_TUBER_MODEL_ID
+from utils.generate_device_settings import V_TUBER_MODEL_NAME
+from utils.generate_device_settings import png_tuber_model_files
+from utils.generate_device_settings import v_tuber_model_files
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import Crop
@@ -14,7 +21,6 @@ from utils.utils import Pixel
 from utils.utils import manual_confirmation
 
 LOGGER = logging.getLogger(__name__)
-STREAM = "Record H.265 1920x1080@30"
 WIDTH = 1920
 HEIGHT = 1080
 WARM_UP_TIME = 5
@@ -26,6 +32,38 @@ TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
 BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
+FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
+TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
+MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
+MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
+PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
+V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
+FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
+SCREEN_SCENE_SETTINGS = {
+    "name": "Screen",
+    "cameraPosition": "Screen capture",
+    "enabled": True,
+}
+RECORD_STREAM_SETTINGS = {
+    "enabled": True,
+    "fps": 30,
+    "resolution": f"{WIDTH}x{HEIGHT}",
+    "recording": {"videoCodec": "H.265/HEVC"},
+}
+
+
+def _scene_widget_settings(
+    widget_id: str, x: int, y: int, size: int, alignment: str = "TopLeft"
+):
+    return {
+        "widgetId": widget_id,
+        "alignment": alignment,
+        "x": x,
+        "y": y,
+        "size": size,
+        "migrated": True,
+        "migrated2": True,
+    }
 
 
 def _is_map_dot(pixel: Pixel) -> bool:
@@ -55,6 +93,15 @@ def _measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
 class SceneSwitchMultipleTimes(TestCase):
     """Switch between two scenes a few times."""
 
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [FRONT_SCENE_SETTINGS, SCREEN_SCENE_SETTINGS],
+                "widgets": [],
+            }
+        )
+
     def run(self):
         for _ in range(10):
             self.moblin.set_scene("Screen")
@@ -77,10 +124,48 @@ class ScenePiPBackFront(TestCase):
         self.skip_if_missing_capability("pip")
         self.skip_if_no_moving_picture()
         self.moving_picture_on()
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": "CBR",
+                        "url": f"srt://{self.moblin.config.tester_ip_address()}:8890?streamid=publish:test",
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                        "fps": self._fps,
+                    }
+                ],
+                "scenes": [
+                    {
+                        "cameraPosition": "Back",
+                        "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
+                        "widgets": [
+                            _scene_widget_settings(
+                                FRONT_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment="BottomRight",
+                            )
+                        ],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [
+                    {
+                        "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        "type": "Video source",
+                        "videoSource": {
+                            "cameraPosition": "Front",
+                            "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
+                        },
+                    }
+                ],
+            }
+        )
 
     def run(self):
-        self.moblin.set_stream(f"SRT 5Mbps 1080@{self._fps}")
-        self.moblin.set_scene("PiP")
         time.sleep(2)
         self.moblin.start_recording()
         time.sleep(10)
@@ -106,12 +191,41 @@ class SceneWidgetsInBackground(TestCase):
 
     def setup(self):
         self.skip_if_missing_capability("background-streaming")
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": "CBR",
+                        "url": f"srt://{self.moblin.config.tester_ip_address()}:8890?streamid=publish:test",
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                        "backgroundStreaming": True,
+                        "backgroundStreamingPiP": False,
+                    }
+                ],
+                "scenes": [
+                    {
+                        "cameraPosition": "Screen capture",
+                        "widgets": [
+                            _scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
+                        ],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [
+                    {
+                        "id": TEXT_WIDGET_ID,
+                        "type": "Text",
+                        "text": {"formatString": "{time}", "fontSize": 80},
+                    }
+                ],
+            }
+        )
 
     def run(self):
         filename = Path("files/ScenewidgetsInBackground.ts")
-        self.moblin.set_scene("Background streaming")
         with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
-            self.moblin.set_stream("Background streaming")
             self.moblin.go_live()
             manual_confirmation("Put the app in background.")
             LOGGER.info("Streaming in background for 10 more seconds")
@@ -128,9 +242,25 @@ class SceneWidgetsInBackground(TestCase):
 
 
 class WidgetTestCase(TestCase):
-    def record(self, scene: str, filename: str) -> Path:
-        self.moblin.set_stream(STREAM)
-        self.moblin.set_scene(scene)
+    def import_settings(
+        self, scene_widgets, widgets, files: Dict[str, Path] | None = None
+    ):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        "cameraPosition": "None",
+                        "widgets": scene_widgets,
+                        "enabled": True,
+                    }
+                ],
+                "widgets": widgets,
+            },
+            files=files,
+        )
+
+    def record(self, filename: str) -> Path:
         time.sleep(WARM_UP_TIME)
         self.moblin.start_recording()
         time.sleep(RECORDING_TIME)
@@ -156,8 +286,20 @@ class SceneMapWidget(WidgetTestCase):
 
     """
 
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[
+                _scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20),
+                _scene_widget_settings(MAP_LARGE_WIDGET_ID, x=30, y=0, size=40),
+            ],
+            widgets=[
+                {"id": MAP_SMALL_WIDGET_ID, "name": "Map small", "type": "Map"},
+                {"id": MAP_LARGE_WIDGET_ID, "name": "Map large", "type": "Map"},
+            ],
+        )
+
     def run(self):
-        recording_file = self.record("Map", "MapWidget.mp4")
+        recording_file = self.record("MapWidget.mp4")
         self.assert_map(recording_file, "small", SMALL_MAP_CROP)
         self.assert_map(recording_file, "large", LARGE_MAP_CROP)
         self.assert_black_background(recording_file)
@@ -171,7 +313,6 @@ class SceneMapWidget(WidgetTestCase):
         )
         width = _measure_map_dot(image, x_step=1, y_step=0)
         height = _measure_map_dot(image, x_step=0, y_step=1)
-        LOGGER.info("The %s map's blue dot is %dx%d pixels", name, width, height)
         self.assert_in(width, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot width")
         self.assert_in(height, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot height")
 
@@ -182,8 +323,27 @@ class ScenePngTuberWidget(WidgetTestCase):
 
     """
 
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[
+                _scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)
+            ],
+            widgets=[
+                {
+                    "id": PNG_TUBER_WIDGET_ID,
+                    "type": "PNGTuber",
+                    "pngTuber": {
+                        "id": PNG_TUBER_MODEL_ID,
+                        "cameraPosition": "Front",
+                        "modelName": PNG_TUBER_MODEL_NAME,
+                    },
+                }
+            ],
+            files=png_tuber_model_files(),
+        )
+
     def run(self):
-        recording_file = self.record("PNGTuber", "PngTuberWidget.mp4")
+        recording_file = self.record("PngTuberWidget.mp4")
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 
@@ -194,8 +354,27 @@ class SceneVTuberWidget(WidgetTestCase):
 
     """
 
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[
+                _scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)
+            ],
+            widgets=[
+                {
+                    "id": V_TUBER_WIDGET_ID,
+                    "type": "VTuber",
+                    "vTuber": {
+                        "id": V_TUBER_MODEL_ID,
+                        "cameraPosition": "Front",
+                        "modelName": V_TUBER_MODEL_NAME,
+                    },
+                }
+            ],
+            files=v_tuber_model_files(),
+        )
+
     def run(self):
-        recording_file = self.record("VTuber", "VTuberWidget.mp4")
+        recording_file = self.record("VTuberWidget.mp4")
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 

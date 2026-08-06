@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
+from typing import Dict
 
 import requests
 
@@ -63,12 +64,12 @@ class Moblin:
             self._server.kill()
             self._server.wait()
 
-    def import_settings(self, overrides):
+    def import_settings(self, overrides, files: Dict[str, Path] | None = None):
         settings = base_settings(self.config.config_toml)
         settings.update(overrides)
         with tempfile.TemporaryDirectory() as settings_dir:
             settings_file = Path(settings_dir) / "settings.zip"
-            create_settings_file(settings, settings_file)
+            create_settings_file(settings, settings_file, files)
             try:
                 self._execute("import_settings", settings_file)
             except subprocess.CalledProcessError:

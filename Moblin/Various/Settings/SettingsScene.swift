@@ -2497,7 +2497,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsWidgetType.self, .text)
         text = container.decode(.text, SettingsWidgetText.self, .init())
@@ -3957,7 +3957,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = container.decode(.name, String.self, "")
+        name = container.decode(.name, String.self, Self.baseName)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         videoSource.cameraPosition = decodeCameraPosition(

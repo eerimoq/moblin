@@ -34,7 +34,6 @@ def main():
         arduino = None
     moblin = Moblin(config, arduino, args.moving_picture)
     with moblin:
-        moblin.set_scene("Front")
         moblin.end()
         moblin.stop_recording()
         sequencer.run(
