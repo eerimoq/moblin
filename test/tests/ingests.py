@@ -4,11 +4,13 @@ from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
+from utils.config import TESTER_RTMP_PORT
+from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegTestStream
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
-from utils.recorder import Recorder
+from utils.moblin import Recorder
 from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
@@ -104,9 +106,7 @@ class IngestSrtClient(IngestTestCase):
     """Stream to an SRT client ingest."""
 
     def setup(self):
-        url = (
-            f"srt://{self.moblin.config.tester_ip_address()}:{SRT_CLIENT_1_SERVER_PORT}"
-        )
+        url = self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT)
         self.import_settings(
             scene={
                 "cameraPosition": "SRT client",
@@ -127,7 +127,7 @@ class IngestSrtClient(IngestTestCase):
 
     def run(self):
         stream = FfmpegTestStream(
-            url=f"srt://0.0.0.0:{SRT_CLIENT_1_SERVER_PORT}?mode=listener&streamid=1",
+            url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestSrtClient.mp4")
@@ -158,7 +158,7 @@ class IngestRtspClientH264(IngestTestCase):
                     {
                         "id": RTSP_STREAM_ID,
                         "name": "1",
-                        "url": f"rtsp://{self.moblin.config.tester_ip_address()}:8554/1",
+                        "url": self.moblin.tester_rtsp_url("1"),
                         "enabled": True,
                     }
                 ],
@@ -168,7 +168,7 @@ class IngestRtspClientH264(IngestTestCase):
     def run(self):
         recorder = Recorder(self.moblin, "IngestRtspClientH264.mp4")
         with MediaMtx() as mediamtx:
-            with FfmpegTestStream(url="rtmp://localhost:1935/1"):
+            with FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"):
                 mediamtx.wait_for_rtsp_stream(2_000_000)
                 self.wait_for_ingest_stream_started(startup_delay=5)
                 with recorder:

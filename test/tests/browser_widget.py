@@ -1,5 +1,4 @@
 import logging
-import time
 from pathlib import Path
 
 from utils.ffmpeg import QrCode
@@ -93,12 +92,7 @@ class BrowserWidgetModes(TestCase):
         create_qr_codes_video(WEBSITES_DIR / "BrowserWidgetHighFpsVideo.mp4")
         with WebServer(WEBSITES_DIR):
             self.import_settings()
-            self.moblin.start_recording()
-            time.sleep(16)
-            self.moblin.stop_recording()
-            recording_file = self.moblin.download_and_delete_latest_recording(
-                "BrowserWidgetHighFpsVideo.mp4"
-            )
+            recording_file = self.moblin.record(16, "BrowserWidgetHighFpsVideo.mp4")
             self.assert_image_qr_codes_periodic_audio_and_video(recording_file)
             self.assert_video_qr_codes_periodic_audio_and_video(recording_file)
             self.assert_image_qr_codes_audio_and_video_only(recording_file)

@@ -39,11 +39,8 @@ class Record(TestCase):
 
     def run(self):
         time.sleep(1)
-        self.moblin.start_recording()
-        time.sleep(10)
-        self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording(
-            f"Record-{self._video_codec}-{self._resolution}@{self._fps}.mp4"
+        recording_file = self.moblin.record(
+            10, f"Record-{self._video_codec}-{self._resolution}@{self._fps}.mp4"
         )
         self.assert_recording(
             recording_file,

@@ -4,6 +4,7 @@ import time
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
+from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegAudioTestStream
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.moblin import Moblin
@@ -93,10 +94,7 @@ class TalkbackSrtClient(TestCase):
     """Play talkback sound over SRT client through the speaker for 10 seconds."""
 
     def setup(self):
-        url = (
-            f"srt://{self.moblin.config.tester_ip_address()}"
-            f":{SRT_CLIENT_TALKBACK_SERVER_PORT}"
-        )
+        url = self.moblin.tester_srt_url(SRT_CLIENT_TALKBACK_SERVER_PORT)
         self.moblin.import_settings(
             overrides={
                 "scenes": [FRONT_SCENE_SETTINGS],
@@ -121,7 +119,7 @@ class TalkbackSrtClient(TestCase):
 
     def run(self):
         stream = FfmpegAudioTestStream(
-            url=f"srt://0.0.0.0:{SRT_CLIENT_TALKBACK_SERVER_PORT}?mode=listener",
+            url=srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
             transport_format="mpegts",
         )
         with stream:

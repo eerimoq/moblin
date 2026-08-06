@@ -5,6 +5,7 @@ from pathlib import Path
 
 import requests
 
+from .config import MEDIAMTX_API_PORT
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -78,6 +79,8 @@ class MediaMtx:
         raise Exception("Timeout waiting for MediaMTX to start")
 
     def _api_get(self, path):
-        response = requests.get(f"http://localhost:9997/v3/{path}", timeout=5)
+        response = requests.get(
+            f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5
+        )
         response.raise_for_status()
         return response.json()

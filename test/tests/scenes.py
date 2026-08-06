@@ -2,6 +2,7 @@ import logging
 import time
 from pathlib import Path
 
+from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
 from utils.ffmpeg import read_video_frame
@@ -107,7 +108,7 @@ class ScenePiPBackFront(TestCase):
                     {
                         "enabled": True,
                         "bitrateRateControl": "CBR",
-                        "url": f"srt://{self.moblin.config.tester_ip_address()}:8890?streamid=publish:test",
+                        "url": self.moblin.tester_srt_publish_url("test"),
                         "srt": {"adaptiveBitrateEnabled": False},
                         "bitrate": 5_000_000,
                         "fps": self._fps,
@@ -144,12 +145,7 @@ class ScenePiPBackFront(TestCase):
 
     def run(self):
         time.sleep(2)
-        self.moblin.start_recording()
-        time.sleep(10)
-        self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording(
-            f"ScenePiPBackFront{self._fps}.mp4"
-        )
+        recording_file = self.moblin.record(10, f"ScenePiPBackFront{self._fps}.mp4")
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
@@ -174,7 +170,7 @@ class SceneWidgetsInBackground(TestCase):
                     {
                         "enabled": True,
                         "bitrateRateControl": "CBR",
-                        "url": f"srt://{self.moblin.config.tester_ip_address()}:8890?streamid=publish:test",
+                        "url": self.moblin.tester_srt_publish_url("test"),
                         "srt": {"adaptiveBitrateEnabled": False},
                         "bitrate": 5_000_000,
                         "backgroundStreaming": True,
@@ -202,7 +198,7 @@ class SceneWidgetsInBackground(TestCase):
 
     def run(self):
         filename = FILES_DIR / "ScenewidgetsInBackground.ts"
-        with FfmpegServer(url="srt://0.0.0.0:8890?mode=listener", filename=filename):
+        with FfmpegServer(url=srt_listener_url(), filename=filename):
             self.moblin.go_live()
             manual_confirmation("Put the app in background.")
             LOGGER.info("Streaming in background for 10 more seconds")
@@ -239,10 +235,7 @@ class WidgetTestCase(TestCase):
 
     def record(self, filename: str) -> Path:
         time.sleep(WARM_UP_TIME)
-        self.moblin.start_recording()
-        time.sleep(RECORDING_TIME)
-        self.moblin.stop_recording()
-        recording_file = self.moblin.download_and_delete_latest_recording(filename)
+        recording_file = self.moblin.record(RECORDING_TIME, filename)
         self.assert_video_size(recording_file, WIDTH, HEIGHT)
         return recording_file
 

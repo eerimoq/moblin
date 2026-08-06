@@ -9,6 +9,9 @@ from pathlib import Path
 import requests
 
 from .arduino import Arduino
+from .config import TESTER_RTMP_PORT
+from .config import TESTER_RTSP_PORT
+from .config import TESTER_SRT_PORT
 from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .generate_device_settings import base_settings
@@ -30,6 +33,7 @@ class Moblin:
         self._remote_control_port = config.remote_control_port()
         self._server = None
         self.ip_address = config.moblin_ip_address()
+        self._tester_ip_address = config.tester_ip_address()
         self._capabilities = config.capabilities()
         self._moving_picture = moving_picture
 
@@ -93,6 +97,9 @@ class Moblin:
     def stop_recording(self):
         self._execute("stop_recording")
 
+    def record(self, duration, filename) -> Path:
+        return Recorder(self, filename).record(duration)
+
     def download_and_delete_latest_recording(self, filename: str) -> Path:
         base_url = f"http://{self.ip_address}:{WEB_REMOTE_CONTROL_PORT}"
         response = requests.get(f"{base_url}/recordings.json", timeout=15)
@@ -109,6 +116,21 @@ class Moblin:
 
     def ping(self):
         self._execute("get_settings")
+
+    def tester_rtmp_url(self, path: str) -> str:
+        return f"rtmp://{self._tester_ip_address}:{TESTER_RTMP_PORT}/{path}"
+
+    def tester_rtsp_url(self, path: str) -> str:
+        return f"rtsp://{self._tester_ip_address}:{TESTER_RTSP_PORT}/{path}"
+
+    def tester_srt_url(self, port: int) -> str:
+        return f"srt://{self._tester_ip_address}:{port}"
+
+    def tester_srt_publish_url(self, name: str, passphrase: str | None = None) -> str:
+        url = f"{self.tester_srt_url(TESTER_SRT_PORT)}?streamid=publish:{name}"
+        if passphrase is not None:
+            url += f"&passphrase={passphrase}"
+        return url
 
     def has_capability(self, name: str) -> bool:
         return name in self._capabilities
@@ -221,3 +243,26 @@ def parse_total_bytes(value, unit):
     if unit == "MB":
         total_bytes *= 1_000_000
     return total_bytes
+
+
+class Recorder:
+    def __init__(self, moblin: Moblin, filename: str):
+        self.recording = Path()
+        self._moblin = moblin
+        self._filename = filename
+
+    def __enter__(self):
+        self._moblin.start_recording()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._moblin.stop_recording()
+        self.recording = self._moblin.download_and_delete_latest_recording(
+            self._filename
+        )
+
+    def record(self, seconds: float) -> Path:
+        """Record for given number of seconds and return the downloaded recording."""
+        with self:
+            time.sleep(seconds)
+        return self.recording

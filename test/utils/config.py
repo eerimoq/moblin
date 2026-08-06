@@ -1,12 +1,31 @@
 import tomllib
 from pathlib import Path
 
+# Ports served by Moblin on the device.
 WEB_REMOTE_CONTROL_PORT = 1180
 RTMP_SERVER_PORT = 11935
 SRT_SERVER_PORT = 4000
+RIST_SERVER_PORT = 6500
+# Ports served on the tester machine.
 SRT_CLIENT_1_SERVER_PORT = 4004
 SRT_CLIENT_TALKBACK_SERVER_PORT = 4005
-RIST_SERVER_PORT = 6500
+TESTER_RTMP_PORT = 1935
+TESTER_RTSP_PORT = 8554
+TESTER_SRT_PORT = 8890
+MEDIAMTX_API_PORT = 9997
+
+
+def srt_listener_url(
+    port: int = TESTER_SRT_PORT,
+    stream_id: str | None = None,
+    passphrase: str | None = None,
+) -> str:
+    url = f"srt://0.0.0.0:{port}?mode=listener"
+    if stream_id is not None:
+        url += f"&streamid={stream_id}"
+    if passphrase is not None:
+        url += f"&passphrase={passphrase}"
+    return url
 
 
 class Config:

@@ -18,7 +18,7 @@ class WebRemoteControlLive(TestCase):
                         "name": "RTMP",
                         "enabled": True,
                         "bitrateRateControl": "CBR",
-                        "url": f"rtmp://{self.moblin.config.tester_ip_address()}:1935/test",
+                        "url": self.moblin.tester_rtmp_url("test"),
                         "rtmp": {"adaptiveBitrateEnabled": False},
                     }
                 ],
