@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 
 from utils.config import WEB_REMOTE_CONTROL_PORT
+from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
@@ -9,10 +10,26 @@ from utils.test_case import TestCase
 class WebRemoteControlLive(TestCase):
     """Go live and end."""
 
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "name": "RTMP",
+                        "enabled": True,
+                        "bitrateRateControl": "CBR",
+                        "url": f"rtmp://{self.moblin.config.tester_ip_address()}:1935/test",
+                        "rtmp": {"adaptiveBitrateEnabled": False},
+                    }
+                ],
+                "scenes": [FRONT_SCENE_SETTINGS],
+                "widgets": [],
+            }
+        )
+
     def run(self):
         self.moblin.set_scene("Front")
         with MediaMtx() as mediamtx:
-            self.moblin.set_stream("RTMP")
             with sync_playwright() as playwright:
                 browser = playwright.chromium.launch()
                 page = browser.new_page()

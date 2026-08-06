@@ -6,6 +6,7 @@ from typing import List
 from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
+from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import WEBSITES_ROOT
@@ -14,10 +15,88 @@ from utils.utils import create_qr_code_image
 from utils.web_server import WebServer
 
 LOGGER = logging.getLogger(__name__)
+PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1312"
+AUDIO_AND_VIDEO_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1313"
+AUDIO_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1314"
+LOCAL_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1315"
+
+
+def _scene_widget_settings(widget_id: str, x: int, y: int):
+    return {
+        "widgetId": widget_id,
+        "alignment": "TopLeft",
+        "x": x,
+        "y": y,
+        "size": 100,
+        "migrated": True,
+        "migrated2": True,
+    }
+
+
+def _widget_settings(widget_id: str, name: str, url: str, **browser):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": "Browser",
+        "browser": {"url": url, "width": 1920, "height": 1080, **browser},
+    }
 
 
 class BrowserWidgetModes(TestCase):
     """4 browser widgets; one for each mode and one local only."""
+
+    def import_settings(self):
+        url = (
+            f"http://{self.moblin.config.tester_ip_address()}:6967"
+            "/BrowserWidgetHighFpsVideo.html"
+        )
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        "cameraPosition": "Screen capture",
+                        "widgets": [
+                            _scene_widget_settings(
+                                PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, x=0, y=0
+                            ),
+                            _scene_widget_settings(
+                                AUDIO_AND_VIDEO_ONLY_WIDGET_ID, x=50, y=0
+                            ),
+                            _scene_widget_settings(AUDIO_ONLY_WIDGET_ID, x=0, y=50),
+                            _scene_widget_settings(LOCAL_ONLY_WIDGET_ID, x=50, y=50),
+                        ],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [
+                    _widget_settings(
+                        PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID,
+                        "Browser periodic audio and video",
+                        url,
+                        mode="periodicAudioAndVideo",
+                    ),
+                    _widget_settings(
+                        AUDIO_AND_VIDEO_ONLY_WIDGET_ID,
+                        "Browser audio and video only",
+                        url,
+                        mode="audioAndVideoOnly",
+                    ),
+                    _widget_settings(
+                        AUDIO_ONLY_WIDGET_ID,
+                        "Browser audio only",
+                        url,
+                        mode="audioOnly",
+                    ),
+                    _widget_settings(
+                        LOCAL_ONLY_WIDGET_ID,
+                        "Browser local only",
+                        url,
+                        localOnly=True,
+                    ),
+                ],
+            }
+        )
 
     def run(self):
         create_qr_code_image(
@@ -25,7 +104,7 @@ class BrowserWidgetModes(TestCase):
         )
         create_qr_codes_video(WEBSITES_ROOT / "BrowserWidgetHighFpsVideo.mp4")
         with WebServer(WEBSITES_ROOT):
-            self.moblin.set_scene("Browser widgets")
+            self.import_settings()
             time.sleep(2)
             self.moblin.start_recording()
             time.sleep(16)
