@@ -59,6 +59,12 @@ class Moblin:
             self._server.kill()
             self._server.wait()
 
+    def import_settings(self, path: Path):
+        try:
+            self._execute("import_settings", path)
+        except subprocess.CalledProcessError:
+            time.sleep(3)
+
     def set_stream(self, name):
         try:
             self._execute("set_stream", name)
