@@ -113,12 +113,8 @@ class SrtServer: @unchecked Sendable {
     }
 
     private func listen() throws {
-        var res = srt_listen(listenerSocket, 5)
-        guard res != SRT_ERROR else {
-            throw "Listen failed: \(lastSrtSocketError())"
-        }
         let server = Unmanaged.passRetained(self).toOpaque()
-        res = srt_listen_callback(
+        var res = srt_listen_callback(
             listenerSocket,
             { server, _, _, _, streamIdIn in
                 guard let server, let streamIdIn else {
@@ -134,6 +130,10 @@ class SrtServer: @unchecked Sendable {
         )
         guard res != SRT_ERROR else {
             throw "Listen callback failed: \(lastSrtSocketError())"
+        }
+        res = srt_listen(listenerSocket, 5)
+        guard res != SRT_ERROR else {
+            throw "Listen failed: \(lastSrtSocketError())"
         }
     }
 
