@@ -181,6 +181,19 @@ private struct GraphicsView: View {
                     resources.
                     """)
                 }
+                if database.graphicsImplementation == .coreImage {
+                    Section {
+                        Toggle("High quality downsampling", isOn: $database.graphicsHighQualityDownsampling)
+                            .onChange(of: database.graphicsHighQualityDownsampling) { _ in
+                                model.setHighQualityDownsampling()
+                            }
+                    } footer: {
+                        Text("""
+                        High quality downsampling makes downscaled images look better, but uses \
+                        more system resources.
+                        """)
+                    }
+                }
             }
             .navigationTitle("Graphics")
         } label: {

@@ -113,10 +113,6 @@ struct DebugSettingsView: View {
                     }
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
-                Toggle("High quality downsampling", isOn: $debug.highQualityDownsampling)
-                    .onChange(of: debug.highQualityDownsampling) { _ in
-                        model.setHighQualityDownsampling()
-                    }
                 Toggle("Web browser bonding", isOn: $debug.httpProxy)
                     .onChange(of: debug.httpProxy) { _ in
                         model.httpProxyServerChanged()

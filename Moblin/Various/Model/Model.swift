@@ -856,7 +856,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setHighQualityDownsampling() {
-        highQualityDownsampling = database.debug.highQualityDownsampling
+        highQualityDownsampling = database.graphicsHighQualityDownsampling
     }
 
     func makeToast(
