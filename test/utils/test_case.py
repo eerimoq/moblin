@@ -119,7 +119,7 @@ class TestCase(systest.TestCase):
     def assert_all_black(self, image: Image):
         if image.is_all_black():
             return
-        position = image.find_non_black_pixel()
+        position = image.find_non_black_pixel() or (-1, -1)
         raise Exception(
             f"Pixel at {position} is {image.pixel(*position)}, but expected it to be black."
         )
