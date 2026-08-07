@@ -60,6 +60,39 @@ def check_dependencies() -> list[str]:
     return missing_dependencies
 
 
+def _ensure_certificate_exists(certificate_file: Path, key_file: Path):
+    if certificate_file.exists() and key_file.exists():
+        return
+    _run(
+        [
+            "openssl",
+            "ecparam",
+            "-name",
+            "prime256v1",
+            "-genkey",
+            "-noout",
+            "-out",
+            str(key_file),
+        ]
+    )
+    _run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-new",
+            "-key",
+            str(key_file),
+            "-out",
+            str(certificate_file),
+            "-days",
+            "3650",
+            "-subj",
+            "/CN=Moblin test",
+        ]
+    )
+
+
 class FfmpegCommand:
     def __init__(self):
         self._server = None
@@ -88,11 +121,24 @@ class FfmpegCommand:
 
 
 class FfmpegTestStream(FfmpegCommand):
-    def __init__(self, url, transport_format="flv", video_codec="libx264"):
+    def __init__(
+        self,
+        url,
+        transport_format="flv",
+        video_codec="libx264",
+        video_profile=None,
+        audio_codec="aac",
+        audio_channels=1,
+        muxer_args=None,
+    ):
         super().__init__()
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
+        self._video_profile = video_profile
+        self._audio_codec = audio_codec
+        self._audio_channels = audio_channels
+        self._muxer_args = muxer_args or []
         self._audio_file = FILES_DIR / "FfmpegTestStream.wav"
         self._ensure_audio_file_exists()
 
@@ -112,6 +158,9 @@ class FfmpegTestStream(FfmpegCommand):
             )
 
     def args(self):
+        video_profile = []
+        if self._video_profile is not None:
+            video_profile = ["-profile:v", self._video_profile]
         return [
             "-re",
             "-f",
@@ -130,6 +179,7 @@ class FfmpegTestStream(FfmpegCommand):
             "16M",
             "-preset",
             "veryfast",
+            *video_profile,
             "-pix_fmt",
             "yuv420p",
             "-g",
@@ -137,16 +187,41 @@ class FfmpegTestStream(FfmpegCommand):
             "-keyint_min",
             "60",
             "-c:a",
-            "aac",
+            self._audio_codec,
             "-b:a",
             "128k",
+            "-ar",
+            "48000",
+            "-ac",
+            str(self._audio_channels),
             "-vf",
             "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=150,"
             "drawtext=fontsize=60:text=%{frame_num}:x=10:y=100",
             "-f",
             self._transport_format,
+            *self._muxer_args,
             self._url,
         ]
+
+
+class FfmpegWhipTestStream(FfmpegTestStream):
+    def __init__(self, url):
+        certificate_file = FILES_DIR / "FfmpegWhipTestStream.crt"
+        key_file = FILES_DIR / "FfmpegWhipTestStream.key"
+        _ensure_certificate_exists(certificate_file, key_file)
+        super().__init__(
+            url=url,
+            transport_format="whip",
+            video_profile="baseline",
+            audio_codec="libopus",
+            audio_channels=2,
+            muxer_args=[
+                "-cert_file",
+                str(certificate_file),
+                "-key_file",
+                str(key_file),
+            ],
+        )
 
 
 class FfmpegAudioTestStream(FfmpegCommand):

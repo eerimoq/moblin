@@ -237,6 +237,9 @@ private class HttpServerConnection: @unchecked Sendable {
         if !content.isEmpty {
             lines.append("Content-Type: \(contentType ?? request.getContentType())")
         }
+        if status != .noContent {
+            lines.append("Content-Length: \(content.count)")
+        }
         appendExtraHeaders(headers: extraHeaders, lines: &lines)
         let headerData = appendCloseHeaderAndFinalize(lines: &lines)
         sendAndClose(data: headerData + content)

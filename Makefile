@@ -27,6 +27,7 @@ PYLINT_ARGS = \
 	--disable too-many-positional-arguments \
 	--disable too-many-instance-attributes \
 	--disable too-few-public-methods \
+	--disable too-many-public-methods \
 	--disable broad-exception-caught \
 	--disable broad-exception-raised \
 	--disable duplicate-code \

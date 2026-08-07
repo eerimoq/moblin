@@ -5,8 +5,10 @@ from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTMP_PORT
+from utils.config import WHIP_SERVER_PORT
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegTestStream
+from utils.ffmpeg import FfmpegWhipTestStream
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import uuid
 from utils.mediamtx import MediaMtx
@@ -20,6 +22,7 @@ RTSP_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 SRT_CLIENT_STREAM_ID = uuid()
+WHIP_STREAM_ID = uuid()
 
 
 class IngestTestCase(TestCase):
@@ -219,6 +222,47 @@ class IngestRistServer(IngestTestCase):
         self.assert_recording(recorder.recording)
 
 
+class IngestWhipServer(IngestTestCase):
+    """Stream to a WHIP server ingest."""
+
+    def setup(self):
+        self.import_settings(
+            scene={
+                "cameraPosition": "WHIP",
+                "whipCameraId": WHIP_STREAM_ID,
+                "micId": f"{WHIP_STREAM_ID} 0",
+            },
+            whipServer={
+                "enabled": True,
+                "port": WHIP_SERVER_PORT,
+                "streams": [
+                    {
+                        "id": WHIP_STREAM_ID,
+                        "name": "1",
+                        "streamKey": "1",
+                        "latency": 2000,
+                    }
+                ],
+            },
+        )
+
+    def run(self):
+        stream = FfmpegWhipTestStream(
+            url=f"http://{self.moblin.ip_address}:{WHIP_SERVER_PORT}/whip/stream/1",
+        )
+        recorder = Recorder(self.moblin, "IngestWhipServer.mp4")
+        with stream:
+            self.wait_for_ingest_stream_started(startup_delay=5)
+            with recorder:
+                self.moblin.wait_for_ingests(
+                    minimim_bitrate=7_000_000,
+                    maximum_bitrate=9_000_000,
+                    total_bytes=10_000_000,
+                    number_of_ingests=1,
+                )
+        self.assert_recording(recorder.recording, channels=1)
+
+
 def tests(moblin: Moblin):
     return [
         IngestRtmpServer(moblin),
@@ -226,4 +270,5 @@ def tests(moblin: Moblin):
         IngestSrtClient(moblin),
         IngestRtspClientH264(moblin),
         IngestRistServer(moblin),
+        IngestWhipServer(moblin),
     ]

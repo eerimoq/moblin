@@ -23,6 +23,7 @@ from .utils import Image
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
+CHANNEL_LAYOUTS = {1: "mono", 2: "stereo"}
 
 
 class TestCase(systest.TestCase):
@@ -97,6 +98,7 @@ class TestCase(systest.TestCase):
         height: int = 1080,
         fps: int = 30,
         video_codec: str = "hevc",
+        channels: int = 1,
     ):
         metadata = ffprobe(recording)
         self.assert_greater(metadata.format.duration, 8)
@@ -111,7 +113,7 @@ class TestCase(systest.TestCase):
             fps,
             video_codec,
         )
-        self._assert_audio(recording, metadata.audio, has_audio_time_codes)
+        self._assert_audio(recording, metadata.audio, has_audio_time_codes, channels)
 
     def assert_video_size(self, recording: Path, width: int, height: int):
         self.assert_equal(ffprobe_video_size(recording), (width, height))
@@ -180,14 +182,18 @@ class TestCase(systest.TestCase):
         self.assert_equal(len(filtered_video.frames), len(video.frames))
 
     def _assert_audio(
-        self, recording: Path, audio: FfprobeAudioOutput, has_audio_time_codes: bool
+        self,
+        recording: Path,
+        audio: FfprobeAudioOutput,
+        has_audio_time_codes: bool,
+        channels: int,
     ):
         expected_samples_per_frame = 1024
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
         self.assert_equal(audio.sample_rate, 48000)
-        self.assert_equal(audio.channels, 1)
-        self.assert_equal(audio.channel_layout, "mono")
+        self.assert_equal(audio.channels, channels)
+        self.assert_equal(audio.channel_layout, CHANNEL_LAYOUTS[channels])
         self.assert_greater(audio.bit_rate, 120_000)
         self.assert_less(audio.bit_rate, 136_000)
         self.assert_presentation_time_stamps(
@@ -197,7 +203,7 @@ class TestCase(systest.TestCase):
         )
         self._assert_audio_time_codes(recording, has_audio_time_codes)
         for frame in audio.frames:
-            self.assert_equal(frame.channels, 1)
+            self.assert_equal(frame.channels, channels)
             self.assert_equal(frame.number_of_samples, expected_samples_per_frame)
 
     def assert_presentation_time_stamps(

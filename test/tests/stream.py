@@ -190,6 +190,22 @@ class StreamRistToFfmpeg(StreamTestCase):
         self.assert_live_stream(filename)
 
 
+class StreamWhipToMediaMtx(StreamTestCase):
+    """WHIP stream from Moblin to MediaMTX for a few seconds."""
+
+    def setup(self):
+        self.import_stream_settings(
+            url=self.moblin.tester_whip_url("test"),
+            codec="H.264/AVC",
+            audioCodec="OPUS",
+            bitrate=5_000_000,
+        )
+
+    def run(self):
+        with self.stream_to_mediamtx(4_500_000, 5_500_000, 10_000_000) as mediamtx:
+            mediamtx.wait_for_webrtc_stream("test", 5_000_000)
+
+
 class StreamMultiRtmpToMediaMtx(StreamTestCase):
     """Multiple RTMP streams from Moblin to MediaMTX for a few seconds."""
 
@@ -259,6 +275,7 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegVideoRateControl(moblin, "CBR"),
         StreamSrtToFfmpegVideoRateControl(moblin, "VBR"),
         StreamRistToFfmpeg(moblin),
+        StreamWhipToMediaMtx(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
         StreamToGenericUrls(moblin, number, generic_stream_url)

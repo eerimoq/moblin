@@ -13,6 +13,7 @@ from .config import TESTER_RIST_PORT
 from .config import TESTER_RTMP_PORT
 from .config import TESTER_RTSP_PORT
 from .config import TESTER_SRT_PORT
+from .config import TESTER_WEBRTC_PORT
 from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .generate_device_settings import base_settings
@@ -135,6 +136,9 @@ class Moblin:
         if passphrase is not None:
             url += f"&passphrase={passphrase}"
         return url
+
+    def tester_whip_url(self, path: str) -> str:
+        return f"whip://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
 
     def has_capability(self, name: str) -> bool:
         return name in self._capabilities
