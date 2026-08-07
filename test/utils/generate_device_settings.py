@@ -1,6 +1,7 @@
 import json
 import zipfile
 from pathlib import Path
+from uuid import uuid7
 
 import requests
 
@@ -17,6 +18,10 @@ RECORD_STREAM_SETTINGS = {
     "resolution": "1920x1080",
     "recording": {"videoCodec": "H.265/HEVC"},
 }
+
+
+def uuid() -> str:
+    return str(uuid7()).upper()
 
 
 def download_model(name: str) -> Path:

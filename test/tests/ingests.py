@@ -8,17 +8,18 @@ from utils.config import TESTER_RTMP_PORT
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegTestStream
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import uuid
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.moblin import Recorder
 from utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
-RTMP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1385"
-RTSP_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1387"
-RIST_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1388"
-SRT_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1389"
-SRT_CLIENT_STREAM_ID = "F3868489-D301-422D-A7DD-334572CA1387"
+RTMP_STREAM_ID = uuid()
+RTSP_STREAM_ID = uuid()
+RIST_STREAM_ID = uuid()
+SRT_STREAM_ID = uuid()
+SRT_CLIENT_STREAM_ID = uuid()
 
 
 class IngestTestCase(TestCase):

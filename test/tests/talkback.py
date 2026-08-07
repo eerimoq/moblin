@@ -7,14 +7,15 @@ from utils.config import SRT_SERVER_PORT
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegAudioTestStream
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
+from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
-RTMP_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-335572CA1386"
-SRT_TALKBACK_STREAM_ID = "F3868489-D301-422D-A7DD-135572CA1389"
-SRT_CLIENT_TALKBACK_STREAM_ID = "F3868489-D301-522D-A7DD-135572CA1389"
+RTMP_TALKBACK_STREAM_ID = uuid()
+SRT_TALKBACK_STREAM_ID = uuid()
+SRT_CLIENT_TALKBACK_STREAM_ID = uuid()
 
 
 class TalkbackRtmpServer(TestCase):

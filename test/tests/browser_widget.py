@@ -6,6 +6,7 @@ from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import scene_widget_settings
+from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import WEBSITES_DIR
@@ -14,10 +15,10 @@ from utils.utils import create_qr_code_image
 from utils.web_server import WebServer
 
 LOGGER = logging.getLogger(__name__)
-PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1312"
-AUDIO_AND_VIDEO_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1313"
-AUDIO_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1314"
-LOCAL_ONLY_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1315"
+PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = uuid()
+AUDIO_AND_VIDEO_ONLY_WIDGET_ID = uuid()
+AUDIO_ONLY_WIDGET_ID = uuid()
+LOCAL_ONLY_WIDGET_ID = uuid()
 
 
 def widget_settings(widget_id: str, name: str, url: str, **browser):

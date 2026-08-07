@@ -11,6 +11,7 @@ from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import download_model
 from utils.generate_device_settings import scene_widget_settings
+from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import FILES_DIR
@@ -31,19 +32,19 @@ TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
 BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
-FRONT_VIDEO_SOURCE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1311"
+FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
 TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
-MAP_SMALL_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1316"
-MAP_LARGE_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1317"
-PNG_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1318"
-V_TUBER_WIDGET_ID = "F3868489-D301-422D-A7DD-335572CA1319"
+MAP_SMALL_WIDGET_ID = uuid()
+MAP_LARGE_WIDGET_ID = uuid()
+PNG_TUBER_WIDGET_ID = uuid()
+V_TUBER_WIDGET_ID = uuid()
 SCREEN_SCENE_SETTINGS = {
     "name": "Screen",
     "cameraPosition": "Screen capture",
     "enabled": True,
 }
-PNG_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1320"
-V_TUBER_MODEL_ID = "F3868489-D301-422D-A7DD-335572CA1321"
+PNG_TUBER_MODEL_ID = uuid()
+V_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 
