@@ -72,6 +72,20 @@ class MediaMtx:
             time.sleep(1)
         raise Exception("Timeout waiting for WebRTC stream to MediaMTX")
 
+    def wait_for_rtsp_publisher(self, path, bytes_received):
+        end_time = time.monotonic() + 30
+        while time.monotonic() < end_time:
+            response = self._api_get("rtspsessions/list")
+            for stream in response["items"]:
+                if (
+                    stream["path"] == path
+                    and stream["state"] == "publish"
+                    and stream["inboundBytes"] > bytes_received
+                ):
+                    return
+            time.sleep(1)
+        raise Exception("Timeout waiting for RTSP publisher to MediaMTX")
+
     def wait_for_rtsp_stream(self, outbound_bytes):
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:

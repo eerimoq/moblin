@@ -140,6 +140,9 @@ class Moblin:
     def tester_whip_url(self, path: str) -> str:
         return f"whip://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
 
+    def tester_whep_url(self, path: str) -> str:
+        return f"http://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
+
     def has_capability(self, name: str) -> bool:
         return name in self._capabilities
 

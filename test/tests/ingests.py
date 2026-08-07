@@ -5,6 +5,7 @@ from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTMP_PORT
+from utils.config import TESTER_RTSP_PORT
 from utils.config import WHIP_SERVER_PORT
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegTestStream
@@ -23,6 +24,7 @@ RIST_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 SRT_CLIENT_STREAM_ID = uuid()
 WHIP_STREAM_ID = uuid()
+WHEP_STREAM_ID = uuid()
 
 
 class IngestTestCase(TestCase):
@@ -263,6 +265,53 @@ class IngestWhipServer(IngestTestCase):
         self.assert_recording(recorder.recording, channels=1)
 
 
+class IngestWhepClient(IngestTestCase):
+    """Stream to a WHEP client ingest."""
+
+    def setup(self):
+        self.import_settings(
+            scene={
+                "cameraPosition": "WHEP",
+                "whepCameraId": WHEP_STREAM_ID,
+                "micId": f"{WHEP_STREAM_ID} 0",
+            },
+            whepClient={
+                "streams": [
+                    {
+                        "id": WHEP_STREAM_ID,
+                        "name": "1",
+                        "url": self.moblin.tester_whep_url("1"),
+                        "enabled": True,
+                        "latency": 2000,
+                    }
+                ],
+            },
+        )
+
+    def run(self):
+        stream = FfmpegTestStream(
+            url=f"rtsp://localhost:{TESTER_RTSP_PORT}/1",
+            transport_format="rtsp",
+            video_profile="baseline",
+            audio_codec="libopus",
+            audio_channels=2,
+            muxer_args=["-rtsp_transport", "tcp"],
+        )
+        recorder = Recorder(self.moblin, "IngestWhepClient.mp4")
+        with MediaMtx() as mediamtx:
+            with stream:
+                mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
+                self.wait_for_ingest_stream_started(startup_delay=5)
+                with recorder:
+                    self.moblin.wait_for_ingests(
+                        minimim_bitrate=7_000_000,
+                        maximum_bitrate=9_000_000,
+                        total_bytes=10_000_000,
+                        number_of_ingests=1,
+                    )
+        self.assert_recording(recorder.recording, channels=1)
+
+
 def tests(moblin: Moblin):
     return [
         IngestRtmpServer(moblin),
@@ -271,4 +320,5 @@ def tests(moblin: Moblin):
         IngestRtspClientH264(moblin),
         IngestRistServer(moblin),
         IngestWhipServer(moblin),
+        IngestWhepClient(moblin),
     ]
