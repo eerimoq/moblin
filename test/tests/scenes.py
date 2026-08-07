@@ -47,6 +47,10 @@ PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
+CORE_IMAGE = "coreImage"
+METAL_PETAL = "metalPetal"
+GRAPHICS_IMPLEMENTATION_NAMES = {CORE_IMAGE: "CoreImage", METAL_PETAL: "MetalPetal"}
+GRAPHICS_IMPLEMENTATIONS = list(GRAPHICS_IMPLEMENTATION_NAMES)
 
 
 def is_map_dot(pixel: Pixel) -> bool:
@@ -87,16 +91,28 @@ class SceneSwitchMultipleTimes(TestCase):
             self.moblin.set_scene("Front")
 
 
-class ScenePiPBackFront(TestCase):
+class GraphicsImplementationTestCase(TestCase):
+    """Base class of test cases that are run once per graphics implementation."""
+
+    def __init__(
+        self, moblin: Moblin, graphics_implementation: str, name: str | None = None
+    ):
+        self.graphics_implementation = graphics_implementation
+        self._name_suffix = GRAPHICS_IMPLEMENTATION_NAMES[graphics_implementation]
+        super().__init__(moblin, f"{name or type(self).__name__}{self._name_suffix}")
+
+    def file_name(self, name: str, extension: str = "mp4") -> str:
+        return f"{name}{self._name_suffix}.{extension}"
+
+
+class ScenePiPBackFront(GraphicsImplementationTestCase):
     """A picture in picture scene with full screen back camera and small front camera in
     bottom right. Record for a few seconds and validate the recording.
 
-    NOTE: Static scenes will make this test fail!
-
     """
 
-    def __init__(self, moblin: Moblin, fps: int):
-        super().__init__(moblin, f"ScenePiPBackFront{fps}Fps")
+    def __init__(self, moblin: Moblin, fps: int, graphics_implementation: str):
+        super().__init__(moblin, graphics_implementation, f"ScenePiPBackFront{fps}Fps")
         self._fps = fps
 
     def setup(self):
@@ -105,6 +121,7 @@ class ScenePiPBackFront(TestCase):
         self.moving_picture_on()
         self.moblin.import_settings(
             overrides={
+                "graphicsImplementation": self.graphics_implementation,
                 "streams": [
                     {
                         "enabled": True,
@@ -146,7 +163,9 @@ class ScenePiPBackFront(TestCase):
 
     def run(self):
         time.sleep(2)
-        recording_file = self.moblin.record(10, f"ScenePiPBackFront{self._fps}.mp4")
+        recording_file = self.moblin.record(
+            10, self.file_name(f"ScenePiPBackFront{self._fps}")
+        )
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
@@ -160,13 +179,14 @@ class ScenePiPBackFront(TestCase):
         )
 
 
-class SceneWidgetsInBackground(TestCase):
+class SceneWidgetsInBackground(GraphicsImplementationTestCase):
     """Stream in background mode with various widgets showing."""
 
     def setup(self):
         self.skip_if_missing_capability("background-streaming")
         self.moblin.import_settings(
             overrides={
+                "graphicsImplementation": self.graphics_implementation,
                 "streams": [
                     {
                         "enabled": True,
@@ -198,7 +218,7 @@ class SceneWidgetsInBackground(TestCase):
         )
 
     def run(self):
-        filename = FILES_DIR / "ScenewidgetsInBackground.ts"
+        filename = FILES_DIR / self.file_name("SceneWidgetsInBackground", "ts")
         with FfmpegServer(url=srt_listener_url(), filename=filename):
             self.moblin.go_live()
             manual_confirmation("Put the app in background.")
@@ -215,12 +235,13 @@ class SceneWidgetsInBackground(TestCase):
         )
 
 
-class WidgetTestCase(TestCase):
+class WidgetTestCase(GraphicsImplementationTestCase):
     def import_settings(
         self, scene_widgets, widgets, files: dict[str, Path] | None = None
     ):
         self.moblin.import_settings(
             overrides={
+                "graphicsImplementation": self.graphics_implementation,
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
                     {
@@ -270,7 +291,7 @@ class SceneMapWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record("MapWidget.mp4")
+        recording_file = self.record(self.file_name("MapWidget"))
         self.assert_map(recording_file, "small", SMALL_MAP_CROP)
         self.assert_map(recording_file, "large", LARGE_MAP_CROP)
         self.assert_black_background(recording_file)
@@ -316,7 +337,7 @@ class ScenePngTuberWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record("PngTuberWidget.mp4")
+        recording_file = self.record(self.file_name("PngTuberWidget"))
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 
@@ -345,18 +366,20 @@ class SceneVTuberWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record("VTuberWidget.mp4")
+        recording_file = self.record(self.file_name("VTuberWidget"))
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 
 
 def tests(moblin: Moblin):
-    return [
-        SceneSwitchMultipleTimes(moblin),
-        ScenePiPBackFront(moblin, fps=30),
-        ScenePiPBackFront(moblin, fps=60),
-        SceneWidgetsInBackground(moblin),
-        SceneMapWidget(moblin),
-        ScenePngTuberWidget(moblin),
-        SceneVTuberWidget(moblin),
-    ]
+    test_cases = [SceneSwitchMultipleTimes(moblin)]
+    for graphics_implementation in GRAPHICS_IMPLEMENTATIONS:
+        test_cases += [
+            ScenePiPBackFront(moblin, 30, graphics_implementation),
+            ScenePiPBackFront(moblin, 60, graphics_implementation),
+            SceneWidgetsInBackground(moblin, graphics_implementation),
+            SceneMapWidget(moblin, graphics_implementation),
+            ScenePngTuberWidget(moblin, graphics_implementation),
+            SceneVTuberWidget(moblin, graphics_implementation),
+        ]
+    return test_cases
