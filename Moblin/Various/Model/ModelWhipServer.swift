@@ -3,7 +3,7 @@ import Foundation
 
 extension Model {
     func whipServerEnabled() -> Bool {
-        database.srtlaServer.enabled
+        database.whipServer.enabled
     }
 
     func whipCameras() -> [Camera] {

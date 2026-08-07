@@ -454,6 +454,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.syncTimestamps = syncTimestamps
         return new
     }
 }
