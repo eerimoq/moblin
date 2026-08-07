@@ -9,6 +9,7 @@ RIST_SERVER_PORT = 6500
 # Ports served on the tester machine.
 SRT_CLIENT_1_SERVER_PORT = 4004
 SRT_CLIENT_TALKBACK_SERVER_PORT = 4005
+TESTER_RIST_PORT = 6600
 TESTER_RTMP_PORT = 1935
 TESTER_RTSP_PORT = 8554
 TESTER_SRT_PORT = 8890
@@ -26,6 +27,10 @@ def srt_listener_url(
     if passphrase is not None:
         url += f"&passphrase={passphrase}"
     return url
+
+
+def rist_listener_url(port: int = TESTER_RIST_PORT) -> str:
+    return f"rist://@0.0.0.0:{port}"
 
 
 class Config:

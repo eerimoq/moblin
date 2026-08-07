@@ -9,6 +9,7 @@ from pathlib import Path
 import requests
 
 from .arduino import Arduino
+from .config import TESTER_RIST_PORT
 from .config import TESTER_RTMP_PORT
 from .config import TESTER_RTSP_PORT
 from .config import TESTER_SRT_PORT
@@ -116,6 +117,9 @@ class Moblin:
 
     def ping(self):
         self._execute("get_settings")
+
+    def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:
+        return f"rist://{self._tester_ip_address}:{port}"
 
     def tester_rtmp_url(self, path: str) -> str:
         return f"rtmp://{self._tester_ip_address}:{TESTER_RTMP_PORT}/{path}"

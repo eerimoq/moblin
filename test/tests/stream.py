@@ -2,6 +2,7 @@ import logging
 from contextlib import contextmanager
 from pathlib import Path
 
+from utils.config import rist_listener_url
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegServer
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
@@ -25,16 +26,14 @@ class StreamTestCase(TestCase):
 
     def stream_to_ffmpeg(
         self,
+        url: str,
         minimum_bitrate: int,
         maximum_bitrate: int,
         total_bytes: int,
-        passphrase: str | None = None,
     ) -> Path:
         filename = FILES_DIR / f"{self.name}.ts"
         self.moblin.set_scene("Front")
-        with FfmpegServer(
-            url=srt_listener_url(passphrase=passphrase), filename=filename
-        ):
+        with FfmpegServer(url=url, filename=filename):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(
                 minimum_bitrate, maximum_bitrate, None, total_bytes
@@ -105,7 +104,9 @@ class StreamSrtToFfmpeg(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(4_000_000, 6_000_000, 10_000_000)
+        filename = self.stream_to_ffmpeg(
+            srt_listener_url(), 4_000_000, 6_000_000, 10_000_000
+        )
         self.assert_live_stream(filename)
 
 
@@ -120,7 +121,9 @@ class StreamSrtToFfmpegHighBitrate(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(49_000_000, 51_000_000, 50_000_000)
+        filename = self.stream_to_ffmpeg(
+            srt_listener_url(), 49_000_000, 51_000_000, 50_000_000
+        )
         self.assert_live_stream(filename, minimum_length=1, maximum_length=10)
 
 
@@ -138,7 +141,10 @@ class StreamSrtToFfmpegEncrypted(StreamTestCase):
 
     def run(self):
         filename = self.stream_to_ffmpeg(
-            4_000_000, 6_000_000, 10_000_000, passphrase=self.PASSPHRASE
+            srt_listener_url(passphrase=self.PASSPHRASE),
+            4_000_000,
+            6_000_000,
+            10_000_000,
         )
         self.assert_live_stream(filename)
 
@@ -161,7 +167,26 @@ class StreamSrtToFfmpegVideoRateControl(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(4_000_000, 6_000_000, 5_000_000)
+        filename = self.stream_to_ffmpeg(
+            srt_listener_url(), 4_000_000, 6_000_000, 5_000_000
+        )
+        self.assert_live_stream(filename)
+
+
+class StreamRistToFfmpeg(StreamTestCase):
+    """RIST stream from Moblin to ffmpeg for a few seconds."""
+
+    def setup(self):
+        self.import_stream_settings(
+            url=self.moblin.tester_rist_url(),
+            rist={"adaptiveBitrateEnabled": False, "bonding": False},
+            bitrate=5_000_000,
+        )
+
+    def run(self):
+        filename = self.stream_to_ffmpeg(
+            rist_listener_url(), 4_000_000, 6_000_000, 10_000_000
+        )
         self.assert_live_stream(filename)
 
 
@@ -233,6 +258,7 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegVideoRateControl(moblin, "ABR"),
         StreamSrtToFfmpegVideoRateControl(moblin, "CBR"),
         StreamSrtToFfmpegVideoRateControl(moblin, "VBR"),
+        StreamRistToFfmpeg(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
         StreamToGenericUrls(moblin, number, generic_stream_url)
