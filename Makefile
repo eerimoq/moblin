@@ -117,3 +117,11 @@ web-remote-control-frontend-build:
 	cd WebRemoteControlFrontend && \
 	NODE_NO_WARNINGS=1 npx tsc --noEmit && \
 	NODE_NO_WARNINGS=1 npm run build --silent
+
+npm-latest-args = \
+	node -p "Object.keys(require('./package.json').$(1) || {}).map((d) => d + '@latest').join(' ')"
+
+web-remote-control-frontend-update-dependencies:
+	cd WebRemoteControlFrontend && \
+	npm install $$($(call npm-latest-args,dependencies)) && \
+	npm install --save-dev $$($(call npm-latest-args,devDependencies))
