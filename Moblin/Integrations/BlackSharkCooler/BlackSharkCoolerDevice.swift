@@ -188,43 +188,29 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         guard let peripheral, let writeCharacteristic, let model else {
             return
         }
-
         let thermalState = ProcessInfo.processInfo.thermalState
-
         switch model {
         case .pro4:
-            // The Pro 4 Operates on  percentage-based values. 0 is off while 100 is max.
             let coolingPowerTarget: Int
             let fanSpeedTarget: Int
-
             switch thermalState {
             case .nominal:
-                // Phone most likely not streaming. We should stop cooling to prevent condensation.
                 coolingPowerTarget = 0
                 fanSpeedTarget = 10
             case .fair:
-                // Our target thermal-state. we can "chill" now. get it haha.
                 coolingPowerTarget = 20
                 fanSpeedTarget = 20
             case .serious:
-                // Risk of reduced performance starts here.
                 coolingPowerTarget = 80
                 fanSpeedTarget = 50
             case .critical:
-                // Phone is overheating! We dont want to be here.
                 coolingPowerTarget = 100
                 fanSpeedTarget = 100
             @unknown default:
-                // We have no idea what this could be. Max everything as a failsafe.
                 coolingPowerTarget = 100
                 fanSpeedTarget = 100
                 logger.info("black-shark-cooler-device: Thermal state is unknown value ( \(thermalState) )")
             }
-            // Since we do not know the fan and cooler-state we have to assume that it can be out of sync.
-            // sending
-            // the commands to update the cooling power and fan speed on every interval will make sure that
-            // its in
-            // sync.
             let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
             logger.debug("black-shark-cooler-device (Pro 4): Adjusting cooling power to \(coolingPower)%")
             peripheral.writeValue(
@@ -242,8 +228,6 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         case .pro5:
             switch thermalState {
             case .nominal:
-                // Turn cooling off. (AKA Desk mode. Fan will run a bit to remove residual heat. cooling is
-                // fully off)
                 logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to OFF")
                 peripheral.writeValue(
                     BlackSharkLib.getSetCoolingEnabledCommand(false, model: .pro5)!,
@@ -252,19 +236,14 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
                 )
             case .fair:
                 if coolingPower != nil, coolingPower! == 2 {
-                    // Cooling is off, which means we are in the wrong mode. set into custom mode.
                     logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-
                     peripheral.writeValue(
                         BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
                         for: writeCharacteristic,
                         type: .withoutResponse
                     )
                 }
-                // The 5 Pro does not have refined controls for the cooling power and fan.
-                // So here we need to co into the "custom" mode which has 5 steps of intensity.
                 logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 1")
-
                 peripheral.writeValue(
                     BlackSharkLib.getSetCustomModeCommand(intensity: 1, model: .pro5)!,
                     for: writeCharacteristic,
@@ -272,17 +251,13 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
                 )
             case .serious:
                 if coolingPower != nil, coolingPower! == 2 {
-                    // Cooling is off, which means we are in the wrong mode. set into custom mode.
                     logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-
                     peripheral.writeValue(
                         BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
                         for: writeCharacteristic,
                         type: .withoutResponse
                     )
                 }
-                // The 5 Pro does not have refined controls for the cooling power and fan.
-                // So here we need to co into the "custom" mode which has 5 steps of intensity.
                 logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 3")
                 peripheral.writeValue(
                     BlackSharkLib.getSetCustomModeCommand(intensity: 2, model: .pro5)!,
@@ -291,17 +266,13 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
                 )
             case .critical:
                 if coolingPower != nil, coolingPower! == 2 {
-                    // Cooling is off, which means we are in the wrong mode. set into custom mode.
                     logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-
                     peripheral.writeValue(
                         BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
                         for: writeCharacteristic,
                         type: .withoutResponse
                     )
                 }
-                // The 5 Pro does not have refined controls for the cooling power and fan.
-                // So here we need to co into the "custom" mode which has 5 steps of intensity.
                 logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 5")
                 peripheral.writeValue(
                     BlackSharkLib.getSetCustomModeCommand(intensity: 5, model: .pro5)!,
@@ -310,17 +281,13 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
                 )
             @unknown default:
                 if coolingPower != nil, coolingPower! == 2 {
-                    // Cooling is off, which means we are in the wrong mode. set into custom mode.
                     logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-
                     peripheral.writeValue(
                         BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
                         for: writeCharacteristic,
                         type: .withoutResponse
                     )
                 }
-                // The 5 Pro does not have refined controls for the cooling power and fan.
-                // So here we need to co into the "custom" mode which has 5 steps of intensity.
                 peripheral.writeValue(
                     BlackSharkLib.getSetCustomModeCommand(intensity: 5, model: .pro5)!,
                     for: writeCharacteristic,
