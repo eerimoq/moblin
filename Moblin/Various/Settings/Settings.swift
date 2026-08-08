@@ -1696,11 +1696,6 @@ private func addMissingQuickButtonsPageOne(database: Database) {
                                  imageOn: "camera.aperture",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .photoShoot,
-                                 imageOn: "person.crop.square.badge.camera.fill",
-                                 imageOff: "person.crop.square.badge.camera",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .widgets,
                                  imageOn: "photo.on.rectangle.fill",
                                  imageOff: "photo.on.rectangle",
@@ -1973,6 +1968,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .previewStream,
                                  imageOn: "video.circle.fill",
                                  imageOff: "video.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .photoShoot,
+                                 imageOn: "person.crop.square.badge.camera.fill",
+                                 imageOff: "person.crop.square.badge.camera",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
