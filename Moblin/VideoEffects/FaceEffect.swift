@@ -118,7 +118,7 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         let backgroundImage = settings.blurBackground ? privacyImage : image
-        var layers: [MultilayerCompositingFilter.Layer] = []
+        var layers: [MTILayer] = []
         if blurFaces || settings.blurBackground {
             let facesImage = settings.blurBackground ? image : privacyImage
             layers += makeFaceLayers(image, facesImage, detections.face)
@@ -132,7 +132,7 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         guard !layers.isEmpty || settings.blurBackground else {
             return image
         }
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = backgroundImage
         filter.layers = layers
         return filter.outputImage ?? image
@@ -171,7 +171,7 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
 
     private func makeFaceLayers(_ image: MTIImage,
                                 _ facesImage: MTIImage,
-                                _ detections: [VNFaceObservation]) -> [MultilayerCompositingFilter.Layer]
+                                _ detections: [VNFaceObservation]) -> [MTILayer]
     {
         let ratio: Float = switch settings.privacyMode {
         case .blur, .pixellate:
@@ -194,21 +194,20 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             }
             let side = 2 * Double(ratio) * boundingBox.height / 1.7
             let position = CGPoint(x: boundingBox.midX, y: size.height - boundingBox.midY)
-            return .content(facesImage, modifier: { layer in
-                layer.contentRegion = CGRect(x: position.x - side / 2,
-                                             y: position.y - side / 2,
-                                             width: side,
-                                             height: side)
-                layer.size = CGSize(width: side, height: side)
-                layer.position = position
-                layer.mask = mask
-            })
+            return .init(content: facesImage,
+                         contentRegion: CGRect(x: position.x - side / 2,
+                                               y: position.y - side / 2,
+                                               width: side,
+                                               height: side),
+                         mask: mask,
+                         position: position,
+                         size: CGSize(width: side, height: side))
         }
     }
 
     private func makeTextLayers(_ image: MTIImage,
                                 _ privacyImage: MTIImage,
-                                _ detections: [TextDetection]) -> [MultilayerCompositingFilter.Layer]
+                                _ detections: [TextDetection]) -> [MTILayer]
     {
         let size = image.extent.size
         return detections.map { detection in
@@ -220,16 +219,15 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
                                        y: size.height - boundingBox.maxY,
                                        width: boundingBox.width,
                                        height: boundingBox.height)
-            return .content(privacyImage, modifier: { layer in
-                layer.contentRegion = contentRegion
-                layer.size = contentRegion.size
-                layer.position = CGPoint(x: contentRegion.midX, y: contentRegion.midY)
-            })
+            return .init(content: privacyImage,
+                         contentRegion: contentRegion,
+                         position: CGPoint(x: contentRegion.midX, y: contentRegion.midY),
+                         size: contentRegion.size)
         }
     }
 
     private func makeMouthLayers(_ image: MTIImage,
-                                 _ detections: [VNFaceObservation]) -> [MultilayerCompositingFilter.Layer]
+                                 _ detections: [VNFaceObservation]) -> [MTILayer]
     {
         guard let moblinImage = moblinImage?.getMetalPetalImage() else {
             return []
@@ -239,10 +237,9 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             guard let mouth = calcMouth(detection, size, moblinImage.extent.size) else {
                 return nil
             }
-            return .content(moblinImage, modifier: { layer in
-                layer.size = mouth.size
-                layer.position = CGPoint(x: mouth.midX, y: size.height - mouth.midY)
-            })
+            return .init(content: moblinImage,
+                         position: CGPoint(x: mouth.midX, y: size.height - mouth.midY),
+                         size: mouth.size)
         }
     }
 

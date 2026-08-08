@@ -87,13 +87,10 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
         let dotSize = CGSize(width: dotSide, height: dotSide)
         let dotX = mapWidth / 2
         let dotY = mapHeight / 2 + CGFloat(dotOffsetRatio) * mapHeight / 2
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = mapImage
         filter.layers = [
-            .content(dotImage, modifier: { layer in
-                layer.size = dotSize
-                layer.position = CGPoint(x: dotX, y: dotY)
-            }),
+            .init(content: dotImage, position: CGPoint(x: dotX, y: dotY), size: dotSize),
         ]
         guard let mapWithDotImage = filter.outputImage else {
             return image

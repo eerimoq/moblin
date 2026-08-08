@@ -167,7 +167,7 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
                         toPixels(sceneWidget.layout.size, backgroundSize.height) / contentSize.height)
         let size = CGSize(width: contentSize.width * scale, height: contentSize.height * scale)
         let position = metalPetalLayerPosition(sceneWidget.layout, size, backgroundSize)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = layerImages.map { layerImage in
             let layerSize = CGSize(width: layerImage.extent.width * scale,
@@ -178,13 +178,10 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
                 position.x - size.width / 2 + layerSize.width / 2
             }
             let y = position.y + size.height / 2 - layerSize.height / 2
-            return .content(layerImage, modifier: { layer in
-                layer.size = layerSize
-                layer.position = CGPoint(x: x, y: y)
-                if mirror {
-                    layer.contentFlipOptions = .flipHorizontally
-                }
-            })
+            return .init(content: layerImage,
+                         contentFlipOptions: mirror ? .flipHorizontally : [],
+                         position: CGPoint(x: x, y: y),
+                         size: layerSize)
         }
         return filter.outputImage ?? image
     }

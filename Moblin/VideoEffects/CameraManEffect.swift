@@ -76,14 +76,13 @@ final class CameraManEffect: VideoEffect, @unchecked Sendable {
                                    y: size.height - cropRect.maxY,
                                    width: cropRect.width,
                                    height: cropRect.height)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(image, modifier: { layer in
-                layer.contentRegion = contentRegion
-                layer.size = size
-                layer.position = CGPoint(x: size.width / 2, y: size.height / 2)
-            }),
+            .init(content: image,
+                  contentRegion: contentRegion,
+                  position: CGPoint(x: size.width / 2, y: size.height / 2),
+                  size: size),
         ]
         return filter.outputImage ?? image
     }

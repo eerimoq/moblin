@@ -101,14 +101,13 @@ final class FixedHorizonEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         let rotation = Float(-currentAngle)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(image, modifier: { layer in
-                layer.size = CGSize(width: size.width * scale, height: size.height * scale)
-                layer.position = CGPoint(x: size.width / 2, y: size.height / 2)
-                layer.rotation = rotation
-            }),
+            .init(content: image,
+                  position: CGPoint(x: size.width / 2, y: size.height / 2),
+                  size: CGSize(width: size.width * scale, height: size.height * scale),
+                  rotation: rotation),
         ]
         return filter.outputImage ?? image
     }

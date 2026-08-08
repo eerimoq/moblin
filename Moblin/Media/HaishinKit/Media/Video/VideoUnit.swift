@@ -1123,18 +1123,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         let scaleFactor = calcScaleFactor(shape.rotated(image.size))
         let size = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
         let position = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-        let mirror = mirror
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = getBlackImageMetalPetal(size: canvasSize)
         filter.layers = [
-            .content(image, modifier: { layer in
-                layer.size = size
-                layer.position = position
-                layer.rotation = shape.rotationRadians()
-                if mirror {
-                    layer.contentFlipOptions = shape.mirrorFlipOptions()
-                }
-            }),
+            .init(content: image,
+                  contentFlipOptions: mirror ? shape.mirrorFlipOptions() : [],
+                  position: position,
+                  size: size,
+                  rotation: shape.rotationRadians()),
         ]
         return filter.outputImage ?? image
     }

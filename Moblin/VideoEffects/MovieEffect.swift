@@ -14,17 +14,15 @@ final class MovieEffect: VideoEffect, @unchecked Sendable {
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
         let size = image.extent.size
         let barSize = CGSize(width: size.width, height: size.height / 6)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(.black, modifier: { layer in
-                layer.size = barSize
-                layer.position = CGPoint(x: size.width / 2, y: barSize.height / 2)
-            }),
-            .content(.black, modifier: { layer in
-                layer.size = barSize
-                layer.position = CGPoint(x: size.width / 2, y: size.height - barSize.height / 2)
-            }),
+            .init(content: .black,
+                  position: CGPoint(x: size.width / 2, y: barSize.height / 2),
+                  size: barSize),
+            .init(content: .black,
+                  position: CGPoint(x: size.width / 2, y: size.height - barSize.height / 2),
+                  size: barSize),
         ]
         return filter.outputImage ?? image
     }

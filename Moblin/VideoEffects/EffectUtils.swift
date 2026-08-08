@@ -109,15 +109,10 @@ extension MTIImage {
                             _ backgroundImage: MTIImage,
                             _ size: CGSize? = nil) -> MTIImage
     {
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = backgroundImage
         filter.layers = [
-            .content(self, modifier: { layer in
-                layer.position = position
-                if let size {
-                    layer.size = size
-                }
-            }),
+            .init(content: self, position: position, size: size),
         ]
         return filter.outputImage ?? backgroundImage
     }
@@ -150,27 +145,23 @@ extension MTIImage {
                                                shape.rotated(borderSize),
                                                backgroundImage.extent.size)
         let rotation = shape.rotationRadians()
-        var layers: [MultilayerCompositingFilter.Layer] = []
+        var layers: [MTILayer] = []
         if borderWidth > 0 {
-            layers.append(.content(.white, modifier: { layer in
-                layer.size = borderSize
-                layer.position = position
-                layer.rotation = rotation
-                layer.tintColor = shape.borderColor
-                layer.cornerRadius = shape.cornerRadius(borderSize)
-            }))
+            layers.append(.init(content: .white,
+                                position: position,
+                                size: borderSize,
+                                rotation: rotation,
+                                cornerRadius: shape.cornerRadius(borderSize),
+                                tintColor: shape.borderColor))
         }
-        layers.append(.content(self, modifier: { layer in
-            layer.contentRegion = shape.contentRegion
-            layer.size = size
-            layer.position = position
-            layer.rotation = rotation
-            layer.cornerRadius = shape.cornerRadius(size)
-            if mirror {
-                layer.contentFlipOptions = shape.mirrorFlipOptions()
-            }
-        }))
-        let filter = MultilayerCompositingFilter()
+        layers.append(.init(content: self,
+                            contentRegion: shape.contentRegion,
+                            contentFlipOptions: mirror ? shape.mirrorFlipOptions() : [],
+                            position: position,
+                            size: size,
+                            rotation: rotation,
+                            cornerRadius: shape.cornerRadius(size)))
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = backgroundImage
         filter.layers = layers
         return filter.outputImage ?? backgroundImage

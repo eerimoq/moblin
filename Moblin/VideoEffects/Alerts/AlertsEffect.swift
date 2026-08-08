@@ -567,31 +567,27 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         let imageSize = image.extent.size
-        let layers: [MultilayerCompositingFilter.Layer] = faceDetections.compactMap { detection in
+        let layers: [MTILayer] = faceDetections.compactMap { detection in
             guard let placement = calcFacePlacement(detection, imageSize, landmarkSettings) else {
                 return nil
             }
             let scale = placement.height / alertImage.extent.height
             let size = CGSize(width: alertImage.extent.width * scale, height: placement.height)
-            // Core Image rotates the alert image around the origin and then translates it, so its
-            // center ends up as the sum of the two.
             let centerPoint = rotatePoint(point: .init(x: placement.center.x - size.width / 2,
                                                        y: placement.center.y - size.height / 2),
                                           alpha: placement.rotation)
             let rotatedCenter = rotatePoint(point: .init(x: size.width / 2, y: size.height / 2),
                                             alpha: placement.rotation)
             let center = CGPoint(x: rotatedCenter.x + centerPoint.x, y: rotatedCenter.y + centerPoint.y)
-            return .content(alertImage, modifier: { layer in
-                layer.size = size
-                layer.position = CGPoint(x: center.x, y: imageSize.height - center.y)
-                // Core Image rotates counter clockwise for positive angles, MetalPetal clockwise.
-                layer.rotation = Float(-placement.rotation)
-            })
+            return .init(content: alertImage,
+                         position: CGPoint(x: center.x, y: imageSize.height - center.y),
+                         size: size,
+                         rotation: Float(-placement.rotation))
         }
         guard !layers.isEmpty else {
             return image
         }
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = layers
         return filter.outputImage ?? image
@@ -626,16 +622,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let messageSize = messageImage.extent.size
         let xPos = toPixels(x, image.extent.width)
         let yPos = toPixels(y, image.extent.height)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(alertImage, modifier: { layer in
-                layer.position = CGPoint(x: xPos + alertSize.width / 2, y: yPos + alertSize.height / 2)
-            }),
-            .content(messageImage, modifier: { layer in
-                layer.position = CGPoint(x: xPos + alertSize.width / 2,
-                                         y: yPos + alertSize.height + messageSize.height / 2)
-            }),
+            .init(content: alertImage,
+                  position: CGPoint(x: xPos + alertSize.width / 2,
+                                    y: yPos + alertSize.height / 2)),
+            .init(content: messageImage,
+                  position: CGPoint(x: xPos + alertSize.width / 2,
+                                    y: yPos + alertSize.height + messageSize.height / 2)),
         ]
         return filter.outputImage ?? image
     }

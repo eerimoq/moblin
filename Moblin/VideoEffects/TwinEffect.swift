@@ -29,20 +29,18 @@ final class TwinEffect: VideoEffect, @unchecked Sendable {
         let height = size.height
         let centerRegion = CGRect(x: width / 2, y: 0, width: width, height: height)
         let layerSize = CGSize(width: width, height: height)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(image, modifier: { layer in
-                layer.contentRegion = centerRegion
-                layer.size = layerSize
-                layer.position = CGPoint(x: width / 2, y: height / 2)
-            }),
-            .content(image, modifier: { layer in
-                layer.contentRegion = centerRegion
-                layer.size = layerSize
-                layer.position = CGPoint(x: 3 * width / 2, y: height / 2)
-                layer.contentFlipOptions = .flipHorizontally
-            }),
+            .init(content: image,
+                  contentRegion: centerRegion,
+                  position: CGPoint(x: width / 2, y: height / 2),
+                  size: layerSize),
+            .init(content: image,
+                  contentRegion: centerRegion,
+                  contentFlipOptions: .flipHorizontally,
+                  position: CGPoint(x: 3 * width / 2, y: height / 2),
+                  size: layerSize),
         ]
         return filter.outputImage ?? image
     }

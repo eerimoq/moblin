@@ -124,21 +124,18 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
         updateAngle(info.presentationTimeStamp.seconds)
         let size = wheel.extent.width
         let arrowSize = arrow.extent.size
-        // The arrow sticks out to the right of the wheel, just as when composited by Core Image.
         let contentSize = CGSize(width: size + 0.3 * arrowSize.width, height: size)
         let position = metalPetalLayerPosition(sceneWidget.layout, contentSize, image.extent.size)
-        // Metal petal rotates clockwise and Core Image counter clockwise.
         let rotation = Float(-angle)
-        let filter = MultilayerCompositingFilter()
+        let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
-            .content(wheel, modifier: { layer in
-                layer.position = CGPoint(x: position.x - 0.15 * arrowSize.width, y: position.y)
-                layer.rotation = rotation
-            }),
-            .content(arrow, modifier: { layer in
-                layer.position = CGPoint(x: position.x + size / 2 - 0.35 * arrowSize.width, y: position.y)
-            }),
+            .init(content: wheel,
+                  position: CGPoint(x: position.x - 0.15 * arrowSize.width, y: position.y),
+                  rotation: rotation),
+            .init(content: arrow,
+                  position: CGPoint(x: position.x + size / 2 - 0.35 * arrowSize.width,
+                                    y: position.y)),
         ]
         return filter.outputImage ?? image
     }
