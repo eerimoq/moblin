@@ -61,6 +61,16 @@ struct SoopLogoAndNameView: View {
     }
 }
 
+struct VkVideoLiveLogoAndNameView: View {
+    var channel: String = ""
+
+    var body: some View {
+        PlatformLogoAndNameView(logo: "VkVideoLiveLogo",
+                                name: String(localized: "VK Video Live"),
+                                channel: channel)
+    }
+}
+
 struct ObsLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
@@ -143,6 +153,15 @@ struct StreamPlatformsSettingsView: View {
             StreamOpenStreamingPlatformSettingsView(stream: stream)
         } label: {
             OpenStreamingPlatformLogoAndNameView()
+        }
+        NavigationLink {
+            StreamVkVideoLiveSettingsView(stream: stream)
+        } label: {
+            HStack {
+                VkVideoLiveLogoAndNameView()
+                Spacer()
+                GrayTextView(text: stream.vkVideoLiveChannelUrl)
+            }
         }
     }
 }

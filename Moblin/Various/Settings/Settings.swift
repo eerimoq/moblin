@@ -2252,6 +2252,9 @@ final class Settings: @unchecked Sendable {
             if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
                 stream.twitchAccessToken = accessToken
             }
+            if let accessToken = loadVkVideoLiveAccessTokenFromKeychain(streamId: stream.id) {
+                stream.vkVideoLiveAccessToken = accessToken
+            }
         }
     }
 
@@ -2261,6 +2264,8 @@ final class Settings: @unchecked Sendable {
             let toStream = SettingsStream(name: "")
             toStream.twitchAccessToken = fromStream.twitchAccessToken
             fromStream.twitchAccessToken = ""
+            toStream.vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
+            fromStream.vkVideoLiveAccessToken = ""
             toDatabase.streams.append(toStream)
         }
         return toDatabase
@@ -2269,6 +2274,7 @@ final class Settings: @unchecked Sendable {
     private func insertSensitiveData(toDatabase: Database, fromDatabase: Database) {
         for (index, fromStream) in fromDatabase.streams.enumerated() where index < toDatabase.streams.count {
             toDatabase.streams[index].twitchAccessToken = fromStream.twitchAccessToken
+            toDatabase.streams[index].vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
         }
     }
 

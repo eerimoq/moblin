@@ -11,6 +11,9 @@ extension Model {
         if showTwitchAuth {
             return false
         }
+        if showVkVideoLiveAuth {
+            return false
+        }
         if showModerationAuth {
             return false
         }
