@@ -184,7 +184,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         )
     }
 
-    func adjustCoolerProfilePro4(_ thermalState: ProcessInfo.ThermalState){
+    func adjustCoolerProfilePro4(_ thermalState: ProcessInfo.ThermalState) {
         guard let peripheral, let writeCharacteristic, let model else {
             return
         }
@@ -223,8 +223,8 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
             type: .withoutResponse
         )
     }
-    
-    func setCustomModePro5(_ intensity: Int){
+
+    func setCustomModePro5(_ intensity: Int) {
         guard let peripheral, let writeCharacteristic, let model else {
             return
         }
@@ -252,8 +252,8 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
             type: .withoutResponse
         )
     }
-    
-    func adjustCoolerProfilePro5(_ thermalState: ProcessInfo.ThermalState){
+
+    func adjustCoolerProfilePro5(_ thermalState: ProcessInfo.ThermalState) {
         guard let peripheral, let writeCharacteristic, let model else {
             return
         }
@@ -270,7 +270,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
             setCustomModePro5(5)
         }
     }
-    
+
     func adjustCoolerProfile() {
         guard let peripheral, let writeCharacteristic, let model else {
             return
