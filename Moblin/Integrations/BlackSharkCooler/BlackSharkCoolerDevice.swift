@@ -36,7 +36,6 @@ class BlackSharkCoolerDevice: NSObject, @unchecked Sendable {
     private var writeCharacteristic: CBCharacteristic?
     private var latestTransmissionTime = ContinuousClock.now
     private var model: BlackSharkLib.Model?
-    private var advertisedName: String?
     private var coolingStatsTimer = SimpleTimer(queue: blackSharkCoolerDeviceDispatchQueue)
     private var coolingPower: Int? // 0-100% How much the cooler should cool.
     private var fanSpeed: Int? // 0-100% How much the fan should spin.
@@ -109,7 +108,7 @@ extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
         }
         central.stopScan()
         self.peripheral = peripheral
-        advertisedName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
+        let advertisedName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
         model = BlackSharkLib.detectModel(advertisedName: advertisedName)
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
@@ -225,7 +224,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
     }
 
     func setCustomModePro5(_ intensity: Int) {
-        guard let peripheral, let writeCharacteristic, let model else {
+        guard let peripheral, let writeCharacteristic else {
             return
         }
         guard intensity != 0 else {
@@ -254,9 +253,6 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
     }
 
     func adjustCoolerProfilePro5(_ thermalState: ProcessInfo.ThermalState) {
-        guard let peripheral, let writeCharacteristic, let model else {
-            return
-        }
         switch thermalState {
         case .nominal:
             setCustomModePro5(0)
@@ -272,7 +268,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
     }
 
     func adjustCoolerProfile() {
-        guard let peripheral, let writeCharacteristic, let model else {
+        guard let model else {
             return
         }
         let thermalState = ProcessInfo.processInfo.thermalState
