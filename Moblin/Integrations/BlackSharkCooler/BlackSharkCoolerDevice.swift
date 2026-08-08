@@ -110,6 +110,7 @@ extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
         central.stopScan()
         self.peripheral = peripheral
         advertisedName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
+        model = BlackSharkLib.detectModel(advertisedName: advertisedName)
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
         setState(state: .connecting)
@@ -138,7 +139,6 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         didDiscoverCharacteristicsFor service: CBService,
         error _: (any Error)?
     ) {
-        model = BlackSharkLib.detectModel(advertisedName: advertisedName)
         for characteristic in service.characteristics ?? [] {
             logger.debug("black-shark-cooler-device: Characteristic found: \(characteristic.uuid)")
             switch characteristic.uuid {
@@ -184,6 +184,93 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         )
     }
 
+    func adjustCoolerProfilePro4(_ thermalState: ProcessInfo.ThermalState){
+        guard let peripheral, let writeCharacteristic, let model else {
+            return
+        }
+        let coolingPowerTarget: Int
+        let fanSpeedTarget: Int
+        switch thermalState {
+        case .nominal:
+            coolingPowerTarget = 0
+            fanSpeedTarget = 10
+        case .fair:
+            coolingPowerTarget = 20
+            fanSpeedTarget = 20
+        case .serious:
+            coolingPowerTarget = 80
+            fanSpeedTarget = 50
+        case .critical:
+            coolingPowerTarget = 100
+            fanSpeedTarget = 100
+        @unknown default:
+            coolingPowerTarget = 100
+            fanSpeedTarget = 100
+            logger.info("black-shark-cooler-device: Thermal state is unknown value ( \(thermalState) )")
+        }
+        let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
+        logger.debug("black-shark-cooler-device (Pro 4): Adjusting cooling power to \(coolingPower)%")
+        peripheral.writeValue(
+            BlackSharkLib.getSetCoolingPowerCommand(coolingPower, model: model)!,
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
+        let fanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
+        logger.debug("black-shark-cooler-device (Pro 4): Adjusting fan speed to \(fanSpeed)%")
+        peripheral.writeValue(
+            BlackSharkLib.getSetFanSpeedCommand(fanSpeed, model: model)!,
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
+    }
+    
+    func setCustomModePro5(_ intensity: Int){
+        guard let peripheral, let writeCharacteristic, let model else {
+            return
+        }
+        guard intensity != 0 else {
+            logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to OFF")
+            peripheral.writeValue(
+                BlackSharkLib.getSetCoolingEnabledCommand(false, model: .pro5)!,
+                for: writeCharacteristic,
+                type: .withoutResponse
+            )
+            return
+        }
+        if let coolingPower, coolingPower == 2 {
+            logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
+            peripheral.writeValue(
+                BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
+                for: writeCharacteristic,
+                type: .withoutResponse
+            )
+        }
+        logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to \(intensity)")
+        peripheral.writeValue(
+            BlackSharkLib.getSetCustomModeCommand(intensity: intensity, model: .pro5)!,
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
+    }
+    
+    func adjustCoolerProfilePro5(_ thermalState: ProcessInfo.ThermalState){
+        guard let peripheral, let writeCharacteristic, let model else {
+            return
+        }
+        switch thermalState {
+        case .nominal:
+            setCustomModePro5(0)
+        case .fair:
+            setCustomModePro5(1)
+        case .serious:
+            setCustomModePro5(2)
+        case .critical:
+            setCustomModePro5(5)
+        @unknown default:
+            setCustomModePro5(5)
+        }
+    }
+    
     func adjustCoolerProfile() {
         guard let peripheral, let writeCharacteristic, let model else {
             return
@@ -191,109 +278,9 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         let thermalState = ProcessInfo.processInfo.thermalState
         switch model {
         case .pro4:
-            let coolingPowerTarget: Int
-            let fanSpeedTarget: Int
-            switch thermalState {
-            case .nominal:
-                coolingPowerTarget = 0
-                fanSpeedTarget = 10
-            case .fair:
-                coolingPowerTarget = 20
-                fanSpeedTarget = 20
-            case .serious:
-                coolingPowerTarget = 80
-                fanSpeedTarget = 50
-            case .critical:
-                coolingPowerTarget = 100
-                fanSpeedTarget = 100
-            @unknown default:
-                coolingPowerTarget = 100
-                fanSpeedTarget = 100
-                logger.info("black-shark-cooler-device: Thermal state is unknown value ( \(thermalState) )")
-            }
-            let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
-            logger.debug("black-shark-cooler-device (Pro 4): Adjusting cooling power to \(coolingPower)%")
-            peripheral.writeValue(
-                BlackSharkLib.getSetCoolingPowerCommand(coolingPower, model: model)!,
-                for: writeCharacteristic,
-                type: .withoutResponse
-            )
-            let fanSpeed = updatedPercentageScale(fanSpeed, target: fanSpeedTarget)
-            logger.debug("black-shark-cooler-device (Pro 4): Adjusting fan speed to \(fanSpeed)%")
-            peripheral.writeValue(
-                BlackSharkLib.getSetFanSpeedCommand(fanSpeed, model: model)!,
-                for: writeCharacteristic,
-                type: .withoutResponse
-            )
+            adjustCoolerProfilePro4(thermalState)
         case .pro5:
-            switch thermalState {
-            case .nominal:
-                logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to OFF")
-                peripheral.writeValue(
-                    BlackSharkLib.getSetCoolingEnabledCommand(false, model: .pro5)!,
-                    for: writeCharacteristic,
-                    type: .withoutResponse
-                )
-            case .fair:
-                if coolingPower != nil, coolingPower! == 2 {
-                    logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-                    peripheral.writeValue(
-                        BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
-                        for: writeCharacteristic,
-                        type: .withoutResponse
-                    )
-                }
-                logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 1")
-                peripheral.writeValue(
-                    BlackSharkLib.getSetCustomModeCommand(intensity: 1, model: .pro5)!,
-                    for: writeCharacteristic,
-                    type: .withoutResponse
-                )
-            case .serious:
-                if coolingPower != nil, coolingPower! == 2 {
-                    logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-                    peripheral.writeValue(
-                        BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
-                        for: writeCharacteristic,
-                        type: .withoutResponse
-                    )
-                }
-                logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 3")
-                peripheral.writeValue(
-                    BlackSharkLib.getSetCustomModeCommand(intensity: 2, model: .pro5)!,
-                    for: writeCharacteristic,
-                    type: .withoutResponse
-                )
-            case .critical:
-                if coolingPower != nil, coolingPower! == 2 {
-                    logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-                    peripheral.writeValue(
-                        BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
-                        for: writeCharacteristic,
-                        type: .withoutResponse
-                    )
-                }
-                logger.debug("black-shark-cooler-device (Pro 5): Adjusting cooling power to 5")
-                peripheral.writeValue(
-                    BlackSharkLib.getSetCustomModeCommand(intensity: 5, model: .pro5)!,
-                    for: writeCharacteristic,
-                    type: .withoutResponse
-                )
-            @unknown default:
-                if coolingPower != nil, coolingPower! == 2 {
-                    logger.debug("black-shark-cooler-device (Pro 5): Enabling custom mode for cooler.")
-                    peripheral.writeValue(
-                        BlackSharkLib.getSetCoolingEnabledCommand(true, model: .pro5)!,
-                        for: writeCharacteristic,
-                        type: .withoutResponse
-                    )
-                }
-                peripheral.writeValue(
-                    BlackSharkLib.getSetCustomModeCommand(intensity: 5, model: .pro5)!,
-                    for: writeCharacteristic,
-                    type: .withoutResponse
-                )
-            }
+            adjustCoolerProfilePro5(thermalState)
         }
     }
 
@@ -348,12 +335,12 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
                 switch model {
                 case .pro4:
                     logger.debug("""
-                    black-shark-cooler-device (4 Pro): CoolerTemp: \(coolingState.phoneTemperature), \
+                    black-shark-cooler-device (Pro 4): CoolerTemp: \(coolingState.phoneTemperature), \
                     Heatsink: \(coolingState.heatsinkTemperature)
                     """)
                 case .pro5:
                     logger.debug("""
-                    black-shark-cooler-device (5 Pro): CoolerTemp: \(coolingState.phoneTemperature), \
+                    black-shark-cooler-device (Pro 5): CoolerTemp: \(coolingState.phoneTemperature), \
                     Heatsink: \(coolingState.heatsinkTemperature), \
                     Fan: \(coolingState.fanRPM.map(String.init) ?? "n/a"), \
                     Power: \(coolingState.powerLevel.map(String.init) ?? "n/a")
