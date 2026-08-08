@@ -1,5 +1,6 @@
 import CoreImage
 import MetalPetal
+import simd
 
 func pixellateCalcScale(size: CGSize, strength: Float) -> Float {
     let maximum = Float(size.maximum())
