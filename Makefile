@@ -119,7 +119,7 @@ web-remote-control-frontend-build:
 	NODE_NO_WARNINGS=1 npm run build --silent
 
 npm-latest-args = \
-	node -p "Object.keys(require('./package.json').$(1) || {}).map((d) => d + '@latest').join(' ')"
+	python -c "import json; print(' '.join(f'{d}@latest' for d in json.load(open('package.json'))['$(1)']))"
 
 web-remote-control-frontend-update-dependencies:
 	cd WebRemoteControlFrontend && \
