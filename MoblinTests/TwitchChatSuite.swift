@@ -53,4 +53,48 @@ struct TwitchChatSuite {
         #expect(message.targetMessageId == nil)
         #expect(message.targetUserId == nil)
     }
+
+    @Test
+    func botRixMessage() throws {
+        let message = try TwitchChatMessage(string: """
+        @badge-info=;\
+        badges=moderator/1,bot-badge/1;\
+        color=#179451;\
+        display-name=BotRixOficial;\
+        emotes=;\
+        first-msg=0;\
+        flags=;\
+        id=b8dc3c37-cb4b-4f7a-a011-52eeae902cb2;\
+        mod=1;\
+        returning-chatter=0;\
+        room-id=63482386;\
+        subscriber=0;\
+        tmi-sent-ts=1786194630483;\
+        turbo=0;\
+        user-id=646848961;\
+        user-type=mod \
+        :botrixoficial!botrixoficial@botrixoficial.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :the test message
+        """)
+        #expect(message.command == .privateMessage)
+        #expect(message.parameters == ["#eerimoq", "the test message"])
+        #expect(message.displayName == "BotRixOficial")
+        #expect(message.user == "botrixoficial")
+        #expect(message.userId == "646848961")
+        #expect(message.color == "#179451")
+        #expect(message.emotes.isEmpty)
+        #expect(message.badges == ["moderator/1", "bot-badge/1"])
+        #expect(message.messageId == nil)
+        #expect(message.id == "b8dc3c37-cb4b-4f7a-a011-52eeae902cb2")
+        #expect(!message.firstMessage)
+        #expect(!message.subscriber)
+        #expect(message.moderator)
+        #expect(message.bits == nil)
+        #expect(message.replySender == nil)
+        #expect(message.replyText == nil)
+        #expect(message.targetMessageId == nil)
+        #expect(message.targetUserId == nil)
+    }
 }
