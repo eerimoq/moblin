@@ -13,10 +13,8 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "strict": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
-      "/js/config.mjs": ["src/config.d.ts"]
+      "/js/config.mjs": ["./src/config.d.ts"]
     }
   },
   "include": ["src"]
