@@ -33,7 +33,7 @@ final class PixellateEffect: VideoEffect, @unchecked Sendable {
     override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
         let scale = pixellateCalcScale(size: image.extent.size, strength: strength)
         filterMetalPetal.inputImage = image
-        filterMetalPetal.scale = simd_make_float2(scale, scale)
+        filterMetalPetal.scale = .init(scale, scale)
         return filterMetalPetal.outputImage ?? image
     }
 }

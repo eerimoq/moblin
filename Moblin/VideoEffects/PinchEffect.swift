@@ -29,8 +29,8 @@ final class PinchEffect: VideoEffect, @unchecked Sendable {
         filterMetalPetal.inputImage = image
         filterMetalPetal.radius = Float(min(image.extent.width, image.extent.height) / 2)
         filterMetalPetal.scale = scale
-        filterMetalPetal.center = simd_make_float2(Float(image.extent.width / 2),
-                                                   Float(image.extent.height / 2))
+        filterMetalPetal.center = .init(Float(image.extent.width / 2),
+                                        Float(image.extent.height / 2))
         return filterMetalPetal.outputImage ?? image
     }
 }
