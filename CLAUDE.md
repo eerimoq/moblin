@@ -9,18 +9,6 @@ and OBS Studio. It streams over RTMP(S), SRT(LA), RIST and WHIP/WebRTC, with SRT
 multiple network interfaces. The repo also contains an Apple Watch companion, a Live Activity extension,
 a home screen widget, a screen recording broadcast extension, and a SolidJS web remote control frontend.
 
-## Setup
-
-1. `cp User.template.xcconfig Config/User.xcconfig`, then set `DEVELOPMENT_TEAM` and
-   `BASE_PRODUCT_BUNDLE_IDENTIFIER`. `CAPABILITIES` selects which entitlements file each target uses
-   (`Moblin/Moblin.$(CAPABILITIES).entitlements`) — use `free` unless you know you need `all`.
-2. `open Moblin.xcodeproj` and wait for SPM packages to resolve. `Command + B` builds, `Command + R` runs.
-3. Swift/JS tooling: `brew install swiftlint swiftformat codespell oxfmt oxlint`.
-
-Several SPM dependencies are `eerimoq` forks pinned to a branch (MetalPetal, Srt, Rist, DataChannel,
-SwiftCube, VRMKit, CrcSwift, NWWebSocket, AlertToast). Bumping one is a commit of its own — see the
-"Bump metal petal" commits.
-
 ## Commands
 
 ```sh
@@ -48,7 +36,8 @@ Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `
 
 ### System tests
 
-`tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`.
+`tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. Ask user to 
+start the app before running the test commands.
 
 ```sh
 make test
@@ -113,28 +102,6 @@ bitrate algorithms are pluggable under `AdaptiveBitrate/` (Belabox, Fight, RIST 
 
 **Moblink** (`Moblin/Moblink/`) is Moblin's own protocol for borrowing other phones' network connections
 as extra bonding links — a streamer/relay pair over the local network.
-
-### Video effects — two rendering backends
-
-`Moblin/VideoEffects/` holds everything drawn on the stream. Each subclasses `VideoEffect`
-(`Moblin/Media/HaishinKit/Media/Video/VideoEffect.swift`), which exposes **parallel CoreImage and
-MetalPetal paths**:
-
-```swift
-func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage           // CoreImage
-func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage // MetalPetal
-```
-
-`VideoUnit` picks the backend at runtime (`isMetalPetalGraphics`), and an effect overriding
-`isMetalPetal() -> true` forces the whole pipeline onto MetalPetal
-(`isMetalPetalGraphicsForcedByEffects`). A new effect should therefore implement both paths; implementing
-only one makes it silently a no-op under the other backend. `VideoEffectInfo` carries the frame's
-timestamp plus cached Vision results — request them via `needsFaceDetections`/`needsTextDetections`
-rather than running Vision inside `execute`.
-
-Effects reach the pipeline through `Media.registerEffect`/`unregisterEffect` for standalone effects, and
-`Media.setPendingAfterAttachEffects` for the ordered per-scene list that `ModelScene` rebuilds on every
-scene change.
 
 ### Adding a widget type
 
