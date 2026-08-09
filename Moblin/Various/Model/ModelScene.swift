@@ -1574,8 +1574,8 @@ extension Model {
                 latestFollower: latestFollower
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
-            if remoteControlStreamer?.isConnected() == true, isTelemetryRequested {
-                remoteControlStreamer?.sendTelemetryUpdate(data: TelemetryData(
+            if remoteControlStreamer?.isConnected() == true, isRemoteControlAssistantRequestingStats {
+                remoteControlStreamer?.sendStatsUpdate(data: Stats(
                     date: now,
                     timeZone: TimeZone.current.identifier,
                     speed: location?.speed ?? 0,

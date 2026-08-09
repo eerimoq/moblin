@@ -332,12 +332,12 @@ extension Model {
         remoteControlAssistant?.stopStatus()
     }
 
-    func remoteControlAssistantStartTelemetry() {
-        remoteControlAssistant?.startTelemetry()
+    func remoteControlAssistantStartStats() {
+        remoteControlAssistant?.startStats()
     }
 
-    func remoteControlAssistantStopTelemetry() {
-        remoteControlAssistant?.stopTelemetry()
+    func remoteControlAssistantStopStats() {
+        remoteControlAssistant?.stopStats()
     }
 
     func reloadRemoteControlRelay() {
@@ -676,7 +676,9 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
-        isTelemetryRequested = false
+        isRemoteControlAssistantRequestingStats = false
+        startWeatherManager()
+        startGeographyManager()
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
@@ -686,7 +688,9 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant disconnected"))
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
-        isTelemetryRequested = false
+        isRemoteControlAssistantRequestingStats = false
+        startWeatherManager()
+        startGeographyManager()
         setLowFpsImage()
         updateRemoteControlStatus()
     }
@@ -916,12 +920,16 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         remoteControlAssistantRequestingStatusFilter = nil
     }
 
-    func remoteControlStreamerStartTelemetry() {
-        isTelemetryRequested = true
+    func remoteControlStreamerStartStats() {
+        isRemoteControlAssistantRequestingStats = true
+        startWeatherManager()
+        startGeographyManager()
     }
 
-    func remoteControlStreamerStopTelemetry() {
-        isTelemetryRequested = false
+    func remoteControlStreamerStopStats() {
+        isRemoteControlAssistantRequestingStats = false
+        startWeatherManager()
+        startGeographyManager()
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {
@@ -1146,8 +1154,8 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         }
     }
 
-    func remoteControlAssistantTelemetry(data: TelemetryData) {
-        remoteControlAssistantLatestTelemetry = data
+    func remoteControlAssistantStats(data: Stats) {
+        remoteControlAssistantLatestStats = data
     }
 }
 

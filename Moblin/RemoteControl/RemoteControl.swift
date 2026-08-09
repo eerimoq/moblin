@@ -54,8 +54,8 @@ enum RemoteControlRequest: Codable {
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
     case importSettings(data: Data)
-    case startTelemetry
-    case stopTelemetry
+    case startStats
+    case stopStats
 }
 
 enum RemoteControlResponse: Codable {
@@ -78,10 +78,10 @@ enum RemoteControlEvent: Codable {
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
     case golfScoreboard(data: RemoteControlGolfScoreboard)
-    case telemetry(data: TelemetryData)
+    case stats(data: Stats)
 }
 
-struct TelemetryData: Codable {
+struct Stats: Codable {
     var date: Date
     var timeZone: String
     var speed: Double
