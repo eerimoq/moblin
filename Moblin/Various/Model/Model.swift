@@ -601,10 +601,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlWeb: RemoteControlWeb?
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
+    var isTelemetryRequested = false
     var isRemoteControlWebRequestingPreview = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
+    var remoteControlAssistantLatestTelemetry: TelemetryData?
     var remoteControlStreamerLatestReceivedChatMessageId = -1
     var useRemoteControlForChatAndEvents = false
     var currentWiFiSsid: String?

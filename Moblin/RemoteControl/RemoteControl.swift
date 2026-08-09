@@ -54,6 +54,8 @@ enum RemoteControlRequest: Codable {
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
     case importSettings(data: Data)
+    case startTelemetry
+    case stopTelemetry
 }
 
 enum RemoteControlResponse: Codable {

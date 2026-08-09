@@ -332,6 +332,14 @@ extension Model {
         remoteControlAssistant?.stopStatus()
     }
 
+    func remoteControlAssistantStartTelemetry() {
+        remoteControlAssistant?.startTelemetry()
+    }
+
+    func remoteControlAssistantStopTelemetry() {
+        remoteControlAssistant?.stopTelemetry()
+    }
+
     func reloadRemoteControlRelay() {
         remoteControlRelay?.stop()
         remoteControlRelay = nil
@@ -668,6 +676,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
+        isTelemetryRequested = false
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
@@ -677,6 +686,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant disconnected"))
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
+        isTelemetryRequested = false
         setLowFpsImage()
         updateRemoteControlStatus()
     }
@@ -906,6 +916,14 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         remoteControlAssistantRequestingStatusFilter = nil
     }
 
+    func remoteControlStreamerStartTelemetry() {
+        isTelemetryRequested = true
+    }
+
+    func remoteControlStreamerStopTelemetry() {
+        isTelemetryRequested = false
+    }
+
     func remoteControlStreamerGetScoreboardSports() -> [String] {
         getScoreboardSports()
     }
@@ -1126,6 +1144,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         if let topRight {
             remoteControl.topRight = topRight
         }
+    }
+
+    func remoteControlAssistantTelemetry(data: TelemetryData) {
+        remoteControlAssistantLatestTelemetry = data
     }
 }
 
