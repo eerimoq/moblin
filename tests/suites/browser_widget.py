@@ -43,7 +43,7 @@ class BrowserWidgetModes(TestCase):
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
                     {
-                        "cameraPosition": "Screen capture",
+                        "cameraPosition": "None",
                         "widgets": [
                             scene_widget_settings(
                                 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100
