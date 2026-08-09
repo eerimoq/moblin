@@ -1516,7 +1516,7 @@ extension Model {
     }
 
     func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
-        guard !textEffects.isEmpty || remoteControlStreamer?.isConnected() == true else {
+        guard !textEffects.isEmpty || isRemoteControlAssistantRequestingStats else {
             return
         }
         var stats: TextEffectStats
@@ -1574,7 +1574,7 @@ extension Model {
                 latestFollower: latestFollower
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
-            if remoteControlStreamer?.isConnected() == true, isRemoteControlAssistantRequestingStats {
+            if isRemoteControlAssistantRequestingStats {
                 remoteControlStreamer?.sendStatsUpdate(data: Stats(
                     date: now,
                     timeZone: TimeZone.current.identifier,
