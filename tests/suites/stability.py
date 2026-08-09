@@ -119,7 +119,7 @@ class StabilityFourIngestsOneStream(TestCase):
     def setup(self):
         if self._shaper is not None:
             self.moblin.use_media_relay(self._shaper.ip_address)
-            self._update_expectations()
+            self._update_expectations(self._shaper)
         self.moblin.import_settings(
             overrides={
                 "streams": [
@@ -313,9 +313,9 @@ class StabilityFourIngestsOneStream(TestCase):
             **kwargs,
         )
 
-    def _update_expectations(self):
-        self._stream_profile = self._shaper.profile(STREAM_GROUP)
-        self._ingests_profile = self._shaper.profile(INGESTS_GROUP)
+    def _update_expectations(self, shaper: TrafficShaper):
+        self._stream_profile = shaper.profile(STREAM_GROUP)
+        self._ingests_profile = shaper.profile(INGESTS_GROUP)
         self._stream_bitrate_range = shaped_bitrate_range(
             STREAM_BITRATE, self._stream_profile, STREAM_BITRATE_RANGE
         )
@@ -326,7 +326,7 @@ class StabilityFourIngestsOneStream(TestCase):
         )
         self._deviation_timeout = max(
             DEVIATION_TIMEOUT,
-            SHAPED_DEVIATION_TIMEOUT_FACTOR * self._shaper.change_period(),
+            SHAPED_DEVIATION_TIMEOUT_FACTOR * shaper.change_period(),
         )
 
     def _go_live(self, mediamtx: MediaMtx):
