@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -10,19 +11,21 @@ from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
 UTILS_DIR = Path(__file__).parent.resolve()
+CONFIG_PATH = UTILS_DIR / "mediamtx.yml"
 
 
 class MediaMtx:
-    def __init__(self):
+    def __init__(self, log_level: str | None = None):
         self._server = None
+        self._log_level = log_level
 
     def __enter__(self):
-        config_path = UTILS_DIR / "mediamtx.yml"
         self._server = subprocess.Popen(
-            ["mediamtx", str(config_path)],
+            ["mediamtx", str(CONFIG_PATH)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            env=self._create_env(),
         )
         log_output(self._server.stdout, LOGGER)
         log_output(self._server.stderr, LOGGER)
@@ -86,6 +89,12 @@ class MediaMtx:
             time.sleep(1)
         raise Exception("Timeout waiting for RTSP publisher to MediaMTX")
 
+    def get_srt_publisher(self, path) -> tuple[str, int] | None:
+        for stream in self._api_get("srtconns/list")["items"]:
+            if stream["path"] == path and stream["state"] == "publish":
+                return stream["id"], stream["bytesReceived"]
+        return None
+
     def wait_for_rtsp_stream(self, outbound_bytes):
         end_time = time.monotonic() + 30
         while time.monotonic() < end_time:
@@ -95,6 +104,11 @@ class MediaMtx:
                     return
             time.sleep(1)
         raise Exception("Timeout waiting for RTSP stream from MediaMTX")
+
+    def _create_env(self) -> dict[str, str] | None:
+        if self._log_level is None:
+            return None
+        return {**os.environ, "MTX_LOGLEVEL": self._log_level}
 
     def _wait_until_server_is_ready(self):
         end_time = time.monotonic() + 15

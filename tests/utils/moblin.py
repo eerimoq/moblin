@@ -4,11 +4,15 @@ import re
 import subprocess
 import tempfile
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 import requests
 
 from .arduino import Arduino
+from .config import RIST_SERVER_PORT
+from .config import RTMP_SERVER_PORT
+from .config import SRT_SERVER_PORT
 from .config import TESTER_RIST_PORT
 from .config import TESTER_RTMP_PORT
 from .config import TESTER_RTSP_PORT
@@ -25,6 +29,22 @@ LOGGER = logging.getLogger(__name__)
 LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
 RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
+RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
+BITRATE_UNITS = {
+    "bps": 1,
+    "kbps": 1_000,
+    "mbps": 1_000_000,
+    "gbps": 1_000_000_000,
+}
+TOTAL_BYTES_UNITS = {
+    "byte": 1,
+    "bytes": 1,
+    "kb": 1_000,
+    "mb": 1_000_000,
+    "gb": 1_000_000_000,
+    "tb": 1_000_000_000_000,
+}
+UPTIME_UNITS = {"d": 86400, "h": 3600, "m": 60, "s": 1}
 
 
 class Moblin:
@@ -143,6 +163,18 @@ class Moblin:
     def tester_whep_url(self, path: str) -> str:
         return f"http://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
 
+    def ingest_rtmp_url(self, stream_key: str = "1") -> str:
+        return f"rtmp://{self.ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
+
+    def ingest_srt_url(self, stream_id: str = "1") -> str:
+        return f"srt://{self.ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
+
+    def ingest_rist_url(self, virtual_destination_port: int = 1) -> str:
+        return (
+            f"rist://{self.ip_address}:{RIST_SERVER_PORT}"
+            f"?virt-dst-port={virtual_destination_port}"
+        )
+
     def has_capability(self, name: str) -> bool:
         return name in self._capabilities
 
@@ -150,25 +182,28 @@ class Moblin:
         return self._moving_picture
 
     def wait_for_ingests(
-        self, minimim_bitrate, maximum_bitrate, total_bytes, number_of_ingests
+        self,
+        minimim_bitrate,
+        maximum_bitrate,
+        total_bytes,
+        number_of_ingests,
+        timeout: float = 60,
     ):
         accumulated_total_bytes = 0
-        previous_total_bytes = self._get_ingests_status()[1]
-        end_time = time.monotonic() + 60
+        previous_total_bytes = self.get_ingests_status().total_bytes
+        end_time = time.monotonic() + timeout
         while time.monotonic() < end_time:
             time.sleep(1)
-            actual_bitrate, actual_total_bytes, actual_number_of_ingests = (
-                self._get_ingests_status()
-            )
-            total_bytes_delta = actual_total_bytes - previous_total_bytes
+            status = self.get_ingests_status()
+            total_bytes_delta = status.total_bytes - previous_total_bytes
             if total_bytes_delta > 0:
                 accumulated_total_bytes += total_bytes_delta
-            previous_total_bytes = actual_total_bytes
-            if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
+            previous_total_bytes = status.total_bytes
+            if status.bitrate < minimim_bitrate or status.bitrate > maximum_bitrate:
                 continue
             if accumulated_total_bytes < total_bytes:
                 continue
-            if actual_number_of_ingests != number_of_ingests:
+            if status.number_of_ingests != number_of_ingests:
                 continue
             return
         raise Exception("Timeout waiting for ingests to reach wanted values")
@@ -180,22 +215,27 @@ class Moblin:
         while time.monotonic() < end_time:
             time.sleep(1)
             bitrate_status = self.get_status_top_right()["bitrate"]["message"]
-            mo = RE_BITRATE_STATUS.match(bitrate_status)
-            if mo:
-                actual_bitrate = parse_bitrate(mo.group(1), mo.group(2))
-                actual_multi_streaming = mo.group(4)
-                actual_total_bytes = parse_total_bytes(mo.group(5), mo.group(6))
-                if actual_bitrate < minimim_bitrate or actual_bitrate > maximum_bitrate:
+            status = parse_bitrate_status(bitrate_status)
+            if status is not None:
+                if status.bitrate < minimim_bitrate or status.bitrate > maximum_bitrate:
                     continue
-                if actual_multi_streaming != multi_streaming:
+                if status.multi_streaming != multi_streaming:
                     continue
-                if actual_total_bytes < total_bytes:
+                if status.total_bytes < total_bytes:
                     continue
                 return
         raise Exception("Timeout waiting for bitrate to reach wanted value")
 
+    def get_status(self):
+        return json.loads(self._execute("get_status"))
+
     def get_status_top_right(self):
-        return json.loads(self._execute("get_status"))["topRight"]
+        return self.get_status()["topRight"]
+
+    def get_ingests_status(self) -> "IngestsStatus":
+        return parse_ingests_status(
+            self.get_status_top_right()["rtmpServer"]["message"]
+        )
 
     def _execute(self, command, *args):
         return subprocess.run(
@@ -228,32 +268,65 @@ class Moblin:
                 time.sleep(1)
         raise Exception("Timeout waiting for streamer to connect")
 
-    def _get_ingests_status(self):
-        ingests_status = self.get_status_top_right()["rtmpServer"]["message"]
-        mo = RE_INGESTS_STATUS.match(ingests_status)
-        if mo:
-            bitrate = parse_bitrate(mo.group(1), mo.group(2))
-            total_bytes = parse_total_bytes(mo.group(3), mo.group(4))
-            number_of_ingests = int(mo.group(5))
-            return bitrate, total_bytes, number_of_ingests
-        if ingests_status.isdigit():
-            # Only the number of ingests is shown when no ingest is connected.
-            return 0, 0, int(ingests_status)
-        raise Exception(f"Ingests status has wrong format: {ingests_status}")
+
+@dataclass
+class IngestsStatus:
+    bitrate: float
+    total_bytes: float
+    number_of_ingests: int
 
 
-def parse_bitrate(value, unit):
-    bitrate = float(value.replace(",", "."))
-    if unit == "Mbps":
-        bitrate *= 1_000_000
-    return bitrate
+@dataclass
+class BitrateStatus:
+    bitrate: float
+    multi_streaming: str | None
+    total_bytes: float
 
 
-def parse_total_bytes(value, unit):
-    total_bytes = float(value.replace(",", "."))
-    if unit == "MB":
-        total_bytes *= 1_000_000
-    return total_bytes
+def parse_ingests_status(message: str) -> IngestsStatus:
+    mo = RE_INGESTS_STATUS.match(message)
+    if mo:
+        return IngestsStatus(
+            bitrate=parse_bitrate(mo.group(1), mo.group(2)),
+            total_bytes=parse_total_bytes(mo.group(3), mo.group(4)),
+            number_of_ingests=int(mo.group(5)),
+        )
+    if message.isdigit():
+        return IngestsStatus(bitrate=0, total_bytes=0, number_of_ingests=int(message))
+    raise Exception(f"Ingests status has wrong format: {message}")
+
+
+def parse_bitrate_status(message: str) -> BitrateStatus | None:
+    mo = RE_BITRATE_STATUS.match(message)
+    if mo is None:
+        return None
+    return BitrateStatus(
+        bitrate=parse_bitrate(mo.group(1), mo.group(2)),
+        multi_streaming=mo.group(4),
+        total_bytes=parse_total_bytes(mo.group(5), mo.group(6)),
+    )
+
+
+def parse_bitrate(value, unit) -> float:
+    return _parse_value(value, unit, BITRATE_UNITS, "bitrate")
+
+
+def parse_total_bytes(value, unit) -> float:
+    return _parse_value(value, unit, TOTAL_BYTES_UNITS, "total bytes")
+
+
+def parse_uptime(uptime: str) -> float | None:
+    matches = RE_UPTIME_STATUS.findall(uptime)
+    if not matches:
+        return None
+    return sum(int(value) * UPTIME_UNITS[unit] for value, unit in matches)
+
+
+def _parse_value(value, unit, units, kind) -> float:
+    scale = units.get(unit.lower())
+    if scale is None:
+        raise Exception(f"Unsupported {kind} unit '{unit}' in '{value} {unit}'")
+    return float(value.replace(",", ".")) * scale
 
 
 class Recorder:

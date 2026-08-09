@@ -24,7 +24,7 @@ cp config.example.toml config.toml
 
 1. Generate settings into clipboard.
    ```bash
-   make -C .. test-generate-device-settings-clipboard
+   make generate-device-settings-clipboard
    ```
 2. Import the generated settings from clipboard into Moblin.
 
@@ -32,13 +32,20 @@ cp config.example.toml config.toml
 
 1. Generate settings to standard output.
    ```bash
-   make -C .. test-generate-device-settings-stdout
+   make generate-device-settings-stdout
    ```
 2. Import the generated settings somehow.
 
 # Run the tests
 
 ```bash
-make -C .. test
-make -C .. test TEST_ARGS="--device macpro Talkback"
+make test
+make test TEST_ARGS="--device macpro Talkback"
+```
+
+# Run the stability test
+
+```bash
+make stability
+make stability TEST_ARGS="--device macpro --duration 0.5"
 ```

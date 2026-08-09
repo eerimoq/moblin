@@ -50,6 +50,16 @@ def scene_widget_settings(
     }
 
 
+def video_source_widget_settings(name: str, widget_id: str, video_source):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": "Video source",
+        "enabled": True,
+        "videoSource": video_source,
+    }
+
+
 def base_settings(config_toml: Path):
     config = Config(config_toml, "")
     return {

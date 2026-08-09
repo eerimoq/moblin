@@ -8,7 +8,7 @@ SWIFTLINT_ARGS = --strict --quiet
 OXFMT_ARGS = "WebRemoteControlFrontend"
 OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
-	test \
+	tests \
 	utils
 BLACK_ARGS = $(PYTHON_DIRS)
 PERIPHERY_ARGS = \
@@ -50,10 +50,9 @@ CODE_DIRS += "MoblinTests"
 CODE_DIRS += "WebRemoteControlFrontend"
 
 CONFIG_TOML ?= config.toml
+TEST_MAKE_ARGS = -C tests CONFIG_TOML=$(CONFIG_TOML) TEST_ARGS="$(TEST_ARGS)"
 
 SHELL = /usr/bin/env bash
-
-.PHONY: test
 
 default:
 
@@ -85,18 +84,16 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
-	cd test && \
-	rm -rf logs files mediamtx.log && \
-	mkdir -p files && \
-	python main.py $(CONFIG_TOML) $(TEST_ARGS)
+	$(MAKE) $(TEST_MAKE_ARGS) test
+
+test-stability:
+	$(MAKE) $(TEST_MAKE_ARGS) stability
 
 test-generate-device-settings-clipboard:
-	cd test && \
-	python generate_device_settings.py $(CONFIG_TOML)
+	$(MAKE) $(TEST_MAKE_ARGS) generate-device-settings-clipboard
 
 test-generate-device-settings-stdout:
-	@cd test && \
-	 python generate_device_settings.py --force-stdout $(CONFIG_TOML)
+	@$(MAKE) --no-print-directory --silent $(TEST_MAKE_ARGS) generate-device-settings-stdout
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings

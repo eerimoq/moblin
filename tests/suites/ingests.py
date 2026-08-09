@@ -8,6 +8,7 @@ from utils.config import TESTER_RTMP_PORT
 from utils.config import TESTER_RTSP_PORT
 from utils.config import WHIP_SERVER_PORT
 from utils.config import srt_listener_url
+from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
 from utils.ffmpeg import FfmpegWhipTestStream
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
@@ -57,9 +58,7 @@ class IngestRtmpServer(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegTestStream(
-            url=f"rtmp://{self.moblin.ip_address}:{RTMP_SERVER_PORT}/live/1"
-        )
+        stream = FfmpegTestStream(url=self.moblin.ingest_rtmp_url())
         recorder = Recorder(self.moblin, "IngestRtmpServer.mp4")
         with stream:
             self.wait_for_ingest_stream_started()
@@ -92,7 +91,7 @@ class IngestSrtServer(IngestTestCase):
 
     def run(self):
         stream = FfmpegTestStream(
-            url=f"srt://{self.moblin.ip_address}:{SRT_SERVER_PORT}?streamid=1",
+            url=self.moblin.ingest_srt_url(),
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestSrtServer.mp4")
@@ -208,7 +207,7 @@ class IngestRistServer(IngestTestCase):
 
     def run(self):
         stream = FfmpegTestStream(
-            url=f"rist://{self.moblin.ip_address}:{RIST_SERVER_PORT}?virt-dst-port=1",
+            url=self.moblin.ingest_rist_url(),
             transport_format="mpegts",
         )
         recorder = Recorder(self.moblin, "IngestRistServer.mp4")
@@ -289,14 +288,7 @@ class IngestWhepClient(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegTestStream(
-            url=f"rtsp://localhost:{TESTER_RTSP_PORT}/1",
-            transport_format="rtsp",
-            video_profile="baseline",
-            audio_codec="libopus",
-            audio_channels=2,
-            muxer_args=["-rtsp_transport", "tcp"],
-        )
+        stream = FfmpegRtspTestStream(url=f"rtsp://localhost:{TESTER_RTSP_PORT}/1")
         recorder = Recorder(self.moblin, "IngestWhepClient.mp4")
         with MediaMtx() as mediamtx:
             with stream:

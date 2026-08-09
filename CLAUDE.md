@@ -48,11 +48,12 @@ Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `
 
 ### System tests
 
-`test/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`.
+`tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`.
 
 ```sh
 make test
 make test TEST_ARGS="--device macpro Talkback"
+make test-stability                        # long-running soak test, 12 hours by default
 ```
 
 ## Architecture

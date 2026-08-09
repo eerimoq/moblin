@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 TEST_DIR = Path(__file__).parent.parent.resolve()
-WEBSITES_DIR = TEST_DIR / "tests" / "websites"
+WEBSITES_DIR = TEST_DIR / "suites" / "websites"
 FILES_DIR = TEST_DIR / "files"
 BLACK_MAXIMUM_VALUE = 40
 

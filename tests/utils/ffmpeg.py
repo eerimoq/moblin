@@ -94,14 +94,32 @@ def _ensure_certificate_exists(certificate_file: Path, key_file: Path):
 
 
 class FfmpegCommand:
-    def __init__(self):
+    def __init__(self, quiet: bool = False):
         self._server = None
+        self._quiet = quiet
 
     def args(self) -> list[str]:
         raise NotImplementedError
 
     def __enter__(self):
-        command = FFMPEG_COMMAND + self.args()
+        self._start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._stop()
+
+    def is_running(self) -> bool:
+        return self._server is not None and self._server.poll() is None
+
+    def restart(self):
+        self._stop()
+        self._start()
+
+    def _start(self):
+        command = list(FFMPEG_COMMAND)
+        if self._quiet:
+            command += ["-nostats", "-loglevel", "warning"]
+        command += self.args()
         LOGGER.debug("Command: %s", " ".join(command))
         self._server = subprocess.Popen(
             command,
@@ -112,12 +130,12 @@ class FfmpegCommand:
         )
         log_output(self._server.stdout, LOGGER, _log_level)
         log_output(self._server.stderr, LOGGER, _log_level)
-        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def _stop(self):
         if self._server is not None:
             self._server.kill()
             self._server.wait()
+            self._server = None
 
 
 class FfmpegTestStream(FfmpegCommand):
@@ -127,18 +145,23 @@ class FfmpegTestStream(FfmpegCommand):
         transport_format="flv",
         video_codec="libx264",
         video_profile=None,
+        video_bitrate=8_000_000,
         audio_codec="aac",
         audio_channels=1,
         muxer_args=None,
+        loop_audio=False,
+        quiet=False,
     ):
-        super().__init__()
+        super().__init__(quiet)
         self._url = url
         self._transport_format = transport_format
         self._video_codec = video_codec
         self._video_profile = video_profile
+        self._video_bitrate = video_bitrate
         self._audio_codec = audio_codec
         self._audio_channels = audio_channels
         self._muxer_args = muxer_args or []
+        self._loop_audio = loop_audio
         self._audio_file = FILES_DIR / "FfmpegTestStream.wav"
         self._ensure_audio_file_exists()
 
@@ -161,22 +184,26 @@ class FfmpegTestStream(FfmpegCommand):
         video_profile = []
         if self._video_profile is not None:
             video_profile = ["-profile:v", self._video_profile]
+        audio_input = []
+        if self._loop_audio:
+            audio_input = ["-re", "-stream_loop", "-1"]
         return [
             "-re",
             "-f",
             "lavfi",
             "-i",
             "testsrc2=size=1920x1080:rate=30",
+            *audio_input,
             "-i",
             str(self._audio_file),
             "-c:v",
             self._video_codec,
             "-b:v",
-            "8M",
+            str(self._video_bitrate),
             "-maxrate",
-            "8M",
+            str(self._video_bitrate),
             "-bufsize",
-            "16M",
+            str(2 * self._video_bitrate),
             "-preset",
             "veryfast",
             *video_profile,
@@ -205,7 +232,7 @@ class FfmpegTestStream(FfmpegCommand):
 
 
 class FfmpegWhipTestStream(FfmpegTestStream):
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         certificate_file = FILES_DIR / "FfmpegWhipTestStream.crt"
         key_file = FILES_DIR / "FfmpegWhipTestStream.key"
         _ensure_certificate_exists(certificate_file, key_file)
@@ -221,6 +248,20 @@ class FfmpegWhipTestStream(FfmpegTestStream):
                 "-key_file",
                 str(key_file),
             ],
+            **kwargs,
+        )
+
+
+class FfmpegRtspTestStream(FfmpegTestStream):
+    def __init__(self, url, **kwargs):
+        super().__init__(
+            url=url,
+            transport_format="rtsp",
+            video_profile="baseline",
+            audio_codec="libopus",
+            audio_channels=2,
+            muxer_args=["-rtsp_transport", "tcp"],
+            **kwargs,
         )
 
 
