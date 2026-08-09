@@ -8,7 +8,8 @@ class RistServerClient {
 
     init(virtualDestinationPort: UInt16, latency: Double) {
         self.virtualDestinationPort = virtualDestinationPort
-        reader = MpegTsReader(decoderQueue: ristServerQueue,
+        reader = MpegTsReader(name: "rist-server",
+                              decoderQueue: ristServerQueue,
                               timecodesEnabled: false,
                               targetLatency: latency)
         reader.delegate = self

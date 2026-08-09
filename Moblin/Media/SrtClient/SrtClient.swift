@@ -32,6 +32,7 @@ class SrtClient: @unchecked Sendable {
         self.url = url
         self.delegate = delegate
         reader = MpegTsReader(
+            name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
             targetLatency: srtClientLatency
@@ -121,6 +122,7 @@ class SrtClient: @unchecked Sendable {
             logger.info("srt-client: \(cameraId): Failed to set post-bind options: \(postFailures).")
         }
         reader = MpegTsReader(
+            name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
             targetLatency: srtClientLatency

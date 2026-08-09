@@ -7,6 +7,7 @@ protocol MpegTsReaderDelegate: AnyObject {
 }
 
 class MpegTsReader: @unchecked Sendable {
+    private let name: String
     private var programAssociationTable = MpegTsProgramAssociation()
     private var programMappingTable: [UInt16: MpegTsProgramMapping] = [:]
     private var programs: [UInt16: UInt16] = [:]
@@ -31,7 +32,8 @@ class MpegTsReader: @unchecked Sendable {
     private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
                                                       maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
 
-    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
+    init(name: String, decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
+        self.name = name
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
         self.targetLatency = targetLatency
@@ -214,7 +216,7 @@ class MpegTsReader: @unchecked Sendable {
         let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         logger.info("mpeg-ts-reader: Got new video dimensions \(dimensions)")
         videoDecoder?.stopRunning()
-        videoDecoder = VideoDecoder(lockQueue: decoderQueue)
+        videoDecoder = VideoDecoder(name: name, lockQueue: decoderQueue)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }

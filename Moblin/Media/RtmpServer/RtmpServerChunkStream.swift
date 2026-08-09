@@ -518,7 +518,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
         guard videoDecoder == nil else {
             return
         }
-        videoDecoder = VideoDecoder(lockQueue: rtmpServerDispatchQueue)
+        videoDecoder = VideoDecoder(name: "rtmp-server", lockQueue: rtmpServerDispatchQueue)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }

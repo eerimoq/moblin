@@ -335,7 +335,7 @@ private class RtpVideoProcessor: RtpProcessor {
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
-        decoder = VideoDecoder(lockQueue: rtspClientQueue)
+        decoder = VideoDecoder(name: "rtsp-client", lockQueue: rtspClientQueue)
         super.init()
         decoder.delegate = self
         decoder.startRunning(formatDescription: formatDescription)

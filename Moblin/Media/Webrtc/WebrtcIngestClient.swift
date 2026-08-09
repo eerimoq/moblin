@@ -49,6 +49,7 @@ private enum VideoCodec {
 }
 
 final class WebrtcIngestClient: @unchecked Sendable {
+    private let name: String
     let streamId: UUID
     private let latency: Double
     private let syncTimestamps: Bool
@@ -72,13 +73,15 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private var audioTimestampOffset: Double?
     private let dispatchQueue: DispatchQueue
 
-    init(streamId: UUID,
+    init(name: String,
+         streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
          delegate: any WebrtcIngestClientDelegate)
     {
+        self.name = name
         self.streamId = streamId
         self.latency = latency
         self.syncTimestamps = syncTimestamps
@@ -360,7 +363,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
             return
         }
         if videoDecoder == nil {
-            videoDecoder = VideoDecoder(lockQueue: dispatchQueue)
+            videoDecoder = VideoDecoder(name: name, lockQueue: dispatchQueue)
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }

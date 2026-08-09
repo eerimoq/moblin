@@ -71,6 +71,7 @@ class WhepClient: @unchecked Sendable {
         }
         stopInternal()
         ingestClient = WebrtcIngestClient(
+            name: "whep-client",
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,

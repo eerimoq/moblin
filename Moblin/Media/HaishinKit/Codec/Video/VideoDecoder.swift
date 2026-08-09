@@ -7,6 +7,7 @@ protocol VideoDecoderDelegate: AnyObject {
 
 class VideoDecoder: @unchecked Sendable {
     private var isRunning = false
+    private let name: String
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
@@ -18,7 +19,8 @@ class VideoDecoder: @unchecked Sendable {
         }
     }
 
-    init(lockQueue: DispatchQueue) {
+    init(name: String, lockQueue: DispatchQueue) {
+        self.name = name
         self.lockQueue = lockQueue
     }
 
@@ -54,7 +56,7 @@ class VideoDecoder: @unchecked Sendable {
                     return
                 }
                 guard let imageBuffer, status == noErr else {
-                    logger.info("video-decoder: Failed to decode frame status \(status)")
+                    logger.info("video-decoder: \(name): Failed to decode frame status \(status)")
                     return
                 }
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -73,14 +75,14 @@ class VideoDecoder: @unchecked Sendable {
                 }
             }
         if err == kVTInvalidSessionErr {
-            logger.info("video-decoder: Decode failed. Resetting session.")
+            logger.info("video-decoder: \(name): Decode failed. Resetting session.")
             invalidateSession = true
         }
     }
 
     private func makeSession() -> VTDecompressionSession? {
         guard let formatDescription else {
-            logger.info("video-decoder: Format description missing")
+            logger.info("video-decoder: \(name): Format description missing")
             return nil
         }
         let attributes: [NSString: AnyObject] = [
@@ -98,7 +100,7 @@ class VideoDecoder: @unchecked Sendable {
             decompressionSessionOut: &session
         )
         guard status == noErr else {
-            logger.info("video-decoder: Failed to create session with status \(status)")
+            logger.info("video-decoder: \(name): Failed to create session with status \(status)")
             return nil
         }
         return session

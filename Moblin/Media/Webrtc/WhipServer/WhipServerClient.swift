@@ -29,6 +29,7 @@ final class WhipServerClient {
         self.streamId = streamId
         self.delegate = delegate
         ingestClient = WebrtcIngestClient(
+            name: "whip-server",
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
