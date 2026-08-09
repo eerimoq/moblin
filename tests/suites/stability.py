@@ -2,11 +2,16 @@ import logging
 import time
 from contextlib import ExitStack
 from dataclasses import dataclass
+from dataclasses import replace
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTSP_PORT
+from utils.config import TESTER_SRT_PORT
+from utils.config import TESTER_WEBRTC_PORT
+from utils.config import TESTER_WEBRTC_UDP_PORT
+from utils.config import Config
 from utils.config import srt_reader_url
 from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
@@ -17,9 +22,20 @@ from utils.generate_device_settings import uuid
 from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
+from utils.monitor import DEVIATION_TIMEOUT
 from utils.monitor import Monitor
 from utils.monitor import StreamContentExpectation
 from utils.test_case import TestCase
+from utils.traffic_shaper import DEVICE_SIDE
+from utils.traffic_shaper import INGESTS_GROUP
+from utils.traffic_shaper import STREAM_GROUP
+from utils.traffic_shaper import TCP
+from utils.traffic_shaper import TESTER_SIDE
+from utils.traffic_shaper import UDP
+from utils.traffic_shaper import Profile
+from utils.traffic_shaper import Relay
+from utils.traffic_shaper import TrafficShaper
+from utils.traffic_shaper import parse_profile
 from utils.utils import FILES_DIR
 from utils.utils import manual_validation
 
@@ -46,6 +62,19 @@ NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
+SHAPED_BITRATE_MINIMUM_FACTOR = 0.2
+SHAPED_BITRATE_MAXIMUM_FACTOR = 1.3
+SHAPED_DEVIATION_TIMEOUT_FACTOR = 2
+SHAPED_STREAM_CONTENT_MINIMUM_FPS_RATIO = 0.3
+SHAPED_STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO = 0.3
+RELAYS = [
+    Relay(STREAM_GROUP, UDP, TESTER_SRT_PORT, TESTER_SIDE),
+    Relay(INGESTS_GROUP, TCP, RTMP_SERVER_PORT, DEVICE_SIDE),
+    Relay(INGESTS_GROUP, UDP, SRT_SERVER_PORT, DEVICE_SIDE),
+    Relay(INGESTS_GROUP, UDP, RIST_SERVER_PORT, DEVICE_SIDE),
+    Relay(INGESTS_GROUP, TCP, TESTER_WEBRTC_PORT, TESTER_SIDE),
+    Relay(INGESTS_GROUP, UDP, TESTER_WEBRTC_UDP_PORT, TESTER_SIDE),
+]
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
@@ -66,16 +95,31 @@ class StabilityFourIngestsOneStream(TestCase):
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
     MediaMTX periodically to verify that it contains moving video and audible
-    audio.
+    audio. The network can be shaped to simulate bad networks, with separate
+    impairments for the outgoing stream and the ingests.
 
     """
 
-    def __init__(self, moblin: Moblin, duration: float = DEFAULT_DURATION):
+    def __init__(
+        self,
+        moblin: Moblin,
+        duration: float = DEFAULT_DURATION,
+        shaper: TrafficShaper | None = None,
+    ):
         super().__init__(moblin)
         self._duration = duration
+        self._shaper = shaper
         self._monitor: Monitor | None = None
+        self._stream_profile: Profile | None = None
+        self._ingests_profile: Profile | None = None
+        self._stream_bitrate_range = STREAM_BITRATE_RANGE
+        self._ingests_bitrate_range = INGESTS_BITRATE_RANGE
+        self._deviation_timeout = DEVIATION_TIMEOUT
 
     def setup(self):
+        if self._shaper is not None:
+            self.moblin.use_media_relay(self._shaper.ip_address)
+            self._update_expectations()
         self.moblin.import_settings(
             overrides={
                 "streams": [
@@ -83,7 +127,9 @@ class StabilityFourIngestsOneStream(TestCase):
                         "name": "Stability",
                         "enabled": True,
                         "url": self.moblin.tester_srt_publish_url(STREAM_PATH),
-                        "srt": {"adaptiveBitrateEnabled": False},
+                        "srt": {
+                            "adaptiveBitrateEnabled": self._stream_profile is not None
+                        },
                         "bitrateRateControl": "CBR",
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
@@ -201,15 +247,21 @@ class StabilityFourIngestsOneStream(TestCase):
             LOGGER,
             "Keep the device connected to power with the app in the foreground",
         )
-        with MediaMtx(log_level="warn") as mediamtx:
-            with ExitStack() as stack:
-                sources = self._create_sources()
-                for source in sources:
-                    stack.enter_context(source.command)
-                mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
-                self._go_live(mediamtx)
-                self._monitor = self._create_monitor(mediamtx, sources)
-                self._monitor_until_done(self._monitor, sources)
+        with ExitStack() as stack:
+            webrtc_host = None
+            if self._shaper is not None:
+                stack.enter_context(self._shaper)
+                webrtc_host = self._shaper.ip_address
+            mediamtx = stack.enter_context(
+                MediaMtx(log_level="warn", webrtc_host=webrtc_host)
+            )
+            sources = self._create_sources()
+            for source in sources:
+                stack.enter_context(source.command)
+            mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
+            self._go_live(mediamtx)
+            self._monitor = self._create_monitor(mediamtx, sources)
+            self._monitor_until_done(self._monitor, sources)
 
     def teardown(self):
         if self._monitor is not None:
@@ -261,15 +313,31 @@ class StabilityFourIngestsOneStream(TestCase):
             **kwargs,
         )
 
+    def _update_expectations(self):
+        self._stream_profile = self._shaper.profile(STREAM_GROUP)
+        self._ingests_profile = self._shaper.profile(INGESTS_GROUP)
+        self._stream_bitrate_range = shaped_bitrate_range(
+            STREAM_BITRATE, self._stream_profile, STREAM_BITRATE_RANGE
+        )
+        self._ingests_bitrate_range = shaped_bitrate_range(
+            NUMBER_OF_INGESTS * INGEST_BITRATE,
+            self._ingests_profile,
+            INGESTS_BITRATE_RANGE,
+        )
+        self._deviation_timeout = max(
+            DEVIATION_TIMEOUT,
+            SHAPED_DEVIATION_TIMEOUT_FACTOR * self._shaper.change_period(),
+        )
+
     def _go_live(self, mediamtx: MediaMtx):
         self.moblin.wait_for_ingests(
-            *INGESTS_BITRATE_RANGE,
+            *self._ingests_bitrate_range,
             total_bytes=0,
             number_of_ingests=NUMBER_OF_INGESTS,
             timeout=INGESTS_CONNECT_TIMEOUT,
         )
         self.moblin.go_live()
-        self.moblin.wait_for_bitrate(*STREAM_BITRATE_RANGE, None, 3_000_000)
+        self.moblin.wait_for_bitrate(*self._stream_bitrate_range, None, 3_000_000)
         mediamtx.wait_for_srt_stream(STREAM_PATH, 3_000_000)
 
     def _create_monitor(self, mediamtx: MediaMtx, sources: list[Source]) -> Monitor:
@@ -279,15 +347,29 @@ class StabilityFourIngestsOneStream(TestCase):
             stream_path=STREAM_PATH,
             source_names=[source.name for source in sources],
             number_of_ingests=NUMBER_OF_INGESTS,
-            stream_bitrate_range=STREAM_BITRATE_RANGE,
-            ingests_bitrate_range=INGESTS_BITRATE_RANGE,
+            stream_bitrate_range=self._stream_bitrate_range,
+            ingests_bitrate_range=self._ingests_bitrate_range,
             poll_interval=POLL_INTERVAL,
-            stream_content=StreamContentExpectation(
-                url=srt_reader_url(STREAM_PATH),
-                path=STREAM_CONTENT_FILE,
-                width=STREAM_WIDTH,
-                height=STREAM_HEIGHT,
-                fps=STREAM_FPS,
+            stream_content=self._create_stream_content_expectation(),
+            deviation_timeout=self._deviation_timeout,
+            shaping="" if self._shaper is None else self._shaper.description(),
+        )
+
+    def _create_stream_content_expectation(self) -> StreamContentExpectation:
+        expectation = StreamContentExpectation(
+            url=srt_reader_url(STREAM_PATH),
+            path=STREAM_CONTENT_FILE,
+            width=STREAM_WIDTH,
+            height=STREAM_HEIGHT,
+            fps=STREAM_FPS,
+        )
+        if self._stream_profile is None:
+            return expectation
+        return replace(
+            expectation,
+            minimum_fps_ratio=SHAPED_STREAM_CONTENT_MINIMUM_FPS_RATIO,
+            minimum_unique_video_frames_ratio=(
+                SHAPED_STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO
             ),
         )
 
@@ -298,6 +380,8 @@ class StabilityFourIngestsOneStream(TestCase):
         while time.monotonic() < end_time:
             next_poll_time += POLL_INTERVAL
             time.sleep(max(0, next_poll_time - time.monotonic()))
+            if self._shaper is not None:
+                self._shaper.poll()
             restart_dead_sources(monitor, sources)
             monitor.poll()
             if time.monotonic() >= next_log_time:
@@ -330,9 +414,45 @@ def restart_dead_sources(monitor: Monitor, sources: list[Source]):
             source.command.restart()
 
 
-def tests(moblin: Moblin, duration: float = DEFAULT_DURATION):
+def shaped_bitrate_range(
+    nominal_bitrate: float,
+    profile: Profile | None,
+    default_range: tuple[float, float],
+) -> tuple[float, float]:
+    if profile is None:
+        return default_range
+    minimum_rate = profile.minimum_rate()
+    maximum_rate = profile.maximum_rate()
+    if minimum_rate is None or maximum_rate is None:
+        return default_range
+    return (
+        SHAPED_BITRATE_MINIMUM_FACTOR * min(nominal_bitrate, minimum_rate),
+        SHAPED_BITRATE_MAXIMUM_FACTOR * min(nominal_bitrate, maximum_rate),
+    )
+
+
+def create_traffic_shaper(
+    config: Config,
+    stream_traffic_shaping: str | None,
+    ingests_traffic_shaping: str | None,
+) -> TrafficShaper | None:
+    profiles = {}
+    if stream_traffic_shaping is not None:
+        profiles[STREAM_GROUP] = parse_profile(stream_traffic_shaping)
+    if ingests_traffic_shaping is not None:
+        profiles[INGESTS_GROUP] = parse_profile(ingests_traffic_shaping)
+    if len(profiles) == 0:
+        return None
+    return TrafficShaper(config, RELAYS, profiles)
+
+
+def tests(
+    moblin: Moblin,
+    duration: float,
+    shaper: TrafficShaper | None,
+):
     return [
-        StabilityFourIngestsOneStream(moblin, duration),
+        StabilityFourIngestsOneStream(moblin, duration, shaper),
     ]
 
 

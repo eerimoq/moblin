@@ -122,6 +122,8 @@ class StreamContentExpectation:
     minimum_unique_video_frames_ratio: float = (
         STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO
     )
+    minimum_fps_ratio: float = STREAM_CONTENT_MINIMUM_FPS_RATIO
+    maximum_fps_ratio: float = STREAM_CONTENT_MAXIMUM_FPS_RATIO
 
 
 def check_stream_content(
@@ -160,8 +162,8 @@ def _check_stream_content_video(
     fps = content.video_fps()
     if not is_within(
         fps,
-        STREAM_CONTENT_MINIMUM_FPS_RATIO * expectation.fps,
-        STREAM_CONTENT_MAXIMUM_FPS_RATIO * expectation.fps,
+        expectation.minimum_fps_ratio * expectation.fps,
+        expectation.maximum_fps_ratio * expectation.fps,
     ):
         problems.append(f"The video is {fps:.1f} instead of {expectation.fps:.1f} fps")
     ratio = content.unique_video_frames_ratio()
@@ -311,6 +313,8 @@ class Monitor:
         ingests_bitrate_range: tuple[float, float],
         poll_interval: float,
         stream_content: StreamContentExpectation,
+        deviation_timeout: float = DEVIATION_TIMEOUT,
+        shaping: str = "",
     ):
         self._moblin = moblin
         self._mediamtx = mediamtx
@@ -319,6 +323,7 @@ class Monitor:
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
         self._poll_interval = poll_interval
+        self._shaping = shaping
         self._start_time = time.monotonic()
         self._previous_sample: Sample | None = None
         self._previous_publisher: tuple[str, int] | None = None
@@ -332,16 +337,18 @@ class Monitor:
         self.last_ram_mb: float | None = None
         self._deviations: list[Deviation] = []
         self._unreachable = self._add_deviation("App unreachable", UNREACHABLE_TIMEOUT)
-        self._not_live = self._add_deviation("Not live")
+        self._not_live = self._add_deviation("Not live", deviation_timeout)
         self._stream_bitrate_deviation = self._add_deviation(
-            "Stream bitrate out of range"
+            "Stream bitrate out of range", deviation_timeout
         )
         self._receiver_deviation = self._add_deviation(
-            "Stream not received by MediaMTX"
+            "Stream not received by MediaMTX", deviation_timeout
         )
-        self._ingests_deviation = self._add_deviation("Wrong number of ingests")
+        self._ingests_deviation = self._add_deviation(
+            "Wrong number of ingests", deviation_timeout
+        )
         self._ingests_bitrate_deviation = self._add_deviation(
-            "Ingests bitrate out of range"
+            "Ingests bitrate out of range", deviation_timeout
         )
         self._stream_content_checker = StreamContentChecker(stream_content)
         self._stream_content_deviation = self._add_deviation(
@@ -409,6 +416,7 @@ class Monitor:
         last = self._previous_sample
         LOGGER.info("--------------------- Stability report ---------------------")
         LOGGER.info("Duration:                   %s", format_duration(self.elapsed()))
+        LOGGER.info("Network shaping:            %s", self._shaping or "none")
         LOGGER.info(
             "Stream total in GB:         %s",
             format_gigabytes(last.stream_total_bytes if last else None),
@@ -592,7 +600,7 @@ class Monitor:
         level = sample.battery_percent
         if sample.battery_charging or level is None:
             return
-        if level < MINIMUM_BATTERY_LEVEL:
+        if 0 < level < MINIMUM_BATTERY_LEVEL:
             raise MonitorError(
                 f"The device battery level is {level} %. Connect the device to power "
                 "and run the test again."

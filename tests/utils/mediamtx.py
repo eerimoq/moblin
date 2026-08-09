@@ -15,9 +15,10 @@ CONFIG_PATH = UTILS_DIR / "mediamtx.yml"
 
 
 class MediaMtx:
-    def __init__(self, log_level: str | None = None):
+    def __init__(self, log_level: str | None = None, webrtc_host: str | None = None):
         self._server = None
         self._log_level = log_level
+        self._webrtc_host = webrtc_host
 
     def __enter__(self):
         self._server = subprocess.Popen(
@@ -106,9 +107,15 @@ class MediaMtx:
         raise Exception("Timeout waiting for RTSP stream from MediaMTX")
 
     def _create_env(self) -> dict[str, str] | None:
-        if self._log_level is None:
+        env = {}
+        if self._log_level is not None:
+            env["MTX_LOGLEVEL"] = self._log_level
+        if self._webrtc_host is not None:
+            env["MTX_WEBRTCIPSFROMINTERFACES"] = "no"
+            env["MTX_WEBRTCADDITIONALHOSTS"] = self._webrtc_host
+        if len(env) == 0:
             return None
-        return {**os.environ, "MTX_LOGLEVEL": self._log_level}
+        return {**os.environ, **env}
 
     def _wait_until_server_is_ready(self):
         end_time = time.monotonic() + 15

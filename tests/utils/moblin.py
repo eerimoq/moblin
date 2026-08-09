@@ -56,6 +56,8 @@ class Moblin:
         self._server = None
         self.ip_address = config.moblin_ip_address()
         self._tester_ip_address = config.tester_ip_address()
+        self._tester_media_ip_address = self._tester_ip_address
+        self._device_media_ip_address = self.ip_address
         self._capabilities = config.capabilities()
         self._moving_picture = moving_picture
 
@@ -139,17 +141,21 @@ class Moblin:
     def ping(self):
         self._execute("get_settings")
 
+    def use_media_relay(self, ip_address: str):
+        self._tester_media_ip_address = ip_address
+        self._device_media_ip_address = ip_address
+
     def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:
-        return f"rist://{self._tester_ip_address}:{port}"
+        return f"rist://{self._tester_media_ip_address}:{port}"
 
     def tester_rtmp_url(self, path: str) -> str:
-        return f"rtmp://{self._tester_ip_address}:{TESTER_RTMP_PORT}/{path}"
+        return f"rtmp://{self._tester_media_ip_address}:{TESTER_RTMP_PORT}/{path}"
 
     def tester_rtsp_url(self, path: str) -> str:
-        return f"rtsp://{self._tester_ip_address}:{TESTER_RTSP_PORT}/{path}"
+        return f"rtsp://{self._tester_media_ip_address}:{TESTER_RTSP_PORT}/{path}"
 
     def tester_srt_url(self, port: int) -> str:
-        return f"srt://{self._tester_ip_address}:{port}"
+        return f"srt://{self._tester_media_ip_address}:{port}"
 
     def tester_srt_publish_url(self, name: str, passphrase: str | None = None) -> str:
         url = f"{self.tester_srt_url(TESTER_SRT_PORT)}?streamid=publish:{name}"
@@ -158,20 +164,24 @@ class Moblin:
         return url
 
     def tester_whip_url(self, path: str) -> str:
-        return f"whip://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
+        return (
+            f"whip://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
+        )
 
     def tester_whep_url(self, path: str) -> str:
-        return f"http://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
+        return (
+            f"http://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
+        )
 
     def ingest_rtmp_url(self, stream_key: str = "1") -> str:
-        return f"rtmp://{self.ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
+        return f"rtmp://{self._device_media_ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
 
     def ingest_srt_url(self, stream_id: str = "1") -> str:
-        return f"srt://{self.ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
+        return f"srt://{self._device_media_ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
 
     def ingest_rist_url(self, virtual_destination_port: int = 1) -> str:
         return (
-            f"rist://{self.ip_address}:{RIST_SERVER_PORT}"
+            f"rist://{self._device_media_ip_address}:{RIST_SERVER_PORT}"
             f"?virt-dst-port={virtual_destination_port}"
         )
 
@@ -252,6 +262,11 @@ class Moblin:
         ).stdout
 
     def _wait_until_streamer_is_connected(self):
+        LOGGER.info(
+            "Waiting for %s's remote control streamer to connect to port %d...",
+            self._device_name,
+            self._remote_control_port,
+        )
         end_time = time.monotonic() + 60
         while time.monotonic() < end_time:
             try:
@@ -260,11 +275,6 @@ class Moblin:
                 time.sleep(3)
                 return
             except Exception:
-                LOGGER.info(
-                    "Waiting for %s's remote control streamer to connect to port %d",
-                    self._device_name,
-                    self._remote_control_port,
-                )
                 time.sleep(1)
         raise Exception("Timeout waiting for streamer to connect")
 

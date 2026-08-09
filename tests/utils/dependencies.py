@@ -10,7 +10,15 @@ def _is_executable_in_path(name: str) -> bool:
 
 def check_dependencies():
     missing_dependencies = []
-    for executable in ["ffmpeg", "qrtool", "mediamtx", "ltcgen", "ltcdump", "openssl"]:
+    for executable in [
+        "ffmpeg",
+        "qrtool",
+        "mediamtx",
+        "ltcgen",
+        "ltcdump",
+        "openssl",
+        "ssh",
+    ]:
         if not _is_executable_in_path(executable):
             missing_dependencies.append(f"{executable} executable not found")
     missing_dependencies += ffmpeg.check_dependencies()

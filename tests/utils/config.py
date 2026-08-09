@@ -15,6 +15,7 @@ TESTER_RTMP_PORT = 1935
 TESTER_RTSP_PORT = 8554
 TESTER_SRT_PORT = 8890
 TESTER_WEBRTC_PORT = 8889
+TESTER_WEBRTC_UDP_PORT = 8189
 MEDIAMTX_API_PORT = 9997
 
 
@@ -67,6 +68,14 @@ class Config:
 
     def generic_stream_urls(self) -> list[str]:
         return self.general()["generic-stream-urls"]
+
+    def shaper(self):
+        shaper = self._config.get("shaper")
+        if shaper is None:
+            raise Exception(
+                f"No [shaper] section found in '{self.config_toml.absolute()}'."
+            )
+        return shaper
 
     def _device(self):
         return self._config["device"][self.device_name()]
