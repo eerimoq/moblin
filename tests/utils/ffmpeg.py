@@ -1,5 +1,7 @@
 import json
 import logging
+import math
+import re
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -14,6 +16,9 @@ from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
 FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
+CAPTURE_EXTRA_TIMEOUT = 30
+RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
+RE_PROGRESS_FRAME = re.compile(r"^frame=(\d+)$", re.MULTILINE)
 
 
 def _log_level(line: str) -> int:
@@ -23,9 +28,11 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
-def _run(command: list[str]):
+def _run(command: list[str], timeout: float | None = None):
     LOGGER.debug("Command: %s", " ".join(command))
-    return subprocess.run(command, check=True, capture_output=True, text=True)
+    return subprocess.run(
+        command, check=True, capture_output=True, text=True, timeout=timeout
+    )
 
 
 def _run_binary(command: list[str]) -> bytes:
@@ -431,6 +438,134 @@ def ffprobe(path: Path):
         audio=ffprobe_audio(path),
         format=ffprobe_format(path),
     )
+
+
+@dataclass
+class StreamContent:
+    duration: float = 0
+    video_codec: str = ""
+    width: int = 0
+    height: int = 0
+    video_duration: float = 0
+    video_frames: int = 0
+    unique_video_frames: int = 0
+    audio_codec: str = ""
+    sample_rate: int = 0
+    channels: int = 0
+    audio_duration: float = 0
+    mean_volume_db: float = -math.inf
+    max_volume_db: float = -math.inf
+
+    def has_video(self) -> bool:
+        return self.video_codec != ""
+
+    def has_audio(self) -> bool:
+        return self.audio_codec != ""
+
+    def video_fps(self) -> float:
+        if self.video_duration <= 0:
+            return 0
+        return self.video_frames / self.video_duration
+
+    def unique_video_frames_ratio(self) -> float:
+        if self.video_frames == 0:
+            return 0
+        return self.unique_video_frames / self.video_frames
+
+
+def capture_stream_content(url: str, duration: float, path: Path) -> StreamContent:
+    _record_stream(url, duration, path)
+    return probe_stream_content(path)
+
+
+def _record_stream(url: str, duration: float, path: Path):
+    path.unlink(missing_ok=True)
+    _run(
+        FFMPEG_COMMAND
+        + [
+            "-nostats",
+            "-loglevel",
+            "warning",
+            "-i",
+            url,
+            "-t",
+            str(duration),
+            "-c",
+            "copy",
+            "-f",
+            "mpegts",
+            str(path),
+        ],
+        timeout=duration + CAPTURE_EXTRA_TIMEOUT,
+    )
+
+
+def probe_stream_content(path: Path) -> StreamContent:
+    content = StreamContent()
+    output = ffprobe_run(
+        path,
+        "-count_packets",
+        "-show_entries",
+        "format=duration:stream=codec_type,codec_name,width,height,duration,"
+        "sample_rate,channels,nb_read_packets",
+    )
+    content.duration = _to_float(output["format"].get("duration"))
+    for stream in output["streams"]:
+        codec_type = stream.get("codec_type")
+        if codec_type == "video" and not content.has_video():
+            content.video_codec = stream["codec_name"]
+            content.width = stream["width"]
+            content.height = stream["height"]
+            content.video_duration = _to_float(stream.get("duration"))
+            content.video_frames = int(stream["nb_read_packets"])
+        elif codec_type == "audio" and not content.has_audio():
+            content.audio_codec = stream["codec_name"]
+            content.sample_rate = int(stream["sample_rate"])
+            content.channels = stream["channels"]
+    _measure_stream_content(path, content)
+    return content
+
+
+def _measure_stream_content(path: Path, content: StreamContent):
+    args = ["-nostats", "-progress", "pipe:1", "-i", str(path)]
+    if content.has_video():
+        args += ["-vf", "mpdecimate", "-fps_mode", "vfr"]
+    if content.has_audio():
+        args += ["-af", "volumedetect"]
+    args += ["-f", "null", "-"]
+    proc = _run(FFMPEG_COMMAND + args, timeout=CAPTURE_EXTRA_TIMEOUT)
+    if content.has_video():
+        content.unique_video_frames = _parse_progress_frames(proc.stdout)
+    if content.has_audio():
+        _parse_volume_detect(proc.stderr, content)
+
+
+def _parse_progress_frames(output: str) -> int:
+    matches = RE_PROGRESS_FRAME.findall(output)
+    if len(matches) == 0:
+        return 0
+    return int(matches[-1])
+
+
+def _parse_volume_detect(output: str, content: StreamContent):
+    number_of_samples = 0
+    for name, value in RE_VOLUME_DETECT.findall(output):
+        if name == "n_samples":
+            number_of_samples = max(number_of_samples, int(value))
+        elif name == "mean_volume":
+            content.mean_volume_db = float(value)
+        else:
+            content.max_volume_db = float(value)
+    samples_per_second = content.sample_rate * content.channels
+    if samples_per_second > 0:
+        content.audio_duration = number_of_samples / samples_per_second
+
+
+def _to_float(value) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 @dataclass

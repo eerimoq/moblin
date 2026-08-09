@@ -31,6 +31,10 @@ def srt_listener_url(
     return url
 
 
+def srt_reader_url(path: str, port: int = TESTER_SRT_PORT) -> str:
+    return f"srt://localhost:{port}?streamid=read:{path}"
+
+
 def rist_listener_url(port: int = TESTER_RIST_PORT) -> str:
     return f"rist://@0.0.0.0:{port}"
 

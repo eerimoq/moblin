@@ -7,6 +7,7 @@ from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTSP_PORT
+from utils.config import srt_reader_url
 from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
@@ -17,8 +18,9 @@ from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.monitor import Monitor
-from utils.monitor import format_duration
+from utils.monitor import StreamContentExpectation
 from utils.test_case import TestCase
+from utils.utils import FILES_DIR
 from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
@@ -36,7 +38,9 @@ STREAM_BITRATE_RANGE = (4_000_000, 6_500_000)
 INGESTS_BITRATE_RANGE = (17_000_000, 26_000_000)
 STREAM_WIDTH = 1920
 STREAM_HEIGHT = 1080
+STREAM_FPS = 30
 STREAM_RESOLUTION = f"{STREAM_WIDTH}x{STREAM_HEIGHT}"
+STREAM_CONTENT_FILE = FILES_DIR / f"{STREAM_PATH}-stream-content.ts"
 INGEST_WIDGET_SIZE = 33
 NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
@@ -59,12 +63,10 @@ class StabilityFourIngestsOneStream(TestCase):
     """Four ingests (RTMP, SRT, RIST and WHEP) and one outgoing SRT stream, all roughly
     5 Mbps, active at the same time for 12 hours, or until the app crashes.
 
-    All four ingests are shown in the scene, so all of them are decoded and composited.
-    A text widget showing the name of the ingest is rendered in the top center of each
-    of them.
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
-    level are monitored continuously. The test fails if the app crashes, becomes
-    unresponsive, or if anything is outside its accepted range for too long.
+    level are monitored continuously. A few seconds of the stream are read back from
+    MediaMTX periodically to verify that it contains moving video and audible
+    audio.
 
     """
 
@@ -84,7 +86,7 @@ class StabilityFourIngestsOneStream(TestCase):
                         "srt": {"adaptiveBitrateEnabled": False},
                         "bitrateRateControl": "CBR",
                         "bitrate": STREAM_BITRATE,
-                        "fps": 30,
+                        "fps": STREAM_FPS,
                         "resolution": STREAM_RESOLUTION,
                     }
                 ],
@@ -280,14 +282,16 @@ class StabilityFourIngestsOneStream(TestCase):
             stream_bitrate_range=STREAM_BITRATE_RANGE,
             ingests_bitrate_range=INGESTS_BITRATE_RANGE,
             poll_interval=POLL_INTERVAL,
+            stream_content=StreamContentExpectation(
+                url=srt_reader_url(STREAM_PATH),
+                path=STREAM_CONTENT_FILE,
+                width=STREAM_WIDTH,
+                height=STREAM_HEIGHT,
+                fps=STREAM_FPS,
+            ),
         )
 
     def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
-        LOGGER.info(
-            "Streaming %d ingests and one stream. Monitoring the app for %s.",
-            NUMBER_OF_INGESTS,
-            format_duration(self._duration),
-        )
         end_time = time.monotonic() + self._duration
         next_poll_time = time.monotonic()
         next_log_time = time.monotonic()
