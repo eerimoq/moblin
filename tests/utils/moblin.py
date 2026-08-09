@@ -129,7 +129,7 @@ class Moblin:
         response = requests.get(f"{base_url}/recordings.json", timeout=15)
         response.raise_for_status()
         recordings = response.json()
-        recording_url = f"{base_url}/recordings/{recordings[0]["name"]}"
+        recording_url = f"{base_url}/recordings/{recordings[0]['name']}"
         response = requests.get(recording_url, timeout=15)
         response.raise_for_status()
         recording_file = FILES_DIR / filename

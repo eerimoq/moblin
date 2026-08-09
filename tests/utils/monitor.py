@@ -189,8 +189,7 @@ def _check_stream_content_audio(
         )
     if content.mean_volume_db < expectation.minimum_mean_volume_db:
         problems.append(
-            f"The audio is silent. Its mean volume is "
-            f"{content.mean_volume_db:.1f} dB"
+            f"The audio is silent. Its mean volume is {content.mean_volume_db:.1f} dB"
         )
     return problems
 

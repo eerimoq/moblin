@@ -10,7 +10,7 @@ OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
-BLACK_ARGS = $(PYTHON_DIRS)
+RUFF_FORMAT_ARGS = $(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--disable-update-check
@@ -60,13 +60,13 @@ style:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
 	isort $(ISORT_ARGS)
-	black $(BLACK_ARGS)
+	ruff format $(RUFF_FORMAT_ARGS)
 
 style-check:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
 	isort $(ISORT_ARGS) --check
-	black $(BLACK_ARGS) --check
+	ruff format $(RUFF_FORMAT_ARGS) --check
 
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)

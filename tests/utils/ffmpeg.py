@@ -632,7 +632,7 @@ def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
     if crop is not None:
         filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")
     filters.append("mpdecimate")
-    filtered_path = path.with_suffix(f".{"-".join(filters)}-filtered.mp4")
+    filtered_path = path.with_suffix(f".{'-'.join(filters)}-filtered.mp4")
     args += [", ".join(filters), "-an", str(filtered_path)]
     ffmpeg_run(*args)
     return filtered_path

@@ -493,11 +493,7 @@ class TrafficShaper:
         else:
             return f"TCP-LISTEN:{relay.port},"
 
-    def _execute(
-        self,
-        command: str,
-        check: bool = True,
-    ) -> subprocess.CompletedProcess:
+    def _execute(self, command: str, check: bool = True) -> subprocess.CompletedProcess:
         return subprocess.run(
             self._build_execute_arguments(command),
             timeout=EXECUTE_TIMEOUT,
@@ -508,9 +504,7 @@ class TrafficShaper:
         )
 
     def _execute_with_input(
-        self,
-        command: str,
-        input_data: str,
+        self, command: str, input_data: str
     ) -> subprocess.CompletedProcess:
         return subprocess.run(
             self._build_execute_arguments(command),
@@ -535,10 +529,7 @@ class TrafficShaper:
             text=True,
         )
 
-    def _build_execute_arguments(
-        self,
-        command: str,
-    ) -> list[str]:
+    def _build_execute_arguments(self, command: str) -> list[str]:
         LOGGER.debug("SSH command: %s", command)
         return self._build_execute_base_arguments() + [
             self._ssh_host,
@@ -596,8 +587,7 @@ def parse_profile(name: str, parameters: str | None) -> Profile:
         raise Exception(f"Unsupported traffic shaping profile '{name}'.")
     if len(values) > 0:
         raise Exception(
-            f"Unsupported {name} traffic shaping settings: "
-            f"{', '.join(sorted(values))}."
+            f"Unsupported {name} traffic shaping settings: {', '.join(sorted(values))}."
         )
     return profile
 
