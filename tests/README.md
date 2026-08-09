@@ -109,13 +109,13 @@ make stability TEST_ARGS="--stream-traffic-shaping profile=random,min-rate=1Mbit
 | Setting | Profiles | Description |
 |---|---|---|
 | `profile` | | `constant`, `square` or `random`. |
-| `rate` | constant | Bandwidth limit, for example `3Mbit`, `500kbit` or `3000000`. |
-| `low-rate`, `high-rate` | square | Bandwidth limits to alternate between. |
-| `min-rate`, `max-rate` | random | Bandwidth limits to pick random rates between. |
-| `period` | square | Seconds at each rate (default 60). |
-| `interval` | random | Seconds between rate changes (default 15). |
-| `seed` | random | Random seed for reproducible runs. |
 | `delay` | all | One way delay in milliseconds. |
 | `jitter` | all | Delay variation in milliseconds. |
 | `loss` | all | Packet loss in percent. |
 | `limit` | all | Queue length in packets (default 1000). |
+| `rate` | constant | Bandwidth limit, for example `3Mbit`, `500kbit` or `3000000`. |
+| `low-rate`, `high-rate` | square | Bandwidth limits to alternate between. |
+| `period` | square | Seconds at each rate (default 60). |
+| `min-rate`, `max-rate` | random | Bandwidth limits to pick random rates between. |
+| `interval` | random | Seconds between rate changes (default 15). |
+| `seed` | random | Random seed for reproducible runs. |
