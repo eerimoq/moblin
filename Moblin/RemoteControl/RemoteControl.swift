@@ -10,6 +10,12 @@ class RemoteControlStartStatusFilter: Codable {
     var topRight: Bool = true
 }
 
+class RemoteControlStartStatsFilter: Codable {
+    var weather: Bool?
+    var geography: Bool?
+    var gForce: Bool?
+}
+
 enum RemoteControlRequest: Codable {
     case getStatus
     case getSettings
@@ -54,7 +60,7 @@ enum RemoteControlRequest: Codable {
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
     case importSettings(data: Data)
-    case startStats
+    case startStats(filter: RemoteControlStartStatsFilter?)
     case stopStats
 }
 
@@ -78,10 +84,10 @@ enum RemoteControlEvent: Codable {
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
     case golfScoreboard(data: RemoteControlGolfScoreboard)
-    case stats(data: Stats)
+    case stats(data: RemoteControlStats)
 }
 
-struct Stats: Codable {
+struct RemoteControlStats: Codable {
     var date: Date
     var timeZone: String
     var speed: Double
@@ -113,6 +119,7 @@ struct Stats: Codable {
     var stepCount: Int?
     var cyclingPower: Int
     var cyclingCadence: Int
+    var gForce: GForce?
 }
 
 struct RemoteControlChatMessage: Codable {

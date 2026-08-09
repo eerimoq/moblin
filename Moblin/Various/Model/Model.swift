@@ -604,9 +604,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var isRemoteControlAssistantRequestingStats = false
     var isRemoteControlWebRequestingPreview = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
+    var remoteControlAssistantRequestingStatsFilter: RemoteControlStartStatsFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
-    var remoteControlAssistantLatestStats: Stats?
+    var remoteControlAssistantLatestStats: RemoteControlStats?
     var remoteControlStreamerLatestReceivedChatMessageId = -1
     var useRemoteControlForChatAndEvents = false
     var currentWiFiSsid: String?
@@ -1224,6 +1225,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
     }
 
+    private func isStatsFilterFieldEnabled(_ field: KeyPath<RemoteControlStartStatsFilter, Bool?>) -> Bool {
+        guard isRemoteControlAssistantRequestingStats else {
+            return false
+        }
+        guard let filter = remoteControlAssistantRequestingStatsFilter else {
+            return true
+        }
+        return filter[keyPath: field] == true
+    }
+
     func startGForceManager() {
         if isGForceManagerNeeded() {
             gForceManager?.start()
@@ -1233,6 +1244,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGForceManagerNeeded() -> Bool {
+        if isStatsFilterFieldEnabled(\.gForce) {
+            return true
+        }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
             guard widget.widget.type == .text else {
                 continue
@@ -1291,7 +1305,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWeatherNeeded() -> Bool {
-        if isRemoteControlAssistantRequestingStats {
+        if isStatsFilterFieldEnabled(\.weather) {
             return true
         }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
@@ -1319,7 +1333,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGeographyNeeded() -> Bool {
-        if isRemoteControlAssistantRequestingStats {
+        if isStatsFilterFieldEnabled(\.geography) {
             return true
         }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
@@ -1725,6 +1739,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateStatusChatText()
         updateAutoSceneSwitcher(now: monotonicNow)
         sendPeriodicRemoteControlStreamerStatus()
+        sendPeriodicRemoteControlStreamerStats(now: now)
         speechToTextProcess()
         updateTwitchRaid()
     }

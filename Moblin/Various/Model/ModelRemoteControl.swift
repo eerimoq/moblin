@@ -332,8 +332,8 @@ extension Model {
         remoteControlAssistant?.stopStatus()
     }
 
-    func remoteControlAssistantStartStats() {
-        remoteControlAssistant?.startStats()
+    func remoteControlAssistantStartStats(filter: RemoteControlStartStatsFilter? = nil) {
+        remoteControlAssistant?.startStats(filter: filter)
     }
 
     func remoteControlAssistantStopStats() {
@@ -498,6 +498,49 @@ extension Model {
              topRight) =
             remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
         remoteControlStreamer?.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
+    }
+
+    func sendPeriodicRemoteControlStreamerStats(now: Date) {
+        guard isRemoteControlAssistantRequestingStats else {
+            return
+        }
+        let location = locationManager.getLatestKnownLocation()
+        let weather = weatherManager.getLatestWeather()?.currentWeather
+        let placemark = geographyManager.getLatestPlacemark()
+        remoteControlStreamer?.sendStatsUpdate(data: RemoteControlStats(
+            date: now,
+            timeZone: TimeZone.current.identifier,
+            speed: location?.speed ?? 0,
+            averageSpeed: averageSpeed,
+            altitude: location?.altitude ?? 0,
+            latitude: location?.coordinate.latitude,
+            longitude: location?.coordinate.longitude,
+            distance: database.location.distance,
+            splitDistance: database.location.splitDistance,
+            slopePercent: slopePercent,
+            altitudeAscent: database.location.altitudeAscent,
+            altitudeDescent: database.location.altitudeDescent,
+            splitAltitudeAscent: database.location.splitAltitudeAscent,
+            splitAltitudeDescent: database.location.splitAltitudeDescent,
+            temperature: weather?.temperature.converted(to: .celsius).value,
+            feelsLikeTemperature: weather?.apparentTemperature.converted(to: .celsius).value,
+            windSpeed: weather?.wind.speed.converted(to: .metersPerSecond).value,
+            windGust: weather?.wind.gust?.converted(to: .metersPerSecond).value,
+            country: placemark?.country,
+            countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
+            state: placemark?.administrativeArea,
+            area: placemark?.subAdministrativeArea,
+            city: placemark?.locality,
+            neighborhood: placemark?.subLocality,
+            heartRates: heartRates,
+            activeEnergyBurned: workoutActiveEnergyBurned,
+            workoutDistance: workoutDistance,
+            power: workoutPower,
+            stepCount: workoutStepCount,
+            cyclingPower: cyclingPower,
+            cyclingCadence: cyclingCadence,
+            gForce: gForceManager?.getLatest()
+        ))
     }
 
     func isRemoteControlStreamerPreviewActive() -> Bool {
@@ -677,8 +720,10 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
         isRemoteControlAssistantRequestingStats = false
+        remoteControlAssistantRequestingStatsFilter = nil
         startWeatherManager()
         startGeographyManager()
+        startGForceManager()
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
@@ -689,8 +734,10 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
         isRemoteControlAssistantRequestingStats = false
+        remoteControlAssistantRequestingStatsFilter = nil
         startWeatherManager()
         startGeographyManager()
+        startGForceManager()
         setLowFpsImage()
         updateRemoteControlStatus()
     }
@@ -920,16 +967,20 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         remoteControlAssistantRequestingStatusFilter = nil
     }
 
-    func remoteControlStreamerStartStats() {
+    func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?) {
         isRemoteControlAssistantRequestingStats = true
+        remoteControlAssistantRequestingStatsFilter = filter
         startWeatherManager()
         startGeographyManager()
+        startGForceManager()
     }
 
     func remoteControlStreamerStopStats() {
         isRemoteControlAssistantRequestingStats = false
+        remoteControlAssistantRequestingStatsFilter = nil
         startWeatherManager()
         startGeographyManager()
+        startGForceManager()
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {
@@ -1154,7 +1205,7 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         }
     }
 
-    func remoteControlAssistantStats(data: Stats) {
+    func remoteControlAssistantStats(data: RemoteControlStats) {
         remoteControlAssistantLatestStats = data
     }
 }

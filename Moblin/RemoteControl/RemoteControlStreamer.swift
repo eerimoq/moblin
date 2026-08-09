@@ -50,7 +50,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
-    func remoteControlStreamerStartStats()
+    func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
 }
 
@@ -124,7 +124,7 @@ class RemoteControlStreamer {
         send(message: .event(data: .scoreboard(config: config)))
     }
 
-    func sendStatsUpdate(data: Stats) {
+    func sendStatsUpdate(data: RemoteControlStats) {
         guard connected else {
             return
         }
@@ -374,8 +374,8 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerImportSettings(settings: data) { succeeded in
                 self.send(message: .response(id: id, result: succeeded ? .ok : .error, data: nil))
             }
-        case .startStats:
-            delegate.remoteControlStreamerStartStats()
+        case let .startStats(filter: filter):
+            delegate.remoteControlStreamerStartStats(filter: filter)
             sendEmptyOkResponse(id: id)
         case .stopStats:
             delegate.remoteControlStreamerStopStats()

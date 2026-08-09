@@ -1516,7 +1516,7 @@ extension Model {
     }
 
     func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
-        guard !textEffects.isEmpty || isRemoteControlAssistantRequestingStats else {
+        guard !textEffects.isEmpty else {
             return
         }
         var stats: TextEffectStats
@@ -1574,41 +1574,6 @@ extension Model {
                 latestFollower: latestFollower
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
-            if isRemoteControlAssistantRequestingStats {
-                remoteControlStreamer?.sendStatsUpdate(data: Stats(
-                    date: now,
-                    timeZone: TimeZone.current.identifier,
-                    speed: location?.speed ?? 0,
-                    averageSpeed: averageSpeed,
-                    altitude: location?.altitude ?? 0,
-                    latitude: location?.coordinate.latitude,
-                    longitude: location?.coordinate.longitude,
-                    distance: database.location.distance,
-                    splitDistance: database.location.splitDistance,
-                    slopePercent: slopePercent,
-                    altitudeAscent: database.location.altitudeAscent,
-                    altitudeDescent: database.location.altitudeDescent,
-                    splitAltitudeAscent: database.location.splitAltitudeAscent,
-                    splitAltitudeDescent: database.location.splitAltitudeDescent,
-                    temperature: weather?.temperature.converted(to: .celsius).value,
-                    feelsLikeTemperature: weather?.apparentTemperature.converted(to: .celsius).value,
-                    windSpeed: weather?.wind.speed.converted(to: .metersPerSecond).value,
-                    windGust: weather?.wind.gust?.converted(to: .metersPerSecond).value,
-                    country: placemark?.country,
-                    countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
-                    state: placemark?.administrativeArea,
-                    area: placemark?.subAdministrativeArea,
-                    city: placemark?.locality,
-                    neighborhood: placemark?.subLocality,
-                    heartRates: heartRates,
-                    activeEnergyBurned: workoutActiveEnergyBurned,
-                    workoutDistance: workoutDistance,
-                    power: workoutPower,
-                    stepCount: workoutStepCount,
-                    cyclingPower: cyclingPower,
-                    cyclingCadence: cyclingCadence
-                ))
-            }
         }
         for effect in textEffects.values {
             effect.updateStats(stats: stats)

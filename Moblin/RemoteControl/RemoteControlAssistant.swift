@@ -12,7 +12,7 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantStatus(general: RemoteControlStatusGeneral?,
                                       topLeft: RemoteControlStatusTopLeft?,
                                       topRight: RemoteControlStatusTopRight?)
-    func remoteControlAssistantStats(data: Stats)
+    func remoteControlAssistantStats(data: RemoteControlStats)
 }
 
 private struct RemoteControlRequestResponse {
@@ -228,8 +228,8 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .stopStatus, onSuccess: {})
     }
 
-    func startStats() {
-        performRequestNoResponseData(data: .startStats, onSuccess: {})
+    func startStats(filter: RemoteControlStartStatsFilter? = nil) {
+        performRequestNoResponseData(data: .startStats(filter: filter), onSuccess: {})
     }
 
     func stopStats() {
