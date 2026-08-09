@@ -264,7 +264,7 @@ class TrafficShaper:
             self._session = None
         if self._control_master is not None:
             self._clean_up()
-            self._execute(None, check=False)
+            self._execute_exit()
             self._control_master.kill()
             self._control_master.wait()
             self._control_master = None
@@ -349,8 +349,8 @@ class TrafficShaper:
             )
 
     def _upload_setup_script(self):
-        self._execute(
-            f"cat > {self._script_path}", input_data=self._create_setup_script()
+        self._execute_with_input(
+            f"cat > {self._script_path}", self._create_setup_script()
         )
         LOGGER.debug(
             "Setup script:\n%s", self._execute(f"cat {self._script_path}").stdout
@@ -495,39 +495,65 @@ class TrafficShaper:
 
     def _execute(
         self,
-        command: str | None,
+        command: str,
         check: bool = True,
-        input_data: str | None = None,
     ) -> subprocess.CompletedProcess:
-        arguments = ["ssh", "-S", str(self._control_path), *SSH_OPTIONS]
-        if command is None:
-            arguments += ["-O", "exit", self._ssh_host]
-        else:
-            arguments += [self._ssh_host, command]
-            LOGGER.debug("SSH command: %s", command)
-        try:
-            if input_data is None:
-                return subprocess.run(
-                    arguments,
-                    timeout=EXECUTE_TIMEOUT,
-                    capture_output=True,
-                    check=check,
-                    stdin=subprocess.DEVNULL,
-                    text=True,
-                )
-            else:
-                return subprocess.run(
-                    arguments,
-                    timeout=EXECUTE_TIMEOUT,
-                    capture_output=True,
-                    check=check,
-                    input=input_data,
-                    text=True,
-                )
-        except subprocess.TimeoutExpired as error:
-            if check:
-                raise
-            return subprocess.CompletedProcess(arguments, 255, "", str(error))
+        return subprocess.run(
+            self._build_execute_arguments(command),
+            timeout=EXECUTE_TIMEOUT,
+            capture_output=True,
+            check=check,
+            stdin=subprocess.DEVNULL,
+            text=True,
+        )
+
+    def _execute_with_input(
+        self,
+        command: str,
+        input_data: str,
+    ) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            self._build_execute_arguments(command),
+            timeout=EXECUTE_TIMEOUT,
+            capture_output=True,
+            check=True,
+            input=input_data,
+            text=True,
+        )
+
+    def _execute_exit(self) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            self._build_execute_base_arguments()
+            + [
+                "-O",
+                "exit",
+                self._ssh_host,
+            ],
+            timeout=EXECUTE_TIMEOUT,
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+
+    def _build_execute_arguments(
+        self,
+        command: str,
+    ) -> list[str]:
+        LOGGER.debug("SSH command: %s", command)
+        return self._build_execute_base_arguments() + [
+            self._ssh_host,
+            command,
+        ]
+
+    def _build_execute_base_arguments(
+        self,
+    ) -> list[str]:
+        return [
+            "ssh",
+            "-S",
+            str(self._control_path),
+            *SSH_OPTIONS,
+        ]
 
 
 def minimum_rate(rates: list[int | None]) -> int | None:
