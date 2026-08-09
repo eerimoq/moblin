@@ -607,7 +607,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlAssistantRequestingStatsFilter: RemoteControlStartStatsFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
-    var remoteControlAssistantLatestStats: RemoteControlStats?
     var remoteControlStreamerLatestReceivedChatMessageId = -1
     var useRemoteControlForChatAndEvents = false
     var currentWiFiSsid: String?
@@ -1225,14 +1224,34 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
     }
 
-    private func isStatsFilterFieldEnabled(_ field: KeyPath<RemoteControlStartStatsFilter, Bool?>) -> Bool {
+    private func isGForceStatsFilterEnabled() -> Bool {
         guard isRemoteControlAssistantRequestingStats else {
             return false
         }
         guard let filter = remoteControlAssistantRequestingStatsFilter else {
             return true
         }
-        return filter[keyPath: field] == true
+        return filter.gForce == true
+    }
+
+    private func isWeatherStatsFilterEnabled() -> Bool {
+        guard isRemoteControlAssistantRequestingStats else {
+            return false
+        }
+        guard let filter = remoteControlAssistantRequestingStatsFilter else {
+            return true
+        }
+        return filter.weather == true
+    }
+
+    private func isGeographyStatsFilterEnabled() -> Bool {
+        guard isRemoteControlAssistantRequestingStats else {
+            return false
+        }
+        guard let filter = remoteControlAssistantRequestingStatsFilter else {
+            return true
+        }
+        return filter.geography == true
     }
 
     func startGForceManager() {
@@ -1244,7 +1263,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGForceManagerNeeded() -> Bool {
-        if isStatsFilterFieldEnabled(\.gForce) {
+        if isGForceStatsFilterEnabled() {
             return true
         }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
@@ -1305,7 +1324,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isWeatherNeeded() -> Bool {
-        if isStatsFilterFieldEnabled(\.weather) {
+        if isWeatherStatsFilterEnabled() {
             return true
         }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
@@ -1333,7 +1352,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isGeographyNeeded() -> Bool {
-        if isStatsFilterFieldEnabled(\.geography) {
+        if isGeographyStatsFilterEnabled() {
             return true
         }
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {

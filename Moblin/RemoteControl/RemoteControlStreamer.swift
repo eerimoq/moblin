@@ -124,7 +124,7 @@ class RemoteControlStreamer {
         send(message: .event(data: .scoreboard(config: config)))
     }
 
-    func sendStatsUpdate(data: RemoteControlStats) {
+    func sendStats(data: RemoteControlStats) {
         guard connected else {
             return
         }

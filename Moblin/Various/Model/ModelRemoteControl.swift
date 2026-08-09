@@ -507,7 +507,7 @@ extension Model {
         let location = locationManager.getLatestKnownLocation()
         let weather = weatherManager.getLatestWeather()?.currentWeather
         let placemark = geographyManager.getLatestPlacemark()
-        remoteControlStreamer?.sendStatsUpdate(data: RemoteControlStats(
+        remoteControlStreamer?.sendStats(data: RemoteControlStats(
             date: now,
             timeZone: TimeZone.current.identifier,
             speed: location?.speed ?? 0,
@@ -719,11 +719,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
-        isRemoteControlAssistantRequestingStats = false
-        remoteControlAssistantRequestingStatsFilter = nil
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        remoteControlStreamerStopStats()
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
@@ -733,11 +729,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         makeToast(title: String(localized: "Remote control assistant disconnected"))
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
-        isRemoteControlAssistantRequestingStats = false
-        remoteControlAssistantRequestingStatsFilter = nil
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        remoteControlStreamerStopStats()
         setLowFpsImage()
         updateRemoteControlStatus()
     }
@@ -1205,9 +1197,7 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         }
     }
 
-    func remoteControlAssistantStats(data: RemoteControlStats) {
-        remoteControlAssistantLatestStats = data
-    }
+    func remoteControlAssistantStats(data _: RemoteControlStats) {}
 }
 
 extension Model: @preconcurrency RemoteControlWebDelegate {
