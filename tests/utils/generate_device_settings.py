@@ -37,7 +37,7 @@ def download_model(name: str) -> Path:
 
 
 def scene_widget_settings(
-    widget_id: str, x: int, y: int, size: int, alignment: str = "TopLeft"
+    widget_id: str, x: float, y: float, size: float, alignment: str = "TopLeft"
 ):
     return {
         "widgetId": widget_id,
@@ -57,6 +57,16 @@ def video_source_widget_settings(name: str, widget_id: str, video_source):
         "type": "Video source",
         "enabled": True,
         "videoSource": video_source,
+    }
+
+
+def text_widget_settings(name: str, widget_id: str, text):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": "Text",
+        "enabled": True,
+        "text": text,
     }
 
 

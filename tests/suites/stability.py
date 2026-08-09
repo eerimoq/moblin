@@ -11,6 +11,7 @@ from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
 from utils.generate_device_settings import scene_widget_settings
+from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
 from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
@@ -33,6 +34,14 @@ INGEST_BITRATE = 5_000_000
 STREAM_BITRATE = 5_000_000
 STREAM_BITRATE_RANGE = (4_000_000, 6_500_000)
 INGESTS_BITRATE_RANGE = (17_000_000, 26_000_000)
+STREAM_WIDTH = 1920
+STREAM_HEIGHT = 1080
+STREAM_RESOLUTION = f"{STREAM_WIDTH}x{STREAM_HEIGHT}"
+INGEST_WIDGET_SIZE = 33
+NAME_WIDGET_WIDTH = 150
+NAME_WIDGET_FONT_SIZE = 40
+NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
+NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
@@ -40,6 +49,10 @@ WHEP_STREAM_ID = uuid()
 SRT_WIDGET_ID = uuid()
 RIST_WIDGET_ID = uuid()
 WHEP_WIDGET_ID = uuid()
+RTMP_NAME_WIDGET_ID = uuid()
+SRT_NAME_WIDGET_ID = uuid()
+RIST_NAME_WIDGET_ID = uuid()
+WHEP_NAME_WIDGET_ID = uuid()
 
 
 class StabilityFourIngestsOneStream(TestCase):
@@ -47,6 +60,8 @@ class StabilityFourIngestsOneStream(TestCase):
     5 Mbps, active at the same time for 12 hours, or until the app crashes.
 
     All four ingests are shown in the scene, so all of them are decoded and composited.
+    A text widget showing the name of the ingest is rendered in the top center of each
+    of them.
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. The test fails if the app crashes, becomes
     unresponsive, or if anything is outside its accepted range for too long.
@@ -70,7 +85,7 @@ class StabilityFourIngestsOneStream(TestCase):
                         "bitrateRateControl": "CBR",
                         "bitrate": STREAM_BITRATE,
                         "fps": 30,
-                        "resolution": "1920x1080",
+                        "resolution": STREAM_RESOLUTION,
                     }
                 ],
                 "scenes": [
@@ -82,21 +97,46 @@ class StabilityFourIngestsOneStream(TestCase):
                         "micId": f"{RTMP_STREAM_ID} 0",
                         "widgets": [
                             scene_widget_settings(
-                                SRT_WIDGET_ID, x=0, y=0, size=33, alignment="TopRight"
+                                SRT_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=INGEST_WIDGET_SIZE,
+                                alignment="TopRight",
                             ),
                             scene_widget_settings(
                                 RIST_WIDGET_ID,
                                 x=0,
                                 y=0,
-                                size=33,
+                                size=INGEST_WIDGET_SIZE,
                                 alignment="BottomLeft",
                             ),
                             scene_widget_settings(
                                 WHEP_WIDGET_ID,
                                 x=0,
                                 y=0,
-                                size=33,
+                                size=INGEST_WIDGET_SIZE,
                                 alignment="BottomRight",
+                            ),
+                            name_scene_widget_settings(
+                                RTMP_NAME_WIDGET_ID, x=0, y=0, alignment="TopCenter"
+                            ),
+                            name_scene_widget_settings(
+                                SRT_NAME_WIDGET_ID,
+                                x=NAME_WIDGET_X,
+                                y=0,
+                                alignment="TopRight",
+                            ),
+                            name_scene_widget_settings(
+                                RIST_NAME_WIDGET_ID,
+                                x=NAME_WIDGET_X,
+                                y=NAME_WIDGET_BOTTOM_ROW_Y,
+                                alignment="TopLeft",
+                            ),
+                            name_scene_widget_settings(
+                                WHEP_NAME_WIDGET_ID,
+                                x=NAME_WIDGET_X,
+                                y=NAME_WIDGET_BOTTOM_ROW_Y,
+                                alignment="TopRight",
                             ),
                         ],
                     }
@@ -117,6 +157,10 @@ class StabilityFourIngestsOneStream(TestCase):
                         WHEP_WIDGET_ID,
                         {"cameraPosition": "WHEP", "whepCameraId": WHEP_STREAM_ID},
                     ),
+                    name_widget_settings("RTMP", RTMP_NAME_WIDGET_ID),
+                    name_widget_settings("SRT", SRT_NAME_WIDGET_ID),
+                    name_widget_settings("RIST", RIST_NAME_WIDGET_ID),
+                    name_widget_settings("WHEP", WHEP_NAME_WIDGET_ID),
                 ],
                 "rtmpServer": {
                     "enabled": True,
@@ -255,6 +299,24 @@ class StabilityFourIngestsOneStream(TestCase):
             if time.monotonic() >= next_log_time:
                 monitor.log_status()
                 next_log_time += LOG_INTERVAL
+
+
+def name_widget_settings(name: str, widget_id: str):
+    return text_widget_settings(
+        f"{name} name",
+        widget_id,
+        {
+            "formatString": name,
+            "fontSize": NAME_WIDGET_FONT_SIZE,
+            "horizontalAlignment": "Center",
+            "widthEnabled": True,
+            "width": NAME_WIDGET_WIDTH,
+        },
+    )
+
+
+def name_scene_widget_settings(widget_id: str, x: float, y: float, alignment: str):
+    return scene_widget_settings(widget_id, x=x, y=y, size=100, alignment=alignment)
 
 
 def restart_dead_sources(monitor: Monitor, sources: list[Source]):
