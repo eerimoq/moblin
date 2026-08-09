@@ -1,5 +1,5 @@
 systest
-black
+ruff
 pylint
 deep_translator
 moblin_assistant
