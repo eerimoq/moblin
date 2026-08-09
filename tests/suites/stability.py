@@ -433,14 +433,20 @@ def shaped_bitrate_range(
 
 def create_traffic_shaper(
     config: Config,
-    stream_traffic_shaping: str | None,
-    ingests_traffic_shaping: str | None,
+    stream_traffic_shaping_profile: str | None,
+    stream_traffic_shaping_parameters: str | None,
+    ingests_traffic_shaping_profile: str | None,
+    ingests_traffic_shaping_parameters: str | None,
 ) -> TrafficShaper | None:
     profiles = {}
-    if stream_traffic_shaping is not None:
-        profiles[STREAM_GROUP] = parse_profile(stream_traffic_shaping)
-    if ingests_traffic_shaping is not None:
-        profiles[INGESTS_GROUP] = parse_profile(ingests_traffic_shaping)
+    if stream_traffic_shaping_profile is not None:
+        profiles[STREAM_GROUP] = parse_profile(
+            stream_traffic_shaping_profile, stream_traffic_shaping_parameters
+        )
+    if ingests_traffic_shaping_profile is not None:
+        profiles[INGESTS_GROUP] = parse_profile(
+            ingests_traffic_shaping_profile, ingests_traffic_shaping_parameters
+        )
     if len(profiles) == 0:
         return None
     return TrafficShaper(config, RELAYS, profiles)

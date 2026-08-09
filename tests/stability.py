@@ -2,11 +2,16 @@ from suites import stability
 
 from utils.runner import create_parser
 from utils.runner import run
+from utils.traffic_shaper import PROFILES
 
 
 def create_suites(moblin, args):
     shaper = stability.create_traffic_shaper(
-        moblin.config, args.stream_traffic_shaping, args.ingests_traffic_shaping
+        moblin.config,
+        args.stream_traffic_shaping_profile,
+        args.stream_traffic_shaping_parameters,
+        args.ingests_traffic_shaping_profile,
+        args.ingests_traffic_shaping_parameters,
     )
     return [stability.tests(moblin, 3600 * args.duration, shaper)]
 
@@ -20,14 +25,24 @@ def main():
         help="Duration in hours (default: %(default)s).",
     )
     parser.add_argument(
-        "--stream-traffic-shaping",
-        help="Traffic shaping of the outgoing stream, for example "
-        "'profile=constant,rate=3Mbit,delay=60,loss=0.5'.",
+        "--stream-traffic-shaping-profile",
+        choices=PROFILES,
+        help="Traffic shaping profile of the outgoing stream.",
     )
     parser.add_argument(
-        "--ingests-traffic-shaping",
-        help="Traffic shaping of the ingests, for example "
-        "'profile=square,low-rate=10Mbit,high-rate=25Mbit,period=120'.",
+        "--stream-traffic-shaping-parameters",
+        help="Traffic shaping parameters of the outgoing stream, for example "
+        "'rate=3Mbit,delay=60,loss=0.5'.",
+    )
+    parser.add_argument(
+        "--ingests-traffic-shaping-profile",
+        choices=PROFILES,
+        help="Traffic shaping profile of the ingests.",
+    )
+    parser.add_argument(
+        "--ingests-traffic-shaping-parameters",
+        help="Traffic shaping parameters of the ingests, for example "
+        "'low-rate=10Mbit,high-rate=25Mbit,period=120'.",
     )
     run("stability", parser, create_suites)
 

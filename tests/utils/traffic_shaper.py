@@ -40,6 +40,10 @@ BITRATE_SUFFIXES = {
 }
 DEFAULT_SQUARE_PERIOD = 60.0
 DEFAULT_RANDOM_INTERVAL = 15.0
+CONSTANT_PROFILE = "constant"
+SQUARE_PROFILE = "square"
+RANDOM_PROFILE = "random"
+PROFILES = [CONSTANT_PROFILE, SQUARE_PROFILE, RANDOM_PROFILE]
 SSH_OPTIONS = [
     "-o",
     "BatchMode=yes",
@@ -371,6 +375,8 @@ class TrafficShaper:
         threading.Thread(target=self._read_session_output, daemon=True).start()
 
     def _read_session_output(self):
+        if self._session is None or self._session.stdout is None:
+            return
         try:
             for line in self._session.stdout:
                 line = line.rstrip()
@@ -546,20 +552,19 @@ def parse_bitrate(value: str) -> int:
     return int(float(text))
 
 
-def parse_profile(specification: str) -> Profile:
-    values = _parse_values(specification)
-    name = values.pop("profile", "constant")
+def parse_profile(name: str, parameters: str | None) -> Profile:
+    values = _parse_values(parameters or "")
     impairment = Impairment(
         delay_ms=float(values.pop("delay", 0)),
         jitter_ms=float(values.pop("jitter", 0)),
         loss_percent=float(values.pop("loss", 0)),
         limit=int(values.pop("limit", DEFAULT_LIMIT)),
     )
-    if name == "constant":
+    if name == CONSTANT_PROFILE:
         profile = _create_constant_profile(impairment, values)
-    elif name == "square":
+    elif name == SQUARE_PROFILE:
         profile = _create_square_profile(impairment, values)
-    elif name == "random":
+    elif name == RANDOM_PROFILE:
         profile = _create_random_profile(impairment, values)
     else:
         raise Exception(f"Unsupported traffic shaping profile '{name}'.")
@@ -571,9 +576,9 @@ def parse_profile(specification: str) -> Profile:
     return profile
 
 
-def _parse_values(specification: str) -> dict[str, str]:
+def _parse_values(parameters: str) -> dict[str, str]:
     values = {}
-    for part in specification.split(","):
+    for part in parameters.split(","):
         part = part.strip()
         if len(part) == 0:
             continue

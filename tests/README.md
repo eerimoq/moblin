@@ -94,21 +94,25 @@ can be shaped.
 
 ## Run the stability test with traffic shaping
 
-Give `--stream-traffic-shaping` and `--ingests-traffic-shaping` to shape the outgoing
-stream and the ingests. Both are optional and independent of each other. Adaptive bitrate is enabled
+Give `--stream-traffic-shaping-profile` and `--ingests-traffic-shaping-profile` to shape the
+outgoing stream and the ingests, and `--stream-traffic-shaping-parameters` and
+`--ingests-traffic-shaping-parameters` to configure the profiles. The stream and the ingests
+are optional and independent of each other. Adaptive bitrate is enabled
 automatically when the outgoing stream is shaped, and the expected bitrates are derived
 from the given rates.
 
 ```bash
-make stability TEST_ARGS="--stream-traffic-shaping rate=3Mbit,delay=60,loss=0.5"
-make stability TEST_ARGS="--ingests-traffic-shaping rate=12Mbit,jitter=10,delay=40"
-make stability TEST_ARGS="--stream-traffic-shaping profile=square,low-rate=1Mbit,high-rate=8Mbit,period=90"
-make stability TEST_ARGS="--stream-traffic-shaping profile=random,min-rate=1Mbit,max-rate=10Mbit,interval=15,seed=1"
+make stability TEST_ARGS="--stream-traffic-shaping-profile constant --stream-traffic-shaping-parameters rate=3Mbit,delay=60,loss=0.5"
+make stability TEST_ARGS="--ingests-traffic-shaping-profile constant --ingests-traffic-shaping-parameters rate=12Mbit,jitter=10,delay=40"
+make stability TEST_ARGS="--stream-traffic-shaping-profile square --stream-traffic-shaping-parameters low-rate=1Mbit,high-rate=8Mbit,period=90"
+make stability TEST_ARGS="--stream-traffic-shaping-profile random --stream-traffic-shaping-parameters min-rate=1Mbit,max-rate=10Mbit,interval=15,seed=1"
 ```
 
-| Setting | Profiles | Description |
+The profiles are `constant`, `square` and `random`. The parameters are given as a comma
+separated list of `<name>=<value>` pairs.
+
+| Parameter | Profiles | Description |
 |---|---|---|
-| `profile` | | `constant`, `square` or `random`. |
 | `delay` | all | One way delay in milliseconds. |
 | `jitter` | all | Delay variation in milliseconds. |
 | `loss` | all | Packet loss in percent. |
