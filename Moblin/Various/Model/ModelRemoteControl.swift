@@ -961,7 +961,11 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?) {
         isRemoteControlAssistantRequestingStats = true
-        remoteControlAssistantRequestingStatsFilter = filter
+        remoteControlAssistantRequestingStatsFilter = filter ?? RemoteControlStartStatsFilter(
+            weather: true,
+            geography: true,
+            gForce: true
+        )
         startWeatherManager()
         startGeographyManager()
         startGForceManager()
@@ -969,7 +973,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerStopStats() {
         isRemoteControlAssistantRequestingStats = false
-        remoteControlAssistantRequestingStatsFilter = nil
+        remoteControlAssistantRequestingStatsFilter = RemoteControlStartStatsFilter()
         startWeatherManager()
         startGeographyManager()
         startGForceManager()

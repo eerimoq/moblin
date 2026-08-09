@@ -604,7 +604,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var isRemoteControlAssistantRequestingStats = false
     var isRemoteControlWebRequestingPreview = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
-    var remoteControlAssistantRequestingStatsFilter: RemoteControlStartStatsFilter?
+    var remoteControlAssistantRequestingStatsFilter = RemoteControlStartStatsFilter()
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
     var remoteControlStreamerLatestReceivedChatMessageId = -1
@@ -1228,30 +1228,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard isRemoteControlAssistantRequestingStats else {
             return false
         }
-        guard let filter = remoteControlAssistantRequestingStatsFilter else {
-            return true
-        }
-        return filter.gForce == true
+        return remoteControlAssistantRequestingStatsFilter.gForce == true
     }
 
     private func isWeatherStatsFilterEnabled() -> Bool {
         guard isRemoteControlAssistantRequestingStats else {
             return false
         }
-        guard let filter = remoteControlAssistantRequestingStatsFilter else {
-            return true
-        }
-        return filter.weather == true
+        return remoteControlAssistantRequestingStatsFilter.weather == true
     }
 
     private func isGeographyStatsFilterEnabled() -> Bool {
         guard isRemoteControlAssistantRequestingStats else {
             return false
         }
-        guard let filter = remoteControlAssistantRequestingStatsFilter else {
-            return true
-        }
-        return filter.geography == true
+        return remoteControlAssistantRequestingStatsFilter.geography == true
     }
 
     func startGForceManager() {

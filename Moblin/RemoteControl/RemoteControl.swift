@@ -14,6 +14,12 @@ class RemoteControlStartStatsFilter: Codable {
     var weather: Bool?
     var geography: Bool?
     var gForce: Bool?
+
+    init(weather: Bool? = nil, geography: Bool? = nil, gForce: Bool? = nil) {
+        self.weather = weather
+        self.geography = geography
+        self.gForce = gForce
+    }
 }
 
 enum RemoteControlRequest: Codable {
