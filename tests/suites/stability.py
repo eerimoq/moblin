@@ -335,7 +335,9 @@ class StabilityFourIngestsOneStream(TestCase):
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             stream_content=self._create_stream_content_expectation(),
-            shaping="" if self._shaper is None else self._shaper.description(),
+            traffic_shaping="none"
+            if self._shaper is None
+            else self._shaper.description(),
         )
 
     def _create_stream_content_expectation(self) -> StreamContentExpectation:

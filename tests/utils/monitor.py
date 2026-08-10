@@ -288,7 +288,7 @@ class Monitor:
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         stream_content: StreamContentExpectation,
-        shaping: str,
+        traffic_shaping: str,
     ):
         self._moblin = moblin
         self._mediamtx = mediamtx
@@ -296,7 +296,7 @@ class Monitor:
         self._number_of_ingests = number_of_ingests
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
-        self._shaping = shaping
+        self._traffic_shaping = traffic_shaping
         self._start_time = time.monotonic()
         self._next_log_time = time.monotonic()
         self._previous_sample: Sample | None = None
@@ -391,7 +391,7 @@ class Monitor:
         last = self._previous_sample
         LOGGER.info("--------------------- Stability report ---------------------")
         LOGGER.info("Duration:                   %s", format_duration(self.elapsed()))
-        LOGGER.info("Network shaping:            %s", self._shaping or "none")
+        LOGGER.info("Traffic shaping:            %s", self._traffic_shaping)
         LOGGER.info(
             "Stream total in GB:         %s",
             format_gigabytes(last.stream_total_bytes if last else None),
