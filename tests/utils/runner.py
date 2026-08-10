@@ -24,6 +24,7 @@ def create_parser(description: str | None = None) -> argparse.ArgumentParser:
 
 def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     sequencer = systest.setup(name, parser, add_date_to_log_filename=False)
+    sequencer.remove_filtered_testcases = True
     args = parser.parse_args()
     check_dependencies()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
