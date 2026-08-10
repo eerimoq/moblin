@@ -89,21 +89,6 @@ test:
 test-stability:
 	$(MAKE) $(TEST_MAKE_ARGS) stability
 
-test-stability-watch-ram:
-	python tests/watch.py ram
-
-test-stability-watch-cpu:
-	python tests/watch.py cpu
-
-test-stability-watch-video-decode-errors:
-	python tests/watch.py video-decode-errors
-
-test-stability-watch-duplicated-frames:
-	python tests/watch.py duplicated-frames
-
-test-stability-watch-dropped-frames:
-	python tests/watch.py dropped-frames
-
 test-generate-device-settings-clipboard:
 	$(MAKE) $(TEST_MAKE_ARGS) generate-device-settings-clipboard
 
