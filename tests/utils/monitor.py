@@ -67,7 +67,7 @@ class Statistics:
 
 
 class Deviation:
-    def __init__(self, name: str, timeout: float = DEVIATION_TIMEOUT):
+    def __init__(self, name: str, timeout: float):
         self.name = name
         self.count = 0
         self.total_duration = 0.0
@@ -313,8 +313,8 @@ class Monitor:
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         stream_content: StreamContentExpectation,
-        deviation_timeout: float = DEVIATION_TIMEOUT,
-        shaping: str = "",
+        deviation_timeout: float,
+        shaping: str,
     ):
         self._moblin = moblin
         self._mediamtx = mediamtx
