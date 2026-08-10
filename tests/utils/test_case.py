@@ -8,6 +8,8 @@ from pathlib import Path
 
 import systest
 
+from .config import Capability
+from .ffmpeg import FfmpegVideoCodec
 from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeVideoOutput
 from .ffmpeg import extract_ltc_wav
@@ -37,9 +39,9 @@ class TestCase(systest.TestCase):
         self.moblin.stop_recording()
         self.moving_picture_off()
 
-    def skip_if_missing_capability(self, name):
-        if not self.moblin.has_capability(name):
-            raise systest.TestCaseSkippedError(f"{name} capability missing.")
+    def skip_if_missing_capability(self, capability: Capability):
+        if not self.moblin.has_capability(capability):
+            raise systest.TestCaseSkippedError(f"{capability} capability missing.")
 
     def skip_if_no_moving_picture(self):
         if not self.moblin.has_moving_picture():
@@ -79,7 +81,7 @@ class TestCase(systest.TestCase):
         self._assert_live_stream_audio(metadata.audio)
 
     def _assert_live_stream_video(self, video: FfprobeVideoOutput, fps: int):
-        self.assert_equal(video.codec, "hevc")
+        self.assert_equal(video.codec, FfmpegVideoCodec.HEVC)
         self.assert_equal(video.width, 1920)
         self.assert_equal(video.height, 1080)
         self.assert_greater(video.real_base_fps, Fraction(f"{fps - 1}/1"))
@@ -97,7 +99,7 @@ class TestCase(systest.TestCase):
         width: int = 1920,
         height: int = 1080,
         fps: int = 30,
-        video_codec: str = "hevc",
+        video_codec: FfmpegVideoCodec = FfmpegVideoCodec.HEVC,
         channels: int = 1,
     ):
         metadata = ffprobe(recording)
@@ -146,7 +148,7 @@ class TestCase(systest.TestCase):
         width,
         height,
         fps: int,
-        video_codec: str,
+        video_codec: FfmpegVideoCodec,
     ):
         self.assert_equal(video.codec, video_codec)
         self.assert_equal(video.width, width)

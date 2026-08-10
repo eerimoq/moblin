@@ -21,7 +21,9 @@ from .config import TESTER_RTSP_PORT
 from .config import TESTER_SRT_PORT
 from .config import TESTER_WEBRTC_PORT
 from .config import WEB_REMOTE_CONTROL_PORT
+from .config import Capability
 from .config import Config
+from .generate_device_settings import SceneName
 from .generate_device_settings import base_settings
 from .generate_device_settings import create_settings_file
 from .utils import FILES_DIR
@@ -164,7 +166,7 @@ class Moblin:
             except subprocess.CalledProcessError:
                 time.sleep(2)
 
-    def set_scene(self, name):
+    def set_scene(self, name: SceneName):
         self._execute("set_scene", name)
 
     def set_talkback_mic(self, name):
@@ -246,8 +248,8 @@ class Moblin:
             f"?virt-dst-port={virtual_destination_port}"
         )
 
-    def has_capability(self, name: str) -> bool:
-        return name in self._capabilities
+    def has_capability(self, capability: Capability) -> bool:
+        return capability in self._capabilities
 
     def has_moving_picture(self) -> bool:
         return self._moving_picture

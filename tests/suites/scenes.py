@@ -2,6 +2,7 @@ import logging
 import time
 from pathlib import Path
 
+from utils.config import Capability
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
@@ -9,6 +10,12 @@ from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import Alignment
+from utils.generate_device_settings import BitrateRateControl
+from utils.generate_device_settings import CameraPosition
+from utils.generate_device_settings import GraphicsImplementation
+from utils.generate_device_settings import SceneName
+from utils.generate_device_settings import WidgetType
 from utils.generate_device_settings import download_model
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import uuid
@@ -39,18 +46,18 @@ MAP_LARGE_WIDGET_ID = uuid()
 PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
 SCREEN_SCENE_SETTINGS = {
-    "name": "Screen",
-    "cameraPosition": "Screen capture",
+    "name": SceneName.SCREEN,
+    "cameraPosition": CameraPosition.SCREEN_CAPTURE,
     "enabled": True,
 }
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
-CORE_IMAGE = "coreImage"
-METAL_PETAL = "metalPetal"
-GRAPHICS_IMPLEMENTATION_NAMES = {CORE_IMAGE: "CoreImage", METAL_PETAL: "MetalPetal"}
-GRAPHICS_IMPLEMENTATIONS = list(GRAPHICS_IMPLEMENTATION_NAMES)
+GRAPHICS_IMPLEMENTATION_NAMES = {
+    GraphicsImplementation.CORE_IMAGE: "CoreImage",
+    GraphicsImplementation.METAL_PETAL: "MetalPetal",
+}
 
 
 def is_map_dot(pixel: Pixel) -> bool:
@@ -87,15 +94,18 @@ class SceneSwitchMultipleTimes(TestCase):
 
     def run(self):
         for _ in range(10):
-            self.moblin.set_scene("Screen")
-            self.moblin.set_scene("Front")
+            self.moblin.set_scene(SceneName.SCREEN)
+            self.moblin.set_scene(SceneName.FRONT)
 
 
 class GraphicsImplementationTestCase(TestCase):
     """Base class of test cases that are run once per graphics implementation."""
 
     def __init__(
-        self, moblin: Moblin, graphics_implementation: str, name: str | None = None
+        self,
+        moblin: Moblin,
+        graphics_implementation: GraphicsImplementation,
+        name: str | None = None,
     ):
         self.graphics_implementation = graphics_implementation
         self._name_suffix = GRAPHICS_IMPLEMENTATION_NAMES[graphics_implementation]
@@ -111,12 +121,17 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
 
     """
 
-    def __init__(self, moblin: Moblin, fps: int, graphics_implementation: str):
+    def __init__(
+        self,
+        moblin: Moblin,
+        fps: int,
+        graphics_implementation: GraphicsImplementation,
+    ):
         super().__init__(moblin, graphics_implementation, f"ScenePiPBackFront{fps}Fps")
         self._fps = fps
 
     def setup(self):
-        self.skip_if_missing_capability("pip")
+        self.skip_if_missing_capability(Capability.PIP)
         self.skip_if_no_moving_picture()
         self.moving_picture_on()
         self.moblin.import_settings(
@@ -125,7 +140,7 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
                 "streams": [
                     {
                         "enabled": True,
-                        "bitrateRateControl": "CBR",
+                        "bitrateRateControl": BitrateRateControl.CBR,
                         "url": self.moblin.tester_srt_publish_url("test"),
                         "srt": {"adaptiveBitrateEnabled": False},
                         "bitrate": 5_000_000,
@@ -134,7 +149,7 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
                 ],
                 "scenes": [
                     {
-                        "cameraPosition": "Back",
+                        "cameraPosition": CameraPosition.BACK,
                         "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
                         "widgets": [
                             scene_widget_settings(
@@ -142,7 +157,7 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
                                 x=0,
                                 y=0,
                                 size=50,
-                                alignment="BottomRight",
+                                alignment=Alignment.BOTTOM_RIGHT,
                             )
                         ],
                         "enabled": True,
@@ -151,9 +166,9 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
                 "widgets": [
                     {
                         "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
-                        "type": "Video source",
+                        "type": WidgetType.VIDEO_SOURCE,
                         "videoSource": {
-                            "cameraPosition": "Front",
+                            "cameraPosition": CameraPosition.FRONT,
                             "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
                         },
                     }
@@ -183,14 +198,14 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
     """Stream in background mode with various widgets showing."""
 
     def setup(self):
-        self.skip_if_missing_capability("background-streaming")
+        self.skip_if_missing_capability(Capability.BACKGROUND_STREAMING)
         self.moblin.import_settings(
             overrides={
                 "graphicsImplementation": self.graphics_implementation,
                 "streams": [
                     {
                         "enabled": True,
-                        "bitrateRateControl": "CBR",
+                        "bitrateRateControl": BitrateRateControl.CBR,
                         "url": self.moblin.tester_srt_publish_url("test"),
                         "srt": {"adaptiveBitrateEnabled": False},
                         "bitrate": 5_000_000,
@@ -200,7 +215,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
                 ],
                 "scenes": [
                     {
-                        "cameraPosition": "Screen capture",
+                        "cameraPosition": CameraPosition.SCREEN_CAPTURE,
                         "widgets": [
                             scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
                         ],
@@ -210,7 +225,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
                 "widgets": [
                     {
                         "id": TEXT_WIDGET_ID,
-                        "type": "Text",
+                        "type": WidgetType.TEXT,
                         "text": {"formatString": "{time}", "fontSize": 80},
                     }
                 ],
@@ -245,7 +260,7 @@ class WidgetTestCase(GraphicsImplementationTestCase):
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
                     {
-                        "cameraPosition": "None",
+                        "cameraPosition": CameraPosition.NONE,
                         "widgets": scene_widgets,
                         "enabled": True,
                     }
@@ -285,8 +300,16 @@ class SceneMapWidget(WidgetTestCase):
                 scene_widget_settings(MAP_LARGE_WIDGET_ID, x=30, y=0, size=40),
             ],
             widgets=[
-                {"id": MAP_SMALL_WIDGET_ID, "name": "Map small", "type": "Map"},
-                {"id": MAP_LARGE_WIDGET_ID, "name": "Map large", "type": "Map"},
+                {
+                    "id": MAP_SMALL_WIDGET_ID,
+                    "name": "Map small",
+                    "type": WidgetType.MAP,
+                },
+                {
+                    "id": MAP_LARGE_WIDGET_ID,
+                    "name": "Map large",
+                    "type": WidgetType.MAP,
+                },
             ],
         )
 
@@ -323,10 +346,10 @@ class ScenePngTuberWidget(WidgetTestCase):
             widgets=[
                 {
                     "id": PNG_TUBER_WIDGET_ID,
-                    "type": "PNGTuber",
+                    "type": WidgetType.PNG_TUBER,
                     "pngTuber": {
                         "id": PNG_TUBER_MODEL_ID,
-                        "cameraPosition": "Front",
+                        "cameraPosition": CameraPosition.FRONT,
                         "modelName": PNG_TUBER_MODEL_NAME,
                     },
                 }
@@ -354,10 +377,10 @@ class SceneVTuberWidget(WidgetTestCase):
             widgets=[
                 {
                     "id": V_TUBER_WIDGET_ID,
-                    "type": "VTuber",
+                    "type": WidgetType.V_TUBER,
                     "vTuber": {
                         "id": V_TUBER_MODEL_ID,
-                        "cameraPosition": "Front",
+                        "cameraPosition": CameraPosition.FRONT,
                         "modelName": V_TUBER_MODEL_NAME,
                     },
                 }
@@ -373,7 +396,7 @@ class SceneVTuberWidget(WidgetTestCase):
 
 def tests(moblin: Moblin):
     test_cases = [SceneSwitchMultipleTimes(moblin)]
-    for graphics_implementation in GRAPHICS_IMPLEMENTATIONS:
+    for graphics_implementation in GraphicsImplementation:
         test_cases += [
             ScenePiPBackFront(moblin, 30, graphics_implementation),
             ScenePiPBackFront(moblin, 60, graphics_implementation),

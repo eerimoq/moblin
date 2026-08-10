@@ -10,20 +10,38 @@ import time
 from collections import deque
 from dataclasses import dataclass
 from dataclasses import replace
+from enum import StrEnum
 from pathlib import Path
 
 from .config import Config
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
-STREAM_GROUP = "stream"
-INGESTS_GROUP = "ingests"
-TESTER_SIDE = "tester"
-DEVICE_SIDE = "device"
-TCP = "tcp"
-UDP = "udp"
-PROTOCOL_NUMBERS = {TCP: 6, UDP: 17}
-GROUP_CLASS_IDS = {STREAM_GROUP: 10, INGESTS_GROUP: 20}
+
+
+class Group(StrEnum):
+    STREAM = "stream"
+    INGESTS = "ingests"
+
+
+class Side(StrEnum):
+    TESTER = "tester"
+    DEVICE = "device"
+
+
+class Protocol(StrEnum):
+    TCP = "tcp"
+    UDP = "udp"
+
+
+class ProfileName(StrEnum):
+    CONSTANT = "constant"
+    SQUARE = "square"
+    RANDOM = "random"
+
+
+PROTOCOL_NUMBERS = {Protocol.TCP: 6, Protocol.UDP: 17}
+GROUP_CLASS_IDS = {Group.STREAM: 10, Group.INGESTS: 20}
 DEFAULT_CLASS_ID = 30
 ROOT_RATE = "10gbit"
 DEFAULT_LIMIT = 1000
@@ -40,10 +58,6 @@ BITRATE_SUFFIXES = {
 }
 DEFAULT_SQUARE_PERIOD = 60.0
 DEFAULT_RANDOM_INTERVAL = 15.0
-CONSTANT_PROFILE = "constant"
-SQUARE_PROFILE = "square"
-RANDOM_PROFILE = "random"
-PROFILES = [CONSTANT_PROFILE, SQUARE_PROFILE, RANDOM_PROFILE]
 SSH_OPTIONS = [
     "-o",
     "BatchMode=yes",
@@ -60,10 +74,10 @@ SSH_OPTIONS = [
 
 @dataclass
 class Relay:
-    group: str
-    protocol: str
+    group: Group
+    protocol: Protocol
     port: int
-    side: str
+    side: Side
 
 
 @dataclass
@@ -222,15 +236,15 @@ class RandomProfile(Profile):
 
 class TrafficShaper:
     def __init__(
-        self, config: Config, relays: list[Relay], profiles: dict[str, Profile]
+        self, config: Config, relays: list[Relay], profiles: dict[Group, Profile]
     ):
         shaper = config.shaper()
         self.ip_address = shaper["ip-address"]
         self._ssh_host = f"{shaper['user']}@{self.ip_address}"
         self._interface = shaper["interface"]
         self._addresses = {
-            TESTER_SIDE: config.tester_ip_address(),
-            DEVICE_SIDE: config.moblin_ip_address(),
+            Side.TESTER: config.tester_ip_address(),
+            Side.DEVICE: config.moblin_ip_address(),
         }
         self._relays = relays
         self._profiles = profiles
@@ -279,7 +293,7 @@ class TrafficShaper:
             if impairment is not None:
                 self._apply(group, impairment)
 
-    def profile(self, group: str) -> Profile | None:
+    def profile(self, group: Group) -> Profile | None:
         return self._profiles.get(group)
 
     def change_period(self) -> float:
@@ -292,7 +306,7 @@ class TrafficShaper:
             f"{group} {profile}" for group, profile in self._profiles.items()
         )
 
-    def _apply(self, group: str, impairment: Impairment):
+    def _apply(self, group: Group, impairment: Impairment):
         class_id = GROUP_CLASS_IDS[group]
         result = self._execute(
             f"sudo tc qdisc change dev {self._interface} "
@@ -475,7 +489,7 @@ class TrafficShaper:
 
     def _create_relay_command(self, relay: Relay) -> str:
         target = self._addresses[relay.side]
-        if relay.protocol == UDP:
+        if relay.protocol == Protocol.UDP:
             return (
                 f"socat -T {RELAY_TIMEOUT} "
                 f"UDP-LISTEN:{relay.port},fork,reuseaddr "
@@ -488,7 +502,7 @@ class TrafficShaper:
             )
 
     def _create_relay_pattern(self, relay: Relay) -> str:
-        if relay.protocol == UDP:
+        if relay.protocol == Protocol.UDP:
             return f"UDP-LISTEN:{relay.port},"
         else:
             return f"TCP-LISTEN:{relay.port},"
@@ -569,7 +583,7 @@ def parse_bitrate(value: str) -> int:
     return int(float(text))
 
 
-def parse_profile(name: str, parameters: str | None) -> Profile:
+def parse_profile(name: ProfileName, parameters: str | None) -> Profile:
     values = _parse_values(parameters or "")
     impairment = Impairment(
         delay_ms=float(values.pop("delay", 0)),
@@ -577,11 +591,11 @@ def parse_profile(name: str, parameters: str | None) -> Profile:
         loss_percent=float(values.pop("loss", 0)),
         limit=int(values.pop("limit", DEFAULT_LIMIT)),
     )
-    if name == CONSTANT_PROFILE:
+    if name == ProfileName.CONSTANT:
         profile = _create_constant_profile(impairment, values)
-    elif name == SQUARE_PROFILE:
+    elif name == ProfileName.SQUARE:
         profile = _create_square_profile(impairment, values)
-    elif name == RANDOM_PROFILE:
+    elif name == ProfileName.RANDOM:
         profile = _create_random_profile(impairment, values)
     else:
         raise Exception(f"Unsupported traffic shaping profile '{name}'.")

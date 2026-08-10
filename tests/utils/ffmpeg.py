@@ -7,6 +7,7 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 from dataclasses import field
+from enum import StrEnum
 from fractions import Fraction
 from pathlib import Path
 
@@ -20,8 +21,28 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 CAPTURE_EXTRA_TIMEOUT = 30
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_PROGRESS_FRAME = re.compile(r"^frame=(\d+)$", re.MULTILINE)
-HARDWARE_VIDEO_ENCODERS = {"h264": "h264_videotoolbox", "hevc": "hevc_videotoolbox"}
-SOFTWARE_VIDEO_ENCODERS = {"h264": "libx264", "hevc": "libx265"}
+
+
+class FfmpegVideoCodec(StrEnum):
+    H264 = "h264"
+    HEVC = "hevc"
+
+
+class TransportFormat(StrEnum):
+    FLV = "flv"
+    MPEGTS = "mpegts"
+    RTSP = "rtsp"
+    WHIP = "whip"
+
+
+HARDWARE_VIDEO_ENCODERS = {
+    FfmpegVideoCodec.H264: "h264_videotoolbox",
+    FfmpegVideoCodec.HEVC: "hevc_videotoolbox",
+}
+SOFTWARE_VIDEO_ENCODERS = {
+    FfmpegVideoCodec.H264: "libx264",
+    FfmpegVideoCodec.HEVC: "libx265",
+}
 
 
 def _log_level(line: str) -> int:
@@ -60,7 +81,7 @@ def ffmpeg_run(*args):
 
 
 @functools.cache
-def video_encoder(codec: str) -> str:
+def video_encoder(codec: FfmpegVideoCodec) -> str:
     hardware_encoder = HARDWARE_VIDEO_ENCODERS[codec]
     if f" {hardware_encoder} " in ffmpeg_run("-encoders").stdout:
         return hardware_encoder
@@ -72,7 +93,9 @@ def video_encoder(codec: str) -> str:
     return SOFTWARE_VIDEO_ENCODERS[codec]
 
 
-def video_encoder_args(bitrate: int, codec: str, realtime: bool) -> list[str]:
+def video_encoder_args(
+    bitrate: int, codec: FfmpegVideoCodec, realtime: bool
+) -> list[str]:
     encoder = video_encoder(codec)
     args = ["-c:v", encoder, "-b:v", str(bitrate)]
     if encoder in HARDWARE_VIDEO_ENCODERS.values():
@@ -183,8 +206,8 @@ class FfmpegTestStream(FfmpegCommand):
     def __init__(
         self,
         url,
-        transport_format="flv",
-        video_codec="h264",
+        transport_format=TransportFormat.FLV,
+        video_codec=FfmpegVideoCodec.H264,
         video_profile=None,
         video_bitrate=8_000_000,
         audio_codec="aac",
@@ -270,7 +293,7 @@ class FfmpegWhipTestStream(FfmpegTestStream):
         _ensure_certificate_exists(certificate_file, key_file)
         super().__init__(
             url=url,
-            transport_format="whip",
+            transport_format=TransportFormat.WHIP,
             video_profile="baseline",
             audio_codec="libopus",
             audio_channels=2,
@@ -288,7 +311,7 @@ class FfmpegRtspTestStream(FfmpegTestStream):
     def __init__(self, url, **kwargs):
         super().__init__(
             url=url,
-            transport_format="rtsp",
+            transport_format=TransportFormat.RTSP,
             video_profile="baseline",
             audio_codec="libopus",
             audio_channels=2,
@@ -298,7 +321,7 @@ class FfmpegRtspTestStream(FfmpegTestStream):
 
 
 class FfmpegAudioTestStream(FfmpegCommand):
-    def __init__(self, url, transport_format="flv"):
+    def __init__(self, url, transport_format=TransportFormat.FLV):
         super().__init__()
         self._url = url
         self._transport_format = transport_format
@@ -660,7 +683,7 @@ def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
     filtered_path = path.with_suffix(f".{'-'.join(filters)}-filtered.mp4")
     args += [
         ", ".join(filters),
-        *video_encoder_args(8_000_000, "h264", False),
+        *video_encoder_args(8_000_000, FfmpegVideoCodec.H264, False),
         "-an",
         str(filtered_path),
     ]
@@ -676,7 +699,7 @@ def create_qr_codes_video(output_file: Path):
         "lavfi",
         "-i",
         "nullsrc=size=400x400:rate=30",
-        *video_encoder_args(1_000_000, "h264", False),
+        *video_encoder_args(1_000_000, FfmpegVideoCodec.H264, False),
         "-pix_fmt",
         "yuv420p",
         "-g",

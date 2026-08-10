@@ -5,6 +5,9 @@ from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import BrowserMode
+from utils.generate_device_settings import CameraPosition
+from utils.generate_device_settings import WidgetType
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
@@ -25,7 +28,7 @@ def widget_settings(widget_id: str, name: str, url: str, **browser):
     return {
         "id": widget_id,
         "name": name,
-        "type": "Browser",
+        "type": WidgetType.BROWSER,
         "browser": {"url": url, "width": 1920, "height": 1080, **browser},
     }
 
@@ -43,7 +46,7 @@ class BrowserWidgetModes(TestCase):
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
                     {
-                        "cameraPosition": "None",
+                        "cameraPosition": CameraPosition.NONE,
                         "widgets": [
                             scene_widget_settings(
                                 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100
@@ -62,19 +65,19 @@ class BrowserWidgetModes(TestCase):
                         PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID,
                         "Browser periodic audio and video",
                         url,
-                        mode="periodicAudioAndVideo",
+                        mode=BrowserMode.PERIODIC_AUDIO_AND_VIDEO,
                     ),
                     widget_settings(
                         AUDIO_AND_VIDEO_ONLY_WIDGET_ID,
                         "Browser audio and video only",
                         url,
-                        mode="audioAndVideoOnly",
+                        mode=BrowserMode.AUDIO_AND_VIDEO_ONLY,
                     ),
                     widget_settings(
                         AUDIO_ONLY_WIDGET_ID,
                         "Browser audio only",
                         url,
-                        mode="audioOnly",
+                        mode=BrowserMode.AUDIO_ONLY,
                     ),
                     widget_settings(
                         LOCAL_ONLY_WIDGET_ID,

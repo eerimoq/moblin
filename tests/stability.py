@@ -2,7 +2,7 @@ from suites import stability
 
 from utils.runner import create_parser
 from utils.runner import run
-from utils.traffic_shaper import PROFILES
+from utils.traffic_shaper import ProfileName
 
 
 def create_suites(moblin, args):
@@ -26,7 +26,8 @@ def main():
     )
     parser.add_argument(
         "--stream-traffic-shaping-profile",
-        choices=PROFILES,
+        type=ProfileName,
+        choices=list(ProfileName),
         help="Traffic shaping profile of the outgoing stream.",
     )
     parser.add_argument(
@@ -36,7 +37,8 @@ def main():
     )
     parser.add_argument(
         "--ingests-traffic-shaping-profile",
-        choices=PROFILES,
+        type=ProfileName,
+        choices=list(ProfileName),
         help="Traffic shaping profile of the ingests.",
     )
     parser.add_argument(

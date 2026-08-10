@@ -2,6 +2,8 @@ from playwright.sync_api import sync_playwright
 
 from utils.config import WEB_REMOTE_CONTROL_PORT
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
+from utils.generate_device_settings import BitrateRateControl
+from utils.generate_device_settings import SceneName
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
@@ -17,7 +19,7 @@ class WebRemoteControlLive(TestCase):
                     {
                         "name": "RTMP",
                         "enabled": True,
-                        "bitrateRateControl": "CBR",
+                        "bitrateRateControl": BitrateRateControl.CBR,
                         "url": self.moblin.tester_rtmp_url("test"),
                         "rtmp": {"adaptiveBitrateEnabled": False},
                     }
@@ -28,7 +30,7 @@ class WebRemoteControlLive(TestCase):
         )
 
     def run(self):
-        self.moblin.set_scene("Front")
+        self.moblin.set_scene(SceneName.FRONT)
         with MediaMtx() as mediamtx:
             with sync_playwright() as playwright:
                 browser = playwright.chromium.launch()

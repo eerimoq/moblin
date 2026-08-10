@@ -6,6 +6,10 @@ from utils.config import rist_listener_url
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegServer
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
+from utils.generate_device_settings import AudioCodec
+from utils.generate_device_settings import BitrateRateControl
+from utils.generate_device_settings import SceneName
+from utils.generate_device_settings import VideoCodec
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.test_case import TestCase
@@ -19,7 +23,13 @@ class StreamTestCase(TestCase):
     def import_stream_settings(self, **stream):
         self.moblin.import_settings(
             overrides={
-                "streams": [{"enabled": True, "bitrateRateControl": "CBR", **stream}],
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        **stream,
+                    }
+                ],
                 "scenes": [FRONT_SCENE_SETTINGS],
             }
         )
@@ -32,7 +42,7 @@ class StreamTestCase(TestCase):
         total_bytes: int,
     ) -> Path:
         filename = FILES_DIR / f"{self.name}.ts"
-        self.moblin.set_scene("Front")
+        self.moblin.set_scene(SceneName.FRONT)
         with FfmpegServer(url=url, filename=filename):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(
@@ -49,7 +59,7 @@ class StreamTestCase(TestCase):
         total_bytes: int,
         multi_streaming: str | None = None,
     ):
-        self.moblin.set_scene("Front")
+        self.moblin.set_scene(SceneName.FRONT)
         with MediaMtx() as mediamtx:
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(
@@ -152,12 +162,12 @@ class StreamSrtToFfmpegEncrypted(StreamTestCase):
 class StreamSrtToFfmpegVideoRateControl(StreamTestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds using given video rate control."""
 
-    def __init__(self, moblin: Moblin, rate_control: str):
+    def __init__(self, moblin: Moblin, rate_control: BitrateRateControl):
         super().__init__(moblin, f"StreamSrtToFfmpegVideoRateControl{rate_control}")
         self._rate_control = rate_control
 
     def setup(self):
-        if self._rate_control == "ABR":
+        if self._rate_control == BitrateRateControl.ABR:
             self.skip_if_no_moving_picture()
             self.moving_picture_on()
         self.import_stream_settings(
@@ -196,8 +206,8 @@ class StreamWhipToMediaMtx(StreamTestCase):
     def setup(self):
         self.import_stream_settings(
             url=self.moblin.tester_whip_url("test"),
-            codec="H.264/AVC",
-            audioCodec="OPUS",
+            codec=VideoCodec.H264,
+            audioCodec=AudioCodec.OPUS,
             bitrate=5_000_000,
         )
 
@@ -252,12 +262,12 @@ class StreamToGenericUrls(StreamTestCase):
     def setup(self):
         self.import_stream_settings(
             url=self._generic_stream_url,
-            codec="H.264/AVC",
+            codec=VideoCodec.H264,
             bitrate=5_000_000,
         )
 
     def run(self):
-        self.moblin.set_scene("Front")
+        self.moblin.set_scene(SceneName.FRONT)
         self.moblin.go_live()
         self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
         self.moblin.end()
@@ -271,9 +281,9 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpeg(moblin, fps=60),
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
-        StreamSrtToFfmpegVideoRateControl(moblin, "ABR"),
-        StreamSrtToFfmpegVideoRateControl(moblin, "CBR"),
-        StreamSrtToFfmpegVideoRateControl(moblin, "VBR"),
+        StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.ABR),
+        StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.CBR),
+        StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.VBR),
         StreamRistToFfmpeg(moblin),
         StreamWhipToMediaMtx(moblin),
         StreamMultiRtmpToMediaMtx(moblin),

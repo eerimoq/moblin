@@ -1,4 +1,5 @@
 import tomllib
+from enum import StrEnum
 from pathlib import Path
 
 # Ports served by Moblin on the device.
@@ -17,6 +18,12 @@ TESTER_SRT_PORT = 8890
 TESTER_WEBRTC_PORT = 8889
 TESTER_WEBRTC_UDP_PORT = 8189
 MEDIAMTX_API_PORT = 9997
+
+
+class Capability(StrEnum):
+    PIP = "pip"
+    RECORD = "record"
+    BACKGROUND_STREAMING = "background-streaming"
 
 
 def srt_listener_url(

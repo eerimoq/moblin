@@ -6,6 +6,7 @@ from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegAudioTestStream
+from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
@@ -84,7 +85,7 @@ class TalkbackSrtlaServer(TestCase):
     def run(self):
         stream = FfmpegAudioTestStream(
             url=f"srt://{self.moblin.ip_address}:{SRT_SERVER_PORT}?streamid=talkback",
-            transport_format="mpegts",
+            transport_format=TransportFormat.MPEGTS,
         )
         with stream:
             manual_validation(LOGGER, "Listen for periodic beeps")
@@ -121,7 +122,7 @@ class TalkbackSrtClient(TestCase):
     def run(self):
         stream = FfmpegAudioTestStream(
             url=srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
-            transport_format="mpegts",
+            transport_format=TransportFormat.MPEGTS,
         )
         with stream:
             manual_validation(LOGGER, "Listen for periodic beeps")

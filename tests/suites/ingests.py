@@ -11,7 +11,9 @@ from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
 from utils.ffmpeg import FfmpegWhipTestStream
+from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import uuid
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
@@ -47,7 +49,7 @@ class IngestRtmpServer(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "RTMP",
+                "cameraPosition": CameraPosition.RTMP,
                 "rtmpCameraId": RTMP_STREAM_ID,
                 "micId": f"{RTMP_STREAM_ID} 0",
             },
@@ -78,7 +80,7 @@ class IngestSrtServer(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "SRT(LA)",
+                "cameraPosition": CameraPosition.SRTLA,
                 "srtlaCameraId": SRT_STREAM_ID,
                 "micId": f"{SRT_STREAM_ID} 0",
             },
@@ -92,7 +94,7 @@ class IngestSrtServer(IngestTestCase):
     def run(self):
         stream = FfmpegTestStream(
             url=self.moblin.ingest_srt_url(),
-            transport_format="mpegts",
+            transport_format=TransportFormat.MPEGTS,
         )
         recorder = Recorder(self.moblin, "IngestSrtServer.mp4")
         with stream:
@@ -113,7 +115,7 @@ class IngestSrtClient(IngestTestCase):
         url = self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT)
         self.import_settings(
             scene={
-                "cameraPosition": "SRT client",
+                "cameraPosition": CameraPosition.SRT_CLIENT,
                 "srtClientCameraId": SRT_CLIENT_STREAM_ID,
                 "micId": f"{SRT_CLIENT_STREAM_ID} 0",
             },
@@ -132,7 +134,7 @@ class IngestSrtClient(IngestTestCase):
     def run(self):
         stream = FfmpegTestStream(
             url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
-            transport_format="mpegts",
+            transport_format=TransportFormat.MPEGTS,
         )
         recorder = Recorder(self.moblin, "IngestSrtClient.mp4")
         with stream:
@@ -152,7 +154,7 @@ class IngestRtspClientH264(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "RTSP",
+                "cameraPosition": CameraPosition.RTSP,
                 "rtspCameraId": RTSP_STREAM_ID,
                 "micId": f"{RTSP_STREAM_ID} 0",
             },
@@ -189,7 +191,7 @@ class IngestRistServer(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "RIST",
+                "cameraPosition": CameraPosition.RIST,
                 "ristCameraId": RIST_STREAM_ID,
                 "micId": f"{RIST_STREAM_ID} 0",
             },
@@ -205,7 +207,7 @@ class IngestRistServer(IngestTestCase):
     def run(self):
         stream = FfmpegTestStream(
             url=self.moblin.ingest_rist_url(),
-            transport_format="mpegts",
+            transport_format=TransportFormat.MPEGTS,
         )
         recorder = Recorder(self.moblin, "IngestRistServer.mp4")
         with stream:
@@ -225,7 +227,7 @@ class IngestWhipServer(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "WHIP",
+                "cameraPosition": CameraPosition.WHIP,
                 "whipCameraId": WHIP_STREAM_ID,
                 "micId": f"{WHIP_STREAM_ID} 0",
             },
@@ -265,7 +267,7 @@ class IngestWhepClient(IngestTestCase):
     def setup(self):
         self.import_settings(
             scene={
-                "cameraPosition": "WHEP",
+                "cameraPosition": CameraPosition.WHEP,
                 "whepCameraId": WHEP_STREAM_ID,
                 "micId": f"{WHEP_STREAM_ID} 0",
             },

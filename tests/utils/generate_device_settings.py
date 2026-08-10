@@ -1,5 +1,6 @@
 import json
 import zipfile
+from enum import StrEnum
 from pathlib import Path
 from uuid import uuid7
 
@@ -11,12 +12,91 @@ from utils.utils import TEST_DIR
 
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
 CACHE_DIR = TEST_DIR / "cache"
-FRONT_SCENE_SETTINGS = {"name": "Front", "cameraPosition": "Front", "enabled": True}
+
+
+class SceneName(StrEnum):
+    FRONT = "Front"
+    SCREEN = "Screen"
+
+
+class CameraPosition(StrEnum):
+    BACK = "Back"
+    FRONT = "Front"
+    NONE = "None"
+    RIST = "RIST"
+    RTMP = "RTMP"
+    RTSP = "RTSP"
+    SCREEN_CAPTURE = "Screen capture"
+    SRTLA = "SRT(LA)"
+    SRT_CLIENT = "SRT client"
+    WHEP = "WHEP"
+    WHIP = "WHIP"
+
+
+class WidgetType(StrEnum):
+    BROWSER = "Browser"
+    MAP = "Map"
+    PNG_TUBER = "PNGTuber"
+    TEXT = "Text"
+    VIDEO_SOURCE = "Video source"
+    V_TUBER = "VTuber"
+
+
+class Alignment(StrEnum):
+    BOTTOM_LEFT = "BottomLeft"
+    BOTTOM_RIGHT = "BottomRight"
+    TOP_CENTER = "TopCenter"
+    TOP_LEFT = "TopLeft"
+    TOP_RIGHT = "TopRight"
+
+
+class BrowserMode(StrEnum):
+    AUDIO_AND_VIDEO_ONLY = "audioAndVideoOnly"
+    AUDIO_ONLY = "audioOnly"
+    PERIODIC_AUDIO_AND_VIDEO = "periodicAudioAndVideo"
+
+
+class VideoCodec(StrEnum):
+    H264 = "H.264/AVC"
+    H265 = "H.265/HEVC"
+
+
+class AudioCodec(StrEnum):
+    AAC = "AAC"
+    OPUS = "OPUS"
+
+
+class BitrateRateControl(StrEnum):
+    ABR = "ABR"
+    CBR = "CBR"
+    VBR = "VBR"
+
+
+class GraphicsImplementation(StrEnum):
+    CORE_IMAGE = "coreImage"
+    METAL_PETAL = "metalPetal"
+
+
+class Resolution(StrEnum):
+    FULL_HD = "1920x1080"
+    QUAD_HD = "2560x1440"
+    ULTRA_HD = "3840x2160"
+
+    def size(self) -> tuple[int, int]:
+        width, height = self.split("x")
+        return int(width), int(height)
+
+
+FRONT_SCENE_SETTINGS = {
+    "name": SceneName.FRONT,
+    "cameraPosition": CameraPosition.FRONT,
+    "enabled": True,
+}
 RECORD_STREAM_SETTINGS = {
     "enabled": True,
     "fps": 30,
-    "resolution": "1920x1080",
-    "recording": {"videoCodec": "H.265/HEVC"},
+    "resolution": Resolution.FULL_HD,
+    "recording": {"videoCodec": VideoCodec.H265},
 }
 
 
@@ -37,7 +117,11 @@ def download_model(name: str) -> Path:
 
 
 def scene_widget_settings(
-    widget_id: str, x: float, y: float, size: float, alignment: str = "TopLeft"
+    widget_id: str,
+    x: float,
+    y: float,
+    size: float,
+    alignment: Alignment = Alignment.TOP_LEFT,
 ):
     return {
         "widgetId": widget_id,
@@ -54,7 +138,7 @@ def video_source_widget_settings(name: str, widget_id: str, video_source):
     return {
         "id": widget_id,
         "name": name,
-        "type": "Video source",
+        "type": WidgetType.VIDEO_SOURCE,
         "enabled": True,
         "videoSource": video_source,
     }
@@ -64,7 +148,7 @@ def text_widget_settings(name: str, widget_id: str, text):
     return {
         "id": widget_id,
         "name": name,
-        "type": "Text",
+        "type": WidgetType.TEXT,
         "enabled": True,
         "text": text,
     }

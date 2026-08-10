@@ -16,6 +16,11 @@ from utils.config import srt_reader_url
 from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
+from utils.ffmpeg import TransportFormat
+from utils.generate_device_settings import Alignment
+from utils.generate_device_settings import BitrateRateControl
+from utils.generate_device_settings import CameraPosition
+from utils.generate_device_settings import Resolution
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
@@ -25,14 +30,12 @@ from utils.moblin import Moblin
 from utils.monitor import Monitor
 from utils.monitor import StreamContentExpectation
 from utils.test_case import TestCase
-from utils.traffic_shaper import DEVICE_SIDE
-from utils.traffic_shaper import INGESTS_GROUP
-from utils.traffic_shaper import STREAM_GROUP
-from utils.traffic_shaper import TCP
-from utils.traffic_shaper import TESTER_SIDE
-from utils.traffic_shaper import UDP
+from utils.traffic_shaper import Group
 from utils.traffic_shaper import Profile
+from utils.traffic_shaper import ProfileName
+from utils.traffic_shaper import Protocol
 from utils.traffic_shaper import Relay
+from utils.traffic_shaper import Side
 from utils.traffic_shaper import TrafficShaper
 from utils.traffic_shaper import parse_profile
 from utils.utils import FILES_DIR
@@ -47,10 +50,9 @@ INGEST_BITRATE = 5_000_000
 STREAM_BITRATE = 5_000_000
 STREAM_BITRATE_RANGE = Range(4_000_000, 6_500_000)
 INGESTS_BITRATE_RANGE = Range(17_000_000, 26_000_000)
-STREAM_WIDTH = 1920
-STREAM_HEIGHT = 1080
 STREAM_FPS = 30
-STREAM_RESOLUTION = f"{STREAM_WIDTH}x{STREAM_HEIGHT}"
+STREAM_RESOLUTION = Resolution.FULL_HD
+STREAM_WIDTH, STREAM_HEIGHT = STREAM_RESOLUTION.size()
 STREAM_CONTENT_FILE = FILES_DIR / f"{STREAM_PATH}-stream-content.ts"
 INGEST_WIDGET_SIZE = 33
 NAME_WIDGET_WIDTH = 150
@@ -58,12 +60,12 @@ NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
 RELAYS = [
-    Relay(STREAM_GROUP, UDP, TESTER_SRT_PORT, TESTER_SIDE),
-    Relay(INGESTS_GROUP, TCP, RTMP_SERVER_PORT, DEVICE_SIDE),
-    Relay(INGESTS_GROUP, UDP, SRT_SERVER_PORT, DEVICE_SIDE),
-    Relay(INGESTS_GROUP, UDP, RIST_SERVER_PORT, DEVICE_SIDE),
-    Relay(INGESTS_GROUP, TCP, TESTER_WEBRTC_PORT, TESTER_SIDE),
-    Relay(INGESTS_GROUP, UDP, TESTER_WEBRTC_UDP_PORT, TESTER_SIDE),
+    Relay(Group.STREAM, Protocol.UDP, TESTER_SRT_PORT, Side.TESTER),
+    Relay(Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
+    Relay(Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
+    Relay(Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
+    Relay(Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
+    Relay(Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
 ]
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
@@ -114,7 +116,7 @@ class StabilityFourIngestsOneStream(TestCase):
                         "srt": {
                             "adaptiveBitrateEnabled": self._stream_profile is not None
                         },
-                        "bitrateRateControl": "CBR",
+                        "bitrateRateControl": BitrateRateControl.CBR,
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
                         "resolution": STREAM_RESOLUTION,
@@ -124,7 +126,7 @@ class StabilityFourIngestsOneStream(TestCase):
                     {
                         "enabled": True,
                         "overrideMic": True,
-                        "cameraPosition": "RTMP",
+                        "cameraPosition": CameraPosition.RTMP,
                         "rtmpCameraId": RTMP_STREAM_ID,
                         "micId": f"{RTMP_STREAM_ID} 0",
                         "widgets": [
@@ -133,42 +135,45 @@ class StabilityFourIngestsOneStream(TestCase):
                                 x=0,
                                 y=0,
                                 size=INGEST_WIDGET_SIZE,
-                                alignment="TopRight",
+                                alignment=Alignment.TOP_RIGHT,
                             ),
                             scene_widget_settings(
                                 RIST_WIDGET_ID,
                                 x=0,
                                 y=0,
                                 size=INGEST_WIDGET_SIZE,
-                                alignment="BottomLeft",
+                                alignment=Alignment.BOTTOM_LEFT,
                             ),
                             scene_widget_settings(
                                 WHEP_WIDGET_ID,
                                 x=0,
                                 y=0,
                                 size=INGEST_WIDGET_SIZE,
-                                alignment="BottomRight",
+                                alignment=Alignment.BOTTOM_RIGHT,
                             ),
                             name_scene_widget_settings(
-                                RTMP_NAME_WIDGET_ID, x=0, y=0, alignment="TopCenter"
+                                RTMP_NAME_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                alignment=Alignment.TOP_CENTER,
                             ),
                             name_scene_widget_settings(
                                 SRT_NAME_WIDGET_ID,
                                 x=NAME_WIDGET_X,
                                 y=0,
-                                alignment="TopRight",
+                                alignment=Alignment.TOP_RIGHT,
                             ),
                             name_scene_widget_settings(
                                 RIST_NAME_WIDGET_ID,
                                 x=NAME_WIDGET_X,
                                 y=NAME_WIDGET_BOTTOM_ROW_Y,
-                                alignment="TopLeft",
+                                alignment=Alignment.TOP_LEFT,
                             ),
                             name_scene_widget_settings(
                                 WHEP_NAME_WIDGET_ID,
                                 x=NAME_WIDGET_X,
                                 y=NAME_WIDGET_BOTTOM_ROW_Y,
-                                alignment="TopRight",
+                                alignment=Alignment.TOP_RIGHT,
                             ),
                         ],
                     }
@@ -177,17 +182,26 @@ class StabilityFourIngestsOneStream(TestCase):
                     video_source_widget_settings(
                         "SRT",
                         SRT_WIDGET_ID,
-                        {"cameraPosition": "SRT(LA)", "srtlaCameraId": SRT_STREAM_ID},
+                        {
+                            "cameraPosition": CameraPosition.SRTLA,
+                            "srtlaCameraId": SRT_STREAM_ID,
+                        },
                     ),
                     video_source_widget_settings(
                         "RIST",
                         RIST_WIDGET_ID,
-                        {"cameraPosition": "RIST", "ristCameraId": RIST_STREAM_ID},
+                        {
+                            "cameraPosition": CameraPosition.RIST,
+                            "ristCameraId": RIST_STREAM_ID,
+                        },
                     ),
                     video_source_widget_settings(
                         "WHEP",
                         WHEP_WIDGET_ID,
-                        {"cameraPosition": "WHEP", "whepCameraId": WHEP_STREAM_ID},
+                        {
+                            "cameraPosition": CameraPosition.WHEP,
+                            "whepCameraId": WHEP_STREAM_ID,
+                        },
                     ),
                     name_widget_settings("RTMP", RTMP_NAME_WIDGET_ID),
                     name_widget_settings("SRT", SRT_NAME_WIDGET_ID),
@@ -268,7 +282,7 @@ class StabilityFourIngestsOneStream(TestCase):
                 command=self._create_source(
                     FfmpegTestStream,
                     self.moblin.ingest_srt_url(),
-                    transport_format="mpegts",
+                    transport_format=TransportFormat.MPEGTS,
                 ),
             ),
             Source(
@@ -276,7 +290,7 @@ class StabilityFourIngestsOneStream(TestCase):
                 command=self._create_source(
                     FfmpegTestStream,
                     self.moblin.ingest_rist_url(),
-                    transport_format="mpegts",
+                    transport_format=TransportFormat.MPEGTS,
                 ),
             ),
             Source(
@@ -298,8 +312,8 @@ class StabilityFourIngestsOneStream(TestCase):
         )
 
     def _update_expectations(self, shaper: TrafficShaper):
-        self._stream_profile = shaper.profile(STREAM_GROUP)
-        self._ingests_profile = shaper.profile(INGESTS_GROUP)
+        self._stream_profile = shaper.profile(Group.STREAM)
+        self._ingests_profile = shaper.profile(Group.INGESTS)
         self._stream_bitrate_range = shaped_bitrate_range(
             STREAM_BITRATE, self._stream_profile, STREAM_BITRATE_RANGE
         )
@@ -380,7 +394,9 @@ def name_widget_settings(name: str, widget_id: str):
     )
 
 
-def name_scene_widget_settings(widget_id: str, x: float, y: float, alignment: str):
+def name_scene_widget_settings(
+    widget_id: str, x: float, y: float, alignment: Alignment
+):
     return scene_widget_settings(widget_id, x=x, y=y, size=100, alignment=alignment)
 
 
@@ -410,18 +426,18 @@ def shaped_bitrate_range(
 
 def create_traffic_shaper(
     config: Config,
-    stream_traffic_shaping_profile: str | None,
+    stream_traffic_shaping_profile: ProfileName | None,
     stream_traffic_shaping_parameters: str | None,
-    ingests_traffic_shaping_profile: str | None,
+    ingests_traffic_shaping_profile: ProfileName | None,
     ingests_traffic_shaping_parameters: str | None,
 ) -> TrafficShaper | None:
-    profiles = {}
+    profiles: dict[Group, Profile] = {}
     if stream_traffic_shaping_profile is not None:
-        profiles[STREAM_GROUP] = parse_profile(
+        profiles[Group.STREAM] = parse_profile(
             stream_traffic_shaping_profile, stream_traffic_shaping_parameters
         )
     if ingests_traffic_shaping_profile is not None:
-        profiles[INGESTS_GROUP] = parse_profile(
+        profiles[Group.INGESTS] = parse_profile(
             ingests_traffic_shaping_profile, ingests_traffic_shaping_parameters
         )
     if len(profiles) == 0:
