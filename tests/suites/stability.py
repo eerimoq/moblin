@@ -274,43 +274,43 @@ class StabilityFourIngestsOneStream(TestCase):
         return [
             Source(
                 name="RTMP",
-                command=self._create_source(
-                    FfmpegTestStream, self.moblin.ingest_rtmp_url()
+                command=FfmpegTestStream(
+                    url=self.moblin.ingest_rtmp_url(),
+                    video_bitrate=INGEST_BITRATE,
+                    loop_audio=True,
+                    quiet=True,
                 ),
             ),
             Source(
                 name="SRT",
-                command=self._create_source(
-                    FfmpegTestStream,
-                    self.moblin.ingest_srt_url(),
+                command=FfmpegTestStream(
+                    url=self.moblin.ingest_srt_url(),
+                    video_bitrate=INGEST_BITRATE,
+                    loop_audio=True,
+                    quiet=True,
                     transport_format=TransportFormat.MPEGTS,
                 ),
             ),
             Source(
                 name="RIST",
-                command=self._create_source(
-                    FfmpegTestStream,
-                    self.moblin.ingest_rist_url(),
+                command=FfmpegTestStream(
+                    url=self.moblin.ingest_rist_url(),
+                    video_bitrate=INGEST_BITRATE,
+                    loop_audio=True,
+                    quiet=True,
                     transport_format=TransportFormat.MPEGTS,
                 ),
             ),
             Source(
                 name="WHEP",
-                command=self._create_source(
-                    FfmpegRtspTestStream,
-                    rtsp_reader_url(WHEP_PATH),
+                command=FfmpegRtspTestStream(
+                    url=rtsp_reader_url(WHEP_PATH),
+                    video_bitrate=INGEST_BITRATE,
+                    loop_audio=True,
+                    quiet=True,
                 ),
             ),
         ]
-
-    def _create_source(self, factory, url: str, **kwargs) -> FfmpegCommand:
-        return factory(
-            url=url,
-            video_bitrate=INGEST_BITRATE,
-            loop_audio=True,
-            quiet=True,
-            **kwargs,
-        )
 
     def _update_expectations(self, shaper: TrafficShaper):
         self._stream_profile = shaper.profile(Group.STREAM)
