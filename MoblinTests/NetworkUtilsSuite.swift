@@ -24,10 +24,10 @@ struct NetworkUtilsSuite {
         #expect(try #require(URL(string: "ws://localhost:2345")?.isLoopback()))
         #expect(try #require(URL(string: "ws://127.0.0.1:2345/foo")?.isLoopback()))
         #expect(try #require(URL(string: "wss://[::1]/foo")?.isLoopback()))
-        #expect(try !(#require(URL(string: "ws://127.0.0.2:2345")?.isLoopback())))
-        #expect(try !(#require(URL(string: "ws://192.168.1.5:2345")?.isLoopback())))
-        #expect(try !(#require(URL(string: "wss://example.com/foo")?.isLoopback())))
-        #expect(try !(#require(URL(string: "wss://[fe80::1]/foo")?.isLoopback())))
-        #expect(try !(#require(URL(string: "ws:///foo")?.isLoopback())))
+        #expect(try !#require(URL(string: "ws://127.0.0.2:2345")?.isLoopback()))
+        #expect(try !#require(URL(string: "ws://192.168.1.5:2345")?.isLoopback()))
+        #expect(try !#require(URL(string: "wss://example.com/foo")?.isLoopback()))
+        #expect(try !#require(URL(string: "wss://[fe80::1]/foo")?.isLoopback()))
+        #expect(try !#require(URL(string: "ws:///foo")?.isLoopback()))
     }
 }
