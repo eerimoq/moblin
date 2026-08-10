@@ -179,15 +179,6 @@ def _check_stream_content_audio(
     return problems
 
 
-def format_error(error: Exception) -> str:
-    output = getattr(error, "stderr", None)
-    if isinstance(output, bytes):
-        output = output.decode(errors="replace")
-    if not output:
-        return str(error)
-    return output.strip().splitlines()[-1]
-
-
 class StreamContentChecker:
     def __init__(self, expectation: StreamContentExpectation):
         self._expectation = expectation
@@ -211,7 +202,7 @@ class StreamContentChecker:
                 self._expectation.path,
             )
         except Exception as error:
-            problems = [f"Failed to capture the stream: {format_error(error)}"]
+            problems = [f"Failed to capture the stream: {error}"]
         else:
             problems = check_stream_content(content, self._expectation)
             self._update_statistics(content)
