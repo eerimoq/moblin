@@ -16,19 +16,7 @@ from .moblin import parse_uptime
 from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
-UNREACHABLE_TIMEOUT = 60
-DEVIATION_TIMEOUT = 120
-MINIMUM_BATTERY_LEVEL = 10
-STREAM_CONTENT_INTERVAL = 300
-STREAM_CONTENT_DURATION = 10
-STREAM_CONTENT_MINIMUM_MEAN_VOLUME_DB = -45
-STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO = 0.5
 STREAM_CONTENT_MINIMUM_DURATION_RATIO = 0.8
-STREAM_CONTENT_MINIMUM_VIDEO_DURATION_RATIO = 0.5
-STREAM_CONTENT_MINIMUM_FPS_RATIO = 0.8
-STREAM_CONTENT_MAXIMUM_FPS_RATIO = 1.2
-STREAM_CONTENT_DEVIATION_TIMEOUT_RATIO = 0.5
-MAXIMUM_SAVED_STREAM_CONTENT_CAPTURES = 5
 
 
 class MonitorError(Exception):
@@ -117,14 +105,12 @@ class StreamContentExpectation:
     width: int
     height: int
     fps: float
-    interval: float = STREAM_CONTENT_INTERVAL
-    duration: float = STREAM_CONTENT_DURATION
-    minimum_mean_volume_db: float = STREAM_CONTENT_MINIMUM_MEAN_VOLUME_DB
-    minimum_unique_video_frames_ratio: float = (
-        STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO
-    )
-    minimum_fps_ratio: float = STREAM_CONTENT_MINIMUM_FPS_RATIO
-    maximum_fps_ratio: float = STREAM_CONTENT_MAXIMUM_FPS_RATIO
+    interval: float = 300
+    duration: float = 10
+    minimum_mean_volume_db: float = -45
+    minimum_unique_video_frames_ratio: float = 0.5
+    minimum_fps_ratio: float = 0.8
+    maximum_fps_ratio: float = 1.2
 
 
 def check_stream_content(
@@ -152,9 +138,7 @@ def _check_stream_content_video(
             f"The video is {content.width}x{content.height} instead of "
             f"{expectation.width}x{expectation.height}"
         )
-    minimum_duration = (
-        STREAM_CONTENT_MINIMUM_VIDEO_DURATION_RATIO * expectation.duration
-    )
+    minimum_duration = 0.5 * expectation.duration
     if content.video_duration < minimum_duration:
         problems.append(
             f"Only {content.video_duration:.1f} of {expectation.duration:.1f} "
@@ -260,7 +244,7 @@ class StreamContentChecker:
 
     def _save_capture(self):
         path = self._expectation.path
-        if self._saved_captures >= MAXIMUM_SAVED_STREAM_CONTENT_CAPTURES:
+        if self._saved_captures >= 5:
             return
         if not path.exists():
             return
@@ -335,7 +319,7 @@ class Monitor:
         self.first_ram_mb: float | None = None
         self.last_ram_mb: float | None = None
         self._deviations: list[Deviation] = []
-        self._unreachable = self._add_deviation("App unreachable", UNREACHABLE_TIMEOUT)
+        self._unreachable = self._add_deviation("App unreachable", 60)
         self._not_live = self._add_deviation("Not live")
         self._stream_bitrate_deviation = self._add_deviation(
             "Stream bitrate out of range"
@@ -350,7 +334,7 @@ class Monitor:
         self._stream_content_checker = StreamContentChecker(stream_content)
         self._stream_content_deviation = self._add_deviation(
             "Unexpected stream content",
-            STREAM_CONTENT_DEVIATION_TIMEOUT_RATIO * stream_content.interval,
+            0.5 * stream_content.interval,
         )
 
     def elapsed(self) -> float:
@@ -458,9 +442,7 @@ class Monitor:
             LOGGER.info("  %-34s%s", f"{deviation.name}:", deviation)
         LOGGER.info("------------------------------------------------------------")
 
-    def _add_deviation(
-        self, name: str, timeout: float = DEVIATION_TIMEOUT
-    ) -> Deviation:
+    def _add_deviation(self, name: str, timeout: float = 120) -> Deviation:
         deviation = Deviation(name, timeout)
         self._deviations.append(deviation)
         return deviation
@@ -588,7 +570,7 @@ class Monitor:
         level = sample.battery_percent
         if sample.battery_charging or level is None:
             return
-        if 0 < level < MINIMUM_BATTERY_LEVEL:
+        if 0 < level < 10:
             raise MonitorError(
                 f"The device battery level is {level} %. Connect the device to power "
                 "and run the test again."
