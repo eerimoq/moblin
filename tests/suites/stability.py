@@ -22,7 +22,6 @@ from utils.generate_device_settings import uuid
 from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
-from utils.monitor import DEVIATION_TIMEOUT
 from utils.monitor import Monitor
 from utils.monitor import StreamContentExpectation
 from utils.test_case import TestCase
@@ -105,7 +104,6 @@ class StabilityFourIngestsOneStream(TestCase):
         self._ingests_profile: Profile | None = None
         self._stream_bitrate_range = STREAM_BITRATE_RANGE
         self._ingests_bitrate_range = INGESTS_BITRATE_RANGE
-        self._deviation_timeout = DEVIATION_TIMEOUT
 
     def setup(self):
         if self._shaper is not None:
@@ -315,10 +313,6 @@ class StabilityFourIngestsOneStream(TestCase):
             self._ingests_profile,
             INGESTS_BITRATE_RANGE,
         )
-        self._deviation_timeout = max(
-            DEVIATION_TIMEOUT,
-            SHAPED_DEVIATION_TIMEOUT_FACTOR * shaper.change_period(),
-        )
 
     def _go_live(self, mediamtx: MediaMtx):
         self.moblin.wait_for_ingests(
@@ -346,7 +340,6 @@ class StabilityFourIngestsOneStream(TestCase):
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             stream_content=self._create_stream_content_expectation(),
-            deviation_timeout=self._deviation_timeout,
             shaping="" if self._shaper is None else self._shaper.description(),
         )
 

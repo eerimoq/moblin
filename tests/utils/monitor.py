@@ -313,7 +313,6 @@ class Monitor:
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         stream_content: StreamContentExpectation,
-        deviation_timeout: float,
         shaping: str,
     ):
         self._moblin = moblin
@@ -337,18 +336,16 @@ class Monitor:
         self.last_ram_mb: float | None = None
         self._deviations: list[Deviation] = []
         self._unreachable = self._add_deviation("App unreachable", UNREACHABLE_TIMEOUT)
-        self._not_live = self._add_deviation("Not live", deviation_timeout)
+        self._not_live = self._add_deviation("Not live")
         self._stream_bitrate_deviation = self._add_deviation(
-            "Stream bitrate out of range", deviation_timeout
+            "Stream bitrate out of range"
         )
         self._receiver_deviation = self._add_deviation(
-            "Stream not received by MediaMTX", deviation_timeout
+            "Stream not received by MediaMTX"
         )
-        self._ingests_deviation = self._add_deviation(
-            "Wrong number of ingests", deviation_timeout
-        )
+        self._ingests_deviation = self._add_deviation("Wrong number of ingests")
         self._ingests_bitrate_deviation = self._add_deviation(
-            "Ingests bitrate out of range", deviation_timeout
+            "Ingests bitrate out of range"
         )
         self._stream_content_checker = StreamContentChecker(stream_content)
         self._stream_content_deviation = self._add_deviation(
