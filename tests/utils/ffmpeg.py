@@ -1,3 +1,4 @@
+import functools
 import json
 import logging
 import math
@@ -19,6 +20,8 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 CAPTURE_EXTRA_TIMEOUT = 30
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_PROGRESS_FRAME = re.compile(r"^frame=(\d+)$", re.MULTILINE)
+HARDWARE_VIDEO_ENCODERS = {"h264": "h264_videotoolbox", "hevc": "hevc_videotoolbox"}
+SOFTWARE_VIDEO_ENCODERS = {"h264": "libx264", "hevc": "libx265"}
 
 
 def _log_level(line: str) -> int:
@@ -54,6 +57,39 @@ def ffprobe_run(path: Path, *args):
 
 def ffmpeg_run(*args):
     return _run(FFMPEG_COMMAND + [*args])
+
+
+@functools.cache
+def video_encoder(codec: str) -> str:
+    hardware_encoder = HARDWARE_VIDEO_ENCODERS[codec]
+    if f" {hardware_encoder} " in ffmpeg_run("-encoders").stdout:
+        return hardware_encoder
+    LOGGER.warning(
+        "The hardware video encoder %s is not supported by ffmpeg. Encoding %s in software.",
+        hardware_encoder,
+        codec,
+    )
+    return SOFTWARE_VIDEO_ENCODERS[codec]
+
+
+def video_encoder_args(
+    bitrate: int, codec: str = "h264", realtime: bool = True
+) -> list[str]:
+    encoder = video_encoder(codec)
+    args = ["-c:v", encoder, "-b:v", str(bitrate)]
+    if encoder in HARDWARE_VIDEO_ENCODERS.values():
+        if realtime:
+            args += ["-realtime", "1"]
+    else:
+        args += [
+            "-maxrate",
+            str(bitrate),
+            "-bufsize",
+            str(2 * bitrate),
+            "-preset",
+            "veryfast",
+        ]
+    return args
 
 
 def check_dependencies() -> list[str]:
@@ -150,7 +186,7 @@ class FfmpegTestStream(FfmpegCommand):
         self,
         url,
         transport_format="flv",
-        video_codec="libx264",
+        video_codec="h264",
         video_profile=None,
         video_bitrate=8_000_000,
         audio_codec="aac",
@@ -203,16 +239,7 @@ class FfmpegTestStream(FfmpegCommand):
             *audio_input,
             "-i",
             str(self._audio_file),
-            "-c:v",
-            self._video_codec,
-            "-b:v",
-            str(self._video_bitrate),
-            "-maxrate",
-            str(self._video_bitrate),
-            "-bufsize",
-            str(2 * self._video_bitrate),
-            "-preset",
-            "veryfast",
+            *video_encoder_args(self._video_bitrate, self._video_codec),
             *video_profile,
             "-pix_fmt",
             "yuv420p",
@@ -633,7 +660,12 @@ def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
         filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")
     filters.append("mpdecimate")
     filtered_path = path.with_suffix(f".{'-'.join(filters)}-filtered.mp4")
-    args += [", ".join(filters), "-an", str(filtered_path)]
+    args += [
+        ", ".join(filters),
+        *video_encoder_args(8_000_000, realtime=False),
+        "-an",
+        str(filtered_path),
+    ]
     ffmpeg_run(*args)
     return filtered_path
 
@@ -646,14 +678,7 @@ def create_qr_codes_video(output_file: Path):
         "lavfi",
         "-i",
         "nullsrc=size=400x400:rate=30",
-        "-c:v",
-        "libx264",
-        "-b:v",
-        "1M",
-        "-maxrate",
-        "1M",
-        "-preset",
-        "veryfast",
+        *video_encoder_args(1_000_000, realtime=False),
         "-pix_fmt",
         "yuv420p",
         "-g",
