@@ -3,7 +3,9 @@ import logging
 import re
 import subprocess
 import tempfile
+import threading
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -31,6 +33,7 @@ LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
 RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
+RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode frame")
 BITRATE_UNITS = {
     "bps": 1,
     "kbps": 1_000,
@@ -48,10 +51,28 @@ TOTAL_BYTES_UNITS = {
 UPTIME_UNITS = {"d": 86400, "h": 3600, "m": 60, "s": 1}
 
 
+class VideoDecodeErrors:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._counts: defaultdict[str, int] = defaultdict(int)
+
+    def handle_log_entry(self, entry: str):
+        mo = RE_VIDEO_DECODE_ERROR.search(entry)
+        if mo is None:
+            return
+        with self._lock:
+            self._counts[mo.group(1)] += 1
+
+    def counts(self) -> dict[str, int]:
+        with self._lock:
+            return dict(self._counts)
+
+
 class Moblin:
     def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
         self.config = config
         self.arduino = arduino
+        self.video_decode_errors = VideoDecodeErrors()
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
         self._server = None
@@ -79,7 +100,11 @@ class Moblin:
             stderr=subprocess.PIPE,
             text=True,
         )
-        log_output(self._server.stdout, LOGGER_ASSISTANT)
+        log_output(
+            self._server.stdout,
+            LOGGER_ASSISTANT,
+            observer=self.video_decode_errors.handle_log_entry,
+        )
         log_output(self._server.stderr, LOGGER_ASSISTANT)
         try:
             self._wait_until_streamer_is_connected()

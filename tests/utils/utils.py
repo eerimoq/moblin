@@ -18,11 +18,13 @@ class Range:
     maximum: float
 
 
-def _log_stream(stream, logger: Logger, log_level):
+def _log_stream(stream, logger: Logger, log_level, observer):
     try:
         for line in stream:
             line = line.rstrip()
             logger.log(log_level(line), line)
+            if observer is not None:
+                observer(line)
     except Exception:
         pass
 
@@ -31,9 +33,9 @@ def _log_level(_line: str) -> int:
     return logging.DEBUG
 
 
-def log_output(stream, logger, log_level=_log_level):
+def log_output(stream, logger, log_level=_log_level, observer=None):
     threading.Thread(
-        target=_log_stream, args=(stream, logger, log_level), daemon=True
+        target=_log_stream, args=(stream, logger, log_level, observer), daemon=True
     ).start()
 
 

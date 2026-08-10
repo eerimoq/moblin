@@ -271,6 +271,7 @@ class Counters:
     stream_reconnects: int = 0
     receiver_reconnects: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
+    video_decode_errors: dict[str, float] = field(default_factory=dict)
     failed_status_requests: int = 0
     thermal_states: defaultdict[str, float] = field(
         default_factory=lambda: defaultdict(float)
@@ -333,6 +334,7 @@ class Monitor:
 
     def poll(self):
         now = time.monotonic()
+        self._update_video_decode_errors()
         try:
             status = self._moblin.get_status()
         except Exception as error:
@@ -349,6 +351,19 @@ class Monitor:
         if time.monotonic() >= self._next_log_time:
             self.log_status()
             self._next_log_time += 60
+
+    def _update_video_decode_errors(self):
+        counts = self._moblin.video_decode_errors.counts()
+        for name, count in sorted(counts.items()):
+            new_errors = count - self.counters.video_decode_errors.get(name, 0)
+            if new_errors > 0:
+                LOGGER.warning(
+                    "Video decoder '%s' failed to decode %d frames (%d in total).",
+                    name,
+                    new_errors,
+                    count,
+                )
+        self.counters.video_decode_errors = dict(counts)
 
     def source_restarted(self, name: str):
         self.counters.source_restarts[name] += 1
@@ -382,9 +397,14 @@ class Monitor:
             "  Ingest source restarts: %s.",
             format_counts(self.counters.source_restarts),
         )
+        LOGGER.info(
+            "  Video decode errors: %s.",
+            format_counts(self.counters.video_decode_errors),
+        )
 
     def report(self):
         now = time.monotonic()
+        self._update_video_decode_errors()
         for deviation in self._deviations:
             deviation.stop(now)
         counters = self.counters
@@ -418,6 +438,10 @@ class Monitor:
         LOGGER.info("Receiver reconnects:        %d", counters.receiver_reconnects)
         LOGGER.info(
             "Ingest source restarts:     %s", format_counts(counters.source_restarts)
+        )
+        LOGGER.info(
+            "Video decode errors:        %s",
+            format_counts(counters.video_decode_errors),
         )
         LOGGER.info("Failed status requests:     %d", counters.failed_status_requests)
         LOGGER.info(
