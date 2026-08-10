@@ -73,6 +73,7 @@ extension Model {
     }
 
     private func importSucceeded() {
+        setDebugLogging(on: database.debug.debugLogging)
         setCurrentStream()
         updateIconImageFromDatabase()
         updateMicsList()
