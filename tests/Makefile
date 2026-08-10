@@ -3,13 +3,15 @@ CONFIG_TOML ?= config.toml
 SHELL = /usr/bin/env bash
 
 test: prepare
+	rm -f logs/test.log
 	python test.py $(CONFIG_TOML) $(TEST_ARGS)
 
 stability: prepare
+	rm -f logs/stability.log
 	python stability.py $(CONFIG_TOML) $(TEST_ARGS)
 
 prepare:
-	rm -rf logs files mediamtx.log
+	rm -rf files
 	mkdir -p files
 
 generate-device-settings-clipboard:
