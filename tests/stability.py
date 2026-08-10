@@ -21,7 +21,7 @@ def main():
     parser.add_argument(
         "--duration",
         type=float,
-        default=stability.DEFAULT_DURATION / 3600,
+        default=12,
         help="Duration in hours (default: %(default)s).",
     )
     parser.add_argument(

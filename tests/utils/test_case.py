@@ -20,6 +20,7 @@ from .moblin import Moblin
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
+from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
@@ -59,8 +60,7 @@ class TestCase(systest.TestCase):
     def wait_for_ingest_stream_started(self, number_of_ingests=1, startup_delay=1):
         time.sleep(startup_delay)
         self.moblin.wait_for_ingests(
-            minimim_bitrate=0,
-            maximum_bitrate=100_000_000,
+            bitrate=Range(0, 100_000_000),
             total_bytes=3_000_000,
             number_of_ingests=number_of_ingests,
         )

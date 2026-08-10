@@ -272,8 +272,8 @@ class TrafficShaper:
             shutil.rmtree(self._directory, ignore_errors=True)
             self._directory = None
 
-    def poll(self, now: float | None = None):
-        now = time.monotonic() if now is None else now
+    def poll(self):
+        now = time.monotonic()
         for group, profile in self._profiles.items():
             impairment = profile.poll(now)
             if impairment is not None:

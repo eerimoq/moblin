@@ -12,6 +12,12 @@ FILES_DIR = TEST_DIR / "files"
 BLACK_MAXIMUM_VALUE = 40
 
 
+@dataclass
+class Range:
+    minimum: float
+    maximum: float
+
+
 def _log_stream(stream, logger: Logger, log_level):
     try:
         for line in stream:

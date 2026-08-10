@@ -37,21 +37,17 @@ from utils.traffic_shaper import Relay
 from utils.traffic_shaper import TrafficShaper
 from utils.traffic_shaper import parse_profile
 from utils.utils import FILES_DIR
+from utils.utils import Range
 from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
-DEFAULT_DURATION = 12 * 3600
-POLL_INTERVAL = 10
-LOG_INTERVAL = 60
-STARTUP_POLL_INTERVAL = 5
-INGESTS_CONNECT_TIMEOUT = 180
 WHEP_PATH = "stabilitywhep"
 STREAM_PATH = "stability"
 NUMBER_OF_INGESTS = 4
 INGEST_BITRATE = 5_000_000
 STREAM_BITRATE = 5_000_000
-STREAM_BITRATE_RANGE = (4_000_000, 6_500_000)
-INGESTS_BITRATE_RANGE = (17_000_000, 26_000_000)
+STREAM_BITRATE_RANGE = Range(4_000_000, 6_500_000)
+INGESTS_BITRATE_RANGE = Range(17_000_000, 26_000_000)
 STREAM_WIDTH = 1920
 STREAM_HEIGHT = 1080
 STREAM_FPS = 30
@@ -100,12 +96,7 @@ class StabilityFourIngestsOneStream(TestCase):
 
     """
 
-    def __init__(
-        self,
-        moblin: Moblin,
-        duration: float = DEFAULT_DURATION,
-        shaper: TrafficShaper | None = None,
-    ):
+    def __init__(self, moblin: Moblin, duration: float, shaper: TrafficShaper | None):
         super().__init__(moblin)
         self._duration = duration
         self._shaper = shaper
@@ -240,7 +231,7 @@ class StabilityFourIngestsOneStream(TestCase):
                 },
             }
         )
-        time.sleep(STARTUP_POLL_INTERVAL)
+        time.sleep(5)
 
     def run(self):
         manual_validation(
@@ -331,13 +322,18 @@ class StabilityFourIngestsOneStream(TestCase):
 
     def _go_live(self, mediamtx: MediaMtx):
         self.moblin.wait_for_ingests(
-            *self._ingests_bitrate_range,
+            self._ingests_bitrate_range,
             total_bytes=0,
             number_of_ingests=NUMBER_OF_INGESTS,
-            timeout=INGESTS_CONNECT_TIMEOUT,
+            timeout=180,
         )
         self.moblin.go_live()
-        self.moblin.wait_for_bitrate(*self._stream_bitrate_range, None, 3_000_000)
+        self.moblin.wait_for_bitrate(
+            self._stream_bitrate_range.minimum,
+            self._stream_bitrate_range.maximum,
+            None,
+            3_000_000,
+        )
         mediamtx.wait_for_srt_stream(STREAM_PATH, 3_000_000)
 
     def _create_monitor(self, mediamtx: MediaMtx, sources: list[Source]) -> Monitor:
@@ -349,7 +345,6 @@ class StabilityFourIngestsOneStream(TestCase):
             number_of_ingests=NUMBER_OF_INGESTS,
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
-            poll_interval=POLL_INTERVAL,
             stream_content=self._create_stream_content_expectation(),
             deviation_timeout=self._deviation_timeout,
             shaping="" if self._shaper is None else self._shaper.description(),
@@ -375,18 +370,12 @@ class StabilityFourIngestsOneStream(TestCase):
 
     def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
         end_time = time.monotonic() + self._duration
-        next_poll_time = time.monotonic()
-        next_log_time = time.monotonic()
         while time.monotonic() < end_time:
-            next_poll_time += POLL_INTERVAL
-            time.sleep(max(0, next_poll_time - time.monotonic()))
+            time.sleep(10)
             if self._shaper is not None:
                 self._shaper.poll()
-            restart_dead_sources(monitor, sources)
             monitor.poll()
-            if time.monotonic() >= next_log_time:
-                monitor.log_status()
-                next_log_time += LOG_INTERVAL
+            restart_dead_sources(monitor, sources)
 
 
 def name_widget_settings(name: str, widget_id: str):
@@ -417,15 +406,15 @@ def restart_dead_sources(monitor: Monitor, sources: list[Source]):
 def shaped_bitrate_range(
     nominal_bitrate: float,
     profile: Profile | None,
-    default_range: tuple[float, float],
-) -> tuple[float, float]:
+    default_range: Range,
+) -> Range:
     if profile is None:
         return default_range
     minimum_rate = profile.minimum_rate()
     maximum_rate = profile.maximum_rate()
     if minimum_rate is None or maximum_rate is None:
         return default_range
-    return (
+    return Range(
         SHAPED_BITRATE_MINIMUM_FACTOR * min(nominal_bitrate, minimum_rate),
         SHAPED_BITRATE_MAXIMUM_FACTOR * min(nominal_bitrate, maximum_rate),
     )

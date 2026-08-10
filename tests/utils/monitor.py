@@ -1,6 +1,7 @@
 import logging
 import shutil
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
@@ -12,6 +13,7 @@ from .moblin import Moblin
 from .moblin import parse_bitrate_status
 from .moblin import parse_ingests_status
 from .moblin import parse_uptime
+from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
 UNREACHABLE_TIMEOUT = 60
@@ -74,7 +76,6 @@ class Deviation:
         self._start_time: float | None = None
 
     def update(self, now: float, is_deviating: bool, message: str):
-        """Raises an exception if deviating for longer than the timeout."""
         if is_deviating:
             if self._start_time is None:
                 self._start_time = now
@@ -294,10 +295,11 @@ class Sample:
 class Counters:
     stream_reconnects: int = 0
     receiver_reconnects: int = 0
-    ingest_disconnects: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
     failed_status_requests: int = 0
-    thermal_states: dict[str, float] = field(default_factory=dict)
+    thermal_states: defaultdict[str, float] = field(
+        default_factory=lambda: defaultdict(float)
+    )
 
 
 class Monitor:
@@ -308,9 +310,8 @@ class Monitor:
         stream_path: str,
         source_names: list[str],
         number_of_ingests: int,
-        stream_bitrate_range: tuple[float, float],
-        ingests_bitrate_range: tuple[float, float],
-        poll_interval: float,
+        stream_bitrate_range: Range,
+        ingests_bitrate_range: Range,
         stream_content: StreamContentExpectation,
         deviation_timeout: float = DEVIATION_TIMEOUT,
         shaping: str = "",
@@ -321,9 +322,9 @@ class Monitor:
         self._number_of_ingests = number_of_ingests
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
-        self._poll_interval = poll_interval
         self._shaping = shaping
         self._start_time = time.monotonic()
+        self._next_log_time = time.monotonic()
         self._previous_sample: Sample | None = None
         self._previous_publisher: tuple[str, int] | None = None
         self.counters = Counters(source_restarts={name: 0 for name in source_names})
@@ -373,6 +374,9 @@ class Monitor:
         self._previous_sample = sample
         self._check(now, sample)
         self._check_stream_content(now, sample)
+        if time.monotonic() >= self._next_log_time:
+            self.log_status()
+            self._next_log_time += 60
 
     def source_restarted(self, name: str):
         self.counters.source_restarts[name] += 1
@@ -440,7 +444,6 @@ class Monitor:
         LOGGER.info("RAM growth in MB:           %s", self._format_ram_growth())
         LOGGER.info("Stream reconnects:          %d", counters.stream_reconnects)
         LOGGER.info("Receiver reconnects:        %d", counters.receiver_reconnects)
-        LOGGER.info("Ingest disconnects:         %d", counters.ingest_disconnects)
         LOGGER.info(
             "Ingest source restarts:     %s", format_counts(counters.source_restarts)
         )
@@ -532,41 +535,26 @@ class Monitor:
         self.last_ram_mb = sample.ram_mb
 
     def _update_counters(self, sample: Sample):
-        if sample.thermal_state:
-            states = self.counters.thermal_states
-            states[sample.thermal_state] = (
-                states.get(sample.thermal_state, 0) + self._poll_interval
-            )
-        previous = self._previous_sample
-        if previous is None:
+        self.counters.thermal_states[sample.thermal_state] += 1
+        previous_sample = self._previous_sample
+        if previous_sample is None:
             return
-        if is_reconnect(previous.stream_uptime, sample.stream_uptime):
+        if is_reconnect(previous_sample.stream_uptime, sample.stream_uptime):
             self.counters.stream_reconnects += 1
             LOGGER.warning("The outgoing stream reconnected.")
-        if sample.number_of_ingests < previous.number_of_ingests:
-            self.counters.ingest_disconnects += 1
-            LOGGER.warning(
-                "Number of ingests dropped from %d to %d.",
-                previous.number_of_ingests,
-                sample.number_of_ingests,
-            )
-        if sample.thermal_state != previous.thermal_state:
-            LOGGER.warning(
-                "Thermal state changed from %s to %s.",
-                previous.thermal_state or "-",
-                sample.thermal_state or "-",
-            )
-        if previous.battery_charging and not sample.battery_charging:
+        if previous_sample.battery_charging and not sample.battery_charging:
             LOGGER.warning("The device is no longer charging.")
 
     def _check(self, now: float, sample: Sample):
-        minimum_stream, maximum_stream = self._stream_bitrate_range
-        minimum_ingests, maximum_ingests = self._ingests_bitrate_range
         self._not_live.update(now, not sample.is_live, "The app is not streaming")
         self._stream_bitrate_deviation.update(
             now,
             sample.is_live
-            and not is_within(sample.stream_bitrate, minimum_stream, maximum_stream),
+            and not is_within(
+                sample.stream_bitrate,
+                self._stream_bitrate_range.minimum,
+                self._stream_bitrate_range.maximum,
+            ),
             f"{format_mbps(sample.stream_bitrate)} Mbps",
         )
         self._receiver_deviation.update(
@@ -582,7 +570,11 @@ class Monitor:
         )
         self._ingests_bitrate_deviation.update(
             now,
-            not is_within(sample.ingests_bitrate, minimum_ingests, maximum_ingests),
+            not is_within(
+                sample.ingests_bitrate,
+                self._ingests_bitrate_range.minimum,
+                self._ingests_bitrate_range.maximum,
+            ),
             f"{format_mbps(sample.ingests_bitrate)} Mbps",
         )
         self._check_battery(sample)

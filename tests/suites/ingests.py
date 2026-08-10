@@ -17,6 +17,7 @@ from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.moblin import Recorder
 from utils.test_case import TestCase
+from utils.utils import Range
 
 LOGGER = logging.getLogger(__name__)
 RTMP_STREAM_ID = uuid()
@@ -64,8 +65,7 @@ class IngestRtmpServer(IngestTestCase):
             self.wait_for_ingest_stream_started()
             with recorder:
                 self.moblin.wait_for_ingests(
-                    minimim_bitrate=7_000_000,
-                    maximum_bitrate=9_000_000,
+                    bitrate=Range(7_000_000, 9_000_000),
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
@@ -99,8 +99,7 @@ class IngestSrtServer(IngestTestCase):
             self.wait_for_ingest_stream_started()
             with recorder:
                 self.moblin.wait_for_ingests(
-                    minimim_bitrate=7_000_000,
-                    maximum_bitrate=9_000_000,
+                    bitrate=Range(7_000_000, 9_000_000),
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
@@ -140,8 +139,7 @@ class IngestSrtClient(IngestTestCase):
             self.wait_for_ingest_stream_started()
             with recorder:
                 self.moblin.wait_for_ingests(
-                    minimim_bitrate=7_000_000,
-                    maximum_bitrate=9_000_000,
+                    bitrate=Range(7_000_000, 9_000_000),
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
@@ -178,8 +176,7 @@ class IngestRtspClientH264(IngestTestCase):
                 self.wait_for_ingest_stream_started(startup_delay=5)
                 with recorder:
                     self.moblin.wait_for_ingests(
-                        minimim_bitrate=7_000_000,
-                        maximum_bitrate=9_000_000,
+                        bitrate=Range(7_000_000, 9_000_000),
                         total_bytes=10_000_000,
                         number_of_ingests=1,
                     )
@@ -215,8 +212,7 @@ class IngestRistServer(IngestTestCase):
             self.wait_for_ingest_stream_started(startup_delay=5)
             with recorder:
                 self.moblin.wait_for_ingests(
-                    minimim_bitrate=7_000_000,
-                    maximum_bitrate=9_000_000,
+                    bitrate=Range(7_000_000, 9_000_000),
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
@@ -256,8 +252,7 @@ class IngestWhipServer(IngestTestCase):
             self.wait_for_ingest_stream_started(startup_delay=5)
             with recorder:
                 self.moblin.wait_for_ingests(
-                    minimim_bitrate=7_000_000,
-                    maximum_bitrate=9_000_000,
+                    bitrate=Range(7_000_000, 9_000_000),
                     total_bytes=10_000_000,
                     number_of_ingests=1,
                 )
@@ -296,8 +291,7 @@ class IngestWhepClient(IngestTestCase):
                 self.wait_for_ingest_stream_started(startup_delay=5)
                 with recorder:
                     self.moblin.wait_for_ingests(
-                        minimim_bitrate=7_000_000,
-                        maximum_bitrate=9_000_000,
+                        bitrate=Range(7_000_000, 9_000_000),
                         total_bytes=10_000_000,
                         number_of_ingests=1,
                     )

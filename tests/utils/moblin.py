@@ -23,6 +23,7 @@ from .config import Config
 from .generate_device_settings import base_settings
 from .generate_device_settings import create_settings_file
 from .utils import FILES_DIR
+from .utils import Range
 from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
@@ -193,8 +194,7 @@ class Moblin:
 
     def wait_for_ingests(
         self,
-        minimim_bitrate,
-        maximum_bitrate,
+        bitrate: Range,
         total_bytes,
         number_of_ingests,
         timeout: float = 60,
@@ -209,7 +209,7 @@ class Moblin:
             if total_bytes_delta > 0:
                 accumulated_total_bytes += total_bytes_delta
             previous_total_bytes = status.total_bytes
-            if status.bitrate < minimim_bitrate or status.bitrate > maximum_bitrate:
+            if status.bitrate < bitrate.minimum or status.bitrate > bitrate.maximum:
                 continue
             if accumulated_total_bytes < total_bytes:
                 continue
