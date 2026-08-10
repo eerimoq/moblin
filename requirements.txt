@@ -9,3 +9,4 @@ pyperclip
 isort
 playwright
 simba_soam
+irwin
