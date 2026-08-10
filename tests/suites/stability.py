@@ -57,11 +57,6 @@ NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
-SHAPED_BITRATE_MINIMUM_FACTOR = 0.2
-SHAPED_BITRATE_MAXIMUM_FACTOR = 1.3
-SHAPED_DEVIATION_TIMEOUT_FACTOR = 2
-SHAPED_STREAM_CONTENT_MINIMUM_FPS_RATIO = 0.3
-SHAPED_STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO = 0.3
 RELAYS = [
     Relay(STREAM_GROUP, UDP, TESTER_SRT_PORT, TESTER_SIDE),
     Relay(INGESTS_GROUP, TCP, RTMP_SERVER_PORT, DEVICE_SIDE),
@@ -355,10 +350,8 @@ class StabilityFourIngestsOneStream(TestCase):
             return expectation
         return replace(
             expectation,
-            minimum_fps_ratio=SHAPED_STREAM_CONTENT_MINIMUM_FPS_RATIO,
-            minimum_unique_video_frames_ratio=(
-                SHAPED_STREAM_CONTENT_MINIMUM_UNIQUE_VIDEO_FRAMES_RATIO
-            ),
+            minimum_fps_ratio=0.3,
+            minimum_unique_video_frames_ratio=0.3,
         )
 
     def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
@@ -408,8 +401,8 @@ def shaped_bitrate_range(
     if minimum_rate is None or maximum_rate is None:
         return default_range
     return Range(
-        SHAPED_BITRATE_MINIMUM_FACTOR * min(nominal_bitrate, minimum_rate),
-        SHAPED_BITRATE_MAXIMUM_FACTOR * min(nominal_bitrate, maximum_rate),
+        0.2 * min(nominal_bitrate, minimum_rate),
+        1.3 * min(nominal_bitrate, maximum_rate),
     )
 
 
