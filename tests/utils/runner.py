@@ -1,5 +1,6 @@
 import argparse
 import logging
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 
@@ -9,6 +10,8 @@ from .arduino import Arduino
 from .config import Config
 from .dependencies import check_dependencies
 from .moblin import Moblin
+from .utils import FILES_DIR
+from .utils import TEST_DIR
 
 MakeTests = Callable[[Moblin, argparse.Namespace], list]
 
@@ -22,7 +25,14 @@ def create_parser(description: str | None = None) -> argparse.ArgumentParser:
     return parser
 
 
+def _remove_previous_run_artifacts(name: str):
+    shutil.rmtree(FILES_DIR, ignore_errors=True)
+    FILES_DIR.mkdir(parents=True)
+    (TEST_DIR / "logs" / f"{name}.log").unlink(missing_ok=True)
+
+
 def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
+    _remove_previous_run_artifacts(name)
     sequencer = systest.setup(name, parser, add_date_to_log_filename=False)
     sequencer.remove_filtered_testcases = True
     args = parser.parse_args()

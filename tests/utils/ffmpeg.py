@@ -72,9 +72,7 @@ def video_encoder(codec: str) -> str:
     return SOFTWARE_VIDEO_ENCODERS[codec]
 
 
-def video_encoder_args(
-    bitrate: int, codec: str = "h264", realtime: bool = True
-) -> list[str]:
+def video_encoder_args(bitrate: int, codec: str, realtime: bool) -> list[str]:
     encoder = video_encoder(codec)
     args = ["-c:v", encoder, "-b:v", str(bitrate)]
     if encoder in HARDWARE_VIDEO_ENCODERS.values():
@@ -239,7 +237,7 @@ class FfmpegTestStream(FfmpegCommand):
             *audio_input,
             "-i",
             str(self._audio_file),
-            *video_encoder_args(self._video_bitrate, self._video_codec),
+            *video_encoder_args(self._video_bitrate, self._video_codec, True),
             *video_profile,
             "-pix_fmt",
             "yuv420p",
@@ -662,7 +660,7 @@ def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
     filtered_path = path.with_suffix(f".{'-'.join(filters)}-filtered.mp4")
     args += [
         ", ".join(filters),
-        *video_encoder_args(8_000_000, realtime=False),
+        *video_encoder_args(8_000_000, "h264", False),
         "-an",
         str(filtered_path),
     ]
@@ -678,7 +676,7 @@ def create_qr_codes_video(output_file: Path):
         "lavfi",
         "-i",
         "nullsrc=size=400x400:rate=30",
-        *video_encoder_args(1_000_000, realtime=False),
+        *video_encoder_args(1_000_000, "h264", False),
         "-pix_fmt",
         "yuv420p",
         "-g",
