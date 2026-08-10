@@ -3,6 +3,7 @@ import time
 from contextlib import ExitStack
 from dataclasses import dataclass
 from dataclasses import replace
+from enum import StrEnum
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
@@ -44,13 +45,24 @@ from utils.utils import Range
 from utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
+
+
+class Ingest(StrEnum):
+    RTMP = "rtmp"
+    SRT = "srt"
+    RIST = "rist"
+    WHEP = "whep"
+
+    def label(self) -> str:
+        return self.name
+
+
 WHEP_PATH = "stabilitywhep"
 STREAM_PATH = "stability"
-NUMBER_OF_INGESTS = 4
 INGEST_BITRATE = 5_000_000
 STREAM_BITRATE = 5_000_000
 STREAM_BITRATE_RANGE = Range(4_000_000, 6_500_000)
-INGESTS_BITRATE_RANGE = Range(17_000_000, 26_000_000)
+INGEST_BITRATE_RANGE = Range(4_250_000, 6_500_000)
 STREAM_FPS = 30
 STREAM_RESOLUTION = Resolution.FULL_HD
 STREAM_WIDTH, STREAM_HEIGHT = STREAM_RESOLUTION.size()
@@ -81,9 +93,10 @@ RIST_NAME_WIDGET_ID = uuid()
 WHEP_NAME_WIDGET_ID = uuid()
 
 
-class StabilityFourIngestsOneStream(TestCase):
-    """Four ingests (RTMP, SRT, RIST and WHEP) and one outgoing SRT stream, all roughly
-    5 Mbps, active at the same time for 12 hours, or until the app crashes.
+class StabilityIngestsOneStream(TestCase):
+    """All four ingests (RTMP, SRT, RIST and WHEP) configured and one outgoing SRT
+    stream, all roughly 5 Mbps, active at the same time for 12 hours, or until the app
+    crashes. Only the ingests given on the command line are streamed to.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
@@ -93,15 +106,22 @@ class StabilityFourIngestsOneStream(TestCase):
 
     """
 
-    def __init__(self, moblin: Moblin, duration: float, shaper: TrafficShaper | None):
+    def __init__(
+        self,
+        moblin: Moblin,
+        ingests: list[Ingest],
+        duration: float,
+        shaper: TrafficShaper | None,
+    ):
         super().__init__(moblin)
+        self._ingests = ingests
         self._duration = duration
         self._shaper = shaper
         self._monitor: Monitor | None = None
         self._stream_profile: Profile | None = None
         self._ingests_profile: Profile | None = None
         self._stream_bitrate_range = STREAM_BITRATE_RANGE
-        self._ingests_bitrate_range = INGESTS_BITRATE_RANGE
+        self._ingests_bitrate_range = ingests_bitrate_range(len(ingests))
 
     def setup(self):
         if self._shaper is not None:
@@ -257,7 +277,8 @@ class StabilityFourIngestsOneStream(TestCase):
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
-            mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
+            if Ingest.WHEP in self._ingests:
+                mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
             self._go_live(mediamtx)
             self._monitor = self._create_monitor(mediamtx, sources)
             self._monitor_until_done(self._monitor, sources)
@@ -272,45 +293,42 @@ class StabilityFourIngestsOneStream(TestCase):
 
     def _create_sources(self) -> list[Source]:
         return [
-            Source(
-                name="RTMP",
-                command=FfmpegTestStream(
+            Source(name=ingest.label(), command=self._create_source_command(ingest))
+            for ingest in self._ingests
+        ]
+
+    def _create_source_command(self, ingest: Ingest) -> FfmpegCommand:
+        match ingest:
+            case Ingest.RTMP:
+                return FfmpegTestStream(
                     url=self.moblin.ingest_rtmp_url(),
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
-                ),
-            ),
-            Source(
-                name="SRT",
-                command=FfmpegTestStream(
+                )
+            case Ingest.SRT:
+                return FfmpegTestStream(
                     url=self.moblin.ingest_srt_url(),
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
                     transport_format=TransportFormat.MPEGTS,
-                ),
-            ),
-            Source(
-                name="RIST",
-                command=FfmpegTestStream(
+                )
+            case Ingest.RIST:
+                return FfmpegTestStream(
                     url=self.moblin.ingest_rist_url(),
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
                     transport_format=TransportFormat.MPEGTS,
-                ),
-            ),
-            Source(
-                name="WHEP",
-                command=FfmpegRtspTestStream(
+                )
+            case Ingest.WHEP:
+                return FfmpegRtspTestStream(
                     url=rtsp_reader_url(WHEP_PATH),
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
-                ),
-            ),
-        ]
+                )
 
     def _update_expectations(self, shaper: TrafficShaper):
         self._stream_profile = shaper.profile(Group.STREAM)
@@ -319,16 +337,16 @@ class StabilityFourIngestsOneStream(TestCase):
             STREAM_BITRATE, self._stream_profile, STREAM_BITRATE_RANGE
         )
         self._ingests_bitrate_range = shaped_bitrate_range(
-            NUMBER_OF_INGESTS * INGEST_BITRATE,
+            len(self._ingests) * INGEST_BITRATE,
             self._ingests_profile,
-            INGESTS_BITRATE_RANGE,
+            ingests_bitrate_range(len(self._ingests)),
         )
 
     def _go_live(self, mediamtx: MediaMtx):
         self.moblin.wait_for_ingests(
             self._ingests_bitrate_range,
             total_bytes=0,
-            number_of_ingests=NUMBER_OF_INGESTS,
+            number_of_ingests=len(self._ingests),
             timeout=180,
         )
         self.moblin.go_live()
@@ -346,7 +364,7 @@ class StabilityFourIngestsOneStream(TestCase):
             mediamtx=mediamtx,
             stream_path=STREAM_PATH,
             source_names=[source.name for source in sources],
-            number_of_ingests=NUMBER_OF_INGESTS,
+            number_of_ingests=len(self._ingests),
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             stream_content=self._create_stream_content_expectation(),
@@ -379,6 +397,13 @@ class StabilityFourIngestsOneStream(TestCase):
                 self._shaper.poll()
             monitor.poll()
             restart_dead_sources(monitor, sources)
+
+
+def ingests_bitrate_range(number_of_ingests: int) -> Range:
+    return Range(
+        number_of_ingests * INGEST_BITRATE_RANGE.minimum,
+        number_of_ingests * INGEST_BITRATE_RANGE.maximum,
+    )
 
 
 def name_widget_settings(name: str, widget_id: str):
@@ -448,11 +473,12 @@ def create_traffic_shaper(
 
 def tests(
     moblin: Moblin,
+    ingests: list[Ingest],
     duration: float,
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityFourIngestsOneStream(moblin, duration, shaper),
+        StabilityIngestsOneStream(moblin, ingests, duration, shaper),
     ]
 
 

@@ -50,6 +50,14 @@ make stability
 make stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
+Give `--ingests` to select which ingests to stream to. All of `rtmp`, `srt`, `rist` and
+`whep` are streamed to by default.
+
+```bash
+make stability TEST_ARGS="--ingests rtmp"
+make stability TEST_ARGS="--ingests srt,whep"
+```
+
 # Traffic shaping
 
 The stability test can simulate bad networks, with separate impairments for the outgoing
