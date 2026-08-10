@@ -128,6 +128,9 @@ The Watch app talks to the phone over `WatchConnectivity` using the string-keyed
 - **Do not write comments or docstrings.** The one exception is a system test case class in `tests/suites/`,
   which gets a one-line docstring describing what the test does (`"""Play talkback sound over RTMP server
   through the speaker for 10 seconds."""`).
+- **Magic numbers are fine, and often preferred, when used in a single place.** Do not hoist a literal
+  into a named constant just because it is a literal — only name it when the same value is used in more
+  than one place.
 - `swiftformat` at 110 columns, Swift 5.9 mode, `--disable docComments --ifdef no-indent`.
 - `swiftlint --strict`. Many rules are off (see `.swiftlint.yml`) — notably `force_cast`, `force_try`,
   `identifier_name`, `cyclomatic_complexity` and `function_body_length`, so long `switch`-heavy functions
