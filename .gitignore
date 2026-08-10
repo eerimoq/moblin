@@ -106,8 +106,8 @@ tests/logs
 tests/files/
 __pycache__
 
-tests/tests/websites/*.jpg
-tests/tests/websites/*.mp4
+tests/suites/websites/*.jpg
+tests/suites/websites/*.mp4
 tests/config.toml
 FfmpegTestStream.wav
 tests/ltc.wav
