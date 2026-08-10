@@ -27,7 +27,8 @@ struct MpegTsReaderSuite {
     @Test
     func ffmpegAudioOnlyPeriodicBeep() throws {
         let mock = Mock()
-        let reader = MpegTsReader(decoderQueue: .main,
+        let reader = MpegTsReader(name: "",
+                                  decoderQueue: .main,
                                   timecodesEnabled: false,
                                   targetLatency: 1.0)
         reader.delegate = mock

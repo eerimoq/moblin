@@ -103,3 +103,21 @@ extension WKWebViewConfiguration {
         }
     }
 }
+
+extension URL {
+    func isLoopback() -> Bool {
+        guard let host = host()?.trimmingCharacters(in: ["[", "]"]) else {
+            return false
+        }
+        if host == "localhost" {
+            return true
+        }
+        if let address = IPv4Address(host) {
+            return address.isLoopback
+        }
+        if let address = IPv6Address(host) {
+            return address.isLoopback
+        }
+        return false
+    }
+}

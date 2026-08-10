@@ -91,7 +91,7 @@ class RemoteControlStreamer {
     private func startInternal() {
         stopInternal()
         gotPong = true
-        webSocket = .init(url: clientUrl)
+        webSocket = .init(url: clientUrl, loopback: clientUrl.isLoopback())
         webSocket.delegate = self
         webSocket.start()
     }
