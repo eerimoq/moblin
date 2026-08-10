@@ -51,7 +51,8 @@ make stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
 Give `--ingests` to select which ingests to stream to. All of `rtmp`, `srt`, `rist` and
-`whep` are streamed to by default.
+`whep` are streamed to by default. The scene and its widgets are always configured for all
+ingests, but the ingests that are not streamed to are disabled in the app.
 
 ```bash
 make stability TEST_ARGS="--ingests rtmp"

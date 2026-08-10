@@ -94,9 +94,10 @@ WHEP_NAME_WIDGET_ID = uuid()
 
 
 class StabilityIngestsOneStream(TestCase):
-    """All four ingests (RTMP, SRT, RIST and WHEP) configured and one outgoing SRT
-    stream, all roughly 5 Mbps, active at the same time for 12 hours, or until the app
-    crashes. Only the ingests given on the command line are streamed to.
+    """The ingests given on the command line (RTMP, SRT, RIST and WHEP) and one
+    outgoing SRT stream, all roughly 5 Mbps, active at the same time for 12 hours, or
+    until the app crashes. All scenes and widgets are always configured, but the ingests
+    that are not streamed to are disabled.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
@@ -230,17 +231,17 @@ class StabilityIngestsOneStream(TestCase):
                     name_widget_settings("WHEP", WHEP_NAME_WIDGET_ID),
                 ],
                 "rtmpServer": {
-                    "enabled": True,
+                    "enabled": Ingest.RTMP in self._ingests,
                     "port": RTMP_SERVER_PORT,
                     "streams": [{"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"}],
                 },
                 "srtlaServer": {
-                    "enabled": True,
+                    "enabled": Ingest.SRT in self._ingests,
                     "srtPort": SRT_SERVER_PORT,
                     "streams": [{"id": SRT_STREAM_ID, "name": "1", "streamId": "1"}],
                 },
                 "ristServer": {
-                    "enabled": True,
+                    "enabled": Ingest.RIST in self._ingests,
                     "port": RIST_SERVER_PORT,
                     "streams": [
                         {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}
@@ -252,7 +253,7 @@ class StabilityIngestsOneStream(TestCase):
                             "id": WHEP_STREAM_ID,
                             "name": "1",
                             "url": self.moblin.tester_whep_url(WHEP_PATH),
-                            "enabled": True,
+                            "enabled": Ingest.WHEP in self._ingests,
                             "latency": 2000,
                         }
                     ],
