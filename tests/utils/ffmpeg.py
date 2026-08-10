@@ -11,10 +11,10 @@ from enum import StrEnum
 from fractions import Fraction
 from pathlib import Path
 
+from .process import ManagedProcess
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
-from .utils import log_output
 
 LOGGER = logging.getLogger(__name__)
 FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
@@ -159,7 +159,7 @@ def _ensure_certificate_exists(certificate_file: Path, key_file: Path):
 
 class FfmpegCommand:
     def __init__(self, quiet: bool = False):
-        self._server = None
+        self._process: ManagedProcess | None = None
         self._quiet = quiet
 
     def args(self) -> list[str]:
@@ -173,7 +173,7 @@ class FfmpegCommand:
         self._stop()
 
     def is_running(self) -> bool:
-        return self._server is not None and self._server.poll() is None
+        return self._process is not None and self._process.is_running()
 
     def restart(self):
         self._stop()
@@ -184,22 +184,15 @@ class FfmpegCommand:
         if self._quiet:
             command += ["-nostats", "-loglevel", "warning"]
         command += self.args()
-        LOGGER.debug("Command: %s", " ".join(command))
-        self._server = subprocess.Popen(
-            command,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
+        self._process = ManagedProcess(
+            command, LOGGER, stdin=subprocess.DEVNULL, log_level=_log_level
         )
-        log_output(self._server.stdout, LOGGER, _log_level)
-        log_output(self._server.stderr, LOGGER, _log_level)
+        self._process.start()
 
     def _stop(self):
-        if self._server is not None:
-            self._server.kill()
-            self._server.wait()
-            self._server = None
+        if self._process is not None:
+            self._process.stop()
+            self._process = None
 
 
 class FfmpegTestStream(FfmpegCommand):

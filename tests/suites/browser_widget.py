@@ -1,13 +1,13 @@
-import logging
 from pathlib import Path
 
+from utils.config import WEB_SERVER_PORT
 from utils.ffmpeg import QrCode
 from utils.ffmpeg import create_qr_codes_video
 from utils.ffmpeg import read_qr_codes
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import BrowserMode
 from utils.generate_device_settings import CameraPosition
-from utils.generate_device_settings import WidgetType
+from utils.generate_device_settings import browser_widget_settings
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import uuid
 from utils.moblin import Moblin
@@ -17,20 +17,10 @@ from utils.utils import Crop
 from utils.utils import create_qr_code_image
 from utils.web_server import WebServer
 
-LOGGER = logging.getLogger(__name__)
 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = uuid()
 AUDIO_AND_VIDEO_ONLY_WIDGET_ID = uuid()
 AUDIO_ONLY_WIDGET_ID = uuid()
 LOCAL_ONLY_WIDGET_ID = uuid()
-
-
-def widget_settings(widget_id: str, name: str, url: str, **browser):
-    return {
-        "id": widget_id,
-        "name": name,
-        "type": WidgetType.BROWSER,
-        "browser": {"url": url, "width": 1920, "height": 1080, **browser},
-    }
 
 
 class BrowserWidgetModes(TestCase):
@@ -38,7 +28,7 @@ class BrowserWidgetModes(TestCase):
 
     def import_settings(self):
         url = (
-            f"http://{self.moblin.config.tester_ip_address()}:6967"
+            f"http://{self.moblin.config.tester_ip_address()}:{WEB_SERVER_PORT}"
             "/BrowserWidgetHighFpsVideo.html"
         )
         self.moblin.import_settings(
@@ -61,27 +51,27 @@ class BrowserWidgetModes(TestCase):
                     }
                 ],
                 "widgets": [
-                    widget_settings(
-                        PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID,
+                    browser_widget_settings(
                         "Browser periodic audio and video",
+                        PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID,
                         url,
                         mode=BrowserMode.PERIODIC_AUDIO_AND_VIDEO,
                     ),
-                    widget_settings(
-                        AUDIO_AND_VIDEO_ONLY_WIDGET_ID,
+                    browser_widget_settings(
                         "Browser audio and video only",
+                        AUDIO_AND_VIDEO_ONLY_WIDGET_ID,
                         url,
                         mode=BrowserMode.AUDIO_AND_VIDEO_ONLY,
                     ),
-                    widget_settings(
-                        AUDIO_ONLY_WIDGET_ID,
+                    browser_widget_settings(
                         "Browser audio only",
+                        AUDIO_ONLY_WIDGET_ID,
                         url,
                         mode=BrowserMode.AUDIO_ONLY,
                     ),
-                    widget_settings(
-                        LOCAL_ONLY_WIDGET_ID,
+                    browser_widget_settings(
                         "Browser local only",
+                        LOCAL_ONLY_WIDGET_ID,
                         url,
                         localOnly=True,
                     ),

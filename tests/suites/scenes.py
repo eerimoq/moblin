@@ -18,7 +18,9 @@ from utils.generate_device_settings import SceneName
 from utils.generate_device_settings import WidgetType
 from utils.generate_device_settings import download_model
 from utils.generate_device_settings import scene_widget_settings
+from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
+from utils.generate_device_settings import video_source_widget_settings
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import FILES_DIR
@@ -88,7 +90,6 @@ class SceneSwitchMultipleTimes(TestCase):
             overrides={
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [FRONT_SCENE_SETTINGS, SCREEN_SCENE_SETTINGS],
-                "widgets": [],
             }
         )
 
@@ -108,11 +109,8 @@ class GraphicsImplementationTestCase(TestCase):
         name: str | None = None,
     ):
         self.graphics_implementation = graphics_implementation
-        self._name_suffix = GRAPHICS_IMPLEMENTATION_NAMES[graphics_implementation]
-        super().__init__(moblin, f"{name or type(self).__name__}{self._name_suffix}")
-
-    def file_name(self, name: str, extension: str = "mp4") -> str:
-        return f"{name}{self._name_suffix}.{extension}"
+        suffix = GRAPHICS_IMPLEMENTATION_NAMES[graphics_implementation]
+        super().__init__(moblin, f"{name or type(self).__name__}{suffix}")
 
 
 class ScenePiPBackFront(GraphicsImplementationTestCase):
@@ -164,23 +162,21 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
                     }
                 ],
                 "widgets": [
-                    {
-                        "id": FRONT_VIDEO_SOURCE_WIDGET_ID,
-                        "type": WidgetType.VIDEO_SOURCE,
-                        "videoSource": {
+                    video_source_widget_settings(
+                        "Front",
+                        FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        {
                             "cameraPosition": CameraPosition.FRONT,
                             "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
                         },
-                    }
+                    )
                 ],
             }
         )
 
     def run(self):
         time.sleep(2)
-        recording_file = self.moblin.record(
-            10, self.file_name(f"ScenePiPBackFront{self._fps}")
-        )
+        recording_file = self.moblin.record(10, f"{self.name}.mp4")
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
@@ -223,17 +219,17 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
                     }
                 ],
                 "widgets": [
-                    {
-                        "id": TEXT_WIDGET_ID,
-                        "type": WidgetType.TEXT,
-                        "text": {"formatString": "{time}", "fontSize": 80},
-                    }
+                    text_widget_settings(
+                        "Time",
+                        TEXT_WIDGET_ID,
+                        {"formatString": "{time}", "fontSize": 80},
+                    )
                 ],
             }
         )
 
     def run(self):
-        filename = FILES_DIR / self.file_name("SceneWidgetsInBackground", "ts")
+        filename = FILES_DIR / f"{self.name}.ts"
         with FfmpegServer(url=srt_listener_url(), filename=filename):
             self.moblin.go_live()
             manual_confirmation("Put the app in background.")
@@ -243,8 +239,6 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
             manual_confirmation("Put the app in foreground.")
         crop = Crop(x=0, y=0, width=400, height=100)
         filtered_video = ffprobe_video(remove_duplicated_frames(filename, crop))
-        for frame in filtered_video.frames:
-            print(frame.pts)
         self.assert_presentation_time_stamps(
             filename, 1, [frame.pts for frame in filtered_video.frames[-8:]], 0.25
         )
@@ -314,7 +308,7 @@ class SceneMapWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record(self.file_name("MapWidget"))
+        recording_file = self.record(f"{self.name}.mp4")
         self.assert_map(recording_file, "small", SMALL_MAP_CROP)
         self.assert_map(recording_file, "large", LARGE_MAP_CROP)
         self.assert_black_background(recording_file)
@@ -360,7 +354,7 @@ class ScenePngTuberWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record(self.file_name("PngTuberWidget"))
+        recording_file = self.record(f"{self.name}.mp4")
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 
@@ -389,7 +383,7 @@ class SceneVTuberWidget(WidgetTestCase):
         )
 
     def run(self):
-        recording_file = self.record(self.file_name("VTuberWidget"))
+        recording_file = self.record(f"{self.name}.mp4")
         self.assert_widget_rendered(recording_file, TUBER_CROP)
         self.assert_black_background(recording_file)
 

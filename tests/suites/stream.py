@@ -1,11 +1,9 @@
-import logging
 from contextlib import contextmanager
 from pathlib import Path
 
 from utils.config import rist_listener_url
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegServer
-from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import AudioCodec
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import SceneName
@@ -15,8 +13,6 @@ from utils.moblin import Moblin
 from utils.test_case import TestCase
 from utils.utils import FILES_DIR
 from utils.utils import format_generic_stream_url_stream_name
-
-LOGGER = logging.getLogger(__name__)
 
 
 class StreamTestCase(TestCase):
@@ -30,7 +26,6 @@ class StreamTestCase(TestCase):
                         **stream,
                     }
                 ],
-                "scenes": [FRONT_SCENE_SETTINGS],
             }
         )
 

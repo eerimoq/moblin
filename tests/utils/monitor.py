@@ -302,6 +302,7 @@ class Monitor:
         self._traffic_shaping = traffic_shaping
         self._start_time = time.monotonic()
         self._next_log_time = time.monotonic()
+        self._previous_poll_time: float | None = None
         self._previous_sample: Sample | None = None
         self._previous_publisher: tuple[str, int] | None = None
         self.counters = Counters(source_restarts={name: 0 for name in source_names})
@@ -347,8 +348,9 @@ class Monitor:
         self._unreachable.update(now, False, "")
         sample = self._create_sample(status)
         self._update_statistics(sample)
-        self._update_counters(sample)
+        self._update_counters(sample, now)
         self._previous_sample = sample
+        self._previous_poll_time = now
         self._check(now, sample)
         self._check_stream_content(now, sample)
         if time.monotonic() >= self._next_log_time:
@@ -570,8 +572,11 @@ class Monitor:
             self.first_ram_mb = sample.ram_mb
         self.last_ram_mb = sample.ram_mb
 
-    def _update_counters(self, sample: Sample):
-        self.counters.thermal_states[sample.thermal_state] += 1
+    def _update_counters(self, sample: Sample, now: float):
+        if self._previous_poll_time is not None:
+            self.counters.thermal_states[sample.thermal_state] += (
+                now - self._previous_poll_time
+            )
         previous_sample = self._previous_sample
         if previous_sample is None:
             return
@@ -644,7 +649,7 @@ def get_message(status, name: str) -> str:
 def parse_system_monitor(message: str) -> tuple[float, float]:
     parts = message.split()
     if len(parts) != 3:
-        raise MonitorError(f"Failed to parse system minitor: {message}")
+        raise MonitorError(f"Failed to parse system monitor: {message}")
     cpu_percent = float(parts[0].rstrip("%").replace(",", "."))
     ram_mb = float(parts[1].replace(",", "."))
     return cpu_percent, ram_mb

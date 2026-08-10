@@ -7,11 +7,11 @@ from dataclasses import replace
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
-from utils.config import TESTER_RTSP_PORT
 from utils.config import TESTER_SRT_PORT
 from utils.config import TESTER_WEBRTC_PORT
 from utils.config import TESTER_WEBRTC_UDP_PORT
 from utils.config import Config
+from utils.config import rtsp_reader_url
 from utils.config import srt_reader_url
 from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
@@ -21,6 +21,7 @@ from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import Resolution
+from utils.generate_device_settings import mic_id
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
@@ -128,7 +129,7 @@ class StabilityFourIngestsOneStream(TestCase):
                         "overrideMic": True,
                         "cameraPosition": CameraPosition.RTMP,
                         "rtmpCameraId": RTMP_STREAM_ID,
-                        "micId": f"{RTMP_STREAM_ID} 0",
+                        "micId": mic_id(RTMP_STREAM_ID),
                         "widgets": [
                             scene_widget_settings(
                                 SRT_WIDGET_ID,
@@ -297,7 +298,7 @@ class StabilityFourIngestsOneStream(TestCase):
                 name="WHEP",
                 command=self._create_source(
                     FfmpegRtspTestStream,
-                    f"rtsp://localhost:{TESTER_RTSP_PORT}/{WHEP_PATH}",
+                    rtsp_reader_url(WHEP_PATH),
                 ),
             ),
         ]

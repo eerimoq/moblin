@@ -14,7 +14,8 @@ from enum import StrEnum
 from pathlib import Path
 
 from .config import Config
-from .utils import log_output
+from .process import log_output
+from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 
@@ -339,12 +340,12 @@ class TrafficShaper:
         )
         log_output(self._control_master.stdout, LOGGER)
         log_output(self._control_master.stderr, LOGGER)
-        end_time = time.monotonic() + CONTROL_MASTER_TIMEOUT
-        while time.monotonic() < end_time:
-            if self._execute("true", check=False).returncode == 0:
-                return
-            time.sleep(0.5)
-        raise Exception(f"Timeout connecting to the traffic shaper {self._ssh_host}")
+        wait_until(
+            lambda: self._execute("true", check=False).returncode == 0,
+            f"a connection to the traffic shaper {self._ssh_host}",
+            timeout=CONTROL_MASTER_TIMEOUT,
+            interval=0.5,
+        )
 
     def _check_dependencies(self):
         missing_dependencies = []

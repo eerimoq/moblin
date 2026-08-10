@@ -2,6 +2,7 @@ import json
 import logging
 import re
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -21,14 +22,16 @@ from .config import TESTER_RTSP_PORT
 from .config import TESTER_SRT_PORT
 from .config import TESTER_WEBRTC_PORT
 from .config import WEB_REMOTE_CONTROL_PORT
+from .config import WHIP_SERVER_PORT
 from .config import Capability
 from .config import Config
 from .generate_device_settings import SceneName
 from .generate_device_settings import base_settings
 from .generate_device_settings import create_settings_file
+from .process import ManagedProcess
 from .utils import FILES_DIR
 from .utils import Range
-from .utils import log_output
+from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
@@ -108,18 +111,9 @@ class Moblin:
         self.buffered_video_buffers = BufferedVideoBuffers()
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
-        self._server = None
-        self.ip_address = config.moblin_ip_address()
-        self._tester_ip_address = config.tester_ip_address()
-        self._tester_media_ip_address = self._tester_ip_address
-        self._device_media_ip_address = self.ip_address
-        self._capabilities = config.capabilities()
-        self._moving_picture = moving_picture
-
-    def __enter__(self):
-        self._server = subprocess.Popen(
+        self._server = ManagedProcess(
             [
-                "python",
+                sys.executable,
                 "-u",
                 "-m",
                 "moblin_assistant",
@@ -129,34 +123,30 @@ class Moblin:
                 "--password",
                 "1234",
             ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        log_output(
-            self._server.stdout,
             LOGGER_ASSISTANT,
             observer=self._handle_log_entry,
+            ready=self._wait_until_streamer_is_connected,
         )
-        log_output(self._server.stderr, LOGGER_ASSISTANT)
-        try:
-            self._wait_until_streamer_is_connected()
-        except BaseException:
-            self._server.kill()
-            self._server.wait()
+        self.ip_address = config.moblin_ip_address()
+        self._tester_ip_address = config.tester_ip_address()
+        self._tester_media_ip_address = self._tester_ip_address
+        self._device_media_ip_address = self.ip_address
+        self._capabilities = config.capabilities()
+        self._moving_picture = moving_picture
+
+    def __enter__(self):
+        self._server.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self._server is not None:
-            self._server.kill()
-            self._server.wait()
+        self._server.stop()
 
     def _handle_log_entry(self, entry: str):
         self.video_decode_errors.handle_log_entry(entry)
         self.buffered_video_buffers.handle_log_entry(entry)
 
     def import_settings(self, overrides, files: dict[str, Path] | None = None):
-        settings = base_settings(self.config.config_toml)
+        settings = base_settings(self.config)
         settings.update(overrides)
         with tempfile.TemporaryDirectory() as settings_dir:
             settings_file = Path(settings_dir) / "settings.zip"
@@ -242,6 +232,12 @@ class Moblin:
     def ingest_srt_url(self, stream_id: str = "1") -> str:
         return f"srt://{self._device_media_ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
 
+    def ingest_whip_url(self, stream_key: str = "1") -> str:
+        return (
+            f"http://{self._device_media_ip_address}:{WHIP_SERVER_PORT}"
+            f"/whip/stream/{stream_key}"
+        )
+
     def ingest_rist_url(self, virtual_destination_port: int = 1) -> str:
         return (
             f"rist://{self._device_media_ip_address}:{RIST_SERVER_PORT}"
@@ -261,42 +257,39 @@ class Moblin:
         number_of_ingests,
         timeout: float = 60,
     ):
-        accumulated_total_bytes = 0
+        accumulated_total_bytes = 0.0
         previous_total_bytes = self.get_ingests_status().total_bytes
-        end_time = time.monotonic() + timeout
-        while time.monotonic() < end_time:
-            time.sleep(1)
+
+        def check() -> bool:
+            nonlocal accumulated_total_bytes, previous_total_bytes
             status = self.get_ingests_status()
-            total_bytes_delta = status.total_bytes - previous_total_bytes
-            if total_bytes_delta > 0:
-                accumulated_total_bytes += total_bytes_delta
+            delta = status.total_bytes - previous_total_bytes
+            if delta > 0:
+                accumulated_total_bytes += delta
             previous_total_bytes = status.total_bytes
-            if status.bitrate < bitrate.minimum or status.bitrate > bitrate.maximum:
-                continue
-            if accumulated_total_bytes < total_bytes:
-                continue
-            if status.number_of_ingests != number_of_ingests:
-                continue
-            return
-        raise Exception("Timeout waiting for ingests to reach wanted values")
+            return (
+                bitrate.minimum <= status.bitrate <= bitrate.maximum
+                and accumulated_total_bytes >= total_bytes
+                and status.number_of_ingests == number_of_ingests
+            )
+
+        wait_until(check, "ingests to reach wanted values", timeout=timeout)
 
     def wait_for_bitrate(
-        self, minimim_bitrate, maximum_bitrate, multi_streaming, total_bytes
+        self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes
     ):
-        end_time = time.monotonic() + 60
-        while time.monotonic() < end_time:
-            time.sleep(1)
-            bitrate_status = self.get_status_top_right()["bitrate"]["message"]
-            status = parse_bitrate_status(bitrate_status)
-            if status is not None:
-                if status.bitrate < minimim_bitrate or status.bitrate > maximum_bitrate:
-                    continue
-                if status.multi_streaming != multi_streaming:
-                    continue
-                if status.total_bytes < total_bytes:
-                    continue
-                return
-        raise Exception("Timeout waiting for bitrate to reach wanted value")
+        def check() -> bool:
+            status = parse_bitrate_status(
+                self.get_status_top_right()["bitrate"]["message"]
+            )
+            return (
+                status is not None
+                and minimum_bitrate <= status.bitrate <= maximum_bitrate
+                and status.multi_streaming == multi_streaming
+                and status.total_bytes >= total_bytes
+            )
+
+        wait_until(check, "bitrate to reach wanted value", timeout=60)
 
     def get_status(self):
         return json.loads(self._execute("get_status"))
@@ -329,16 +322,14 @@ class Moblin:
             self._device_name,
             self._remote_control_port,
         )
-        end_time = time.monotonic() + 60
-        while time.monotonic() < end_time:
-            try:
-                self.ping()
-                LOGGER.info("Remote control streamer connected")
-                time.sleep(3)
-                return
-            except Exception:
-                time.sleep(1)
-        raise Exception("Timeout waiting for streamer to connect")
+
+        def check() -> bool:
+            self.ping()
+            return True
+
+        wait_until(check, "streamer to connect", timeout=60, ignore_errors=True)
+        LOGGER.info("Remote control streamer connected")
+        time.sleep(3)
 
 
 @dataclass

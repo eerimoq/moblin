@@ -18,6 +18,7 @@ TESTER_SRT_PORT = 8890
 TESTER_WEBRTC_PORT = 8889
 TESTER_WEBRTC_UDP_PORT = 8189
 MEDIAMTX_API_PORT = 9997
+WEB_SERVER_PORT = 6967
 
 
 class Capability(StrEnum):
@@ -41,6 +42,10 @@ def srt_listener_url(
 
 def srt_reader_url(path: str, port: int = TESTER_SRT_PORT) -> str:
     return f"srt://localhost:{port}?streamid=read:{path}"
+
+
+def rtsp_reader_url(path: str, port: int = TESTER_RTSP_PORT) -> str:
+    return f"rtsp://localhost:{port}/{path}"
 
 
 def rist_listener_url(port: int = TESTER_RIST_PORT) -> str:

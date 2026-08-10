@@ -1,15 +1,12 @@
-import logging
 import time
 
 from utils.config import Capability
 from utils.ffmpeg import FfmpegVideoCodec
-from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import Resolution
 from utils.generate_device_settings import VideoCodec
 from utils.moblin import Moblin
 from utils.test_case import TestCase
 
-LOGGER = logging.getLogger(__name__)
 FFMPEG_VIDEO_CODECS = {
     VideoCodec.H264: FfmpegVideoCodec.H264,
     VideoCodec.H265: FfmpegVideoCodec.HEVC,
@@ -42,16 +39,12 @@ class Record(TestCase):
                         "recording": {"videoCodec": self._video_codec},
                     }
                 ],
-                "scenes": [FRONT_SCENE_SETTINGS],
-                "widgets": [],
             }
         )
 
     def run(self):
         time.sleep(1)
-        recording_file = self.moblin.record(
-            10, f"Record-{self._video_codec.name}-{self._resolution}@{self._fps}.mp4"
-        )
+        recording_file = self.moblin.record(10, f"{self.name}.mp4")
         width, height = self._resolution.size()
         self.assert_recording(
             recording_file,

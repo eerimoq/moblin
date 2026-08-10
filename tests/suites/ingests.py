@@ -1,12 +1,12 @@
-import logging
+from pathlib import Path
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTMP_PORT
-from utils.config import TESTER_RTSP_PORT
 from utils.config import WHIP_SERVER_PORT
+from utils.config import rtsp_reader_url
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
@@ -14,6 +14,7 @@ from utils.ffmpeg import FfmpegWhipTestStream
 from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import CameraPosition
+from utils.generate_device_settings import mic_id
 from utils.generate_device_settings import uuid
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
@@ -21,7 +22,6 @@ from utils.moblin import Recorder
 from utils.test_case import TestCase
 from utils.utils import Range
 
-LOGGER = logging.getLogger(__name__)
 RTMP_STREAM_ID = uuid()
 RTSP_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
@@ -37,10 +37,20 @@ class IngestTestCase(TestCase):
             overrides={
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [scene | {"enabled": True, "overrideMic": True}],
-                "widgets": [],
                 **overrides,
             }
         )
+
+    def record_ingest(self, startup_delay: float = 1) -> Path:
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        self.wait_for_ingest_stream_started(startup_delay=startup_delay)
+        with recorder:
+            self.moblin.wait_for_ingests(
+                bitrate=Range(7_000_000, 9_000_000),
+                total_bytes=10_000_000,
+                number_of_ingests=1,
+            )
+        return recorder.recording
 
 
 class IngestRtmpServer(IngestTestCase):
@@ -51,7 +61,7 @@ class IngestRtmpServer(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.RTMP,
                 "rtmpCameraId": RTMP_STREAM_ID,
-                "micId": f"{RTMP_STREAM_ID} 0",
+                "micId": mic_id(RTMP_STREAM_ID),
             },
             rtmpServer={
                 "enabled": True,
@@ -61,17 +71,9 @@ class IngestRtmpServer(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegTestStream(url=self.moblin.ingest_rtmp_url())
-        recorder = Recorder(self.moblin, "IngestRtmpServer.mp4")
-        with stream:
-            self.wait_for_ingest_stream_started()
-            with recorder:
-                self.moblin.wait_for_ingests(
-                    bitrate=Range(7_000_000, 9_000_000),
-                    total_bytes=10_000_000,
-                    number_of_ingests=1,
-                )
-        self.assert_recording(recorder.recording, has_audio_time_codes=True)
+        with FfmpegTestStream(url=self.moblin.ingest_rtmp_url()):
+            recording = self.record_ingest()
+        self.assert_recording(recording, has_audio_time_codes=True)
 
 
 class IngestSrtServer(IngestTestCase):
@@ -82,7 +84,7 @@ class IngestSrtServer(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.SRTLA,
                 "srtlaCameraId": SRT_STREAM_ID,
-                "micId": f"{SRT_STREAM_ID} 0",
+                "micId": mic_id(SRT_STREAM_ID),
             },
             srtlaServer={
                 "enabled": True,
@@ -96,35 +98,27 @@ class IngestSrtServer(IngestTestCase):
             url=self.moblin.ingest_srt_url(),
             transport_format=TransportFormat.MPEGTS,
         )
-        recorder = Recorder(self.moblin, "IngestSrtServer.mp4")
         with stream:
-            self.wait_for_ingest_stream_started()
-            with recorder:
-                self.moblin.wait_for_ingests(
-                    bitrate=Range(7_000_000, 9_000_000),
-                    total_bytes=10_000_000,
-                    number_of_ingests=1,
-                )
-        self.assert_recording(recorder.recording)
+            recording = self.record_ingest()
+        self.assert_recording(recording)
 
 
 class IngestSrtClient(IngestTestCase):
     """Stream to an SRT client ingest."""
 
     def setup(self):
-        url = self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT)
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.SRT_CLIENT,
                 "srtClientCameraId": SRT_CLIENT_STREAM_ID,
-                "micId": f"{SRT_CLIENT_STREAM_ID} 0",
+                "micId": mic_id(SRT_CLIENT_STREAM_ID),
             },
             srtClient={
                 "streams": [
                     {
                         "id": SRT_CLIENT_STREAM_ID,
                         "name": "1",
-                        "url": url,
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT),
                         "enabled": True,
                     }
                 ],
@@ -136,16 +130,9 @@ class IngestSrtClient(IngestTestCase):
             url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
             transport_format=TransportFormat.MPEGTS,
         )
-        recorder = Recorder(self.moblin, "IngestSrtClient.mp4")
         with stream:
-            self.wait_for_ingest_stream_started()
-            with recorder:
-                self.moblin.wait_for_ingests(
-                    bitrate=Range(7_000_000, 9_000_000),
-                    total_bytes=10_000_000,
-                    number_of_ingests=1,
-                )
-        self.assert_recording(recorder.recording)
+            recording = self.record_ingest()
+        self.assert_recording(recording)
 
 
 class IngestRtspClientH264(IngestTestCase):
@@ -156,7 +143,7 @@ class IngestRtspClientH264(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.RTSP,
                 "rtspCameraId": RTSP_STREAM_ID,
-                "micId": f"{RTSP_STREAM_ID} 0",
+                "micId": mic_id(RTSP_STREAM_ID),
             },
             rtspClient={
                 "streams": [
@@ -171,18 +158,11 @@ class IngestRtspClientH264(IngestTestCase):
         )
 
     def run(self):
-        recorder = Recorder(self.moblin, "IngestRtspClientH264.mp4")
         with MediaMtx() as mediamtx:
             with FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"):
                 mediamtx.wait_for_rtsp_stream(2_000_000)
-                self.wait_for_ingest_stream_started(startup_delay=5)
-                with recorder:
-                    self.moblin.wait_for_ingests(
-                        bitrate=Range(7_000_000, 9_000_000),
-                        total_bytes=10_000_000,
-                        number_of_ingests=1,
-                    )
-        self.assert_recording(recorder.recording)
+                recording = self.record_ingest(startup_delay=5)
+        self.assert_recording(recording)
 
 
 class IngestRistServer(IngestTestCase):
@@ -193,7 +173,7 @@ class IngestRistServer(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.RIST,
                 "ristCameraId": RIST_STREAM_ID,
-                "micId": f"{RIST_STREAM_ID} 0",
+                "micId": mic_id(RIST_STREAM_ID),
             },
             ristServer={
                 "enabled": True,
@@ -209,16 +189,9 @@ class IngestRistServer(IngestTestCase):
             url=self.moblin.ingest_rist_url(),
             transport_format=TransportFormat.MPEGTS,
         )
-        recorder = Recorder(self.moblin, "IngestRistServer.mp4")
         with stream:
-            self.wait_for_ingest_stream_started(startup_delay=5)
-            with recorder:
-                self.moblin.wait_for_ingests(
-                    bitrate=Range(7_000_000, 9_000_000),
-                    total_bytes=10_000_000,
-                    number_of_ingests=1,
-                )
-        self.assert_recording(recorder.recording)
+            recording = self.record_ingest(startup_delay=5)
+        self.assert_recording(recording)
 
 
 class IngestWhipServer(IngestTestCase):
@@ -229,7 +202,7 @@ class IngestWhipServer(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.WHIP,
                 "whipCameraId": WHIP_STREAM_ID,
-                "micId": f"{WHIP_STREAM_ID} 0",
+                "micId": mic_id(WHIP_STREAM_ID),
             },
             whipServer={
                 "enabled": True,
@@ -246,19 +219,9 @@ class IngestWhipServer(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegWhipTestStream(
-            url=f"http://{self.moblin.ip_address}:{WHIP_SERVER_PORT}/whip/stream/1",
-        )
-        recorder = Recorder(self.moblin, "IngestWhipServer.mp4")
-        with stream:
-            self.wait_for_ingest_stream_started(startup_delay=5)
-            with recorder:
-                self.moblin.wait_for_ingests(
-                    bitrate=Range(7_000_000, 9_000_000),
-                    total_bytes=10_000_000,
-                    number_of_ingests=1,
-                )
-        self.assert_recording(recorder.recording, channels=1)
+        with FfmpegWhipTestStream(url=self.moblin.ingest_whip_url()):
+            recording = self.record_ingest(startup_delay=5)
+        self.assert_recording(recording)
 
 
 class IngestWhepClient(IngestTestCase):
@@ -269,7 +232,7 @@ class IngestWhepClient(IngestTestCase):
             scene={
                 "cameraPosition": CameraPosition.WHEP,
                 "whepCameraId": WHEP_STREAM_ID,
-                "micId": f"{WHEP_STREAM_ID} 0",
+                "micId": mic_id(WHEP_STREAM_ID),
             },
             whepClient={
                 "streams": [
@@ -285,19 +248,11 @@ class IngestWhepClient(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegRtspTestStream(url=f"rtsp://localhost:{TESTER_RTSP_PORT}/1")
-        recorder = Recorder(self.moblin, "IngestWhepClient.mp4")
         with MediaMtx() as mediamtx:
-            with stream:
+            with FfmpegRtspTestStream(url=rtsp_reader_url("1")):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
-                self.wait_for_ingest_stream_started(startup_delay=5)
-                with recorder:
-                    self.moblin.wait_for_ingests(
-                        bitrate=Range(7_000_000, 9_000_000),
-                        total_bytes=10_000_000,
-                        number_of_ingests=1,
-                    )
-        self.assert_recording(recorder.recording, channels=1)
+                recording = self.record_ingest(startup_delay=5)
+        self.assert_recording(recording)
 
 
 def tests(moblin: Moblin):

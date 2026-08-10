@@ -23,6 +23,7 @@ from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
 from .utils import Range
+from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
@@ -132,12 +133,7 @@ class TestCase(systest.TestCase):
         self.assert_greater(image.non_black_ratio(), minimum_ratio)
 
     def wait_until(self, check: Callable[[], bool]):
-        end_time = time.monotonic() + 15
-        while time.monotonic() < end_time:
-            if check():
-                return
-            time.sleep(0.1)
-        raise Exception("Timeout waiting for condition to be true")
+        wait_until(check, "condition to be true", timeout=15, interval=0.1)
 
     def _assert_video(
         self,

@@ -1,6 +1,6 @@
-import logging
 import subprocess
-import threading
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
@@ -18,25 +18,23 @@ class Range:
     maximum: float
 
 
-def _log_stream(stream, logger: Logger, log_level, observer):
-    try:
-        for line in stream:
-            line = line.rstrip()
-            logger.log(log_level(line), line)
-            if observer is not None:
-                observer(line)
-    except Exception:
-        pass
-
-
-def _log_level(_line: str) -> int:
-    return logging.DEBUG
-
-
-def log_output(stream, logger, log_level=_log_level, observer=None):
-    threading.Thread(
-        target=_log_stream, args=(stream, logger, log_level, observer), daemon=True
-    ).start()
+def wait_until(
+    check: Callable[[], bool],
+    description: str,
+    timeout: float = 30,
+    interval: float = 1,
+    ignore_errors: bool = False,
+):
+    end_time = time.monotonic() + timeout
+    while time.monotonic() < end_time:
+        try:
+            if check():
+                return
+        except Exception:
+            if not ignore_errors:
+                raise
+        time.sleep(interval)
+    raise Exception(f"Timeout waiting for {description}")
 
 
 def manual_validation(logger: Logger, message: str):

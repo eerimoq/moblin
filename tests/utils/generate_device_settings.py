@@ -6,9 +6,9 @@ from uuid import uuid7
 
 import requests
 
-from utils.config import WEB_REMOTE_CONTROL_PORT
-from utils.config import Config
-from utils.utils import TEST_DIR
+from .config import WEB_REMOTE_CONTROL_PORT
+from .config import Config
+from .utils import TEST_DIR
 
 MODELS_BASE_URL = "https://mys-lang.org/moblin-test"
 CACHE_DIR = TEST_DIR / "cache"
@@ -104,6 +104,10 @@ def uuid() -> str:
     return str(uuid7()).upper()
 
 
+def mic_id(stream_id: str) -> str:
+    return f"{stream_id} 0"
+
+
 def download_model(name: str) -> Path:
     path = CACHE_DIR / name
     if not path.exists():
@@ -154,8 +158,16 @@ def text_widget_settings(name: str, widget_id: str, text):
     }
 
 
-def base_settings(config_toml: Path):
-    config = Config(config_toml, "")
+def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": WidgetType.BROWSER,
+        "browser": {"url": url, "width": 1920, "height": 1080, **browser},
+    }
+
+
+def base_settings(config: Config):
     return {
         "scenes": [FRONT_SCENE_SETTINGS],
         "remoteControl": {
