@@ -34,6 +34,9 @@ RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
 RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode frame")
+RE_BUFFERED_VIDEO_BUFFERS = re.compile(
+    r"buffered-video: (.+?): (\d+) duplicated and (\d+) dropped buffers"
+)
 BITRATE_UNITS = {
     "bps": 1,
     "kbps": 1_000,
@@ -68,11 +71,39 @@ class VideoDecodeErrors:
             return dict(self._counts)
 
 
+@dataclass
+class BufferedVideoBuffersCounts:
+    duplicated: dict[str, int]
+    dropped: dict[str, int]
+
+
+class BufferedVideoBuffers:
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._duplicated: defaultdict[str, int] = defaultdict(int)
+        self._dropped: defaultdict[str, int] = defaultdict(int)
+
+    def handle_log_entry(self, entry: str):
+        mo = RE_BUFFERED_VIDEO_BUFFERS.search(entry)
+        if mo is None:
+            return
+        with self._lock:
+            self._duplicated[mo.group(1)] += int(mo.group(2))
+            self._dropped[mo.group(1)] += int(mo.group(3))
+
+    def counts(self) -> BufferedVideoBuffersCounts:
+        with self._lock:
+            return BufferedVideoBuffersCounts(
+                dict(self._duplicated), dict(self._dropped)
+            )
+
+
 class Moblin:
     def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
         self.config = config
         self.arduino = arduino
         self.video_decode_errors = VideoDecodeErrors()
+        self.buffered_video_buffers = BufferedVideoBuffers()
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
         self._server = None
@@ -103,7 +134,7 @@ class Moblin:
         log_output(
             self._server.stdout,
             LOGGER_ASSISTANT,
-            observer=self.video_decode_errors.handle_log_entry,
+            observer=self._handle_log_entry,
         )
         log_output(self._server.stderr, LOGGER_ASSISTANT)
         try:
@@ -117,6 +148,10 @@ class Moblin:
         if self._server is not None:
             self._server.kill()
             self._server.wait()
+
+    def _handle_log_entry(self, entry: str):
+        self.video_decode_errors.handle_log_entry(entry)
+        self.buffered_video_buffers.handle_log_entry(entry)
 
     def import_settings(self, overrides, files: dict[str, Path] | None = None):
         settings = base_settings(self.config.config_toml)

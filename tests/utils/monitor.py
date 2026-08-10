@@ -272,6 +272,8 @@ class Counters:
     receiver_reconnects: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
     video_decode_errors: dict[str, float] = field(default_factory=dict)
+    duplicated_video_buffers: dict[str, float] = field(default_factory=dict)
+    dropped_video_buffers: dict[str, float] = field(default_factory=dict)
     failed_status_requests: int = 0
     thermal_states: defaultdict[str, float] = field(
         default_factory=lambda: defaultdict(float)
@@ -335,6 +337,7 @@ class Monitor:
     def poll(self):
         now = time.monotonic()
         self._update_video_decode_errors()
+        self._update_buffered_video_buffers()
         try:
             status = self._moblin.get_status()
         except Exception as error:
@@ -364,6 +367,28 @@ class Monitor:
                     count,
                 )
         self.counters.video_decode_errors = dict(counts)
+
+    def _update_buffered_video_buffers(self):
+        counts = self._moblin.buffered_video_buffers.counts()
+        for name in sorted(set(counts.duplicated) | set(counts.dropped)):
+            duplicated = counts.duplicated.get(name, 0)
+            dropped = counts.dropped.get(name, 0)
+            new_duplicated = duplicated - self.counters.duplicated_video_buffers.get(
+                name, 0
+            )
+            new_dropped = dropped - self.counters.dropped_video_buffers.get(name, 0)
+            if new_duplicated > 0 or new_dropped > 0:
+                LOGGER.warning(
+                    "Buffered video '%s' duplicated %d and dropped %d frames "
+                    "(%d and %d in total).",
+                    name,
+                    new_duplicated,
+                    new_dropped,
+                    duplicated,
+                    dropped,
+                )
+        self.counters.duplicated_video_buffers = dict(counts.duplicated)
+        self.counters.dropped_video_buffers = dict(counts.dropped)
 
     def source_restarted(self, name: str):
         self.counters.source_restarts[name] += 1
@@ -401,10 +426,19 @@ class Monitor:
             "  Video decode errors: %s.",
             format_counts(self.counters.video_decode_errors),
         )
+        LOGGER.info(
+            "  Duplicated video frames: %s.",
+            format_counts(self.counters.duplicated_video_buffers),
+        )
+        LOGGER.info(
+            "  Dropped video frames: %s.",
+            format_counts(self.counters.dropped_video_buffers),
+        )
 
     def report(self):
         now = time.monotonic()
         self._update_video_decode_errors()
+        self._update_buffered_video_buffers()
         for deviation in self._deviations:
             deviation.stop(now)
         counters = self.counters
@@ -442,6 +476,14 @@ class Monitor:
         LOGGER.info(
             "Video decode errors:        %s",
             format_counts(counters.video_decode_errors),
+        )
+        LOGGER.info(
+            "Duplicated video frames:    %s",
+            format_counts(counters.duplicated_video_buffers),
+        )
+        LOGGER.info(
+            "Dropped video frames:       %s",
+            format_counts(counters.dropped_video_buffers),
         )
         LOGGER.info("Failed status requests:     %d", counters.failed_status_requests)
         LOGGER.info(
