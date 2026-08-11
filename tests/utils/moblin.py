@@ -1,11 +1,10 @@
-import json
 import logging
 import re
-import subprocess
 import sys
 import tempfile
 import threading
 import time
+from base64 import b64encode
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -150,15 +149,17 @@ class Moblin:
             settings_file = Path(settings_dir) / "settings.zip"
             create_settings_file(settings, settings_file, files)
             try:
-                self._execute("import_settings", settings_file)
-            except subprocess.CalledProcessError:
+                self._request(
+                    {"importSettings": {"data": b64encode(settings_file.read_bytes()).decode("utf-8")}}
+                )
+            except Exception:
                 time.sleep(2)
 
     def set_scene(self, name: SceneName):
-        self._execute("set_scene", name)
+        self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 
     def set_talkback_mic(self, name):
-        self._execute("set_talkback_mic", name)
+        self._request({"setTalkbackMic": {"id": self._get_settings_id("mics", name)}})
 
     def set_muted(self, on: bool):
         self._request({"setMute": {"on": on}})
@@ -174,16 +175,16 @@ class Moblin:
         )
 
     def go_live(self):
-        self._execute("go_live")
+        self._request({"setLive": {"on": True}})
 
     def end(self):
-        self._execute("end")
+        self._request({"setLive": {"on": False}})
 
     def start_recording(self):
-        self._execute("start_recording")
+        self._request({"setRecord": {"on": True}})
 
     def stop_recording(self):
-        self._execute("stop_recording")
+        self._request({"setRecord": {"on": False}})
 
     def record(self, duration, filename) -> Path:
         return Recorder(self, filename).record(duration)
@@ -203,7 +204,7 @@ class Moblin:
         return recording_file
 
     def ping(self):
-        self._execute("get_settings")
+        self._get_settings()
 
     def use_media_relay(self, ip_address: str):
         self._tester_media_ip_address = ip_address
@@ -292,7 +293,7 @@ class Moblin:
         wait_until(check, "bitrate to reach wanted value", timeout=60)
 
     def get_status(self):
-        return json.loads(self._execute("get_status"))
+        return self._request({"getStatus": {}})["data"]["getStatus"]
 
     def get_status_top_right(self):
         return self.get_status()["topRight"]
@@ -325,19 +326,14 @@ class Moblin:
     def _request(self, data):
         return make_client_request(self._remote_control_port, data)
 
-    def _execute(self, command, *args):
-        return subprocess.run(
-            [
-                "moblin_assistant",
-                "--port",
-                str(self._remote_control_port),
-                command,
-                *args,
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout
+    def _get_settings(self):
+        return self._request({"getSettings": {}})["data"]["getSettings"]["data"]
+
+    def _get_settings_id(self, kind: str, name: str) -> str:
+        for item in self._get_settings()[kind]:
+            if item["name"] == name:
+                return item["id"]
+        raise Exception(f"Unknown {kind} item {name}")
 
     def _wait_until_streamer_is_connected(self):
         LOGGER.info(
