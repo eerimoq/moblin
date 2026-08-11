@@ -1179,6 +1179,7 @@ class Database: Codable, ObservableObject {
     var streamDecks: SettingsStreamDecks = .init()
     @Published var graphicsImplementation: SettingsGraphicsImplementation = .coreImage
     @Published var graphicsHighQualityDownsampling: Bool = false
+    @Published var ingestsSoftwareVideoDecoding: Bool = false
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
@@ -1301,6 +1302,7 @@ class Database: Codable, ObservableObject {
         case streamDecks
         case graphicsImplementation
         case graphicsHighQualityDownsampling
+        case ingestsSoftwareVideoDecoding
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1388,6 +1390,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.streamDecks, streamDecks)
         try container.encode(.graphicsImplementation, graphicsImplementation)
         try container.encode(.graphicsHighQualityDownsampling, graphicsHighQualityDownsampling)
+        try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
     }
 
     init() {}
@@ -1539,6 +1542,7 @@ class Database: Codable, ObservableObject {
         graphicsHighQualityDownsampling = container.decode(.graphicsHighQualityDownsampling,
                                                            Bool.self,
                                                            debug.highQualityDownsamplingToBeRemoved)
+        ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
     }
 }
 

@@ -30,6 +30,7 @@ extension Model {
                                     url: url,
                                     latency: stream.latencySeconds(),
                                     transport: stream.transport,
+                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
                                     delegate: self)
             client.start()
             ingests.rtsp.append(client)

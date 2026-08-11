@@ -21,6 +21,7 @@ class WhepClient: @unchecked Sendable {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
+    private let softwareDecoding: Bool
     private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
@@ -29,11 +30,18 @@ class WhepClient: @unchecked Sendable {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: any WhepClientDelegate) {
+    init(streamId: UUID,
+         url: URL,
+         latency: Double,
+         syncTimestamps: Bool,
+         softwareDecoding: Bool,
+         delegate: any WhepClientDelegate)
+    {
         self.streamId = streamId
         self.url = url
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
     }
 
@@ -75,6 +83,7 @@ class WhepClient: @unchecked Sendable {
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
+            softwareDecoding: softwareDecoding,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self

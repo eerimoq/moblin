@@ -53,6 +53,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
     let streamId: UUID
     private let latency: Double
     private let syncTimestamps: Bool
+    private let softwareDecoding: Bool
     private(set) var peerConnectionId: Int32 = -1
     weak var delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
@@ -77,6 +78,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
          streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
+         softwareDecoding: Bool,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
          delegate: any WebrtcIngestClientDelegate)
@@ -85,6 +87,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
         self.streamId = streamId
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.softwareDecoding = softwareDecoding
         self.iceServers = iceServers
         self.dispatchQueue = dispatchQueue
         targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
@@ -363,7 +366,9 @@ final class WebrtcIngestClient: @unchecked Sendable {
             return
         }
         if videoDecoder == nil {
-            videoDecoder = VideoDecoder(name: name, lockQueue: dispatchQueue)
+            videoDecoder = VideoDecoder(name: name,
+                                        lockQueue: dispatchQueue,
+                                        softwareDecoding: softwareDecoding)
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }

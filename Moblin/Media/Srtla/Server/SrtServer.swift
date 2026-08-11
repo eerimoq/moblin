@@ -7,11 +7,13 @@ class SrtServer: @unchecked Sendable {
     var acceptedStreamId: Atomic<String> = .init("")
     var running: Bool = false
     private let timecodesEnabled: Bool
+    private let softwareDecoding: Bool
     private let port: UInt16
     private let srtlaPatches: Bool
 
-    init(timecodesEnabled: Bool, port: UInt16, srtlaPatches: Bool) {
+    init(timecodesEnabled: Bool, softwareDecoding: Bool, port: UInt16, srtlaPatches: Bool) {
         self.timecodesEnabled = timecodesEnabled
+        self.softwareDecoding = softwareDecoding
         self.port = port
         self.srtlaPatches = srtlaPatches
     }
@@ -63,7 +65,10 @@ class SrtServer: @unchecked Sendable {
             DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
                 srtlaServer.connectedStreamIds.mutate { $0.append(streamId) }
                 srtlaServer.clientConnected(cameraId: cameraId, name: name)
-                SrtServerClient(server: self, cameraId: cameraId, timecodesEnabled: self.timecodesEnabled)
+                SrtServerClient(server: self,
+                                cameraId: cameraId,
+                                timecodesEnabled: self.timecodesEnabled,
+                                softwareDecoding: self.softwareDecoding)
                     .run(clientSocket: clientSocket)
                 srtlaServer.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
                 srtlaServer.clientDisconnected(cameraId: cameraId, name: name)

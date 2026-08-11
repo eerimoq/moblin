@@ -13,7 +13,8 @@ extension Model {
             ingests.srtla = SrtlaServer(
                 settings: database.srtlaServer,
                 delegate: self,
-                timecodesEnabled: isTimecodesEnabled()
+                timecodesEnabled: isTimecodesEnabled(),
+                softwareDecoding: database.ingestsSoftwareVideoDecoding
             )
             ingests.srtla?.start()
         }

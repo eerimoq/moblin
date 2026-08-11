@@ -26,15 +26,18 @@ class SrtClient: @unchecked Sendable {
     private var bitrateStats: Atomic<BitrateStats> = .init(.init())
     private let reconnectTimer = SimpleTimer(queue: srtClientQueue)
     private var reader: MpegTsReader
+    private let softwareDecoding: Bool
 
-    init(cameraId: UUID, url: URL, delegate: any SrtClientDelegate) {
+    init(cameraId: UUID, url: URL, softwareDecoding: Bool, delegate: any SrtClientDelegate) {
         self.cameraId = cameraId
         self.url = url
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         reader = MpegTsReader(
             name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
             targetLatency: srtClientLatency
         )
         reader.delegate = self
@@ -125,6 +128,7 @@ class SrtClient: @unchecked Sendable {
             name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
             targetLatency: srtClientLatency
         )
         reader.delegate = self

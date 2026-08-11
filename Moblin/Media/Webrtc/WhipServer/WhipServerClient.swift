@@ -23,6 +23,7 @@ final class WhipServerClient {
     init(streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
+         softwareDecoding: Bool,
          iceServers: [String],
          delegate: any WhipServerClientDelegate)
     {
@@ -33,6 +34,7 @@ final class WhipServerClient {
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
+            softwareDecoding: softwareDecoding,
             iceServers: iceServers,
             dispatchQueue: whipServerDispatchQueue,
             delegate: self

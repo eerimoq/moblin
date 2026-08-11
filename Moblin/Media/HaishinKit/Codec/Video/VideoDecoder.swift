@@ -9,6 +9,7 @@ class VideoDecoder: @unchecked Sendable {
     private var isRunning = false
     private let name: String
     private let lockQueue: DispatchQueue
+    private let softwareDecoding: Bool
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
@@ -19,9 +20,10 @@ class VideoDecoder: @unchecked Sendable {
         }
     }
 
-    init(name: String, lockQueue: DispatchQueue) {
+    init(name: String, lockQueue: DispatchQueue, softwareDecoding: Bool) {
         self.name = name
         self.lockQueue = lockQueue
+        self.softwareDecoding = softwareDecoding
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
@@ -90,11 +92,17 @@ class VideoDecoder: @unchecked Sendable {
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
         ]
+        var decoderSpecification: [NSString: AnyObject]?
+        if #available(iOS 17.0, *), softwareDecoding {
+            decoderSpecification = [
+                kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder: kCFBooleanFalse,
+            ]
+        }
         var session: VTDecompressionSession?
         let status = VTDecompressionSessionCreate(
             allocator: kCFAllocatorDefault,
             formatDescription: formatDescription,
-            decoderSpecification: nil,
+            decoderSpecification: decoderSpecification as CFDictionary?,
             imageBufferAttributes: attributes as CFDictionary?,
             outputCallback: nil,
             decompressionSessionOut: &session

@@ -335,7 +335,9 @@ private class RtpVideoProcessor: RtpProcessor {
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
-        decoder = VideoDecoder(name: "rtsp-client", lockQueue: rtspClientQueue)
+        decoder = VideoDecoder(name: "rtsp-client",
+                               lockQueue: rtspClientQueue,
+                               softwareDecoding: client.softwareDecoding)
         super.init()
         decoder.delegate = self
         decoder.startRunning(formatDescription: formatDescription)
@@ -592,6 +594,7 @@ class RtspClient: @unchecked Sendable {
     private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
+    fileprivate let softwareDecoding: Bool
     private let username: String?
     private let password: String?
     private let port: Int
@@ -614,10 +617,12 @@ class RtspClient: @unchecked Sendable {
          url: URL,
          latency: Double,
          transport: SettingsRtspTransport,
+         softwareDecoding: Bool,
          delegate: any RtspClientDelegate)
     {
         self.cameraId = cameraId
         self.latency = latency
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         transportType = transport
         username = url.user()

@@ -87,7 +87,9 @@ extension Model {
     func reloadRtmpServer() {
         stopRtmpServer()
         if database.rtmpServer.enabled {
-            ingests.rtmp = RtmpServer(settings: database.rtmpServer.clone(), delegate: self)
+            ingests.rtmp = RtmpServer(settings: database.rtmpServer.clone(),
+                                      softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      delegate: self)
             ingests.rtmp?.start()
         }
     }

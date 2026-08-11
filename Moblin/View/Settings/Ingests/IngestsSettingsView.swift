@@ -1,9 +1,8 @@
 import SwiftUI
 
 struct IngestsSettingsView: View {
-    // periphery: ignore
     let model: Model
-    let database: Database
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
@@ -24,6 +23,12 @@ struct IngestsSettingsView: View {
                     }
                     #endif
                 }
+            }
+            Section {
+                Toggle("Software video decoding", isOn: $database.ingestsSoftwareVideoDecoding)
+                    .onChange(of: database.ingestsSoftwareVideoDecoding) { _ in
+                        model.reloadIngests()
+                    }
             }
         }
         .navigationTitle("Ingests")
