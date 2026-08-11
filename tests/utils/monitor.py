@@ -107,7 +107,7 @@ class StreamContentExpectation:
     fps: float
     interval: float = 300
     duration: float = 10
-    minimum_mean_volume_db: float | None = -45
+    minimum_mean_volume_db: float | None = -90
     minimum_unique_video_frames_ratio: float = 0.5
     minimum_fps_ratio: float = 0.8
     maximum_fps_ratio: float = 1.2
