@@ -4,7 +4,6 @@ import libsrt
 class SrtServer: @unchecked Sendable {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
-    var acceptedStreamId: Atomic<String> = .init("")
     var running: Bool = false
     private let timecodesEnabled: Bool
     private let softwareDecoding: Bool
@@ -49,17 +48,17 @@ class SrtServer: @unchecked Sendable {
         while true {
             logger.info("srt-server: \(port): Waiting for client to connect.")
             let clientSocket = try accept()
+            let streamId = getStreamId(clientSocket)
             guard let srtlaServer,
                   let stream = srtlaServer.settings.streams
-                  .first(where: { $0.streamId == acceptedStreamId.value }),
-                  !srtlaServer.connectedStreamIds.value.contains(acceptedStreamId.value)
+                  .first(where: { $0.streamId == streamId }),
+                  !srtlaServer.connectedStreamIds.value.contains(streamId)
             else {
                 srt_close(clientSocket)
-                logger.info("srt-server: \(port): Client with stream id \(acceptedStreamId.value) denied.")
+                logger.info("srt-server: \(port): Client with stream id '\(streamId)' denied.")
                 continue
             }
             logger.info("srt-server: \(port): Accepted client \(stream.name).")
-            let streamId = acceptedStreamId.value
             let cameraId = stream.id
             let name = stream.camera()
             startBlockingThread(name: "com.eerimoq.Moblin.SrtClient") {
@@ -74,8 +73,16 @@ class SrtServer: @unchecked Sendable {
                 srtlaServer.clientDisconnected(cameraId: cameraId, name: name)
                 logger.info("srt-server: \(self.port): Closed client.")
             }
-            acceptedStreamId.mutate { $0 = "" }
         }
+    }
+
+    private func getStreamId(_ socket: SRTSOCKET) -> String {
+        var streamId = [CChar](repeating: 0, count: 513)
+        var size = Int32(512)
+        guard srt_getsockflag(socket, SRTO_STREAMID, &streamId, &size) != SRT_ERROR else {
+            return ""
+        }
+        return String(cString: streamId)
     }
 
     private func open() throws {
@@ -118,26 +125,7 @@ class SrtServer: @unchecked Sendable {
     }
 
     private func listen() throws {
-        let server = Unmanaged.passRetained(self).toOpaque()
-        var res = srt_listen_callback(
-            listenerSocket,
-            { server, _, _, _, streamIdIn in
-                guard let server, let streamIdIn else {
-                    return SRT_ERROR
-                }
-                let srtServer: SrtServer = Unmanaged.fromOpaque(server)
-                    .takeUnretainedValue()
-                let streamId = String(cString: streamIdIn)
-                srtServer.acceptedStreamId.mutate { $0 = streamId }
-                return 0
-            },
-            server
-        )
-        guard res != SRT_ERROR else {
-            throw "Listen callback failed: \(lastSrtSocketError())"
-        }
-        res = srt_listen(listenerSocket, 5)
-        guard res != SRT_ERROR else {
+        guard srt_listen(listenerSocket, 5) != SRT_ERROR else {
             throw "Listen failed: \(lastSrtSocketError())"
         }
     }
