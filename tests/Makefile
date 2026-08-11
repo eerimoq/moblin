@@ -8,6 +8,9 @@ test:
 stability:
 	python stability.py $(CONFIG_TOML) $(TEST_ARGS)
 
+stability-watch:
+	python watch.py grid
+
 generate-device-settings-clipboard:
 	python generate_device_settings.py $(CONFIG_TOML)
 

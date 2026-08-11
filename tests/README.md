@@ -73,6 +73,26 @@ related to the outgoing stream is left unmonitored.
 make stability TEST_ARGS="--no-stream"
 ```
 
+# Watch the stability test
+
+Show all graphs at once in a grid, updated live while the stability test is running. Two
+columns are used if the terminal is wide enough, otherwise one. Press `h` for help, and `q`
+to quit.
+
+```bash
+make stability-watch
+```
+
+Show a single graph, with the same keys.
+
+```bash
+python watch.py ram
+python watch.py cpu
+python watch.py video-decode-errors
+python watch.py duplicated-frames
+python watch.py dropped-frames
+```
+
 # Traffic shaping
 
 The stability test can simulate bad networks, with separate impairments for the outgoing

@@ -89,6 +89,9 @@ test:
 test-stability:
 	$(MAKE) $(TEST_MAKE_ARGS) stability
 
+test-stability-watch:
+	$(MAKE) $(TEST_MAKE_ARGS) stability-watch
+
 test-generate-device-settings-clipboard:
 	$(MAKE) $(TEST_MAKE_ARGS) generate-device-settings-clipboard
 
