@@ -97,7 +97,9 @@ class Impairment:
                 arguments += [f"{self.jitter_ms}ms", "distribution", "normal"]
         if self.loss_percent > 0:
             arguments += ["loss", f"{self.loss_percent}%"]
-        if self.rate is not None:
+        if self.rate is None:
+            arguments += ["rate", ROOT_RATE]
+        else:
             arguments += ["rate", f"{self.rate}bit"]
         return " ".join(arguments)
 
