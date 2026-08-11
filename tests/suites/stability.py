@@ -84,6 +84,13 @@ RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
 WHEP_STREAM_ID = uuid()
+SCENE_INGEST = Ingest.RTMP
+INGEST_STREAM_IDS = {
+    Ingest.RTMP: RTMP_STREAM_ID,
+    Ingest.SRT: SRT_STREAM_ID,
+    Ingest.RIST: RIST_STREAM_ID,
+    Ingest.WHEP: WHEP_STREAM_ID,
+}
 SRT_WIDGET_ID = uuid()
 RIST_WIDGET_ID = uuid()
 WHEP_WIDGET_ID = uuid()
@@ -97,7 +104,8 @@ class StabilityIngestsOneStream(TestCase):
     """The ingests given on the command line (RTMP, SRT, RIST and WHEP) and one
     outgoing SRT stream, all roughly 5 Mbps, active at the same time for 12 hours, or
     until the app crashes. All scenes and widgets are always configured, but the ingests
-    that are not streamed to are disabled. The outgoing stream can be disabled on the
+    that are not streamed to are disabled. The mic is the scene's ingest if enabled,
+    and otherwise the first enabled ingest. The outgoing stream can be disabled on the
     command line, leaving only the ingests active.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
@@ -153,7 +161,7 @@ class StabilityIngestsOneStream(TestCase):
                         "overrideMic": True,
                         "cameraPosition": CameraPosition.RTMP,
                         "rtmpCameraId": RTMP_STREAM_ID,
-                        "micId": mic_id(RTMP_STREAM_ID),
+                        "micId": mic_id(INGEST_STREAM_IDS[mic_ingest(self._ingests)]),
                         "widgets": [
                             scene_widget_settings(
                                 SRT_WIDGET_ID,
@@ -406,6 +414,12 @@ class StabilityIngestsOneStream(TestCase):
                 self._shaper.poll()
             monitor.poll()
             restart_dead_sources(monitor, sources)
+
+
+def mic_ingest(ingests: list[Ingest]) -> Ingest:
+    if SCENE_INGEST in ingests:
+        return SCENE_INGEST
+    return ingests[0]
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:
