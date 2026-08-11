@@ -59,6 +59,13 @@ make stability TEST_ARGS="--ingests rtmp"
 make stability TEST_ARGS="--ingests srt,whep"
 ```
 
+Give `--no-stream` to only run the ingests. The app never goes live, and everything
+related to the outgoing stream is left unmonitored.
+
+```bash
+make stability TEST_ARGS="--no-stream"
+```
+
 # Traffic shaping
 
 The stability test can simulate bad networks, with separate impairments for the outgoing

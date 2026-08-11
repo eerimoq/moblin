@@ -33,7 +33,11 @@ def create_suites(moblin, args):
         args.ingests_traffic_shaping_profile,
         args.ingests_traffic_shaping_parameters,
     )
-    return [stability.tests(moblin, args.ingests, 3600 * args.duration, shaper)]
+    return [
+        stability.tests(
+            moblin, args.ingests, not args.no_stream, 3600 * args.duration, shaper
+        )
+    ]
 
 
 def main():
@@ -50,6 +54,11 @@ def main():
         default=list(Ingest),
         help="Comma separated list of ingests to stream to, for example 'rtmp,whep' "
         "(default: all).",
+    )
+    parser.add_argument(
+        "--no-stream",
+        action="store_true",
+        help="Do not start the outgoing stream, only run the ingests.",
     )
     parser.add_argument(
         "--stream-traffic-shaping-profile",

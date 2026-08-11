@@ -288,6 +288,7 @@ class Monitor:
         stream_path: str,
         source_names: list[str],
         number_of_ingests: int,
+        stream_enabled: bool,
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         stream_content: StreamContentExpectation,
@@ -297,6 +298,7 @@ class Monitor:
         self._mediamtx = mediamtx
         self._stream_path = stream_path
         self._number_of_ingests = number_of_ingests
+        self._stream_enabled = stream_enabled
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
         self._traffic_shaping = traffic_shaping
@@ -447,6 +449,10 @@ class Monitor:
         last = self._previous_sample
         LOGGER.info("--------------------- Stability report ---------------------")
         LOGGER.info("Duration:                   %s", format_duration(self.elapsed()))
+        LOGGER.info(
+            "Outgoing stream:            %s",
+            "enabled" if self._stream_enabled else "disabled",
+        )
         LOGGER.info("Traffic shaping:            %s", self._traffic_shaping)
         LOGGER.info(
             "Stream total in GB:         %s",
@@ -535,7 +541,8 @@ class Monitor:
         sample.ingests_bitrate = ingests.bitrate
         sample.ingests_total_bytes = ingests.total_bytes
         sample.number_of_ingests = ingests.number_of_ingests
-        self._read_publisher(sample)
+        if self._stream_enabled:
+            self._read_publisher(sample)
         return sample
 
     def _read_publisher(self, sample: Sample):
@@ -587,7 +594,9 @@ class Monitor:
             LOGGER.warning("The device is no longer charging.")
 
     def _check(self, now: float, sample: Sample):
-        self._not_live.update(now, not sample.is_live, "The app is not streaming")
+        self._not_live.update(
+            now, self._stream_enabled and not sample.is_live, "The app is not streaming"
+        )
         self._stream_bitrate_deviation.update(
             now,
             sample.is_live

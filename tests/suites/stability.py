@@ -97,7 +97,8 @@ class StabilityIngestsOneStream(TestCase):
     """The ingests given on the command line (RTMP, SRT, RIST and WHEP) and one
     outgoing SRT stream, all roughly 5 Mbps, active at the same time for 12 hours, or
     until the app crashes. All scenes and widgets are always configured, but the ingests
-    that are not streamed to are disabled.
+    that are not streamed to are disabled. The outgoing stream can be disabled on the
+    command line, leaving only the ingests active.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
@@ -111,11 +112,13 @@ class StabilityIngestsOneStream(TestCase):
         self,
         moblin: Moblin,
         ingests: list[Ingest],
+        stream: bool,
         duration: float,
         shaper: TrafficShaper | None,
     ):
         super().__init__(moblin)
         self._ingests = ingests
+        self._stream = stream
         self._duration = duration
         self._shaper = shaper
         self._monitor: Monitor | None = None
@@ -280,7 +283,9 @@ class StabilityIngestsOneStream(TestCase):
                 stack.enter_context(source.command)
             if Ingest.WHEP in self._ingests:
                 mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
-            self._go_live(mediamtx)
+            self._wait_for_ingests()
+            if self._stream:
+                self._go_live(mediamtx)
             self._monitor = self._create_monitor(mediamtx, sources)
             self._monitor_until_done(self._monitor, sources)
 
@@ -343,13 +348,15 @@ class StabilityIngestsOneStream(TestCase):
             ingests_bitrate_range(len(self._ingests)),
         )
 
-    def _go_live(self, mediamtx: MediaMtx):
+    def _wait_for_ingests(self):
         self.moblin.wait_for_ingests(
             self._ingests_bitrate_range,
             total_bytes=0,
             number_of_ingests=len(self._ingests),
             timeout=180,
         )
+
+    def _go_live(self, mediamtx: MediaMtx):
         self.moblin.go_live()
         self.moblin.wait_for_bitrate(
             self._stream_bitrate_range.minimum,
@@ -366,6 +373,7 @@ class StabilityIngestsOneStream(TestCase):
             stream_path=STREAM_PATH,
             source_names=[source.name for source in sources],
             number_of_ingests=len(self._ingests),
+            stream_enabled=self._stream,
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             stream_content=self._create_stream_content_expectation(),
@@ -475,11 +483,12 @@ def create_traffic_shaper(
 def tests(
     moblin: Moblin,
     ingests: list[Ingest],
+    stream: bool,
     duration: float,
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, duration, shaper),
+        StabilityIngestsOneStream(moblin, ingests, stream, duration, shaper),
     ]
 
 
