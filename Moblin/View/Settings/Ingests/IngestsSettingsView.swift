@@ -29,6 +29,16 @@ struct IngestsSettingsView: View {
                     .onChange(of: database.ingestsSoftwareVideoDecoding) { _ in
                         model.reloadIngests()
                     }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("""
+                    Decode ingested video on the CPU instead of using the hardware video decoder. \
+                    Uses more CPU, battery and generates more heat, but can decode video the hardware \
+                    decoder does not support and allows decoding more streams at the same time.
+                    """)
+                    Text("")
+                    Text("Only enable this if hardware video decoding does not work.")
+                }
             }
         }
         .navigationTitle("Ingests")
