@@ -99,7 +99,8 @@ class StabilityIngestsOneStream(TestCase):
     until the app crashes. The scene uses the front camera and shows all four ingests as
     widgets. All scenes and widgets are always configured, but the ingests that are not
     streamed to are disabled. The mic is the builtin one. The outgoing stream can be
-    disabled on the command line, leaving only the ingests active.
+    disabled on the command line, leaving only the ingests active, and all ingests can be
+    disabled, leaving only the outgoing stream active.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
@@ -362,6 +363,8 @@ class StabilityIngestsOneStream(TestCase):
         )
 
     def _wait_for_ingests(self):
+        if len(self._ingests) == 0:
+            return
         self.moblin.wait_for_ingests(
             self._ingests_bitrate_range,
             total_bytes=0,

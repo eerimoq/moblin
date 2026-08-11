@@ -59,6 +59,13 @@ make stability TEST_ARGS="--ingests rtmp"
 make stability TEST_ARGS="--ingests srt,whep"
 ```
 
+Give an empty list of ingests to only run the outgoing stream. All ingests are disabled in
+the app.
+
+```bash
+make stability TEST_ARGS="--ingests ''"
+```
+
 Give `--no-stream` to only run the ingests. The app never goes live, and everything
 related to the outgoing stream is left unmonitored.
 

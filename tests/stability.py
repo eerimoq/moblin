@@ -9,7 +9,9 @@ from utils.traffic_shaper import ProfileName
 
 
 def parse_ingests(value: str) -> list[Ingest]:
-    ingests = []
+    ingests: list[Ingest] = []
+    if value.strip() == "":
+        return ingests
     for name in value.split(","):
         try:
             ingest = Ingest(name.strip().lower())
@@ -20,8 +22,6 @@ def parse_ingests(value: str) -> list[Ingest]:
             ) from None
         if ingest not in ingests:
             ingests.append(ingest)
-    if len(ingests) == 0:
-        raise argparse.ArgumentTypeError("at least one ingest must be given")
     return ingests
 
 
@@ -52,8 +52,8 @@ def main():
         "--ingests",
         type=parse_ingests,
         default=list(Ingest),
-        help="Comma separated list of ingests to stream to, for example 'rtmp,whep' "
-        "(default: all).",
+        help="Comma separated list of ingests to stream to, for example 'rtmp,whep'. "
+        "Give an empty list to disable all ingests (default: all).",
     )
     parser.add_argument(
         "--no-stream",
