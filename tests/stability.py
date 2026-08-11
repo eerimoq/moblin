@@ -35,7 +35,12 @@ def create_suites(moblin, args):
     )
     return [
         stability.tests(
-            moblin, args.ingests, not args.no_stream, 3600 * args.duration, shaper
+            moblin,
+            args.ingests,
+            not args.no_stream,
+            not args.no_silent_audio_check,
+            3600 * args.duration,
+            shaper,
         )
     ]
 
@@ -59,6 +64,11 @@ def main():
         "--no-stream",
         action="store_true",
         help="Do not start the outgoing stream, only run the ingests.",
+    )
+    parser.add_argument(
+        "--no-silent-audio-check",
+        action="store_true",
+        help="Do not check that the audio in the stream content is audible.",
     )
     parser.add_argument(
         "--stream-traffic-shaping-profile",

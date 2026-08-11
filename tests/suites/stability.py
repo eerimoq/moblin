@@ -105,7 +105,8 @@ class StabilityIngestsOneStream(TestCase):
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
     MediaMTX periodically to verify that it contains moving video and audible
-    audio. The network can be shaped to simulate bad networks, with separate
+    audio. The silent audio check can be disabled on the command line, for example when
+    the device is in a quiet room. The network can be shaped to simulate bad networks, with separate
     impairments for the outgoing stream and the ingests.
 
     """
@@ -115,12 +116,14 @@ class StabilityIngestsOneStream(TestCase):
         moblin: Moblin,
         ingests: list[Ingest],
         stream: bool,
+        silent_audio_check: bool,
         duration: float,
         shaper: TrafficShaper | None,
     ):
         super().__init__(moblin)
         self._ingests = ingests
         self._stream = stream
+        self._silent_audio_check = silent_audio_check
         self._duration = duration
         self._shaper = shaper
         self._monitor: Monitor | None = None
@@ -406,6 +409,8 @@ class StabilityIngestsOneStream(TestCase):
             height=STREAM_HEIGHT,
             fps=STREAM_FPS,
         )
+        if not self._silent_audio_check:
+            expectation = replace(expectation, minimum_mean_volume_db=None)
         if self._stream_profile is None:
             return expectation
         return replace(
@@ -500,11 +505,14 @@ def tests(
     moblin: Moblin,
     ingests: list[Ingest],
     stream: bool,
+    silent_audio_check: bool,
     duration: float,
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, stream, duration, shaper),
+        StabilityIngestsOneStream(
+            moblin, ingests, stream, silent_audio_check, duration, shaper
+        ),
     ]
 
 

@@ -107,7 +107,7 @@ class StreamContentExpectation:
     fps: float
     interval: float = 300
     duration: float = 10
-    minimum_mean_volume_db: float = -45
+    minimum_mean_volume_db: float | None = -45
     minimum_unique_video_frames_ratio: float = 0.5
     minimum_fps_ratio: float = 0.8
     maximum_fps_ratio: float = 1.2
@@ -172,7 +172,10 @@ def _check_stream_content_audio(
             f"Only {content.audio_duration:.1f} of {expectation.duration:.1f} "
             "seconds contain audio"
         )
-    if content.mean_volume_db < expectation.minimum_mean_volume_db:
+    if (
+        expectation.minimum_mean_volume_db is not None
+        and content.mean_volume_db < expectation.minimum_mean_volume_db
+    ):
         problems.append(
             f"The audio is silent. Its mean volume is {content.mean_volume_db:.1f} dB"
         )

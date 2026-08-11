@@ -73,6 +73,14 @@ related to the outgoing stream is left unmonitored.
 make stability TEST_ARGS="--no-stream"
 ```
 
+Give `--no-silent-audio-check` to not check that the audio read back from the stream is
+audible, for example when the device is in a quiet room. The mean volume is still measured
+and reported.
+
+```bash
+make stability TEST_ARGS="--no-silent-audio-check"
+```
+
 # Watch the stability test
 
 Show all graphs at once in a grid, updated live while the stability test is running. Two
