@@ -2,7 +2,6 @@ import logging
 import time
 from contextlib import ExitStack
 from dataclasses import dataclass
-from dataclasses import replace
 from enum import StrEnum
 
 from utils.config import RIST_SERVER_PORT
@@ -410,14 +409,11 @@ class StabilityIngestsOneStream(TestCase):
             fps=STREAM_FPS,
         )
         if not self._silent_audio_check:
-            expectation = replace(expectation, minimum_mean_volume_db=None)
-        if self._stream_profile is None:
-            return expectation
-        return replace(
-            expectation,
-            minimum_fps_ratio=0.3,
-            minimum_unique_video_frames_ratio=0.3,
-        )
+            expectation.minimum_mean_volume_db = None
+        if self._stream_profile is not None:
+            expectation.minimum_fps_ratio = 0.3
+            expectation.minimum_unique_video_frames_ratio = 0.3
+        return expectation
 
     def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
         end_time = time.monotonic() + self._duration
