@@ -49,7 +49,7 @@ extension Model {
     }
 
     func isKickPusherConfigured() -> Bool {
-        database.chat.enabled && stream.kickChannelName != ""
+        database.chat.enabled && stream.kickChatEnabled && stream.kickChannelName != ""
     }
 
     func isKickPusherConnected() -> Bool {
@@ -97,6 +97,11 @@ extension Model {
         reloadViewers()
         reloadKickPusher()
         reloadKickViewers()
+        resetChat()
+    }
+
+    func kickChatEnabledUpdated() {
+        reloadKickPusher()
         resetChat()
     }
 

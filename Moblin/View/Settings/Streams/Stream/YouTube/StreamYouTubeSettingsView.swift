@@ -556,6 +556,16 @@ struct StreamYouTubeSettingsView: View {
             } footer: {
                 Text("The Video ID unique for every live stream.")
             }
+            Section {
+                Toggle("Enabled", isOn: $stream.youTubeChatEnabled)
+                    .onChange(of: stream.youTubeChatEnabled) { _ in
+                        if stream.enabled {
+                            model.youTubeChatEnabledUpdated()
+                        }
+                    }
+            } header: {
+                Text("Chat")
+            }
         }
         .navigationTitle("YouTube")
         .onChange(of: stream.youTubeAuthState) { authState in

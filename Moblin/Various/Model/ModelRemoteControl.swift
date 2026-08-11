@@ -82,9 +82,9 @@ extension Model {
         remoteControlStreamer!.start()
     }
 
-    private func remoteControlStreamerSendTwitchStart() {
+    func remoteControlStreamerSendTwitchStart() {
         remoteControlStreamer?.twitchStart(
-            channelName: stream.twitchChannelName,
+            channelName: stream.twitchChatEnabled ? stream.twitchChannelName : nil,
             channelId: stream.twitchChannelId,
             accessToken: stream.twitchAccessToken
         )
