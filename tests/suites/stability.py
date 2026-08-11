@@ -22,7 +22,6 @@ from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import Resolution
-from utils.generate_device_settings import mic_id
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
@@ -84,13 +83,7 @@ RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
 RIST_STREAM_ID = uuid()
 WHEP_STREAM_ID = uuid()
-SCENE_INGEST = Ingest.RTMP
-INGEST_STREAM_IDS = {
-    Ingest.RTMP: RTMP_STREAM_ID,
-    Ingest.SRT: SRT_STREAM_ID,
-    Ingest.RIST: RIST_STREAM_ID,
-    Ingest.WHEP: WHEP_STREAM_ID,
-}
+RTMP_WIDGET_ID = uuid()
 SRT_WIDGET_ID = uuid()
 RIST_WIDGET_ID = uuid()
 WHEP_WIDGET_ID = uuid()
@@ -103,10 +96,10 @@ WHEP_NAME_WIDGET_ID = uuid()
 class StabilityIngestsOneStream(TestCase):
     """The ingests given on the command line (RTMP, SRT, RIST and WHEP) and one
     outgoing SRT stream, all roughly 5 Mbps, active at the same time for 12 hours, or
-    until the app crashes. All scenes and widgets are always configured, but the ingests
-    that are not streamed to are disabled. The mic is the scene's ingest if enabled,
-    and otherwise the first enabled ingest. The outgoing stream can be disabled on the
-    command line, leaving only the ingests active.
+    until the app crashes. The scene uses the front camera and shows all four ingests as
+    widgets. All scenes and widgets are always configured, but the ingests that are not
+    streamed to are disabled. The mic is the builtin one. The outgoing stream can be
+    disabled on the command line, leaving only the ingests active.
 
     Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
     level are monitored continuously. A few seconds of the stream are read back from
@@ -158,11 +151,15 @@ class StabilityIngestsOneStream(TestCase):
                 "scenes": [
                     {
                         "enabled": True,
-                        "overrideMic": True,
-                        "cameraPosition": CameraPosition.RTMP,
-                        "rtmpCameraId": RTMP_STREAM_ID,
-                        "micId": mic_id(INGEST_STREAM_IDS[mic_ingest(self._ingests)]),
+                        "cameraPosition": CameraPosition.FRONT,
                         "widgets": [
+                            scene_widget_settings(
+                                RTMP_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=INGEST_WIDGET_SIZE,
+                                alignment=Alignment.TOP_LEFT,
+                            ),
                             scene_widget_settings(
                                 SRT_WIDGET_ID,
                                 x=0,
@@ -186,9 +183,9 @@ class StabilityIngestsOneStream(TestCase):
                             ),
                             name_scene_widget_settings(
                                 RTMP_NAME_WIDGET_ID,
-                                x=0,
+                                x=NAME_WIDGET_X,
                                 y=0,
-                                alignment=Alignment.TOP_CENTER,
+                                alignment=Alignment.TOP_LEFT,
                             ),
                             name_scene_widget_settings(
                                 SRT_NAME_WIDGET_ID,
@@ -212,6 +209,14 @@ class StabilityIngestsOneStream(TestCase):
                     }
                 ],
                 "widgets": [
+                    video_source_widget_settings(
+                        "RTMP",
+                        RTMP_WIDGET_ID,
+                        {
+                            "cameraPosition": CameraPosition.RTMP,
+                            "rtmpCameraId": RTMP_STREAM_ID,
+                        },
+                    ),
                     video_source_widget_settings(
                         "SRT",
                         SRT_WIDGET_ID,
@@ -414,12 +419,6 @@ class StabilityIngestsOneStream(TestCase):
                 self._shaper.poll()
             monitor.poll()
             restart_dead_sources(monitor, sources)
-
-
-def mic_ingest(ingests: list[Ingest]) -> Ingest:
-    if SCENE_INGEST in ingests:
-        return SCENE_INGEST
-    return ingests[0]
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:
