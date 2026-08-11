@@ -57,7 +57,11 @@ BITRATE_SUFFIXES = {
     "mbit": 1_000_000,
     "gbit": 1_000_000_000,
 }
+DEFAULT_CONSTANT_RATE = "4Mbit"
+DEFAULT_SQUARE_LOW_RATE = "3Mbit"
 DEFAULT_SQUARE_PERIOD = 60.0
+DEFAULT_RANDOM_MINIMUM_RATE = "1Mbit"
+DEFAULT_RANDOM_MAXIMUM_RATE = "7Mbit"
 DEFAULT_RANDOM_INTERVAL = 15.0
 SSH_OPTIONS = [
     "-o",
@@ -461,15 +465,11 @@ class TrafficShaper:
             "trap clean_up EXIT HUP INT TERM",
             f"tc qdisc del dev {self._interface} root 2>/dev/null || true",
             f"tc qdisc add dev {self._interface} root handle 1: htb default {DEFAULT_CLASS_ID}",
-            f"tc class add dev {self._interface} parent 1: classid 1:{DEFAULT_CLASS_ID} "
-            f"htb rate {ROOT_RATE}",
+            self._create_class_command(DEFAULT_CLASS_ID),
         ]
         for group in self._profiles:
             class_id = GROUP_CLASS_IDS[group]
-            lines.append(
-                f"tc class add dev {self._interface} parent 1: classid 1:{class_id} "
-                f"htb rate {ROOT_RATE}"
-            )
+            lines.append(self._create_class_command(class_id))
             lines.append(
                 f"tc qdisc add dev {self._interface} parent 1:{class_id} handle {class_id}: "
                 f"netem limit {DEFAULT_LIMIT}"
@@ -489,6 +489,12 @@ class TrafficShaper:
             lines.append('pids="$pids $!"')
         lines.append("while true; do sleep 1; done")
         return "\n".join(lines) + "\n"
+
+    def _create_class_command(self, class_id: int) -> str:
+        return (
+            f"tc class add dev {self._interface} parent 1: classid 1:{class_id} "
+            f"htb rate {ROOT_RATE} quantum 200000"
+        )
 
     def _create_relay_command(self, relay: Relay) -> str:
         target = self._addresses[relay.side]
@@ -623,29 +629,25 @@ def _parse_values(parameters: str) -> dict[str, str]:
 
 
 def _create_constant_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
-    return ConstantProfile(_with_rate(impairment, values.pop("rate", None)))
+    return ConstantProfile(
+        _with_rate(impairment, values.pop("rate", DEFAULT_CONSTANT_RATE))
+    )
 
 
 def _create_square_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
     return SquareProfile(
-        _with_rate(impairment, values.pop("low-rate", None)),
-        _with_rate(impairment, values.pop("high-rate", None)),
+        _with_rate(impairment, values.pop("low-rate", DEFAULT_SQUARE_LOW_RATE)),
+        _with_rate(impairment, values.pop("high-rate", ROOT_RATE)),
         float(values.pop("period", DEFAULT_SQUARE_PERIOD)),
     )
 
 
 def _create_random_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
-    minimum_rate_value = values.pop("min-rate", None)
-    maximum_rate_value = values.pop("max-rate", None)
-    if minimum_rate_value is None or maximum_rate_value is None:
-        raise Exception(
-            "The random traffic shaping profile requires min-rate and max-rate."
-        )
     seed = values.pop("seed", None)
     return RandomProfile(
         impairment,
-        parse_bitrate(minimum_rate_value),
-        parse_bitrate(maximum_rate_value),
+        parse_bitrate(values.pop("min-rate", DEFAULT_RANDOM_MINIMUM_RATE)),
+        parse_bitrate(values.pop("max-rate", DEFAULT_RANDOM_MAXIMUM_RATE)),
         float(values.pop("interval", DEFAULT_RANDOM_INTERVAL)),
         None if seed is None else int(seed),
     )

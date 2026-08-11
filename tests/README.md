@@ -168,9 +168,9 @@ separated list of `<name>=<value>` pairs.
 | `jitter` | all | Delay variation in milliseconds. |
 | `loss` | all | Packet loss in percent. |
 | `limit` | all | Queue length in packets (default 1000). |
-| `rate` | constant | Bandwidth limit, for example `3Mbit`, `500kbit` or `3000000`. |
-| `low-rate`, `high-rate` | square | Bandwidth limits to alternate between. |
+| `rate` | constant | Bandwidth limit, for example `3Mbit`, `500kbit` or `3000000` (default 4Mbit). |
+| `low-rate`, `high-rate` | square | Bandwidth limits to alternate between (`low-rate` defaults to 3Mbit). |
 | `period` | square | Seconds at each rate (default 60). |
-| `min-rate`, `max-rate` | random | Bandwidth limits to pick random rates between. |
+| `min-rate`, `max-rate` | random | Bandwidth limits to pick random rates between (defaults to 1Mbit and 7Mbit). |
 | `interval` | random | Seconds between rate changes (default 15). |
 | `seed` | random | Random seed for reproducible runs. |
