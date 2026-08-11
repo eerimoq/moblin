@@ -3,6 +3,7 @@ from pathlib import Path
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_1_SERVER_PORT
+from utils.config import SRT_CLIENT_2_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
 from utils.config import TESTER_RTMP_PORT
 from utils.config import WHIP_SERVER_PORT
@@ -13,13 +14,17 @@ from utils.ffmpeg import FfmpegTestStream
 from utils.ffmpeg import FfmpegWhipTestStream
 from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import mic_id
+from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import uuid
+from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.moblin import Recorder
 from utils.test_case import TestCase
+from utils.utils import Crop
 from utils.utils import Range
 
 RTMP_STREAM_ID = uuid()
@@ -29,6 +34,16 @@ SRT_STREAM_ID = uuid()
 SRT_CLIENT_STREAM_ID = uuid()
 WHIP_STREAM_ID = uuid()
 WHEP_STREAM_ID = uuid()
+RTMP_STREAM_2_ID = uuid()
+RTSP_STREAM_2_ID = uuid()
+RIST_STREAM_2_ID = uuid()
+SRT_STREAM_2_ID = uuid()
+SRT_CLIENT_STREAM_2_ID = uuid()
+WHIP_STREAM_2_ID = uuid()
+WHEP_STREAM_2_ID = uuid()
+SECOND_INGEST_WIDGET_ID = uuid()
+FIRST_INGEST_CROP = Crop(x=0, y=0, width=800, height=500)
+SECOND_INGEST_CROP = Crop(x=1120, y=580, width=800, height=500)
 
 
 class IngestTestCase(TestCase):
@@ -41,14 +56,17 @@ class IngestTestCase(TestCase):
             }
         )
 
-    def record_ingest(self, startup_delay: float = 1) -> Path:
+    def record_ingest(self, startup_delay: float = 1, number_of_ingests: int = 1) -> Path:
         recorder = Recorder(self.moblin, f"{self.name}.mp4")
-        self.wait_for_ingest_stream_started(startup_delay=startup_delay)
+        self.wait_for_ingest_stream_started(
+            number_of_ingests=number_of_ingests,
+            startup_delay=startup_delay,
+        )
         with recorder:
             self.moblin.wait_for_ingests(
-                bitrate=Range(7_000_000, 9_000_000),
-                total_bytes=10_000_000,
-                number_of_ingests=1,
+                bitrate=Range(number_of_ingests * 7_000_000, number_of_ingests * 9_000_000),
+                total_bytes=number_of_ingests * 10_000_000,
+                number_of_ingests=number_of_ingests,
             )
         return recorder.recording
 
@@ -253,6 +271,306 @@ class IngestWhepClient(IngestTestCase):
         self.assert_recording(recording)
 
 
+class ParallelIngestTestCase(IngestTestCase):
+    def import_parallel_settings(
+        self,
+        camera_position: CameraPosition,
+        camera_id_key: str,
+        first_stream_id: str,
+        second_stream_id: str,
+        **overrides,
+    ):
+        self.import_settings(
+            scene={
+                "cameraPosition": camera_position,
+                camera_id_key: first_stream_id,
+                "micId": mic_id(first_stream_id),
+                "widgets": [
+                    scene_widget_settings(
+                        SECOND_INGEST_WIDGET_ID,
+                        x=0,
+                        y=0,
+                        size=50,
+                        alignment=Alignment.BOTTOM_RIGHT,
+                    )
+                ],
+            },
+            widgets=[
+                video_source_widget_settings(
+                    "2",
+                    SECOND_INGEST_WIDGET_ID,
+                    {"cameraPosition": camera_position, camera_id_key: second_stream_id},
+                )
+            ],
+            **overrides,
+        )
+
+    def record_parallel_ingests(self, startup_delay: float = 1) -> Path:
+        return self.record_ingest(startup_delay=startup_delay, number_of_ingests=2)
+
+    def assert_parallel_recording(self, recording: Path):
+        self.assert_recording(
+            recording,
+            has_qr_codes=False
+        )
+
+
+class IngestParallelRtmpServer(ParallelIngestTestCase):
+    """Stream to two RTMP server ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.RTMP,
+            camera_id_key="rtmpCameraId",
+            first_stream_id=RTMP_STREAM_ID,
+            second_stream_id=RTMP_STREAM_2_ID,
+            rtmpServer={
+                "enabled": True,
+                "port": RTMP_SERVER_PORT,
+                "streams": [
+                    {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
+                    {"id": RTMP_STREAM_2_ID, "name": "2", "streamKey": "2"},
+                ],
+            },
+        )
+
+    def run(self):
+        with (
+            FfmpegTestStream(url=self.moblin.ingest_rtmp_url("1")),
+            FfmpegTestStream(url=self.moblin.ingest_rtmp_url("2")),
+        ):
+            recording = self.record_parallel_ingests()
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelSrtServer(ParallelIngestTestCase):
+    """Stream to two SRT server ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.SRTLA,
+            camera_id_key="srtlaCameraId",
+            first_stream_id=SRT_STREAM_ID,
+            second_stream_id=SRT_STREAM_2_ID,
+            srtlaServer={
+                "enabled": True,
+                "srtPort": SRT_SERVER_PORT,
+                "streams": [
+                    {"id": SRT_STREAM_ID, "name": "1", "streamId": "1"},
+                    {"id": SRT_STREAM_2_ID, "name": "2", "streamId": "2"},
+                ],
+            },
+        )
+
+    def run(self):
+        with (
+            FfmpegTestStream(
+                url=self.moblin.ingest_srt_url("1"),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+            FfmpegTestStream(
+                url=self.moblin.ingest_srt_url("2"),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+        ):
+            recording = self.record_parallel_ingests()
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelSrtClient(ParallelIngestTestCase):
+    """Stream to two SRT client ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.SRT_CLIENT,
+            camera_id_key="srtClientCameraId",
+            first_stream_id=SRT_CLIENT_STREAM_ID,
+            second_stream_id=SRT_CLIENT_STREAM_2_ID,
+            srtClient={
+                "streams": [
+                    {
+                        "id": SRT_CLIENT_STREAM_ID,
+                        "name": "1",
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT),
+                        "enabled": True,
+                    },
+                    {
+                        "id": SRT_CLIENT_STREAM_2_ID,
+                        "name": "2",
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_2_SERVER_PORT),
+                        "enabled": True,
+                    },
+                ],
+            },
+        )
+
+    def run(self):
+        with (
+            FfmpegTestStream(
+                url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+            FfmpegTestStream(
+                url=srt_listener_url(SRT_CLIENT_2_SERVER_PORT, stream_id="2"),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+        ):
+            recording = self.record_parallel_ingests()
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelRtspClient(ParallelIngestTestCase):
+    """Stream to two RTSP client ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.RTSP,
+            camera_id_key="rtspCameraId",
+            first_stream_id=RTSP_STREAM_ID,
+            second_stream_id=RTSP_STREAM_2_ID,
+            rtspClient={
+                "streams": [
+                    {
+                        "id": RTSP_STREAM_ID,
+                        "name": "1",
+                        "url": self.moblin.tester_rtsp_url("1"),
+                        "enabled": True,
+                    },
+                    {
+                        "id": RTSP_STREAM_2_ID,
+                        "name": "2",
+                        "url": self.moblin.tester_rtsp_url("2"),
+                        "enabled": True,
+                    },
+                ],
+            },
+        )
+
+    def run(self):
+        with MediaMtx() as mediamtx:
+            with (
+                FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"),
+                FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/2"),
+            ):
+                mediamtx.wait_for_rtmp_stream("1", 1_000_000)
+                mediamtx.wait_for_rtmp_stream("2", 1_000_000)
+                recording = self.record_parallel_ingests(startup_delay=5)
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelRistServer(ParallelIngestTestCase):
+    """Stream to two RIST server ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.RIST,
+            camera_id_key="ristCameraId",
+            first_stream_id=RIST_STREAM_ID,
+            second_stream_id=RIST_STREAM_2_ID,
+            ristServer={
+                "enabled": True,
+                "port": RIST_SERVER_PORT,
+                "streams": [
+                    {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1},
+                    {"id": RIST_STREAM_2_ID, "name": "2", "virtualDestinationPort": 2},
+                ],
+            },
+        )
+
+    def run(self):
+        with (
+            FfmpegTestStream(
+                url=self.moblin.ingest_rist_url(1),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+            FfmpegTestStream(
+                url=self.moblin.ingest_rist_url(2),
+                transport_format=TransportFormat.MPEGTS,
+            ),
+        ):
+            recording = self.record_parallel_ingests(startup_delay=5)
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelWhipServer(ParallelIngestTestCase):
+    """Stream to two WHIP server ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.WHIP,
+            camera_id_key="whipCameraId",
+            first_stream_id=WHIP_STREAM_ID,
+            second_stream_id=WHIP_STREAM_2_ID,
+            whipServer={
+                "enabled": True,
+                "port": WHIP_SERVER_PORT,
+                "streams": [
+                    {
+                        "id": WHIP_STREAM_ID,
+                        "name": "1",
+                        "streamKey": "1",
+                        "latency": 2000,
+                    },
+                    {
+                        "id": WHIP_STREAM_2_ID,
+                        "name": "2",
+                        "streamKey": "2",
+                        "latency": 2000,
+                    },
+                ],
+            },
+        )
+
+    def run(self):
+        with (
+            FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("1")),
+            FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("2")),
+        ):
+            recording = self.record_parallel_ingests(startup_delay=5)
+        self.assert_parallel_recording(recording)
+
+
+class IngestParallelWhepClient(ParallelIngestTestCase):
+    """Stream to two WHEP client ingests in parallel."""
+
+    def setup(self):
+        self.import_parallel_settings(
+            camera_position=CameraPosition.WHEP,
+            camera_id_key="whepCameraId",
+            first_stream_id=WHEP_STREAM_ID,
+            second_stream_id=WHEP_STREAM_2_ID,
+            whepClient={
+                "streams": [
+                    {
+                        "id": WHEP_STREAM_ID,
+                        "name": "1",
+                        "url": self.moblin.tester_whep_url("1"),
+                        "enabled": True,
+                        "latency": 2000,
+                    },
+                    {
+                        "id": WHEP_STREAM_2_ID,
+                        "name": "2",
+                        "url": self.moblin.tester_whep_url("2"),
+                        "enabled": True,
+                        "latency": 2000,
+                    },
+                ],
+            },
+        )
+
+    def run(self):
+        with MediaMtx() as mediamtx:
+            with (
+                FfmpegRtspTestStream(url=rtsp_reader_url("1")),
+                FfmpegRtspTestStream(url=rtsp_reader_url("2")),
+            ):
+                mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
+                mediamtx.wait_for_rtsp_publisher("2", 2_000_000)
+                recording = self.record_parallel_ingests(startup_delay=5)
+        self.assert_parallel_recording(recording)
+
+
 def tests(moblin: Moblin):
     return [
         IngestRtmpServer(moblin),
@@ -262,4 +580,11 @@ def tests(moblin: Moblin):
         IngestRistServer(moblin),
         IngestWhipServer(moblin),
         IngestWhepClient(moblin),
+        IngestParallelRtmpServer(moblin),
+        IngestParallelSrtServer(moblin),
+        IngestParallelSrtClient(moblin),
+        # IngestParallelRtspClient(moblin),
+        IngestParallelRistServer(moblin),
+        # IngestParallelWhipServer(moblin),
+        # IngestParallelWhepClient(moblin),
     ]
