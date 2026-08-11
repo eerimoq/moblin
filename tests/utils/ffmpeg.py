@@ -54,9 +54,7 @@ def _log_level(line: str) -> int:
 
 def _run(command: list[str], timeout: float | None = None):
     LOGGER.debug("Command: %s", " ".join(command))
-    return subprocess.run(
-        command, check=True, capture_output=True, text=True, timeout=timeout
-    )
+    return subprocess.run(command, check=True, capture_output=True, text=True, timeout=timeout)
 
 
 def _run_binary(command: list[str]) -> bytes:
@@ -93,9 +91,7 @@ def video_encoder(codec: FfmpegVideoCodec) -> str:
     return SOFTWARE_VIDEO_ENCODERS[codec]
 
 
-def video_encoder_args(
-    bitrate: int, codec: FfmpegVideoCodec, realtime: bool
-) -> list[str]:
+def video_encoder_args(bitrate: int, codec: FfmpegVideoCodec, realtime: bool) -> list[str]:
     encoder = video_encoder(codec)
     args = ["-c:v", encoder, "-b:v", str(bitrate)]
     if encoder in HARDWARE_VIDEO_ENCODERS.values():
@@ -118,9 +114,7 @@ def check_dependencies() -> list[str]:
     missing_dependencies = []
     for video_filter in ["qrencode", "drawtext"]:
         if f" {video_filter} " not in output:
-            missing_dependencies.append(
-                f"The {video_filter} video filter is not supported by ffmpeg"
-            )
+            missing_dependencies.append(f"The {video_filter} video filter is not supported by ffmpeg")
     return missing_dependencies
 
 
@@ -184,9 +178,7 @@ class FfmpegCommand:
         if self._quiet:
             command += ["-nostats", "-loglevel", "warning"]
         command += self.args()
-        self._process = ManagedProcess(
-            command, LOGGER, stdin=subprocess.DEVNULL, log_level=_log_level
-        )
+        self._process = ManagedProcess(command, LOGGER, stdin=subprocess.DEVNULL, log_level=_log_level)
         self._process.start()
 
     def _stop(self):
@@ -430,9 +422,7 @@ def ffprobe_video(path: Path):
 
 
 def ffprobe_video_size(path: Path) -> tuple[int, int]:
-    output = ffprobe_run(
-        path, "-select_streams", "v:0", "-show_entries", "stream=width,height"
-    )
+    output = ffprobe_run(path, "-select_streams", "v:0", "-show_entries", "stream=width,height")
     stream = output["streams"][0]
     return stream["width"], stream["height"]
 
@@ -637,9 +627,7 @@ def read_qr_codes(path: Path, crop: Crop) -> list[QrCode]:
     )
     procs = []
     for file in sorted(qr_codes_dir.iterdir()):
-        proc = subprocess.Popen(
-            ["qrtool", "decode", file], stdout=subprocess.PIPE, text=True
-        )
+        proc = subprocess.Popen(["qrtool", "decode", file], stdout=subprocess.PIPE, text=True)
         procs.append(proc)
     qr_codes = []
     for proc in procs:
@@ -662,9 +650,7 @@ def read_video_frame(path: Path, timestamp: float, crop: Crop | None = None) -> 
 
 
 def extract_ltc_wav(path: Path, output: Path):
-    ffmpeg_run(
-        "-i", str(path), "-vn", "-map", "0:a:0", "-c:a", "pcm_s16le", str(output)
-    )
+    ffmpeg_run("-i", str(path), "-vn", "-map", "0:a:0", "-c:a", "pcm_s16le", str(output))
 
 
 def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:

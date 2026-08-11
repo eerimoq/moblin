@@ -62,12 +62,8 @@ def main():
                             continue
 
                         if translated is None:
-                            print(
-                                f'Translating "{english}" to {", ".join(xcode_languages)}'
-                            )
-                            translator = GoogleTranslator(
-                                source="en", target=google_language
-                            )
+                            print(f'Translating "{english}" to {", ".join(xcode_languages)}')
+                            translator = GoogleTranslator(source="en", target=google_language)
 
                             try:
                                 translated = translator.translate(english)
@@ -79,9 +75,7 @@ def main():
                         }
     finally:
         localizable_xcstrings_path.write_text(
-            json.dumps(
-                localizable, indent=2, ensure_ascii=False, separators=(",", " : ")
-            ),
+            json.dumps(localizable, indent=2, ensure_ascii=False, separators=(",", " : ")),
             encoding="utf-8",
         )
 

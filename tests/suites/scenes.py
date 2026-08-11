@@ -63,11 +63,7 @@ GRAPHICS_IMPLEMENTATION_NAMES = {
 
 
 def is_map_dot(pixel: Pixel) -> bool:
-    return (
-        pixel.blue > 180
-        and pixel.blue - pixel.red > 80
-        and pixel.blue - pixel.green > 60
-    )
+    return pixel.blue > 180 and pixel.blue - pixel.red > 80 and pixel.blue - pixel.green > 60
 
 
 def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
@@ -212,9 +208,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
                 "scenes": [
                     {
                         "cameraPosition": CameraPosition.SCREEN_CAPTURE,
-                        "widgets": [
-                            scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
-                        ],
+                        "widgets": [scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)],
                         "enabled": True,
                     }
                 ],
@@ -245,9 +239,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
 
 
 class WidgetTestCase(GraphicsImplementationTestCase):
-    def import_settings(
-        self, scene_widgets, widgets, files: dict[str, Path] | None = None
-    ):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None):
         self.moblin.import_settings(
             overrides={
                 "graphicsImplementation": self.graphics_implementation,
@@ -271,14 +263,10 @@ class WidgetTestCase(GraphicsImplementationTestCase):
         return recording_file
 
     def assert_widget_rendered(self, recording_file: Path, crop: Crop):
-        self.assert_not_all_black(
-            read_video_frame(recording_file, FRAME_TIMESTAMP, crop)
-        )
+        self.assert_not_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, crop))
 
     def assert_black_background(self, recording_file: Path):
-        self.assert_all_black(
-            read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP)
-        )
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP))
 
 
 class SceneMapWidget(WidgetTestCase):
@@ -334,9 +322,7 @@ class ScenePngTuberWidget(WidgetTestCase):
 
     def setup(self):
         self.import_settings(
-            scene_widgets=[
-                scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)
-            ],
+            scene_widgets=[scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)],
             widgets=[
                 {
                     "id": PNG_TUBER_WIDGET_ID,
@@ -348,9 +334,7 @@ class ScenePngTuberWidget(WidgetTestCase):
                     },
                 }
             ],
-            files={
-                f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)
-            },
+            files={f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)},
         )
 
     def run(self):

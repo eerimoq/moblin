@@ -186,9 +186,7 @@ def base_settings(config: Config):
     }
 
 
-def create_settings_file(
-    settings, output_file: Path, files: dict[str, Path] | None = None
-):
+def create_settings_file(settings, output_file: Path, files: dict[str, Path] | None = None):
     with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("settings.json", json.dumps(settings, indent=4))
         for name, path in (files or {}).items():

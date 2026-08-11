@@ -71,9 +71,7 @@ class Deviation:
                 LOGGER.warning("%s: %s", self.name, message)
             duration = now - self._start_time
             if duration > self._timeout:
-                raise MonitorError(
-                    f"{self.name} for {duration:.0f} seconds in a row: {message}"
-                )
+                raise MonitorError(f"{self.name} for {duration:.0f} seconds in a row: {message}")
         elif self._start_time is not None:
             duration = self._stop(now)
             LOGGER.info("%s: Back to normal after %.0f seconds.", self.name, duration)
@@ -86,8 +84,7 @@ class Deviation:
         if self.count == 0:
             return "never"
         return (
-            f"{self.count} times, {self.total_duration:.0f} s in total, "
-            f"{self.longest_duration:.0f} s at most"
+            f"{self.count} times, {self.total_duration:.0f} s in total, {self.longest_duration:.0f} s at most"
         )
 
     def _stop(self, now: float) -> float:
@@ -113,23 +110,16 @@ class StreamContentExpectation:
     maximum_fps_ratio: float = 1.2
 
 
-def check_stream_content(
-    content: StreamContent, expectation: StreamContentExpectation
-) -> list[str]:
+def check_stream_content(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
     problems = []
     if content.duration < STREAM_CONTENT_MINIMUM_DURATION_RATIO * expectation.duration:
-        problems.append(
-            f"Captured {content.duration:.1f} instead of "
-            f"{expectation.duration:.1f} seconds"
-        )
+        problems.append(f"Captured {content.duration:.1f} instead of {expectation.duration:.1f} seconds")
     problems += _check_stream_content_video(content, expectation)
     problems += _check_stream_content_audio(content, expectation)
     return problems
 
 
-def _check_stream_content_video(
-    content: StreamContent, expectation: StreamContentExpectation
-) -> list[str]:
+def _check_stream_content_video(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
     if not content.has_video():
         return ["No video in the stream"]
     problems = []
@@ -141,8 +131,7 @@ def _check_stream_content_video(
     minimum_duration = 0.5 * expectation.duration
     if content.video_duration < minimum_duration:
         problems.append(
-            f"Only {content.video_duration:.1f} of {expectation.duration:.1f} "
-            "seconds contain video"
+            f"Only {content.video_duration:.1f} of {expectation.duration:.1f} seconds contain video"
         )
     fps = content.video_fps()
     if not is_within(
@@ -160,25 +149,20 @@ def _check_stream_content_video(
     return problems
 
 
-def _check_stream_content_audio(
-    content: StreamContent, expectation: StreamContentExpectation
-) -> list[str]:
+def _check_stream_content_audio(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
     if not content.has_audio():
         return ["No audio in the stream"]
     problems = []
     minimum_duration = STREAM_CONTENT_MINIMUM_DURATION_RATIO * expectation.duration
     if content.audio_duration < minimum_duration:
         problems.append(
-            f"Only {content.audio_duration:.1f} of {expectation.duration:.1f} "
-            "seconds contain audio"
+            f"Only {content.audio_duration:.1f} of {expectation.duration:.1f} seconds contain audio"
         )
     if (
         expectation.minimum_mean_volume_db is not None
         and content.mean_volume_db < expectation.minimum_mean_volume_db
     ):
-        problems.append(
-            f"The audio is silent. Its mean volume is {content.mean_volume_db:.1f} dB"
-        )
+        problems.append(f"The audio is silent. Its mean volume is {content.mean_volume_db:.1f} dB")
     return problems
 
 
@@ -278,9 +262,7 @@ class Counters:
     duplicated_video_buffers: dict[str, float] = field(default_factory=dict)
     dropped_video_buffers: dict[str, float] = field(default_factory=dict)
     failed_status_requests: int = 0
-    thermal_states: defaultdict[str, float] = field(
-        default_factory=lambda: defaultdict(float)
-    )
+    thermal_states: defaultdict[str, float] = field(default_factory=lambda: defaultdict(float))
 
 
 class Monitor:
@@ -321,16 +303,10 @@ class Monitor:
         self._deviations: list[Deviation] = []
         self._unreachable = self._add_deviation("App unreachable", 60)
         self._not_live = self._add_deviation("Not live")
-        self._stream_bitrate_deviation = self._add_deviation(
-            "Stream bitrate out of range"
-        )
-        self._receiver_deviation = self._add_deviation(
-            "Stream not received by MediaMTX"
-        )
+        self._stream_bitrate_deviation = self._add_deviation("Stream bitrate out of range")
+        self._receiver_deviation = self._add_deviation("Stream not received by MediaMTX")
         self._ingests_deviation = self._add_deviation("Wrong number of ingests")
-        self._ingests_bitrate_deviation = self._add_deviation(
-            "Ingests bitrate out of range"
-        )
+        self._ingests_bitrate_deviation = self._add_deviation("Ingests bitrate out of range")
         self._stream_content_checker = StreamContentChecker(stream_content)
         self._stream_content_deviation = self._add_deviation(
             "Unexpected stream content",
@@ -380,14 +356,11 @@ class Monitor:
         for name in sorted(set(counts.duplicated) | set(counts.dropped)):
             duplicated = counts.duplicated.get(name, 0)
             dropped = counts.dropped.get(name, 0)
-            new_duplicated = duplicated - self.counters.duplicated_video_buffers.get(
-                name, 0
-            )
+            new_duplicated = duplicated - self.counters.duplicated_video_buffers.get(name, 0)
             new_dropped = dropped - self.counters.dropped_video_buffers.get(name, 0)
             if new_duplicated > 0 or new_dropped > 0:
                 LOGGER.warning(
-                    "Buffered video '%s' duplicated %d and dropped %d frames "
-                    "(%d and %d in total).",
+                    "Buffered video '%s' duplicated %d and dropped %d frames (%d and %d in total).",
                     name,
                     new_duplicated,
                     new_dropped,
@@ -471,9 +444,7 @@ class Monitor:
         LOGGER.info("  Ingests bitrate in Mbps:  %s", self.ingests_bitrate.format(1e6))
         LOGGER.info("  CPU in %%:                 %s", self.cpu_percent)
         LOGGER.info("  RAM in MB:                %s", self.ram_mb)
-        LOGGER.info(
-            "  Received video FPS:       %s", self._stream_content_checker.video_fps
-        )
+        LOGGER.info("  Received video FPS:       %s", self._stream_content_checker.video_fps)
         LOGGER.info(
             "  Received audio in dB:     %s",
             self._stream_content_checker.mean_volume_db,
@@ -481,9 +452,7 @@ class Monitor:
         LOGGER.info("RAM growth in MB:           %s", self._format_ram_growth())
         LOGGER.info("Stream reconnects:          %d", counters.stream_reconnects)
         LOGGER.info("Receiver reconnects:        %d", counters.receiver_reconnects)
-        LOGGER.info(
-            "Ingest source restarts:     %s", format_counts(counters.source_restarts)
-        )
+        LOGGER.info("Ingest source restarts:     %s", format_counts(counters.source_restarts))
         LOGGER.info(
             "Video decode errors:        %s",
             format_counts(counters.video_decode_errors),
@@ -502,9 +471,7 @@ class Monitor:
             self._stream_content_checker.checks,
             self._stream_content_checker.failed_checks,
         )
-        LOGGER.info(
-            "Thermal states in seconds:  %s", format_counts(counters.thermal_states)
-        )
+        LOGGER.info("Thermal states in seconds:  %s", format_counts(counters.thermal_states))
         LOGGER.info("Deviations:")
         for deviation in self._deviations:
             LOGGER.info("  %-34s%s", f"{deviation.name}:", deviation)
@@ -523,9 +490,7 @@ class Monitor:
     def _create_sample(self, status) -> Sample:
         general = status.get("general") or {}
         top_right = status.get("topRight") or {}
-        cpu_percent, ram_mb = parse_system_monitor(
-            get_message(top_right, "systemMonitor")
-        )
+        cpu_percent, ram_mb = parse_system_monitor(get_message(top_right, "systemMonitor"))
         sample = Sample(
             elapsed=self.elapsed(),
             is_live=bool(general.get("isLive")),
@@ -584,9 +549,7 @@ class Monitor:
 
     def _update_counters(self, sample: Sample, now: float):
         if self._previous_poll_time is not None:
-            self.counters.thermal_states[sample.thermal_state] += (
-                now - self._previous_poll_time
-            )
+            self.counters.thermal_states[sample.thermal_state] += now - self._previous_poll_time
         previous_sample = self._previous_sample
         if previous_sample is None:
             return
@@ -597,9 +560,7 @@ class Monitor:
             LOGGER.warning("The device is no longer charging.")
 
     def _check(self, now: float, sample: Sample):
-        self._not_live.update(
-            now, self._stream_enabled and not sample.is_live, "The app is not streaming"
-        )
+        self._not_live.update(now, self._stream_enabled and not sample.is_live, "The app is not streaming")
         self._stream_bitrate_deviation.update(
             now,
             sample.is_live
@@ -612,8 +573,7 @@ class Monitor:
         )
         self._receiver_deviation.update(
             now,
-            sample.is_live
-            and (not sample.receiver_connected or sample.received_bitrate == 0),
+            sample.is_live and (not sample.receiver_connected or sample.received_bitrate == 0),
             "No SRT publisher" if not sample.receiver_connected else "No data received",
         )
         self._ingests_deviation.update(
@@ -636,9 +596,7 @@ class Monitor:
         if not sample.is_live or not self._stream_content_checker.is_due(now):
             return
         problems = self._stream_content_checker.check(now)
-        self._stream_content_deviation.update(
-            now, len(problems) > 0, ". ".join(problems)
-        )
+        self._stream_content_deviation.update(now, len(problems) > 0, ". ".join(problems))
 
     def _check_battery(self, sample: Sample):
         level = sample.battery_percent
@@ -646,8 +604,7 @@ class Monitor:
             return
         if 0 < level < 10:
             raise MonitorError(
-                f"The device battery level is {level} %. Connect the device to power "
-                "and run the test again."
+                f"The device battery level is {level} %. Connect the device to power and run the test again."
             )
 
 

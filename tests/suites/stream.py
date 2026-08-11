@@ -40,9 +40,7 @@ class StreamTestCase(TestCase):
         self.moblin.set_scene(SceneName.FRONT)
         with FfmpegServer(url=url, filename=filename):
             self.moblin.go_live()
-            self.moblin.wait_for_bitrate(
-                minimum_bitrate, maximum_bitrate, None, total_bytes
-            )
+            self.moblin.wait_for_bitrate(minimum_bitrate, maximum_bitrate, None, total_bytes)
             self.moblin.end()
         return filename
 
@@ -57,9 +55,7 @@ class StreamTestCase(TestCase):
         self.moblin.set_scene(SceneName.FRONT)
         with MediaMtx() as mediamtx:
             self.moblin.go_live()
-            self.moblin.wait_for_bitrate(
-                minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes
-            )
+            self.moblin.wait_for_bitrate(minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes)
             yield mediamtx
             self.moblin.end()
 
@@ -109,9 +105,7 @@ class StreamSrtToFfmpeg(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(
-            srt_listener_url(), 4_000_000, 6_000_000, 10_000_000
-        )
+        filename = self.stream_to_ffmpeg(srt_listener_url(), 4_000_000, 6_000_000, 10_000_000)
         self.assert_live_stream(filename)
 
 
@@ -126,9 +120,7 @@ class StreamSrtToFfmpegHighBitrate(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(
-            srt_listener_url(), 49_000_000, 51_000_000, 50_000_000
-        )
+        filename = self.stream_to_ffmpeg(srt_listener_url(), 49_000_000, 51_000_000, 50_000_000)
         self.assert_live_stream(filename, minimum_length=1, maximum_length=10)
 
 
@@ -172,9 +164,7 @@ class StreamSrtToFfmpegVideoRateControl(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(
-            srt_listener_url(), 4_000_000, 6_000_000, 5_000_000
-        )
+        filename = self.stream_to_ffmpeg(srt_listener_url(), 4_000_000, 6_000_000, 5_000_000)
         self.assert_live_stream(filename)
 
 
@@ -189,9 +179,7 @@ class StreamRistToFfmpeg(StreamTestCase):
         )
 
     def run(self):
-        filename = self.stream_to_ffmpeg(
-            rist_listener_url(), 4_000_000, 6_000_000, 10_000_000
-        )
+        filename = self.stream_to_ffmpeg(rist_listener_url(), 4_000_000, 6_000_000, 10_000_000)
         self.assert_live_stream(filename)
 
 
@@ -236,9 +224,7 @@ class StreamMultiRtmpToMediaMtx(StreamTestCase):
         )
 
     def run(self):
-        with self.stream_to_mediamtx(
-            4_500_000, 5_500_000, 30_000_000, multi_streaming="x3"
-        ) as mediamtx:
+        with self.stream_to_mediamtx(4_500_000, 5_500_000, 30_000_000, multi_streaming="x3") as mediamtx:
             mediamtx.wait_for_rtmp_stream("test1", 10_000_000)
             mediamtx.wait_for_rtmp_stream("test2", 10_000_000)
             mediamtx.wait_for_rtmp_stream("test3", 10_000_000)
@@ -248,9 +234,7 @@ class StreamToGenericUrls(StreamTestCase):
     """Stream to each generic URL for a few seconds."""
 
     def __init__(self, moblin: Moblin, number: int, generic_stream_url: str):
-        self._generic_stream = format_generic_stream_url_stream_name(
-            number, generic_stream_url
-        )
+        self._generic_stream = format_generic_stream_url_stream_name(number, generic_stream_url)
         super().__init__(moblin, f"StreamToGenericUrls({self._generic_stream})")
         self._generic_stream_url = generic_stream_url
 
@@ -284,7 +268,5 @@ def tests(moblin: Moblin):
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
         StreamToGenericUrls(moblin, number, generic_stream_url)
-        for number, generic_stream_url in enumerate(
-            moblin.config.generic_stream_urls(), 1
-        )
+        for number, generic_stream_url in enumerate(moblin.config.generic_stream_urls(), 1)
     ]

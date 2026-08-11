@@ -98,13 +98,7 @@ class Image:
 
 
 def create_qr_code_image(text: str, output_image: Path):
-    command = [
-        "qrtool",
-        "encode",
-        "--output",
-        str(output_image),
-        text,
-    ]
+    command = ["qrtool", "encode", "--output", str(output_image), text]
     subprocess.run(command, check=True)
 
 

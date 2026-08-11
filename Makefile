@@ -10,7 +10,9 @@ OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
-RUFF_FORMAT_ARGS = $(PYTHON_DIRS)
+RUFF_FORMAT_ARGS = \
+	--line-length 110 \
+	$(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--disable-update-check

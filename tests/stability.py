@@ -17,9 +17,7 @@ def parse_ingests(value: str) -> list[Ingest]:
             ingest = Ingest(name.strip().lower())
         except ValueError:
             choices = ", ".join(Ingest)
-            raise argparse.ArgumentTypeError(
-                f"'{name}' is not one of {choices}"
-            ) from None
+            raise argparse.ArgumentTypeError(f"'{name}' is not one of {choices}") from None
         if ingest not in ingests:
             ingests.append(ingest)
     return ingests
@@ -78,8 +76,7 @@ def main():
     )
     parser.add_argument(
         "--stream-traffic-shaping-parameters",
-        help="Traffic shaping parameters of the outgoing stream, for example "
-        "'rate=3Mbit,delay=60,loss=0.5'.",
+        help="Traffic shaping parameters of the outgoing stream, for example 'rate=3Mbit,delay=60,loss=0.5'.",
     )
     parser.add_argument(
         "--ingests-traffic-shaping-profile",

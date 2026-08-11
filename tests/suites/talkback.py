@@ -92,9 +92,7 @@ class TalkbackSrtClient(TalkbackTestCase):
                     {
                         "id": SRT_CLIENT_TALKBACK_STREAM_ID,
                         "name": "Talkback",
-                        "url": self.moblin.tester_srt_url(
-                            SRT_CLIENT_TALKBACK_SERVER_PORT
-                        ),
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
                         "enabled": True,
                     }
                 ],
@@ -102,9 +100,7 @@ class TalkbackSrtClient(TalkbackTestCase):
         )
 
     def run(self):
-        self.play_beeps(
-            srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT), TransportFormat.MPEGTS
-        )
+        self.play_beeps(srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT), TransportFormat.MPEGTS)
 
 
 def tests(moblin: Moblin):

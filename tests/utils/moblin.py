@@ -39,9 +39,7 @@ RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
 RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode frame")
-RE_BUFFERED_VIDEO_BUFFERS = re.compile(
-    r"buffered-video: (.+?): (\d+) duplicated and (\d+) dropped buffers"
-)
+RE_BUFFERED_VIDEO_BUFFERS = re.compile(r"buffered-video: (.+?): (\d+) duplicated and (\d+) dropped buffers")
 BITRATE_UNITS = {
     "bps": 1,
     "kbps": 1_000,
@@ -98,9 +96,7 @@ class BufferedVideoBuffers:
 
     def counts(self) -> BufferedVideoBuffersCounts:
         with self._lock:
-            return BufferedVideoBuffersCounts(
-                dict(self._duplicated), dict(self._dropped)
-            )
+            return BufferedVideoBuffersCounts(dict(self._duplicated), dict(self._dropped))
 
 
 class Moblin:
@@ -217,14 +213,10 @@ class Moblin:
         return url
 
     def tester_whip_url(self, path: str) -> str:
-        return (
-            f"whip://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
-        )
+        return f"whip://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
 
     def tester_whep_url(self, path: str) -> str:
-        return (
-            f"http://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
-        )
+        return f"http://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
 
     def ingest_rtmp_url(self, stream_key: str = "1") -> str:
         return f"rtmp://{self._device_media_ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
@@ -233,10 +225,7 @@ class Moblin:
         return f"srt://{self._device_media_ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
 
     def ingest_whip_url(self, stream_key: str = "1") -> str:
-        return (
-            f"http://{self._device_media_ip_address}:{WHIP_SERVER_PORT}"
-            f"/whip/stream/{stream_key}"
-        )
+        return f"http://{self._device_media_ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"
 
     def ingest_rist_url(self, virtual_destination_port: int = 1) -> str:
         return (
@@ -275,13 +264,9 @@ class Moblin:
 
         wait_until(check, "ingests to reach wanted values", timeout=timeout)
 
-    def wait_for_bitrate(
-        self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes
-    ):
+    def wait_for_bitrate(self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes):
         def check() -> bool:
-            status = parse_bitrate_status(
-                self.get_status_top_right()["bitrate"]["message"]
-            )
+            status = parse_bitrate_status(self.get_status_top_right()["bitrate"]["message"])
             return (
                 status is not None
                 and minimum_bitrate <= status.bitrate <= maximum_bitrate
@@ -298,9 +283,7 @@ class Moblin:
         return self.get_status()["topRight"]
 
     def get_ingests_status(self) -> "IngestsStatus":
-        return parse_ingests_status(
-            self.get_status_top_right()["rtmpServer"]["message"]
-        )
+        return parse_ingests_status(self.get_status_top_right()["rtmpServer"]["message"])
 
     def _execute(self, command, *args):
         return subprocess.run(
@@ -404,9 +387,7 @@ class Recorder:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._moblin.stop_recording()
-        self.recording = self._moblin.download_and_delete_latest_recording(
-            self._filename
-        )
+        self.recording = self._moblin.download_and_delete_latest_recording(self._filename)
 
     def record(self, seconds: float) -> Path:
         """Record for given number of seconds and return the downloaded recording."""

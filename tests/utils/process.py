@@ -22,9 +22,7 @@ def _log_level(_line: str) -> int:
 
 
 def log_output(stream, logger, log_level=_log_level, observer=None):
-    threading.Thread(
-        target=_log_stream, args=(stream, logger, log_level, observer), daemon=True
-    ).start()
+    threading.Thread(target=_log_stream, args=(stream, logger, log_level, observer), daemon=True).start()
 
 
 class ManagedProcess:

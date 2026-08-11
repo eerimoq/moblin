@@ -84,9 +84,7 @@ class Config:
     def shaper(self):
         shaper = self._config.get("shaper")
         if shaper is None:
-            raise Exception(
-                f"No [shaper] section found in '{self.config_toml.absolute()}'."
-            )
+            raise Exception(f"No [shaper] section found in '{self.config_toml.absolute()}'.")
         return shaper
 
     def _device(self):
@@ -95,6 +93,4 @@ class Config:
     def _validate(self, config_toml: Path):
         device_name = self.device_name()
         if device_name not in self._config["device"]:
-            raise Exception(
-                f"Device '{device_name}' not found in '{config_toml.absolute()}'."
-            )
+            raise Exception(f"Device '{device_name}' not found in '{config_toml.absolute()}'.")

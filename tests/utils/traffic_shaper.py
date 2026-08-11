@@ -197,10 +197,7 @@ class SquareProfile(Profile):
         return maximum_rate([self._low.rate, self._high.rate])
 
     def __str__(self):
-        return (
-            f"square every {self._period:.0f} s "
-            f"between ({self._low}) and ({self._high})"
-        )
+        return f"square every {self._period:.0f} s between ({self._low}) and ({self._high})"
 
 
 class RandomProfile(Profile):
@@ -242,9 +239,7 @@ class RandomProfile(Profile):
 
 
 class TrafficShaper:
-    def __init__(
-        self, config: Config, relays: list[Relay], profiles: dict[Group, Profile]
-    ):
+    def __init__(self, config: Config, relays: list[Relay], profiles: dict[Group, Profile]):
         shaper = config.shaper()
         self.ip_address = shaper["ip-address"]
         self._ssh_host = f"{shaper['user']}@{self.ip_address}"
@@ -304,14 +299,10 @@ class TrafficShaper:
         return self._profiles.get(group)
 
     def change_period(self) -> float:
-        return max(
-            (profile.change_period() for profile in self._profiles.values()), default=0
-        )
+        return max((profile.change_period() for profile in self._profiles.values()), default=0)
 
     def description(self) -> str:
-        return ", ".join(
-            f"{group} {profile}" for group, profile in self._profiles.items()
-        )
+        return ", ".join(f"{group} {profile}" for group, profile in self._profiles.items())
 
     def _apply(self, group: Group, impairment: Impairment):
         class_id = GROUP_CLASS_IDS[group]
@@ -321,7 +312,9 @@ class TrafficShaper:
             f"{impairment.netem_arguments()}",
             check=False,
         )
-        if result.returncode != 0:
+        if result.returncode == 0:
+            LOGGER.info("Shaping the %s to %s.", group, impairment)
+        else:
             LOGGER.warning(
                 "Failed to shape the %s to %s: %s",
                 group,
@@ -364,18 +357,11 @@ class TrafficShaper:
                 f"{', '.join(missing_dependencies)}"
             )
         if self._execute("sudo --non-interactive tc", check=False).returncode != 0:
-            raise Exception(
-                f"Passwordless sudo is not available on the traffic shaper "
-                f"{self._ssh_host}"
-            )
+            raise Exception(f"Passwordless sudo is not available on the traffic shaper {self._ssh_host}")
 
     def _upload_setup_script(self):
-        self._execute_with_input(
-            f"cat > {self._script_path}", self._create_setup_script()
-        )
-        LOGGER.debug(
-            "Setup script:\n%s", self._execute(f"cat {self._script_path}").stdout
-        )
+        self._execute_with_input(f"cat > {self._script_path}", self._create_setup_script())
+        LOGGER.debug("Setup script:\n%s", self._execute(f"cat {self._script_path}").stdout)
 
     def _start_session(self):
         self._session = subprocess.Popen(
@@ -414,8 +400,7 @@ class TrafficShaper:
 
     def _find_problems(self) -> list[str]:
         checks = [
-            f"tc qdisc show dev {self._interface} | grep -q htb || "
-            f"echo 'no htb qdisc on {self._interface}'"
+            f"tc qdisc show dev {self._interface} | grep -q htb || echo 'no htb qdisc on {self._interface}'"
         ]
         for relay in self._relays:
             checks.append(
@@ -433,8 +418,7 @@ class TrafficShaper:
         while time.monotonic() < end_time:
             if self._session is not None and self._session.poll() is not None:
                 raise Exception(
-                    "The traffic shaper session ended unexpectedly."
-                    f"{self._format_session_output()}"
+                    f"The traffic shaper session ended unexpectedly.{self._format_session_output()}"
                 )
             problems = self._find_problems()
             if len(problems) == 0:
@@ -498,23 +482,12 @@ class TrafficShaper:
 
     def _create_relay_command(self, relay: Relay) -> str:
         target = self._addresses[relay.side]
-        if relay.protocol == Protocol.UDP:
-            return (
-                f"socat -T {RELAY_TIMEOUT} "
-                f"UDP-LISTEN:{relay.port},fork,reuseaddr "
-                f"UDP:{target}:{relay.port}"
-            )
-        else:
-            return (
-                f"socat TCP-LISTEN:{relay.port},fork,reuseaddr "
-                f"TCP:{target}:{relay.port}"
-            )
+        port = relay.port
+        protocol = relay.protocol.upper()
+        return f"socat -T {RELAY_TIMEOUT} {protocol}-LISTEN:{port},fork,reuseaddr {protocol}:{target}:{port}"
 
     def _create_relay_pattern(self, relay: Relay) -> str:
-        if relay.protocol == Protocol.UDP:
-            return f"UDP-LISTEN:{relay.port},"
-        else:
-            return f"TCP-LISTEN:{relay.port},"
+        return f"{relay.protocol.upper()}-LISTEN:{relay.port},"
 
     def _execute(self, command: str, check: bool = True) -> subprocess.CompletedProcess:
         return subprocess.run(
@@ -526,9 +499,7 @@ class TrafficShaper:
             text=True,
         )
 
-    def _execute_with_input(
-        self, command: str, input_data: str
-    ) -> subprocess.CompletedProcess:
+    def _execute_with_input(self, command: str, input_data: str) -> subprocess.CompletedProcess:
         return subprocess.run(
             self._build_execute_arguments(command),
             timeout=EXECUTE_TIMEOUT,
@@ -540,12 +511,7 @@ class TrafficShaper:
 
     def _execute_exit(self) -> subprocess.CompletedProcess:
         return subprocess.run(
-            self._build_execute_base_arguments()
-            + [
-                "-O",
-                "exit",
-                self._ssh_host,
-            ],
+            self._build_execute_base_arguments() + ["-O", "exit", self._ssh_host],
             timeout=EXECUTE_TIMEOUT,
             capture_output=True,
             check=False,
@@ -554,20 +520,10 @@ class TrafficShaper:
 
     def _build_execute_arguments(self, command: str) -> list[str]:
         LOGGER.debug("SSH command: %s", command)
-        return self._build_execute_base_arguments() + [
-            self._ssh_host,
-            command,
-        ]
+        return self._build_execute_base_arguments() + [self._ssh_host, command]
 
-    def _build_execute_base_arguments(
-        self,
-    ) -> list[str]:
-        return [
-            "ssh",
-            "-S",
-            str(self._control_path),
-            *SSH_OPTIONS,
-        ]
+    def _build_execute_base_arguments(self) -> list[str]:
+        return ["ssh", "-S", str(self._control_path), *SSH_OPTIONS]
 
 
 def minimum_rate(rates: list[int | None]) -> int | None:
@@ -609,9 +565,7 @@ def parse_profile(name: ProfileName, parameters: str | None) -> Profile:
     else:
         raise Exception(f"Unsupported traffic shaping profile '{name}'.")
     if len(values) > 0:
-        raise Exception(
-            f"Unsupported {name} traffic shaping settings: {', '.join(sorted(values))}."
-        )
+        raise Exception(f"Unsupported {name} traffic shaping settings: {', '.join(sorted(values))}.")
     return profile
 
 
@@ -629,9 +583,7 @@ def _parse_values(parameters: str) -> dict[str, str]:
 
 
 def _create_constant_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
-    return ConstantProfile(
-        _with_rate(impairment, values.pop("rate", DEFAULT_CONSTANT_RATE))
-    )
+    return ConstantProfile(_with_rate(impairment, values.pop("rate", DEFAULT_CONSTANT_RATE)))
 
 
 def _create_square_profile(impairment: Impairment, values: dict[str, str]) -> Profile:

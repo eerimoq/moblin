@@ -16,9 +16,7 @@ FFMPEG_VIDEO_CODECS = {
 class Record(TestCase):
     """Record a 10 seconds video."""
 
-    def __init__(
-        self, moblin: Moblin, video_codec: VideoCodec, resolution: Resolution, fps: int
-    ):
+    def __init__(self, moblin: Moblin, video_codec: VideoCodec, resolution: Resolution, fps: int):
         super().__init__(moblin, f"Record{video_codec.name}-{resolution}@{fps}")
         self._video_codec = video_codec
         self._resolution = resolution
@@ -67,9 +65,5 @@ def tests(moblin: Moblin):
     ]
     for resolution in [Resolution.FULL_HD, Resolution.QUAD_HD, Resolution.ULTRA_HD]:
         for fps in [30, 60]:
-            test_cases.append(
-                Record(
-                    moblin, video_codec=VideoCodec.H265, resolution=resolution, fps=fps
-                )
-            )
+            test_cases.append(Record(moblin, video_codec=VideoCodec.H265, resolution=resolution, fps=fps))
     return test_cases

@@ -36,18 +36,14 @@ class MediaMtx:
         self._wait_for_connection(
             "rtmpconns/list",
             "RTMP stream to MediaMTX",
-            lambda stream: (
-                stream["path"] == path and stream["bytesReceived"] > bytes_received
-            ),
+            lambda stream: stream["path"] == path and stream["bytesReceived"] > bytes_received,
         )
 
     def wait_for_srt_stream(self, path, bytes_received):
         self._wait_for_connection(
             "srtconns/list",
             "SRT stream to MediaMTX",
-            lambda stream: (
-                stream["path"] == path and stream["bytesReceived"] > bytes_received
-            ),
+            lambda stream: stream["path"] == path and stream["bytesReceived"] > bytes_received,
         )
 
     def wait_for_webrtc_stream(self, path, bytes_received):
@@ -85,9 +81,7 @@ class MediaMtx:
                 return stream["id"], stream["bytesReceived"]
         return None
 
-    def _wait_for_connection(
-        self, endpoint: str, description: str, match: Callable[[dict], bool]
-    ):
+    def _wait_for_connection(self, endpoint: str, description: str, match: Callable[[dict], bool]):
         wait_until(
             lambda: any(match(stream) for stream in self._api_get(endpoint)["items"]),
             description,
@@ -114,8 +108,6 @@ class MediaMtx:
         )
 
     def _api_get(self, path):
-        response = requests.get(
-            f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5
-        )
+        response = requests.get(f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5)
         response.raise_for_status()
         return response.json()

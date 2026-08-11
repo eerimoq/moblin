@@ -38,12 +38,8 @@ class BrowserWidgetModes(TestCase):
                     {
                         "cameraPosition": CameraPosition.NONE,
                         "widgets": [
-                            scene_widget_settings(
-                                PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100
-                            ),
-                            scene_widget_settings(
-                                AUDIO_AND_VIDEO_ONLY_WIDGET_ID, 50, 0, 100
-                            ),
+                            scene_widget_settings(PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100),
+                            scene_widget_settings(AUDIO_AND_VIDEO_ONLY_WIDGET_ID, 50, 0, 100),
                             scene_widget_settings(AUDIO_ONLY_WIDGET_ID, 0, 50, 100),
                             scene_widget_settings(LOCAL_ONLY_WIDGET_ID, 50, 50, 100),
                         ],
@@ -80,9 +76,7 @@ class BrowserWidgetModes(TestCase):
         )
 
     def run(self):
-        create_qr_code_image(
-            "n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg"
-        )
+        create_qr_code_image("n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg")
         create_qr_codes_video(WEBSITES_DIR / "BrowserWidgetHighFpsVideo.mp4")
         with WebServer(WEBSITES_DIR):
             self.import_settings()
@@ -156,9 +150,7 @@ class BrowserWidgetModes(TestCase):
                 seen_frame_number_count += 1
             else:
                 seen_frame_number_count = 1
-            self.assert_greater_equal(
-                qr_code.number, previous_frame_number, f"Index {index}"
-            )
+            self.assert_greater_equal(qr_code.number, previous_frame_number, f"Index {index}")
             self.assert_less(seen_frame_number_count, 4, f"Index {index}")
             previous_frame_number = qr_code.number
 

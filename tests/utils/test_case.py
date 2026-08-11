@@ -125,9 +125,7 @@ class TestCase(systest.TestCase):
         if image.is_all_black():
             return
         position = image.find_non_black_pixel() or (-1, -1)
-        raise Exception(
-            f"Pixel at {position} is {image.pixel(*position)}, but expected it to be black."
-        )
+        raise Exception(f"Pixel at {position} is {image.pixel(*position)}, but expected it to be black.")
 
     def assert_not_all_black(self, image: Image, minimum_ratio: float = 0.01):
         self.assert_greater(image.non_black_ratio(), minimum_ratio)
@@ -151,9 +149,7 @@ class TestCase(systest.TestCase):
         self.assert_equal(video.height, height)
         self.assert_greater(video.average_fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.average_fps, Fraction(f"{fps + 1}/1"))
-        self.assert_presentation_time_stamps(
-            recording, 1 / fps, [frame.pts for frame in video.frames]
-        )
+        self.assert_presentation_time_stamps(recording, 1 / fps, [frame.pts for frame in video.frames])
         self._assert_video_frame_numbers_increasing(recording, has_qr_codes)
         picture_types = {frame.picture_type for frame in video.frames}
         self.assert_equal(len(picture_types), 3)
@@ -224,9 +220,7 @@ class TestCase(systest.TestCase):
                 LOGGER.info("Missing PTS: %s", missing_presentation_time_stamp)
         self.assert_equal(len(missing_presentation_time_stamps), 0)
 
-    def _assert_video_frame_numbers_increasing(
-        self, recording: Path, has_qr_codes: bool
-    ):
+    def _assert_video_frame_numbers_increasing(self, recording: Path, has_qr_codes: bool):
         if not has_qr_codes:
             return
         qr_codes = read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))

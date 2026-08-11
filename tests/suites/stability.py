@@ -142,9 +142,7 @@ class StabilityIngestsOneStream(TestCase):
                         "name": "Stability",
                         "enabled": True,
                         "url": self.moblin.tester_srt_publish_url(STREAM_PATH),
-                        "srt": {
-                            "adaptiveBitrateEnabled": self._stream_profile is not None
-                        },
+                        "srt": {"adaptiveBitrateEnabled": self._stream_profile is not None},
                         "bitrateRateControl": BitrateRateControl.CBR,
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
@@ -262,9 +260,7 @@ class StabilityIngestsOneStream(TestCase):
                 "ristServer": {
                     "enabled": Ingest.RIST in self._ingests,
                     "port": RIST_SERVER_PORT,
-                    "streams": [
-                        {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}
-                    ],
+                    "streams": [{"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}],
                 },
                 "whepClient": {
                     "streams": [
@@ -291,9 +287,7 @@ class StabilityIngestsOneStream(TestCase):
             if self._shaper is not None:
                 stack.enter_context(self._shaper)
                 webrtc_host = self._shaper.ip_address
-            mediamtx = stack.enter_context(
-                MediaMtx(log_level="warn", webrtc_host=webrtc_host)
-            )
+            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host))
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
@@ -395,9 +389,7 @@ class StabilityIngestsOneStream(TestCase):
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             stream_content=self._create_stream_content_expectation(),
-            traffic_shaping="none"
-            if self._shaper is None
-            else self._shaper.description(),
+            traffic_shaping="none" if self._shaper is None else self._shaper.description(),
         )
 
     def _create_stream_content_expectation(self) -> StreamContentExpectation:
@@ -446,9 +438,7 @@ def name_widget_settings(name: str, widget_id: str):
     )
 
 
-def name_scene_widget_settings(
-    widget_id: str, x: float, y: float, alignment: Alignment
-):
+def name_scene_widget_settings(widget_id: str, x: float, y: float, alignment: Alignment):
     return scene_widget_settings(widget_id, x=x, y=y, size=100, alignment=alignment)
 
 
@@ -506,9 +496,7 @@ def tests(
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityIngestsOneStream(
-            moblin, ingests, stream, silent_audio_check, duration, shaper
-        ),
+        StabilityIngestsOneStream(moblin, ingests, stream, silent_audio_check, duration, shaper),
     ]
 
 
