@@ -10,6 +10,7 @@ from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from utils.generate_device_settings import SCREEN_SCENE_SETTINGS
 from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
@@ -47,11 +48,6 @@ MAP_SMALL_WIDGET_ID = uuid()
 MAP_LARGE_WIDGET_ID = uuid()
 PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
-SCREEN_SCENE_SETTINGS = {
-    "name": SceneName.SCREEN,
-    "cameraPosition": CameraPosition.SCREEN_CAPTURE,
-    "enabled": True,
-}
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"

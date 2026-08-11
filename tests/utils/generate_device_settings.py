@@ -15,6 +15,7 @@ CACHE_DIR = TEST_DIR / "cache"
 
 
 class SceneName(StrEnum):
+    EMPTY = "Empty"
     FRONT = "Front"
     SCREEN = "Screen"
 
@@ -87,9 +88,19 @@ class Resolution(StrEnum):
         return int(width), int(height)
 
 
+EMPTY_SCENE_SETTINGS = {
+    "name": SceneName.EMPTY,
+    "cameraPosition": CameraPosition.NONE,
+    "enabled": True,
+}
 FRONT_SCENE_SETTINGS = {
     "name": SceneName.FRONT,
     "cameraPosition": CameraPosition.FRONT,
+    "enabled": True,
+}
+SCREEN_SCENE_SETTINGS = {
+    "name": SceneName.SCREEN,
+    "cameraPosition": CameraPosition.SCREEN_CAPTURE,
     "enabled": True,
 }
 RECORD_STREAM_SETTINGS = {
@@ -174,6 +185,7 @@ def base_settings(config: Config):
             "server": {
                 "enabled": True,
                 "url": f"ws://{config.tester_ip_address()}:{config.remote_control_port()}",
+                "reliableChatAndEvents": True,
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
             "password": "1234",

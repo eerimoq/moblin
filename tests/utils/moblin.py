@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import requests
+from moblin_assistant import make_client_request
 
 from .arduino import Arduino
 from .config import RIST_SERVER_PORT
@@ -129,6 +130,7 @@ class Moblin:
         self._device_media_ip_address = self.ip_address
         self._capabilities = config.capabilities()
         self._moving_picture = moving_picture
+        self._chat_message_id = 0
 
     def __enter__(self):
         self._server.start()
@@ -157,6 +159,19 @@ class Moblin:
 
     def set_talkback_mic(self, name):
         self._execute("set_talkback_mic", name)
+
+    def set_muted(self, on: bool):
+        self._request({"setMute": {"on": on}})
+
+    def send_chat_message(self, text: str, is_moderator: bool = True):
+        self._request(
+            {
+                "chatMessages": {
+                    "history": False,
+                    "messages": [self._create_chat_message(text, is_moderator)],
+                }
+            }
+        )
 
     def go_live(self):
         self._execute("go_live")
@@ -282,8 +297,33 @@ class Moblin:
     def get_status_top_right(self):
         return self.get_status()["topRight"]
 
+    def get_camera_status(self) -> str:
+        return self.get_status()["topLeft"]["camera"]["message"]
+
+    def is_muted(self) -> bool:
+        return self.get_status()["general"]["isMuted"]
+
     def get_ingests_status(self) -> "IngestsStatus":
         return parse_ingests_status(self.get_status_top_right()["rtmpServer"]["message"])
+
+    def _create_chat_message(self, text: str, is_moderator: bool):
+        self._chat_message_id = max(self._chat_message_id + 1, int(time.time() * 1000))
+        return {
+            "id": self._chat_message_id,
+            "platform": {"twitch": {}},
+            "displayName": "Tester",
+            "user": "tester",
+            "userBadges": [],
+            "segments": [{"id": index, "text": f"{word} "} for index, word in enumerate(text.split())],
+            "timestamp": time.strftime("%H:%M"),
+            "isAction": False,
+            "isModerator": is_moderator,
+            "isSubscriber": False,
+            "isOwner": False,
+        }
+
+    def _request(self, data):
+        return make_client_request(self._remote_control_port, data)
 
     def _execute(self, command, *args):
         return subprocess.run(
