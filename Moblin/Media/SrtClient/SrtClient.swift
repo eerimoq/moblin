@@ -88,7 +88,7 @@ class SrtClient: @unchecked Sendable {
             return
         }
         self.socket = socket
-        DispatchQueue(label: "com.eerimoq.moblin.srt-client-connection", qos: .userInteractive).async {
+        startBlockingThread(name: "com.eerimoq.moblin.srt-client-connection") {
             self.main(socket: socket)
         }
     }

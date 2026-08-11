@@ -21,7 +21,7 @@ class SrtServer: @unchecked Sendable {
     func start() {
         srt_startup()
         running = true
-        DispatchQueue(label: "com.eerimoq.srtla-srt-server", qos: .userInteractive).async {
+        startBlockingThread(name: "com.eerimoq.srtla-srt-server") {
             do {
                 try self.main()
             } catch {
@@ -62,7 +62,7 @@ class SrtServer: @unchecked Sendable {
             let streamId = acceptedStreamId.value
             let cameraId = stream.id
             let name = stream.camera()
-            DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
+            startBlockingThread(name: "com.eerimoq.Moblin.SrtClient") {
                 srtlaServer.connectedStreamIds.mutate { $0.append(streamId) }
                 srtlaServer.clientConnected(cameraId: cameraId, name: name)
                 SrtServerClient(server: self,
