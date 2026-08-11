@@ -24,7 +24,6 @@ from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.moblin import Recorder
 from utils.test_case import TestCase
-from utils.utils import Crop
 from utils.utils import Range
 
 RTMP_STREAM_ID = uuid()
@@ -42,8 +41,6 @@ SRT_CLIENT_STREAM_2_ID = uuid()
 WHIP_STREAM_2_ID = uuid()
 WHEP_STREAM_2_ID = uuid()
 SECOND_INGEST_WIDGET_ID = uuid()
-FIRST_INGEST_CROP = Crop(x=0, y=0, width=800, height=500)
-SECOND_INGEST_CROP = Crop(x=1120, y=580, width=800, height=500)
 
 
 class IngestTestCase(TestCase):
@@ -309,10 +306,7 @@ class ParallelIngestTestCase(IngestTestCase):
         return self.record_ingest(startup_delay=startup_delay, number_of_ingests=2)
 
     def assert_parallel_recording(self, recording: Path):
-        self.assert_recording(
-            recording,
-            has_qr_codes=False
-        )
+        self.assert_recording(recording, has_qr_codes=False)
 
 
 class IngestParallelRtmpServer(ParallelIngestTestCase):
