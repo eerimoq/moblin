@@ -2361,8 +2361,9 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
-        database.chat.enabled && stream.openStreamingPlatformUrl != "" && stream
-            .openStreamingPlatformChannelId != ""
+        database.chat.enabled && stream.openStreamingPlatformChatEnabled
+            && stream.openStreamingPlatformUrl != ""
+            && stream.openStreamingPlatformChannelId != ""
     }
 
     func isOpenStreamingPlatformChatConnected() -> Bool {
@@ -2395,6 +2396,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func openStreamingPlatformRoomUpdated() {
+        reloadOpenStreamingPlatformChat()
+        resetChat()
+    }
+
+    func openStreamingPlatformChatEnabledUpdated() {
         reloadOpenStreamingPlatformChat()
         resetChat()
     }
