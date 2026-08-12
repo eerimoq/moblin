@@ -27,20 +27,16 @@ class VideoDecoder: @unchecked Sendable {
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
-        lockQueue.async {
-            self.isRunning = true
-            self.invalidateSession = true
-            self.formatDescription = formatDescription
-        }
+        isRunning = true
+        invalidateSession = true
+        self.formatDescription = formatDescription
     }
 
     func stopRunning() {
-        lockQueue.async {
-            self.session = nil
-            self.invalidateSession = true
-            self.formatDescription = nil
-            self.isRunning = false
-        }
+        session = nil
+        invalidateSession = true
+        formatDescription = nil
+        isRunning = false
     }
 
     func decodeSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
