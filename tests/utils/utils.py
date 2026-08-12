@@ -21,11 +21,9 @@ class Range:
 def wait_until(
     check: Callable[[], bool],
     description: str,
-    timeout: float = 30,
-    interval: float = 1,
     ignore_errors: bool = False,
 ):
-    end_time = time.monotonic() + timeout
+    end_time = time.monotonic() + 60
     while time.monotonic() < end_time:
         try:
             if check():
@@ -33,7 +31,7 @@ def wait_until(
         except Exception:
             if not ignore_errors:
                 raise
-        time.sleep(interval)
+        time.sleep(0.5)
     raise Exception(f"Timeout waiting for {description}")
 
 

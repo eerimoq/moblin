@@ -131,7 +131,7 @@ class TestCase(systest.TestCase):
         self.assert_greater(image.non_black_ratio(), minimum_ratio)
 
     def wait_until(self, check: Callable[[], bool]):
-        wait_until(check, "condition to be true", timeout=15, interval=0.1)
+        wait_until(check, "condition to be true")
 
     def _assert_video(
         self,

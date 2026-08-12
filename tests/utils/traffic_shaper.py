@@ -48,7 +48,6 @@ ROOT_RATE = "10gbit"
 DEFAULT_LIMIT = 1000
 RELAY_TIMEOUT = 600
 READY_TIMEOUT = 30
-CONTROL_MASTER_TIMEOUT = 30
 EXECUTE_TIMEOUT = 30
 SESSION_OUTPUT_LINES = 20
 BITRATE_SUFFIXES = {
@@ -342,8 +341,6 @@ class TrafficShaper:
         wait_until(
             lambda: self._execute("true", check=False).returncode == 0,
             f"a connection to the traffic shaper {self._ssh_host}",
-            timeout=CONTROL_MASTER_TIMEOUT,
-            interval=0.5,
         )
 
     def _check_dependencies(self):

@@ -266,7 +266,7 @@ class Moblin:
             f"?virt-dst-port={virtual_destination_port}"
         )
 
-    def wait_for_tcp_ports(self, *ports: int, timeout: float = 30):
+    def wait_for_tcp_ports(self, *ports: int):
         for port in ports:
 
             def check(port=port) -> bool:
@@ -274,7 +274,7 @@ class Moblin:
                     sock.settimeout(1)
                     return sock.connect_ex((self._device_media_ip_address, port)) == 0
 
-            wait_until(check, f"TCP port {port} to accept connections", timeout=timeout)
+            wait_until(check, f"TCP port {port} to accept connections")
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in self._capabilities
@@ -287,7 +287,6 @@ class Moblin:
         bitrate: Range,
         total_bytes,
         number_of_ingests,
-        timeout: float = 60,
     ):
         accumulated_total_bytes = 0.0
         previous_total_bytes = self.get_ingests_status().total_bytes
@@ -305,7 +304,7 @@ class Moblin:
                 and status.number_of_ingests == number_of_ingests
             )
 
-        wait_until(check, "ingests to reach wanted values", timeout=timeout)
+        wait_until(check, "ingests to reach wanted values")
 
     def wait_for_bitrate(self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes):
         def check() -> bool:
@@ -317,7 +316,7 @@ class Moblin:
                 and status.total_bytes >= total_bytes
             )
 
-        wait_until(check, "bitrate to reach wanted value", timeout=60)
+        wait_until(check, "bitrate to reach wanted value")
 
     def get_status(self):
         return self._request({"getStatus": {}})["data"]["getStatus"]
@@ -373,7 +372,7 @@ class Moblin:
             self.ping()
             return True
 
-        wait_until(check, "streamer to connect", timeout=60, ignore_errors=True)
+        wait_until(check, "streamer to connect", ignore_errors=True)
         LOGGER.info("Remote control streamer connected")
 
 

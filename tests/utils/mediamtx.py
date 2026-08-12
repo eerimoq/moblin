@@ -103,13 +103,7 @@ class MediaMtx:
         return {**os.environ, **env}
 
     def _wait_until_server_is_ready(self):
-        wait_until(
-            lambda: self._api_get("info") is not None,
-            "MediaMTX to start",
-            timeout=15,
-            interval=0.5,
-            ignore_errors=True,
-        )
+        wait_until(lambda: self._api_get("info") is not None, "MediaMTX to start", ignore_errors=True)
 
     def _api_get(self, path):
         response = requests.get(f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5)
