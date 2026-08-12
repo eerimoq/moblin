@@ -373,7 +373,6 @@ class StabilityIngestsOneStream(TestCase):
             self._ingests_bitrate_range,
             total_bytes=0,
             number_of_ingests=len(self._ingests),
-            timeout=180,
         )
 
     def _go_live(self, mediamtx: MediaMtx):
