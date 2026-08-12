@@ -570,6 +570,6 @@ def tests(moblin: Moblin):
         IngestParallelSrtClient(moblin),
         IngestParallelRtspClient(moblin),
         IngestParallelRistServer(moblin),
-        # IngestParallelWhipServer(moblin),
+        IngestParallelWhipServer(moblin),
         # IngestParallelWhepClient(moblin),
     ]
