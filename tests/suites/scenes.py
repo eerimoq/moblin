@@ -97,9 +97,9 @@ class SceneSwitchMultipleTimes(TestCase):
 
 class SceneSwitchBackAndFrontCameraAudio(TestCase):
     """Switch between a back camera scene and a front camera scene every two seconds
-    while recording with the default builtin microphone. White noise is played on the
-    test runner computer for the microphone to pick up. Validate that the recorded audio
-    has no glitches.
+    while recording and streaming over SRT to the test runner computer with the default
+    builtin microphone. White noise is played on the test runner computer for the
+    microphone to pick up. Validate that the recorded and streamed audio has no glitches.
 
     """
 
@@ -111,7 +111,15 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
         self.skip_if_missing_capability(Capability.PIP)
         self.moblin.import_settings(
             overrides={
-                "streams": [RECORD_STREAM_SETTINGS],
+                "streams": [
+                    {
+                        **RECORD_STREAM_SETTINGS,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                    }
+                ],
                 "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
                 "videoStabilizationMode": self.video_stabilization_mode,
             }
@@ -122,15 +130,20 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
         front_camera = self.select_scene(SceneName.FRONT)
         self.assert_not_equal(back_camera, front_camera)
         recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        stream_file = FILES_DIR / f"{self.name}.ts"
         with FfmpegNoisePlayer():
-            time.sleep(WARM_UP_TIME)
-            with recorder:
-                for _ in range(5):
-                    self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
-                    time.sleep(2)
-                    self.assert_equal(self.select_scene(SceneName.FRONT), front_camera)
-                    time.sleep(2)
+            with FfmpegServer(url=srt_listener_url(), filename=stream_file):
+                time.sleep(WARM_UP_TIME)
+                self.moblin.go_live()
+                with recorder:
+                    for _ in range(5):
+                        self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                        time.sleep(2)
+                        self.assert_equal(self.select_scene(SceneName.FRONT), front_camera)
+                        time.sleep(2)
+                self.moblin.end()
         self.assert_no_audio_glitches(recorder.recording)
+        self.assert_no_audio_glitches(stream_file)
 
     def select_scene(self, name: SceneName) -> str:
         self.moblin.set_scene(name)
