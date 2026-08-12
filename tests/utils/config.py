@@ -2,6 +2,10 @@ import tomllib
 from enum import StrEnum
 from pathlib import Path
 
+from xdg_base_dirs import xdg_config_home
+
+from .utils import TEST_DIR
+
 # Ports served by Moblin on the device.
 WEB_REMOTE_CONTROL_PORT = 1180
 RTMP_SERVER_PORT = 11935
@@ -55,13 +59,22 @@ def rist_listener_url(port: int = TESTER_RIST_PORT) -> str:
     return f"rist://@0.0.0.0:{port}"
 
 
+def find_config_toml() -> Path:
+    paths = [TEST_DIR / "config.toml", xdg_config_home() / "moblin" / "tests" / "config.toml"]
+    for path in paths:
+        if path.exists():
+            return path
+    found = " or ".join(f"'{path}'" for path in paths)
+    raise Exception(f"No configuration file found. Create {found}.")
+
+
 class Config:
-    def __init__(self, config_toml: Path, device: str):
-        self.config_toml = config_toml
-        self._config = tomllib.loads(config_toml.read_text())
+    def __init__(self, device: str):
+        self.config_toml = find_config_toml()
+        self._config = tomllib.loads(self.config_toml.read_text())
         if device:
             self.general()["device"] = device
-        self._validate(config_toml)
+        self._validate(self.config_toml)
 
     def device_name(self):
         return self.general()["device"]

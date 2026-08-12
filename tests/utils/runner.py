@@ -2,7 +2,6 @@ import argparse
 import logging
 import shutil
 from collections.abc import Callable
-from pathlib import Path
 
 import systest
 
@@ -18,7 +17,6 @@ MakeTests = Callable[[Moblin, argparse.Namespace], list]
 
 def create_parser(description: str | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("config_toml", type=Path)
     parser.add_argument("--device")
     parser.add_argument("--moving-picture", action="store_true")
     parser.add_argument("--arduino-serial-port")
@@ -39,7 +37,7 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     check_dependencies()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
     logging.getLogger("websockets.client").setLevel(logging.INFO)
-    config = Config(args.config_toml, args.device)
+    config = Config(args.device)
     if args.arduino_serial_port:
         arduino = Arduino(args.arduino_serial_port)
     else:

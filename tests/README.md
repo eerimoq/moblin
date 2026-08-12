@@ -18,6 +18,9 @@ Copy `config.example.toml` to `config.toml` and modify it to match your test set
 cp config.example.toml config.toml
 ```
 
+`config.toml` in this folder is used if it exists, otherwise
+`$XDG_CONFIG_HOME/moblin/tests/config.toml`, where `$XDG_CONFIG_HOME` defaults to `~/.config`.
+
 # Moblin device configuration
 
 ## Via clipboard

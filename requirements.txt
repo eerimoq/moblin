@@ -11,3 +11,4 @@ mypy
 playwright
 simba_soam
 irwin
+xdg-base-dirs

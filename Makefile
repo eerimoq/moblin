@@ -64,8 +64,7 @@ CODE_DIRS += "Moblin Screen Recording"
 CODE_DIRS += "MoblinTests"
 CODE_DIRS += "WebRemoteControlFrontend"
 
-CONFIG_TOML ?= config.toml
-TEST_MAKE_ARGS = -C tests CONFIG_TOML=$(CONFIG_TOML) TEST_ARGS="$(TEST_ARGS)"
+TEST_MAKE_ARGS = -C tests TEST_ARGS="$(TEST_ARGS)"
 
 SHELL = /usr/bin/env bash
 
