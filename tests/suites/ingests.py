@@ -176,7 +176,7 @@ class IngestRtspClientH264(IngestTestCase):
     def run(self):
         with MediaMtx() as mediamtx:
             with FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"):
-                mediamtx.wait_for_rtsp_stream(2_000_000)
+                mediamtx.wait_for_rtsp_stream("1", 2_000_000)
                 recording = self.record_ingest(startup_delay=5)
         self.assert_recording(recording)
 
@@ -442,8 +442,8 @@ class IngestParallelRtspClient(ParallelIngestTestCase):
             stream_1 = FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1")
             stream_2 = FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/2")
             with stream_1, stream_2:
-                mediamtx.wait_for_rtmp_stream("1", 1_000_000)
-                mediamtx.wait_for_rtmp_stream("2", 1_000_000)
+                mediamtx.wait_for_rtsp_stream("1", 2_000_000)
+                mediamtx.wait_for_rtsp_stream("2", 2_000_000)
                 recording = self.record_parallel_ingests(startup_delay=5)
         self.assert_parallel_recording(recording)
 
@@ -568,7 +568,7 @@ def tests(moblin: Moblin):
         IngestParallelRtmpServer(moblin),
         IngestParallelSrtServer(moblin),
         IngestParallelSrtClient(moblin),
-        # IngestParallelRtspClient(moblin),
+        IngestParallelRtspClient(moblin),
         IngestParallelRistServer(moblin),
         # IngestParallelWhipServer(moblin),
         # IngestParallelWhepClient(moblin),

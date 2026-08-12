@@ -68,11 +68,15 @@ class MediaMtx:
             ),
         )
 
-    def wait_for_rtsp_stream(self, outbound_bytes):
+    def wait_for_rtsp_stream(self, path, outbound_bytes):
         self._wait_for_connection(
-            "rtspconns/list",
+            "rtspsessions/list",
             "RTSP stream from MediaMTX",
-            lambda stream: stream["outboundBytes"] > outbound_bytes,
+            lambda stream: (
+                stream["path"] == path
+                and stream["state"] == "read"
+                and stream["outboundBytes"] > outbound_bytes
+            ),
         )
 
     def get_srt_publisher(self, path) -> tuple[str, int] | None:
