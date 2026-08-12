@@ -51,7 +51,7 @@ def main():
             for xcode_languages, google_language in LANGUAGES:
                 translated = None
 
-                if not isinstance(xcode_languages, list):
+                if isinstance(xcode_languages, str):
                     xcode_languages = [xcode_languages]
 
                 for xcode_language in xcode_languages:

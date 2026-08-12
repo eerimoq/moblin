@@ -41,6 +41,19 @@ PYLINT_ARGS = \
 ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
+MYPY_ARGS = \
+	--check-untyped-defs \
+	--ignore-missing-imports \
+	--warn-redundant-casts \
+	--warn-unused-ignores \
+	--warn-no-return \
+	--strict-equality \
+	--no-error-summary \
+	$(PYTHON_DIRS)
+RUFF_CHECK_ARGS = \
+	--isolated \
+	--select E9,F \
+	$(PYTHON_DIRS)
 
 CODE_DIRS += "Common"
 CODE_DIRS += "Moblin"
@@ -74,6 +87,8 @@ lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYLINT_ARGS)
+	ruff check $(RUFF_CHECK_ARGS)
+	mypy $(MYPY_ARGS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:

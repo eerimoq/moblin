@@ -93,6 +93,12 @@ RIST_NAME_WIDGET_ID = uuid()
 WHEP_NAME_WIDGET_ID = uuid()
 
 
+@dataclass
+class Source:
+    name: str
+    command: FfmpegCommand
+
+
 class StabilityIngestsOneStream(TestCase):
     """Test long streaming sessions."""
 
@@ -506,9 +512,3 @@ def tests(
     return [
         StabilityIngestsOneStream(moblin, ingests, stream, record, silent_audio_check, duration, shaper),
     ]
-
-
-@dataclass
-class Source:
-    name: str
-    command: FfmpegCommand
