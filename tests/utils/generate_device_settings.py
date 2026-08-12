@@ -6,6 +6,7 @@ from uuid import uuid7
 
 import requests
 
+from .config import REMOTE_CONTROL_PASSWORD
 from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .utils import TEST_DIR
@@ -188,7 +189,7 @@ def base_settings(config: Config):
                 "reliableChatAndEvents": True,
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
-            "password": "1234",
+            "password": REMOTE_CONTROL_PASSWORD,
         },
         "location": {"enabled": True},
         "verboseStatuses": True,

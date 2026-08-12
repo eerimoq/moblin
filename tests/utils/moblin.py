@@ -14,6 +14,7 @@ import requests
 from moblin_assistant import make_client_request
 
 from .arduino import Arduino
+from .config import REMOTE_CONTROL_PASSWORD
 from .config import RIST_SERVER_PORT
 from .config import RTMP_SERVER_PORT
 from .config import SRT_SERVER_PORT
@@ -118,7 +119,7 @@ class Moblin:
                 str(self._remote_control_port),
                 "run",
                 "--password",
-                "1234",
+                REMOTE_CONTROL_PASSWORD,
             ],
             LOGGER_ASSISTANT,
             observer=self._handle_log_entry,
