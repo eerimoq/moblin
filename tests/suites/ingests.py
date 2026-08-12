@@ -26,20 +26,8 @@ from utils.moblin import Recorder
 from utils.test_case import TestCase
 from utils.utils import Range
 
-RTMP_STREAM_ID = uuid()
-RTSP_STREAM_ID = uuid()
-RIST_STREAM_ID = uuid()
-SRT_STREAM_ID = uuid()
-SRT_CLIENT_STREAM_ID = uuid()
-WHIP_STREAM_ID = uuid()
-WHEP_STREAM_ID = uuid()
-RTMP_STREAM_2_ID = uuid()
-RTSP_STREAM_2_ID = uuid()
-RIST_STREAM_2_ID = uuid()
-SRT_STREAM_2_ID = uuid()
-SRT_CLIENT_STREAM_2_ID = uuid()
-WHIP_STREAM_2_ID = uuid()
-WHEP_STREAM_2_ID = uuid()
+STREAM_ID = uuid()
+STREAM_2_ID = uuid()
 SECOND_INGEST_WIDGET_ID = uuid()
 
 
@@ -75,13 +63,13 @@ class IngestRtmpServer(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.RTMP,
-                "rtmpCameraId": RTMP_STREAM_ID,
-                "micId": mic_id(RTMP_STREAM_ID),
+                "rtmpCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             rtmpServer={
                 "enabled": True,
                 "port": RTMP_SERVER_PORT,
-                "streams": [{"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"}],
+                "streams": [{"id": STREAM_ID, "name": "1", "streamKey": "1"}],
             },
         )
         self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
@@ -99,13 +87,13 @@ class IngestSrtServer(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.SRTLA,
-                "srtlaCameraId": SRT_STREAM_ID,
-                "micId": mic_id(SRT_STREAM_ID),
+                "srtlaCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             srtlaServer={
                 "enabled": True,
                 "srtPort": SRT_SERVER_PORT,
-                "streams": [{"id": SRT_STREAM_ID, "name": "Test", "streamId": "1"}],
+                "streams": [{"id": STREAM_ID, "name": "Test", "streamId": "1"}],
             },
         )
 
@@ -126,13 +114,13 @@ class IngestSrtClient(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.SRT_CLIENT,
-                "srtClientCameraId": SRT_CLIENT_STREAM_ID,
-                "micId": mic_id(SRT_CLIENT_STREAM_ID),
+                "srtClientCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             srtClient={
                 "streams": [
                     {
-                        "id": SRT_CLIENT_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT),
                         "enabled": True,
@@ -158,13 +146,13 @@ class IngestRtspClientH264(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.RTSP,
-                "rtspCameraId": RTSP_STREAM_ID,
-                "micId": mic_id(RTSP_STREAM_ID),
+                "rtspCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             rtspClient={
                 "streams": [
                     {
-                        "id": RTSP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_rtsp_url("1"),
                         "enabled": True,
@@ -188,13 +176,13 @@ class IngestRistServer(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.RIST,
-                "ristCameraId": RIST_STREAM_ID,
-                "micId": mic_id(RIST_STREAM_ID),
+                "ristCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             ristServer={
                 "enabled": True,
                 "port": RIST_SERVER_PORT,
-                "streams": [{"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}],
+                "streams": [{"id": STREAM_ID, "name": "1", "virtualDestinationPort": 1}],
             },
         )
 
@@ -215,15 +203,15 @@ class IngestWhipServer(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.WHIP,
-                "whipCameraId": WHIP_STREAM_ID,
-                "micId": mic_id(WHIP_STREAM_ID),
+                "whipCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             whipServer={
                 "enabled": True,
                 "port": WHIP_SERVER_PORT,
                 "streams": [
                     {
-                        "id": WHIP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "streamKey": "1",
                         "latency": 2000,
@@ -245,13 +233,13 @@ class IngestWhepClient(IngestTestCase):
         self.import_settings(
             scene={
                 "cameraPosition": CameraPosition.WHEP,
-                "whepCameraId": WHEP_STREAM_ID,
-                "micId": mic_id(WHEP_STREAM_ID),
+                "whepCameraId": STREAM_ID,
+                "micId": mic_id(STREAM_ID),
             },
             whepClient={
                 "streams": [
                     {
-                        "id": WHEP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_whep_url("1"),
                         "enabled": True,
@@ -317,14 +305,14 @@ class IngestParallelRtmpServer(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.RTMP,
             camera_id_key="rtmpCameraId",
-            first_stream_id=RTMP_STREAM_ID,
-            second_stream_id=RTMP_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             rtmpServer={
                 "enabled": True,
                 "port": RTMP_SERVER_PORT,
                 "streams": [
-                    {"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"},
-                    {"id": RTMP_STREAM_2_ID, "name": "2", "streamKey": "2"},
+                    {"id": STREAM_ID, "name": "1", "streamKey": "1"},
+                    {"id": STREAM_2_ID, "name": "2", "streamKey": "2"},
                 ],
             },
         )
@@ -345,14 +333,14 @@ class IngestParallelSrtServer(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.SRTLA,
             camera_id_key="srtlaCameraId",
-            first_stream_id=SRT_STREAM_ID,
-            second_stream_id=SRT_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             srtlaServer={
                 "enabled": True,
                 "srtPort": SRT_SERVER_PORT,
                 "streams": [
-                    {"id": SRT_STREAM_ID, "name": "1", "streamId": "1"},
-                    {"id": SRT_STREAM_2_ID, "name": "2", "streamId": "2"},
+                    {"id": STREAM_ID, "name": "1", "streamId": "1"},
+                    {"id": STREAM_2_ID, "name": "2", "streamId": "2"},
                 ],
             },
         )
@@ -376,18 +364,18 @@ class IngestParallelSrtClient(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.SRT_CLIENT,
             camera_id_key="srtClientCameraId",
-            first_stream_id=SRT_CLIENT_STREAM_ID,
-            second_stream_id=SRT_CLIENT_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             srtClient={
                 "streams": [
                     {
-                        "id": SRT_CLIENT_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_srt_url(SRT_CLIENT_1_SERVER_PORT),
                         "enabled": True,
                     },
                     {
-                        "id": SRT_CLIENT_STREAM_2_ID,
+                        "id": STREAM_2_ID,
                         "name": "2",
                         "url": self.moblin.tester_srt_url(SRT_CLIENT_2_SERVER_PORT),
                         "enabled": True,
@@ -417,18 +405,18 @@ class IngestParallelRtspClient(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.RTSP,
             camera_id_key="rtspCameraId",
-            first_stream_id=RTSP_STREAM_ID,
-            second_stream_id=RTSP_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             rtspClient={
                 "streams": [
                     {
-                        "id": RTSP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_rtsp_url("1"),
                         "enabled": True,
                     },
                     {
-                        "id": RTSP_STREAM_2_ID,
+                        "id": STREAM_2_ID,
                         "name": "2",
                         "url": self.moblin.tester_rtsp_url("2"),
                         "enabled": True,
@@ -455,14 +443,14 @@ class IngestParallelRistServer(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.RIST,
             camera_id_key="ristCameraId",
-            first_stream_id=RIST_STREAM_ID,
-            second_stream_id=RIST_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             ristServer={
                 "enabled": True,
                 "port": RIST_SERVER_PORT,
                 "streams": [
-                    {"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1},
-                    {"id": RIST_STREAM_2_ID, "name": "2", "virtualDestinationPort": 2},
+                    {"id": STREAM_ID, "name": "1", "virtualDestinationPort": 1},
+                    {"id": STREAM_2_ID, "name": "2", "virtualDestinationPort": 2},
                 ],
             },
         )
@@ -486,20 +474,20 @@ class IngestParallelWhipServer(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.WHIP,
             camera_id_key="whipCameraId",
-            first_stream_id=WHIP_STREAM_ID,
-            second_stream_id=WHIP_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             whipServer={
                 "enabled": True,
                 "port": WHIP_SERVER_PORT,
                 "streams": [
                     {
-                        "id": WHIP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "streamKey": "1",
                         "latency": 2000,
                     },
                     {
-                        "id": WHIP_STREAM_2_ID,
+                        "id": STREAM_2_ID,
                         "name": "2",
                         "streamKey": "2",
                         "latency": 2000,
@@ -523,19 +511,19 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
         self.import_parallel_settings(
             camera_position=CameraPosition.WHEP,
             camera_id_key="whepCameraId",
-            first_stream_id=WHEP_STREAM_ID,
-            second_stream_id=WHEP_STREAM_2_ID,
+            first_stream_id=STREAM_ID,
+            second_stream_id=STREAM_2_ID,
             whepClient={
                 "streams": [
                     {
-                        "id": WHEP_STREAM_ID,
+                        "id": STREAM_ID,
                         "name": "1",
                         "url": self.moblin.tester_whep_url("1"),
                         "enabled": True,
                         "latency": 2000,
                     },
                     {
-                        "id": WHEP_STREAM_2_ID,
+                        "id": STREAM_2_ID,
                         "name": "2",
                         "url": self.moblin.tester_whep_url("2"),
                         "enabled": True,
