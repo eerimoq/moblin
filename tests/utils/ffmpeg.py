@@ -21,6 +21,13 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 CAPTURE_EXTRA_TIMEOUT = 30
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_PROGRESS_FRAME = re.compile(r"^frame=(\d+)$", re.MULTILINE)
+RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
+RE_MUXING_DEVICE = re.compile(r"^ .E (\S+)", re.MULTILINE)
+AUDIO_OUTPUT_DEVICES = {
+    "audiotoolbox": "-",
+    "pulse": "default",
+    "alsa": "default",
+}
 
 
 class FfmpegVideoCodec(StrEnum):
@@ -109,12 +116,31 @@ def video_encoder_args(bitrate: int, codec: FfmpegVideoCodec, realtime: bool) ->
     return args
 
 
+@functools.cache
+def audio_output_device() -> tuple[str, str] | None:
+    devices = RE_MUXING_DEVICE.findall(ffmpeg_run("-devices").stdout)
+    for device, url in AUDIO_OUTPUT_DEVICES.items():
+        if device in devices:
+            return device, url
+    return None
+
+
+def audio_output_args() -> list[str]:
+    device = audio_output_device()
+    if device is None:
+        raise Exception("No audio output device is supported by ffmpeg.")
+    return ["-f", device[0], device[1]]
+
+
 def check_dependencies() -> list[str]:
     output = ffmpeg_run("-filters").stdout
     missing_dependencies = []
     for video_filter in ["qrencode", "drawtext"]:
         if f" {video_filter} " not in output:
             missing_dependencies.append(f"The {video_filter} video filter is not supported by ffmpeg")
+    if audio_output_device() is None:
+        devices = ", ".join(AUDIO_OUTPUT_DEVICES)
+        missing_dependencies.append(f"No audio output device ({devices}) is supported by ffmpeg")
     return missing_dependencies
 
 
@@ -325,6 +351,21 @@ class FfmpegAudioTestStream(FfmpegCommand):
             "-f",
             self._transport_format,
             self._url,
+        ]
+
+
+class FfmpegNoisePlayer(FfmpegCommand):
+    def __init__(self, amplitude: float = 0.5):
+        super().__init__(quiet=True)
+        self._amplitude = amplitude
+
+    def args(self):
+        return [
+            "-f",
+            "lavfi",
+            "-i",
+            f"anoisesrc=amplitude={self._amplitude}:sample_rate=48000",
+            *audio_output_args(),
         ]
 
 
@@ -647,6 +688,44 @@ def read_video_frame(path: Path, timestamp: float, crop: Crop | None = None) -> 
     args += ["-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
     data = _run_binary(FFMPEG_COMMAND + args)
     return Image(width, height, data)
+
+
+def measure_mean_volume(path: Path) -> float:
+    output = ffmpeg_run("-i", str(path), "-vn", "-af", "volumedetect", "-f", "null", "-").stderr
+    for name, value in RE_VOLUME_DETECT.findall(output):
+        if name == "mean_volume":
+            return float(value)
+    return -math.inf
+
+
+@dataclass
+class Silence:
+    start: float
+    end: float
+
+
+def detect_silence(path: Path, noise_db: float, minimum_duration: float) -> list[Silence]:
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vn",
+        "-af",
+        f"silencedetect=noise={noise_db}dB:duration={minimum_duration}",
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    silences = []
+    start = None
+    for kind, value in RE_SILENCE_DETECT.findall(output):
+        if kind == "start":
+            start = float(value)
+        elif start is not None:
+            silences.append(Silence(start, float(value)))
+            start = None
+    if start is not None:
+        silences.append(Silence(start, ffprobe_format(path).duration))
+    return silences
 
 
 def extract_ltc_wav(path: Path, output: Path):

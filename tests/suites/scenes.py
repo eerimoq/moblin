@@ -4,10 +4,12 @@ from pathlib import Path
 
 from utils.config import Capability
 from utils.config import srt_listener_url
+from utils.ffmpeg import FfmpegNoisePlayer
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import ffprobe_video
 from utils.ffmpeg import read_video_frame
 from utils.ffmpeg import remove_duplicated_frames
+from utils.generate_device_settings import BACK_SCENE_SETTINGS
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import SCREEN_SCENE_SETTINGS
@@ -23,6 +25,7 @@ from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
 from utils.generate_device_settings import video_source_widget_settings
 from utils.moblin import Moblin
+from utils.moblin import Recorder
 from utils.test_case import TestCase
 from utils.utils import FILES_DIR
 from utils.utils import Crop
@@ -89,6 +92,43 @@ class SceneSwitchMultipleTimes(TestCase):
         for _ in range(10):
             self.moblin.set_scene(SceneName.SCREEN)
             self.moblin.set_scene(SceneName.FRONT)
+
+
+class SceneSwitchBackAndFrontCameraAudio(TestCase):
+    """Switch between a back camera scene and a front camera scene every two seconds
+    while recording with the default builtin microphone. White noise is played on the
+    test runner computer for the microphone to pick up. Validate that the recorded audio
+    has no glitches.
+
+    """
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
+            }
+        )
+
+    def run(self):
+        back_camera = self.select_scene(SceneName.BACK)
+        front_camera = self.select_scene(SceneName.FRONT)
+        self.assert_not_equal(back_camera, front_camera)
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        with FfmpegNoisePlayer():
+            time.sleep(WARM_UP_TIME)
+            with recorder:
+                for _ in range(5):
+                    self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                    time.sleep(2)
+                    self.assert_equal(self.select_scene(SceneName.FRONT), front_camera)
+                    time.sleep(2)
+        self.assert_no_audio_glitches(recorder.recording)
+
+    def select_scene(self, name: SceneName) -> str:
+        self.moblin.set_scene(name)
+        return self.moblin.get_camera_status()
 
 
 class GraphicsImplementationTestCase(TestCase):
@@ -369,7 +409,10 @@ class SceneVTuberWidget(WidgetTestCase):
 
 
 def tests(moblin: Moblin):
-    test_cases = [SceneSwitchMultipleTimes(moblin)]
+    test_cases = [
+        SceneSwitchMultipleTimes(moblin),
+        SceneSwitchBackAndFrontCameraAudio(moblin),
+    ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [
             ScenePiPBackFront(moblin, 30, graphics_implementation),

@@ -16,6 +16,7 @@ CACHE_DIR = TEST_DIR / "cache"
 
 
 class SceneName(StrEnum):
+    BACK = "Back"
     EMPTY = "Empty"
     FRONT = "Front"
     SCREEN = "Screen"
@@ -89,6 +90,11 @@ class Resolution(StrEnum):
         return int(width), int(height)
 
 
+BACK_SCENE_SETTINGS = {
+    "name": SceneName.BACK,
+    "cameraPosition": CameraPosition.BACK,
+    "enabled": True,
+}
 EMPTY_SCENE_SETTINGS = {
     "name": SceneName.EMPTY,
     "cameraPosition": CameraPosition.NONE,

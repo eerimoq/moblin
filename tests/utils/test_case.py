@@ -12,10 +12,13 @@ from .config import Capability
 from .ffmpeg import FfmpegVideoCodec
 from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeVideoOutput
+from .ffmpeg import detect_silence
 from .ffmpeg import extract_ltc_wav
 from .ffmpeg import ffprobe
+from .ffmpeg import ffprobe_audio
 from .ffmpeg import ffprobe_video
 from .ffmpeg import ffprobe_video_size
+from .ffmpeg import measure_mean_volume
 from .ffmpeg import read_qr_codes
 from .ffmpeg import remove_duplicated_frames
 from .moblin import Moblin
@@ -28,6 +31,7 @@ from .utils import wait_until
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
 CHANNEL_LAYOUTS = {1: "mono", 2: "stereo"}
+AUDIO_SAMPLES_PER_FRAME = 1024
 
 
 class TestCase(systest.TestCase):
@@ -118,6 +122,23 @@ class TestCase(systest.TestCase):
         )
         self._assert_audio(recording, metadata.audio, has_audio_time_codes, channels)
 
+    def assert_no_audio_glitches(self, recording: Path):
+        audio = ffprobe_audio(recording)
+        self.assert_equal(audio.sample_rate, 48000)
+        self._assert_audio_presentation_time_stamps(recording, audio)
+        mean_volume_db = measure_mean_volume(recording)
+        LOGGER.info("Mean volume: %.1f dB", mean_volume_db)
+        self.assert_greater(
+            mean_volume_db,
+            -55,
+            "The played noise was not picked up by the microphone. Turn up the volume of the "
+            "test runner computer and place it closer to the device.",
+        )
+        dropouts = detect_silence(recording, mean_volume_db - 25, 0.1)
+        for dropout in dropouts:
+            LOGGER.info("Audio dropout from %.3f to %.3f seconds", dropout.start, dropout.end)
+        self.assert_equal(len(dropouts), 0)
+
     def assert_video_size(self, recording: Path, width: int, height: int):
         self.assert_equal(ffprobe_video_size(recording), (width, height))
 
@@ -182,7 +203,6 @@ class TestCase(systest.TestCase):
         has_audio_time_codes: bool,
         channels: int,
     ):
-        expected_samples_per_frame = 1024
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
         self.assert_equal(audio.sample_rate, 48000)
@@ -190,15 +210,18 @@ class TestCase(systest.TestCase):
         self.assert_equal(audio.channel_layout, CHANNEL_LAYOUTS[channels])
         self.assert_greater(audio.bit_rate, 120_000)
         self.assert_less(audio.bit_rate, 136_000)
-        self.assert_presentation_time_stamps(
-            recording,
-            expected_samples_per_frame / audio.sample_rate,
-            [frame.pts for frame in audio.frames],
-        )
+        self._assert_audio_presentation_time_stamps(recording, audio)
         self._assert_audio_time_codes(recording, has_audio_time_codes)
         for frame in audio.frames:
             self.assert_equal(frame.channels, channels)
-            self.assert_equal(frame.number_of_samples, expected_samples_per_frame)
+            self.assert_equal(frame.number_of_samples, AUDIO_SAMPLES_PER_FRAME)
+
+    def _assert_audio_presentation_time_stamps(self, recording: Path, audio: FfprobeAudioOutput):
+        self.assert_presentation_time_stamps(
+            recording,
+            AUDIO_SAMPLES_PER_FRAME / audio.sample_rate,
+            [frame.pts for frame in audio.frames],
+        )
 
     def assert_presentation_time_stamps(
         self,
