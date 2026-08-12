@@ -360,7 +360,6 @@ class Moblin:
 
         wait_until(check, "streamer to connect", timeout=60, ignore_errors=True)
         LOGGER.info("Remote control streamer connected")
-        time.sleep(3)
 
 
 @dataclass
