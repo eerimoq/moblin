@@ -65,6 +65,7 @@ STREAM_FPS = 30
 STREAM_RESOLUTION = Resolution.FULL_HD
 STREAM_WIDTH, STREAM_HEIGHT = STREAM_RESOLUTION.size()
 STREAM_CONTENT_FILE = FILES_DIR / f"{STREAM_PATH}-stream-content.ts"
+RECORDING_FILE_NAME = f"{STREAM_PATH}-recording.mp4"
 INGEST_WIDGET_SIZE = 33
 NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
@@ -93,28 +94,14 @@ WHEP_NAME_WIDGET_ID = uuid()
 
 
 class StabilityIngestsOneStream(TestCase):
-    """The ingests given on the command line (RTMP, SRT, RIST and WHEP) and one
-    outgoing SRT stream, all roughly 5 Mbps, active at the same time for 12 hours, or
-    until the app crashes. The scene uses the front camera and shows all four ingests as
-    widgets. All scenes and widgets are always configured, but the ingests that are not
-    streamed to are disabled. The mic is the builtin one. The outgoing stream can be
-    disabled on the command line, leaving only the ingests active, and all ingests can be
-    disabled, leaving only the outgoing stream active.
-
-    Bitrates, reconnections, ingests, CPU load, memory usage, thermal state and battery
-    level are monitored continuously. A few seconds of the stream are read back from
-    MediaMTX periodically to verify that it contains moving video and audible
-    audio. The silent audio check can be disabled on the command line, for example when
-    the device is in a quiet room. The network can be shaped to simulate bad networks, with separate
-    impairments for the outgoing stream and the ingests.
-
-    """
+    """Test long streaming sessions."""
 
     def __init__(
         self,
         moblin: Moblin,
         ingests: list[Ingest],
         stream: bool,
+        record: bool,
         silent_audio_check: bool,
         duration: float,
         shaper: TrafficShaper | None,
@@ -122,6 +109,8 @@ class StabilityIngestsOneStream(TestCase):
         super().__init__(moblin)
         self._ingests = ingests
         self._stream = stream
+        self._record = record
+        self._recording_started = False
         self._silent_audio_check = silent_audio_check
         self._duration = duration
         self._shaper = shaper
@@ -296,8 +285,14 @@ class StabilityIngestsOneStream(TestCase):
             self._wait_for_ingests()
             if self._stream:
                 self._go_live(mediamtx)
+            if self._record:
+                self.moblin.start_recording()
+                self._recording_started = True
             self._monitor = self._create_monitor(mediamtx, sources)
             self._monitor_until_done(self._monitor, sources)
+            if self._recording_started:
+                self.moblin.stop_recording()
+                self._download_recording()
 
     def teardown(self):
         if self._monitor is not None:
@@ -306,6 +301,19 @@ class StabilityIngestsOneStream(TestCase):
             super().teardown()
         except Exception as error:
             LOGGER.warning("Failed to stop the app. Did it crash? %s", error)
+
+    def _download_recording(self):
+        LOGGER.debug("Downloading the recording...")
+        try:
+            recording = self.moblin.download_and_delete_latest_recording(RECORDING_FILE_NAME)
+        except Exception as error:
+            LOGGER.warning("Failed to download the recording. %s", error)
+            return
+        LOGGER.info(
+            "Downloaded the recording to %s (%.1f GB).",
+            recording,
+            recording.stat().st_size / 1e9,
+        )
 
     def _create_sources(self) -> list[Source]:
         return [
@@ -491,12 +499,13 @@ def tests(
     moblin: Moblin,
     ingests: list[Ingest],
     stream: bool,
+    record: bool,
     silent_audio_check: bool,
     duration: float,
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, stream, silent_audio_check, duration, shaper),
+        StabilityIngestsOneStream(moblin, ingests, stream, record, silent_audio_check, duration, shaper),
     ]
 
 

@@ -105587,6 +105587,7 @@
       }
     },
     "Host channel" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

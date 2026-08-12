@@ -73,6 +73,15 @@ related to the outgoing stream is left unmonitored.
 make stability TEST_ARGS="--no-stream"
 ```
 
+Everything is recorded to disk in the app while the test runs. The recording is downloaded to
+`files/stability-recording.mp4` and deleted from the device when the test ends, also when it
+fails. Make sure the device has enough free disk space, as roughly 2.5 GB is recorded per hour.
+Give `--no-record` to not record at all.
+
+```bash
+make stability TEST_ARGS="--no-record"
+```
+
 Give `--no-silent-audio-check` to not check that the audio read back from the stream is
 audible, for example when the device is in a quiet room. The mean volume is still measured
 and reported.

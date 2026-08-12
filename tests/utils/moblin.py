@@ -198,10 +198,12 @@ class Moblin:
         response.raise_for_status()
         recordings = response.json()
         recording_url = f"{base_url}/recordings/{recordings[0]['name']}"
-        response = requests.get(recording_url, timeout=15)
-        response.raise_for_status()
         recording_file = FILES_DIR / filename
-        recording_file.write_bytes(response.content)
+        with requests.get(recording_url, timeout=60, stream=True) as response:
+            response.raise_for_status()
+            with recording_file.open("wb") as fout:
+                for chunk in response.iter_content(1_000_000):
+                    fout.write(chunk)
         response = requests.delete(recording_url, timeout=15)
         response.raise_for_status()
         return recording_file
