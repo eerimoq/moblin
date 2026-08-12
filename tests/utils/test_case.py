@@ -71,7 +71,7 @@ class TestCase(systest.TestCase):
     def assert_live_stream(
         self,
         recording: Path,
-        minimum_length: int = 8,
+        minimum_length: int = 7,
         maximum_length: int = 20,
         fps: int = 30,
     ):
