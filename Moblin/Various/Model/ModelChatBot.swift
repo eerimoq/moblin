@@ -532,13 +532,16 @@ extension Model {
         let user = command.user() ?? String(localized: "Unknown")
         addMusic(title: title) { result in
             switch result {
-            case let .success(song):
+            case let .added(song: song):
                 self.sendChatBotReply(
                     message: String(localized: "\(song) added to the queue by \(user)."),
                     platform: platform
                 )
-            case let .failure(message):
-                self.sendChatBotReply(message: message, platform: platform)
+            case .songNotFound:
+                self.sendChatBotReply(
+                    message: String(localized: "\(title) requested by \(user) not found."),
+                    platform: platform
+                )
             }
         }
     }
