@@ -47,5 +47,6 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     with moblin:
         moblin.end()
         moblin.stop_recording()
+        moblin.delete_all_recordings()
         sequencer.run(*make_tests(moblin, args))
     sequencer.report_and_exit(json=False, dot=False)

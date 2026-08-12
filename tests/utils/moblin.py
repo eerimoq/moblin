@@ -193,10 +193,8 @@ class Moblin:
         return Recorder(self, filename).record(duration)
 
     def download_and_delete_latest_recording(self, filename: str) -> Path:
-        base_url = f"http://{self.ip_address}:{WEB_REMOTE_CONTROL_PORT}"
-        response = requests.get(f"{base_url}/recordings.json", timeout=15)
-        response.raise_for_status()
-        recordings = response.json()
+        base_url = self._web_remote_control_url()
+        recordings = self._get_recordings()
         recording_url = f"{base_url}/recordings/{recordings[0]['name']}"
         recording_file = FILES_DIR / filename
         with requests.get(recording_url, timeout=60, stream=True) as response:
@@ -207,6 +205,20 @@ class Moblin:
         response = requests.delete(recording_url, timeout=15)
         response.raise_for_status()
         return recording_file
+
+    def delete_all_recordings(self):
+        base_url = self._web_remote_control_url()
+        for recording in self._get_recordings():
+            response = requests.delete(f"{base_url}/recordings/{recording['name']}", timeout=15)
+            response.raise_for_status()
+
+    def _web_remote_control_url(self) -> str:
+        return f"http://{self.ip_address}:{WEB_REMOTE_CONTROL_PORT}"
+
+    def _get_recordings(self) -> list:
+        response = requests.get(f"{self._web_remote_control_url()}/recordings.json", timeout=15)
+        response.raise_for_status()
+        return response.json()
 
     def ping(self):
         self._get_settings()
