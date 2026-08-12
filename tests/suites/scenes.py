@@ -18,6 +18,7 @@ from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import GraphicsImplementation
 from utils.generate_device_settings import SceneName
+from utils.generate_device_settings import VideoStabilizationMode
 from utils.generate_device_settings import WidgetType
 from utils.generate_device_settings import download_model
 from utils.generate_device_settings import scene_widget_settings
@@ -102,12 +103,17 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
 
     """
 
+    def __init__(self, moblin: Moblin, video_stabilization_mode: VideoStabilizationMode):
+        super().__init__(moblin, f"{type(self).__name__}{video_stabilization_mode.name.title()}")
+        self.video_stabilization_mode = video_stabilization_mode
+
     def setup(self):
         self.skip_if_missing_capability(Capability.PIP)
         self.moblin.import_settings(
             overrides={
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
+                "videoStabilizationMode": self.video_stabilization_mode,
             }
         )
 
@@ -411,7 +417,8 @@ class SceneVTuberWidget(WidgetTestCase):
 def tests(moblin: Moblin):
     test_cases = [
         SceneSwitchMultipleTimes(moblin),
-        SceneSwitchBackAndFrontCameraAudio(moblin),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [

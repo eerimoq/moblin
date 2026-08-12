@@ -80,6 +80,13 @@ class GraphicsImplementation(StrEnum):
     METAL_PETAL = "metalPetal"
 
 
+class VideoStabilizationMode(StrEnum):
+    OFF = "Off"
+    STANDARD = "Standard"
+    CINEMATIC = "Cinematic"
+    CINEMATIC_EXTENDED_ENHANCED = "Cinematic extended enhanced"
+
+
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
     QUAD_HD = "2560x1440"
