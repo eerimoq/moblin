@@ -53,6 +53,7 @@ class TalkbackRtmpServer(TalkbackTestCase):
                 ],
             },
         )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
 
     def run(self):
         self.play_beeps(self.moblin.ingest_rtmp_url("talkback"))

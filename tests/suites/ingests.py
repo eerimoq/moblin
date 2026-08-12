@@ -53,7 +53,7 @@ class IngestTestCase(TestCase):
             }
         )
 
-    def record_ingest(self, startup_delay: float = 1, number_of_ingests: int = 1) -> Path:
+    def record_ingest(self, startup_delay: int = 1, number_of_ingests: int = 1) -> Path:
         recorder = Recorder(self.moblin, f"{self.name}.mp4")
         self.wait_for_ingest_stream_started(
             number_of_ingests=number_of_ingests,
@@ -84,6 +84,7 @@ class IngestRtmpServer(IngestTestCase):
                 "streams": [{"id": RTMP_STREAM_ID, "name": "1", "streamKey": "1"}],
             },
         )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
 
     def run(self):
         with FfmpegTestStream(url=self.moblin.ingest_rtmp_url()):
@@ -302,7 +303,7 @@ class ParallelIngestTestCase(IngestTestCase):
             **overrides,
         )
 
-    def record_parallel_ingests(self, startup_delay: float = 1) -> Path:
+    def record_parallel_ingests(self, startup_delay: int = 1) -> Path:
         return self.record_ingest(startup_delay=startup_delay, number_of_ingests=2)
 
     def assert_parallel_recording(self, recording: Path):
@@ -327,12 +328,12 @@ class IngestParallelRtmpServer(ParallelIngestTestCase):
                 ],
             },
         )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
 
     def run(self):
-        with (
-            FfmpegTestStream(url=self.moblin.ingest_rtmp_url("1")),
-            FfmpegTestStream(url=self.moblin.ingest_rtmp_url("2")),
-        ):
+        stream_1 = FfmpegTestStream(url=self.moblin.ingest_rtmp_url("1"))
+        stream_2 = FfmpegTestStream(url=self.moblin.ingest_rtmp_url("2"))
+        with stream_1, stream_2:
             recording = self.record_parallel_ingests()
         self.assert_parallel_recording(recording)
 
@@ -357,16 +358,13 @@ class IngestParallelSrtServer(ParallelIngestTestCase):
         )
 
     def run(self):
-        with (
-            FfmpegTestStream(
-                url=self.moblin.ingest_srt_url("1"),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-            FfmpegTestStream(
-                url=self.moblin.ingest_srt_url("2"),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-        ):
+        stream_1 = FfmpegTestStream(
+            url=self.moblin.ingest_srt_url("1"), transport_format=TransportFormat.MPEGTS
+        )
+        stream_2 = FfmpegTestStream(
+            url=self.moblin.ingest_srt_url("2"), transport_format=TransportFormat.MPEGTS
+        )
+        with stream_1, stream_2:
             recording = self.record_parallel_ingests()
         self.assert_parallel_recording(recording)
 
@@ -399,16 +397,15 @@ class IngestParallelSrtClient(ParallelIngestTestCase):
         )
 
     def run(self):
-        with (
-            FfmpegTestStream(
-                url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-            FfmpegTestStream(
-                url=srt_listener_url(SRT_CLIENT_2_SERVER_PORT, stream_id="2"),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-        ):
+        stream_1 = FfmpegTestStream(
+            url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
+            transport_format=TransportFormat.MPEGTS,
+        )
+        stream_2 = FfmpegTestStream(
+            url=srt_listener_url(SRT_CLIENT_2_SERVER_PORT, stream_id="2"),
+            transport_format=TransportFormat.MPEGTS,
+        )
+        with stream_1, stream_2:
             recording = self.record_parallel_ingests()
         self.assert_parallel_recording(recording)
 
@@ -442,10 +439,9 @@ class IngestParallelRtspClient(ParallelIngestTestCase):
 
     def run(self):
         with MediaMtx() as mediamtx:
-            with (
-                FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"),
-                FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/2"),
-            ):
+            stream_1 = FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1")
+            stream_2 = FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/2")
+            with stream_1, stream_2:
                 mediamtx.wait_for_rtmp_stream("1", 1_000_000)
                 mediamtx.wait_for_rtmp_stream("2", 1_000_000)
                 recording = self.record_parallel_ingests(startup_delay=5)
@@ -472,16 +468,13 @@ class IngestParallelRistServer(ParallelIngestTestCase):
         )
 
     def run(self):
-        with (
-            FfmpegTestStream(
-                url=self.moblin.ingest_rist_url(1),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-            FfmpegTestStream(
-                url=self.moblin.ingest_rist_url(2),
-                transport_format=TransportFormat.MPEGTS,
-            ),
-        ):
+        stream_1 = FfmpegTestStream(
+            url=self.moblin.ingest_rist_url(1), transport_format=TransportFormat.MPEGTS
+        )
+        stream_2 = FfmpegTestStream(
+            url=self.moblin.ingest_rist_url(2), transport_format=TransportFormat.MPEGTS
+        )
+        with stream_1, stream_2:
             recording = self.record_parallel_ingests(startup_delay=5)
         self.assert_parallel_recording(recording)
 
@@ -516,10 +509,9 @@ class IngestParallelWhipServer(ParallelIngestTestCase):
         )
 
     def run(self):
-        with (
-            FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("1")),
-            FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("2")),
-        ):
+        stream_1 = FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("1"))
+        stream_2 = FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("2"))
+        with stream_1, stream_2:
             recording = self.record_parallel_ingests(startup_delay=5)
         self.assert_parallel_recording(recording)
 
@@ -555,10 +547,9 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
 
     def run(self):
         with MediaMtx() as mediamtx:
-            with (
-                FfmpegRtspTestStream(url=rtsp_reader_url("1")),
-                FfmpegRtspTestStream(url=rtsp_reader_url("2")),
-            ):
+            stream_1 = FfmpegRtspTestStream(url=rtsp_reader_url("1"))
+            stream_2 = FfmpegRtspTestStream(url=rtsp_reader_url("2"))
+            with stream_1, stream_2:
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 mediamtx.wait_for_rtsp_publisher("2", 2_000_000)
                 recording = self.record_parallel_ingests(startup_delay=5)

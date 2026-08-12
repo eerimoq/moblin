@@ -1,5 +1,6 @@
 import logging
 import re
+import socket
 import sys
 import tempfile
 import threading
@@ -153,7 +154,8 @@ class Moblin:
                     {"importSettings": {"data": b64encode(settings_file.read_bytes()).decode("utf-8")}}
                 )
             except Exception:
-                time.sleep(2)
+                pass
+            time.sleep(2)
 
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
@@ -248,6 +250,16 @@ class Moblin:
             f"rist://{self._device_media_ip_address}:{RIST_SERVER_PORT}"
             f"?virt-dst-port={virtual_destination_port}"
         )
+
+    def wait_for_tcp_ports(self, *ports: int, timeout: float = 30):
+        for port in ports:
+
+            def check(port=port) -> bool:
+                with socket.socket() as sock:
+                    sock.settimeout(1)
+                    return sock.connect_ex((self._device_media_ip_address, port)) == 0
+
+            wait_until(check, f"TCP port {port} to accept connections", timeout=timeout)
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in self._capabilities
