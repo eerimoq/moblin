@@ -1,3 +1,4 @@
+import json
 import logging
 import re
 import socket
@@ -7,11 +8,14 @@ import threading
 import time
 from base64 import b64encode
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
 import requests
 from moblin_assistant import make_client_request
+from websockets.sync.client import ClientConnection
+from websockets.sync.client import connect
 
 from .arduino import Arduino
 from .config import REMOTE_CONTROL_PASSWORD
@@ -37,6 +41,7 @@ from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")
+LOGGER_EVENTS = logging.getLogger(__name__ + ".events")
 RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
@@ -101,6 +106,47 @@ class BufferedVideoBuffers:
             return BufferedVideoBuffersCounts(dict(self._duplicated), dict(self._dropped))
 
 
+class AssistantEvents:
+    def __init__(self, port: int, log_entry_observer: Callable[[str], None]):
+        self._port = port
+        self._log_entry_observer = log_entry_observer
+        self._stopped = threading.Event()
+        self._connection: ClientConnection | None = None
+        self._thread = threading.Thread(target=self._listen, daemon=True)
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._stopped.set()
+        connection = self._connection
+        if connection is not None:
+            connection.close()
+        self._thread.join(timeout=5)
+
+    def _listen(self):
+        while not self._stopped.is_set():
+            try:
+                with connect(f"ws://localhost:{self._port}/events", max_size=None) as connection:
+                    self._connection = connection
+                    for message in connection:
+                        self._handle_message(message)
+            except Exception:
+                pass
+            finally:
+                self._connection = None
+            self._stopped.wait(1)
+
+    def _handle_message(self, message):
+        for kind, data in json.loads(message).items():
+            if kind == "log":
+                entry = data["entry"]
+                LOGGER_EVENTS.debug("%s", entry)
+                self._log_entry_observer(entry)
+            else:
+                LOGGER_EVENTS.debug("%s: %s", kind, data)
+
+
 class Moblin:
     def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
         self.config = config
@@ -122,9 +168,9 @@ class Moblin:
                 REMOTE_CONTROL_PASSWORD,
             ],
             LOGGER_ASSISTANT,
-            observer=self._handle_log_entry,
             ready=self._wait_until_streamer_is_connected,
         )
+        self._events = AssistantEvents(self._remote_control_port, self._handle_log_entry)
         self.ip_address = config.moblin_ip_address()
         self._tester_ip_address = config.tester_ip_address()
         self._tester_media_ip_address = self._tester_ip_address
@@ -135,9 +181,11 @@ class Moblin:
 
     def __enter__(self):
         self._server.start()
+        self._events.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self._events.stop()
         self._server.stop()
 
     def _handle_log_entry(self, entry: str):
