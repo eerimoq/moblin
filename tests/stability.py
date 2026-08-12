@@ -49,7 +49,7 @@ def main():
     parser.add_argument(
         "--duration",
         type=float,
-        default=12,
+        default=8,
         help="Duration in hours (default: %(default)s).",
     )
     parser.add_argument(
