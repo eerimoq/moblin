@@ -106,7 +106,7 @@ class StreamSrtToFfmpeg(StreamTestCase):
 
     def run(self):
         filename = self.stream_to_ffmpeg(srt_listener_url(), 4_000_000, 6_000_000, 10_000_000)
-        self.assert_live_stream(filename)
+        self.assert_live_stream(filename, fps=self._fps)
 
 
 class StreamSrtToFfmpegHighBitrate(StreamTestCase):
