@@ -25,7 +25,7 @@ from .ffmpeg import ffprobe_video
 from .ffmpeg import ffprobe_video_size
 from .ffmpeg import measure_mean_volume
 from .ffmpeg import read_qr_codes
-from .ffmpeg import remove_duplicated_frames
+from .ffmpeg import read_unique_frame_presentation_time_stamps
 from .moblin import Moblin
 from .utils import FILES_DIR
 from .utils import Crop
@@ -172,20 +172,18 @@ class TestCase(systest.TestCase):
         self.assert_in("I", picture_types)
         self.assert_in("P", picture_types)
         self.assert_in("B", picture_types)
-        for filtered_video in probe.filtered_videos:
-            self._assert_no_duplicated_frames(fps, video, recording, filtered_video)
+        for presentation_time_stamps in probe.unique_frame_presentation_time_stamps:
+            self._assert_no_duplicated_frames(fps, video, recording, presentation_time_stamps)
 
     def _assert_no_duplicated_frames(
         self,
         fps: int,
         video: FfprobeVideoOutput,
         recording: Path,
-        filtered_video: FfprobeVideoOutput,
+        presentation_time_stamps: list[float],
     ):
-        self.assert_presentation_time_stamps(
-            recording, 1 / fps, [frame.pts for frame in filtered_video.frames]
-        )
-        self.assert_equal(len(filtered_video.frames), len(video.frames))
+        self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps)
+        self.assert_equal(len(presentation_time_stamps), len(video.frames))
 
     def _assert_audio(self, probe: "RecordingProbe", recording: Path, channels: int):
         audio = probe.audio
@@ -283,7 +281,7 @@ class RecordingProbe:
     video: FfprobeVideoOutput
     audio: FfprobeAudioOutput
     qr_codes: list[QrCode] | None
-    filtered_videos: list[FfprobeVideoOutput]
+    unique_frame_presentation_time_stamps: list[list[float]]
     audio_time_codes: str | None
 
 
@@ -299,14 +297,16 @@ def probe_recording(
         video_future = executor.submit(ffprobe_video, recording)
         audio_future = executor.submit(ffprobe_audio, recording)
         qr_codes_future = executor.submit(_read_qr_codes, recording, has_qr_codes)
-        filtered_video_futures = [executor.submit(_probe_filtered_video, recording, crop) for crop in crops]
+        unique_frames_futures = [
+            executor.submit(read_unique_frame_presentation_time_stamps, recording, crop) for crop in crops
+        ]
         audio_time_codes_future = executor.submit(_read_audio_time_codes, recording, has_audio_time_codes)
         return RecordingProbe(
             format=format_future.result(),
             video=video_future.result(),
             audio=audio_future.result(),
             qr_codes=qr_codes_future.result(),
-            filtered_videos=[future.result() for future in filtered_video_futures],
+            unique_frame_presentation_time_stamps=[future.result() for future in unique_frames_futures],
             audio_time_codes=audio_time_codes_future.result(),
         )
 
@@ -315,10 +315,6 @@ def _read_qr_codes(recording: Path, has_qr_codes: bool) -> list[QrCode] | None:
     if not has_qr_codes:
         return None
     return read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))
-
-
-def _probe_filtered_video(recording: Path, crop: Crop | None) -> FfprobeVideoOutput:
-    return ffprobe_video(remove_duplicated_frames(recording, crop))
 
 
 def _read_audio_time_codes(recording: Path, has_audio_time_codes: bool) -> str | None:

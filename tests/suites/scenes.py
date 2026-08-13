@@ -6,9 +6,8 @@ from utils.config import Capability
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegNoisePlayer
 from utils.ffmpeg import FfmpegServer
-from utils.ffmpeg import ffprobe_video
+from utils.ffmpeg import read_unique_frame_presentation_time_stamps
 from utils.ffmpeg import read_video_frame
-from utils.ffmpeg import remove_duplicated_frames
 from utils.generate_device_settings import BACK_SCENE_SETTINGS
 from utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
@@ -287,10 +286,8 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
             self.moblin.end()
             manual_confirmation("Put the app in foreground.")
         crop = Crop(x=0, y=0, width=400, height=100)
-        filtered_video = ffprobe_video(remove_duplicated_frames(filename, crop))
-        self.assert_presentation_time_stamps(
-            filename, 1, [frame.pts for frame in filtered_video.frames[-8:]], 0.25
-        )
+        presentation_time_stamps = read_unique_frame_presentation_time_stamps(filename, crop)
+        self.assert_presentation_time_stamps(filename, 1, presentation_time_stamps[-8:], 0.25)
 
 
 class WidgetTestCase(GraphicsImplementationTestCase):

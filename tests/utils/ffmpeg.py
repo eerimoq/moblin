@@ -25,6 +25,7 @@ RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?
 RE_PROGRESS_FRAME = re.compile(r"^frame=(\d+)$", re.MULTILINE)
 RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
 RE_MUXING_DEVICE = re.compile(r"^ .E (\S+)", re.MULTILINE)
+RE_SHOWINFO_PTS = re.compile(r"^\[Parsed_showinfo.*? pts_time:(\S+)", re.MULTILINE)
 AUDIO_OUTPUT_DEVICES = {
     "audiotoolbox": "-",
     "pulse": "default",
@@ -765,21 +766,24 @@ def extract_ltc_wav(path: Path, output: Path):
     ffmpeg_run("-i", str(path), "-vn", "-map", "0:a:0", "-c:a", "pcm_s16le", str(output))
 
 
-def remove_duplicated_frames(path: Path, crop: Crop | None = None) -> Path:
-    args = ["-i", str(path), "-vf"]
+def read_unique_frame_presentation_time_stamps(path: Path, crop: Crop | None = None) -> list[float]:
     filters = []
     if crop is not None:
         filters.append(f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}")
-    filters.append("mpdecimate")
-    filtered_path = path.with_suffix(f".{'-'.join(filters)}-filtered.mp4")
-    args += [
+    filters += ["mpdecimate", "showinfo"]
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vf",
         ", ".join(filters),
-        *video_encoder_args(8_000_000, FfmpegVideoCodec.H264, False),
+        "-fps_mode",
+        "vfr",
         "-an",
-        str(filtered_path),
-    ]
-    ffmpeg_run(*args)
-    return filtered_path
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    return [float(pts) for pts in RE_SHOWINFO_PTS.findall(output)]
 
 
 def create_qr_codes_video(output_file: Path):
