@@ -148,7 +148,13 @@ class AssistantEvents:
 
 
 class Moblin:
-    def __init__(self, config: Config, arduino: Arduino | None, moving_picture: bool):
+    def __init__(
+        self,
+        config: Config,
+        arduino: Arduino | None,
+        moving_picture: bool,
+        skip_background_streaming: bool = False,
+    ):
         self.config = config
         self.arduino = arduino
         self.video_decode_errors = VideoDecodeErrors()
@@ -176,6 +182,12 @@ class Moblin:
         self._tester_media_ip_address = self._tester_ip_address
         self._device_media_ip_address = self.ip_address
         self._capabilities = config.capabilities()
+        if skip_background_streaming:
+            self._capabilities = [
+                capability
+                for capability in self._capabilities
+                if capability != Capability.BACKGROUND_STREAMING
+            ]
         self._moving_picture = moving_picture
         self._chat_message_id = 0
 
