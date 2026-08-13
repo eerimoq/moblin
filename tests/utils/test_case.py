@@ -3,6 +3,8 @@ import re
 import subprocess
 import time
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
 
@@ -11,11 +13,14 @@ import systest
 from .config import Capability
 from .ffmpeg import FfmpegVideoCodec
 from .ffmpeg import FfprobeAudioOutput
+from .ffmpeg import FfprobeFormatOutput
 from .ffmpeg import FfprobeVideoOutput
+from .ffmpeg import QrCode
 from .ffmpeg import detect_silence
 from .ffmpeg import extract_ltc_wav
 from .ffmpeg import ffprobe
 from .ffmpeg import ffprobe_audio
+from .ffmpeg import ffprobe_format
 from .ffmpeg import ffprobe_video
 from .ffmpeg import ffprobe_video_size
 from .ffmpeg import measure_mean_volume
@@ -107,20 +112,11 @@ class TestCase(systest.TestCase):
         video_codec: FfmpegVideoCodec = FfmpegVideoCodec.HEVC,
         channels: int = 1,
     ):
-        metadata = ffprobe(recording)
-        self.assert_greater(metadata.format.duration, 8)
-        self.assert_less(metadata.format.duration, 14)
-        self._assert_video(
-            metadata.video,
-            recording,
-            has_qr_codes,
-            duplicated_frames_crops,
-            width,
-            height,
-            fps,
-            video_codec,
-        )
-        self._assert_audio(recording, metadata.audio, has_audio_time_codes, channels)
+        probe = probe_recording(recording, has_qr_codes, duplicated_frames_crops, has_audio_time_codes)
+        self.assert_greater(probe.format.duration, 8)
+        self.assert_less(probe.format.duration, 14)
+        self._assert_video(probe, recording, width, height, fps, video_codec)
+        self._assert_audio(probe, recording, channels)
 
     def assert_no_audio_glitches(self, recording: Path):
         audio = ffprobe_audio(recording)
@@ -156,53 +152,43 @@ class TestCase(systest.TestCase):
 
     def _assert_video(
         self,
-        video: FfprobeVideoOutput,
+        probe: "RecordingProbe",
         recording: Path,
-        has_qr_codes: bool,
-        duplicated_frames_crops: list[Crop] | None,
         width,
         height,
         fps: int,
         video_codec: FfmpegVideoCodec,
     ):
+        video = probe.video
         self.assert_equal(video.codec, video_codec)
         self.assert_equal(video.width, width)
         self.assert_equal(video.height, height)
         self.assert_greater(video.average_fps, Fraction(f"{fps - 1}/1"))
         self.assert_less(video.average_fps, Fraction(f"{fps + 1}/1"))
         self.assert_presentation_time_stamps(recording, 1 / fps, [frame.pts for frame in video.frames])
-        self._assert_video_frame_numbers_increasing(recording, has_qr_codes)
+        self._assert_video_frame_numbers_increasing(probe.qr_codes)
         picture_types = {frame.picture_type for frame in video.frames}
         self.assert_equal(len(picture_types), 3)
         self.assert_in("I", picture_types)
         self.assert_in("P", picture_types)
         self.assert_in("B", picture_types)
-        if duplicated_frames_crops is None:
-            self._assert_no_duplicated_frames(fps, video, recording)
-        else:
-            for crop in duplicated_frames_crops:
-                self._assert_no_duplicated_frames(fps, video, recording, crop)
+        for filtered_video in probe.filtered_videos:
+            self._assert_no_duplicated_frames(fps, video, recording, filtered_video)
 
     def _assert_no_duplicated_frames(
         self,
         fps: int,
         video: FfprobeVideoOutput,
         recording: Path,
-        crop: Crop | None = None,
+        filtered_video: FfprobeVideoOutput,
     ):
-        filtered_video = ffprobe_video(remove_duplicated_frames(recording, crop))
         self.assert_presentation_time_stamps(
             recording, 1 / fps, [frame.pts for frame in filtered_video.frames]
         )
         self.assert_equal(len(filtered_video.frames), len(video.frames))
 
-    def _assert_audio(
-        self,
-        recording: Path,
-        audio: FfprobeAudioOutput,
-        has_audio_time_codes: bool,
-        channels: int,
-    ):
+    def _assert_audio(self, probe: "RecordingProbe", recording: Path, channels: int):
+        audio = probe.audio
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
         self.assert_equal(audio.sample_rate, 48000)
@@ -211,7 +197,7 @@ class TestCase(systest.TestCase):
         self.assert_greater(audio.bit_rate, 115_000)
         self.assert_less(audio.bit_rate, 136_000)
         self._assert_audio_presentation_time_stamps(recording, audio)
-        self._assert_audio_time_codes(recording, has_audio_time_codes)
+        self._assert_audio_time_codes(probe.audio_time_codes)
         for frame in audio.frames:
             self.assert_equal(frame.channels, channels)
             self.assert_equal(frame.number_of_samples, AUDIO_SAMPLES_PER_FRAME)
@@ -243,10 +229,9 @@ class TestCase(systest.TestCase):
                 LOGGER.info("Missing PTS: %s", missing_presentation_time_stamp)
         self.assert_equal(len(missing_presentation_time_stamps), 0)
 
-    def _assert_video_frame_numbers_increasing(self, recording: Path, has_qr_codes: bool):
-        if not has_qr_codes:
+    def _assert_video_frame_numbers_increasing(self, qr_codes: list[QrCode] | None):
+        if qr_codes is None:
             return
-        qr_codes = read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))
         self.assert_greater(len(qr_codes), 0)
         seen_increase = False
         bad_frame_numbers = False
@@ -263,17 +248,9 @@ class TestCase(systest.TestCase):
                 bad_frame_numbers = True
         self.assert_false(bad_frame_numbers)
 
-    def _assert_audio_time_codes(self, recording: Path, has_audio_time_codes: bool):
-        if not has_audio_time_codes:
+    def _assert_audio_time_codes(self, output: str | None):
+        if output is None:
             return
-        ltc_wav = FILES_DIR / "ltc.wav"
-        extract_ltc_wav(recording, ltc_wav)
-        output = subprocess.run(
-            ["ltcdump", "--fps", "30", str(ltc_wav)],
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout
         has_seen_start_time = False
         has_seen_end_time = False
         for line in output.splitlines():
@@ -298,6 +275,63 @@ class TestCase(systest.TestCase):
     def _log_output(self, output: str):
         for line in output.splitlines():
             LOGGER.info("ltcdump: %s", line)
+
+
+@dataclass
+class RecordingProbe:
+    format: FfprobeFormatOutput
+    video: FfprobeVideoOutput
+    audio: FfprobeAudioOutput
+    qr_codes: list[QrCode] | None
+    filtered_videos: list[FfprobeVideoOutput]
+    audio_time_codes: str | None
+
+
+def probe_recording(
+    recording: Path,
+    has_qr_codes: bool,
+    duplicated_frames_crops: list[Crop] | None,
+    has_audio_time_codes: bool,
+) -> RecordingProbe:
+    crops = duplicated_frames_crops if duplicated_frames_crops is not None else [None]
+    with ThreadPoolExecutor() as executor:
+        format_future = executor.submit(ffprobe_format, recording)
+        video_future = executor.submit(ffprobe_video, recording)
+        audio_future = executor.submit(ffprobe_audio, recording)
+        qr_codes_future = executor.submit(_read_qr_codes, recording, has_qr_codes)
+        filtered_video_futures = [executor.submit(_probe_filtered_video, recording, crop) for crop in crops]
+        audio_time_codes_future = executor.submit(_read_audio_time_codes, recording, has_audio_time_codes)
+        return RecordingProbe(
+            format=format_future.result(),
+            video=video_future.result(),
+            audio=audio_future.result(),
+            qr_codes=qr_codes_future.result(),
+            filtered_videos=[future.result() for future in filtered_video_futures],
+            audio_time_codes=audio_time_codes_future.result(),
+        )
+
+
+def _read_qr_codes(recording: Path, has_qr_codes: bool) -> list[QrCode] | None:
+    if not has_qr_codes:
+        return None
+    return read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))
+
+
+def _probe_filtered_video(recording: Path, crop: Crop | None) -> FfprobeVideoOutput:
+    return ffprobe_video(remove_duplicated_frames(recording, crop))
+
+
+def _read_audio_time_codes(recording: Path, has_audio_time_codes: bool) -> str | None:
+    if not has_audio_time_codes:
+        return None
+    ltc_wav = FILES_DIR / "ltc.wav"
+    extract_ltc_wav(recording, ltc_wav)
+    return subprocess.run(
+        ["ltcdump", "--fps", "30", str(ltc_wav)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
 
 
 def find_missing_presentation_time_stamps(
