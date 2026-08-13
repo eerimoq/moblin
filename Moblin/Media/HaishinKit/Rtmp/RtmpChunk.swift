@@ -73,6 +73,8 @@ final class RtmpChunk {
     private(set) var chunkStreamId = RtmpChunk.ChunkStreamId.command.rawValue
     private(set) var message: RtmpMessage?
     private(set) var fragmented = false
+    private(set) var decodedSize = 0
+    private var payload = Data()
     private var header = Data()
 
     init(type: RtmpChunkType, chunkStreamId: UInt16, message: RtmpMessage) {
@@ -106,7 +108,7 @@ final class RtmpChunk {
         guard let message else {
             return false
         }
-        return message.length == message.encoded.count
+        return message.length == payload.count
     }
 
     func encode() -> Data {
@@ -136,18 +138,19 @@ final class RtmpChunk {
         guard let message else {
             return 0
         }
-        var length = message.length - message.encoded.count
+        var length = message.length - payload.count
         if data.count < length {
             length = data.count
         }
-        let chunkSize = maximumSize - (message.encoded.count % maximumSize)
+        let chunkSize = maximumSize - (payload.count % maximumSize)
         if chunkSize < length {
             length = chunkSize
         }
         if length > 0 {
-            message.encoded.append(data[0 ..< length])
+            payload.append(data[0 ..< length])
+            message.encoded = payload
         }
-        fragmented = message.encoded.count % maximumSize == 0
+        fragmented = payload.count % maximumSize == 0
         return length
     }
 
@@ -157,12 +160,14 @@ final class RtmpChunk {
         }
         let buffer = ByteReader(data: data)
         buffer.position = basicHeaderSize(chunkStreamId: chunkStreamId)
+        payload = Data()
         do {
             self.message = RtmpMessage.create(type: message.type)
             self.message?.streamId = message.streamId
             self.message?.timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
             self.message?.length = message.length
-            self.message?.encoded = try Data(buffer.readBytes(message.length))
+            payload = try Data(buffer.readBytes(message.length))
+            self.message?.encoded = payload
         } catch {
             logger.info("\(buffer)")
         }
@@ -197,7 +202,8 @@ final class RtmpChunk {
         default:
             break
         }
-        header.append(data[0 ..< basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type)])
+        decodedSize = basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type)
+        header.append(data[0 ..< decodedSize])
         guard type == .zero || type == .one else {
             return
         }
@@ -217,7 +223,9 @@ final class RtmpChunk {
         }
         let end = min(message.length + reader.position, data.count)
         fragmented = size + reader.position <= end
-        message.encoded = data.subdata(in: reader.position ..< min(size + reader.position, end))
+        payload = data.subdata(in: reader.position ..< min(size + reader.position, end))
+        decodedSize = reader.position + payload.count
+        message.encoded = payload
         self.message = message
     }
 }

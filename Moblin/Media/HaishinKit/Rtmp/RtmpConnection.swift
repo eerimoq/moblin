@@ -303,15 +303,10 @@ extension RtmpConnection: RtmpSocketDelegate {
         else {
             return data
         }
-        let encoded = chunk.encode()
-        var offset = encoded.count
-        if encoded.count >= 4, encoded[1] == 0xFF, encoded[2] == 0xFF, encoded[3] == 0xFF {
-            offset += 4
-        }
+        var offset = chunk.decodedSize
         if currentChunk != nil {
             offset = chunk.append(data: data, maximumSize: socket.maximumChunkSizeFromServer)
-        }
-        if chunk.type == .two {
+        } else if chunk.type == .two {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         } else if chunk.type == .three, fragmentedChunks[chunk.chunkStreamId] == nil {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
