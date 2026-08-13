@@ -2,9 +2,10 @@ import logging
 import time
 from pathlib import Path
 
+from utils.config import RTMP_SERVER_PORT
 from utils.config import Capability
 from utils.config import srt_listener_url
-from utils.ffmpeg import FfmpegNoisePlayer
+from utils.ffmpeg import FfmpegNoiseStream
 from utils.ffmpeg import FfmpegServer
 from utils.ffmpeg import read_unique_frame_presentation_time_stamps
 from utils.ffmpeg import read_video_frame
@@ -20,6 +21,7 @@ from utils.generate_device_settings import SceneName
 from utils.generate_device_settings import VideoStabilizationMode
 from utils.generate_device_settings import WidgetType
 from utils.generate_device_settings import download_model
+from utils.generate_device_settings import mic_id
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
@@ -53,6 +55,7 @@ PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
+NOISE_TALKBACK_STREAM_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 GRAPHICS_IMPLEMENTATION_NAMES = {
@@ -97,8 +100,9 @@ class SceneSwitchMultipleTimes(TestCase):
 class SceneSwitchBackAndFrontCameraAudio(TestCase):
     """Switch between a back camera scene and a front camera scene every two seconds
     while recording and streaming over SRT to the test runner computer with the default
-    builtin microphone. White noise is played on the test runner computer for the
-    microphone to pick up. Validate that the recorded and streamed audio has no glitches.
+    builtin microphone. White noise is played on the device's speaker over talkback for
+    the microphone to pick up. Validate that the recorded and streamed audio has no
+    glitches.
 
     """
 
@@ -121,8 +125,21 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
                 ],
                 "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
                 "videoStabilizationMode": self.video_stabilization_mode,
+                "rtmpServer": {
+                    "enabled": True,
+                    "port": RTMP_SERVER_PORT,
+                    "streams": [
+                        {
+                            "id": NOISE_TALKBACK_STREAM_ID,
+                            "name": "Noise",
+                            "streamKey": "noise",
+                        }
+                    ],
+                },
+                "talkBack": {"enabled": True, "micId": mic_id(NOISE_TALKBACK_STREAM_ID)},
             }
         )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
 
     def run(self):
         back_camera = self.select_scene(SceneName.BACK)
@@ -130,7 +147,7 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
         self.assert_not_equal(back_camera, front_camera)
         recorder = Recorder(self.moblin, f"{self.name}.mp4")
         stream_file = FILES_DIR / f"{self.name}.ts"
-        with FfmpegNoisePlayer():
+        with FfmpegNoiseStream(self.moblin.ingest_rtmp_url("noise")):
             with FfmpegServer(url=srt_listener_url(), filename=stream_file):
                 time.sleep(WARM_UP_TIME)
                 self.moblin.go_live()

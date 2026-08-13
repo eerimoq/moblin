@@ -127,8 +127,7 @@ class TestCase(systest.TestCase):
         self.assert_greater(
             mean_volume_db,
             -70,
-            "The played noise was not picked up by the microphone. Turn up the volume of the "
-            "test runner computer and place it closer to the device.",
+            "The played noise was not picked up by the microphone. Turn up the volume of the device.",
         )
         dropouts = detect_silence(recording, mean_volume_db - 25, 0.1)
         for dropout in dropouts:
