@@ -483,6 +483,8 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
         switch type {
         case 1 ... 47:
             try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 48:
+            try processBufferTypeAp(packet: packet, timestamp: timestamp)
         case 49:
             try processBufferTypeFu(packet: packet, timestamp: timestamp)
         default:
@@ -493,6 +495,23 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
         decodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
+    }
+
+    private func processBufferTypeAp(packet: Data, timestamp: Int64) throws {
+        var offset = 14
+        while offset < packet.count {
+            guard offset + 2 <= packet.count else {
+                throw "AP packet short NAL header"
+            }
+            let nalUnitSize = Int(UInt16(packet[offset]) << 8 | UInt16(packet[offset + 1]))
+            offset += 2
+            guard offset + nalUnitSize <= packet.count else {
+                throw "AP packet short NAL data"
+            }
+            decodeFrame()
+            startNewFrame(timestamp: timestamp, first: packet[offset ..< offset + nalUnitSize])
+            offset += nalUnitSize
+        }
     }
 
     private func processBufferTypeFu(packet: Data, timestamp: Int64) throws {

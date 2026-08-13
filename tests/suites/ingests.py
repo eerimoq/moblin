@@ -11,11 +11,13 @@ from utils.config import rtsp_reader_url
 from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
+from utils.ffmpeg import FfmpegVideoCodec
 from utils.ffmpeg import FfmpegWhipTestStream
 from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import CameraPosition
+from utils.generate_device_settings import VideoCodec
 from utils.generate_device_settings import mic_id
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import uuid
@@ -29,6 +31,10 @@ from utils.utils import Range
 STREAM_ID = uuid()
 STREAM_2_ID = uuid()
 SECOND_INGEST_WIDGET_ID = uuid()
+FFMPEG_VIDEO_CODECS = {
+    VideoCodec.H264: FfmpegVideoCodec.H264,
+    VideoCodec.H265: FfmpegVideoCodec.HEVC,
+}
 
 
 class IngestTestCase(TestCase):
@@ -139,8 +145,12 @@ class IngestSrtClient(IngestTestCase):
         self.assert_recording(recording)
 
 
-class IngestRtspClientH264(IngestTestCase):
+class IngestRtspClient(IngestTestCase):
     """Stream to an RTSP client ingest."""
+
+    def __init__(self, moblin: Moblin, video_codec: VideoCodec):
+        super().__init__(moblin, f"IngestRtspClient{video_codec.name}")
+        self._video_codec = video_codec
 
     def setup(self):
         self.import_settings(
@@ -163,7 +173,11 @@ class IngestRtspClientH264(IngestTestCase):
 
     def run(self):
         with MediaMtx() as mediamtx:
-            with FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"):
+            stream = FfmpegTestStream(
+                url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1",
+                video_codec=FFMPEG_VIDEO_CODECS[self._video_codec],
+            )
+            with stream:
                 mediamtx.wait_for_rtsp_stream("1", 2_000_000)
                 recording = self.record_ingest()
         self.assert_recording(recording)
@@ -545,19 +559,23 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
 
 
 def tests(moblin: Moblin):
-    return [
-        IngestRtmpServer(moblin),
-        IngestSrtServer(moblin),
-        IngestSrtClient(moblin),
-        IngestRtspClientH264(moblin),
-        IngestRistServer(moblin),
-        IngestWhipServer(moblin),
-        IngestWhepClient(moblin),
-        IngestParallelRtmpServer(moblin),
-        IngestParallelSrtServer(moblin),
-        IngestParallelSrtClient(moblin),
-        IngestParallelRtspClient(moblin),
-        IngestParallelRistServer(moblin),
-        IngestParallelWhipServer(moblin),
-        IngestParallelWhepClient(moblin),
-    ]
+    return (
+        [
+            IngestRtmpServer(moblin),
+            IngestSrtServer(moblin),
+            IngestSrtClient(moblin),
+        ]
+        + [IngestRtspClient(moblin, video_codec) for video_codec in FFMPEG_VIDEO_CODECS]
+        + [
+            IngestRistServer(moblin),
+            IngestWhipServer(moblin),
+            IngestWhepClient(moblin),
+            IngestParallelRtmpServer(moblin),
+            IngestParallelSrtServer(moblin),
+            IngestParallelSrtClient(moblin),
+            IngestParallelRtspClient(moblin),
+            IngestParallelRistServer(moblin),
+            IngestParallelWhipServer(moblin),
+            IngestParallelWhepClient(moblin),
+        ]
+    )
