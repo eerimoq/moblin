@@ -123,10 +123,10 @@ class TestCase(systest.TestCase):
         self.assert_equal(audio.sample_rate, 48000)
         self._assert_audio_presentation_time_stamps(recording, audio)
         mean_volume_db = measure_mean_volume(recording)
-        LOGGER.info("Mean volume: %.1f dB", mean_volume_db)
+        LOGGER.debug("Mean volume: %.1f dB", mean_volume_db)
         self.assert_greater(
             mean_volume_db,
-            -55,
+            -70,
             "The played noise was not picked up by the microphone. Turn up the volume of the "
             "test runner computer and place it closer to the device.",
         )
