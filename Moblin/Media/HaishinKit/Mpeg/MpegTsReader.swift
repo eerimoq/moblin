@@ -30,8 +30,10 @@ class MpegTsReader: @unchecked Sendable {
     private let targetLatency: Double
     weak var delegate: (any MpegTsReaderDelegate)?
     private let decoderQueue: DispatchQueue
-    private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
-                                                      maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
+    private let wrappingTimestamp = WrappingTimestamp(
+        name: "MpegTsReader",
+        maximumTimestamp: CMTime(value: 0x2_0000_0000, timescale: CMTimeScale(TSTimestamp.resolution))
+    )
 
     init(name: String,
          decoderQueue: DispatchQueue,
@@ -369,7 +371,7 @@ class MpegTsReader: @unchecked Sendable {
         var dataOffset = AdtsHeader.size
         let optionalHeader = packetizedElementaryStream.optionalHeader
         while let dataLength = iterator.next() {
-            let delta = CMTime(seconds: offset)
+            let delta = CMTime(seconds: offset, preferredTimescale: CMTimeScale(TSTimestamp.resolution))
             let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: dataOffset,
                                                                               length: dataLength)
             var sampleSizes = [dataLength]
