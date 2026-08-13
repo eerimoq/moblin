@@ -529,7 +529,7 @@ private class Rtp {
     var processor: RtpProcessor?
     private let wrappingTimestamp = WrappingTimestamp(
         name: "RTP",
-        maximumTimestamp: CMTime(seconds: 0x1_0000_0000)
+        maximumTimestamp: CMTime(value: 0x1_0000_0000, timescale: 1)
     )
 
     func handlePacket(packet: Data) throws {
