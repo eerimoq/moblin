@@ -18,6 +18,7 @@ def check_dependencies():
         "ltcdump",
         "openssl",
         "ssh",
+        "lsof",
     ]:
         if not _is_executable_in_path(executable):
             missing_dependencies.append(f"{executable} executable not found")

@@ -76,6 +76,11 @@ class ManagedProcess:
     def is_running(self) -> bool:
         return self._process is not None and self._process.poll() is None
 
+    def pid(self) -> int | None:
+        if self._process is None:
+            return None
+        return self._process.pid
+
     def __enter__(self):
         self.start()
         return self

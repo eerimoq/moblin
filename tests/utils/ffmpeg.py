@@ -10,11 +10,13 @@ from dataclasses import field
 from enum import StrEnum
 from fractions import Fraction
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from .process import ManagedProcess
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
+from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
@@ -185,6 +187,9 @@ class FfmpegCommand:
     def args(self) -> list[str]:
         raise NotImplementedError
 
+    def _wait_until_ready(self):
+        pass
+
     def __enter__(self):
         self._start()
         return self
@@ -204,7 +209,13 @@ class FfmpegCommand:
         if self._quiet:
             command += ["-nostats", "-loglevel", "warning"]
         command += self.args()
-        self._process = ManagedProcess(command, LOGGER, stdin=subprocess.DEVNULL, log_level=_log_level)
+        self._process = ManagedProcess(
+            command,
+            LOGGER,
+            stdin=subprocess.DEVNULL,
+            log_level=_log_level,
+            ready=self._wait_until_ready,
+        )
         self._process.start()
 
     def _stop(self):
@@ -369,6 +380,16 @@ class FfmpegNoisePlayer(FfmpegCommand):
         ]
 
 
+def _holds_udp_port(pid: int, port: int) -> bool:
+    proc = subprocess.run(
+        ["lsof", "-nP", "-a", "-p", str(pid), f"-iUDP:{port}"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return len(proc.stdout.splitlines()) > 1
+
+
 class FfmpegServer(FfmpegCommand):
     def __init__(self, url: str, filename: Path):
         super().__init__()
@@ -383,6 +404,18 @@ class FfmpegServer(FfmpegCommand):
             "copy",
             str(self._filename),
         ]
+
+    def _wait_until_ready(self):
+        port = urlsplit(self._url).port
+        pid = self._process.pid() if self._process is not None else None
+        if port is None or pid is None:
+            return
+        wait_until(lambda: self._is_listening(pid, port), f"ffmpeg to listen on UDP port {port}")
+
+    def _is_listening(self, pid: int, port: int) -> bool:
+        if not self.is_running():
+            raise Exception(f"ffmpeg exited before it started to listen on UDP port {port}")
+        return _holds_udp_port(pid, port)
 
 
 @dataclass
