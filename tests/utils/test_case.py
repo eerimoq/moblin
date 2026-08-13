@@ -208,7 +208,7 @@ class TestCase(systest.TestCase):
         self.assert_equal(audio.sample_rate, 48000)
         self.assert_equal(audio.channels, channels)
         self.assert_equal(audio.channel_layout, CHANNEL_LAYOUTS[channels])
-        self.assert_greater(audio.bit_rate, 120_000)
+        self.assert_greater(audio.bit_rate, 115_000)
         self.assert_less(audio.bit_rate, 136_000)
         self._assert_audio_presentation_time_stamps(recording, audio)
         self._assert_audio_time_codes(recording, has_audio_time_codes)

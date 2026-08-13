@@ -165,7 +165,7 @@ class IngestRtspClientH264(IngestTestCase):
         with MediaMtx() as mediamtx:
             with FfmpegTestStream(url=f"rtmp://localhost:{TESTER_RTMP_PORT}/1"):
                 mediamtx.wait_for_rtsp_stream("1", 2_000_000)
-                recording = self.record_ingest(startup_delay=5)
+                recording = self.record_ingest()
         self.assert_recording(recording)
 
 
@@ -192,7 +192,7 @@ class IngestRistServer(IngestTestCase):
             transport_format=TransportFormat.MPEGTS,
         )
         with stream:
-            recording = self.record_ingest(startup_delay=5)
+            recording = self.record_ingest()
         self.assert_recording(recording)
 
 
@@ -222,7 +222,7 @@ class IngestWhipServer(IngestTestCase):
 
     def run(self):
         with FfmpegWhipTestStream(url=self.moblin.ingest_whip_url()):
-            recording = self.record_ingest(startup_delay=5)
+            recording = self.record_ingest()
         self.assert_recording(recording)
 
 
@@ -253,7 +253,7 @@ class IngestWhepClient(IngestTestCase):
         with MediaMtx() as mediamtx:
             with FfmpegRtspTestStream(url=rtsp_reader_url("1")):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
-                recording = self.record_ingest(startup_delay=5)
+                recording = self.record_ingest()
         self.assert_recording(recording)
 
 
@@ -432,7 +432,7 @@ class IngestParallelRtspClient(ParallelIngestTestCase):
             with stream_1, stream_2:
                 mediamtx.wait_for_rtsp_stream("1", 2_000_000)
                 mediamtx.wait_for_rtsp_stream("2", 2_000_000)
-                recording = self.record_parallel_ingests(startup_delay=5)
+                recording = self.record_parallel_ingests()
         self.assert_parallel_recording(recording)
 
 
@@ -463,7 +463,7 @@ class IngestParallelRistServer(ParallelIngestTestCase):
             url=self.moblin.ingest_rist_url(2), transport_format=TransportFormat.MPEGTS
         )
         with stream_1, stream_2:
-            recording = self.record_parallel_ingests(startup_delay=5)
+            recording = self.record_parallel_ingests(startup_delay=3)
         self.assert_parallel_recording(recording)
 
 
@@ -500,7 +500,7 @@ class IngestParallelWhipServer(ParallelIngestTestCase):
         stream_1 = FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("1"))
         stream_2 = FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("2"))
         with stream_1, stream_2:
-            recording = self.record_parallel_ingests(startup_delay=5)
+            recording = self.record_parallel_ingests(startup_delay=3)
         self.assert_parallel_recording(recording)
 
 
@@ -540,7 +540,7 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
             with stream_1, stream_2:
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 mediamtx.wait_for_rtsp_publisher("2", 2_000_000)
-                recording = self.record_parallel_ingests(startup_delay=5)
+                recording = self.record_parallel_ingests(startup_delay=3)
         self.assert_parallel_recording(recording)
 
 
