@@ -126,7 +126,7 @@ class TestCase(systest.TestCase):
         LOGGER.debug("Mean volume: %.1f dB", mean_volume_db)
         self.assert_greater(
             mean_volume_db,
-            -70,
+            -55,
             "The played noise was not picked up by the microphone. Turn up the volume of the device.",
         )
         dropouts = detect_silence(recording, mean_volume_db - 25, 0.1)
