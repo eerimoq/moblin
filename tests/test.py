@@ -26,13 +26,6 @@ def create_suites(moblin, _):
 
 def main():
     parser = create_parser("Run tests.")
-    parser.add_argument("--moving-picture", action="store_true")
-    parser.add_argument("--arduino-serial-port")
-    parser.add_argument(
-        "--skip-background-streaming",
-        action="store_true",
-        help="Skip all tests that requires background streaming.",
-    )
     run("test", parser, create_suites)
 
 

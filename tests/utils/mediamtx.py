@@ -15,9 +15,10 @@ CONFIG_PATH = UTILS_DIR / "mediamtx.yml"
 
 
 class MediaMtx:
-    def __init__(self, log_level: str | None = None, webrtc_host: str | None = None):
+    def __init__(self, log_level: str | None = None, webrtc_host: str | None = None, srt: bool = True):
         self._log_level = log_level
         self._webrtc_host = webrtc_host
+        self._srt = srt
         self._server = ManagedProcess(
             ["mediamtx", str(CONFIG_PATH)],
             LOGGER,
@@ -79,12 +80,6 @@ class MediaMtx:
             ),
         )
 
-    def get_srt_publisher(self, path) -> tuple[str, int] | None:
-        for stream in self._api_get("srtconns/list")["items"]:
-            if stream["path"] == path and stream["state"] == "publish":
-                return stream["id"], stream["bytesReceived"]
-        return None
-
     def _wait_for_connection(self, endpoint: str, description: str, match: Callable[[dict], bool]):
         wait_until(
             lambda: any(match(stream) for stream in self._api_get(endpoint)["items"]),
@@ -98,6 +93,8 @@ class MediaMtx:
         if self._webrtc_host is not None:
             env["MTX_WEBRTCIPSFROMINTERFACES"] = "no"
             env["MTX_WEBRTCADDITIONALHOSTS"] = self._webrtc_host
+        if not self._srt:
+            env["MTX_SRT"] = "no"
         if len(env) == 0:
             return None
         return {**os.environ, **env}

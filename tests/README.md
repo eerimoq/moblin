@@ -70,7 +70,7 @@ make stability TEST_ARGS="--ingests ''"
 ```
 
 Give `--no-stream` to only run the ingests. The app never goes live, and everything
-related to the outgoing stream is left unmonitored.
+related to the outgoing stream is left unmonitored and unrecorded.
 
 ```bash
 make stability TEST_ARGS="--no-stream"
@@ -85,13 +85,12 @@ Give `--no-record` to not record at all.
 make stability TEST_ARGS="--no-record"
 ```
 
-Give `--no-silent-audio-check` to not check that the audio read back from the stream is
-audible, for example when the device is in a quiet room. The mean volume is still measured
-and reported.
-
-```bash
-make stability TEST_ARGS="--no-silent-audio-check"
-```
+The outgoing stream is received by `ffmpeg`, which listens for SRT connections on the test
+machine, and everything it receives is written to `files/stability-stream-1.ts`. A new file,
+with the number increased by one, is created if `ffmpeg` exits and is restarted, typically
+because the app reconnected. Make sure the test machine has enough free disk space, as
+roughly 2.3 GB is written per hour at the default bitrate. All files are deleted when the
+next test run starts.
 
 # Watch the stability test
 
@@ -124,7 +123,7 @@ machine is never shaped.
 ```
  device (Moblin)                shaper (Linux)                 tester
       |                                |                          |
-      |  stream  srt :8890 ----------->| socat udp 8890 --------->| mediamtx
+      |  stream  srt :8890 ----------->| socat udp 8890 --------->| ffmpeg
       |<---------------- rtmp :11935 --| socat tcp 11935 <--------| ffmpeg
       |<----------------- srt :4000 ---| socat udp 4000 <---------| ffmpeg
       |<---------------- rist :6500 ---| socat udp 6500 <---------| ffmpeg

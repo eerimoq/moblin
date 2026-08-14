@@ -12,10 +12,11 @@ from utils.config import TESTER_WEBRTC_PORT
 from utils.config import TESTER_WEBRTC_UDP_PORT
 from utils.config import Config
 from utils.config import rtsp_reader_url
-from utils.config import srt_reader_url
+from utils.config import srt_listener_url
 from utils.ffmpeg import FfmpegCommand
 from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
+from utils.ffmpeg import StreamRecorder
 from utils.ffmpeg import TransportFormat
 from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
@@ -29,7 +30,6 @@ from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.monitor import Monitor
-from utils.monitor import StreamContentExpectation
 from utils.test_case import TestCase
 from utils.traffic_shaper import Group
 from utils.traffic_shaper import Profile
@@ -42,6 +42,7 @@ from utils.traffic_shaper import parse_profile
 from utils.utils import FILES_DIR
 from utils.utils import Range
 from utils.utils import manual_validation
+from utils.utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ INGEST_BITRATE_RANGE = Range(4_250_000, 6_500_000)
 STREAM_FPS = 30
 STREAM_RESOLUTION = Resolution.FULL_HD
 STREAM_WIDTH, STREAM_HEIGHT = STREAM_RESOLUTION.size()
-STREAM_CONTENT_FILE = FILES_DIR / f"{STREAM_PATH}-stream-content.ts"
+STREAM_FILE = FILES_DIR / f"{STREAM_PATH}-stream.ts"
 RECORDING_FILE_NAME = f"{STREAM_PATH}-recording.mp4"
 INGEST_WIDGET_SIZE = 33
 NAME_WIDGET_WIDTH = 150
@@ -109,7 +110,6 @@ class StabilityIngestsOneStream(TestCase):
         ingests: list[Ingest],
         stream: bool,
         record: bool,
-        silent_audio_check: bool,
         duration: float,
         shaper: TrafficShaper | None,
     ):
@@ -118,7 +118,6 @@ class StabilityIngestsOneStream(TestCase):
         self._stream = stream
         self._record = record
         self._recording_started = False
-        self._silent_audio_check = silent_audio_check
         self._duration = duration
         self._shaper = shaper
         self._monitor: Monitor | None = None
@@ -227,20 +226,23 @@ class StabilityIngestsOneStream(TestCase):
             if self._shaper is not None:
                 stack.enter_context(self._shaper)
                 webrtc_host = self._shaper.ip_address
-            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host))
+            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host, srt=False))
+            recorder = None
+            if self._stream:
+                recorder = stack.enter_context(StreamRecorder(srt_listener_url(), STREAM_FILE))
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
             if Ingest.WHEP in self._ingests:
                 mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
             self._wait_for_ingests()
-            if self._stream:
-                self._go_live(mediamtx)
+            if recorder is not None:
+                self._go_live(recorder)
             if self._record:
                 self.moblin.start_recording()
                 self._recording_started = True
-            self._monitor = self._create_monitor(mediamtx, sources)
-            self._monitor_until_done(self._monitor, sources)
+            self._monitor = self._create_monitor(recorder, sources)
+            self._monitor_until_done(self._monitor, recorder, sources)
             if self._recording_started:
                 self.moblin.stop_recording()
                 self._download_recording()
@@ -326,7 +328,7 @@ class StabilityIngestsOneStream(TestCase):
             number_of_ingests=len(self._ingests),
         )
 
-    def _go_live(self, mediamtx: MediaMtx):
+    def _go_live(self, recorder: StreamRecorder):
         self.moblin.go_live()
         self.moblin.wait_for_bitrate(
             self._stream_bitrate_range.minimum,
@@ -334,38 +336,26 @@ class StabilityIngestsOneStream(TestCase):
             None,
             3_000_000,
         )
-        mediamtx.wait_for_srt_stream(STREAM_PATH, 3_000_000)
+        wait_until(lambda: recorder.total_bytes() > 3_000_000, "the stream to be recorded to disk")
 
-    def _create_monitor(self, mediamtx: MediaMtx, sources: list[Source]) -> Monitor:
+    def _create_monitor(self, recorder: StreamRecorder | None, sources: list[Source]) -> Monitor:
         return Monitor(
             moblin=self.moblin,
-            mediamtx=mediamtx,
-            stream_path=STREAM_PATH,
+            recorder=recorder,
             source_names=[source.name for source in sources],
             number_of_ingests=len(self._ingests),
             stream_enabled=self._stream,
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
-            stream_content=self._create_stream_content_expectation(),
             traffic_shaping="none" if self._shaper is None else self._shaper.description(),
         )
 
-    def _create_stream_content_expectation(self) -> StreamContentExpectation:
-        expectation = StreamContentExpectation(
-            url=srt_reader_url(STREAM_PATH),
-            path=STREAM_CONTENT_FILE,
-            width=STREAM_WIDTH,
-            height=STREAM_HEIGHT,
-            fps=STREAM_FPS,
-        )
-        if not self._silent_audio_check:
-            expectation.minimum_mean_volume_db = None
-        if self._stream_profile is not None:
-            expectation.minimum_fps_ratio = 0.3
-            expectation.minimum_unique_video_frames_ratio = 0.3
-        return expectation
-
-    def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
+    def _monitor_until_done(
+        self,
+        monitor: Monitor,
+        recorder: StreamRecorder | None,
+        sources: list[Source],
+    ):
         end_time = time.monotonic() + self._duration
         while time.monotonic() < end_time:
             time.sleep(5)
@@ -376,6 +366,8 @@ class StabilityIngestsOneStream(TestCase):
                 self._shaper.poll()
             monitor.poll()
             restart_dead_sources(monitor, sources)
+            if recorder is not None:
+                recorder.poll()
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:
@@ -515,10 +507,9 @@ def tests(
     ingests: list[Ingest],
     stream: bool,
     record: bool,
-    silent_audio_check: bool,
     duration: float,
     shaper: TrafficShaper | None,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, stream, record, silent_audio_check, duration, shaper),
+        StabilityIngestsOneStream(moblin, ingests, stream, record, duration, shaper),
     ]

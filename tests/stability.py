@@ -37,7 +37,6 @@ def create_suites(moblin, args):
             args.ingests,
             not args.no_stream,
             not args.no_record,
-            not args.no_silent_audio_check,
             3600 * args.duration,
             shaper,
         )
@@ -68,11 +67,6 @@ def main():
         "--no-record",
         action="store_true",
         help="Do not record to disk in the app.",
-    )
-    parser.add_argument(
-        "--no-silent-audio-check",
-        action="store_true",
-        help="Do not check that the audio in the stream content is audible.",
     )
     parser.add_argument(
         "--stream-traffic-shaping-profile",

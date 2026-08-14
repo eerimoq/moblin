@@ -1,14 +1,10 @@
 import logging
-import shutil
 import time
 from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field
-from pathlib import Path
 
-from .ffmpeg import StreamContent
-from .ffmpeg import capture_stream_content
-from .mediamtx import MediaMtx
+from .ffmpeg import StreamRecorder
 from .moblin import Moblin
 from .moblin import parse_bitrate_status
 from .moblin import parse_ingests_status
@@ -16,7 +12,6 @@ from .moblin import parse_uptime
 from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
-STREAM_CONTENT_MINIMUM_DURATION_RATIO = 0.8
 
 
 class MonitorError(Exception):
@@ -96,145 +91,6 @@ class Deviation:
 
 
 @dataclass
-class StreamContentExpectation:
-    url: str
-    path: Path
-    width: int
-    height: int
-    fps: float
-    interval: float = 300
-    duration: float = 10
-    minimum_mean_volume_db: float | None = -90
-    minimum_unique_video_frames_ratio: float = 0.5
-    minimum_fps_ratio: float = 0.8
-    maximum_fps_ratio: float = 1.2
-
-
-def check_stream_content(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
-    problems = []
-    if content.duration < STREAM_CONTENT_MINIMUM_DURATION_RATIO * expectation.duration:
-        problems.append(f"Captured {content.duration:.1f} instead of {expectation.duration:.1f} seconds")
-    problems += _check_stream_content_video(content, expectation)
-    problems += _check_stream_content_audio(content, expectation)
-    return problems
-
-
-def _check_stream_content_video(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
-    if not content.has_video():
-        return ["No video in the stream"]
-    problems = []
-    if (content.width, content.height) != (expectation.width, expectation.height):
-        problems.append(
-            f"The video is {content.width}x{content.height} instead of "
-            f"{expectation.width}x{expectation.height}"
-        )
-    minimum_duration = 0.5 * expectation.duration
-    if content.video_duration < minimum_duration:
-        problems.append(
-            f"Only {content.video_duration:.1f} of {expectation.duration:.1f} seconds contain video"
-        )
-    fps = content.video_fps()
-    if not is_within(
-        fps,
-        expectation.minimum_fps_ratio * expectation.fps,
-        expectation.maximum_fps_ratio * expectation.fps,
-    ):
-        problems.append(f"The video is {fps:.1f} instead of {expectation.fps:.1f} fps")
-    ratio = content.unique_video_frames_ratio()
-    if ratio < expectation.minimum_unique_video_frames_ratio:
-        problems.append(
-            f"The video looks frozen. Only {content.unique_video_frames} of "
-            f"{content.video_frames} frames differ from the frame before them"
-        )
-    return problems
-
-
-def _check_stream_content_audio(content: StreamContent, expectation: StreamContentExpectation) -> list[str]:
-    if not content.has_audio():
-        return ["No audio in the stream"]
-    problems = []
-    minimum_duration = STREAM_CONTENT_MINIMUM_DURATION_RATIO * expectation.duration
-    if content.audio_duration < minimum_duration:
-        problems.append(
-            f"Only {content.audio_duration:.1f} of {expectation.duration:.1f} seconds contain audio"
-        )
-    if (
-        expectation.minimum_mean_volume_db is not None
-        and content.mean_volume_db < expectation.minimum_mean_volume_db
-    ):
-        problems.append(f"The audio is silent. Its mean volume is {content.mean_volume_db:.1f} dB")
-    return problems
-
-
-class StreamContentChecker:
-    def __init__(self, expectation: StreamContentExpectation):
-        self._expectation = expectation
-        self._next_time = time.monotonic()
-        self._saved_captures = 0
-        self.checks = 0
-        self.failed_checks = 0
-        self.video_fps = Statistics()
-        self.mean_volume_db = Statistics()
-
-    def is_due(self, now: float) -> bool:
-        return now >= self._next_time
-
-    def check(self, now: float) -> list[str]:
-        self._next_time = now + self._expectation.interval
-        self.checks += 1
-        try:
-            content = capture_stream_content(
-                self._expectation.url,
-                self._expectation.duration,
-                self._expectation.path,
-            )
-        except Exception as error:
-            problems = [f"Failed to capture the stream: {error}"]
-        else:
-            problems = check_stream_content(content, self._expectation)
-            self._update_statistics(content)
-            self._log(content)
-        if len(problems) > 0:
-            self.failed_checks += 1
-            self._save_capture()
-        return problems
-
-    def _update_statistics(self, content: StreamContent):
-        self.video_fps.add(content.video_fps())
-        self.mean_volume_db.add(content.mean_volume_db)
-
-    def _log(self, content: StreamContent):
-        LOGGER.info(
-            "Stream content: %.1f s of %s %dx%d at %.1f fps with %.0f %% moving "
-            "frames. %.1f s of %s %d Hz %d channels at %.1f dB.",
-            content.video_duration,
-            content.video_codec or "-",
-            content.width,
-            content.height,
-            content.video_fps(),
-            100 * content.unique_video_frames_ratio(),
-            content.audio_duration,
-            content.audio_codec or "-",
-            content.sample_rate,
-            content.channels,
-            content.mean_volume_db,
-        )
-
-    def _save_capture(self):
-        path = self._expectation.path
-        if self._saved_captures >= 5:
-            return
-        if not path.exists():
-            return
-        self._saved_captures += 1
-        saved_path = path.with_name(
-            f"{path.stem}-{self._saved_captures}{path.suffix}",
-        )
-        shutil.copyfile(path, saved_path)
-        LOGGER.warning("Saved the unexpected stream content to %s.", saved_path)
-
-
-@dataclass
 class Sample:
     elapsed: float = 0
     is_live: bool = False
@@ -243,6 +99,7 @@ class Sample:
     stream_uptime: float | None = None
     receiver_connected: bool = False
     received_bitrate: float | None = None
+    received_total_bytes: float = 0
     ingests_bitrate: float = 0
     ingests_total_bytes: float = 0
     number_of_ingests: int = 0
@@ -256,7 +113,7 @@ class Sample:
 @dataclass
 class Counters:
     stream_reconnects: int = 0
-    receiver_reconnects: int = 0
+    recorder_restarts: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
     video_decode_errors: dict[str, float] = field(default_factory=dict)
     duplicated_video_buffers: dict[str, float] = field(default_factory=dict)
@@ -269,19 +126,16 @@ class Monitor:
     def __init__(
         self,
         moblin: Moblin,
-        mediamtx: MediaMtx,
-        stream_path: str,
+        recorder: StreamRecorder | None,
         source_names: list[str],
         number_of_ingests: int,
         stream_enabled: bool,
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
-        stream_content: StreamContentExpectation,
         traffic_shaping: str,
     ):
         self._moblin = moblin
-        self._mediamtx = mediamtx
-        self._stream_path = stream_path
+        self._recorder = recorder
         self._number_of_ingests = number_of_ingests
         self._stream_enabled = stream_enabled
         self._stream_bitrate_range = stream_bitrate_range
@@ -291,7 +145,6 @@ class Monitor:
         self._next_log_time = time.monotonic()
         self._previous_poll_time: float | None = None
         self._previous_sample: Sample | None = None
-        self._previous_publisher: tuple[str, int] | None = None
         self.counters = Counters(source_restarts={name: 0 for name in source_names})
         self.stream_bitrate = Statistics()
         self.received_bitrate = Statistics()
@@ -304,14 +157,9 @@ class Monitor:
         self._unreachable = self._add_deviation("App unreachable", 60)
         self._not_live = self._add_deviation("Not live")
         self._stream_bitrate_deviation = self._add_deviation("Stream bitrate out of range")
-        self._receiver_deviation = self._add_deviation("Stream not received by MediaMTX")
+        self._receiver_deviation = self._add_deviation("Stream not recorded to disk")
         self._ingests_deviation = self._add_deviation("Wrong number of ingests")
         self._ingests_bitrate_deviation = self._add_deviation("Ingests bitrate out of range")
-        self._stream_content_checker = StreamContentChecker(stream_content)
-        self._stream_content_deviation = self._add_deviation(
-            "Unexpected stream content",
-            0.5 * stream_content.interval,
-        )
 
     def elapsed(self) -> float:
         return time.monotonic() - self._start_time
@@ -333,7 +181,6 @@ class Monitor:
         self._previous_sample = sample
         self._previous_poll_time = now
         self._check(now, sample)
-        self._check_stream_content(now, sample)
         if time.monotonic() >= self._next_log_time:
             self.log_status()
             self._next_log_time += 60
@@ -438,20 +285,19 @@ class Monitor:
             "Ingests total in GB:        %s",
             format_gigabytes(last.ingests_total_bytes if last else None),
         )
+        LOGGER.info(
+            "Recorded stream in GB:      %s",
+            format_gigabytes(last.received_total_bytes if last and self._recorder else None),
+        )
         LOGGER.info("Minimum / average / maximum:")
         LOGGER.info("  Stream bitrate in Mbps:   %s", self.stream_bitrate.format(1e6))
         LOGGER.info("  Received bitrate in Mbps: %s", self.received_bitrate.format(1e6))
         LOGGER.info("  Ingests bitrate in Mbps:  %s", self.ingests_bitrate.format(1e6))
         LOGGER.info("  CPU in %%:                 %s", self.cpu_percent)
         LOGGER.info("  RAM in MB:                %s", self.ram_mb)
-        LOGGER.info("  Received video FPS:       %s", self._stream_content_checker.video_fps)
-        LOGGER.info(
-            "  Received audio in dB:     %s",
-            self._stream_content_checker.mean_volume_db,
-        )
         LOGGER.info("RAM growth in MB:           %s", self._format_ram_growth())
         LOGGER.info("Stream reconnects:          %d", counters.stream_reconnects)
-        LOGGER.info("Receiver reconnects:        %d", counters.receiver_reconnects)
+        LOGGER.info("Stream recorder restarts:   %d", counters.recorder_restarts)
         LOGGER.info("Ingest source restarts:     %s", format_counts(counters.source_restarts))
         LOGGER.info(
             "Video decode errors:        %s",
@@ -466,11 +312,7 @@ class Monitor:
             format_counts(counters.dropped_video_buffers),
         )
         LOGGER.info("Failed status requests:     %d", counters.failed_status_requests)
-        LOGGER.info(
-            "Stream content checks:      %d (%d failed)",
-            self._stream_content_checker.checks,
-            self._stream_content_checker.failed_checks,
-        )
+        LOGGER.info("Recorded stream files:      %s", self._format_recorded_files())
         LOGGER.info("Thermal states in seconds:  %s", format_counts(counters.thermal_states))
         LOGGER.info("Deviations:")
         for deviation in self._deviations:
@@ -481,6 +323,11 @@ class Monitor:
         deviation = Deviation(name, timeout)
         self._deviations.append(deviation)
         return deviation
+
+    def _format_recorded_files(self) -> str:
+        if self._recorder is None:
+            return "-"
+        return ", ".join(str(file) for file in self._recorder.files)
 
     def _format_ram_growth(self) -> str:
         if self.first_ram_mb is None or self.last_ram_mb is None:
@@ -509,31 +356,25 @@ class Monitor:
         sample.ingests_bitrate = ingests.bitrate
         sample.ingests_total_bytes = ingests.total_bytes
         sample.number_of_ingests = ingests.number_of_ingests
-        if self._stream_enabled:
-            self._read_publisher(sample)
+        if self._recorder is not None:
+            self._read_recorder(sample)
         return sample
 
-    def _read_publisher(self, sample: Sample):
-        try:
-            publisher = self._mediamtx.get_srt_publisher(self._stream_path)
-        except Exception as error:
-            LOGGER.warning("Failed to read the MediaMTX status: %s", error)
+    def _read_recorder(self, sample: Sample):
+        recorder = self._recorder
+        if recorder is None:
             return
-        if publisher is None:
-            self._previous_publisher = None
+        sample.receiver_connected = recorder.is_running()
+        sample.received_total_bytes = recorder.total_bytes()
+        self.counters.recorder_restarts = recorder.restarts
+        previous = self._previous_sample
+        if previous is None:
             return
-        sample.receiver_connected = True
-        previous = self._previous_publisher
-        self._previous_publisher = publisher
-        if previous is None or self._previous_sample is None:
-            return
-        if previous[0] != publisher[0]:
-            self.counters.receiver_reconnects += 1
-            LOGGER.warning("MediaMTX accepted a new SRT connection from the app.")
-            return
-        elapsed = sample.elapsed - self._previous_sample.elapsed
+        elapsed = sample.elapsed - previous.elapsed
         if elapsed > 0:
-            sample.received_bitrate = 8 * (publisher[1] - previous[1]) / elapsed
+            sample.received_bitrate = (
+                8 * (sample.received_total_bytes - previous.received_total_bytes) / elapsed
+            )
 
     def _update_statistics(self, sample: Sample):
         if sample.is_live and sample.stream_bitrate is not None:
@@ -574,7 +415,7 @@ class Monitor:
         self._receiver_deviation.update(
             now,
             sample.is_live and (not sample.receiver_connected or sample.received_bitrate == 0),
-            "No SRT publisher" if not sample.receiver_connected else "No data received",
+            "No stream recorder" if not sample.receiver_connected else "No data received",
         )
         self._ingests_deviation.update(
             now,
@@ -591,12 +432,6 @@ class Monitor:
             f"{format_mbps(sample.ingests_bitrate)} Mbps",
         )
         self._check_battery(sample)
-
-    def _check_stream_content(self, now: float, sample: Sample):
-        if not sample.is_live or not self._stream_content_checker.is_due(now):
-            return
-        problems = self._stream_content_checker.check(now)
-        self._stream_content_deviation.update(now, len(problems) > 0, ". ".join(problems))
 
     def _check_battery(self, sample: Sample):
         level = sample.battery_percent
