@@ -264,6 +264,10 @@ func formatThreeDecimals(_ value: some BinaryFloatingPoint) -> String {
     String(format: "%.03f", Double(value))
 }
 
+func formatFourDecimals(_ value: some BinaryFloatingPoint) -> String {
+    String(format: "%.04f", Double(value))
+}
+
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         min(max(self, limits.lowerBound), limits.upperBound)
