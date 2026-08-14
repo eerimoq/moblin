@@ -21,6 +21,7 @@ from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
 from utils.generate_device_settings import Resolution
+from utils.generate_device_settings import SceneName
 from utils.generate_device_settings import scene_widget_settings
 from utils.generate_device_settings import text_widget_settings
 from utils.generate_device_settings import uuid
@@ -145,64 +146,8 @@ class StabilityIngestsOneStream(TestCase):
                     }
                 ],
                 "scenes": [
-                    {
-                        "enabled": True,
-                        "cameraPosition": CameraPosition.FRONT,
-                        "widgets": [
-                            scene_widget_settings(
-                                RTMP_WIDGET_ID,
-                                x=0,
-                                y=0,
-                                size=INGEST_WIDGET_SIZE,
-                                alignment=Alignment.TOP_LEFT,
-                            ),
-                            scene_widget_settings(
-                                SRT_WIDGET_ID,
-                                x=0,
-                                y=0,
-                                size=INGEST_WIDGET_SIZE,
-                                alignment=Alignment.TOP_RIGHT,
-                            ),
-                            scene_widget_settings(
-                                RIST_WIDGET_ID,
-                                x=0,
-                                y=0,
-                                size=INGEST_WIDGET_SIZE,
-                                alignment=Alignment.BOTTOM_LEFT,
-                            ),
-                            scene_widget_settings(
-                                WHEP_WIDGET_ID,
-                                x=0,
-                                y=0,
-                                size=INGEST_WIDGET_SIZE,
-                                alignment=Alignment.BOTTOM_RIGHT,
-                            ),
-                            name_scene_widget_settings(
-                                RTMP_NAME_WIDGET_ID,
-                                x=NAME_WIDGET_X,
-                                y=0,
-                                alignment=Alignment.TOP_LEFT,
-                            ),
-                            name_scene_widget_settings(
-                                SRT_NAME_WIDGET_ID,
-                                x=NAME_WIDGET_X,
-                                y=0,
-                                alignment=Alignment.TOP_RIGHT,
-                            ),
-                            name_scene_widget_settings(
-                                RIST_NAME_WIDGET_ID,
-                                x=NAME_WIDGET_X,
-                                y=NAME_WIDGET_BOTTOM_ROW_Y,
-                                alignment=Alignment.TOP_LEFT,
-                            ),
-                            name_scene_widget_settings(
-                                WHEP_NAME_WIDGET_ID,
-                                x=NAME_WIDGET_X,
-                                y=NAME_WIDGET_BOTTOM_ROW_Y,
-                                alignment=Alignment.TOP_RIGHT,
-                            ),
-                        ],
-                    }
+                    scene_settings(SceneName.FRONT, CameraPosition.FRONT),
+                    scene_settings(SceneName.BACK, CameraPosition.BACK),
                 ],
                 "widgets": [
                     video_source_widget_settings(
@@ -423,7 +368,10 @@ class StabilityIngestsOneStream(TestCase):
     def _monitor_until_done(self, monitor: Monitor, sources: list[Source]):
         end_time = time.monotonic() + self._duration
         while time.monotonic() < end_time:
-            time.sleep(10)
+            time.sleep(5)
+            self.moblin.set_scene(SceneName.BACK)
+            time.sleep(5)
+            self.moblin.set_scene(SceneName.FRONT)
             if self._shaper is not None:
                 self._shaper.poll()
             monitor.poll()
@@ -435,6 +383,68 @@ def ingests_bitrate_range(number_of_ingests: int) -> Range:
         number_of_ingests * INGEST_BITRATE_RANGE.minimum,
         number_of_ingests * INGEST_BITRATE_RANGE.maximum,
     )
+
+
+def scene_settings(name: SceneName, camera_position: CameraPosition):
+    return {
+        "name": name,
+        "enabled": True,
+        "cameraPosition": camera_position,
+        "widgets": [
+            scene_widget_settings(
+                RTMP_WIDGET_ID,
+                x=0,
+                y=0,
+                size=INGEST_WIDGET_SIZE,
+                alignment=Alignment.TOP_LEFT,
+            ),
+            scene_widget_settings(
+                SRT_WIDGET_ID,
+                x=0,
+                y=0,
+                size=INGEST_WIDGET_SIZE,
+                alignment=Alignment.TOP_RIGHT,
+            ),
+            scene_widget_settings(
+                RIST_WIDGET_ID,
+                x=0,
+                y=0,
+                size=INGEST_WIDGET_SIZE,
+                alignment=Alignment.BOTTOM_LEFT,
+            ),
+            scene_widget_settings(
+                WHEP_WIDGET_ID,
+                x=0,
+                y=0,
+                size=INGEST_WIDGET_SIZE,
+                alignment=Alignment.BOTTOM_RIGHT,
+            ),
+            name_scene_widget_settings(
+                RTMP_NAME_WIDGET_ID,
+                x=NAME_WIDGET_X,
+                y=0,
+                alignment=Alignment.TOP_LEFT,
+            ),
+            name_scene_widget_settings(
+                SRT_NAME_WIDGET_ID,
+                x=NAME_WIDGET_X,
+                y=0,
+                alignment=Alignment.TOP_RIGHT,
+            ),
+            name_scene_widget_settings(
+                RIST_NAME_WIDGET_ID,
+                x=NAME_WIDGET_X,
+                y=NAME_WIDGET_BOTTOM_ROW_Y,
+                alignment=Alignment.TOP_LEFT,
+            ),
+            name_scene_widget_settings(
+                WHEP_NAME_WIDGET_ID,
+                x=NAME_WIDGET_X,
+                y=NAME_WIDGET_BOTTOM_ROW_Y,
+                alignment=Alignment.TOP_RIGHT,
+            ),
+        ],
+    }
 
 
 def name_widget_settings(name: str, widget_id: str):
