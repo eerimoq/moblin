@@ -15,16 +15,9 @@ from .utils import TEST_DIR
 MakeTests = Callable[[Moblin, argparse.Namespace], list]
 
 
-def create_parser(description: str | None = None) -> argparse.ArgumentParser:
+def create_parser(description: str) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--device")
-    parser.add_argument("--moving-picture", action="store_true")
-    parser.add_argument("--arduino-serial-port")
-    parser.add_argument(
-        "--skip-background-streaming",
-        action="store_true",
-        help="Skip all tests that requires background streaming.",
-    )
     return parser
 
 
