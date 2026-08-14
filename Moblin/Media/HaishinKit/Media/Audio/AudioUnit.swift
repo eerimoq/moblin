@@ -353,6 +353,12 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     }
 }
 
+// private var baseTimestamp: Double = .nan
+// private var previousTimestamp: Double = 0.0
+// private var previousSyncedTimestamp: Double = 0.0
+// private var sampleCounter: Double = 0.0
+// private var nowStart: ContinuousClock.Instant?
+
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
@@ -363,7 +369,43 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(processor: processor, sampleBuffer: sampleBuffer)
+        let presentationTimeStamp = syncTimeToHost(processor: processor, sampleBuffer: sampleBuffer)
+        // if baseTimestamp.isNaN {
+        //     baseTimestamp = sampleBuffer.presentationTimeStamp.seconds
+        // }
+        // if nowStart == nil {
+        //     nowStart = .now
+        // }
+        // let timestamp = sampleBuffer.presentationTimeStamp.seconds - baseTimestamp
+        // let syncedTimestamp = presentationTimeStamp.seconds - baseTimestamp
+        // let delta = timestamp - previousTimestamp
+        // let deltaSynced = syncedTimestamp - previousSyncedTimestamp
+        // let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
+        // let numSamples = sampleBuffer.numSamples
+        // let hostTime = currentPresentationTimeStamp().seconds - baseTimestamp
+        // let sampleTime = sampleCounter / sampleRate
+        // let now = nowStart!.duration(to: .now).seconds
+        // logger.info("""
+        // xxx audio \
+        // r: \(sampleRate) ns: \(numSamples) \
+        // t: \(formatFourDecimals(timestamp)) ts: \(formatFourDecimals(syncedTimestamp)) \
+        // d: \(formatFourDecimals(delta)) ds: \(formatFourDecimals(deltaSynced)) \
+        // c: \(formatFourDecimals(sampleTime)) \
+        // h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
+        // """)
+        // if delta > 0.03 || delta < 0.01 || deltaSynced > 0.03 || deltaSynced < 0.01 {
+        //     logger.info("""
+        //     xxx audio abnormal \
+        //     r: \(sampleRate) ns: \(numSamples) \
+        //     t: \(formatFourDecimals(timestamp)) ts: \(formatFourDecimals(syncedTimestamp)) \
+        //     d: \(formatFourDecimals(delta)) ds: \(formatFourDecimals(deltaSynced)) \
+        //     c: \(formatFourDecimals(sampleTime)) \
+        //     h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
+        //     """)
+        // }
+        // sampleCounter += Double(numSamples)
+        // previousTimestamp = timestamp
+        // previousSyncedTimestamp = syncedTimestamp
         var sampleBuffer = sampleBuffer
         if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer, presentationTimeStamp) {
             sampleBuffer = bufferedAudio.getSampleBuffer(presentationTimeStamp.seconds) ?? sampleBuffer
@@ -394,13 +436,11 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
     }
 }
 
-private func syncTimeToVideo(processor: Processor, sampleBuffer: CMSampleBuffer) -> CMTime {
+private func syncTimeToHost(processor: Processor, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-    if let audioClock = processor.audio.session.synchronizationClock,
-       let videoClock = processor.video.session.synchronizationClock
-    {
+    if let audioClock = processor.audio.session.synchronizationClock {
         let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
-        let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
+        let seconds = audioClock.convertTime(presentationTimeStamp, to: CMClockGetHostTimeClock()).seconds
         let value = CMTimeValue(seconds * Double(audioTimescale))
         presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
     }
