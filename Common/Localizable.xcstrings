@@ -5910,7 +5910,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ wurde von %@ zur Warteschlange hinzugefügt."
+            "value" : "%1$@ wurde von %2$@ zur Warteschlange hinzugefügt."
           }
         },
         "en" : {
@@ -5922,127 +5922,127 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ ditambahkan ke antrean oleh %@."
+            "value" : "%1$@ ditambahkan ke antrean oleh %2$@."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@이(가) 대기열에 %@을(를) 추가했습니다."
+            "value" : "%1$@이(가) 대기열에 %2$@을(를) 추가했습니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ adicionado à fila por %@."
+            "value" : "%1$@ adicionado à fila por %2$@."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ pridal do frontu %@."
+            "value" : "%1$@ pridal do frontu %2$@."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@, %@ tarafından sıraya eklendi."
+            "value" : "%1$@, %2$@ tarafından sıraya eklendi."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ added to the queue by %@."
+            "value" : "%1$@ added to the queue by %2$@."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ 由 %@ 加入隊列。"
+            "value" : "%1$@ 由 %2$@ 加入隊列。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ 由 %@ 加入隊列。"
+            "value" : "%1$@ 由 %2$@ 加入隊列。"
           }
         }
       }
@@ -6914,7 +6914,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ angefordert von %@ nicht gefunden."
+            "value" : "%1$@ angefordert von %2$@ nicht gefunden."
           }
         },
         "en" : {
@@ -6926,127 +6926,127 @@
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ solicitado por %@ no encontrado."
+            "value" : "%1$@ solicitado por %2$@ no encontrado."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ pyytämää %@ ei löydy."
+            "value" : "%1$@ pyytämää %2$@ ei löydy."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ によってリクエストされた %@ が見つかりません。"
+            "value" : "%1$@ によってリクエストされた %2$@ が見つかりません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@님이 요청한 %@을(를) 찾을 수 없습니다."
+            "value" : "%1$@님이 요청한 %2$@을(를) 찾을 수 없습니다."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ solicitado por %@ não encontrado."
+            "value" : "%1$@ solicitado por %2$@ não encontrado."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@, запрошенный %@, не найден."
+            "value" : "%1$@, запрошенный %2$@, не найден."
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ requested by %@ not found."
+            "value" : "%1$@ requested by %2$@ not found."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "未找到 %@ 請求的 %@。"
+            "value" : "未找到 %1$@ 請求的 %2$@。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "未找到 %@ 請求的 %@。"
+            "value" : "未找到 %1$@ 請求的 %2$@。"
           }
         }
       }
@@ -27928,7 +27928,7 @@
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Add song"
           }
         },
