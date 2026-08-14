@@ -53,63 +53,10 @@ make stability
 make stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
-Give `--ingests` to select which ingests to stream to. All of `rtmp`, `srt`, `rist` and
-`whep` are streamed to by default. The scene and its widgets are always configured for all
-ingests, but the ingests that are not streamed to are disabled in the app.
-
-```bash
-make stability TEST_ARGS="--ingests rtmp"
-make stability TEST_ARGS="--ingests srt,whep"
-```
-
-Give an empty list of ingests to only run the outgoing stream. All ingests are disabled in
-the app.
-
-```bash
-make stability TEST_ARGS="--ingests ''"
-```
-
-Give `--no-stream` to only run the ingests. The app never goes live, and everything
-related to the outgoing stream is left unmonitored and unrecorded.
-
-```bash
-make stability TEST_ARGS="--no-stream"
-```
-
-Everything is recorded to disk in the app while the test runs. The recording is downloaded to
-`files/stability-recording.mp4` and deleted from the device when the test ends, also when it
-fails. Make sure the device has enough free disk space, as roughly 2.5 GB is recorded per hour.
-Give `--no-record` to not record at all.
-
-```bash
-make stability TEST_ARGS="--no-record"
-```
-
-The outgoing stream is received by `ffmpeg`, which listens for SRT connections on the test
-machine, and everything it receives is written to `files/stability-stream-1.ts`. A new file,
-with the number increased by one, is created if `ffmpeg` exits and is restarted, typically
-because the app reconnected. Make sure the test machine has enough free disk space, as
-roughly 2.3 GB is written per hour at the default bitrate. All files are deleted when the
-next test run starts.
-
 # Watch the stability test
-
-Show all graphs at once in a grid, updated live while the stability test is running. Two
-columns are used if the terminal is wide enough, otherwise one. Press `h` for help, and `q`
-to quit.
 
 ```bash
 make stability-watch
-```
-
-Show a single graph, with the same keys.
-
-```bash
-python watch.py ram
-python watch.py cpu
-python watch.py video-decode-errors
-python watch.py duplicated-frames
-python watch.py dropped-frames
 ```
 
 # Traffic shaping
