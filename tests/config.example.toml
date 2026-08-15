@@ -18,6 +18,13 @@ generic-stream-urls = [
     "srt://eu.srt.belabox.net:4000?streamid=275092837459082734590872345"
 ]
 
+[dji-camera]
+bluetooth-peripheral-name = "OsmoAction5Pro"
+bluetooth-peripheral-id = "E5A7C0B2-2F1D-4C6A-9E3B-71D0F4A85C29"
+wifi-ssid = "moblin"
+wifi-password = "hunter2"
+model = "osmoAction5Pro"
+
 [shaper]
 user = "erik"
 ip-address = "shaper.home"

@@ -44,6 +44,7 @@ cp config.example.toml config.toml
 ```bash
 make test
 make test TEST_ARGS="--device macpro Talkback"
+make test TEST_ARGS="--dji-camera DjiCameraRtmpServer"
 ```
 
 # Run the stability test

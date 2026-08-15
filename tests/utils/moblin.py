@@ -153,6 +153,7 @@ class Moblin:
         config: Config,
         arduino: Arduino | None,
         moving_picture: bool,
+        dji_camera: bool = False,
         skip_background_streaming: bool = False,
     ):
         self.config = config
@@ -189,6 +190,7 @@ class Moblin:
                 if capability != Capability.BACKGROUND_STREAMING
             ]
         self._moving_picture = moving_picture
+        self._dji_camera = dji_camera
         self._chat_message_id = 0
 
     def __enter__(self):
@@ -342,6 +344,9 @@ class Moblin:
     def has_moving_picture(self) -> bool:
         return self._moving_picture
 
+    def has_dji_camera(self) -> bool:
+        return self._dji_camera
+
     def wait_for_ingests(
         self,
         bitrate: Range,
@@ -365,6 +370,13 @@ class Moblin:
             )
 
         wait_until(check, "ingests to reach wanted values")
+
+    def wait_for_dji_devices_streaming(self, number_of_devices: int = 1):
+        def check() -> bool:
+            status = self.get_status_top_right().get("djiDevices")
+            return status is not None and len(status["message"].split(",")) == number_of_devices
+
+        wait_until(check, "DJI devices to start streaming")
 
     def wait_for_bitrate(self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes):
         def check() -> bool:

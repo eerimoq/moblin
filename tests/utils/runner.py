@@ -21,6 +21,11 @@ def create_parser(description: str) -> argparse.ArgumentParser:
     parser.add_argument("--arduino-serial-port")
     parser.add_argument("--moving-picture", action="store_true")
     parser.add_argument(
+        "--dji-camera",
+        action="store_true",
+        help="Run all tests that requires a DJI camera.",
+    )
+    parser.add_argument(
         "--skip-background-streaming",
         action="store_true",
         help="Skip all tests that requires background streaming.",
@@ -47,7 +52,13 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
         arduino = Arduino(args.arduino_serial_port)
     else:
         arduino = None
-    moblin = Moblin(config, arduino, args.moving_picture, args.skip_background_streaming)
+    moblin = Moblin(
+        config,
+        arduino,
+        args.moving_picture,
+        args.dji_camera,
+        args.skip_background_streaming,
+    )
     with moblin:
         moblin.end()
         moblin.stop_recording()

@@ -88,6 +88,17 @@ class VideoStabilizationMode(StrEnum):
     CINEMATIC_EXTENDED_ENHANCED = "Cinematic extended enhanced"
 
 
+class DjiDeviceUrlType(StrEnum):
+    SERVER = "Server"
+    CUSTOM = "Custom"
+
+
+class DjiDeviceResolution(StrEnum):
+    R1080P = "1080p"
+    R720P = "720p"
+    R480P = "480p"
+
+
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
     QUAD_HD = "2560x1440"
@@ -132,6 +143,26 @@ def uuid() -> str:
 
 def mic_id(stream_id: str) -> str:
     return f"{stream_id} 0"
+
+
+def dji_device_settings(device_id: str, rtmp_stream_id: str, dji_camera: dict):
+    return {
+        "id": device_id,
+        "name": "Camera",
+        "bluetoothPeripheralName": dji_camera["bluetooth-peripheral-name"],
+        "bluetoothPeripheralId": dji_camera["bluetooth-peripheral-id"],
+        "wifiSsid": dji_camera["wifi-ssid"],
+        "wifiPassword": dji_camera["wifi-password"],
+        "model": dji_camera["model"],
+        "rtmpUrlType": DjiDeviceUrlType.SERVER,
+        "serverRtmpStreamId": rtmp_stream_id,
+        "resolution": DjiDeviceResolution.R1080P,
+        "fps": 30,
+        "bitrate": 6_000_000,
+        "videoCodec": VideoCodec.H265,
+        "autoRestartStream": True,
+        "isStarted": True,
+    }
 
 
 def download_model(name: str) -> Path:

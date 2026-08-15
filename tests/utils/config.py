@@ -98,6 +98,12 @@ class Config:
     def generic_stream_urls(self) -> list[str]:
         return self.general()["generic-stream-urls"]
 
+    def dji_camera(self):
+        dji_camera = self._config.get("dji-camera")
+        if dji_camera is None:
+            raise Exception(f"No [dji-camera] section found in '{self.config_toml.absolute()}'.")
+        return dji_camera
+
     def shaper(self):
         shaper = self._config.get("shaper")
         if shaper is None:

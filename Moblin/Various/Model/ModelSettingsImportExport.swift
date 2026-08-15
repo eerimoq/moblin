@@ -80,6 +80,7 @@ extension Model {
         reloadStream()
         resetSelectedScene()
         updateQuickButtonStates()
+        reloadDjiDevicesAfterSettingsImport()
         makeToast(title: String(localized: "Settings imported"))
     }
 

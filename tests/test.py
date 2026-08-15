@@ -1,5 +1,6 @@
 from suites import browser_widget
 from suites import chat
+from suites import dji_camera
 from suites import ingests
 from suites import record
 from suites import scenes
@@ -20,6 +21,7 @@ def create_suites(moblin, _):
         stream.tests(moblin),
         browser_widget.tests(moblin),
         chat.tests(moblin),
+        dji_camera.tests(moblin),
         web_remote_control.tests(moblin),
     ]
 
