@@ -330,11 +330,10 @@ class RtmpServerClient: @unchecked Sendable {
     }
 
     private func receiveDataFromNetwork() {
-        let length = max(1, receiveSize - inputBuffer.count)
-        connection.receive(
-            minimumIncompleteLength: length,
-            maximumLength: max(length, 8192)
-        ) { data, _, isComplete, error in
+        connection.receive(minimumIncompleteLength: receiveSize, maximumLength: max(
+            receiveSize,
+            8192
+        )) { data, _, isComplete, error in
             if let data {
                 self.processReceivedData(data: data)
             }
