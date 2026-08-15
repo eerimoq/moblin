@@ -37,6 +37,7 @@ class CameraPosition(StrEnum):
 
 
 class WidgetType(StrEnum):
+    ALERTS = "Alerts"
     BROWSER = "Browser"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"

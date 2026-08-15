@@ -5,6 +5,12 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
+from utils.av_sync import AlertSyncReport
+from utils.av_sync import alert_chat_message
+from utils.av_sync import alert_media_files
+from utils.av_sync import alerts_media_gallery_settings
+from utils.av_sync import alerts_widget_settings
+from utils.av_sync import measure_alert_synchronization
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
@@ -91,6 +97,13 @@ RTMP_WIDGET_ID = uuid()
 SRT_WIDGET_ID = uuid()
 RIST_WIDGET_ID = uuid()
 WHEP_WIDGET_ID = uuid()
+ALERT_WIDGET_ID = uuid()
+ALERT_WIDGET_X = 40.0
+ALERT_WIDGET_Y = 40.0
+ALERT_INTERVAL = 15 * 60
+FIRST_ALERT_DELAY = 60
+MAXIMUM_ALERT_OFFSET_SPREAD = 0.25
+MAXIMUM_ALERT_OFFSET_DRIFT = 0.1
 RTMP_NAME_WIDGET_ID = uuid()
 SRT_NAME_WIDGET_ID = uuid()
 RIST_NAME_WIDGET_ID = uuid()
@@ -127,6 +140,7 @@ class StabilityIngestsOneStream(TestCase):
         self._ingests_profile: Profile | None = None
         self._stream_bitrate_range = STREAM_BITRATE_RANGE
         self._ingests_bitrate_range = ingests_bitrate_range(len(ingests))
+        self._alert_times: list[float] = []
 
     def setup(self):
         if self._shaper is not None:
@@ -187,7 +201,13 @@ class StabilityIngestsOneStream(TestCase):
                     name_widget_settings("SRT", SRT_NAME_WIDGET_ID),
                     name_widget_settings("RIST", RIST_NAME_WIDGET_ID),
                     name_widget_settings("WHEP", WHEP_NAME_WIDGET_ID),
+                    alerts_widget_settings("Alert", ALERT_WIDGET_ID),
                 ],
+                "alertsMediaGallery": alerts_media_gallery_settings(),
+                "chat": {
+                    "botEnabled": True,
+                    "botCommandPermissions": {"alert": {"moderatorsEnabled": True}, "migrated": True},
+                },
                 "rtmpServer": {
                     "enabled": Ingest.RTMP in self._ingests,
                     "port": RTMP_SERVER_PORT,
@@ -214,14 +234,16 @@ class StabilityIngestsOneStream(TestCase):
                         }
                     ],
                 },
-            }
+            },
+            files=alert_media_files(),
         )
         time.sleep(5)
 
     def run(self):
         manual_validation(
             LOGGER,
-            "Keep the device connected to power with the app in the foreground",
+            "Keep the device connected to power with the app in the foreground, and the volume "
+            "turned up so the microphone picks up the alert sounds",
         )
         stream_recorder: StreamRecorder | None = None
         recording: Path | None = None
@@ -251,7 +273,9 @@ class StabilityIngestsOneStream(TestCase):
             if self._recording_started:
                 self.moblin.stop_recording()
                 recording = self._download_recording()
+        reports = self._measure_alert_synchronization(stream_recorder, recording)
         self._assert_no_audio_gaps(stream_recorder, recording)
+        self._assert_alerts_synchronized(reports, recording)
 
     def teardown(self):
         if self._monitor is not None:
@@ -283,6 +307,45 @@ class StabilityIngestsOneStream(TestCase):
             files += recorder.files
         for file in files:
             self._assert_audio_presentation_time_stamps(file, ffprobe_audio(file))
+
+    def _measure_alert_synchronization(
+        self,
+        recorder: StreamRecorder | None,
+        recording: Path | None,
+    ) -> list[AlertSyncReport]:
+        reports: list[AlertSyncReport] = []
+        if len(self._alert_times) < 2:
+            return reports
+        files = [recording] if recording is not None else []
+        files += recorder.files if recorder is not None else []
+        for file in files:
+            try:
+                report = measure_alert_synchronization(
+                    file, self._alert_times, ALERT_WIDGET_X, ALERT_WIDGET_Y
+                )
+            except Exception as error:
+                LOGGER.warning("Failed to measure alert synchronization in %s. %s", file, error)
+                continue
+            report.log()
+            reports.append(report)
+        return reports
+
+    def _assert_alerts_synchronized(self, reports: list[AlertSyncReport], recording: Path | None):
+        for report in reports:
+            if report.path == recording:
+                self.assert_equal(len(report.missing), 0)
+            if len(report.alerts) < 2:
+                continue
+            self.assert_less(report.spread(), MAXIMUM_ALERT_OFFSET_SPREAD)
+            self.assert_less(abs(report.drift()), MAXIMUM_ALERT_OFFSET_DRIFT)
+
+    def _trigger_alert(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        time.sleep(3)
+        self.moblin.send_chat_message(alert_chat_message())
+        self._alert_times.append(time.monotonic())
+        LOGGER.info("Triggered alert %s.", len(self._alert_times) - 1)
+        time.sleep(7)
 
     def _create_sources(self) -> list[Source]:
         return [
@@ -372,11 +435,15 @@ class StabilityIngestsOneStream(TestCase):
         sources: list[Source],
     ):
         end_time = time.monotonic() + self._duration
+        alert_time = time.monotonic() + FIRST_ALERT_DELAY
         while time.monotonic() < end_time:
             time.sleep(5)
             self.moblin.set_scene(SceneName.BACK)
             time.sleep(5)
             self.moblin.set_scene(SceneName.FRONT)
+            if time.monotonic() >= alert_time:
+                self._trigger_alert()
+                alert_time += ALERT_INTERVAL
             if self._shaper is not None:
                 self._shaper.poll()
             monitor.poll()
@@ -450,6 +517,7 @@ def scene_settings(name: SceneName, camera_position: CameraPosition):
                 y=NAME_WIDGET_BOTTOM_ROW_Y,
                 alignment=Alignment.TOP_RIGHT,
             ),
+            scene_widget_settings(ALERT_WIDGET_ID, x=ALERT_WIDGET_X, y=ALERT_WIDGET_Y, size=100),
         ],
     }
 

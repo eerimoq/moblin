@@ -53,6 +53,17 @@ make stability
 make stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
+# Audio and video synchronization in the stability test
+
+The stability test triggers an alerts widget every 15 minutes with the `!moblin alert sync`
+chat bot command. The alert shows a four coloured square in the middle of the scene and
+plays a 3 kHz tone burst through the speaker, which the microphone picks up. Both the
+recording and the streamed files are searched for the tone bursts and the squares
+afterwards, and the time from the square to the tone is reported for every alert. A
+constant offset is expected, as the sound has to travel from the speaker to the
+microphone, so the test fails on the spread and the drift of the offsets rather than on
+their value. Turn up the volume of the device, or the tone bursts are not found.
+
 # Watch the stability test
 
 ```bash

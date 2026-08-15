@@ -16,6 +16,7 @@ from .process import ManagedProcess
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
+from .utils import Pixel
 from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
@@ -620,12 +621,101 @@ def read_video_frame(path: Path, timestamp: float, crop: Crop | None = None) -> 
     return Image(width, height, data)
 
 
+@dataclass
+class VideoRegionColors:
+    pts: float
+    colors: list[Pixel]
+
+
+def read_video_region_colors(
+    path: Path,
+    crop: Crop,
+    columns: int,
+    rows: int,
+    start: float,
+    duration: float,
+) -> list[VideoRegionColors]:
+    command = FFMPEG_COMMAND + [
+        "-ss",
+        f"{start:.3f}",
+        "-t",
+        f"{duration:.3f}",
+        "-i",
+        str(path),
+        "-an",
+        "-vf",
+        f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height},"
+        f"format=rgb24,scale={columns}:{rows}:flags=area,showinfo",
+        "-fps_mode",
+        "passthrough",
+        "-f",
+        "rawvideo",
+        "-pix_fmt",
+        "rgb24",
+        "-",
+    ]
+    LOGGER.debug("Command: %s", " ".join(command))
+    proc = subprocess.run(command, check=True, capture_output=True)
+    presentation_time_stamps = [
+        float(pts) for pts in RE_SHOWINFO_PTS.findall(proc.stderr.decode("utf-8", "replace"))
+    ]
+    frame_size = 3 * columns * rows
+    frames = []
+    for index, pts in enumerate(presentation_time_stamps):
+        data = proc.stdout[index * frame_size : (index + 1) * frame_size]
+        if len(data) < frame_size:
+            break
+        colors = [Pixel(*data[offset : offset + 3]) for offset in range(0, frame_size, 3)]
+        frames.append(VideoRegionColors(start + pts, colors))
+    return frames
+
+
 def measure_mean_volume(path: Path) -> float:
-    output = ffmpeg_run("-i", str(path), "-vn", "-af", "volumedetect", "-f", "null", "-").stderr
-    for name, value in RE_VOLUME_DETECT.findall(output):
-        if name == "mean_volume":
+    return _measure_volume(path, "mean_volume", None)
+
+
+def measure_max_volume(path: Path, audio_filters: list[str] | None = None) -> float:
+    return _measure_volume(path, "max_volume", audio_filters)
+
+
+def _measure_volume(path: Path, name: str, audio_filters: list[str] | None) -> float:
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vn",
+        "-af",
+        _audio_filter_chain(audio_filters, "volumedetect"),
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    for found_name, value in RE_VOLUME_DETECT.findall(output):
+        if found_name == name:
             return float(value)
     return -math.inf
+
+
+def _audio_filter_chain(audio_filters: list[str] | None, *extra: str) -> str:
+    return ",".join([*(audio_filters or []), *extra])
+
+
+def detect_audio_onsets(
+    path: Path,
+    noise_db: float,
+    minimum_silence: float,
+    audio_filters: list[str] | None = None,
+) -> list[float]:
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vn",
+        "-af",
+        _audio_filter_chain(audio_filters, f"silencedetect=noise={noise_db}dB:duration={minimum_silence}"),
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    return [float(value) for kind, value in RE_SILENCE_DETECT.findall(output) if kind == "end"]
 
 
 @dataclass
