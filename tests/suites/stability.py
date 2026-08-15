@@ -276,8 +276,13 @@ class StabilityIngestsOneStream(TestCase):
             if self._recording_started:
                 self.moblin.stop_recording()
                 recording = self._download_recording()
+        if stream_recorder is not None:
+            self._assert_audio_presentation_time_stamps(
+                stream_recorder.file, ffprobe_audio(stream_recorder.file)
+            )
+        if recording is not None:
+            self._assert_audio_presentation_time_stamps(recording, ffprobe_audio(recording))
         reports = self._measure_alert_synchronization(stream_recorder, recording)
-        self._assert_no_audio_gaps(stream_recorder, recording)
         self._assert_alerts_synchronized(reports, recording)
 
     def teardown(self):
@@ -301,15 +306,6 @@ class StabilityIngestsOneStream(TestCase):
             recording.stat().st_size / 1e9,
         )
         return recording
-
-    def _assert_no_audio_gaps(self, recorder: StreamRecorder | None, recording: Path | None):
-        files = []
-        if recording is not None:
-            files.append(recording)
-        if recorder is not None:
-            files.append(recorder.file)
-        for file in files:
-            self._assert_audio_presentation_time_stamps(file, ffprobe_audio(file))
 
     def _measure_alert_synchronization(
         self,
