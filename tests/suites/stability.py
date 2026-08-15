@@ -242,8 +242,11 @@ class StabilityIngestsOneStream(TestCase):
     def run(self):
         manual_validation(
             LOGGER,
-            "Keep the device connected to power with the app in the foreground, and the volume "
-            "turned up so the microphone picks up the alert sounds",
+            "Keep the device connected to power with the app in the foreground",
+        )
+        manual_validation(
+            LOGGER,
+            "Keep the volume turned up so the microphone picks up the alert sounds",
         )
         stream_recorder: StreamRecorder | None = None
         recording: Path | None = None
