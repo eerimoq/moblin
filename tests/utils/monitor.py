@@ -13,6 +13,8 @@ from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
 
+REPORT_WIDTH = 64
+
 
 class MonitorError(Exception):
     pass
@@ -38,15 +40,12 @@ class Statistics:
             return None
         return self._total / self._count
 
-    def format(self, scale: float = 1) -> str:
+    def columns(self, scale: float = 1) -> list[str]:
         average = self.average()
         if self.minimum is None or self.maximum is None or average is None:
-            return "-"
+            return ["-", "-", "-"]
         values = [self.minimum, average, self.maximum]
-        return " / ".join(format_value(value, scale, 1) for value in values)
-
-    def __str__(self):
-        return self.format()
+        return [format_value(value, scale, 1) for value in values]
 
 
 class Deviation:
@@ -75,12 +74,14 @@ class Deviation:
         if self._start_time is not None:
             self._stop(now)
 
-    def __str__(self):
+    def columns(self) -> list[str]:
         if self.count == 0:
-            return "never"
-        return (
-            f"{self.count} times, {self.total_duration:.0f} s in total, {self.longest_duration:.0f} s at most"
-        )
+            return ["0", "-", "-"]
+        return [
+            str(self.count),
+            format_short_duration(self.total_duration),
+            format_short_duration(self.longest_duration),
+        ]
 
     def _stop(self, now: float) -> float:
         duration = now - (self._start_time or now)
@@ -267,49 +268,66 @@ class Monitor:
             deviation.stop(now)
         counters = self.counters
         last = self._previous_sample
-        LOGGER.info("--------------------- Stability report ---------------------")
-        LOGGER.info("Duration:                   %s", format_duration(self.elapsed()))
-        LOGGER.info("Traffic shaping:            %s", self._traffic_shaping)
-        LOGGER.info(
-            "Stream total in GB:         %s",
-            format_gigabytes(last.stream_total_bytes if last else None),
+        log_heading("Stability report")
+        log_items(
+            [
+                ("Duration", format_duration(self.elapsed())),
+                ("Traffic shaping", self._traffic_shaping),
+                ("Stream reconnects", str(counters.stream_reconnects)),
+                ("Failed status requests", str(counters.failed_status_requests)),
+                ("RAM growth in MB", self._format_ram_growth()),
+                ("Recorded stream file", self._format_recorded_file()),
+            ]
         )
-        LOGGER.info(
-            "Ingests total in GB:        %s",
-            format_gigabytes(last.ingests_total_bytes if last else None),
+        log_table(
+            "Transferred",
+            ["GB"],
+            [
+                ["Stream", format_gigabytes(last.stream_total_bytes if last else None)],
+                ["Ingests", format_gigabytes(last.ingests_total_bytes if last else None)],
+                [
+                    "Recorded stream",
+                    format_gigabytes(last.received_total_bytes if last and self._stream_recorder else None),
+                ],
+            ],
         )
-        LOGGER.info(
-            "Recorded stream in GB:      %s",
-            format_gigabytes(last.received_total_bytes if last and self._stream_recorder else None),
+        log_table(
+            "Measurements",
+            ["Minimum", "Average", "Maximum"],
+            [
+                ["Stream bitrate in Mbps", *self.stream_bitrate.columns(1e6)],
+                ["Received bitrate in Mbps", *self.received_bitrate.columns(1e6)],
+                ["Ingests bitrate in Mbps", *self.ingests_bitrate.columns(1e6)],
+                ["CPU in %", *self.cpu_percent.columns()],
+                ["RAM in MB", *self.ram_mb.columns()],
+            ],
         )
-        LOGGER.info("Minimum / average / maximum:")
-        LOGGER.info("  Stream bitrate in Mbps:   %s", self.stream_bitrate.format(1e6))
-        LOGGER.info("  Received bitrate in Mbps: %s", self.received_bitrate.format(1e6))
-        LOGGER.info("  Ingests bitrate in Mbps:  %s", self.ingests_bitrate.format(1e6))
-        LOGGER.info("  CPU in %%:                 %s", self.cpu_percent)
-        LOGGER.info("  RAM in MB:                %s", self.ram_mb)
-        LOGGER.info("RAM growth in MB:           %s", self._format_ram_growth())
-        LOGGER.info("Stream reconnects:          %d", counters.stream_reconnects)
-        LOGGER.info("Ingest source restarts:     %s", format_counts(counters.source_restarts))
-        LOGGER.info(
-            "Video decode errors:        %s",
-            format_counts(counters.video_decode_errors),
+        log_table("Ingest sources", ["Restarts"], count_rows(counters.source_restarts))
+        log_table("Video decoders", ["Errors"], count_rows(counters.video_decode_errors))
+        log_table(
+            "Buffered video",
+            ["Duplicated", "Dropped"],
+            [
+                [name, format_value(duplicated), format_value(dropped)]
+                for name, duplicated, dropped in merge_counts(
+                    counters.duplicated_video_buffers, counters.dropped_video_buffers
+                )
+            ],
         )
-        LOGGER.info(
-            "Duplicated video frames:    %s",
-            format_counts(counters.duplicated_video_buffers),
+        log_table(
+            "Thermal states",
+            ["Duration"],
+            [
+                [name or "-", format_short_duration(seconds)]
+                for name, seconds in sorted(counters.thermal_states.items())
+            ],
         )
-        LOGGER.info(
-            "Dropped video frames:       %s",
-            format_counts(counters.dropped_video_buffers),
+        log_table(
+            "Deviations",
+            ["Times", "In total", "At most"],
+            [[deviation.name, *deviation.columns()] for deviation in self._deviations],
         )
-        LOGGER.info("Failed status requests:     %d", counters.failed_status_requests)
-        LOGGER.info("Recorded stream file:       %s", self._format_recorded_file())
-        LOGGER.info("Thermal states in seconds:  %s", format_counts(counters.thermal_states))
-        LOGGER.info("Deviations:")
-        for deviation in self._deviations:
-            LOGGER.info("  %-34s%s", f"{deviation.name}:", deviation)
-        LOGGER.info("------------------------------------------------------------")
+        log_rule()
 
     def _add_deviation(self, name: str, timeout: float = 120) -> Deviation:
         deviation = Deviation(name, timeout)
@@ -436,6 +454,49 @@ class Monitor:
             )
 
 
+def merge_counts(first: dict[str, float], second: dict[str, float]) -> list[tuple[str, float, float]]:
+    return [(name, first.get(name, 0), second.get(name, 0)) for name in sorted(set(first) | set(second))]
+
+
+def count_rows(counts: dict[str, float]) -> list[list[str]]:
+    return [[name, format_value(count)] for name, count in sorted(counts.items())]
+
+
+def log_heading(title: str):
+    LOGGER.info("")
+    LOGGER.info("%s", f" {title} ".center(REPORT_WIDTH, "="))
+
+
+def log_rule():
+    LOGGER.info("%s", REPORT_WIDTH * "=")
+    LOGGER.info("")
+
+
+def log_items(items: list[tuple[str, str]]):
+    width = max(len(name) for name, _ in items) + 3
+    for name, value in items:
+        LOGGER.info("%s%s", name.ljust(width), value)
+
+
+def log_table(title: str, headers: list[str], rows: list[list[str]]):
+    LOGGER.info("")
+    if not rows:
+        LOGGER.info("%s", title)
+        LOGGER.info("  -")
+        return
+    name_width = max([len(title)] + [len(row[0]) + 2 for row in rows]) + 3
+    widths = [
+        max([len(header)] + [len(row[index + 1]) for row in rows]) + 3 for index, header in enumerate(headers)
+    ]
+    LOGGER.info("%s%s", title.ljust(name_width), columns_to_string(headers, widths))
+    for row in rows:
+        LOGGER.info("%s%s", f"  {row[0]}".ljust(name_width), columns_to_string(row[1:], widths))
+
+
+def columns_to_string(columns: list[str], widths: list[int]) -> str:
+    return "".join(column.rjust(width) for column, width in zip(columns, widths))
+
+
 def get_message(status, name: str) -> str:
     item = status.get(name)
     if item is None:
@@ -482,6 +543,16 @@ def format_duration(seconds: float) -> str:
     hours, seconds = divmod(int(seconds), 3600)
     minutes, seconds = divmod(seconds, 60)
     return f"{hours}h {minutes:02d}m {seconds:02d}s"
+
+
+def format_short_duration(seconds: float) -> str:
+    hours, remainder = divmod(int(seconds), 3600)
+    minutes, remainder = divmod(remainder, 60)
+    if hours > 0:
+        return f"{hours}h {minutes:02d}m"
+    if minutes > 0:
+        return f"{minutes}m {remainder:02d}s"
+    return f"{remainder}s"
 
 
 def format_counts(counts: dict[str, float]) -> str:
