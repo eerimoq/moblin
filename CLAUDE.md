@@ -34,6 +34,12 @@ web assets in `Moblin/RemoteControl/Web/` are committed and must be regenerated 
 
 Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `@Test` and `#expect`.
 
+**Always run the unit tests for Mac Catalyst, never for a simulator or a device, when a test run is needed:**
+
+```sh
+xcodebuild test -scheme Moblin -destination 'platform=macOS,variant=Mac Catalyst'
+```
+
 ### System tests
 
 `tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. Ask user to 
