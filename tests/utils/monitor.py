@@ -126,18 +126,16 @@ class Monitor:
     def __init__(
         self,
         moblin: Moblin,
-        recorder: StreamRecorder | None,
+        stream_recorder: StreamRecorder | None,
         source_names: list[str],
         number_of_ingests: int,
-        stream_enabled: bool,
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         traffic_shaping: str,
     ):
         self._moblin = moblin
-        self._recorder = recorder
+        self._stream_recorder = stream_recorder
         self._number_of_ingests = number_of_ingests
-        self._stream_enabled = stream_enabled
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
         self._traffic_shaping = traffic_shaping
@@ -272,10 +270,6 @@ class Monitor:
         last = self._previous_sample
         LOGGER.info("--------------------- Stability report ---------------------")
         LOGGER.info("Duration:                   %s", format_duration(self.elapsed()))
-        LOGGER.info(
-            "Outgoing stream:            %s",
-            "enabled" if self._stream_enabled else "disabled",
-        )
         LOGGER.info("Traffic shaping:            %s", self._traffic_shaping)
         LOGGER.info(
             "Stream total in GB:         %s",
@@ -287,7 +281,7 @@ class Monitor:
         )
         LOGGER.info(
             "Recorded stream in GB:      %s",
-            format_gigabytes(last.received_total_bytes if last and self._recorder else None),
+            format_gigabytes(last.received_total_bytes if last and self._stream_recorder else None),
         )
         LOGGER.info("Minimum / average / maximum:")
         LOGGER.info("  Stream bitrate in Mbps:   %s", self.stream_bitrate.format(1e6))
@@ -325,9 +319,9 @@ class Monitor:
         return deviation
 
     def _format_recorded_files(self) -> str:
-        if self._recorder is None:
+        if self._stream_recorder is None:
             return "-"
-        return ", ".join(str(file) for file in self._recorder.files)
+        return ", ".join(str(file) for file in self._stream_recorder.files)
 
     def _format_ram_growth(self) -> str:
         if self.first_ram_mb is None or self.last_ram_mb is None:
@@ -356,12 +350,12 @@ class Monitor:
         sample.ingests_bitrate = ingests.bitrate
         sample.ingests_total_bytes = ingests.total_bytes
         sample.number_of_ingests = ingests.number_of_ingests
-        if self._recorder is not None:
+        if self._stream_recorder is not None:
             self._read_recorder(sample)
         return sample
 
     def _read_recorder(self, sample: Sample):
-        recorder = self._recorder
+        recorder = self._stream_recorder
         if recorder is None:
             return
         sample.receiver_connected = recorder.is_running()
@@ -401,7 +395,9 @@ class Monitor:
             LOGGER.warning("The device is no longer charging.")
 
     def _check(self, now: float, sample: Sample):
-        self._not_live.update(now, self._stream_enabled and not sample.is_live, "The app is not streaming")
+        self._not_live.update(
+            now, self._stream_recorder is not None and not sample.is_live, "The app is not streaming"
+        )
         self._stream_bitrate_deviation.update(
             now,
             sample.is_live

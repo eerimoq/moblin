@@ -223,7 +223,7 @@ class StabilityIngestsOneStream(TestCase):
             LOGGER,
             "Keep the device connected to power with the app in the foreground",
         )
-        recorder: StreamRecorder | None = None
+        stream_recorder: StreamRecorder | None = None
         recording: Path | None = None
         with ExitStack() as stack:
             webrtc_host = None
@@ -232,26 +232,26 @@ class StabilityIngestsOneStream(TestCase):
                 webrtc_host = self._shaper.ip_address
             mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host, srt=False))
             if self._stream:
-                recorder = stack.enter_context(StreamRecorder(srt_listener_url(), STREAM_FILE))
+                stream_recorder = stack.enter_context(StreamRecorder(srt_listener_url(), STREAM_FILE))
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
             if Ingest.WHEP in self._ingests:
                 mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
             self._wait_for_ingests()
-            if recorder is not None:
-                self._go_live(recorder)
+            if stream_recorder is not None:
+                self._go_live(stream_recorder)
             if self._record:
                 self.moblin.start_recording()
                 self._recording_started = True
-            self._monitor = self._create_monitor(recorder, sources)
-            self._monitor_until_done(self._monitor, recorder, sources)
-            if recorder is not None:
+            self._monitor = self._create_monitor(stream_recorder, sources)
+            self._monitor_until_done(self._monitor, stream_recorder, sources)
+            if stream_recorder is not None:
                 self.moblin.end()
             if self._recording_started:
                 self.moblin.stop_recording()
                 recording = self._download_recording()
-        self._assert_no_audio_gaps(recorder, recording)
+        self._assert_no_audio_gaps(stream_recorder, recording)
 
     def teardown(self):
         if self._monitor is not None:
@@ -344,7 +344,7 @@ class StabilityIngestsOneStream(TestCase):
             number_of_ingests=len(self._ingests),
         )
 
-    def _go_live(self, recorder: StreamRecorder):
+    def _go_live(self, stream_recorder: StreamRecorder):
         self.moblin.go_live()
         self.moblin.wait_for_bitrate(
             self._stream_bitrate_range.minimum,
@@ -352,15 +352,14 @@ class StabilityIngestsOneStream(TestCase):
             None,
             3_000_000,
         )
-        wait_until(lambda: recorder.total_bytes() > 3_000_000, "the stream to be recorded to disk")
+        wait_until(lambda: stream_recorder.total_bytes() > 3_000_000, "the stream to be recorded to disk")
 
-    def _create_monitor(self, recorder: StreamRecorder | None, sources: list[Source]) -> Monitor:
+    def _create_monitor(self, stream_recorder: StreamRecorder | None, sources: list[Source]) -> Monitor:
         return Monitor(
             moblin=self.moblin,
-            recorder=recorder,
+            stream_recorder=stream_recorder,
             source_names=[source.name for source in sources],
             number_of_ingests=len(self._ingests),
-            stream_enabled=self._stream,
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             traffic_shaping="none" if self._shaper is None else self._shaper.description(),

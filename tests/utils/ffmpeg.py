@@ -434,7 +434,6 @@ class StreamRecorder:
         server.start()
         self.files.append(path)
         self._server = server
-        LOGGER.info("Recording the received stream to %s.", path)
 
 
 def file_size(path: Path) -> int:
