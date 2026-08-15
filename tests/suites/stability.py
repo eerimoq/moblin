@@ -3,6 +3,7 @@ import time
 from contextlib import ExitStack
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
@@ -18,6 +19,7 @@ from utils.ffmpeg import FfmpegRtspTestStream
 from utils.ffmpeg import FfmpegTestStream
 from utils.ffmpeg import StreamRecorder
 from utils.ffmpeg import TransportFormat
+from utils.ffmpeg import ffprobe_audio
 from utils.generate_device_settings import Alignment
 from utils.generate_device_settings import BitrateRateControl
 from utils.generate_device_settings import CameraPosition
@@ -221,13 +223,14 @@ class StabilityIngestsOneStream(TestCase):
             LOGGER,
             "Keep the device connected to power with the app in the foreground",
         )
+        recorder: StreamRecorder | None = None
+        recording: Path | None = None
         with ExitStack() as stack:
             webrtc_host = None
             if self._shaper is not None:
                 stack.enter_context(self._shaper)
                 webrtc_host = self._shaper.ip_address
             mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host, srt=False))
-            recorder = None
             if self._stream:
                 recorder = stack.enter_context(StreamRecorder(srt_listener_url(), STREAM_FILE))
             sources = self._create_sources()
@@ -243,9 +246,12 @@ class StabilityIngestsOneStream(TestCase):
                 self._recording_started = True
             self._monitor = self._create_monitor(recorder, sources)
             self._monitor_until_done(self._monitor, recorder, sources)
+            if recorder is not None:
+                self.moblin.end()
             if self._recording_started:
                 self.moblin.stop_recording()
-                self._download_recording()
+                recording = self._download_recording()
+        self._assert_no_audio_gaps(recorder, recording)
 
     def teardown(self):
         if self._monitor is not None:
@@ -255,18 +261,28 @@ class StabilityIngestsOneStream(TestCase):
         except Exception as error:
             LOGGER.warning("Failed to stop the app. Did it crash? %s", error)
 
-    def _download_recording(self):
+    def _download_recording(self) -> Path | None:
         LOGGER.debug("Downloading the recording...")
         try:
             recording = self.moblin.download_and_delete_latest_recording(RECORDING_FILE_NAME)
         except Exception as error:
             LOGGER.warning("Failed to download the recording. %s", error)
-            return
+            return None
         LOGGER.info(
             "Downloaded the recording to %s (%.1f GB).",
             recording,
             recording.stat().st_size / 1e9,
         )
+        return recording
+
+    def _assert_no_audio_gaps(self, recorder: StreamRecorder | None, recording: Path | None):
+        files = []
+        if recording is not None:
+            files.append(recording)
+        if recorder is not None:
+            files += recorder.files
+        for file in files:
+            self._assert_audio_presentation_time_stamps(file, ffprobe_audio(file))
 
     def _create_sources(self) -> list[Source]:
         return [
