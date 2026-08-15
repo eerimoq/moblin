@@ -15,10 +15,9 @@ CONFIG_PATH = UTILS_DIR / "mediamtx.yml"
 
 
 class MediaMtx:
-    def __init__(self, log_level: str | None = None, webrtc_host: str | None = None, srt: bool = True):
+    def __init__(self, log_level: str | None = None, webrtc_host: str | None = None):
         self._log_level = log_level
         self._webrtc_host = webrtc_host
-        self._srt = srt
         self._server = ManagedProcess(
             ["mediamtx", str(CONFIG_PATH)],
             LOGGER,
@@ -93,8 +92,6 @@ class MediaMtx:
         if self._webrtc_host is not None:
             env["MTX_WEBRTCIPSFROMINTERFACES"] = "no"
             env["MTX_WEBRTCADDITIONALHOSTS"] = self._webrtc_host
-        if not self._srt:
-            env["MTX_SRT"] = "no"
         if len(env) == 0:
             return None
         return {**os.environ, **env}

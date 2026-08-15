@@ -13,8 +13,8 @@ from utils.av_sync import alerts_widget_settings
 from utils.av_sync import measure_alert_synchronization
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
+from utils.config import SRT_CLIENT_STABILITY_SERVER_PORT
 from utils.config import SRT_SERVER_PORT
-from utils.config import TESTER_SRT_PORT
 from utils.config import TESTER_WEBRTC_PORT
 from utils.config import TESTER_WEBRTC_UDP_PORT
 from utils.config import Config
@@ -82,7 +82,7 @@ NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
 RELAYS = [
-    Relay(Group.STREAM, Protocol.UDP, TESTER_SRT_PORT, Side.TESTER),
+    Relay(Group.STREAM, Protocol.UDP, SRT_CLIENT_STABILITY_SERVER_PORT, Side.TESTER),
     Relay(Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
     Relay(Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
     Relay(Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
@@ -152,7 +152,7 @@ class StabilityIngestsOneStream(TestCase):
                     {
                         "name": "Stability",
                         "enabled": True,
-                        "url": self.moblin.tester_srt_publish_url(STREAM_PATH),
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_STABILITY_SERVER_PORT),
                         "srt": {"adaptiveBitrateEnabled": self._stream_profile is not None},
                         "bitrateRateControl": BitrateRateControl.CBR,
                         "bitrate": STREAM_BITRATE,
@@ -255,9 +255,11 @@ class StabilityIngestsOneStream(TestCase):
             if self._shaper is not None:
                 stack.enter_context(self._shaper)
                 webrtc_host = self._shaper.ip_address
-            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host, srt=False))
+            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host))
             if self._stream:
-                stream_recorder = stack.enter_context(StreamRecorder(srt_listener_url(), STREAM_FILE))
+                stream_recorder = stack.enter_context(
+                    StreamRecorder(srt_listener_url(SRT_CLIENT_STABILITY_SERVER_PORT), STREAM_FILE)
+                )
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
