@@ -5909,7 +5909,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ wurde von %2$@ zur Warteschlange hinzugefügt."
           }
         },
@@ -6913,7 +6913,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ angefordert von %2$@ nicht gefunden."
           }
         },
@@ -27838,8 +27838,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Add song"
+            "state" : "translated",
+            "value" : "Song hinzufügen"
           }
         },
         "es" : {
@@ -32812,7 +32812,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Apple Music"
           }
         },
@@ -64480,8 +64480,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Core Image is Apple's image processing framework. MetalPetal is experimental. MetalPetal provides similar image processing, and hopefully uses less system resources."
+            "state" : "translated",
+            "value" : "Core Image ist Apples Framework zur Bildverarbeitung. MetalPetal befindet sich noch in der Testphase. MetalPetal bietet ähnliche Bildverarbeitungsfunktionen und beansprucht hoffentlich weniger Systemressourcen."
           }
         },
         "es" : {
@@ -69738,8 +69738,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Dekodieren Sie aufgenommene Videos auf der CPU, anstatt den Hardware-Videodecoder zu verwenden. Verbraucht mehr CPU, Akku und erzeugt mehr Wärme, kann aber Videos dekodieren, die der Hardware-Decoder nicht unterstützt, und ermöglicht die gleichzeitige Dekodierung mehrerer Streams."
+            "state" : "translated",
+            "value" : "Dekodiert das eingehende Video auf der CPU, anstatt den Hardware Videodekoder zu verwenden. Dies beansprucht die CPU stärker, verbraucht mehr Akkuleistung und erzeugt mehr Wärme, ermöglicht jedoch die Dekodierung von Videos, die der Hardware-Dekoder nicht unterstützt und erlaubt die gleichzeitige Dekodierung mehrerer Streams."
           }
         },
         "es" : {
@@ -103120,8 +103120,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Graphics"
+            "state" : "translated",
+            "value" : "Grafik"
           }
         },
         "es" : {
@@ -104824,8 +104824,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hochwertiges Downsampling sorgt dafür, dass verkleinerte Bilder besser aussehen, verbraucht aber mehr Systemressourcen."
+            "state" : "translated",
+            "value" : "Durch hochwertiges Downsampling sehen verkleinerte Bilder besser aus, beanspruchen jedoch mehr Systemressourcen."
           }
         },
         "es" : {
@@ -112926,8 +112926,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Verbinden"
+            "state" : "translated",
+            "value" : "Beitreten"
           }
         },
         "es" : {
@@ -135394,8 +135394,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fehler beim Musikplayer"
+            "state" : "translated",
+            "value" : "Musik Player Fehler"
           }
         },
         "es" : {
@@ -149608,8 +149608,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Aktivieren Sie dies nur, wenn die Hardware-Videodekodierung nicht funktioniert."
+            "state" : "translated",
+            "value" : "Aktiviere diese Option nur, wenn die Hardware-Videodekodierung nicht funktioniert."
           }
         },
         "es" : {
@@ -156699,8 +156699,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Foto-Shooting"
+            "state" : "translated",
+            "value" : "Foto Shooting"
           }
         },
         "es" : {
@@ -181021,8 +181021,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Save settings"
+            "state" : "translated",
+            "value" : "Einstellungen speichern"
           }
         },
         "es" : {
@@ -181159,8 +181159,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Saved 😅"
+            "state" : "translated",
+            "value" : "Gespeichert 😅"
           }
         },
         "es" : {
@@ -181441,7 +181441,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Gespeicherte URLs"
           }
         },
@@ -204801,8 +204801,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Software video decoding"
+            "state" : "translated",
+            "value" : "Software Video Dekodierung"
           }
         },
         "es" : {
@@ -223551,8 +223551,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Taking photos periodically"
+            "state" : "translated",
+            "value" : "Fotos werden in regelmäßigen Abständen aufgenommen"
           }
         },
         "es" : {
