@@ -237,7 +237,7 @@ class StabilityIngestsOneStream(TestCase):
             },
             files=alert_media_files(),
         )
-        time.sleep(5)
+        time.sleep(2)
 
     def run(self):
         manual_validation(
