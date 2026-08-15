@@ -113,7 +113,6 @@ class Sample:
 @dataclass
 class Counters:
     stream_reconnects: int = 0
-    recorder_restarts: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
     video_decode_errors: dict[str, float] = field(default_factory=dict)
     duplicated_video_buffers: dict[str, float] = field(default_factory=dict)
@@ -291,7 +290,6 @@ class Monitor:
         LOGGER.info("  RAM in MB:                %s", self.ram_mb)
         LOGGER.info("RAM growth in MB:           %s", self._format_ram_growth())
         LOGGER.info("Stream reconnects:          %d", counters.stream_reconnects)
-        LOGGER.info("Stream recorder restarts:   %d", counters.recorder_restarts)
         LOGGER.info("Ingest source restarts:     %s", format_counts(counters.source_restarts))
         LOGGER.info(
             "Video decode errors:        %s",
@@ -306,7 +304,7 @@ class Monitor:
             format_counts(counters.dropped_video_buffers),
         )
         LOGGER.info("Failed status requests:     %d", counters.failed_status_requests)
-        LOGGER.info("Recorded stream files:      %s", self._format_recorded_files())
+        LOGGER.info("Recorded stream file:       %s", self._format_recorded_file())
         LOGGER.info("Thermal states in seconds:  %s", format_counts(counters.thermal_states))
         LOGGER.info("Deviations:")
         for deviation in self._deviations:
@@ -318,10 +316,10 @@ class Monitor:
         self._deviations.append(deviation)
         return deviation
 
-    def _format_recorded_files(self) -> str:
+    def _format_recorded_file(self) -> str:
         if self._stream_recorder is None:
             return "-"
-        return ", ".join(str(file) for file in self._stream_recorder.files)
+        return str(self._stream_recorder.file)
 
     def _format_ram_growth(self) -> str:
         if self.first_ram_mb is None or self.last_ram_mb is None:
@@ -360,7 +358,6 @@ class Monitor:
             return
         sample.receiver_connected = recorder.is_running()
         sample.received_total_bytes = recorder.total_bytes()
-        self.counters.recorder_restarts = recorder.restarts
         previous = self._previous_sample
         if previous is None:
             return

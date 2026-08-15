@@ -401,40 +401,33 @@ class FfmpegServer(FfmpegCommand):
 class StreamRecorder:
     def __init__(self, url: str, path: Path):
         self._url = url
-        self._path = path
         self._server: FfmpegServer | None = None
-        self.files: list[Path] = []
-        self.restarts = 0
+        self.file = path
 
     def __enter__(self):
-        self._start()
+        self._server = FfmpegServer(url=self._url, filename=self.file)
+        self._server.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self._server is not None:
-            self._server.stop()
-            self._server = None
+        self._stop()
 
     def is_running(self) -> bool:
         return self._server is not None and self._server.is_running()
 
     def total_bytes(self) -> int:
-        return sum(file_size(file) for file in self.files)
+        return file_size(self.file)
 
     def poll(self):
         if self._server is None or self._server.is_running():
             return
-        self._server.stop()
-        self.restarts += 1
-        LOGGER.warning("The stream recorder exited and was restarted.")
-        self._start()
+        LOGGER.warning("The stream recorder exited. No longer receiving the stream.")
+        self._stop()
 
-    def _start(self):
-        path = self._path.with_name(f"{self._path.stem}-{len(self.files) + 1}{self._path.suffix}")
-        server = FfmpegServer(url=self._url, filename=path)
-        server.start()
-        self.files.append(path)
-        self._server = server
+    def _stop(self):
+        if self._server is not None:
+            self._server.stop()
+            self._server = None
 
 
 def file_size(path: Path) -> int:

@@ -304,7 +304,7 @@ class StabilityIngestsOneStream(TestCase):
         if recording is not None:
             files.append(recording)
         if recorder is not None:
-            files += recorder.files
+            files.append(recorder.file)
         for file in files:
             self._assert_audio_presentation_time_stamps(file, ffprobe_audio(file))
 
@@ -316,8 +316,11 @@ class StabilityIngestsOneStream(TestCase):
         reports: list[AlertSyncReport] = []
         if len(self._alert_times) < 2:
             return reports
-        files = [recording] if recording is not None else []
-        files += recorder.files if recorder is not None else []
+        files = []
+        if recording is not None:
+            files.append(recording)
+        if recorder is not None:
+            files.append(recorder.file)
         for file in files:
             try:
                 report = measure_alert_synchronization(
