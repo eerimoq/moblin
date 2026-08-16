@@ -38,6 +38,7 @@ from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.monitor import Monitor
+from utils.network_capture import CaptureStream
 from utils.network_capture import NetworkCapture
 from utils.test_case import TestCase
 from utils.traffic_shaper import Group
@@ -137,6 +138,7 @@ class StabilityIngestsOneStream(TestCase):
         self._shaper = shaper
         self._video_bitrate_control = video_bitrate_control
         self._network_capture = network_capture
+        self._capture: NetworkCapture | None = None
         self._monitor: Monitor | None = None
         self._stream_profile: Profile | None = None
         self._ingests_profile: Profile | None = None
@@ -294,6 +296,7 @@ class StabilityIngestsOneStream(TestCase):
     def teardown(self):
         if self._monitor is not None:
             self._monitor.report()
+        self._report_network_capture()
         try:
             super().teardown()
         except Exception as error:
@@ -443,7 +446,27 @@ class StabilityIngestsOneStream(TestCase):
         hosts = [self.moblin.ip_address]
         if self._shaper is not None:
             hosts.append(self._shaper.ip_address)
-        return stack.enter_context(NetworkCapture(hosts, FILES_DIR, STREAM_PATH))
+        streams = [CaptureStream(relay.name, relay.protocol, relay.port) for relay in RELAYS]
+        self._capture = stack.enter_context(
+            NetworkCapture(hosts, FILES_DIR, STREAM_PATH, streams, self._capture_settings())
+        )
+        return self._capture
+
+    def _capture_settings(self) -> dict[str, str]:
+        return {
+            "Video bitrate control": str(self._video_bitrate_control),
+            "Video bitrate": f"{STREAM_BITRATE / 1e6:.1f} Mbps",
+            "Stream traffic shaping": profile_description(self._stream_profile),
+            "Ingests traffic shaping": profile_description(self._ingests_profile),
+        }
+
+    def _report_network_capture(self):
+        if self._capture is None:
+            return
+        try:
+            self._capture.report()
+        except Exception as error:
+            LOGGER.warning("Failed to analyze the network capture. %s", error)
 
     def _monitor_until_done(
         self,
@@ -470,6 +493,12 @@ class StabilityIngestsOneStream(TestCase):
                 recorder.poll()
             if capture is not None:
                 capture.poll()
+
+
+def profile_description(profile: Profile | None) -> str:
+    if profile is None:
+        return "none"
+    return str(profile)
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:

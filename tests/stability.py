@@ -63,7 +63,8 @@ def create_suites(moblin, args):
 def main():
     parser = create_parser("Run the app for a long time and monitor it.")
     parser.add_argument(
-        "-d", "--duration",
+        "-d",
+        "--duration",
         type=float,
         default=8,
         help="Duration in hours (default: %(default)s).",
