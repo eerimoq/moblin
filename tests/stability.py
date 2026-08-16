@@ -5,7 +5,8 @@ from suites.stability import Ingest
 
 from utils.runner import create_parser
 from utils.runner import run
-from utils.traffic_shaper import ProfileName
+from utils.traffic_shaper import Profile
+from utils.traffic_shaper import parse_profile
 
 
 def parse_ingests(value: str) -> list[Ingest]:
@@ -23,13 +24,18 @@ def parse_ingests(value: str) -> list[Ingest]:
     return ingests
 
 
+def parse_traffic_shaping(value: str) -> Profile:
+    try:
+        return parse_profile(value)
+    except Exception as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+
+
 def create_suites(moblin, args):
     shaper = stability.create_traffic_shaper(
         moblin.config,
-        args.stream_traffic_shaping_profile,
-        args.stream_traffic_shaping_parameters,
-        args.ingests_traffic_shaping_profile,
-        args.ingests_traffic_shaping_parameters,
+        args.stream_traffic_shaping,
+        args.ingests_traffic_shaping,
     )
     return [
         stability.tests(
@@ -69,25 +75,18 @@ def main():
         help="Do not record to disk in the app.",
     )
     parser.add_argument(
-        "--stream-traffic-shaping-profile",
-        type=ProfileName,
-        choices=list(ProfileName),
-        help="Traffic shaping profile of the outgoing stream.",
+        "-s",
+        "--stream-traffic-shaping",
+        type=parse_traffic_shaping,
+        help="Traffic shaping of the outgoing stream as '<profile>,<name>=<value>,...', "
+        "for example 'constant,rate=3,delay=60,loss=0.5'. Rates are in Mbps.",
     )
     parser.add_argument(
-        "--stream-traffic-shaping-parameters",
-        help="Traffic shaping parameters of the outgoing stream, for example 'rate=3Mbit,delay=60,loss=0.5'.",
-    )
-    parser.add_argument(
-        "--ingests-traffic-shaping-profile",
-        type=ProfileName,
-        choices=list(ProfileName),
-        help="Traffic shaping profile of the ingests.",
-    )
-    parser.add_argument(
-        "--ingests-traffic-shaping-parameters",
-        help="Traffic shaping parameters of the ingests, for example "
-        "'low-rate=10Mbit,high-rate=25Mbit,period=120'.",
+        "-i",
+        "--ingests-traffic-shaping",
+        type=parse_traffic_shaping,
+        help="Traffic shaping of each ingest as '<profile>,<name>=<value>,...', "
+        "for example 'square,low-rate=10,high-rate=25,period=120'. Rates are in Mbps.",
     )
     run("stability", parser, create_suites)
 

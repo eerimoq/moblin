@@ -41,12 +41,10 @@ from utils.monitor import Monitor
 from utils.test_case import TestCase
 from utils.traffic_shaper import Group
 from utils.traffic_shaper import Profile
-from utils.traffic_shaper import ProfileName
 from utils.traffic_shaper import Protocol
 from utils.traffic_shaper import Relay
 from utils.traffic_shaper import Side
 from utils.traffic_shaper import TrafficShaper
-from utils.traffic_shaper import parse_profile
 from utils.utils import FILES_DIR
 from utils.utils import Range
 from utils.utils import manual_validation
@@ -572,20 +570,14 @@ def shaped_bitrate_range(
 
 def create_traffic_shaper(
     config: Config,
-    stream_traffic_shaping_profile: ProfileName | None,
-    stream_traffic_shaping_parameters: str | None,
-    ingests_traffic_shaping_profile: ProfileName | None,
-    ingests_traffic_shaping_parameters: str | None,
+    stream_profile: Profile | None,
+    ingests_profile: Profile | None,
 ) -> TrafficShaper | None:
     profiles: dict[Group, Profile] = {}
-    if stream_traffic_shaping_profile is not None:
-        profiles[Group.STREAM] = parse_profile(
-            stream_traffic_shaping_profile, stream_traffic_shaping_parameters
-        )
-    if ingests_traffic_shaping_profile is not None:
-        profiles[Group.INGESTS] = parse_profile(
-            ingests_traffic_shaping_profile, ingests_traffic_shaping_parameters
-        )
+    if stream_profile is not None:
+        profiles[Group.STREAM] = stream_profile
+    if ingests_profile is not None:
+        profiles[Group.INGESTS] = ingests_profile
     if len(profiles) == 0:
         return None
     return TrafficShaper(config, RELAYS, profiles)

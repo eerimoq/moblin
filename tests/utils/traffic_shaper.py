@@ -46,24 +46,20 @@ PROTOCOL_NUMBERS = {Protocol.TCP: 6, Protocol.UDP: 17}
 GROUP_TARGET_NAMES = {Group.STREAM: "stream", Group.INGESTS: "ingest"}
 DEFAULT_CLASS_ID = 1
 FIRST_CLASS_ID = 10
-ROOT_RATE = "10gbit"
+UNLIMITED_RATE = 10_000_000_000
+ROOT_RATE = f"{UNLIMITED_RATE}bit"
 DEFAULT_LIMIT = 1000
 RELAY_TIMEOUT = 600
 READY_TIMEOUT = 30
 EXECUTE_TIMEOUT = 30
 SESSION_OUTPUT_LINES = 20
 STATISTICS_SEPARATOR = "--- filters ---"
-BITRATE_SUFFIXES = {
-    "bit": 1,
-    "kbit": 1_000,
-    "mbit": 1_000_000,
-    "gbit": 1_000_000_000,
-}
-DEFAULT_CONSTANT_RATE = "4Mbit"
-DEFAULT_SQUARE_LOW_RATE = "3Mbit"
+DEFAULT_CONSTANT_RATE = 4_000_000
+DEFAULT_SQUARE_LOW_RATE = 3_000_000
+DEFAULT_SQUARE_HIGH_RATE = UNLIMITED_RATE
 DEFAULT_SQUARE_PERIOD = 60.0
-DEFAULT_RANDOM_MINIMUM_RATE = "1Mbit"
-DEFAULT_RANDOM_MAXIMUM_RATE = "7Mbit"
+DEFAULT_RANDOM_MINIMUM_RATE = 1_000_000
+DEFAULT_RANDOM_MAXIMUM_RATE = 7_000_000
 DEFAULT_RANDOM_INTERVAL = 15.0
 SSH_OPTIONS = [
     "-o",
@@ -697,16 +693,17 @@ def maximum_rate(rates: list[int | None]) -> int | None:
     return max(values)
 
 
-def parse_bitrate(value: str) -> int:
-    text = value.strip().lower()
-    for suffix in sorted(BITRATE_SUFFIXES, key=len, reverse=True):
-        if text.endswith(suffix):
-            return int(float(text[: -len(suffix)]) * BITRATE_SUFFIXES[suffix])
-    return int(float(text))
+def parse_rate(value: str) -> int:
+    try:
+        return int(float(value) * 1e6)
+    except ValueError:
+        raise Exception(f"'{value}' is not a rate in Mbps.") from None
 
 
-def parse_profile(name: ProfileName, parameters: str | None) -> Profile:
-    values = _parse_values(parameters or "")
+def parse_profile(value: str) -> Profile:
+    profile_name, _, parameters = value.partition(",")
+    name = _parse_profile_name(profile_name)
+    values = _parse_values(parameters)
     impairment = Impairment(
         delay_ms=float(values.pop("delay", 0)),
         jitter_ms=float(values.pop("jitter", 0)),
@@ -717,13 +714,19 @@ def parse_profile(name: ProfileName, parameters: str | None) -> Profile:
         profile = _create_constant_profile(impairment, values)
     elif name == ProfileName.SQUARE:
         profile = _create_square_profile(impairment, values)
-    elif name == ProfileName.RANDOM:
-        profile = _create_random_profile(impairment, values)
     else:
-        raise Exception(f"Unsupported traffic shaping profile '{name}'.")
+        profile = _create_random_profile(impairment, values)
     if len(values) > 0:
         raise Exception(f"Unsupported {name} traffic shaping settings: {', '.join(sorted(values))}.")
     return profile
+
+
+def _parse_profile_name(name: str) -> ProfileName:
+    try:
+        return ProfileName(name.strip().lower())
+    except ValueError:
+        choices = ", ".join(ProfileName)
+        raise Exception(f"'{name.strip()}' is not one of the profiles {choices}.") from None
 
 
 def _parse_values(parameters: str) -> dict[str, str]:
@@ -740,13 +743,13 @@ def _parse_values(parameters: str) -> dict[str, str]:
 
 
 def _create_constant_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
-    return ConstantProfile(_with_rate(impairment, values.pop("rate", DEFAULT_CONSTANT_RATE)))
+    return ConstantProfile(replace(impairment, rate=_pop_rate(values, "rate", DEFAULT_CONSTANT_RATE)))
 
 
 def _create_square_profile(impairment: Impairment, values: dict[str, str]) -> Profile:
     return SquareProfile(
-        _with_rate(impairment, values.pop("low-rate", DEFAULT_SQUARE_LOW_RATE)),
-        _with_rate(impairment, values.pop("high-rate", ROOT_RATE)),
+        replace(impairment, rate=_pop_rate(values, "low-rate", DEFAULT_SQUARE_LOW_RATE)),
+        replace(impairment, rate=_pop_rate(values, "high-rate", DEFAULT_SQUARE_HIGH_RATE)),
         float(values.pop("period", DEFAULT_SQUARE_PERIOD)),
     )
 
@@ -755,14 +758,15 @@ def _create_random_profile(impairment: Impairment, values: dict[str, str]) -> Pr
     seed = values.pop("seed", None)
     return RandomProfile(
         impairment,
-        parse_bitrate(values.pop("min-rate", DEFAULT_RANDOM_MINIMUM_RATE)),
-        parse_bitrate(values.pop("max-rate", DEFAULT_RANDOM_MAXIMUM_RATE)),
+        _pop_rate(values, "min-rate", DEFAULT_RANDOM_MINIMUM_RATE),
+        _pop_rate(values, "max-rate", DEFAULT_RANDOM_MAXIMUM_RATE),
         float(values.pop("interval", DEFAULT_RANDOM_INTERVAL)),
         None if seed is None else int(seed),
     )
 
 
-def _with_rate(impairment: Impairment, rate: str | None) -> Impairment:
-    if rate is None:
-        return impairment
-    return replace(impairment, rate=parse_bitrate(rate))
+def _pop_rate(values: dict[str, str], name: str, default: int) -> int:
+    value = values.pop(name, None)
+    if value is None:
+        return default
+    return parse_rate(value)
