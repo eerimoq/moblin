@@ -1,21 +1,24 @@
+All commands below are run from the repository root.
+
 # Prerequisites
 
 Install Python dependencies and various tools. You might have to add ffmpeg to PATH.
 
 ```bash
-pip install -r ../requirements.txt
+pip install -r requirements.txt
 brew install mediamtx ffmpeg-full qrtool ltc-tools
 ```
 
 # Configuration
 
-Copy `config.example.toml` to `config.toml` and modify it to match your test setup.
+Copy `tests/config.example.toml` to `tests/config.toml` and modify it to match your test
+setup.
 
 ```bash
-cp config.example.toml config.toml
+cp tests/config.example.toml tests/config.toml
 ```
 
-`config.toml` in this folder is used if it exists, otherwise `$XDG_CONFIG_HOME/moblin/tests/config.toml`.
+`tests/config.toml` is used if it exists, otherwise `$XDG_CONFIG_HOME/moblin/tests/config.toml`.
 
 # Moblin device configuration
 
@@ -23,7 +26,7 @@ cp config.example.toml config.toml
 
 1. Generate settings into clipboard.
    ```bash
-   make generate-device-settings-clipboard
+   make test-generate-device-settings-clipboard
    ```
 2. Import the generated settings from clipboard into Moblin.
 
@@ -31,7 +34,7 @@ cp config.example.toml config.toml
 
 1. Generate settings to standard output.
    ```bash
-   make generate-device-settings-stdout
+   make test-generate-device-settings-stdout
    ```
 2. Import the generated settings somehow.
 
@@ -45,14 +48,14 @@ make test TEST_ARGS="--device macpro Talkback"
 # Run the stability test
 
 ```bash
-make stability
-make stability TEST_ARGS="--device macpro --duration 0.5"
+make test-stability
+make test-stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
 # Watch the stability test
 
 ```bash
-make stability-watch
+python -m tests.watch grid
 ```
 
 # Traffic shaping
@@ -86,7 +89,7 @@ machine is never shaped.
    ```
    erik ALL=(ALL) NOPASSWD: ALL
    ```
-4. Add the machine to `config.toml`.
+4. Add the machine to `tests/config.toml`.
    ```toml
    [shaper]
    user = "erik"
