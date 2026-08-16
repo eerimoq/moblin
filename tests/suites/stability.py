@@ -82,12 +82,12 @@ NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
 RELAYS = [
-    Relay(Group.STREAM, Protocol.UDP, SRT_CLIENT_STABILITY_SERVER_PORT, Side.TESTER),
-    Relay(Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
-    Relay(Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
-    Relay(Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
-    Relay(Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
-    Relay(Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
+    Relay("Stream", Group.STREAM, Protocol.UDP, SRT_CLIENT_STABILITY_SERVER_PORT, Side.TESTER),
+    Relay("RTMP", Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
+    Relay("SRT", Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
+    Relay("RIST", Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
+    Relay("WHEP HTTP", Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
+    Relay("WHEP media", Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
 ]
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
@@ -429,7 +429,7 @@ class StabilityIngestsOneStream(TestCase):
             number_of_ingests=len(self._ingests),
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
-            traffic_shaping="none" if self._shaper is None else self._shaper.description(),
+            shaper=self._shaper,
         )
 
     def _monitor_until_done(

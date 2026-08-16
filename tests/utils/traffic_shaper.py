@@ -1,3 +1,4 @@
+import json
 import logging
 import math
 import os
@@ -50,6 +51,7 @@ RELAY_TIMEOUT = 600
 READY_TIMEOUT = 30
 EXECUTE_TIMEOUT = 30
 SESSION_OUTPUT_LINES = 20
+STATISTICS_SEPARATOR = "--- filters ---"
 BITRATE_SUFFIXES = {
     "bit": 1,
     "kbit": 1_000,
@@ -78,10 +80,48 @@ SSH_OPTIONS = [
 
 @dataclass
 class Relay:
+    name: str
     group: Group
     protocol: Protocol
     port: int
     side: Side
+
+
+@dataclass
+class RelayFilter:
+    prio: int
+    relay: Relay
+    port_type: str
+    destination: Side
+
+
+@dataclass
+class Traffic:
+    total_bytes: int = 0
+    packets: int = 0
+
+
+@dataclass
+class StreamStatistics:
+    name: str
+    group: Group
+    sent: dict[Side, Traffic]
+
+
+@dataclass
+class GroupStatistics:
+    total_bytes: int
+    packets: int
+    dropped: int
+    overlimits: int
+    backlog_bytes: int
+    backlog_packets: int
+
+
+@dataclass
+class ShaperStatistics:
+    groups: dict[Group, GroupStatistics]
+    streams: list[StreamStatistics]
 
 
 @dataclass
@@ -249,6 +289,7 @@ class TrafficShaper:
         }
         self._relays = relays
         self._profiles = profiles
+        self._relay_filters = create_relay_filters(relays, profiles)
         self._directory: Path | None = None
         self._control_path: Path | None = None
         self._control_master: subprocess.Popen | None = None
@@ -270,6 +311,7 @@ class TrafficShaper:
             self.__exit__(None, None, None)
             raise
         LOGGER.info("Shaping the traffic on %s.", self.ip_address)
+        self._check_statistics()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -302,6 +344,62 @@ class TrafficShaper:
 
     def description(self) -> str:
         return ", ".join(f"{group} {profile}" for group, profile in self._profiles.items())
+
+    def statistics(self) -> ShaperStatistics:
+        result = self._execute(
+            f"tc -s -j qdisc show dev {self._interface}; echo '{STATISTICS_SEPARATOR}'; "
+            f"tc -s -j filter show dev {self._interface} parent 1:"
+        )
+        qdiscs, _, filters = result.stdout.partition(STATISTICS_SEPARATOR)
+        return ShaperStatistics(
+            groups=self._parse_group_statistics(qdiscs),
+            streams=self._parse_stream_statistics(filters),
+        )
+
+    def _check_statistics(self):
+        try:
+            statistics = self.statistics()
+        except Exception as error:
+            LOGGER.warning("Failed to read the traffic shaper statistics. %s", error)
+            return
+        if all(len(stream.sent) == 0 for stream in statistics.streams):
+            LOGGER.warning("No per stream statistics available on the traffic shaper %s.", self._ssh_host)
+
+    def _parse_group_statistics(self, text: str) -> dict[Group, GroupStatistics]:
+        groups = {f"{GROUP_CLASS_IDS[group]}:": group for group in self._profiles}
+        statistics = {}
+        for entry in json.loads(text):
+            group = groups.get(entry.get("handle"))
+            if group is None:
+                continue
+            statistics[group] = GroupStatistics(
+                total_bytes=entry.get("bytes", 0),
+                packets=entry.get("packets", 0),
+                dropped=entry.get("drops", 0),
+                overlimits=entry.get("overlimits", 0),
+                backlog_bytes=entry.get("backlog", 0),
+                backlog_packets=entry.get("qlen", 0),
+            )
+        return statistics
+
+    def _parse_stream_statistics(self, text: str) -> list[StreamStatistics]:
+        traffic = {}
+        for entry in json.loads(text):
+            statistics = find_statistics(entry)
+            if statistics is None:
+                continue
+            traffic[entry.get("pref")] = Traffic(
+                total_bytes=statistics.get("bytes", 0),
+                packets=statistics.get("packets", 0),
+            )
+        streams: dict[str, StreamStatistics] = {}
+        for relay_filter in self._relay_filters:
+            relay = relay_filter.relay
+            stream = streams.setdefault(relay.name, StreamStatistics(relay.name, relay.group, {}))
+            sent = traffic.get(relay_filter.prio)
+            if sent is not None:
+                stream.sent[relay_filter.destination] = sent
+        return list(streams.values())
 
     def _apply(self, group: Group, impairment: Impairment):
         class_id = GROUP_CLASS_IDS[group]
@@ -455,21 +553,25 @@ class TrafficShaper:
                 f"tc qdisc add dev {self._interface} parent 1:{class_id} handle {class_id}: "
                 f"netem limit {DEFAULT_LIMIT}"
             )
-        for relay in self._relays:
-            if relay.group not in self._profiles:
-                continue
-            class_id = GROUP_CLASS_IDS[relay.group]
-            for port_type in ["sport", "dport"]:
-                lines.append(
-                    f"tc filter add dev {self._interface} protocol ip parent 1: prio 1 u32 "
-                    f"match ip protocol {PROTOCOL_NUMBERS[relay.protocol]} 0xff "
-                    f"match ip {port_type} {relay.port} 0xffff flowid 1:{class_id}"
-                )
+        lines.append(self._create_add_filter_function())
+        for relay_filter in self._relay_filters:
+            relay = relay_filter.relay
+            lines.append(
+                f"add_filter {relay_filter.prio} {PROTOCOL_NUMBERS[relay.protocol]} "
+                f"{relay_filter.port_type} {relay.port} {GROUP_CLASS_IDS[relay.group]}"
+            )
         for relay in self._relays:
             lines.append(f"{self._create_relay_command(relay)} &")
             lines.append('pids="$pids $!"')
         lines.append("while true; do sleep 1; done")
         return "\n".join(lines) + "\n"
+
+    def _create_add_filter_function(self) -> str:
+        command = (
+            f"tc filter add dev {self._interface} protocol ip parent 1: prio $1 u32 "
+            "match ip protocol $2 0xff match ip $3 $4 0xffff flowid 1:$5"
+        )
+        return "\n".join(["add_filter() {", f"    {command} action pass 2>/dev/null || {command}", "}"])
 
     def _create_class_command(self, class_id: int) -> str:
         return (
@@ -521,6 +623,36 @@ class TrafficShaper:
 
     def _build_execute_base_arguments(self) -> list[str]:
         return ["ssh", "-S", str(self._control_path), *SSH_OPTIONS]
+
+
+def create_relay_filters(relays: list[Relay], profiles: dict[Group, Profile]) -> list[RelayFilter]:
+    filters = []
+    for index, relay in enumerate(relay for relay in relays if relay.group in profiles):
+        filters.append(RelayFilter(2 * index + 1, relay, "dport", relay.side))
+        filters.append(RelayFilter(2 * index + 2, relay, "sport", other_side(relay.side)))
+    return filters
+
+
+def other_side(side: Side) -> Side:
+    if side == Side.DEVICE:
+        return Side.TESTER
+    return Side.DEVICE
+
+
+def find_statistics(value: object) -> dict | None:
+    if isinstance(value, dict):
+        if "bytes" in value and "packets" in value:
+            return value
+        values: list = list(value.values())
+    elif isinstance(value, list):
+        values = value
+    else:
+        return None
+    for item in values:
+        statistics = find_statistics(item)
+        if statistics is not None:
+            return statistics
+    return None
 
 
 def minimum_rate(rates: list[int | None]) -> int | None:
