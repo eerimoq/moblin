@@ -4,10 +4,7 @@ Install Python dependencies and various tools. You might have to add ffmpeg to P
 
 ```bash
 pip install -r ../requirements.txt
-brew install mediamtx
-brew install ffmpeg-full
-brew install qrtool
-brew install ltc-tools
+brew install mediamtx ffmpeg-full qrtool ltc-tools
 ```
 
 # Configuration
@@ -18,8 +15,7 @@ Copy `config.example.toml` to `config.toml` and modify it to match your test set
 cp config.example.toml config.toml
 ```
 
-`config.toml` in this folder is used if it exists, otherwise
-`$XDG_CONFIG_HOME/moblin/tests/config.toml`, where `$XDG_CONFIG_HOME` defaults to `~/.config`.
+`config.toml` in this folder is used if it exists, otherwise `$XDG_CONFIG_HOME/moblin/tests/config.toml`.
 
 # Moblin device configuration
 
