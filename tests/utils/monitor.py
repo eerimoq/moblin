@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from dataclasses import field
 
 from .ffmpeg import StreamRecorder
+from .moblin import BufferedBuffers
 from .moblin import Moblin
 from .moblin import parse_bitrate_status
 from .moblin import parse_ingests_status
@@ -112,12 +113,18 @@ class Sample:
 
 
 @dataclass
+class BufferedCounters:
+    duplicated: dict[str, float] = field(default_factory=dict)
+    dropped: dict[str, float] = field(default_factory=dict)
+
+
+@dataclass
 class Counters:
     stream_reconnects: int = 0
     source_restarts: dict[str, float] = field(default_factory=dict)
     video_decode_errors: dict[str, float] = field(default_factory=dict)
-    duplicated_video_buffers: dict[str, float] = field(default_factory=dict)
-    dropped_video_buffers: dict[str, float] = field(default_factory=dict)
+    buffered_video: BufferedCounters = field(default_factory=BufferedCounters)
+    buffered_audio: BufferedCounters = field(default_factory=BufferedCounters)
     failed_status_requests: int = 0
     thermal_states: defaultdict[str, float] = field(default_factory=lambda: defaultdict(float))
 
@@ -165,7 +172,7 @@ class Monitor:
     def poll(self):
         now = time.monotonic()
         self._update_video_decode_errors()
-        self._update_buffered_video_buffers()
+        self._update_buffered_buffers()
         try:
             status = self._moblin.get_status()
         except Exception as error:
@@ -196,24 +203,35 @@ class Monitor:
                 )
         self.counters.video_decode_errors = dict(counts)
 
-    def _update_buffered_video_buffers(self):
-        counts = self._moblin.buffered_video_buffers.counts()
+    def _update_buffered_buffers(self):
+        self._update_buffered_media_buffers(
+            "Buffered video", self._moblin.buffered_video_buffers, self.counters.buffered_video
+        )
+        self._update_buffered_media_buffers(
+            "Buffered audio", self._moblin.buffered_audio_buffers, self.counters.buffered_audio
+        )
+
+    def _update_buffered_media_buffers(
+        self, title: str, buffers: BufferedBuffers, counters: BufferedCounters
+    ):
+        counts = buffers.counts()
         for name in sorted(set(counts.duplicated) | set(counts.dropped)):
             duplicated = counts.duplicated.get(name, 0)
             dropped = counts.dropped.get(name, 0)
-            new_duplicated = duplicated - self.counters.duplicated_video_buffers.get(name, 0)
-            new_dropped = dropped - self.counters.dropped_video_buffers.get(name, 0)
+            new_duplicated = duplicated - counters.duplicated.get(name, 0)
+            new_dropped = dropped - counters.dropped.get(name, 0)
             if new_duplicated > 0 or new_dropped > 0:
                 LOGGER.warning(
-                    "Buffered video '%s' duplicated %d and dropped %d frames (%d and %d in total).",
+                    "%s '%s' duplicated %d and dropped %d buffers (%d and %d in total).",
+                    title,
                     name,
                     new_duplicated,
                     new_dropped,
                     duplicated,
                     dropped,
                 )
-        self.counters.duplicated_video_buffers = dict(counts.duplicated)
-        self.counters.dropped_video_buffers = dict(counts.dropped)
+        counters.duplicated = dict(counts.duplicated)
+        counters.dropped = dict(counts.dropped)
 
     def source_restarted(self, name: str):
         self.counters.source_restarts[name] += 1
@@ -252,18 +270,26 @@ class Monitor:
             format_counts(self.counters.video_decode_errors),
         )
         LOGGER.info(
-            "  Duplicated video frames: %s.",
-            format_counts(self.counters.duplicated_video_buffers),
+            "  Duplicated video buffers: %s.",
+            format_counts(self.counters.buffered_video.duplicated),
         )
         LOGGER.info(
-            "  Dropped video frames: %s.",
-            format_counts(self.counters.dropped_video_buffers),
+            "  Dropped video buffers: %s.",
+            format_counts(self.counters.buffered_video.dropped),
+        )
+        LOGGER.info(
+            "  Duplicated audio buffers: %s.",
+            format_counts(self.counters.buffered_audio.duplicated),
+        )
+        LOGGER.info(
+            "  Dropped audio buffers: %s.",
+            format_counts(self.counters.buffered_audio.dropped),
         )
 
     def report(self):
         now = time.monotonic()
         self._update_video_decode_errors()
-        self._update_buffered_video_buffers()
+        self._update_buffered_buffers()
         for deviation in self._deviations:
             deviation.stop(now)
         counters = self.counters
@@ -304,16 +330,8 @@ class Monitor:
         )
         log_table("Ingest sources", ["Restarts"], count_rows(counters.source_restarts))
         log_table("Video decoders", ["Errors"], count_rows(counters.video_decode_errors))
-        log_table(
-            "Buffered video",
-            ["Duplicated", "Dropped"],
-            [
-                [name, format_value(duplicated), format_value(dropped)]
-                for name, duplicated, dropped in merge_counts(
-                    counters.duplicated_video_buffers, counters.dropped_video_buffers
-                )
-            ],
-        )
+        log_table("Buffered video", ["Duplicated", "Dropped"], buffered_rows(counters.buffered_video))
+        log_table("Buffered audio", ["Duplicated", "Dropped"], buffered_rows(counters.buffered_audio))
         log_table(
             "Thermal states",
             ["Duration"],
@@ -454,8 +472,11 @@ class Monitor:
             )
 
 
-def merge_counts(first: dict[str, float], second: dict[str, float]) -> list[tuple[str, float, float]]:
-    return [(name, first.get(name, 0), second.get(name, 0)) for name in sorted(set(first) | set(second))]
+def buffered_rows(counters: BufferedCounters) -> list[list[str]]:
+    return [
+        [name, format_value(counters.duplicated.get(name, 0)), format_value(counters.dropped.get(name, 0))]
+        for name in sorted(set(counters.duplicated) | set(counters.dropped))
+    ]
 
 
 def count_rows(counts: dict[str, float]) -> list[list[str]]:

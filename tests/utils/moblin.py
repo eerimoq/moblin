@@ -46,7 +46,6 @@ RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
 RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode frame")
-RE_BUFFERED_VIDEO_BUFFERS = re.compile(r"buffered-video: (.+?): (\d+) duplicated and (\d+) dropped buffers")
 BITRATE_UNITS = {
     "bps": 1,
     "kbps": 1_000,
@@ -82,28 +81,29 @@ class VideoDecodeErrors:
 
 
 @dataclass
-class BufferedVideoBuffersCounts:
+class BufferedBuffersCounts:
     duplicated: dict[str, int]
     dropped: dict[str, int]
 
 
-class BufferedVideoBuffers:
-    def __init__(self):
+class BufferedBuffers:
+    def __init__(self, media: str):
+        self._re = re.compile(rf"buffered-{media}: (.+?): (\d+) duplicated and (\d+) dropped buffers")
         self._lock = threading.Lock()
         self._duplicated: defaultdict[str, int] = defaultdict(int)
         self._dropped: defaultdict[str, int] = defaultdict(int)
 
     def handle_log_entry(self, entry: str):
-        mo = RE_BUFFERED_VIDEO_BUFFERS.search(entry)
+        mo = self._re.search(entry)
         if mo is None:
             return
         with self._lock:
             self._duplicated[mo.group(1)] += int(mo.group(2))
             self._dropped[mo.group(1)] += int(mo.group(3))
 
-    def counts(self) -> BufferedVideoBuffersCounts:
+    def counts(self) -> BufferedBuffersCounts:
         with self._lock:
-            return BufferedVideoBuffersCounts(dict(self._duplicated), dict(self._dropped))
+            return BufferedBuffersCounts(dict(self._duplicated), dict(self._dropped))
 
 
 class AssistantEvents:
@@ -159,7 +159,8 @@ class Moblin:
         self.config = config
         self.arduino = arduino
         self.video_decode_errors = VideoDecodeErrors()
-        self.buffered_video_buffers = BufferedVideoBuffers()
+        self.buffered_video_buffers = BufferedBuffers("video")
+        self.buffered_audio_buffers = BufferedBuffers("audio")
         self._device_name = config.device_name()
         self._remote_control_port = config.remote_control_port()
         self._server = ManagedProcess(
@@ -205,6 +206,7 @@ class Moblin:
     def _handle_log_entry(self, entry: str):
         self.video_decode_errors.handle_log_entry(entry)
         self.buffered_video_buffers.handle_log_entry(entry)
+        self.buffered_audio_buffers.handle_log_entry(entry)
 
     def import_settings(self, overrides, files: dict[str, Path] | None = None):
         settings = base_settings(self.config)
