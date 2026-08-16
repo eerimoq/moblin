@@ -454,8 +454,10 @@ class StabilityIngestsOneStream(TestCase):
 
     def _capture_settings(self) -> dict[str, str]:
         return {
+            "Device": self.moblin.config.device_name(),
             "Video bitrate control": str(self._video_bitrate_control),
             "Video bitrate": f"{STREAM_BITRATE / 1e6:.1f} Mbps",
+            "Adaptive bitrate": "enabled" if self._stream_profile is not None else "disabled",
             "Stream traffic shaping": profile_description(self._stream_profile),
             "Ingests traffic shaping": profile_description(self._ingests_profile),
         }
