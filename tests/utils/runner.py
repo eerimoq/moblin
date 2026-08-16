@@ -1,6 +1,7 @@
 import argparse
 import logging
 import shutil
+import textwrap
 from collections.abc import Callable
 
 import systest
@@ -15,8 +16,17 @@ from .utils import TEST_DIR
 MakeTests = Callable[[Moblin, argparse.Namespace], list]
 
 
+class HelpFormatter(argparse.HelpFormatter):
+    def _split_lines(self, text: str, width: int) -> list[str]:
+        lines = []
+        for line in text.splitlines():
+            indent = " " * (len(line) - len(line.lstrip()) + 2)
+            lines += textwrap.wrap(line, width, subsequent_indent=indent) or [""]
+        return lines
+
+
 def create_parser(description: str) -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=description)
+    parser = argparse.ArgumentParser(description=description, formatter_class=HelpFormatter)
     parser.add_argument("--device")
     parser.add_argument("--arduino-serial-port")
     parser.add_argument("--moving-picture", action="store_true")

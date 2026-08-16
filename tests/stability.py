@@ -6,6 +6,7 @@ from suites.stability import Ingest
 from utils.generate_device_settings import BitrateRateControl
 from utils.runner import create_parser
 from utils.runner import run
+from utils.traffic_shaper import PROFILES_HELP
 from utils.traffic_shaper import Profile
 from utils.traffic_shaper import parse_profile
 
@@ -73,7 +74,7 @@ def main():
         "--ingests",
         type=parse_ingests,
         default=list(Ingest),
-        help="Comma separated list of ingests to stream to, for example 'rtmp,whep'. "
+        help="Comma separated list of ingests to stream to, for example 'rtmp,whep'.\n\n"
         "Give an empty list to disable all ingests (default: all).",
     )
     parser.add_argument(
@@ -102,15 +103,13 @@ def main():
         "-s",
         "--stream-traffic-shaping",
         type=parse_traffic_shaping,
-        help="Traffic shaping of the outgoing stream as '<profile>,<name>=<value>,...', "
-        "for example 'constant,rate=3,delay=60,loss=0.5'. Rates are in Mbps.",
+        help=f"Traffic shaping of the outgoing stream as '<profile>,<name>=<value>,...'.\n{PROFILES_HELP}",
     )
     parser.add_argument(
         "-i",
         "--ingests-traffic-shaping",
         type=parse_traffic_shaping,
-        help="Traffic shaping of each ingest as '<profile>,<name>=<value>,...', "
-        "for example 'square,low-rate=10,high-rate=25,period=120'. Rates are in Mbps.",
+        help="Traffic shaping of each ingest. See --stream-traffic-shaping for details.",
     )
     run("stability", parser, create_suites)
 

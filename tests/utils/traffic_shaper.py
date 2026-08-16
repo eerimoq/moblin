@@ -700,6 +700,28 @@ def parse_rate(value: str) -> int:
         raise Exception(f"'{value}' is not a rate in Mbps.") from None
 
 
+PROFILES_HELP = f"""
+Available profiles and their settings, with defaults within parentheses \
+and all rates in Mbps:
+  constant:
+    rate ({DEFAULT_CONSTANT_RATE / 1e6:g})
+  square:
+    low-rate ({DEFAULT_SQUARE_LOW_RATE / 1e6:g})
+    high-rate (unlimited)
+    period in seconds ({DEFAULT_SQUARE_PERIOD:g})
+  random:
+    min-rate ({DEFAULT_RANDOM_MINIMUM_RATE / 1e6:g})
+    max-rate ({DEFAULT_RANDOM_MAXIMUM_RATE / 1e6:g})
+    interval in seconds ({DEFAULT_RANDOM_INTERVAL:g})
+    seed (random)
+  any profile:
+    delay in milliseconds (0)
+    jitter in milliseconds (0)
+    loss in percent (0)
+    limit in packets ({DEFAULT_LIMIT})
+"""
+
+
 def parse_profile(value: str) -> Profile:
     profile_name, _, parameters = value.partition(",")
     name = _parse_profile_name(profile_name)
