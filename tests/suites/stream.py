@@ -4,6 +4,7 @@ from pathlib import Path
 from ..utils.config import TESTER_SRTLA_PORT
 from ..utils.config import TESTER_SRTLA_SRT_PORT
 from ..utils.config import WEB_REMOTE_CONTROL_PORT
+from ..utils.config import Capability
 from ..utils.config import rist_listener_url
 from ..utils.config import srt_listener_url
 from ..utils.ffmpeg import FfmpegServer
@@ -108,6 +109,8 @@ class StreamSrtToFfmpeg(StreamTestCase):
         self._fps = fps
 
     def setup(self):
+        if self._fps == 60:
+            self.skip_if_missing_capability(Capability.PIP)
         self.import_stream_settings(
             url=self.moblin.tester_srt_publish_url("test"),
             srt={"adaptiveBitrateEnabled": False},
