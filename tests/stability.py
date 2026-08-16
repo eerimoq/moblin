@@ -3,6 +3,7 @@ import argparse
 from suites import stability
 from suites.stability import Ingest
 
+from utils.generate_device_settings import BitrateRateControl
 from utils.runner import create_parser
 from utils.runner import run
 from utils.traffic_shaper import Profile
@@ -22,6 +23,14 @@ def parse_ingests(value: str) -> list[Ingest]:
         if ingest not in ingests:
             ingests.append(ingest)
     return ingests
+
+
+def parse_video_bitrate_control(value: str) -> BitrateRateControl:
+    try:
+        return BitrateRateControl(value.strip().upper())
+    except ValueError:
+        choices = ", ".join(BitrateRateControl)
+        raise argparse.ArgumentTypeError(f"'{value}' is not one of {choices}") from None
 
 
 def parse_traffic_shaping(value: str) -> Profile:
@@ -45,6 +54,7 @@ def create_suites(moblin, args):
             not args.no_record,
             3600 * args.duration,
             shaper,
+            args.video_bitrate_control,
         )
     ]
 
@@ -73,6 +83,13 @@ def main():
         "--no-record",
         action="store_true",
         help="Do not record to disk in the app.",
+    )
+    parser.add_argument(
+        "--video-bitrate-control",
+        type=parse_video_bitrate_control,
+        choices=list(BitrateRateControl),
+        default=BitrateRateControl.ABR,
+        help="Video bitrate control (default: %(default)s).",
     )
     parser.add_argument(
         "-s",

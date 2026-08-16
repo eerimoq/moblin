@@ -125,6 +125,7 @@ class StabilityIngestsOneStream(TestCase):
         record: bool,
         duration: float,
         shaper: TrafficShaper | None,
+        video_bitrate_control: BitrateRateControl,
     ):
         super().__init__(moblin)
         self._ingests = ingests
@@ -132,6 +133,7 @@ class StabilityIngestsOneStream(TestCase):
         self._record = record
         self._duration = duration
         self._shaper = shaper
+        self._video_bitrate_control = video_bitrate_control
         self._monitor: Monitor | None = None
         self._stream_profile: Profile | None = None
         self._ingests_profile: Profile | None = None
@@ -151,7 +153,7 @@ class StabilityIngestsOneStream(TestCase):
                         "enabled": True,
                         "url": self.moblin.tester_srt_url(SRT_CLIENT_STABILITY_SERVER_PORT),
                         "srt": {"adaptiveBitrateEnabled": self._stream_profile is not None},
-                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "bitrateRateControl": self._video_bitrate_control,
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
                         "resolution": STREAM_RESOLUTION,
@@ -590,7 +592,8 @@ def tests(
     record: bool,
     duration: float,
     shaper: TrafficShaper | None,
+    video_bitrate_control: BitrateRateControl,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, stream, record, duration, shaper),
+        StabilityIngestsOneStream(moblin, ingests, stream, record, duration, shaper, video_bitrate_control),
     ]
