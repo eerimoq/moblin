@@ -58,10 +58,8 @@ def alerts_widget_settings(name: str, widget_id: str):
             "chatBot": {
                 "commands": [
                     {
-                        "id": uuid(),
                         "name": ALERT_COMMAND_NAME,
                         "alert": {
-                            "id": uuid(),
                             "enabled": True,
                             "imageId": ALERT_IMAGE_ID,
                             "imageLoopCount": 1,

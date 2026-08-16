@@ -5,12 +5,12 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
-from utils.av_sync import AlertSyncReport
-from utils.av_sync import alert_chat_message
-from utils.av_sync import alert_media_files
-from utils.av_sync import alerts_media_gallery_settings
-from utils.av_sync import alerts_widget_settings
-from utils.av_sync import measure_alert_synchronization
+from utils.audio_video_sync import AlertSyncReport
+from utils.audio_video_sync import alert_chat_message
+from utils.audio_video_sync import alert_media_files
+from utils.audio_video_sync import alerts_media_gallery_settings
+from utils.audio_video_sync import alerts_widget_settings
+from utils.audio_video_sync import measure_alert_synchronization
 from utils.config import RIST_SERVER_PORT
 from utils.config import RTMP_SERVER_PORT
 from utils.config import SRT_CLIENT_STABILITY_SERVER_PORT
