@@ -44,7 +44,6 @@ cp config.example.toml config.toml
 ```bash
 make test
 make test TEST_ARGS="--device macpro Talkback"
-make test TEST_ARGS="--dji-camera DjiCameraRtmpServer"
 ```
 
 # Run the stability test
@@ -119,15 +118,15 @@ make stability TEST_ARGS="-s random,min-rate=1,max-rate=10,interval=15,seed=1 -i
 Both arguments are given as `<profile>,<name>=<value>,...`, where the profiles are
 `constant`, `square` and `random`. All rates are in Mbps.
 
-| Parameter | Profiles | Description |
-|---|---|---|
-| `delay` | all | One way delay in milliseconds. |
-| `jitter` | all | Delay variation in milliseconds. |
-| `loss` | all | Packet loss in percent. |
-| `limit` | all | Queue length in packets (default 1000). |
-| `rate` | constant | Bandwidth limit in Mbps (default 4). |
-| `low-rate`, `high-rate` | square | Bandwidth limits in Mbps to alternate between (`low-rate` defaults to 3 and `high-rate` to no limit). |
-| `period` | square | Seconds at each rate (default 60). |
-| `min-rate`, `max-rate` | random | Bandwidth limits in Mbps to pick random rates between (defaults to 1 and 7). |
-| `interval` | random | Seconds between rate changes (default 15). |
-| `seed` | random | Random seed for reproducible runs. |
+| Parameter               | Profiles | Description |
+|-------------------------|----------|-------------|
+| `delay`                 | all      | One way delay in milliseconds. |
+| `jitter`                | all      | Delay variation in milliseconds. |
+| `loss`                  | all      | Packet loss in percent. |
+| `limit`                 | all.     | Queue length in packets (default 1000). |
+| `rate`                  | constant | Bandwidth limit in Mbps (default 4). |
+| `low-rate`, `high-rate` | square   | Bandwidth limits in Mbps to alternate between (`low-rate` defaults to 3 and `high-rate` to no limit). |
+| `period`                | square   | Seconds at each rate (default 60). |
+| `min-rate`, `max-rate`  | random   | Bandwidth limits in Mbps to pick random rates between (defaults to 1 and 7). |
+| `interval`              | random   | Seconds between rate changes (default 15). |
+| `seed`                  | random   | Random seed for reproducible runs. |
