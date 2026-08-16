@@ -86,8 +86,8 @@ RELAYS = [
     Relay("RTMP", Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
     Relay("SRT", Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
     Relay("RIST", Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
-    Relay("WHEP HTTP", Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
-    Relay("WHEP media", Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
+    Relay("WHEP", Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
+    Relay("WHEP", Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
 ]
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
@@ -394,10 +394,11 @@ class StabilityIngestsOneStream(TestCase):
         self._stream_profile = shaper.profile(Group.STREAM)
         self._ingests_profile = shaper.profile(Group.INGESTS)
         self._stream_bitrate_range = shaped_bitrate_range(
-            STREAM_BITRATE, self._stream_profile, STREAM_BITRATE_RANGE
+            STREAM_BITRATE, 1, self._stream_profile, STREAM_BITRATE_RANGE
         )
         self._ingests_bitrate_range = shaped_bitrate_range(
-            len(self._ingests) * INGEST_BITRATE,
+            INGEST_BITRATE,
+            len(self._ingests),
             self._ingests_profile,
             ingests_bitrate_range(len(self._ingests)),
         )
@@ -553,6 +554,7 @@ def restart_dead_sources(monitor: Monitor, sources: list[Source]):
 
 def shaped_bitrate_range(
     nominal_bitrate: float,
+    count: int,
     profile: Profile | None,
     default_range: Range,
 ) -> Range:
@@ -563,8 +565,8 @@ def shaped_bitrate_range(
     if minimum_rate is None or maximum_rate is None:
         return default_range
     return Range(
-        0.2 * min(nominal_bitrate, minimum_rate),
-        1.3 * min(nominal_bitrate, maximum_rate),
+        0.2 * count * min(nominal_bitrate, minimum_rate),
+        1.3 * count * min(nominal_bitrate, maximum_rate),
     )
 
 

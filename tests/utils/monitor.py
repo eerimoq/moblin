@@ -10,8 +10,6 @@ from .moblin import Moblin
 from .moblin import parse_bitrate_status
 from .moblin import parse_ingests_status
 from .moblin import parse_uptime
-from .traffic_shaper import Group
-from .traffic_shaper import ShaperStatistics
 from .traffic_shaper import Side
 from .traffic_shaper import StreamStatistics
 from .traffic_shaper import TrafficShaper
@@ -137,13 +135,11 @@ class Counters:
 class ShaperMonitor:
     def __init__(self, shaper: TrafficShaper):
         self._shaper = shaper
-        self._latest: ShaperStatistics | None = None
+        self._latest: list[StreamStatistics] = []
         self._latest_time: float | None = None
-        self._group_bitrates: defaultdict[Group, Statistics] = defaultdict(Statistics)
-        self._stream_bitrates: defaultdict[tuple[str, Side], Statistics] = defaultdict(Statistics)
-        self._maximum_queued: defaultdict[Group, float] = defaultdict(float)
-        self._latest_group_bitrates: dict[Group, float] = {}
-        self._latest_stream_bitrates: dict[tuple[str, Side], float] = {}
+        self._bitrates: defaultdict[tuple[str, Side], Statistics] = defaultdict(Statistics)
+        self._latest_bitrates: dict[tuple[str, Side], float] = {}
+        self._maximum_queued: defaultdict[str, float] = defaultdict(float)
         self._has_warned = False
 
     def poll(self):
@@ -160,93 +156,72 @@ class ShaperMonitor:
         self._latest_time = now
 
     def log_status(self):
-        latest = self._latest
-        if latest is None:
+        if len(self._latest) == 0:
             return
-        for group, statistics in latest.groups.items():
-            LOGGER.info(
-                "  Shaped %s: %s Mbps, %s dropped, %s queued.",
-                group,
-                format_mbps(self._latest_group_bitrates.get(group)),
-                format_value(statistics.dropped),
-                format_value(statistics.backlog_packets),
-            )
-        LOGGER.info(
-            "  Shaped streams in Mbps to device/tester: %s.",
-            self._format_stream_bitrates(latest),
-        )
+        LOGGER.info("  Shaped streams in Mbps to device/tester: %s.", self._format_bitrates())
+        LOGGER.info("  Shaped streams dropped/queued: %s.", self._format_queues())
 
-    def _format_stream_bitrates(self, latest: ShaperStatistics) -> str:
-        parts = []
-        for stream in latest.streams:
-            to_device = self._latest_stream_bitrates.get((stream.name, Side.DEVICE))
-            to_tester = self._latest_stream_bitrates.get((stream.name, Side.TESTER))
-            parts.append(f"{stream.name}: {format_mbps(to_device)}/{format_mbps(to_tester)}")
-        if len(parts) == 0:
-            return "-"
-        return ", ".join(parts)
-
-    def group_rows(self) -> list[list[str]]:
-        latest = self._latest
-        if latest is None:
-            return []
+    def queue_rows(self) -> list[list[str]]:
         return [
             [
-                str(group),
-                format_value(self._group_bitrates[group].average(), 1e6, 1),
-                format_gigabytes(statistics.total_bytes),
-                format_value(statistics.dropped),
-                format_value(statistics.overlimits),
-                format_value(self._maximum_queued[group]),
+                stream.name,
+                format_value(stream.queue.dropped),
+                format_value(stream.queue.overlimits),
+                format_value(self._maximum_queued[stream.name]),
             ]
-            for group, statistics in latest.groups.items()
+            for stream in self._latest
         ]
 
-    def stream_rows(self) -> list[list[str]]:
-        latest = self._latest
-        if latest is None:
-            return []
+    def bitrate_rows(self) -> list[list[str]]:
         rows = []
-        for stream in latest.streams:
+        for stream in self._latest:
             for side, traffic in stream.sent.items():
                 rows.append(
                     [
                         f"{stream.name} to {side}",
-                        *self._stream_bitrates[(stream.name, side)].columns(1e6),
+                        *self._bitrates[(stream.name, side)].columns(1e6),
                         format_gigabytes(traffic.total_bytes),
                     ]
                 )
         return rows
 
-    def _update(self, now: float, statistics: ShaperStatistics):
-        for group, group_statistics in statistics.groups.items():
-            self._maximum_queued[group] = max(self._maximum_queued[group], group_statistics.backlog_packets)
-        latest = self._latest
+    def _format_bitrates(self) -> str:
+        parts = []
+        for stream in self._latest:
+            to_device = self._latest_bitrates.get((stream.name, Side.DEVICE))
+            to_tester = self._latest_bitrates.get((stream.name, Side.TESTER))
+            parts.append(f"{stream.name}: {format_mbps(to_device)}/{format_mbps(to_tester)}")
+        return ", ".join(parts)
+
+    def _format_queues(self) -> str:
+        return ", ".join(
+            f"{stream.name}: {stream.queue.dropped:.0f}/{stream.queue.backlog_packets:.0f}"
+            for stream in self._latest
+        )
+
+    def _update(self, now: float, statistics: list[StreamStatistics]):
+        for stream in statistics:
+            self._maximum_queued[stream.name] = max(
+                self._maximum_queued[stream.name], stream.queue.backlog_packets
+            )
         elapsed = now - (self._latest_time or now)
-        if latest is None or elapsed <= 0:
+        if elapsed <= 0:
             return
-        for group, group_statistics in statistics.groups.items():
-            previous_statistics = latest.groups.get(group)
-            if previous_statistics is None:
-                continue
-            bitrate = bits_per_second(group_statistics.total_bytes - previous_statistics.total_bytes, elapsed)
-            self._group_bitrates[group].add(bitrate)
-            self._latest_group_bitrates[group] = bitrate
-        previous_streams = {stream.name: stream for stream in latest.streams}
-        for stream in statistics.streams:
+        previous_streams = {stream.name: stream for stream in self._latest}
+        for stream in statistics:
             previous_stream = previous_streams.get(stream.name)
             if previous_stream is None:
                 continue
-            self._update_stream(stream, previous_stream, elapsed)
+            self._update_bitrates(stream, previous_stream, elapsed)
 
-    def _update_stream(self, stream: StreamStatistics, previous: StreamStatistics, elapsed: float):
+    def _update_bitrates(self, stream: StreamStatistics, previous: StreamStatistics, elapsed: float):
         for side, traffic in stream.sent.items():
             previous_traffic = previous.sent.get(side)
             if previous_traffic is None:
                 continue
             bitrate = bits_per_second(traffic.total_bytes - previous_traffic.total_bytes, elapsed)
-            self._stream_bitrates[(stream.name, side)].add(bitrate)
-            self._latest_stream_bitrates[(stream.name, side)] = bitrate
+            self._bitrates[(stream.name, side)].add(bitrate)
+            self._latest_bitrates[(stream.name, side)] = bitrate
 
 
 class Monitor:
@@ -455,14 +430,14 @@ class Monitor:
         )
         if self._shaper_monitor is not None:
             log_table(
-                "Shaped groups",
-                ["Mbps", "GB", "Dropped", "Overlimits", "Queued"],
-                self._shaper_monitor.group_rows(),
+                "Shaped stream queues",
+                ["Dropped", "Overlimits", "Queued"],
+                self._shaper_monitor.queue_rows(),
             )
             log_table(
                 "Shaped streams in Mbps",
                 ["Minimum", "Average", "Maximum", "GB"],
-                self._shaper_monitor.stream_rows(),
+                self._shaper_monitor.bitrate_rows(),
             )
         log_table("Ingest sources", ["Restarts"], count_rows(counters.source_restarts))
         log_table("Video decoders", ["Errors"], count_rows(counters.video_decode_errors))
