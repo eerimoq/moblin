@@ -1,14 +1,13 @@
 import argparse
 
-from suites import stability
-from suites.stability import Ingest
-
-from utils.generate_device_settings import BitrateRateControl
-from utils.runner import create_parser
-from utils.runner import run
-from utils.traffic_shaper import PROFILES_HELP
-from utils.traffic_shaper import Profile
-from utils.traffic_shaper import parse_profile
+from .suites import stability
+from .suites.stability import Ingest
+from .utils.generate_device_settings import BitrateRateControl
+from .utils.runner import create_parser
+from .utils.runner import run
+from .utils.traffic_shaper import PROFILES_HELP
+from .utils.traffic_shaper import Profile
+from .utils.traffic_shaper import parse_profile
 
 
 def parse_ingests(value: str) -> list[Ingest]:

@@ -1,21 +1,21 @@
 from pathlib import Path
 
-from utils.config import WEB_SERVER_PORT
-from utils.ffmpeg import QrCode
-from utils.ffmpeg import create_qr_codes_video
-from utils.ffmpeg import read_qr_codes
-from utils.generate_device_settings import RECORD_STREAM_SETTINGS
-from utils.generate_device_settings import BrowserMode
-from utils.generate_device_settings import CameraPosition
-from utils.generate_device_settings import browser_widget_settings
-from utils.generate_device_settings import scene_widget_settings
-from utils.generate_device_settings import uuid
-from utils.moblin import Moblin
-from utils.test_case import TestCase
-from utils.utils import WEBSITES_DIR
-from utils.utils import Crop
-from utils.utils import create_qr_code_image
-from utils.web_server import WebServer
+from ..utils.config import WEB_SERVER_PORT
+from ..utils.ffmpeg import QrCode
+from ..utils.ffmpeg import create_qr_codes_video
+from ..utils.ffmpeg import read_qr_codes
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from ..utils.generate_device_settings import BrowserMode
+from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import browser_widget_settings
+from ..utils.generate_device_settings import scene_widget_settings
+from ..utils.generate_device_settings import uuid
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
+from ..utils.utils import WEBSITES_DIR
+from ..utils.utils import Crop
+from ..utils.utils import create_qr_code_image
+from ..utils.web_server import WebServer
 
 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = uuid()
 AUDIO_AND_VIDEO_ONLY_WIDGET_ID = uuid()

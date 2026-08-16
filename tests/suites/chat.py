@@ -1,9 +1,9 @@
-from utils.generate_device_settings import EMPTY_SCENE_SETTINGS
-from utils.generate_device_settings import RECORD_STREAM_SETTINGS
-from utils.generate_device_settings import SCREEN_SCENE_SETTINGS
-from utils.generate_device_settings import SceneName
-from utils.moblin import Moblin
-from utils.test_case import TestCase
+from ..utils.generate_device_settings import EMPTY_SCENE_SETTINGS
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from ..utils.generate_device_settings import SCREEN_SCENE_SETTINGS
+from ..utils.generate_device_settings import SceneName
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
 
 
 class ChatTestCase(TestCase):

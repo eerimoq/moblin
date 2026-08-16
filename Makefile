@@ -100,19 +100,19 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
-	$(MAKE) $(TEST_MAKE_ARGS) test
+	python -m tests.test $(TEST_ARGS)
 
 test-stability:
-	$(MAKE) $(TEST_MAKE_ARGS) stability
+	python -m tests.stability $(TEST_ARGS)
 
 test-stability-watch:
-	$(MAKE) $(TEST_MAKE_ARGS) stability-watch
+	python -m tests.watch
 
 test-generate-device-settings-clipboard:
-	$(MAKE) $(TEST_MAKE_ARGS) generate-device-settings-clipboard
+	python -m tests.generate_device_settings $(TEST_ARGS)
 
 test-generate-device-settings-stdout:
-	@$(MAKE) --no-print-directory --silent $(TEST_MAKE_ARGS) generate-device-settings-stdout
+	python -m tests.generate_device_settings --force-stdout $(TEST_ARGS)
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings

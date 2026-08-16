@@ -1,15 +1,14 @@
-from suites import browser_widget
-from suites import chat
-from suites import dji_camera
-from suites import ingests
-from suites import record
-from suites import scenes
-from suites import stream
-from suites import talkback
-from suites import web_remote_control
-
-from utils.runner import create_parser
-from utils.runner import run
+from .suites import browser_widget
+from .suites import chat
+from .suites import dji_camera
+from .suites import ingests
+from .suites import record
+from .suites import scenes
+from .suites import stream
+from .suites import talkback
+from .suites import web_remote_control
+from .utils.runner import create_parser
+from .utils.runner import run
 
 
 def create_suites(moblin, _):

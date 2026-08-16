@@ -1,11 +1,11 @@
 import time
 
-from utils.config import Capability
-from utils.ffmpeg import FfmpegVideoCodec
-from utils.generate_device_settings import Resolution
-from utils.generate_device_settings import VideoCodec
-from utils.moblin import Moblin
-from utils.test_case import TestCase
+from ..utils.config import Capability
+from ..utils.ffmpeg import FfmpegVideoCodec
+from ..utils.generate_device_settings import Resolution
+from ..utils.generate_device_settings import VideoCodec
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
 
 FFMPEG_VIDEO_CODECS = {
     VideoCodec.H264: FfmpegVideoCodec.H264,

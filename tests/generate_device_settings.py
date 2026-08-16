@@ -3,8 +3,8 @@ import json
 
 import pyperclip
 
-from utils.config import Config
-from utils.generate_device_settings import base_settings
+from .utils.config import Config
+from .utils.generate_device_settings import base_settings
 
 
 def main():
