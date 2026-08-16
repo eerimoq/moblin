@@ -53,6 +53,14 @@ class TestCase(systest.TestCase):
         if not self.moblin.has_capability(capability):
             raise systest.TestCaseSkippedError(f"{capability} capability missing.")
 
+    def skip_if_no_secondary_ip_address(self):
+        if not self.moblin.has_secondary_ip_address():
+            raise systest.TestCaseSkippedError("No secondary IP address.")
+
+    def skip_if_no_receiver(self):
+        if not self.moblin.config.has_receiver():
+            raise systest.TestCaseSkippedError("No receiver.")
+
     def skip_if_no_moving_picture(self):
         if not self.moblin.has_moving_picture():
             raise systest.TestCaseSkippedError("No moving picture.")

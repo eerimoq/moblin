@@ -21,6 +21,8 @@ TESTER_RIST_PORT = 6600
 TESTER_RTMP_PORT = 1935
 TESTER_RTSP_PORT = 8554
 TESTER_SRT_PORT = 8890
+TESTER_SRTLA_PORT = 5000
+TESTER_SRTLA_SRT_PORT = 4008
 TESTER_WEBRTC_PORT = 8889
 TESTER_WEBRTC_UDP_PORT = 8189
 MEDIAMTX_API_PORT = 9997
@@ -89,8 +91,17 @@ class Config:
     def moblin_ip_address(self):
         return self._device()["moblin-ip-address"]
 
+    def moblin_secondary_ip_address(self) -> str | None:
+        return self._device().get("moblin-secondary-ip-address")
+
     def tester_ip_address(self):
         return self.general()["tester-ip-address"]
+
+    def has_receiver(self) -> bool:
+        return "receiver-remote-control-port" in self.general()
+
+    def receiver_remote_control_port(self) -> int:
+        return self.general()["receiver-remote-control-port"]
 
     def capabilities(self):
         return self._device()["capabilities"]

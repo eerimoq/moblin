@@ -26,6 +26,7 @@ from .config import TESTER_RIST_PORT
 from .config import TESTER_RTMP_PORT
 from .config import TESTER_RTSP_PORT
 from .config import TESTER_SRT_PORT
+from .config import TESTER_SRTLA_PORT
 from .config import TESTER_WEBRTC_PORT
 from .config import WEB_REMOTE_CONTROL_PORT
 from .config import WHIP_SERVER_PORT
@@ -151,18 +152,23 @@ class Moblin:
     def __init__(
         self,
         config: Config,
-        arduino: Arduino | None,
-        moving_picture: bool,
+        arduino: Arduino | None = None,
+        moving_picture: bool = False,
         dji_camera: bool = False,
         skip_background_streaming: bool = False,
+        name: str | None = None,
+        ip_address: str | None = None,
+        remote_control_port: int | None = None,
     ):
         self.config = config
         self.arduino = arduino
         self.video_decode_errors = VideoDecodeErrors()
         self.buffered_video_buffers = BufferedBuffers("video")
         self.buffered_audio_buffers = BufferedBuffers("audio")
-        self._device_name = config.device_name()
-        self._remote_control_port = config.remote_control_port()
+        self._device_name = name if name is not None else config.device_name()
+        self._remote_control_port = (
+            remote_control_port if remote_control_port is not None else config.remote_control_port()
+        )
         self._server = ManagedProcess(
             [
                 sys.executable,
@@ -179,7 +185,8 @@ class Moblin:
             ready=self._wait_until_streamer_is_connected,
         )
         self._events = AssistantEvents(self._remote_control_port, self._handle_log_entry)
-        self.ip_address = config.moblin_ip_address()
+        self.ip_address = ip_address if ip_address is not None else config.moblin_ip_address()
+        self.secondary_ip_address = config.moblin_secondary_ip_address()
         self._tester_ip_address = config.tester_ip_address()
         self._tester_media_ip_address = self._tester_ip_address
         self._device_media_ip_address = self.ip_address
@@ -209,7 +216,7 @@ class Moblin:
         self.buffered_audio_buffers.handle_log_entry(entry)
 
     def import_settings(self, overrides, files: dict[str, Path] | None = None):
-        settings = base_settings(self.config)
+        settings = base_settings(self.config, self._remote_control_port)
         settings.update(overrides)
         with tempfile.TemporaryDirectory() as settings_dir:
             settings_file = Path(settings_dir) / "settings.zip"
@@ -309,6 +316,9 @@ class Moblin:
             url += f"&passphrase={passphrase}"
         return url
 
+    def tester_srtla_url(self, stream_id: str) -> str:
+        return f"srtla://{self._tester_media_ip_address}:{TESTER_SRTLA_PORT}?streamid={stream_id}"
+
     def tester_whip_url(self, path: str) -> str:
         return f"whip://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
 
@@ -330,18 +340,22 @@ class Moblin:
             f"?virt-dst-port={virtual_destination_port}"
         )
 
-    def wait_for_tcp_ports(self, *ports: int):
+    def wait_for_tcp_ports(self, *ports: int, ip_address: str | None = None):
+        address = ip_address if ip_address is not None else self._device_media_ip_address
         for port in ports:
 
             def check(port=port) -> bool:
                 with socket.socket() as sock:
                     sock.settimeout(1)
-                    return sock.connect_ex((self._device_media_ip_address, port)) == 0
+                    return sock.connect_ex((address, port)) == 0
 
-            wait_until(check, f"TCP port {port} to accept connections")
+            wait_until(check, f"TCP port {port} on {address} to accept connections")
 
     def has_capability(self, capability: Capability) -> bool:
         return capability in self._capabilities
+
+    def has_secondary_ip_address(self) -> bool:
+        return self.secondary_ip_address is not None
 
     def has_moving_picture(self) -> bool:
         return self._moving_picture
@@ -379,6 +393,13 @@ class Moblin:
             return status is not None and len(status["message"].split(",")) == number_of_devices
 
         wait_until(check, "DJI devices to start streaming")
+
+    def wait_for_bonding_connections(self, number_of_connections: int):
+        def check() -> bool:
+            status = self.get_status_top_right().get("srtla")
+            return status is not None and len(status["message"].split(",")) == number_of_connections
+
+        wait_until(check, "bonding connections to be established")
 
     def wait_for_bitrate(self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes):
         def check() -> bool:
@@ -448,6 +469,15 @@ class Moblin:
 
         wait_until(check, "streamer to connect", ignore_errors=True)
         LOGGER.info("Remote control streamer connected")
+
+
+def create_receiver(config: Config) -> Moblin:
+    return Moblin(
+        config,
+        name="receiver",
+        ip_address=config.tester_ip_address(),
+        remote_control_port=config.receiver_remote_control_port(),
+    )
 
 
 @dataclass

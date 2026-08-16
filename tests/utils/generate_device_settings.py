@@ -224,13 +224,13 @@ def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
     }
 
 
-def base_settings(config: Config):
+def base_settings(config: Config, remote_control_port: int):
     return {
         "scenes": [FRONT_SCENE_SETTINGS],
         "remoteControl": {
             "server": {
                 "enabled": True,
-                "url": f"ws://{config.tester_ip_address()}:{config.remote_control_port()}",
+                "url": f"ws://{config.tester_ip_address()}:{remote_control_port}",
                 "reliableChatAndEvents": True,
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},

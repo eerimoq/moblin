@@ -1,18 +1,29 @@
 from contextlib import contextmanager
 from pathlib import Path
 
+from ..utils.config import TESTER_SRTLA_PORT
+from ..utils.config import TESTER_SRTLA_SRT_PORT
+from ..utils.config import WEB_REMOTE_CONTROL_PORT
 from ..utils.config import rist_listener_url
 from ..utils.config import srt_listener_url
 from ..utils.ffmpeg import FfmpegServer
 from ..utils.generate_device_settings import AudioCodec
 from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import SceneName
 from ..utils.generate_device_settings import VideoCodec
+from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import uuid
 from ..utils.mediamtx import MediaMtx
 from ..utils.moblin import Moblin
+from ..utils.moblin import create_receiver
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
+from ..utils.utils import Range
 from ..utils.utils import format_generic_stream_url_stream_name
+
+SRTLA_INGEST_ID = uuid()
+SRTLA_STREAM_ID = "1"
 
 
 class StreamTestCase(TestCase):
@@ -183,6 +194,62 @@ class StreamRistToFfmpeg(StreamTestCase):
         self.assert_live_stream(filename)
 
 
+class StreamSrtlaBondingToMoblin(StreamTestCase):
+    """SRTLA stream from Moblin over two network interfaces to Moblin on the tester machine."""
+
+    def setup(self):
+        self.skip_if_no_secondary_ip_address()
+        self.skip_if_no_receiver()
+        self.moblin.wait_for_tcp_ports(
+            WEB_REMOTE_CONTROL_PORT,
+            ip_address=self.moblin.secondary_ip_address,
+        )
+        self.import_stream_settings(
+            url=self.moblin.tester_srtla_url(SRTLA_STREAM_ID),
+            srt={"adaptiveBitrateEnabled": False},
+            bitrate=5_000_000,
+        )
+
+    def run(self):
+        with create_receiver(self.moblin.config) as receiver:
+            receiver.import_settings(
+                overrides={
+                    "scenes": [
+                        {
+                            "name": SceneName.FRONT,
+                            "cameraPosition": CameraPosition.SRTLA,
+                            "srtlaCameraId": SRTLA_INGEST_ID,
+                            "micId": mic_id(SRTLA_INGEST_ID),
+                            "overrideMic": True,
+                            "enabled": True,
+                        }
+                    ],
+                    "srtlaServer": {
+                        "enabled": True,
+                        "srtPort": TESTER_SRTLA_SRT_PORT,
+                        "srtlaPort": TESTER_SRTLA_PORT,
+                        "streams": [
+                            {
+                                "id": SRTLA_INGEST_ID,
+                                "name": "Test",
+                                "streamId": SRTLA_STREAM_ID,
+                            }
+                        ],
+                    },
+                }
+            )
+            self.moblin.set_scene(SceneName.FRONT)
+            self.moblin.go_live()
+            self.moblin.wait_for_bonding_connections(2)
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+            receiver.wait_for_ingests(
+                bitrate=Range(4_000_000, 6_000_000),
+                total_bytes=10_000_000,
+                number_of_ingests=1,
+            )
+            self.moblin.end()
+
+
 class StreamWhipToMediaMtx(StreamTestCase):
     """WHIP stream from Moblin to MediaMTX for a few seconds."""
 
@@ -264,6 +331,7 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.CBR),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.VBR),
         StreamRistToFfmpeg(moblin),
+        StreamSrtlaBondingToMoblin(moblin),
         StreamWhipToMediaMtx(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
     ] + [
