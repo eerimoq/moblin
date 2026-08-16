@@ -132,7 +132,6 @@ class StabilityIngestsOneStream(TestCase):
         self._ingests = ingests
         self._stream = stream
         self._record = record
-        self._recording_started = False
         self._duration = duration
         self._shaper = shaper
         self._monitor: Monitor | None = None
@@ -248,8 +247,6 @@ class StabilityIngestsOneStream(TestCase):
             LOGGER,
             "Keep the volume turned up so the microphone picks up the alert sounds",
         )
-        stream_recorder: StreamRecorder | None = None
-        recording: Path | None = None
         with ExitStack() as stack:
             webrtc_host = None
             if self._shaper is not None:
@@ -260,6 +257,8 @@ class StabilityIngestsOneStream(TestCase):
                 stream_recorder = stack.enter_context(
                     StreamRecorder(srt_listener_url(SRT_CLIENT_STABILITY_SERVER_PORT), STREAM_FILE)
                 )
+            else:
+                stream_recorder = None
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
@@ -270,14 +269,15 @@ class StabilityIngestsOneStream(TestCase):
                 self._go_live(stream_recorder)
             if self._record:
                 self.moblin.start_recording()
-                self._recording_started = True
             self._monitor = self._create_monitor(stream_recorder, sources)
             self._monitor_until_done(self._monitor, stream_recorder, sources)
             if stream_recorder is not None:
                 self.moblin.end()
-            if self._recording_started:
+            if self._record:
                 self.moblin.stop_recording()
                 recording = self._download_recording()
+            else:
+                recording = None
         if stream_recorder is not None:
             self._assert_audio_presentation_time_stamps(
                 stream_recorder.file, ffprobe_audio(stream_recorder.file)
