@@ -38,6 +38,7 @@ from utils.generate_device_settings import video_source_widget_settings
 from utils.mediamtx import MediaMtx
 from utils.moblin import Moblin
 from utils.monitor import Monitor
+from utils.network_capture import NetworkCapture
 from utils.test_case import TestCase
 from utils.traffic_shaper import Group
 from utils.traffic_shaper import Profile
@@ -126,6 +127,7 @@ class StabilityIngestsOneStream(TestCase):
         duration: float,
         shaper: TrafficShaper | None,
         video_bitrate_control: BitrateRateControl,
+        network_capture: bool,
     ):
         super().__init__(moblin)
         self._ingests = ingests
@@ -134,6 +136,7 @@ class StabilityIngestsOneStream(TestCase):
         self._duration = duration
         self._shaper = shaper
         self._video_bitrate_control = video_bitrate_control
+        self._network_capture = network_capture
         self._monitor: Monitor | None = None
         self._stream_profile: Profile | None = None
         self._ingests_profile: Profile | None = None
@@ -248,6 +251,7 @@ class StabilityIngestsOneStream(TestCase):
             "Keep the volume turned up so the microphone picks up the alert sounds",
         )
         with ExitStack() as stack:
+            capture = self._enter_network_capture(stack)
             webrtc_host = None
             if self._shaper is not None:
                 stack.enter_context(self._shaper)
@@ -270,7 +274,7 @@ class StabilityIngestsOneStream(TestCase):
             if self._record:
                 self.moblin.start_recording()
             self._monitor = self._create_monitor(stream_recorder, sources)
-            self._monitor_until_done(self._monitor, stream_recorder, sources)
+            self._monitor_until_done(self._monitor, stream_recorder, sources, capture)
             if stream_recorder is not None:
                 self.moblin.end()
             if self._record:
@@ -433,11 +437,20 @@ class StabilityIngestsOneStream(TestCase):
             shaper=self._shaper,
         )
 
+    def _enter_network_capture(self, stack: ExitStack) -> NetworkCapture | None:
+        if not self._network_capture:
+            return None
+        hosts = [self.moblin.ip_address]
+        if self._shaper is not None:
+            hosts.append(self._shaper.ip_address)
+        return stack.enter_context(NetworkCapture(hosts, FILES_DIR, STREAM_PATH))
+
     def _monitor_until_done(
         self,
         monitor: Monitor,
         recorder: StreamRecorder | None,
         sources: list[Source],
+        capture: NetworkCapture | None,
     ):
         end_time = time.monotonic() + self._duration
         alert_time = time.monotonic() + FIRST_ALERT_DELAY
@@ -455,6 +468,8 @@ class StabilityIngestsOneStream(TestCase):
             restart_dead_sources(monitor, sources)
             if recorder is not None:
                 recorder.poll()
+            if capture is not None:
+                capture.poll()
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:
@@ -593,7 +608,17 @@ def tests(
     duration: float,
     shaper: TrafficShaper | None,
     video_bitrate_control: BitrateRateControl,
+    network_capture: bool,
 ):
     return [
-        StabilityIngestsOneStream(moblin, ingests, stream, record, duration, shaper, video_bitrate_control),
+        StabilityIngestsOneStream(
+            moblin,
+            ingests,
+            stream,
+            record,
+            duration,
+            shaper,
+            video_bitrate_control,
+            network_capture,
+        ),
     ]

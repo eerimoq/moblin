@@ -54,6 +54,18 @@ make stability
 make stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 
+# Network capture
+
+Give `--network-capture` to the stability test to capture all packets to and from the
+device, and the traffic shaper if used, for the whole test run. The packets are truncated
+to 128 bytes and written to `files/stability-<interface>.pcap`, one file per interface. The
+test machine must be allowed to capture packets, for example by installing ChmodBPF on
+macOS or by running `sudo setcap cap_net_raw,cap_net_admin+eip $(which tcpdump)` on Linux.
+
+```bash
+make stability TEST_ARGS="--network-capture"
+```
+
 # Watch the stability test
 
 ```bash

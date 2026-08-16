@@ -19,6 +19,7 @@ def check_dependencies():
         "openssl",
         "ssh",
         "lsof",
+        "tcpdump",
     ]:
         if not _is_executable_in_path(executable):
             missing_dependencies.append(f"{executable} executable not found")

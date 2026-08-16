@@ -55,6 +55,7 @@ def create_suites(moblin, args):
             3600 * args.duration,
             shaper,
             args.video_bitrate_control,
+            args.network_capture,
         )
     ]
 
@@ -62,7 +63,7 @@ def create_suites(moblin, args):
 def main():
     parser = create_parser("Run the app for a long time and monitor it.")
     parser.add_argument(
-        "--duration",
+        "-d", "--duration",
         type=float,
         default=8,
         help="Duration in hours (default: %(default)s).",
@@ -90,6 +91,11 @@ def main():
         choices=list(BitrateRateControl),
         default=BitrateRateControl.ABR,
         help="Video bitrate control (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--network-capture",
+        action="store_true",
+        help="Capture the packets to and from the device to a pcap file for the whole test run.",
     )
     parser.add_argument(
         "-s",
