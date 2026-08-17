@@ -164,11 +164,11 @@ class StreamSrtToFfmpegVideoRateControl(StreamTestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds using given video rate control."""
 
     def __init__(self, moblin: Moblin, rate_control: BitrateRateControl):
-        super().__init__(moblin, f"StreamSrtToFfmpegVideoRateControl{rate_control}")
+        super().__init__(moblin, f"StreamSrtToFfmpegVideoRateControl{rate_control.title()}")
         self._rate_control = rate_control
 
     def setup(self):
-        if self._rate_control == BitrateRateControl.ABR:
+        if self._rate_control != BitrateRateControl.CBR:
             self.skip_if_no_moving_picture()
             self.moving_picture_on()
         self.import_stream_settings(
