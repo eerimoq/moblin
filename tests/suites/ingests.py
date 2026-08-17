@@ -559,23 +559,20 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
 
 
 def tests(moblin: Moblin):
-    return (
-        [
-            IngestRtmpServer(moblin),
-            IngestSrtServer(moblin),
-            IngestSrtClient(moblin),
-        ]
-        + [IngestRtspClient(moblin, video_codec) for video_codec in FFMPEG_VIDEO_CODECS]
-        + [
-            IngestRistServer(moblin),
-            IngestWhipServer(moblin),
-            IngestWhepClient(moblin),
-            IngestParallelRtmpServer(moblin),
-            IngestParallelSrtServer(moblin),
-            IngestParallelSrtClient(moblin),
-            IngestParallelRtspClient(moblin),
-            IngestParallelRistServer(moblin),
-            IngestParallelWhipServer(moblin),
-            IngestParallelWhepClient(moblin),
-        ]
-    )
+    return [
+        IngestRtmpServer(moblin),
+        IngestSrtServer(moblin),
+        IngestSrtClient(moblin),
+        IngestRtspClient(moblin, VideoCodec.H264),
+        IngestRtspClient(moblin, VideoCodec.H265),
+        IngestRistServer(moblin),
+        IngestWhipServer(moblin),
+        IngestWhepClient(moblin),
+        IngestParallelRtmpServer(moblin),
+        IngestParallelSrtServer(moblin),
+        IngestParallelSrtClient(moblin),
+        IngestParallelRtspClient(moblin),
+        IngestParallelRistServer(moblin),
+        IngestParallelWhipServer(moblin),
+        IngestParallelWhepClient(moblin),
+    ]
