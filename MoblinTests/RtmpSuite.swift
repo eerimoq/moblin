@@ -56,8 +56,9 @@ struct RtmpSuite {
         var arguments: [AsValue]?
         connection.callCompletions[1] = { arguments = $0 }
         let data = makeConnectResultChunkData()
-        #expect(connection.socketDataReceived(data: data.subdata(in: 0 ..< 12)).isEmpty)
-        #expect(connection.socketDataReceived(data: data.advanced(by: 12)).isEmpty)
+        let buffer = connection.socketDataReceived(data: data.subdata(in: 0 ..< 12))
+        #expect(buffer == data.subdata(in: 0 ..< 12))
+        #expect(connection.socketDataReceived(data: buffer + data.advanced(by: 12)).isEmpty)
         #expect(arguments?.count == 1)
     }
 

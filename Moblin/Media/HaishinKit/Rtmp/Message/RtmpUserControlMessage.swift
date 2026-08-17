@@ -45,7 +45,7 @@ final class RtmpUserControlMessage: RtmpMessage {
             if super.encoded == newValue {
                 return
             }
-            if length == newValue.count {
+            if length == newValue.count, newValue.count >= 2 {
                 if let event = Event(rawValue: newValue[1]) {
                     self.event = event
                 }
