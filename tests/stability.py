@@ -2,6 +2,7 @@ import argparse
 
 from .suites import stability
 from .suites.stability import Ingest
+from .suites.stability import StreamProtocol
 from .utils.generate_device_settings import BitrateRateControl
 from .utils.runner import create_parser
 from .utils.runner import run
@@ -25,6 +26,14 @@ def parse_ingests(value: str) -> list[Ingest]:
     return ingests
 
 
+def parse_stream_protocol(value: str) -> StreamProtocol:
+    try:
+        return StreamProtocol(value.strip().lower())
+    except ValueError:
+        choices = ", ".join(StreamProtocol)
+        raise argparse.ArgumentTypeError(f"'{value}' is not one of {choices}") from None
+
+
 def parse_video_bitrate_control(value: str) -> BitrateRateControl:
     try:
         return BitrateRateControl(value.strip().upper())
@@ -43,6 +52,7 @@ def parse_traffic_shaping(value: str) -> Profile:
 def create_suites(moblin, args):
     shaper = stability.create_traffic_shaper(
         moblin.config,
+        args.stream_protocol,
         args.stream_traffic_shaping,
         args.ingests_traffic_shaping,
     )
@@ -51,6 +61,7 @@ def create_suites(moblin, args):
             moblin,
             args.ingests,
             not args.no_stream,
+            args.stream_protocol,
             not args.no_record,
             3600 * args.duration,
             shaper,
@@ -80,6 +91,14 @@ def main():
         "--no-stream",
         action="store_true",
         help="Do not start the outgoing stream, only run the ingests.",
+    )
+    parser.add_argument(
+        "-p",
+        "--stream-protocol",
+        type=parse_stream_protocol,
+        choices=list(StreamProtocol),
+        default=StreamProtocol.SRT,
+        help="Outgoing stream protocol (default: %(default)s).",
     )
     parser.add_argument(
         "--no-record",

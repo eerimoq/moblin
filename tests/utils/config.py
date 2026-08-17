@@ -17,6 +17,7 @@ SRT_CLIENT_1_SERVER_PORT = 4004
 SRT_CLIENT_TALKBACK_SERVER_PORT = 4005
 SRT_CLIENT_2_SERVER_PORT = 4006
 SRT_CLIENT_STABILITY_SERVER_PORT = 4007
+RTMP_CLIENT_STABILITY_SERVER_PORT = 1936
 TESTER_RIST_PORT = 6600
 TESTER_RTMP_PORT = 1935
 TESTER_RTSP_PORT = 8554
@@ -60,6 +61,10 @@ def rtsp_reader_url(path: str, port: int = TESTER_RTSP_PORT) -> str:
 
 def rist_listener_url(port: int = TESTER_RIST_PORT) -> str:
     return f"rist://@0.0.0.0:{port}"
+
+
+def rtmp_listener_url(path: str, port: int = TESTER_RTMP_PORT) -> str:
+    return f"rtmp://0.0.0.0:{port}/{path}"
 
 
 def find_config_toml() -> Path:

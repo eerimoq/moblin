@@ -402,7 +402,6 @@ class Monitor:
                 ("Stream reconnects", str(counters.stream_reconnects)),
                 ("Failed status requests", str(counters.failed_status_requests)),
                 ("RAM growth in MB", self._format_ram_growth()),
-                ("Recorded stream file", self._format_recorded_file()),
             ]
         )
         log_table(

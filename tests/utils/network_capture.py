@@ -202,11 +202,8 @@ class NetworkCapture:
         report.log()
         file = self._directory / f"{self._name}-bitrates.html"
         report.write_html(file)
-        LOGGER.info(
-            "Analyzed the network capture in %s. Open the bitrate graphs with 'open %s'.",
-            format_short_duration(time.monotonic() - started),
-            file,
-        )
+        LOGGER.info(            "Analyzed the network capture in %s.",            format_short_duration(time.monotonic() - started)        )
+        LOGGER.info(            "Open the bitrate graphs with 'open %s'.",            file        )
 
     def _start(self, interface: str):
         file = self._directory / f"{self._name}-{interface}.pcap"

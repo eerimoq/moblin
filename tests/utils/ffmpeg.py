@@ -360,9 +360,9 @@ class FfmpegNoiseStream(FfmpegAudioStream):
         )
 
 
-def _holds_udp_port(pid: int, port: int) -> bool:
+def _holds_port(pid: int, transport: str, port: int) -> bool:
     proc = subprocess.run(
-        ["lsof", "-nP", "-a", "-p", str(pid), f"-iUDP:{port}"],
+        ["lsof", "-nP", "-a", "-p", str(pid), f"-i{transport}:{port}"],
         check=False,
         capture_output=True,
         text=True,
@@ -377,7 +377,11 @@ class FfmpegServer(FfmpegCommand):
         self._filename = filename
 
     def args(self):
+        listen = []
+        if self._transport() == "TCP":
+            listen = ["-listen", "1"]
         return [
+            *listen,
             "-i",
             self._url,
             "-c",
@@ -385,17 +389,24 @@ class FfmpegServer(FfmpegCommand):
             str(self._filename),
         ]
 
+    def _transport(self) -> str:
+        return "TCP" if urlsplit(self._url).scheme in ["rtmp", "rtmps"] else "UDP"
+
     def _wait_until_ready(self):
         port = urlsplit(self._url).port
         pid = self._process.pid() if self._process is not None else None
         if port is None or pid is None:
             return
-        wait_until(lambda: self._is_listening(pid, port), f"ffmpeg to listen on UDP port {port}")
+        transport = self._transport()
+        wait_until(
+            lambda: self._is_listening(pid, transport, port),
+            f"ffmpeg to listen on {transport} port {port}",
+        )
 
-    def _is_listening(self, pid: int, port: int) -> bool:
+    def _is_listening(self, pid: int, transport: str, port: int) -> bool:
         if not self.is_running():
-            raise Exception(f"ffmpeg exited before it started to listen on UDP port {port}")
-        return _holds_udp_port(pid, port)
+            raise Exception(f"ffmpeg exited before it started to listen on {transport} port {port}")
+        return _holds_port(pid, transport, port)
 
 
 class StreamRecorder:

@@ -12,12 +12,16 @@ from ..utils.audio_video_sync import alerts_media_gallery_settings
 from ..utils.audio_video_sync import alerts_widget_settings
 from ..utils.audio_video_sync import measure_alert_synchronization
 from ..utils.config import RIST_SERVER_PORT
+from ..utils.config import RTMP_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import SRT_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import SRT_SERVER_PORT
+from ..utils.config import TESTER_RIST_PORT
 from ..utils.config import TESTER_WEBRTC_PORT
 from ..utils.config import TESTER_WEBRTC_UDP_PORT
 from ..utils.config import Config
+from ..utils.config import rist_listener_url
+from ..utils.config import rtmp_listener_url
 from ..utils.config import rtsp_reader_url
 from ..utils.config import srt_listener_url
 from ..utils.ffmpeg import FfmpegCommand
@@ -65,6 +69,12 @@ class Ingest(StrEnum):
         return self.name
 
 
+class StreamProtocol(StrEnum):
+    SRT = "srt"
+    RTMP = "rtmp"
+    RIST = "rist"
+
+
 WHEP_PATH = "stabilitywhep"
 STREAM_PATH = "stability"
 INGEST_BITRATE = 5_000_000
@@ -81,8 +91,7 @@ NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
-RELAYS = [
-    Relay("Stream", Group.STREAM, Protocol.UDP, SRT_CLIENT_STABILITY_SERVER_PORT, Side.TESTER),
+INGEST_RELAYS = [
     Relay("RTMP", Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
     Relay("SRT", Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
     Relay("RIST", Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
@@ -124,6 +133,7 @@ class StabilityIngestsOneStream(TestCase):
         moblin: Moblin,
         ingests: list[Ingest],
         stream: bool,
+        stream_protocol: StreamProtocol,
         record: bool,
         duration: float,
         shaper: TrafficShaper | None,
@@ -133,6 +143,7 @@ class StabilityIngestsOneStream(TestCase):
         super().__init__(moblin)
         self._ingests = ingests
         self._stream = stream
+        self._stream_protocol = stream_protocol
         self._record = record
         self._duration = duration
         self._shaper = shaper
@@ -156,8 +167,7 @@ class StabilityIngestsOneStream(TestCase):
                     {
                         "name": "Stability",
                         "enabled": True,
-                        "url": self.moblin.tester_srt_url(SRT_CLIENT_STABILITY_SERVER_PORT),
-                        "srt": {"adaptiveBitrateEnabled": self._stream_profile is not None},
+                        **self._stream_protocol_settings(),
                         "bitrateRateControl": self._video_bitrate_control,
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
@@ -261,7 +271,7 @@ class StabilityIngestsOneStream(TestCase):
             mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host))
             if self._stream:
                 stream_recorder = stack.enter_context(
-                    StreamRecorder(srt_listener_url(SRT_CLIENT_STABILITY_SERVER_PORT), STREAM_FILE)
+                    StreamRecorder(stream_recorder_url(self._stream_protocol), STREAM_FILE)
                 )
             else:
                 stream_recorder = None
@@ -301,6 +311,25 @@ class StabilityIngestsOneStream(TestCase):
             super().teardown()
         except Exception as error:
             LOGGER.warning("Failed to stop the app. Did it crash? %s", error)
+
+    def _stream_protocol_settings(self) -> dict:
+        adaptive_bitrate = {"adaptiveBitrateEnabled": self._stream_profile is not None}
+        match self._stream_protocol:
+            case StreamProtocol.SRT:
+                return {
+                    "url": self.moblin.tester_srt_url(SRT_CLIENT_STABILITY_SERVER_PORT),
+                    "srt": adaptive_bitrate,
+                }
+            case StreamProtocol.RTMP:
+                return {
+                    "url": self.moblin.tester_rtmp_url(STREAM_PATH, RTMP_CLIENT_STABILITY_SERVER_PORT),
+                    "rtmp": adaptive_bitrate,
+                }
+            case StreamProtocol.RIST:
+                return {
+                    "url": self.moblin.tester_rist_url(),
+                    "rist": {**adaptive_bitrate, "bonding": False},
+                }
 
     def _download_recording(self) -> Path | None:
         LOGGER.debug("Downloading the recording...")
@@ -446,7 +475,9 @@ class StabilityIngestsOneStream(TestCase):
         hosts = [self.moblin.ip_address]
         if self._shaper is not None:
             hosts.append(self._shaper.ip_address)
-        streams = [CaptureStream(relay.name, relay.protocol, relay.port) for relay in RELAYS]
+        streams = [
+            CaptureStream(relay.name, relay.protocol, relay.port) for relay in relays(self._stream_protocol)
+        ]
         self._capture = stack.enter_context(
             NetworkCapture(hosts, FILES_DIR, STREAM_PATH, streams, self._capture_settings())
         )
@@ -455,6 +486,7 @@ class StabilityIngestsOneStream(TestCase):
     def _capture_settings(self) -> dict[str, str]:
         return {
             "Device": self.moblin.config.device_name(),
+            "Stream protocol": self._stream_protocol.name,
             "Video bitrate control": str(self._video_bitrate_control),
             "Video bitrate": f"{STREAM_BITRATE / 1e6:.1f} Mbps",
             "Adaptive bitrate": "enabled" if self._stream_profile is not None else "disabled",
@@ -495,6 +527,31 @@ class StabilityIngestsOneStream(TestCase):
                 recorder.poll()
             if capture is not None:
                 capture.poll()
+
+
+def stream_relay(stream_protocol: StreamProtocol) -> Relay:
+    match stream_protocol:
+        case StreamProtocol.SRT:
+            port, protocol = SRT_CLIENT_STABILITY_SERVER_PORT, Protocol.UDP
+        case StreamProtocol.RTMP:
+            port, protocol = RTMP_CLIENT_STABILITY_SERVER_PORT, Protocol.TCP
+        case StreamProtocol.RIST:
+            port, protocol = TESTER_RIST_PORT, Protocol.UDP
+    return Relay("Stream", Group.STREAM, protocol, port, Side.TESTER)
+
+
+def relays(stream_protocol: StreamProtocol) -> list[Relay]:
+    return [stream_relay(stream_protocol)] + INGEST_RELAYS
+
+
+def stream_recorder_url(stream_protocol: StreamProtocol) -> str:
+    match stream_protocol:
+        case StreamProtocol.SRT:
+            return srt_listener_url(SRT_CLIENT_STABILITY_SERVER_PORT)
+        case StreamProtocol.RTMP:
+            return rtmp_listener_url(STREAM_PATH, RTMP_CLIENT_STABILITY_SERVER_PORT)
+        case StreamProtocol.RIST:
+            return rist_listener_url()
 
 
 def profile_description(profile: Profile | None) -> str:
@@ -618,6 +675,7 @@ def shaped_bitrate_range(
 
 def create_traffic_shaper(
     config: Config,
+    stream_protocol: StreamProtocol,
     stream_profile: Profile | None,
     ingests_profile: Profile | None,
 ) -> TrafficShaper | None:
@@ -628,13 +686,14 @@ def create_traffic_shaper(
         profiles[Group.INGESTS] = ingests_profile
     if len(profiles) == 0:
         return None
-    return TrafficShaper(config, RELAYS, profiles)
+    return TrafficShaper(config, relays(stream_protocol), profiles)
 
 
 def tests(
     moblin: Moblin,
     ingests: list[Ingest],
     stream: bool,
+    stream_protocol: StreamProtocol,
     record: bool,
     duration: float,
     shaper: TrafficShaper | None,
@@ -646,6 +705,7 @@ def tests(
             moblin,
             ingests,
             stream,
+            stream_protocol,
             record,
             duration,
             shaper,

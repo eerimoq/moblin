@@ -301,8 +301,8 @@ class Moblin:
     def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:
         return f"rist://{self._tester_media_ip_address}:{port}"
 
-    def tester_rtmp_url(self, path: str) -> str:
-        return f"rtmp://{self._tester_media_ip_address}:{TESTER_RTMP_PORT}/{path}"
+    def tester_rtmp_url(self, path: str, port: int = TESTER_RTMP_PORT) -> str:
+        return f"rtmp://{self._tester_media_ip_address}:{port}/{path}"
 
     def tester_rtsp_url(self, path: str) -> str:
         return f"rtsp://{self._tester_media_ip_address}:{TESTER_RTSP_PORT}/{path}"
