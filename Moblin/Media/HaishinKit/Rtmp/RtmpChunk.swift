@@ -154,7 +154,7 @@ final class RtmpChunk {
         return length
     }
 
-    func append(data: Data, message: RtmpMessage?) -> Int {
+    func append(data: Data, message: RtmpMessage?) -> Int? {
         guard let message else {
             return 0
         }
@@ -162,16 +162,19 @@ final class RtmpChunk {
         buffer.position = basicHeaderSize(chunkStreamId: chunkStreamId)
         payload = Data()
         do {
-            self.message = RtmpMessage.create(type: message.type)
-            self.message?.streamId = message.streamId
-            self.message?.timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
-            self.message?.length = message.length
-            payload = try Data(buffer.readBytes(message.length))
-            self.message?.encoded = payload
+            let timestamp = type == .two ? try buffer.readUInt24() : message.timestamp
+            payload = try buffer.readBytes(min(message.length, size))
+            let newMessage = RtmpMessage.create(type: message.type)
+            newMessage.streamId = message.streamId
+            newMessage.timestamp = timestamp
+            newMessage.length = message.length
+            newMessage.encoded = payload
+            self.message = newMessage
+            fragmented = payload.count < message.length
         } catch {
-            logger.info("\(buffer)")
+            return nil
         }
-        return basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type) + message.length
+        return buffer.position
     }
 
     func split(maximumSize: Int) -> [Data] {

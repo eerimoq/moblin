@@ -306,10 +306,13 @@ extension RtmpConnection: RtmpSocketDelegate {
         var offset = chunk.decodedSize
         if currentChunk != nil {
             offset = chunk.append(data: data, maximumSize: socket.maximumChunkSizeFromServer)
-        } else if chunk.type == .two {
-            offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
-        } else if chunk.type == .three, fragmentedChunks[chunk.chunkStreamId] == nil {
-            offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
+        } else if chunk.type == .two
+            || (chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil)
+        {
+            guard let appendedSize = chunk.append(data: data, message: messages[chunk.chunkStreamId]) else {
+                return data
+            }
+            offset = appendedSize
         }
         if let message = chunk.message, chunk.ready() {
             switch chunk.type {

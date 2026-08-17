@@ -368,6 +368,39 @@ struct RtmpStreamSuite {
         #expect(message.arguments.count == 1)
         #expect(message.arguments[0] == .number(1))
     }
+
+    @Test
+    func acknowledgementChunkSplitOverTwoReads() {
+        let modelMock = ModelMock()
+        let processor = Processor(delegate: modelMock)
+        let rtmpStream = RtmpStream(name: "test",
+                                    processor: processor,
+                                    delegate: modelMock,
+                                    queue: rtmpQueue)
+        let connection = RtmpConnection(name: "test", queue: rtmpQueue)
+        connection.stream = rtmpStream
+        rtmpStream.info.onWritten(sequence: 14000)
+        #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
+        let typeZeroChunk = Data([0x02, 0, 0, 0, 0, 0, 4, 0x03, 0, 0, 0, 0]) + UInt32(1).bigEndian.data
+        #expect(connection.socketDataReceived(data: typeZeroChunk).isEmpty)
+        #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
+        let typeThreeChunk = Data([0xC2]) + UInt32(14001).bigEndian.data
+        let buffered = connection.socketDataReceived(data: typeThreeChunk.prefix(3))
+        #expect(buffered == typeThreeChunk.prefix(3))
+        #expect(connection.socketDataReceived(data: buffered + typeThreeChunk.suffix(2)).isEmpty)
+        #expect(rtmpStream.info.stats.value.packetsInFlight == 0)
+    }
+
+    @Test
+    func typeThreeChunkPayloadIsCappedAtChunkSize() throws {
+        let previousMessage = RtmpAggregateMessage()
+        previousMessage.length = 300
+        let data = Data([0xC3]) + Data(count: 400)
+        let chunk = try #require(RtmpChunk(data: data, size: 128))
+        #expect(chunk.append(data: data, message: previousMessage) == 129)
+        #expect(chunk.fragmented)
+        #expect(!chunk.ready())
+    }
 }
 
 private func receiveC0C1(server: RtmpServerMock) async -> Data {
