@@ -41,9 +41,7 @@ class DjiCameraRtmpServer(TestCase):
                     "port": RTMP_SERVER_PORT,
                     "streams": [{"id": STREAM_ID, "name": "DJI", "streamKey": "dji"}],
                 },
-                "djiDevices": {
-                    "devices": [dji_device_settings(STREAM_ID, self.moblin.config.dji_camera())]
-                },
+                "djiDevices": {"devices": [dji_device_settings(STREAM_ID, self.moblin.config.dji_camera())]},
             }
         )
 
