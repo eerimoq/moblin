@@ -145,9 +145,8 @@ def mic_id(stream_id: str) -> str:
     return f"{stream_id} 0"
 
 
-def dji_device_settings(device_id: str, rtmp_stream_id: str, dji_camera: dict):
+def dji_device_settings(rtmp_stream_id: str, dji_camera: dict):
     return {
-        "id": device_id,
         "name": "Camera",
         "bluetoothPeripheralName": dji_camera["bluetooth-peripheral-name"],
         "bluetoothPeripheralId": dji_camera["bluetooth-peripheral-id"],

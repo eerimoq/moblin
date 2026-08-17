@@ -219,7 +219,6 @@ class StreamSrtlaBondingToMoblin(StreamTestCase):
                 overrides={
                     "scenes": [
                         {
-                            "name": SceneName.FRONT,
                             "cameraPosition": CameraPosition.SRTLA,
                             "srtlaCameraId": SRTLA_INGEST_ID,
                             "micId": mic_id(SRTLA_INGEST_ID),
@@ -241,7 +240,6 @@ class StreamSrtlaBondingToMoblin(StreamTestCase):
                     },
                 }
             )
-            self.moblin.set_scene(SceneName.FRONT)
             self.moblin.go_live()
             self.moblin.wait_for_bonding_connections(2)
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)

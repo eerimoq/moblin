@@ -17,7 +17,6 @@ from ..utils.test_case import TestCase
 
 LOGGER = logging.getLogger(__name__)
 STREAM_ID = uuid()
-DEVICE_ID = uuid()
 
 
 class DjiCameraRtmpServer(TestCase):
@@ -43,7 +42,7 @@ class DjiCameraRtmpServer(TestCase):
                     "streams": [{"id": STREAM_ID, "name": "DJI", "streamKey": "dji"}],
                 },
                 "djiDevices": {
-                    "devices": [dji_device_settings(DEVICE_ID, STREAM_ID, self.moblin.config.dji_camera())]
+                    "devices": [dji_device_settings(STREAM_ID, self.moblin.config.dji_camera())]
                 },
             }
         )
