@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreAudio
 
 struct RecorderDataSegment {
     let data: Data
@@ -11,6 +12,8 @@ protocol RecorderDelegate: AnyObject {
     func recorderDataSegment(segment: RecorderDataSegment)
     func recorderFinished()
 }
+
+private let maximumAudioPresentationTimeStampOffset = 0.01
 
 private let queue = DispatchQueue(label: "com.eerimoq.recorder")
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder-file-writer")
@@ -27,7 +30,8 @@ final class Recorder: NSObject, @unchecked Sendable {
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
-    private var basePresentationTimeStamp: CMTime = .zero
+    private var basePresentationTimeStamp: CMTime = .invalid
+    private var nextAudioPresentationTimeStamp: CMTime = .invalid
     private var isRecording: Bool = false
     weak var delegate: (any RecorderDelegate)?
 
@@ -112,31 +116,105 @@ final class Recorder: NSObject, @unchecked Sendable {
 
     private func appendAudioInternal(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
-              let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
+              let convertedSampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
+              let input = getAudioWriterInput(sampleBuffer: convertedSampleBuffer),
+              let duration = makeAudioDuration(numberOfFrames: convertedSampleBuffer.numSamples),
               isReadyForStartWriting(writer: writer),
               input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
+              basePresentationTimeStamp.isValid
         else {
             return
         }
-        if !input.append(sampleBuffer) {
+        let presentationTimeStamp = presentationTimeStamp - basePresentationTimeStamp
+        guard presentationTimeStamp >= .zero else {
+            return
+        }
+        if !nextAudioPresentationTimeStamp.isValid {
+            nextAudioPresentationTimeStamp = .zero
+        }
+        let offset = (presentationTimeStamp - nextAudioPresentationTimeStamp).seconds
+        if offset < -maximumAudioPresentationTimeStampOffset {
+            return
+        }
+        if offset > maximumAudioPresentationTimeStampOffset {
+            appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
+        }
+        guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
+        else {
+            return
+        }
+        guard appendAudioSampleBuffer(writer, input, sampleBuffer) else {
+            return
+        }
+        nextAudioPresentationTimeStamp = presentationTimeStamp + duration
+    }
+
+    private func makeAudioDuration(numberOfFrames: Int) -> CMTime? {
+        guard let outputFormat = audioConverter?.outputFormat else {
+            return nil
+        }
+        return CMTime(value: CMTimeValue(numberOfFrames), timescale: CMTimeScale(outputFormat.sampleRate))
+    }
+
+    private func appendAudioSilence(_ writer: AVAssetWriter,
+                                    _ input: AVAssetWriterInput,
+                                    _ from: CMTime,
+                                    _ to: CMTime)
+    {
+        guard let outputFormat = audioConverter?.outputFormat else {
+            return
+        }
+        let numberOfFrames = UInt32(((to - from).seconds * outputFormat.sampleRate).rounded())
+        guard numberOfFrames > 0,
+              let buffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: numberOfFrames)
+        else {
+            return
+        }
+        buffer.frameLength = numberOfFrames
+        for audioBuffer in UnsafeMutableAudioBufferListPointer(buffer.mutableAudioBufferList) {
+            guard let data = audioBuffer.mData else {
+                continue
+            }
+            memset(data, 0, Int(audioBuffer.mDataByteSize))
+        }
+        guard let sampleBuffer = buffer.makeSampleBuffer(from) else {
+            return
+        }
+        logger.info("""
+        recorder: audio: Inserting \(formatThreeDecimals((to - from).seconds)) seconds of silence at \
+        \(formatThreeDecimals(from.seconds))
+        """)
+        _ = appendAudioSampleBuffer(writer, input, sampleBuffer)
+    }
+
+    private func appendAudioSampleBuffer(_ writer: AVAssetWriter,
+                                         _ input: AVAssetWriterInput,
+                                         _ sampleBuffer: CMSampleBuffer) -> Bool
+    {
+        guard input.append(sampleBuffer) else {
             logger.info("""
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
             stopRunningInternal()
+            return false
         }
+        return true
     }
 
     private func appendVideoInternal(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
               let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
               isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+              input.isReadyForMoreMediaData
+        else {
+            return
+        }
+        if !basePresentationTimeStamp.isValid {
+            basePresentationTimeStamp = sampleBuffer.presentationTimeStamp
+        }
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
         else {
             return
         }
@@ -190,9 +268,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         }
     }
 
-    private func createAudioWriterInput(sampleBuffer: CMSampleBuffer,
-                                        _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
-    {
+    private func createAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput {
         let sourceFormatHint = sampleBuffer.formatDescription
         var outputSettings: [String: Any] = [:]
         if let sourceFormatHint, let inSourceFormat = sourceFormatHint.audioStreamBasicDescription {
@@ -208,14 +284,12 @@ final class Recorder: NSObject, @unchecked Sendable {
                 }
             }
         }
-        return makeWriterInput(.audio, outputSettings, sampleBuffer, presentationTimeStamp)
+        return makeWriterInput(.audio, outputSettings, sampleBuffer)
     }
 
-    private func getAudioWriterInput(sampleBuffer: CMSampleBuffer,
-                                     _ presentationTimeStamp: CMTime) -> AVAssetWriterInput?
-    {
+    private func getAudioWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if audioWriterInput == nil {
-            audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp)
+            audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer)
         }
         return audioWriterInput
     }
@@ -235,7 +309,7 @@ final class Recorder: NSObject, @unchecked Sendable {
                 outputSettings[key] = value
             }
         }
-        return makeWriterInput(.video, outputSettings, sampleBuffer, sampleBuffer.presentationTimeStamp)
+        return makeWriterInput(.video, outputSettings, sampleBuffer)
     }
 
     private func getVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
@@ -247,8 +321,7 @@ final class Recorder: NSObject, @unchecked Sendable {
 
     private func makeWriterInput(_ mediaType: AVMediaType,
                                  _ outputSettings: [String: Any],
-                                 _ sampleBuffer: CMSampleBuffer,
-                                 _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
+                                 _ sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput
     {
         if let audioStreamBasicDescription = sampleBuffer.formatDescription?.audioStreamBasicDescription {
             logger.debug("""
@@ -265,7 +338,6 @@ final class Recorder: NSObject, @unchecked Sendable {
         if writer?.inputs.count == 2 {
             writer?.startWriting()
             writer?.startSession(atSourceTime: .zero)
-            basePresentationTimeStamp = presentationTimeStamp
         }
         return input
     }
@@ -380,7 +452,8 @@ final class Recorder: NSObject, @unchecked Sendable {
         videoWriterInput = nil
         audioConverter = nil
         audioOutputFormat = nil
-        basePresentationTimeStamp = .zero
+        basePresentationTimeStamp = .invalid
+        nextAudioPresentationTimeStamp = .invalid
         fileWriterQueue.async {
             self.fileHandle = nil
             self.initSegment = nil
