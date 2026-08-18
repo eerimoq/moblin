@@ -5,6 +5,7 @@ import math
 import re
 import shutil
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from dataclasses import field
 from enum import StrEnum
@@ -580,8 +581,7 @@ class QrCode:
     number: int
     pts: float
 
-    def __init__(self, proc):
-        text = proc.stdout.read()
+    def __init__(self, text: str):
         parts = text.split(" ")
         if len(parts) == 4:
             self.number = int(parts[1])
@@ -589,6 +589,11 @@ class QrCode:
         else:
             self.number = -1
             self.pts = -1
+
+
+def _decode_qr_code(file: Path) -> QrCode:
+    proc = subprocess.run(["qrtool", "decode", str(file)], check=False, capture_output=True, text=True)
+    return QrCode(proc.stdout)
 
 
 def read_qr_codes(path: Path, crop: Crop) -> list[QrCode]:
@@ -601,14 +606,8 @@ def read_qr_codes(path: Path, crop: Crop) -> list[QrCode]:
         f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
         f"{qr_codes_dir}/%05d.jpg",
     )
-    procs = []
-    for file in sorted(qr_codes_dir.iterdir()):
-        proc = subprocess.Popen(["qrtool", "decode", file], stdout=subprocess.PIPE, text=True)
-        procs.append(proc)
-    qr_codes = []
-    for proc in procs:
-        proc.wait()
-        qr_codes.append(QrCode(proc))
+    with ThreadPoolExecutor(max_workers=32) as executor:
+        qr_codes = list(executor.map(_decode_qr_code, sorted(qr_codes_dir.iterdir())))
     shutil.rmtree(qr_codes_dir)
     return qr_codes
 
