@@ -817,7 +817,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         ) {
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else {
-            logger.info("buffered-video: Failed to output frame")
+            logger.info("video-unit: Failed to output buffered frame")
         }
     }
 
@@ -1239,7 +1239,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         do {
             try metalPetalContext?.render(image, to: outputImageBuffer)
         } catch {
-            logger.info("Metal petal error: \(error)")
+            logger.info("video-unit: Metal petal error: \(error)")
             return (nil, nil)
         }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
@@ -1488,7 +1488,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         if numberOfDiscardedFrames > 0 {
             logger.info(
                 """
-                Discarded \(numberOfDiscardedFrames) old video frames before \
+                video-unit: Discarded \(numberOfDiscardedFrames) old frames before \
                 \(sampleBuffer.presentationTimeStamp.seconds)
                 """
             )
@@ -1950,7 +1950,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     @objc
     private func sessionWasInterrupted(_: Notification) {
-        logger.debug("Video session interruption started")
+        logger.debug("video-unit: Session interruption started")
         processorPipelineQueue.async {
             self.prepareFirstFrame()
         }
@@ -1958,7 +1958,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     @objc
     private func sessionInterruptionEnded(_: Notification) {
-        logger.debug("Video session interruption ended")
+        logger.debug("video-unit: Session interruption ended")
     }
 
     private func findVideoFormat(
@@ -2002,7 +2002,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 nil,
                 useAutoFrameRate,
                 useLandscapeInPortrait,
-                "No video format found matching \(height)p\(Int(fps)), \(colorSpace)"
+                "No format found matching \(height)p\(Int(fps)), \(colorSpace)"
             )
         }
         formats = formats.filter { !$0.isVideoBinned }
@@ -2015,7 +2015,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported video pixel format")
+            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported pixel format")
         }
         return (formats.first, useAutoFrameRate, useLandscapeInPortrait, nil)
     }
@@ -2029,10 +2029,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         \(device.activeColorSpace), \
         \(device.activeFormat.formatDescription.mediaSubType)
         """
-        logger.info(error)
-        logger.info(activeFormat)
+        logger.info("video-unit: \(error)")
+        logger.info("video-unit: \(activeFormat)")
         for format in device.formats {
-            logger.info("Available video format: \(format)")
+            logger.info("video-unit: Available format: \(format)")
         }
     }
 
@@ -2060,7 +2060,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let format else {
             return
         }
-        logger.debug("Selected video format: \(format)")
+        logger.debug("video-unit: Selected format: \(format)")
         do {
             try device.lockForConfiguration()
             if device.activeFormat != format {
@@ -2083,7 +2083,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             device.unlockForConfiguration()
         } catch {
-            logger.info("Error while locking device: \(error)")
+            logger.info("video-unit: Error while locking device: \(error)")
         }
     }
 
@@ -2189,7 +2189,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             device.torchMode = torchMode
             device.unlockForConfiguration()
         } catch {
-            logger.info("while setting torch: \(error)")
+            logger.info("video-unit: Error while setting torch: \(error)")
         }
     }
 
@@ -2426,7 +2426,7 @@ extension VideoUnit: MacScreenCaptureDelegate {
 extension VideoUnit: AVCapturePhotoCaptureDelegate {
     func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error {
-            logger.info("Photo error: \(error)")
+            logger.info("video-unit: Photo error: \(error)")
             return
         }
         if let photoData = photo.fileDataRepresentation() {
@@ -2435,7 +2435,7 @@ extension VideoUnit: AVCapturePhotoCaptureDelegate {
                 creationRequest.addResource(with: .photo, data: photoData, options: nil)
             } completionHandler: { _, error in
                 if let error {
-                    logger.info("Error saving photo: \(error.localizedDescription)")
+                    logger.info("video-unit: Error saving photo: \(error.localizedDescription)")
                     return
                 }
             }

@@ -15,7 +15,7 @@ private class TalkbackPlayer {
             playerNode.play()
             isRunning = true
         } catch {
-            logger.info("talk-back-audio-player: Failed to start engine: \(error)")
+            logger.info("audio-unit: Failed to start talkback player engine: \(error)")
         }
     }
 
@@ -301,7 +301,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if numberOfDiscardedSampleBuffers > 0 {
             logger.info(
                 """
-                Discarded \(numberOfDiscardedSampleBuffers) old audio buffers before \
+                audio-unit: Discarded \(numberOfDiscardedSampleBuffers) old buffers before \
                 \(presentationTimeStamp.seconds)
                 """
             )
