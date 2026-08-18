@@ -46,7 +46,7 @@ LOGGER_EVENTS = logging.getLogger(__name__ + ".events")
 RE_INGESTS_STATUS = re.compile(r"(\S+) (\S+) \((\S+) (\S+)\) (\S+)")
 RE_BITRATE_STATUS = re.compile(r"(\S+) (\S+) ((\S+) )?\((\S+) (\S+)\)")
 RE_UPTIME_STATUS = re.compile(r"(\d+)\s*([dhms])")
-RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode frame")
+RE_VIDEO_DECODE_ERROR = re.compile(r"video-decoder: (\S+): Failed to decode (\d+) frame\(s\)")
 BITRATE_UNITS = {
     "bps": 1,
     "kbps": 1_000,
@@ -74,7 +74,7 @@ class VideoDecodeErrors:
         if mo is None:
             return
         with self._lock:
-            self._counts[mo.group(1)] += 1
+            self._counts[mo.group(1)] += int(mo.group(2))
 
     def counts(self) -> dict[str, int]:
         with self._lock:

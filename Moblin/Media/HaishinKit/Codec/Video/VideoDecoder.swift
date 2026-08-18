@@ -13,6 +13,8 @@ class VideoDecoder: @unchecked Sendable {
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
+    private var numberOfFailedFrames = 0
+    private var latestFailedFrameStatus: OSStatus = noErr
     private var session: VTDecompressionSession? {
         didSet {
             oldValue?.invalidate()
@@ -29,6 +31,7 @@ class VideoDecoder: @unchecked Sendable {
     func startRunning(formatDescription: CMFormatDescription? = nil) {
         isRunning = true
         invalidateSession = true
+        numberOfFailedFrames = 0
         self.formatDescription = formatDescription
     }
 
@@ -54,7 +57,10 @@ class VideoDecoder: @unchecked Sendable {
                     return
                 }
                 guard let imageBuffer, status == noErr else {
-                    logger.info("video-decoder: \(name): Failed to decode frame status \(status)")
+                    lockQueue.async {
+                        self.numberOfFailedFrames += 1
+                        self.latestFailedFrameStatus = status
+                    }
                     return
                 }
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -69,6 +75,7 @@ class VideoDecoder: @unchecked Sendable {
                     return
                 }
                 lockQueue.async {
+                    self.logFailedFrames()
                     self.delegate?.videoDecoderOutputSampleBuffer(self, sampleBuffer)
                 }
             }
@@ -76,6 +83,17 @@ class VideoDecoder: @unchecked Sendable {
             logger.info("video-decoder: \(name): Decode failed. Resetting session.")
             invalidateSession = true
         }
+    }
+
+    private func logFailedFrames() {
+        guard numberOfFailedFrames > 0 else {
+            return
+        }
+        logger.info("""
+        video-decoder: \(name): Failed to decode \(numberOfFailedFrames) frame(s). \
+        Latest status \(latestFailedFrameStatus).
+        """)
+        numberOfFailedFrames = 0
     }
 
     private func makeSession() -> VTDecompressionSession? {
