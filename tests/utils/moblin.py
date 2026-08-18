@@ -232,6 +232,9 @@ class Moblin:
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 
+    def set_mic(self, name):
+        self._request({"setMic": {"id": self._get_settings_id("mics", name)}})
+
     def set_talkback_mic(self, name):
         self._request({"setTalkbackMic": {"id": self._get_settings_id("mics", name)}})
 

@@ -36,6 +36,7 @@ PYLINT_ARGS = \
 	--disable line-too-long \
 	--disable consider-using-with \
 	--disable no-else-return \
+	--disable fixme \
 	--recursive yes \
 	$(PYTHON_DIRS)
 ISORT_ARGS = \

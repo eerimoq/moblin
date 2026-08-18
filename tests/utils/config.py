@@ -36,6 +36,7 @@ class Capability(StrEnum):
     PIP = "pip"
     RECORD = "record"
     BACKGROUND_STREAMING = "background-streaming"
+    DUAL_MICS = "dual-mics"
 
 
 def srt_listener_url(

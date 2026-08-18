@@ -4,6 +4,7 @@ capabilities = [
     "pip",
     "record",
     "background-streaming",
+    "dual-mics",
 ]
 
 [device.macpro]
