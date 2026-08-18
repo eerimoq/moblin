@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamOpenStreamingPlatformSettingsView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -37,6 +37,16 @@ struct StreamOpenStreamingPlatformSettingsView: View {
                     onSubmit: submitRoom,
                     placeholder: "4e9f02fc-cee9-4d1c-b4b5-99b9496375c8"
                 )
+            }
+            Section {
+                Toggle("Enabled", isOn: $stream.openStreamingPlatformChatEnabled)
+                    .onChange(of: stream.openStreamingPlatformChatEnabled) { _ in
+                        if stream.enabled {
+                            model.openStreamingPlatformChatEnabledUpdated()
+                        }
+                    }
+            } header: {
+                Text("Chat")
             }
         }
         .navigationTitle("Open Streaming Platform")

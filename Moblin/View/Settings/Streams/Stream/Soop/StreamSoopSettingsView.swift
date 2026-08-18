@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamSoopSettingsView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     func submitChannelName(value: String) {
         stream.soopChannelName = value
@@ -41,6 +41,16 @@ struct StreamSoopSettingsView: View {
                     )
                     Text("Example URL: https://play.sooplive.co.kr/myChannelName/myVideoId")
                 }
+            }
+            Section {
+                Toggle("Enabled", isOn: $stream.soopChatEnabled)
+                    .onChange(of: stream.soopChatEnabled) { _ in
+                        if stream.enabled {
+                            model.soopChatEnabledUpdated()
+                        }
+                    }
+            } header: {
+                Text("Chat")
             }
         }
         .navigationTitle("SOOP")

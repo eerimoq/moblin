@@ -10,6 +10,11 @@ extension Model {
         resetChat()
     }
 
+    func soopChatEnabledUpdated() {
+        reloadSoopChat()
+        resetChat()
+    }
+
     func reloadSoopPlatformStatus() {
         soopPlatformStatus?.stop()
         if isSoopViewersConfigured() {
@@ -27,7 +32,8 @@ extension Model {
     }
 
     func isSoopChatConfigured() -> Bool {
-        database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
+        database.chat.enabled && stream.soopChatEnabled && stream.soopChannelName != ""
+            && stream.soopStreamId != ""
     }
 
     func isSoopViewersConfigured() -> Bool {
