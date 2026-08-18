@@ -25,6 +25,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
     var inputUid: String = ""
     var dataSourceId: Int?
     var builtInOrientation: SettingsMic?
+    @Published var delay: Double = 0.0
     @Published var connected: Bool = false
 
     func isAudioSession() -> Bool {
@@ -107,6 +108,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         case inputUid
         case dataSourceID
         case builtInOrientation
+        case delay
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -115,6 +117,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         try container.encode(.inputUid, inputUid)
         try container.encode(.dataSourceID, dataSourceId)
         try container.encode(.builtInOrientation, builtInOrientation)
+        try container.encode(.delay, delay)
     }
 
     init() {}
@@ -125,6 +128,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         inputUid = container.decode(.inputUid, String.self, "")
         dataSourceId = container.decode(.dataSourceID, Int?.self, nil)
         builtInOrientation = container.decode(.builtInOrientation, SettingsMic?.self, nil)
+        delay = container.decode(.delay, Double.self, 0.0)
     }
 }
 

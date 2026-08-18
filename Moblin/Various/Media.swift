@@ -679,6 +679,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setAudioGain(gain: gain)
     }
 
+    func setAudioDelay(delay: Double) {
+        processor?.setAudioDelay(delay: delay)
+    }
+
     func registerEffect(_ effect: VideoEffect) {
         processor?.registerVideoEffect(effect)
     }

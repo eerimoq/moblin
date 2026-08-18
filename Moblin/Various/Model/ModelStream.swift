@@ -340,6 +340,7 @@ extension Model {
             1: database.audio.outputToInputChannelsMap.channel2,
         ])
         setAudioGain(gainDb: database.audio.gainDb)
+        updateMicDelay()
         startRecorderIfNeeded()
         reloadConnections()
         resetChat()

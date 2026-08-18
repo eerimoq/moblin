@@ -96,6 +96,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var output: AVCaptureAudioDataOutput?
     var muted = false
     var gain: Float = 1.0
+    private var delay = 0.0
     weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
@@ -169,6 +170,12 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.previewEncoder?.stopRunning()
             self.previewEncoder = nil
+        }
+    }
+
+    func setDelay(delay: Double) {
+        processorPipelineQueue.async {
+            self.delay = delay
         }
     }
 
@@ -281,6 +288,10 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
             return
         }
+        let presentationTimeStamp = presentationTimeStamp + CMTime(
+            seconds: delay,
+            preferredTimescale: presentationTimeStamp.timescale
+        )
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(
                 sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0

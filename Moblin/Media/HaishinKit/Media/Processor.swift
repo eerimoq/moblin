@@ -103,6 +103,10 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func setAudioDelay(delay: Double) {
+        audio.setDelay(delay: delay)
+    }
+
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         audio.encoder.setSettings(settings: settings)
     }
