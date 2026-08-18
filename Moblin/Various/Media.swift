@@ -671,6 +671,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setTorch(value: on)
     }
 
+    func setTorchLevel(level: Float) {
+        processor?.setTorchLevel(value: level)
+    }
+
     func setMute(on: Bool) {
         processor?.setHasAudio(value: !on)
     }

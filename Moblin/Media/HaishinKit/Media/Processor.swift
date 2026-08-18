@@ -54,6 +54,12 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func setTorchLevel(value: Float) {
+        processorControlQueue.async {
+            self.video.torchLevel = value
+        }
+    }
+
     func setFps(value: Float64, preferAutoFps: Bool) {
         processorControlQueue.async {
             self.video.setFps(fps: value, preferAutoFps: preferAutoFps)

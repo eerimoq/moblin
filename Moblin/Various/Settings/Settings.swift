@@ -1180,6 +1180,7 @@ class Database: Codable, ObservableObject {
     @Published var graphicsImplementation: SettingsGraphicsImplementation = .coreImage
     @Published var graphicsHighQualityDownsampling: Bool = false
     @Published var ingestsSoftwareVideoDecoding: Bool = false
+    @Published var torchLevel: Float = 1.0
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
@@ -1303,6 +1304,7 @@ class Database: Codable, ObservableObject {
         case graphicsImplementation
         case graphicsHighQualityDownsampling
         case ingestsSoftwareVideoDecoding
+        case torchLevel
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1391,6 +1393,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.graphicsImplementation, graphicsImplementation)
         try container.encode(.graphicsHighQualityDownsampling, graphicsHighQualityDownsampling)
         try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
+        try container.encode(.torchLevel, torchLevel)
     }
 
     init() {}
@@ -1543,6 +1546,7 @@ class Database: Codable, ObservableObject {
                                                            Bool.self,
                                                            debug.highQualityDownsamplingToBeRemoved)
         ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
+        torchLevel = container.decode(.torchLevel, Float.self, 1.0)
     }
 }
 

@@ -287,6 +287,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    var torchLevel: Float = 1.0 {
+        didSet {
+            guard let device, torch else {
+                return
+            }
+            setTorchMode(device, .on)
+        }
+    }
+
     override init() {
         if let metalDevice = MTLCreateSystemDefaultDevice() {
             metalPetalContext = try? MTIContext(device: metalDevice)
@@ -2186,7 +2195,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
         do {
             try device.lockForConfiguration()
-            device.torchMode = torchMode
+            if torchMode == .on {
+                try device.setTorchModeOn(level: torchLevel.clamped(to: 0.01 ... 1.0))
+            } else {
+                device.torchMode = torchMode
+            }
             device.unlockForConfiguration()
         } catch {
             logger.info("video-unit: Error while setting torch: \(error)")

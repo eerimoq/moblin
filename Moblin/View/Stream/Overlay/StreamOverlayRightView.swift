@@ -751,6 +751,9 @@ private struct RightOverlayBottomVerticalView: View {
                                                                     camera: model.camera,
                                                                     show: model.camera.show)
                     }
+                    if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                        StreamOverlayRightTorchView(model: model, database: database)
+                    }
                 }
                 if show.zoomPresets, zoom.hasZoom {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
@@ -791,6 +794,9 @@ private struct RightOverlayBottomHorizontalView: View {
                 StreamOverlayRightCameraSettingsControlView(model: model,
                                                             camera: model.camera,
                                                             show: model.camera.show)
+            }
+            if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                StreamOverlayRightTorchView(model: model, database: database)
             }
             if show.zoomPresets, zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,

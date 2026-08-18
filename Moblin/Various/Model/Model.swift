@@ -2952,8 +2952,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateTorch() {
+        media.setTorchLevel(level: database.torchLevel)
         media.setTorch(on: streamOverlay.isTorchOn)
         remoteControlStateChanged(state: .init(torchOn: streamOverlay.isTorchOn))
+    }
+
+    func setTorchLevel(level: Float) {
+        media.setTorchLevel(level: level)
     }
 
     func toggleMute() {
