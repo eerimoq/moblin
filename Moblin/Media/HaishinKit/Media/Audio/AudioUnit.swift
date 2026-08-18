@@ -106,6 +106,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var latestAudioStatusTime = 0.0
     private var talkbackCameraId: UUID?
     private var talkbackPlayer: TalkbackPlayer?
+    private var latestSampleBufferAppendTime: CMTime = .zero
+    private var numberOfDiscardedSampleBuffers = 0
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -292,6 +294,20 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             seconds: delay,
             preferredTimescale: presentationTimeStamp.timescale
         )
+        guard presentationTimeStamp > latestSampleBufferAppendTime else {
+            numberOfDiscardedSampleBuffers += 1
+            return
+        }
+        if numberOfDiscardedSampleBuffers > 0 {
+            logger.info(
+                """
+                Discarded \(numberOfDiscardedSampleBuffers) old audio buffers before \
+                \(presentationTimeStamp.seconds)
+                """
+            )
+            numberOfDiscardedSampleBuffers = 0
+        }
+        latestSampleBufferAppendTime = presentationTimeStamp
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(
                 sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0

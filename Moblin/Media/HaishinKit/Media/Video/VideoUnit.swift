@@ -216,6 +216,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var rotation: Double = 0.0
     private var mirror: Bool = false
     private var latestSampleBufferAppendTime: CMTime = .zero
+    private var numberOfDiscardedFrames = 0
     private var lowFpsImageEnabled: Bool = false
     private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0
@@ -1480,14 +1481,18 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return false
         }
-        if sampleBuffer.presentationTimeStamp < latestSampleBufferAppendTime {
+        guard sampleBuffer.presentationTimeStamp > latestSampleBufferAppendTime else {
+            numberOfDiscardedFrames += 1
+            return false
+        }
+        if numberOfDiscardedFrames > 0 {
             logger.info(
                 """
-                Discarding video frame: \(sampleBuffer.presentationTimeStamp.seconds) \
-                \(latestSampleBufferAppendTime.seconds)
+                Discarded \(numberOfDiscardedFrames) old video frames before \
+                \(sampleBuffer.presentationTimeStamp.seconds)
                 """
             )
-            return false
+            numberOfDiscardedFrames = 0
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
