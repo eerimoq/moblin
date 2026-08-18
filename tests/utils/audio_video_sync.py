@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .ffmpeg import detect_audio_onsets
 from .ffmpeg import ffmpeg_run
+from .ffmpeg import ffprobe_format
 from .ffmpeg import ffprobe_video_size
 from .ffmpeg import measure_max_volume
 from .ffmpeg import read_video_region_colors
@@ -36,6 +37,7 @@ ALERT_SOUND_BANDWIDTH = 400
 ALERT_SOUND_DURATION = 0.4
 ALERT_SOUND_LEVEL_MARGIN = 12
 AUDIO_SEARCH_MARGIN = 10.0
+MAXIMUM_ALERT_OFFSET = 1.5
 VIDEO_SEARCH_MARGIN = 3.0
 
 
@@ -123,9 +125,9 @@ class AlertSyncReport:
         return _slope_per_hour([(alert.trigger_time, alert.offset()) for alert in self.alerts])
 
     def log(self):
-        LOGGER.info("Alert audio and video synchronization in %s", self.path)
+        LOGGER.debug("Alert audio and video synchronization in %s", self.path)
         for alert in self.alerts:
-            LOGGER.info(
+            LOGGER.debug(
                 "  Alert %s: video at %.3f s, audio at %.3f s, audio is %.0f ms late",
                 alert.index,
                 alert.video_time,
@@ -137,7 +139,7 @@ class AlertSyncReport:
         if len(self.alerts) == 0:
             return
         offsets = self.offsets()
-        LOGGER.info(
+        LOGGER.debug(
             "  Found %s of %s alerts. Audio is %.0f to %.0f ms late (spread %.0f ms, drift %.0f ms/h).",
             len(self.alerts),
             len(self.alerts) + len(self.missing),
@@ -165,6 +167,8 @@ def measure_alert_synchronization(
             video_time = _find_video_onset(path, crop, audio_time)
         if audio_time is None or video_time is None:
             missing.append(index)
+        elif abs(audio_time - video_time) > MAXIMUM_ALERT_OFFSET:
+            missing.append(index)
         else:
             alerts.append(AlertSync(index, trigger_time, audio_time, video_time))
     return AlertSyncReport(path, alerts, missing)
@@ -175,26 +179,49 @@ def _find_audio_onsets(path: Path, trigger_times: list[float]) -> list[float | N
     max_volume = measure_max_volume(path, audio_filters)
     if max_volume == float("-inf"):
         return [None] * len(trigger_times)
+    probe = ffprobe_format(path)
     onsets = detect_audio_onsets(
         path,
         max_volume - ALERT_SOUND_LEVEL_MARGIN,
         2 * ALERT_SOUND_DURATION,
         audio_filters,
+        copy_timestamps=True,
     )
-    return _match_onsets(sorted(onsets), trigger_times)
+    onsets = [
+        onset - probe.start_time
+        for onset in sorted(onsets)
+        if onset - probe.start_time < probe.duration - ALERT_SOUND_DURATION
+    ]
+    return _match_onsets(onsets, trigger_times)
 
 
 def _match_onsets(onsets: list[float], trigger_times: list[float]) -> list[float | None]:
     best: list[float | None] = [None] * len(trigger_times)
-    best_matches = 0
+    best_score = (0, 0.0)
     for onset in onsets:
         for trigger_time in trigger_times:
-            matched = _match_onsets_with_offset(onsets, trigger_times, onset - trigger_time)
-            matches = sum(1 for value in matched if value is not None)
-            if matches > best_matches:
-                best_matches = matches
+            offset = onset - trigger_time
+            matched = _match_onsets_with_offset(onsets, trigger_times, offset)
+            score = _score_onsets(matched, trigger_times, offset)
+            if score > best_score:
+                best_score = score
                 best = matched
     return best
+
+
+def _score_onsets(
+    matched: list[float | None],
+    trigger_times: list[float],
+    offset: float,
+) -> tuple[int, float]:
+    matches = 0
+    error = 0.0
+    for trigger_time, onset in zip(trigger_times, matched):
+        if onset is None:
+            continue
+        matches += 1
+        error += abs(onset - (trigger_time + offset))
+    return matches, -error
 
 
 def _match_onsets_with_offset(

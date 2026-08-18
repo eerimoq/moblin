@@ -2,6 +2,7 @@ from .suites import browser_widget
 from .suites import chat
 from .suites import dji_camera
 from .suites import ingests
+from .suites import mic_delay
 from .suites import record
 from .suites import scenes
 from .suites import stream
@@ -16,6 +17,7 @@ def create_suites(moblin, _):
         talkback.tests(moblin),
         ingests.tests(moblin),
         record.tests(moblin),
+        mic_delay.tests(moblin),
         scenes.tests(moblin),
         stream.tests(moblin),
         browser_widget.tests(moblin),

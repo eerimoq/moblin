@@ -501,6 +501,7 @@ class FfprobeAudioOutput:
 @dataclass
 class FfprobeFormatOutput:
     duration: float
+    start_time: float
 
 
 @dataclass
@@ -570,8 +571,11 @@ def ffprobe_audio(path) -> FfprobeAudioOutput:
 
 
 def ffprobe_format(path):
-    output = ffprobe_run(path, "-show_entries", "format=duration")
-    return FfprobeFormatOutput(duration=float(output["format"]["duration"]))
+    output = ffprobe_run(path, "-show_entries", "format=duration,start_time")
+    return FfprobeFormatOutput(
+        duration=float(output["format"]["duration"]),
+        start_time=float(output["format"].get("start_time", 0)),
+    )
 
 
 def ffprobe(path: Path):
@@ -713,8 +717,10 @@ def detect_audio_onsets(
     noise_db: float,
     minimum_silence: float,
     audio_filters: list[str] | None = None,
+    copy_timestamps: bool = False,
 ) -> list[float]:
     output = ffmpeg_run(
+        *(["-copyts"] if copy_timestamps else []),
         "-i",
         str(path),
         "-vn",

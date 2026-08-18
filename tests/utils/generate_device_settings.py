@@ -145,6 +145,20 @@ def mic_id(stream_id: str) -> str:
     return f"{stream_id} 0"
 
 
+def mics_settings(mics: list[dict], delay: float):
+    return {"all": [mic_settings(mic, delay) for mic in mics]}
+
+
+def mic_settings(mic: dict, delay: float):
+    input_uid, data_source_id = mic["id"].rsplit(" ", 1)
+    return {
+        "name": mic["name"],
+        "inputUid": input_uid,
+        "dataSourceID": int(data_source_id) if data_source_id != "0" else None,
+        "delay": delay,
+    }
+
+
 def dji_device_settings(rtmp_stream_id: str, dji_camera: dict):
     return {
         "name": "Camera",
