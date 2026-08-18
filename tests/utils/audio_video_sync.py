@@ -135,7 +135,7 @@ class AlertSyncReport:
                 1000 * alert.offset(),
             )
         if len(self.missing) > 0:
-            LOGGER.info("  Alerts not found: %s", ", ".join(str(index) for index in self.missing))
+            LOGGER.debug("  Alerts not found: %s", ", ".join(str(index) for index in self.missing))
         if len(self.alerts) == 0:
             return
         offsets = self.offsets()

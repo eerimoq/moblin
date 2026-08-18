@@ -149,7 +149,6 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
         stream_file = FILES_DIR / f"{self.name}.ts"
         with FfmpegNoiseStream(self.moblin.ingest_rtmp_url("noise")):
             with FfmpegServer(url=srt_listener_url(), filename=stream_file):
-                time.sleep(WARM_UP_TIME)
                 self.moblin.go_live()
                 with recorder:
                     for _ in range(5):

@@ -33,7 +33,6 @@ NUMBER_OF_ALERTS = 3
 FIRST_ALERT_DELAY = 5
 ALERT_INTERVAL = 7
 STREAM_BITRATE = 5_000_000
-WARM_UP_TIME = 2
 MAXIMUM_OFFSET_ERROR = 0.15
 MAXIMUM_OFFSET_SPREAD = 0.25
 MINIMUM_NUMBER_OF_ALERTS = 2
@@ -72,7 +71,6 @@ class MicDelay(TestCase):
         stream_file = FILES_DIR / f"{self._file_name(delay)}.ts"
         recorder = Recorder(self.moblin, f"{self._file_name(delay)}.mp4")
         with FfmpegServer(url=srt_listener_url(), filename=stream_file):
-            time.sleep(WARM_UP_TIME)
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 2_000_000)
             with recorder:
