@@ -254,6 +254,7 @@ def base_settings(config: Config, remote_control_port: int):
         "showAllSettings": True,
         "debug": {"logLevel": "Debug"},
         "show": {"stream": True, "cpu": True, "microphone": True},
+        "chat": {"timestampColorEnabled": True},
     }
 
 

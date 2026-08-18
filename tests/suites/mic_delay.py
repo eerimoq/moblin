@@ -113,6 +113,7 @@ class MicDelay(TestCase):
                 "chat": {
                     "botEnabled": True,
                     "botCommandPermissions": {"alert": {"moderatorsEnabled": True}, "migrated": True},
+                    "timestampColorEnabled": True,
                 },
                 "mics": mics_settings(mics, delay),
             },
