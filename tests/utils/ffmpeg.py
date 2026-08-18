@@ -25,6 +25,11 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
 RE_SHOWINFO_PTS = re.compile(r"^\[Parsed_showinfo.*? pts_time:(\S+)", re.MULTILINE)
+BEEP_FREQUENCY = 3000
+BEEP_BANDWIDTH = 400
+BEEP_DURATION = 0.4
+BEEP_INTERVAL = 2
+BEEP_LEVEL_MARGIN = 12
 
 
 class FfmpegVideoCodec(StrEnum):
@@ -346,7 +351,8 @@ class FfmpegAudioTestStream(FfmpegAudioStream):
     def __init__(self, url, transport_format=TransportFormat.FLV):
         super().__init__(
             url,
-            "aevalsrc=exprs='if(lt(mod(t,1),0.015),0.8*sin(2*PI*1800*t)*exp(-80*mod(t,1)),0)':s=48000",
+            f"aevalsrc=exprs='if(lt(mod(t,{BEEP_INTERVAL}),{BEEP_DURATION}),"
+            f"0.5*sin(2*PI*{BEEP_FREQUENCY}*t),0)':s=48000",
             transport_format,
         )
 
@@ -719,6 +725,16 @@ def detect_audio_onsets(
         "-",
     ).stderr
     return [float(value) for kind, value in RE_SILENCE_DETECT.findall(output) if kind == "end"]
+
+
+def detect_beeps(path: Path) -> list[float]:
+    audio_filters = [f"bandpass=f={BEEP_FREQUENCY}:width_type=h:w={BEEP_BANDWIDTH}"]
+    max_volume = measure_max_volume(path, audio_filters)
+    if max_volume == -math.inf:
+        return []
+    onsets = detect_audio_onsets(path, max_volume - BEEP_LEVEL_MARGIN, 2 * BEEP_DURATION, audio_filters)
+    end_of_file = ffprobe_format(path).duration - BEEP_DURATION
+    return [onset for onset in onsets if onset < end_of_file]
 
 
 @dataclass
