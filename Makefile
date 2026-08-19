@@ -20,24 +20,6 @@ CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 PYLINT_ARGS = \
-	--disable missing-module-docstring \
-	--disable missing-class-docstring \
-	--disable missing-function-docstring \
-	--disable too-many-nested-blocks \
-	--disable too-many-locals \
-	--disable too-many-arguments \
-	--disable too-many-positional-arguments \
-	--disable too-many-instance-attributes \
-	--disable too-few-public-methods \
-	--disable too-many-public-methods \
-	--disable broad-exception-caught \
-	--disable broad-exception-raised \
-	--disable duplicate-code \
-	--disable line-too-long \
-	--disable consider-using-with \
-	--disable no-else-return \
-	--disable fixme \
-	--recursive yes \
 	$(PYTHON_DIRS)
 ISORT_ARGS = \
 	--force-single-line-imports \
