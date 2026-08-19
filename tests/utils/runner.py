@@ -36,9 +36,9 @@ def create_parser(description: str) -> argparse.ArgumentParser:
         help="Run all tests that requires a DJI camera.",
     )
     parser.add_argument(
-        "--skip-background-streaming",
+        "--interactive",
         action="store_true",
-        help="Skip all tests that requires background streaming.",
+        help="Run all tests that requires user interaction.",
     )
     return parser
 
@@ -67,7 +67,7 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
         arduino,
         args.moving_picture,
         args.dji_camera,
-        args.skip_background_streaming,
+        args.interactive,
     )
     with moblin:
         moblin.end()

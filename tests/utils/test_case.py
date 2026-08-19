@@ -69,6 +69,10 @@ class TestCase(systest.TestCase):
         if not self.moblin.has_dji_camera():
             raise systest.TestCaseSkippedError("No DJI camera.")
 
+    def skip_if_not_interactive(self):
+        if not self.moblin.is_interactive():
+            raise systest.TestCaseSkippedError("Not interactive.")
+
     def moving_picture_on(self):
         if self.moblin.arduino is None:
             return

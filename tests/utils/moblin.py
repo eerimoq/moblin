@@ -155,7 +155,7 @@ class Moblin:
         arduino: Arduino | None = None,
         moving_picture: bool = False,
         dji_camera: bool = False,
-        skip_background_streaming: bool = False,
+        interactive: bool = False,
         name: str | None = None,
         ip_address: str | None = None,
         remote_control_port: int | None = None,
@@ -191,12 +191,7 @@ class Moblin:
         self._tester_media_ip_address = self._tester_ip_address
         self._device_media_ip_address = self.ip_address
         self._capabilities = config.capabilities()
-        if skip_background_streaming:
-            self._capabilities = [
-                capability
-                for capability in self._capabilities
-                if capability != Capability.BACKGROUND_STREAMING
-            ]
+        self._interactive = interactive
         self._moving_picture = moving_picture
         self._dji_camera = dji_camera
         self._chat_message_id = 0
@@ -365,6 +360,9 @@ class Moblin:
 
     def has_dji_camera(self) -> bool:
         return self._dji_camera
+
+    def is_interactive(self) -> bool:
+        return self._interactive
 
     def wait_for_ingests(
         self,

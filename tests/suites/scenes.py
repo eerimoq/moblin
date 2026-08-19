@@ -261,6 +261,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
 
     def setup(self):
         self.skip_if_missing_capability(Capability.BACKGROUND_STREAMING)
+        self.skip_if_not_interactive()
         self.moblin.import_settings(
             overrides={
                 "graphicsImplementation": self.graphics_implementation,
