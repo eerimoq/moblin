@@ -1,5 +1,6 @@
 import bisect
 import logging
+import statistics
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,7 +40,7 @@ ALERT_SOUND_BANDWIDTH = 150
 ALERT_SOUND_BANDPASS_STAGES = 3
 ALERT_SOUND_DURATION = 0.4
 ALERT_SOUND_LEVEL_MARGIN = 12
-ALERT_SOUND_BAND_MARGIN = 10
+ALERT_SOUND_FLOOR_MARGIN = 30
 ALERT_SOUND_WINDOW = 0.1
 AUDIO_SEARCH_MARGIN = 10.0
 MAXIMUM_ALERT_OFFSET = 1.5
@@ -210,14 +211,16 @@ def _find_alert_sounds(path: Path, start_time: float) -> list[AlertSound]:
     levels = measure_audio_band_levels(
         path,
         _alert_sound_filters(),
-        [f"bandreject=f={ALERT_SOUND_FREQUENCY}:width_type=h:w={4 * ALERT_SOUND_BANDWIDTH}"],
         ALERT_SOUND_WINDOW,
         copy_timestamps=True,
     )
+    if len(levels) == 0:
+        return []
+    threshold = statistics.median(level.level for level in levels) + ALERT_SOUND_FLOOR_MARGIN
     alert_sounds = []
     run: list[AudioBandLevel] = []
     for level in levels:
-        if level.in_band - level.out_of_band > ALERT_SOUND_BAND_MARGIN:
+        if level.level > threshold:
             run.append(level)
             continue
         alert_sounds += _alert_sound(run, start_time)
@@ -228,7 +231,7 @@ def _find_alert_sounds(path: Path, start_time: float) -> list[AlertSound]:
 def _alert_sound(run: list[AudioBandLevel], start_time: float) -> list[AlertSound]:
     if len(run) * ALERT_SOUND_WINDOW < ALERT_SOUND_DURATION / 2:
         return []
-    return [AlertSound(run[0].time - start_time, max(level.in_band for level in run))]
+    return [AlertSound(run[0].time - start_time, max(level.level for level in run))]
 
 
 def _refine_alert_sound(path: Path, alert_sound: AlertSound, start_time: float) -> float | None:

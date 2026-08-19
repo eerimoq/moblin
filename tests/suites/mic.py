@@ -31,8 +31,8 @@ ALERT_WIDGET_ID = uuid()
 ALERT_WIDGET_X = 40.0
 ALERT_WIDGET_Y = 40.0
 STREAM_BITRATE = 5_000_000
-MAXIMUM_OFFSET_SPREAD = 0.25
-FIRST_ALERT_DELAY = 5
+MAXIMUM_OFFSET_SPREAD = 0.15
+ALERT_DELAY = 5
 REFERENCE_DELAY = 0.0
 DELAYS = [REFERENCE_DELAY, 0.5, -0.5]
 NUMBER_OF_ALERTS = 3
@@ -133,7 +133,7 @@ class MicDelay(TestCase):
 
     def _trigger_alerts(self):
         self._alert_times = []
-        time.sleep(FIRST_ALERT_DELAY)
+        time.sleep(ALERT_DELAY)
         for _ in range(NUMBER_OF_ALERTS):
             self.moblin.send_chat_message(alert_chat_message())
             self._alert_times.append(time.monotonic())
@@ -191,13 +191,13 @@ class MicSwitch(TestCase):
         self._mics = self.moblin.get_mics()[:NUMBER_OF_MICS]
         self.assert_equal(len(self._mics), NUMBER_OF_MICS)
         self.moblin.set_scene(SceneName.FRONT)
+        self.moblin.set_main_mic()
         stream_file = FILES_DIR / f"{self.name}.ts"
         recorder = Recorder(self.moblin, f"{self.name}.mp4")
         with FfmpegServer(url=srt_listener_url(), filename=stream_file):
             self.moblin.go_live()
             self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 2_000_000)
             with recorder:
-                time.sleep(FIRST_ALERT_DELAY)
                 self._trigger_alert()
                 self._switch_mics()
                 self._trigger_alert()
@@ -215,6 +215,8 @@ class MicSwitch(TestCase):
         self.assert_equal(len(set(selected)), NUMBER_OF_MICS)
 
     def _trigger_alert(self):
+        self.moblin.set_main_mic()
+        time.sleep(ALERT_DELAY)
         self.moblin.send_chat_message(alert_chat_message())
         self._alert_times.append(time.monotonic())
         time.sleep(ALERT_DURATION)

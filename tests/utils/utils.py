@@ -36,11 +36,11 @@ def wait_until(
 
 
 def manual_validation(logger: Logger, message: str):
-    logger.info("🧪🧪🧪 Manual validation: %s 🧪🧪🧪", message)
+    logger.info("🧪: %s", message)
 
 
 def manual_requirement(logger: Logger, message: str):
-    logger.info("📋📋📋 Manual requirement: %s 📋📋📋", message)
+    logger.info("👷‍♂️: %s", message)
 
 
 def manual_volume_requirement(logger: Logger):
@@ -48,7 +48,7 @@ def manual_volume_requirement(logger: Logger):
 
 
 def manual_confirmation(message: str):
-    input(f"🧑‍🔧🧑‍🔧🧑‍🔧 {message} Press ENTER to continue. 🧑‍🔧🧑‍🔧🧑‍🔧")
+    input(f"🧑‍🔧: {message} Press ENTER to continue.")
 
 
 @dataclass

@@ -230,6 +230,9 @@ class Moblin:
     def set_mic(self, name):
         self._request({"setMic": {"id": self._get_settings_id("mics", name)}})
 
+    def set_main_mic(self):
+        self.set_mic(self.get_mics()[0]['name'])
+
     def set_talkback_mic(self, name):
         self._request({"setTalkbackMic": {"id": self._get_settings_id("mics", name)}})
 

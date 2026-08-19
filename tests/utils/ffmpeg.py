@@ -724,14 +724,12 @@ def _audio_filter_chain(audio_filters: list[str] | None, *extra: str) -> str:
 @dataclass
 class AudioBandLevel:
     time: float
-    in_band: float
-    out_of_band: float
+    level: float
 
 
 def measure_audio_band_levels(
     path: Path,
-    in_band_filters: list[str],
-    out_of_band_filters: list[str],
+    filters: list[str],
     window: float,
     copy_timestamps: bool = False,
 ) -> list[AudioBandLevel]:
@@ -741,23 +739,20 @@ def measure_audio_band_levels(
         str(path),
         "-vn",
         "-af",
-        ";".join(
+        ",".join(
             [
-                f"aformat=channel_layouts=mono:sample_rates={AUDIO_BAND_SAMPLE_RATE},"
-                f"asetnsamples=n={round(window * AUDIO_BAND_SAMPLE_RATE)},asplit[a][b]",
-                f"[a]{','.join(in_band_filters)}[in]",
-                f"[b]{','.join(out_of_band_filters)}[out]",
-                "[in][out]amerge=inputs=2,"
-                "astats=metadata=1:reset=1:measure_perchannel=RMS_level:measure_overall=none,"
-                "ametadata=print:key=lavfi.astats.1.RMS_level,"
-                "ametadata=print:key=lavfi.astats.2.RMS_level",
+                f"aformat=channel_layouts=mono:sample_rates={AUDIO_BAND_SAMPLE_RATE}",
+                f"asetnsamples=n={round(window * AUDIO_BAND_SAMPLE_RATE)}",
+                *filters,
+                "astats=metadata=1:reset=1:measure_perchannel=RMS_level:measure_overall=none",
+                "ametadata=print:key=lavfi.astats.1.RMS_level",
             ]
         ),
         "-f",
         "null",
         "-",
     ).stderr
-    levels: dict[float, dict[str, float]] = {}
+    levels: dict[float, float] = {}
     window_time = 0.0
     for line in output.splitlines():
         match = RE_METADATA_TIME.match(line)
@@ -766,12 +761,8 @@ def measure_audio_band_levels(
             continue
         match = RE_ASTATS_RMS_LEVEL.match(line)
         if match is not None:
-            levels.setdefault(window_time, {})[match.group(1)] = _parse_level(match.group(2))
-    return [
-        AudioBandLevel(window_time, values["1"], values["2"])
-        for window_time, values in sorted(levels.items())
-        if len(values) == 2
-    ]
+            levels[window_time] = _parse_level(match.group(2))
+    return [AudioBandLevel(window_time, level) for window_time, level in sorted(levels.items())]
 
 
 def _parse_level(value: str) -> float:
