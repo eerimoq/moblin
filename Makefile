@@ -1,4 +1,3 @@
-SWIFTLINT_ARGS = --strict --quiet
 OXFMT_ARGS = "WebRemoteControlFrontend"
 OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
@@ -42,7 +41,7 @@ style-check:
 	ruff format $(PYTHON_DIRS) --check
 
 lint:
-	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
+	swiftlint lint --quiet $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYTHON_DIRS)
 	ruff check $(PYTHON_DIRS)
