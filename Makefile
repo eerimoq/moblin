@@ -22,8 +22,6 @@ CODESPELL_ARGS = \
 ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
-MYPY_ARGS = \
-	$(PYTHON_DIRS)
 RUFF_CHECK_ARGS = \
 	--isolated \
 	--select E9,F \
@@ -61,7 +59,7 @@ lint:
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYTHON_DIRS)
 	ruff check $(RUFF_CHECK_ARGS)
-	mypy $(MYPY_ARGS)
+	mypy $(PYTHON_DIRS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:
