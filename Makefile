@@ -1,15 +1,17 @@
-PYTHON_DIRS = \
-	tests \
-	utils
-WEB_DIRS = WebRemoteControlFrontend
+PYTHON_DIRS += tests
+PYTHON_DIRS += utils
 
-CODE_DIRS += "Common"
-CODE_DIRS += "Moblin"
-CODE_DIRS += "Moblin Watch"
-CODE_DIRS += "Moblin Widget"
-CODE_DIRS += "Moblin Live Activity"
-CODE_DIRS += "Moblin Screen Recording"
-CODE_DIRS += "MoblinTests"
+WEB_DIRS += WebRemoteControlFrontend
+
+SWIFT_DIRS += "Common"
+SWIFT_DIRS += "Moblin"
+SWIFT_DIRS += "Moblin Watch"
+SWIFT_DIRS += "Moblin Widget"
+SWIFT_DIRS += "Moblin Live Activity"
+SWIFT_DIRS += "Moblin Screen Recording"
+SWIFT_DIRS += "MoblinTests"
+
+CODE_DIRS += $(SWIFT_DIRS)
 CODE_DIRS += $(WEB_DIRS)
 CODE_DIRS += $(PYTHON_DIRS)
 
@@ -20,19 +22,19 @@ SHELL = /usr/bin/env bash
 default:
 
 style:
-	swiftformat $(CODE_DIRS)
+	swiftformat $(SWIFT_DIRS)
 	oxfmt $(WEB_DIRS)
 	isort $(PYTHON_DIRS)
 	ruff format $(PYTHON_DIRS)
 
 style-check:
-	swiftformat $(CODE_DIRS) --lint
+	swiftformat $(SWIFT_DIRS) --lint
 	oxfmt $(WEB_DIRS) --check
 	isort $(PYTHON_DIRS) --check
 	ruff format $(PYTHON_DIRS) --check
 
 lint:
-	swiftlint lint --quiet $(CODE_DIRS)
+	swiftlint lint --quiet $(SWIFT_DIRS)
 	oxlint $(WEB_DIRS)
 	pylint $(PYTHON_DIRS)
 	ruff check $(PYTHON_DIRS)
