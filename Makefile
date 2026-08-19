@@ -6,9 +6,6 @@ PYTHON_DIRS = \
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--disable-update-check
-CODESPELL_ARGS = \
-	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
-	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
@@ -55,7 +52,7 @@ periphery:
 	periphery scan $(PERIPHERY_ARGS)
 
 spell-check:
-	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
+	codespell $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
 	python -m tests.test $(TEST_ARGS)
