@@ -15,3 +15,4 @@ xdg-base-dirs
 pyleetspeak==0.1.0
 pyphen
 tqdm
+humanfriendly

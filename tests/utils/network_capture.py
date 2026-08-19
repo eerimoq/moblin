@@ -9,10 +9,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from humanfriendly import format_size
+from humanfriendly import format_timespan
+
 from .ffmpeg import file_size
-from .monitor import format_duration
-from .monitor import format_gigabytes
-from .monitor import format_short_duration
 from .monitor import log_table
 from .process import ManagedProcess
 from .traffic_shaper import PROTOCOL_NUMBERS
@@ -70,13 +70,13 @@ class CaptureReport:
     def log(self):
         log_table(
             "Captured bitrates",
-            ["Average Mbps", "Maximum Mbps", "GB"],
+            ["Average Mbps", "Maximum Mbps", "Total"],
             [
                 [
                     series.name,
                     f"{series.average_mbps(self.duration):.1f}",
                     f"{series.maximum_mbps():.1f}",
-                    format_gigabytes(series.total_bytes),
+                    format_size(series.total_bytes),
                 ]
                 for series in self.series
             ],
@@ -85,7 +85,7 @@ class CaptureReport:
     def write_html(self, output: Path):
         data = {
             "startTime": datetime.fromtimestamp(self.start_time).strftime("%Y-%m-%d %H:%M:%S"),
-            "duration": format_duration(self.duration),
+            "duration": format_timespan(round(self.duration)),
             "files": ", ".join(file.name for file in self.files),
             "totalSlot": self.total_slot,
             "settings": [{"name": name, "value": value} for name, value in self.settings.items()],
@@ -190,7 +190,7 @@ class NetworkCapture:
             process.stop()
         self._processes = []
         for file in self.files:
-            LOGGER.info("Captured %.1f MB of packets to %s.", file_size(file) / 1e6, file)
+            LOGGER.info("Captured %s of packets to %s.", format_size(file_size(file)), file)
 
     def report(self):
         LOGGER.debug("Analyzing the network capture...")
@@ -202,7 +202,10 @@ class NetworkCapture:
         report.log()
         file = self._directory / f"{self._name}-bitrates.html"
         report.write_html(file)
-        LOGGER.info("Analyzed the network capture in %s.", format_short_duration(time.monotonic() - started))
+        LOGGER.info(
+            "Analyzed the network capture in %s.",
+            format_timespan(round(time.monotonic() - started), max_units=2),
+        )
         LOGGER.info("Open the bitrate graphs with 'open %s'.", file)
 
     def _start(self, interface: str):

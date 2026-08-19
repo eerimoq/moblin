@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
+from humanfriendly import format_size
+
 from ..utils.audio_video_sync import AlertSyncReport
 from ..utils.audio_video_sync import alert_chat_message
 from ..utils.audio_video_sync import alert_media_files
@@ -333,9 +335,9 @@ class StabilityIngestsOneStream(TestCase):
             LOGGER.warning("Failed to download the recording. %s", error)
             return None
         LOGGER.info(
-            "Downloaded the recording to %s (%.1f GB).",
+            "Downloaded the recording to %s (%s).",
             recording,
-            recording.stat().st_size / 1e9,
+            format_size(recording.stat().st_size),
         )
         return recording
 

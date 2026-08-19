@@ -4,6 +4,9 @@ from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field
 
+from humanfriendly import format_size
+from humanfriendly import format_timespan
+
 from .ffmpeg import StreamRecorder
 from .moblin import BufferedBuffers
 from .moblin import Moblin
@@ -83,8 +86,8 @@ class Deviation:
             return ["0", "-", "-"]
         return [
             str(self.count),
-            format_short_duration(self.total_duration),
-            format_short_duration(self.longest_duration),
+            format_timespan(round(self.total_duration), max_units=2),
+            format_timespan(round(self.longest_duration), max_units=2),
         ]
 
     def _stop(self, now: float) -> float:
@@ -180,7 +183,7 @@ class ShaperMonitor:
                     [
                         f"{stream.name} to {side}",
                         *self._bitrates[(stream.name, side)].columns(1e6),
-                        format_gigabytes(traffic.total_bytes),
+                        format_size(traffic.total_bytes),
                     ]
                 )
         return rows
@@ -344,8 +347,8 @@ class Monitor:
         LOGGER.info(
             "Status: %s. Monitored for %s. Remaining %s.",
             "Live" if sample.is_live else "Not live",
-            format_duration(sample.elapsed),
-            format_duration(max(self._duration - sample.elapsed, 0)),
+            format_timespan(round(sample.elapsed), max_units=2),
+            format_timespan(round(max(self._duration - sample.elapsed, 0)), max_units=2),
         )
         LOGGER.info(
             "  Stream: %s Mbps (%s Mbps received). Ingests: %s Mbps (%d).",
@@ -400,7 +403,7 @@ class Monitor:
         log_heading("Stability report")
         log_items(
             [
-                ("Duration", format_duration(self.elapsed())),
+                ("Duration", format_timespan(round(self.elapsed()))),
                 ("Traffic shaping", self._traffic_shaping),
                 ("Stream reconnects", str(counters.stream_reconnects)),
                 ("Failed status requests", str(counters.failed_status_requests)),
@@ -409,13 +412,13 @@ class Monitor:
         )
         log_table(
             "Transferred",
-            ["GB"],
+            ["Total"],
             [
-                ["Stream", format_gigabytes(last.stream_total_bytes if last else None)],
-                ["Ingests", format_gigabytes(last.ingests_total_bytes if last else None)],
+                ["Stream", format_total_bytes(last.stream_total_bytes if last else None)],
+                ["Ingests", format_total_bytes(last.ingests_total_bytes if last else None)],
                 [
                     "Recorded stream",
-                    format_gigabytes(last.received_total_bytes if last and self._stream_recorder else None),
+                    format_total_bytes(last.received_total_bytes if last and self._stream_recorder else None),
                 ],
             ],
         )
@@ -438,7 +441,7 @@ class Monitor:
             )
             log_table(
                 "Shaped streams in Mbps",
-                ["Minimum", "Average", "Maximum", "GB"],
+                ["Minimum", "Average", "Maximum", "Total"],
                 self._shaper_monitor.bitrate_rows(),
             )
         log_table("Ingest sources", ["Restarts"], count_rows(counters.source_restarts))
@@ -449,7 +452,7 @@ class Monitor:
             "Thermal states",
             ["Duration"],
             [
-                [name or "-", format_short_duration(seconds)]
+                [name or "-", format_timespan(round(seconds), max_units=2)]
                 for name, seconds in sorted(counters.thermal_states.items())
             ],
         )
@@ -673,24 +676,10 @@ def format_mbps(bitrate: float | None) -> str:
     return format_value(bitrate, 1e6, 1)
 
 
-def format_gigabytes(total_bytes: float | None) -> str:
-    return format_value(total_bytes, 1e9, 1)
-
-
-def format_duration(seconds: float) -> str:
-    hours, seconds = divmod(int(seconds), 3600)
-    minutes, seconds = divmod(seconds, 60)
-    return f"{hours}h {minutes:02d}m {seconds:02d}s"
-
-
-def format_short_duration(seconds: float) -> str:
-    hours, remainder = divmod(int(seconds), 3600)
-    minutes, remainder = divmod(remainder, 60)
-    if hours > 0:
-        return f"{hours}h {minutes:02d}m"
-    if minutes > 0:
-        return f"{minutes}m {remainder:02d}s"
-    return f"{remainder}s"
+def format_total_bytes(total_bytes: float | None) -> str:
+    if total_bytes is None:
+        return "-"
+    return format_size(total_bytes)
 
 
 def format_counts(counts: dict[str, float]) -> str:
