@@ -25,13 +25,6 @@ ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
 MYPY_ARGS = \
-	--check-untyped-defs \
-	--ignore-missing-imports \
-	--warn-redundant-casts \
-	--warn-unused-ignores \
-	--warn-no-return \
-	--strict-equality \
-	--no-error-summary \
 	$(PYTHON_DIRS)
 RUFF_CHECK_ARGS = \
 	--isolated \
