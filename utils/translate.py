@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from deep_translator import GoogleTranslator
-from pyleetspeak.LeetSpeaker import LeetSpeaker
+from pyleetspeak2.LeetSpeaker import LeetSpeaker
 
 LANGUAGES = [
     ("sv", "sv"),

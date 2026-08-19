@@ -12,7 +12,5 @@ playwright
 simba_soam
 irwin
 xdg-base-dirs
-pyleetspeak==0.1.0
-pyphen
-tqdm
+pyleetspeak2
 humanfriendly
