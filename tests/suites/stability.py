@@ -465,6 +465,7 @@ class StabilityIngestsOneStream(TestCase):
             number_of_ingests=len(self._ingests),
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
+            duration=self._duration,
             shaper=self._shaper,
         )
 

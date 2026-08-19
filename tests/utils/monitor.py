@@ -233,6 +233,7 @@ class Monitor:
         number_of_ingests: int,
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
+        duration: float,
         shaper: TrafficShaper | None,
     ):
         self._moblin = moblin
@@ -240,6 +241,7 @@ class Monitor:
         self._number_of_ingests = number_of_ingests
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
+        self._duration = duration
         self._traffic_shaping = "none" if shaper is None else shaper.description()
         self._shaper_monitor = None if shaper is None else ShaperMonitor(shaper)
         self._start_time = time.monotonic()
@@ -340,9 +342,10 @@ class Monitor:
         if sample is None:
             return
         LOGGER.info(
-            "Status: %s. Monitored for %s.",
+            "Status: %s. Monitored for %s. Remaining %s.",
             "Live" if sample.is_live else "Not live",
             format_duration(sample.elapsed),
+            format_duration(max(self._duration - sample.elapsed, 0)),
         )
         LOGGER.info(
             "  Stream: %s Mbps (%s Mbps received). Ingests: %s Mbps (%d).",
