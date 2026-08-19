@@ -1,9 +1,3 @@
-SWIFTFORMAT_ARGS = \
-	--maxwidth 110 \
-	--swiftversion 5.9 \
-	--exclude Moblin/Integrations/Tesla/Protobuf \
-	--disable docComments \
-	--ifdef no-indent
 SWIFTLINT_ARGS = --strict --quiet
 OXFMT_ARGS = "WebRemoteControlFrontend"
 OXLINT_ARGS = "WebRemoteControlFrontend"
@@ -36,13 +30,13 @@ SHELL = /usr/bin/env bash
 default:
 
 style:
-	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
+	swiftformat $(CODE_DIRS)
 	oxfmt $(OXFMT_ARGS)
 	isort $(ISORT_ARGS)
 	ruff format $(PYTHON_DIRS)
 
 style-check:
-	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
+	swiftformat $(CODE_DIRS) --lint
 	oxfmt $(OXFMT_ARGS) --check
 	isort $(ISORT_ARGS) --check
 	ruff format $(PYTHON_DIRS) --check
