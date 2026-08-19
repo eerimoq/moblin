@@ -10,9 +10,6 @@ OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
-RUFF_FORMAT_ARGS = \
-	--line-length 110 \
-	$(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--disable-update-check
@@ -21,10 +18,6 @@ CODESPELL_ARGS = \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
 ISORT_ARGS = \
 	--force-single-line-imports \
-	$(PYTHON_DIRS)
-RUFF_CHECK_ARGS = \
-	--isolated \
-	--select E9,F \
 	$(PYTHON_DIRS)
 
 CODE_DIRS += "Common"
@@ -46,19 +39,19 @@ style:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
 	isort $(ISORT_ARGS)
-	ruff format $(RUFF_FORMAT_ARGS)
+	ruff format $(PYTHON_DIRS)
 
 style-check:
 	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
 	isort $(ISORT_ARGS) --check
-	ruff format $(RUFF_FORMAT_ARGS) --check
+	ruff format $(PYTHON_DIRS) --check
 
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYTHON_DIRS)
-	ruff check $(RUFF_CHECK_ARGS)
+	ruff check $(PYTHON_DIRS)
 	mypy $(PYTHON_DIRS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
 
