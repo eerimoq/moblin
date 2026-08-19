@@ -3,9 +3,6 @@ OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
-PERIPHERY_ARGS = \
-	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
-	--disable-update-check
 ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
@@ -49,7 +46,7 @@ lint-fix:
 	python utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
-	periphery scan $(PERIPHERY_ARGS)
+	periphery scan
 
 spell-check:
 	codespell $(CODE_DIRS) $(PYTHON_DIRS)

@@ -1,3 +1,6 @@
 project: Moblin.xcodeproj
 schemes:
 - Moblin
+index_exclude:
+- Moblin/Integrations/Tesla/Protobuf/*
+disable_update_check: true
