@@ -26,6 +26,9 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-y"]
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
 RE_SHOWINFO_PTS = re.compile(r"^\[Parsed_showinfo.*? pts_time:(\S+)", re.MULTILINE)
+RE_METADATA_TIME = re.compile(r"^\[Parsed_ametadata.*? pts_time:(\S+)", re.MULTILINE)
+RE_ASTATS_RMS_LEVEL = re.compile(r"^\[Parsed_ametadata.*? lavfi\.astats\.(\d)\.RMS_level=(\S+)", re.MULTILINE)
+AUDIO_BAND_SAMPLE_RATE = 16000
 BEEP_FREQUENCY = 3000
 BEEP_BANDWIDTH = 400
 BEEP_DURATION = 0.4
@@ -718,15 +721,76 @@ def _audio_filter_chain(audio_filters: list[str] | None, *extra: str) -> str:
     return ",".join([*(audio_filters or []), *extra])
 
 
+@dataclass
+class AudioBandLevel:
+    time: float
+    in_band: float
+    out_of_band: float
+
+
+def measure_audio_band_levels(
+    path: Path,
+    in_band_filters: list[str],
+    out_of_band_filters: list[str],
+    window: float,
+    copy_timestamps: bool = False,
+) -> list[AudioBandLevel]:
+    output = ffmpeg_run(
+        *(["-copyts"] if copy_timestamps else []),
+        "-i",
+        str(path),
+        "-vn",
+        "-af",
+        ";".join(
+            [
+                f"aformat=channel_layouts=mono:sample_rates={AUDIO_BAND_SAMPLE_RATE},"
+                f"asetnsamples=n={round(window * AUDIO_BAND_SAMPLE_RATE)},asplit[a][b]",
+                f"[a]{','.join(in_band_filters)}[in]",
+                f"[b]{','.join(out_of_band_filters)}[out]",
+                "[in][out]amerge=inputs=2,"
+                "astats=metadata=1:reset=1:measure_perchannel=RMS_level:measure_overall=none,"
+                "ametadata=print:key=lavfi.astats.1.RMS_level,"
+                "ametadata=print:key=lavfi.astats.2.RMS_level",
+            ]
+        ),
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    levels: dict[float, dict[str, float]] = {}
+    window_time = 0.0
+    for line in output.splitlines():
+        match = RE_METADATA_TIME.match(line)
+        if match is not None:
+            window_time = float(match.group(1))
+            continue
+        match = RE_ASTATS_RMS_LEVEL.match(line)
+        if match is not None:
+            levels.setdefault(window_time, {})[match.group(1)] = _parse_level(match.group(2))
+    return [
+        AudioBandLevel(window_time, values["1"], values["2"])
+        for window_time, values in sorted(levels.items())
+        if len(values) == 2
+    ]
+
+
+def _parse_level(value: str) -> float:
+    return -120.0 if value.endswith("inf") else float(value)
+
+
 def detect_audio_onsets(
     path: Path,
     noise_db: float,
     minimum_silence: float,
     audio_filters: list[str] | None = None,
     copy_timestamps: bool = False,
+    start: float | None = None,
+    duration: float | None = None,
 ) -> list[float]:
     output = ffmpeg_run(
         *(["-copyts"] if copy_timestamps else []),
+        *([] if start is None else ["-ss", str(start)]),
+        *([] if duration is None else ["-t", str(duration)]),
         "-i",
         str(path),
         "-vn",

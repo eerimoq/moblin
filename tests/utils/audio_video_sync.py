@@ -4,11 +4,12 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
+from .ffmpeg import AudioBandLevel
 from .ffmpeg import detect_audio_onsets
 from .ffmpeg import ffmpeg_run
 from .ffmpeg import ffprobe_format
 from .ffmpeg import ffprobe_video_size
-from .ffmpeg import measure_max_volume
+from .ffmpeg import measure_audio_band_levels
 from .ffmpeg import read_video_region_colors
 from .generate_device_settings import WidgetType
 from .generate_device_settings import uuid
@@ -34,9 +35,12 @@ ALERT_QUADRANT_COLORS = [
 ]
 ALERT_COLOR_TOLERANCE = 60
 ALERT_SOUND_FREQUENCY = 3000
-ALERT_SOUND_BANDWIDTH = 400
+ALERT_SOUND_BANDWIDTH = 150
+ALERT_SOUND_BANDPASS_STAGES = 3
 ALERT_SOUND_DURATION = 0.4
 ALERT_SOUND_LEVEL_MARGIN = 12
+ALERT_SOUND_BAND_MARGIN = 10
+ALERT_SOUND_WINDOW = 0.1
 AUDIO_SEARCH_MARGIN = 10.0
 MAXIMUM_ALERT_OFFSET = 1.5
 VIDEO_SEARCH_MARGIN = 3.0
@@ -179,27 +183,76 @@ def measure_alert_synchronization(
 
 
 def _find_audio_onsets(path: Path, trigger_times: list[float]) -> list[float | None]:
-    audio_filters = [f"bandpass=f={ALERT_SOUND_FREQUENCY}:width_type=h:w={ALERT_SOUND_BANDWIDTH}"]
-    max_volume = measure_max_volume(path, audio_filters)
-    if max_volume == float("-inf"):
-        return [None] * len(trigger_times)
     probe = ffprobe_format(path)
-    onsets = detect_audio_onsets(
-        path,
-        max_volume - ALERT_SOUND_LEVEL_MARGIN,
-        2 * ALERT_SOUND_DURATION,
-        audio_filters,
-        copy_timestamps=True,
-    )
-    onsets = [
-        onset - probe.start_time
-        for onset in sorted(onsets)
-        if onset - probe.start_time < probe.duration - ALERT_SOUND_DURATION
-    ]
+    onsets = []
+    for alert_sound in _find_alert_sounds(path, probe.start_time):
+        if alert_sound.time > probe.duration - ALERT_SOUND_DURATION:
+            continue
+        onset = _refine_alert_sound(path, alert_sound, probe.start_time)
+        if onset is not None:
+            onsets.append(onset)
     return _match_onsets(onsets, trigger_times)
 
 
+@dataclass
+class AlertSound:
+    time: float
+    level: float
+
+
+def _alert_sound_filters() -> list[str]:
+    return ALERT_SOUND_BANDPASS_STAGES * [
+        f"bandpass=f={ALERT_SOUND_FREQUENCY}:width_type=h:w={ALERT_SOUND_BANDWIDTH}"
+    ]
+
+
+def _find_alert_sounds(path: Path, start_time: float) -> list[AlertSound]:
+    levels = measure_audio_band_levels(
+        path,
+        _alert_sound_filters(),
+        [f"bandreject=f={ALERT_SOUND_FREQUENCY}:width_type=h:w={4 * ALERT_SOUND_BANDWIDTH}"],
+        ALERT_SOUND_WINDOW,
+        copy_timestamps=True,
+    )
+    alert_sounds = []
+    run: list[AudioBandLevel] = []
+    for level in levels:
+        if level.in_band - level.out_of_band > ALERT_SOUND_BAND_MARGIN:
+            run.append(level)
+            continue
+        alert_sounds += _alert_sound(run, start_time)
+        run = []
+    return alert_sounds + _alert_sound(run, start_time)
+
+
+def _alert_sound(run: list[AudioBandLevel], start_time: float) -> list[AlertSound]:
+    if len(run) * ALERT_SOUND_WINDOW < ALERT_SOUND_DURATION / 2:
+        return []
+    return [AlertSound(run[0].time - start_time, max(level.in_band for level in run))]
+
+
+def _refine_alert_sound(path: Path, alert_sound: AlertSound, start_time: float) -> float | None:
+    onsets = detect_audio_onsets(
+        path,
+        alert_sound.level - ALERT_SOUND_LEVEL_MARGIN,
+        ALERT_SOUND_DURATION,
+        _alert_sound_filters(),
+        copy_timestamps=True,
+        start=max(alert_sound.time - 1, 0),
+        duration=1 + 2 * ALERT_SOUND_DURATION,
+    )
+    onsets = [
+        onset - start_time
+        for onset in sorted(onsets)
+        if abs(onset - start_time - alert_sound.time) < ALERT_SOUND_WINDOW + ALERT_SOUND_DURATION / 2
+    ]
+    if len(onsets) == 0:
+        return None
+    return onsets[0]
+
+
 def _match_onsets(onsets: list[float], trigger_times: list[float]) -> list[float | None]:
+    onsets = sorted(onsets)
     best: list[float | None] = [None] * len(trigger_times)
     best_score = (0, 0.0)
     for onset in onsets:

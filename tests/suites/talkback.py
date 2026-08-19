@@ -34,16 +34,21 @@ class TalkbackTestCase(TestCase):
         )
         time.sleep(1)
 
-    def play_beeps(self, url: str, transport_format=TransportFormat.FLV):
+    def play_beeps(
+        self,
+        url: str,
+        transport_format=TransportFormat.FLV,
+        recording_duration=RECORDING_DURATION,
+    ):
         manual_volume_requirement(LOGGER)
         with FfmpegAudioTestStream(url=url, transport_format=transport_format):
             time.sleep(BEEP_INTERVAL)
-            recording = self.moblin.record(RECORDING_DURATION, f"{self.name}.mp4")
+            recording = self.moblin.record(recording_duration, f"{self.name}.mp4")
         self.assert_beeps(recording)
 
     def assert_beeps(self, recording: Path):
         beeps = detect_beeps(recording)
-        LOGGER.info(
+        LOGGER.debug(
             "Found %s beeps in %s at %s.",
             len(beeps),
             recording,
@@ -118,7 +123,11 @@ class TalkbackSrtClient(TalkbackTestCase):
         )
 
     def run(self):
-        self.play_beeps(srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT), TransportFormat.MPEGTS)
+        self.play_beeps(
+            srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
+            TransportFormat.MPEGTS,
+            RECORDING_DURATION + 5,
+        )
 
 
 def tests(moblin: Moblin):

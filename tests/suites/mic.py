@@ -106,7 +106,7 @@ class MicDelay(TestCase):
     def _measure_offsets(self, delay: float) -> Offsets:
         self._import_settings(delay)
         self.moblin.set_scene(SceneName.FRONT)
-        LOGGER.debug("Recording and streaming with mic '%s' delayed %.2f s.", self.moblin.get_mic(), delay)
+        LOGGER.info("Recording and streaming with mic '%s' delayed %.2f s.", self.moblin.get_mic(), delay)
         stream_file = FILES_DIR / f"{self._file_name(delay)}.ts"
         recorder = Recorder(self.moblin, f"{self._file_name(delay)}.mp4")
         with FfmpegServer(url=srt_listener_url(), filename=stream_file):
