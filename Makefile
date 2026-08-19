@@ -19,8 +19,6 @@ PERIPHERY_ARGS = \
 CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
-PYLINT_ARGS = \
-	$(PYTHON_DIRS)
 ISORT_ARGS = \
 	--force-single-line-imports \
 	$(PYTHON_DIRS)
@@ -61,7 +59,7 @@ style-check:
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
-	pylint $(PYLINT_ARGS)
+	pylint $(PYTHON_DIRS)
 	ruff check $(RUFF_CHECK_ARGS)
 	mypy $(MYPY_ARGS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
