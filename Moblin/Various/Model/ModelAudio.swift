@@ -56,6 +56,11 @@ extension Model {
         }
     }
 
+    func setupAudioAfterSettingsImport() {
+        mic.current = noMic
+        setupAudio()
+    }
+
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()

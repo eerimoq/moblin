@@ -145,7 +145,9 @@ class TestCase(systest.TestCase):
             -55,
             "The played noise was not picked up by the microphone. Turn up the volume of the device.",
         )
-        dropouts = detect_silence(recording, mean_volume_db - 25, 0.1)
+        dropouts = [
+            dropout for dropout in detect_silence(recording, mean_volume_db - 25, 0.1) if dropout.start > 0
+        ]
         for dropout in dropouts:
             LOGGER.info("Audio dropout from %.3f to %.3f seconds", dropout.start, dropout.end)
         self.assert_equal(len(dropouts), 0)

@@ -79,6 +79,7 @@ extension Model {
         updateMicsList()
         reloadStream()
         resetSelectedScene()
+        setupAudioAfterSettingsImport()
         updateQuickButtonStates()
         reloadDjiDevicesAfterSettingsImport()
         makeToast(title: String(localized: "Settings imported"))
