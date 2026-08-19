@@ -3,9 +3,6 @@ OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
-ISORT_ARGS = \
-	--force-single-line-imports \
-	$(PYTHON_DIRS)
 
 CODE_DIRS += "Common"
 CODE_DIRS += "Moblin"
@@ -25,13 +22,13 @@ default:
 style:
 	swiftformat $(CODE_DIRS)
 	oxfmt $(OXFMT_ARGS)
-	isort $(ISORT_ARGS)
+	isort $(PYTHON_DIRS)
 	ruff format $(PYTHON_DIRS)
 
 style-check:
 	swiftformat $(CODE_DIRS) --lint
 	oxfmt $(OXFMT_ARGS) --check
-	isort $(ISORT_ARGS) --check
+	isort $(PYTHON_DIRS) --check
 	ruff format $(PYTHON_DIRS) --check
 
 lint:
