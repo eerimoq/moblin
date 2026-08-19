@@ -39,6 +39,14 @@ def manual_validation(logger: Logger, message: str):
     logger.info("🧪🧪🧪 Manual validation: %s 🧪🧪🧪", message)
 
 
+def manual_requirement(logger: Logger, message: str):
+    logger.info("📋📋📋 Manual requirement: %s 📋📋📋", message)
+
+
+def manual_volume_requirement(logger: Logger):
+    manual_requirement(logger, "Keep the volume turned up so the microphones pick up played sounds")
+
+
 def manual_confirmation(message: str):
     input(f"🧑‍🔧🧑‍🔧🧑‍🔧 {message} Press ENTER to continue. 🧑‍🔧🧑‍🔧🧑‍🔧")
 

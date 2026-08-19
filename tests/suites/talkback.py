@@ -14,7 +14,7 @@ from ..utils.generate_device_settings import mic_id
 from ..utils.generate_device_settings import uuid
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
-from ..utils.utils import manual_validation
+from ..utils.utils import manual_volume_requirement
 
 LOGGER = logging.getLogger(__name__)
 RTMP_TALKBACK_STREAM_ID = uuid()
@@ -35,9 +35,8 @@ class TalkbackTestCase(TestCase):
         time.sleep(1)
 
     def play_beeps(self, url: str, transport_format=TransportFormat.FLV):
-        manual_validation(LOGGER, "Keep the volume turned up so the microphone picks up the beeps")
+        manual_volume_requirement(LOGGER)
         with FfmpegAudioTestStream(url=url, transport_format=transport_format):
-            manual_validation(LOGGER, "Listen for periodic beeps")
             time.sleep(BEEP_INTERVAL)
             recording = self.moblin.record(RECORDING_DURATION, f"{self.name}.mp4")
         self.assert_beeps(recording)

@@ -56,7 +56,8 @@ from ..utils.traffic_shaper import Side
 from ..utils.traffic_shaper import TrafficShaper
 from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
-from ..utils.utils import manual_validation
+from ..utils.utils import manual_requirement
+from ..utils.utils import manual_volume_requirement
 from ..utils.utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
@@ -257,14 +258,11 @@ class StabilityIngestsOneStream(TestCase):
         time.sleep(2)
 
     def run(self):
-        manual_validation(
+        manual_requirement(
             LOGGER,
             "Keep the device connected to power with the app in the foreground",
         )
-        manual_validation(
-            LOGGER,
-            "Keep the volume turned up so the microphone picks up the alert sounds",
-        )
+        manual_volume_requirement(LOGGER)
         with ExitStack() as stack:
             capture = self._enter_network_capture(stack)
             webrtc_host = None

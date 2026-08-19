@@ -24,7 +24,7 @@ from ..utils.moblin import Moblin
 from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
-from ..utils.utils import manual_validation
+from ..utils.utils import manual_volume_requirement
 
 LOGGER = logging.getLogger(__name__)
 ALERT_WIDGET_ID = uuid()
@@ -99,10 +99,7 @@ class MicDelay(TestCase):
         self._alert_times: list[float] = []
 
     def run(self):
-        manual_validation(
-            LOGGER,
-            "Keep the volume turned up so the microphone picks up the alert sounds",
-        )
+        manual_volume_requirement(LOGGER)
         offsets = {delay: self._measure_offsets(delay) for delay in DELAYS}
         self._assert_offsets(offsets)
 
@@ -190,10 +187,7 @@ class MicSwitch(TestCase):
         )
 
     def run(self):
-        manual_validation(
-            LOGGER,
-            "Keep the volume turned up so the microphones pick up the alert sounds",
-        )
+        manual_volume_requirement(LOGGER)
         self._mics = self.moblin.get_mics()[:NUMBER_OF_MICS]
         self.assert_equal(len(self._mics), NUMBER_OF_MICS)
         self.moblin.set_scene(SceneName.FRONT)
