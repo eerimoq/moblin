@@ -22,7 +22,7 @@ from .utils import Pixel
 from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
-FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-y"]
+FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-y"]
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
 RE_SHOWINFO_PTS = re.compile(r"^\[Parsed_showinfo.*? pts_time:(\S+)", re.MULTILINE)
@@ -67,7 +67,7 @@ def _run_logged(command: list[str], text: bool):
     try:
         return subprocess.run(command, check=True, capture_output=True, text=text)
     finally:
-        LOGGER.debug("Command: %s (%.3f s)", " ".join(command), time.monotonic() - started)
+        LOGGER.debug("Command (%.3f s): %s", time.monotonic() - started, " ".join(command))
 
 
 def _run(command: list[str]):
@@ -195,7 +195,7 @@ class FfmpegCommand:
     def start(self):
         command = list(FFMPEG_COMMAND)
         if self._quiet:
-            command += ["-nostats", "-loglevel", "warning"]
+            command += ["-loglevel", "warning"]
         command += self.args()
         self._process = ManagedProcess(
             command,
