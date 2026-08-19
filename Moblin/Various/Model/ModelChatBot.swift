@@ -88,6 +88,20 @@ private func getAnswer(_ language: String) -> String {
     answerByLanguage[language] ?? ""
 }
 
+private func formatAiAnswer(user: String, question: String, answer: String) -> String {
+    var question = question
+    let recognizer = NLLanguageRecognizer()
+    recognizer.processString(question)
+    let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?.identifier
+    if question.last?.isPunctuation != true {
+        question += ","
+    }
+    guard let language else {
+        return "\(user): \(question) \(answer)"
+    }
+    return "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
+}
+
 extension Model {
     func executeChatBotMessage() {
         guard let message = chatBotMessages.popFirst() else {
@@ -369,31 +383,26 @@ extension Model {
     }
 
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
-        var question = command.rest()
+        let question = command.rest()
         let ai = database.chat.botCommandAi
         guard let baseUrl = URL(string: ai.baseUrl) else {
             return
         }
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
-            .ask(question, model: ai.model, role: ai.personality) { answer in
-                guard let answer else {
-                    return
+            .ask(question, model: ai.model, role: ai.personality) { result in
+                switch result {
+                case let .success(answer):
+                    self.sendChatBotReply(
+                        message: formatAiAnswer(user: user, question: question, answer: answer),
+                        platform: platform
+                    )
+                case let .failure(error):
+                    self.sendChatBotReply(message: String(localized: """
+                    \(user), sorry, I could not answer your question (\(error.description)). 😢
+                    """), platform: platform)
                 }
-                guard let user = command.message.user else {
-                    return
-                }
-                let recognizer = NLLanguageRecognizer()
-                recognizer.processString(question)
-                let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?
-                    .identifier
-                guard let language else {
-                    return
-                }
-                if question.last?.isPunctuation != true {
-                    question += ","
-                }
-                let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
-                self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
             }
     }
 

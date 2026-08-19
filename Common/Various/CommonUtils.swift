@@ -315,6 +315,10 @@ extension HTTPURLResponse {
     var isUnauthorized: Bool {
         statusCode == 401
     }
+
+    var isTooManyRequests: Bool {
+        statusCode == 429
+    }
 }
 
 func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {

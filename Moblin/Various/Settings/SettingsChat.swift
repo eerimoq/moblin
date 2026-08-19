@@ -448,9 +448,10 @@ class SettingsChatNicknames: Codable, ObservableObject {
 
 class SettingsOpenAi: Codable, ObservableObject {
     private static let defaultPersonality = "You give fast and short answers."
+    private static let defaultModel = "gemini-3.5-flash-lite"
     @Published var baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/openai"
     @Published var apiKey: String = ""
-    @Published var model: String = "gemini-2.0-flash"
+    @Published var model: String = defaultModel
     @Published var personality: String
 
     init(personality: String? = nil) {
@@ -480,7 +481,7 @@ class SettingsOpenAi: Codable, ObservableObject {
             "https://generativelanguage.googleapis.com/v1beta/openai"
         )
         apiKey = container.decode(.apiKey, String.self, "")
-        model = container.decode(.model, String.self, "gemini-2.0-flash")
+        model = container.decode(.model, String.self, Self.defaultModel)
         personality = container.decode(.role, String.self, SettingsOpenAi.defaultPersonality)
     }
 
