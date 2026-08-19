@@ -134,3 +134,11 @@ class Config:
         device_name = self.device_name()
         if device_name not in self._config["device"]:
             raise Exception(f"Device '{device_name}' not found in '{config_toml.absolute()}'.")
+        for name, device in self._config["device"].items():
+            for capability in device["capabilities"]:
+                if capability not in list(Capability):
+                    allowed = ", ".join(f"'{item}'" for item in Capability)
+                    raise Exception(
+                        f"Unknown capability '{capability}' for device '{name}' in "
+                        f"'{config_toml.absolute()}'. Allowed capabilities are {allowed}."
+                    )
