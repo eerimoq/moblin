@@ -7295,6 +7295,12 @@
             "value" : "%1$@ requested by %2$@ not found."
           }
         },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ requested by %2$@ not found."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -7329,12 +7335,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "未找到 %1$@ 請求的 %2$@。"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@ requested by %2$@ not found."
           }
         }
       }
@@ -109622,6 +109622,12 @@
             "value" : "Vďaka vysokokvalitnému prevzorkovaniu vyzerajú zmenšené obrázky lepšie, ale využívajú viac systémových prostriedkov."
           }
         },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nedsampling av hög kvalitet gör att nedskalade bilder ser bättre ut, men använder mer systemresurser."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -109656,12 +109662,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "High quality downsampling makes downscaled images look better, but uses more system resources."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Nedsampling av hög kvalitet gör att nedskalade bilder ser bättre ut, men använder mer systemresurser."
           }
         }
       }
@@ -118513,7 +118513,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "precis begåvade %1$lld nivå %2$lld prenumerationer!"
+            "value" : "giftade %1$lld nivå %2$lld-prenumerationer!"
           }
         },
         "tr" : {
@@ -257941,6 +257941,12 @@
             "value" : "Používa sa na synchronizáciu zvuku a videa."
           }
         },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Används för att synkronisera ljud och video."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -257975,12 +257981,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Use to synchronize audio and video."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Används för att synkronisera ljud och video."
           }
         }
       }
