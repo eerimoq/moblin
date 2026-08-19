@@ -1,5 +1,6 @@
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from dataclasses import dataclass
 from enum import StrEnum
@@ -294,14 +295,7 @@ class StabilityIngestsOneStream(TestCase):
                 recording = self._download_recording()
             else:
                 recording = None
-        if stream_recorder is not None:
-            self._assert_audio_presentation_time_stamps(
-                stream_recorder.file, ffprobe_audio(stream_recorder.file)
-            )
-        if recording is not None:
-            self._assert_audio_presentation_time_stamps(recording, ffprobe_audio(recording))
-        reports = self._measure_alert_synchronization(stream_recorder, recording)
-        self._assert_alerts_synchronized(reports, recording)
+        self._validate(stream_recorder, recording)
 
     def teardown(self):
         if self._monitor is not None:
@@ -345,30 +339,35 @@ class StabilityIngestsOneStream(TestCase):
         )
         return recording
 
-    def _measure_alert_synchronization(
-        self,
-        recorder: StreamRecorder | None,
-        recording: Path | None,
-    ) -> list[AlertSyncReport]:
-        reports: list[AlertSyncReport] = []
-        if len(self._alert_times) < 2:
-            return reports
+    def _validate(self, recorder: StreamRecorder | None, recording: Path | None):
         files = []
         if recording is not None:
             files.append(recording)
         if recorder is not None:
             files.append(recorder.file)
-        for file in files:
-            try:
-                report = measure_alert_synchronization(
-                    file, self._alert_times, ALERT_WIDGET_X, ALERT_WIDGET_Y
-                )
-            except Exception as error:
-                LOGGER.warning("Failed to measure alert synchronization in %s. %s", file, error)
-                continue
-            report.log()
-            reports.append(report)
-        return reports
+        reports = []
+        with ThreadPoolExecutor() as executor:
+            audio_futures = [executor.submit(ffprobe_audio, file) for file in files]
+            report_futures = [executor.submit(self._measure_alert_synchronization, file) for file in files]
+            for future in report_futures:
+                report = future.result()
+                if report is None:
+                    continue
+                report.log()
+                reports.append(report)
+            audios = [future.result() for future in audio_futures]
+        for file, audio in zip(files, audios):
+            self._assert_audio_presentation_time_stamps(file, audio)
+        self._assert_alerts_synchronized(reports, recording)
+
+    def _measure_alert_synchronization(self, file: Path) -> AlertSyncReport | None:
+        if len(self._alert_times) < 2:
+            return None
+        try:
+            return measure_alert_synchronization(file, self._alert_times, ALERT_WIDGET_X, ALERT_WIDGET_Y)
+        except Exception as error:
+            LOGGER.warning("Failed to measure alert synchronization in %s. %s", file, error)
+            return None
 
     def _assert_alerts_synchronized(self, reports: list[AlertSyncReport], recording: Path | None):
         for report in reports:
