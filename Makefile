@@ -1,8 +1,7 @@
-OXFMT_ARGS = "WebRemoteControlFrontend"
-OXLINT_ARGS = "WebRemoteControlFrontend"
 PYTHON_DIRS = \
 	tests \
 	utils
+WEB_DIRS = WebRemoteControlFrontend
 
 CODE_DIRS += "Common"
 CODE_DIRS += "Moblin"
@@ -11,7 +10,8 @@ CODE_DIRS += "Moblin Widget"
 CODE_DIRS += "Moblin Live Activity"
 CODE_DIRS += "Moblin Screen Recording"
 CODE_DIRS += "MoblinTests"
-CODE_DIRS += "WebRemoteControlFrontend"
+CODE_DIRS += $(WEB_DIRS)
+CODE_DIRS += $(PYTHON_DIRS)
 
 TEST_MAKE_ARGS = -C tests TEST_ARGS="$(TEST_ARGS)"
 
@@ -21,19 +21,19 @@ default:
 
 style:
 	swiftformat $(CODE_DIRS)
-	oxfmt $(OXFMT_ARGS)
+	oxfmt $(WEB_DIRS)
 	isort $(PYTHON_DIRS)
 	ruff format $(PYTHON_DIRS)
 
 style-check:
 	swiftformat $(CODE_DIRS) --lint
-	oxfmt $(OXFMT_ARGS) --check
+	oxfmt $(WEB_DIRS) --check
 	isort $(PYTHON_DIRS) --check
 	ruff format $(PYTHON_DIRS) --check
 
 lint:
 	swiftlint lint --quiet $(CODE_DIRS)
-	oxlint $(OXLINT_ARGS)
+	oxlint $(WEB_DIRS)
 	pylint $(PYTHON_DIRS)
 	ruff check $(PYTHON_DIRS)
 	mypy $(PYTHON_DIRS)
@@ -46,7 +46,7 @@ periphery:
 	periphery scan
 
 spell-check:
-	codespell $(CODE_DIRS) $(PYTHON_DIRS)
+	codespell $(CODE_DIRS)
 
 test:
 	python -m tests.test $(TEST_ARGS)
