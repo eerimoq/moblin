@@ -5,6 +5,7 @@ import math
 import re
 import shutil
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from dataclasses import field
@@ -61,14 +62,20 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
+def _run_logged(command: list[str], text: bool):
+    started = time.monotonic()
+    try:
+        return subprocess.run(command, check=True, capture_output=True, text=text)
+    finally:
+        LOGGER.debug("Command: %s (%.3f s)", " ".join(command), time.monotonic() - started)
+
+
 def _run(command: list[str]):
-    LOGGER.debug("Command: %s", " ".join(command))
-    return subprocess.run(command, check=True, capture_output=True, text=True)
+    return _run_logged(command, True)
 
 
 def _run_binary(command: list[str]) -> bytes:
-    LOGGER.debug("Command: %s", " ".join(command))
-    return subprocess.run(command, check=True, capture_output=True).stdout
+    return _run_logged(command, False).stdout
 
 
 def ffprobe_run(path: Path, *args):
@@ -667,8 +674,7 @@ def read_video_region_colors(
         "rgb24",
         "-",
     ]
-    LOGGER.debug("Command: %s", " ".join(command))
-    proc = subprocess.run(command, check=True, capture_output=True)
+    proc = _run_logged(command, False)
     presentation_time_stamps = [
         float(pts) for pts in RE_SHOWINFO_PTS.findall(proc.stderr.decode("utf-8", "replace"))
     ]
