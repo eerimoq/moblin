@@ -1,8 +1,3 @@
-PYTHON_DIRS += tests
-PYTHON_DIRS += utils
-
-WEB_DIRS += WebRemoteControlFrontend
-
 SWIFT_DIRS += "Common"
 SWIFT_DIRS += "Moblin"
 SWIFT_DIRS += "Moblin Watch"
@@ -10,6 +5,11 @@ SWIFT_DIRS += "Moblin Widget"
 SWIFT_DIRS += "Moblin Live Activity"
 SWIFT_DIRS += "Moblin Screen Recording"
 SWIFT_DIRS += "MoblinTests"
+
+WEB_DIRS += WebRemoteControlFrontend
+
+PYTHON_DIRS += tests
+PYTHON_DIRS += utils
 
 CODE_DIRS += $(SWIFT_DIRS)
 CODE_DIRS += $(WEB_DIRS)
