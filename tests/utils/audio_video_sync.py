@@ -1,5 +1,6 @@
 import bisect
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -159,12 +160,15 @@ def measure_alert_synchronization(
     width, height = ffprobe_video_size(path)
     crop = alert_crop(width, height, x, y)
     audio_times = _find_audio_onsets(path, trigger_times)
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        video_times = list(
+            executor.map(lambda audio_time: _find_video_onset(path, crop, audio_time), audio_times)
+        )
     alerts = []
     missing = []
-    for index, (trigger_time, audio_time) in enumerate(zip(trigger_times, audio_times)):
-        video_time = None
-        if audio_time is not None:
-            video_time = _find_video_onset(path, crop, audio_time)
+    for index, (trigger_time, audio_time, video_time) in enumerate(
+        zip(trigger_times, audio_times, video_times)
+    ):
         if audio_time is None or video_time is None:
             missing.append(index)
         elif abs(audio_time - video_time) > MAXIMUM_ALERT_OFFSET:
@@ -247,7 +251,9 @@ def _nearest(values: list[float], value: float) -> float | None:
     return min(candidates, key=lambda candidate: abs(candidate - value))
 
 
-def _find_video_onset(path: Path, crop: Crop, audio_time: float) -> float | None:
+def _find_video_onset(path: Path, crop: Crop, audio_time: float | None) -> float | None:
+    if audio_time is None:
+        return None
     frames = read_video_region_colors(
         path,
         crop,
