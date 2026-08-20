@@ -999,10 +999,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
     }
 
+    private func removeUnusedKeychainItems() {
+        let streamIds = database.streams.map(\.id)
+        removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: streamIds)
+        removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: streamIds)
+    }
+
     func setup() {
         battery.level = Double(UIDevice.current.batteryLevel)
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
+        removeUnusedKeychainItems()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media = Media(delegate: self)
         setupAppIntents()

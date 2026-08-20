@@ -31,6 +31,7 @@ private let scopes = [
 ]
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"
+private let twitchAuthServer = "www.twitch.tv"
 
 private struct TwitchAuthView: UIViewRepresentable {
     let twitchAuth: TwitchAuth
@@ -129,6 +130,13 @@ func removeTwitchAccessTokenInKeychain(streamId: UUID) {
     createKeychain(streamId: streamId.uuidString).remove()
 }
 
+func removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: [UUID]) {
+    let usedStreamIds = Set(usedStreamIds.map(\.uuidString))
+    for streamId in Keychain.loadStreamIds(server: twitchAuthServer) where !usedStreamIds.contains(streamId) {
+        createKeychain(streamId: streamId).remove()
+    }
+}
+
 private func createKeychain(streamId: String) -> Keychain {
-    Keychain(streamId: streamId, server: "www.twitch.tv", logPrefix: "twitch: auth")
+    Keychain(streamId: streamId, server: twitchAuthServer, logPrefix: "twitch: auth")
 }
