@@ -108,8 +108,13 @@ struct YouTubeApiChannelListResponse: Codable {
     let items: [YouTubeApiChannel]
 }
 
+protocol YouTubeApiDelegate: AnyObject {
+    func youTubeApiUnauthorized()
+}
+
 class YouTubeApi {
     private let accessToken: String
+    weak var delegate: (any YouTubeApiDelegate)?
 
     init(accessToken: String) {
         self.accessToken = accessToken
@@ -329,6 +334,7 @@ class YouTubeApi {
                     logger.info("youtube-api: Error response body: \(data)")
                 }
                 if response?.http?.isUnauthorized == true {
+                    self.delegate?.youTubeApiUnauthorized()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

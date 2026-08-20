@@ -72,6 +72,7 @@ let fallbackStream = SettingsStream(name: "Fallback")
 let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
+let maxNotLoggedInToastCount = 10
 
 private func randomBuyIconsTitle() -> String {
     [
@@ -1478,6 +1479,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !makeBuyIconsToastIfNeeded() {
                 makeReplayShouldBeDisabledToastIfNeeded()
             }
+            makeNotLoggedInToTwitchToastIfNeeded()
+            makeNotLoggedInToKickToastIfNeeded()
+            makeNotLoggedInToYouTubeToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)

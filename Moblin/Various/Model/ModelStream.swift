@@ -502,6 +502,13 @@ extension Model {
         makeToast(title: String(localized: "🤟 Stream ended 🤟"), subTitle: subTitle, onTapped: onTapped)
     }
 
+    func makeNotLoggedInToToast(platform: Platform) {
+        makeErrorToast(
+            title: String(localized: "Not logged in to \(platform.name())"),
+            subTitle: String(localized: "Please login again")
+        )
+    }
+
     private func makeConnectFailureToast(subTitle: String) {
         makeErrorToast(title: failedToConnectMessage(stream.name),
                        subTitle: subTitle,

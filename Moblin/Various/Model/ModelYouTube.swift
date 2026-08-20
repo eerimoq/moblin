@@ -47,6 +47,8 @@ extension Model {
                 externalUserAgent: userAgent
             ) { authState, _ in
                 stream.youTubeAuthState = authState
+                stream.youTubeWantsToBeLoggedIn = authState != nil
+                stream.youTubeNotLoggedInCount = 0
                 self.youTube.session = nil
             }
         }
@@ -54,7 +56,19 @@ extension Model {
 
     func youTubeSignOut(stream: SettingsStream) {
         stream.youTubeAuthState = nil
+        stream.youTubeWantsToBeLoggedIn = false
         removeYouTubeAuthStateInKeychain(streamId: stream.id)
+    }
+
+    func makeNotLoggedInToYouTubeToastIfNeeded() {
+        guard stream.youTubeWantsToBeLoggedIn, !stream.isYouTubeAuthorized() else {
+            return
+        }
+        stream.youTubeNotLoggedInCount += 1
+        if stream.youTubeNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.youTubeWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .youTube)
     }
 
     func getYouTubeApi(stream: SettingsStream, onCompleted: @escaping (YouTubeApi?) -> Void) {
@@ -63,7 +77,9 @@ extension Model {
                 onCompleted(nil)
                 return
             }
-            onCompleted(YouTubeApi(accessToken: accessToken))
+            let youTubeApi = YouTubeApi(accessToken: accessToken)
+            youTubeApi.delegate = self
+            onCompleted(youTubeApi)
         }
     }
 
@@ -220,5 +236,16 @@ extension Model {
                 }
             }
         }
+    }
+}
+
+extension Model: @preconcurrency YouTubeApiDelegate {
+    func youTubeApiUnauthorized() {
+        guard stream.isYouTubeAuthorized() else {
+            return
+        }
+        stream.youTubeAuthState = nil
+        removeYouTubeAuthStateInKeychain(streamId: stream.id)
+        makeNotLoggedInToToast(platform: .youTube)
     }
 }

@@ -162,6 +162,8 @@ extension Model {
         twitchAuthOnComplete = { accessToken in
             storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
             stream.twitchLoggedIn = true
+            stream.twitchWantsToBeLoggedIn = true
+            stream.twitchNotLoggedInCount = 0
             stream.twitchAccessToken = accessToken
             self.showTwitchAuth = false
             self.showModerationAuth = false
@@ -182,6 +184,7 @@ extension Model {
 
     func twitchLogout(stream: SettingsStream) {
         stream.twitchLoggedIn = false
+        stream.twitchWantsToBeLoggedIn = false
         stream.twitchAccessToken = ""
         removeTwitchAccessTokenInKeychain(streamId: stream.id)
         if stream.enabled {
@@ -193,6 +196,17 @@ extension Model {
 
     func handleTwitchAccessToken(accessToken: String) {
         twitchAuthOnComplete?(accessToken)
+    }
+
+    func makeNotLoggedInToTwitchToastIfNeeded() {
+        guard stream.twitchWantsToBeLoggedIn, !stream.twitchLoggedIn else {
+            return
+        }
+        stream.twitchNotLoggedInCount += 1
+        if stream.twitchNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.twitchWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .twitch)
     }
 
     func createStreamMarker() {
@@ -811,6 +825,10 @@ extension Model: @preconcurrency TwitchChatDelegate {
 
 extension Model: @preconcurrency TwitchApiDelegate {
     func twitchApiUnauthorized() {
+        guard stream.twitchLoggedIn else {
+            return
+        }
         stream.twitchLoggedIn = false
+        makeNotLoggedInToToast(platform: .twitch)
     }
 }

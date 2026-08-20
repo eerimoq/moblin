@@ -151,6 +151,7 @@ extension Model {
             stream.twitchChannelId = createStreamWizard.twitchChannelId.trim()
             stream.twitchAccessToken = createStreamWizard.twitchAccessToken
             stream.twitchLoggedIn = createStreamWizard.twitchLoggedIn
+            stream.twitchWantsToBeLoggedIn = createStreamWizard.twitchLoggedIn
             if stream.twitchLoggedIn, !stream.twitchAccessToken.isEmpty {
                 storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: stream.twitchAccessToken)
             }
@@ -158,12 +159,14 @@ extension Model {
             stream.kickChannelName = createStreamWizard.kickChannelName.trim()
             stream.kickAccessToken = createStreamWizard.kickAccessToken
             stream.kickLoggedIn = createStreamWizard.kickLoggedIn
+            stream.kickWantsToBeLoggedIn = createStreamWizard.kickLoggedIn
             stream.kickChannelId = createStreamWizard.kickChannelId
             stream.kickSlug = createStreamWizard.kickSlug
             stream.kickChatroomChannelId = createStreamWizard.kickChatroomChannelId
         case .youTube:
             stream.youTubeHandle = createStreamWizard.youTubeHandle.trim()
             stream.youTubeAuthState = createStreamWizard.youTubeStream.youTubeAuthState
+            stream.youTubeWantsToBeLoggedIn = createStreamWizard.youTubeStream.youTubeWantsToBeLoggedIn
         case .soop:
             if !createStreamWizard.soopChannelName.isEmpty, !createStreamWizard.soopStreamId.isEmpty {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()

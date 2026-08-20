@@ -237,7 +237,7 @@ extension Model {
             if stream.kickLoggedIn {
                 sendKickChatMessage(message: message)
             } else {
-                makeNotLoggedInToKickToast()
+                makeNotLoggedInToToast(platform: .kick)
             }
         }
     }
