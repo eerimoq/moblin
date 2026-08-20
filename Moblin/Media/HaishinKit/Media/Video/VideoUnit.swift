@@ -1714,7 +1714,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         ciImage = ciImage.scaled(x: scale, y: scale)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
-        processor?.delegate.streamVideo(
+        processor?.delegate.streamLowFpsImage(
             lowFpsImage: image.jpegData(compressionQuality: 0.3),
             frameNumber: lowFpsImageFrameNumber
         )

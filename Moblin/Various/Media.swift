@@ -1087,7 +1087,7 @@ final class Media: NSObject, @unchecked Sendable {
 }
 
 extension Media: ProcessorDelegate {
-    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -1103,7 +1103,7 @@ extension Media: ProcessorDelegate {
         }
     }
 
-    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64) {
+    func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64) {
         delegate.mediaOnLowFpsImage(lowFpsImage, frameNumber)
     }
 

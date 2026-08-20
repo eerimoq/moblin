@@ -361,9 +361,9 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         numberOfAudioChannels: Int
     ) {
         let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-        processor?.delegate.stream(audioLevel: audioLevel,
-                                   numberOfAudioChannels: numberOfAudioChannels,
-                                   sampleRate: sampleRate)
+        processor?.delegate.streamAudioLevel(audioLevel: audioLevel,
+                                             numberOfAudioChannels: numberOfAudioChannels,
+                                             sampleRate: sampleRate)
     }
 
     private func appendTalkback(sampleBuffer: CMSampleBuffer) {
