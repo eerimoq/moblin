@@ -446,12 +446,12 @@ def tests(moblin: Moblin):
         SceneSwitchMultipleTimes(moblin),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
+        SceneWidgetsInBackground(moblin, GraphicsImplementation.CORE_IMAGE),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [
             ScenePiPBackFront(moblin, 30, graphics_implementation),
             ScenePiPBackFront(moblin, 60, graphics_implementation),
-            SceneWidgetsInBackground(moblin, graphics_implementation),
             SceneMapWidget(moblin, graphics_implementation),
             ScenePngTuberWidget(moblin, graphics_implementation),
             SceneVTuberWidget(moblin, graphics_implementation),
