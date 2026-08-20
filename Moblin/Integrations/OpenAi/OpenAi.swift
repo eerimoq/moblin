@@ -21,11 +21,23 @@ private struct Response: Codable {
     let choices: [Choice]
 }
 
+private struct ResponseErrorItemError: Codable {
+    let message: String
+}
+
+private struct ResponseErrorItem: Codable {
+    let error: ResponseErrorItemError
+}
+
+private struct ResponseError: Codable {
+    let errors: [ResponseErrorItem]
+}
+
 enum OpenAiError: Error, CustomStringConvertible {
     case malformedRequest
     case requestFailed(String)
     case rateLimited
-    case httpError(Int)
+    case httpError(Int, String)
     case malformedResponse
     case noAnswer
 
@@ -37,8 +49,8 @@ enum OpenAiError: Error, CustomStringConvertible {
             "request failed: \(message)"
         case .rateLimited:
             "too many requests"
-        case let .httpError(statusCode):
-            "HTTP error \(statusCode)"
+        case let .httpError(statusCode, message):
+            "HTTP error \(statusCode): \(message)"
         case .malformedResponse:
             "malformed response"
         case .noAnswer:
@@ -88,7 +100,9 @@ class OpenAi {
                 if response.isTooManyRequests {
                     onComplete(.failure(.rateLimited))
                 } else {
-                    onComplete(.failure(.httpError(response.statusCode)))
+                    let message = (try? JSONDecoder().decode(ResponseError.self, from: data))?
+                        .errors.first?.error.message ?? ""
+                    onComplete(.failure(.httpError(response.statusCode, message)))
                 }
                 return
             }
