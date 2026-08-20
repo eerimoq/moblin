@@ -333,12 +333,11 @@ private struct RemoteControlStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
-        if model.isRemoteControlStreamerConfigured(), !model.isRemoteControlStreamerConnected() {
-            return .red
-        } else if model.isRemoteControlAssistantConfigured(), !model.isRemoteControlAssistantConnected() {
-            return .red
+        if status.remoteControlOk {
+            .white
+        } else {
+            .red
         }
-        return .white
     }
 
     var body: some View {

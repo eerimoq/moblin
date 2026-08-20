@@ -236,6 +236,7 @@ class SystemMonitor: ObservableObject {
 
 class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatusChanged = false
+    @Published var remoteControlOk = false
     @Published var remoteControlStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue

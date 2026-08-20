@@ -92,12 +92,16 @@ extension Model {
 
     func updateRemoteControlStatus() {
         let status: String
+        let ok: Bool
         if isRemoteControlAssistantConnected(), isRemoteControlStreamerConnected() {
             status = String(localized: "Assistant and streamer")
+            ok = true
         } else if isRemoteControlAssistantConnected() {
             status = String(localized: "Assistant")
+            ok = true
         } else if isRemoteControlStreamerConnected() {
             status = String(localized: "Streamer")
+            ok = true
         } else {
             let assistantError = remoteControlAssistant?.connectionErrorMessage ?? ""
             let streamerError = remoteControlStreamer?.connectionErrorMessage ?? ""
@@ -110,9 +114,13 @@ extension Model {
             } else {
                 status = noValue
             }
+            ok = false
         }
         if status != statusTopRight.remoteControlStatus {
             statusTopRight.remoteControlStatus = status
+        }
+        if ok != statusTopRight.remoteControlOk {
+            statusTopRight.remoteControlOk = ok
         }
     }
 

@@ -248,6 +248,7 @@ def base_settings(config: Config, remote_control_port: int):
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
             "password": REMOTE_CONTROL_PASSWORD,
+            "hasMigratedAssistant": True,
         },
         "location": {"enabled": True},
         "verboseStatuses": True,
