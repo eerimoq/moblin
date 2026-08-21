@@ -1,105 +1,12 @@
 import AVFoundation
 import Foundation
-import NaturalLanguage
-
-private let askedByLanguage = [
-    "ar": "سأل",
-    "bg": "попита",
-    "ca": "va preguntar",
-    "cs": "se zeptal",
-    "da": "spurgte",
-    "de": "fragte",
-    "en": "asked",
-    "el": "ερωτηθείς",
-    "es": "preguntó",
-    "fi": "kysyi",
-    "fr": "demandée",
-    "he": "שאל",
-    "hi": "पूछा",
-    "hr": "pitao",
-    "hu": "kérdezte",
-    "id": "diminta",
-    "it": "chiesto",
-    "ja": "尋ねた",
-    "ko": "질문",
-    "ms": "bertanya",
-    "nb": "spurte",
-    "nl": "vroeg",
-    "no": "spurte",
-    "pl": "zapytał",
-    "pt": "perguntou",
-    "ro": "a întrebat",
-    "ru": "спросил",
-    "sk": "sa spýtal",
-    "sl": "vprašal",
-    "sv": "frågade",
-    "ta": "என்று கேட்டார்",
-    "th": "ถาม",
-    "tr": "sordu",
-    "uk": "запитав",
-    "vi": "yêu cầu",
-    "zh": "问",
-]
-
-private let answerByLanguage = [
-    "ar": "إجابة",
-    "bg": "отговор",
-    "ca": "Respon",
-    "cs": "Odpověď",
-    "da": "Svar",
-    "de": "Antwort",
-    "en": "Answer",
-    "el": "Ερωτηθείς",
-    "es": "Respuesta",
-    "fi": "Vastaus",
-    "fr": "Répondre",
-    "he": "תְשׁוּבָה",
-    "hi": "उत्तर",
-    "hr": "Odgovor",
-    "hu": "Válasz",
-    "id": "Menjawab",
-    "it": "Risposta",
-    "ja": "答え",
-    "ko": "답변",
-    "ms": "Jawab",
-    "nb": "Svare",
-    "nl": "Antwoord",
-    "no": "Svare",
-    "pl": "Odpowiedź",
-    "pt": "Resposta",
-    "ro": "Răspuns",
-    "ru": "Отвечать",
-    "sk": "Odpoveď",
-    "sl": "Odgovori",
-    "sv": "Svar",
-    "ta": "பதில்",
-    "th": "คำตอบ",
-    "tr": "Cevap",
-    "uk": "Відповідь",
-    "vi": "Trả lời",
-    "zh": "回答",
-]
-
-private func getAsked(_ language: String) -> String {
-    askedByLanguage[language] ?? ""
-}
-
-private func getAnswer(_ language: String) -> String {
-    answerByLanguage[language] ?? ""
-}
 
 private func formatAiAnswer(user: String, question: String, answer: String) -> String {
     var question = question
-    let recognizer = NLLanguageRecognizer()
-    recognizer.processString(question)
-    let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?.identifier
     if question.last?.isPunctuation != true {
         question += ","
     }
-    guard let language else {
-        return "\(user): \(question) \(answer)"
-    }
-    return "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
+    return String(localized: "\(user) asked: \(question) Answer: \(answer)")
 }
 
 extension Model {
