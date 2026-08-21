@@ -53,6 +53,7 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     _remove_previous_run_artifacts(name)
     sequencer = systest.setup(name, parser, add_date_to_log_filename=False)
     sequencer.remove_filtered_testcases = True
+    sequencer.compact_output = True
     args = parser.parse_args()
     check_dependencies()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
