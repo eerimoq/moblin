@@ -192,7 +192,7 @@ class TwitchApi {
         let body = [
             "broadcaster_id": broadcasterId,
             "sender_id": broadcasterId,
-            "message": message,
+            "message": message.truncate(length: 500),
         ]
         doPost(subPath: "chat/messages", body: serialize(body), onComplete: onComplete)
     }

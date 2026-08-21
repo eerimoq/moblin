@@ -24,6 +24,13 @@ extension String {
     func removeAllWhitespaces() -> String {
         replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
     }
+
+    func truncate(length: Int) -> String {
+        guard count > length else {
+            return self
+        }
+        return prefix(max(length - 3, 0)) + String("...".prefix(length))
+    }
 }
 
 func randomName() -> String {
