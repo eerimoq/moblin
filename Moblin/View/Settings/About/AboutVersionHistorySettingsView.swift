@@ -8,6 +8,15 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.2137.0", date: "2026-08-17", changes: [
+        "• Hopefully no more audio glitches when switching builtin camera.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Leetspeak (1337) translation. 🧑‍🏭 Claude",
+        "  • Select Esperanto as app language in iOS settings.",
+        "• Make DJI devices work directly after importing settings. 🐛 Claude",
+        "• Claude trying to fix the bugs it introduced in \"Fix RTMP sometimes fails to connect.\" fix. 🐛 Claude",
+        "• Try implementing \"Fix RTMP sometimes fails to connect.\" properly. 🧑‍🏭 Claude",
+    ]),
     Version(version: "33.1337.0", date: "2026-08-14", changes: [
         "• Optional chatter name in Open Streaming Platform chat messages. 🧑‍🏭 e22ha",
         "• Only show Apple Music settings when show all settings toggle is enabled.",
