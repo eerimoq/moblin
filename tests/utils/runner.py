@@ -27,7 +27,7 @@ class HelpFormatter(argparse.HelpFormatter):
 
 def create_parser(description: str) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=description, formatter_class=HelpFormatter)
-    parser.add_argument("--device")
+    parser.add_argument("--device", required=True)
     parser.add_argument("--arduino-serial-port")
     parser.add_argument("--moving-picture", action="store_true")
     parser.add_argument(
