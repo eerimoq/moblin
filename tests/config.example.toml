@@ -5,6 +5,7 @@ capabilities = [
     "record",
     "background-streaming",
     "dual-mics",
+    "stereo-mic",
 ]
 
 [device.macpro]

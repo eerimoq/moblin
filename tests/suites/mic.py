@@ -245,8 +245,31 @@ class MicSwitch(TestCase):
         self.assert_less(report.spread(), MAXIMUM_OFFSET_SPREAD)
 
 
+class MicStereo(TestCase):
+    """Record a 10 seconds video with prefer stereo mic enabled and the front or back built-in
+    mic selected, and validate that the recorded audio is stereo.
+
+    """
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.STEREO_MIC)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "audio": {"preferStereoMic": True},
+            }
+        )
+
+    def run(self):
+        self.moblin.set_mic("Front")
+        self.wait_until(lambda: self.moblin.get_number_of_audio_channels() == 2)
+        recording = self.moblin.record(10, f"{self.name}.mp4")
+        self.assert_recording(recording, has_qr_codes=False, duplicated_frames_crops=[], channels=2)
+
+
 def tests(moblin: Moblin):
     return [
         MicDelay(moblin),
         MicSwitch(moblin),
+        MicStereo(moblin),
     ]

@@ -429,6 +429,9 @@ class Moblin:
     def get_mic(self) -> str:
         return self.get_status()["topLeft"]["mic"]["message"]
 
+    def get_number_of_audio_channels(self) -> int:
+        return self.get_status_top_right()["audioInfo"]["numberOfAudioChannels"]
+
     def get_mics(self) -> list[dict]:
         return self._get_settings()["mics"]
 
