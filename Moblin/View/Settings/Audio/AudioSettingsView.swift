@@ -121,8 +121,8 @@ struct AudioSettingsView: View {
             }
             if database.showAllSettings {
                 Section {
-                    Toggle("Prefer stereo mic", isOn: $debug.preferStereoMic)
-                        .onChange(of: debug.preferStereoMic) { _ in
+                    Toggle("Prefer stereo mic", isOn: $audio.preferStereoMic)
+                        .onChange(of: audio.preferStereoMic) { _ in
                             if mic.current.isAudioSession() {
                                 model.reloadAudioSession()
                                 model.selectMicDefault(mic: mic.current)

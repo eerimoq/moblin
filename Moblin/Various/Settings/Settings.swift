@@ -1437,6 +1437,10 @@ class Database: Codable, ObservableObject {
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, SettingsAudio.self, .init())
+        if debug.preferStereoMicToBeRemoved {
+            audio.preferStereoMic = true
+            debug.preferStereoMicToBeRemoved = false
+        }
         macros = container.decode(.macros, SettingsMacros.self, .init())
         webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
         deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
