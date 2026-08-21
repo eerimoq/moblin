@@ -41,14 +41,14 @@ cp tests/config.example.toml tests/config.toml
 # Run the tests
 
 ```bash
-make test
+make test TEST_ARGS="--device macpro"
 make test TEST_ARGS="--device macpro Talkback"
 ```
 
 # Run the stability test
 
 ```bash
-make test-stability
+make test-stability TEST_ARGS="--device macpro"
 make test-stability TEST_ARGS="--device macpro --duration 0.5"
 ```
 

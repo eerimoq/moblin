@@ -82,12 +82,11 @@ class Config:
     def __init__(self, device: str):
         self.config_toml = find_config_toml()
         self._config = tomllib.loads(self.config_toml.read_text())
-        if device:
-            self.general()["device"] = device
+        self._device_name = device
         self._validate(self.config_toml)
 
     def device_name(self):
-        return self.general()["device"]
+        return self._device_name
 
     def general(self):
         return self._config["general"]
@@ -132,9 +131,8 @@ class Config:
         return self._config["device"][self.device_name()]
 
     def _validate(self, config_toml: Path):
-        device_name = self.device_name()
-        if device_name not in self._config["device"]:
-            raise Exception(f"Device '{device_name}' not found in '{config_toml.absolute()}'.")
+        if self._device_name and self._device_name not in self._config["device"]:
+            raise Exception(f"Device '{self._device_name}' not found in '{config_toml.absolute()}'.")
         for name, device in self._config["device"].items():
             for capability in device["capabilities"]:
                 if capability not in list(Capability):
