@@ -152,20 +152,20 @@ class Moblin:
     def __init__(
         self,
         config: Config,
+        device_name: str,
         arduino: Arduino | None = None,
         moving_picture: bool = False,
         dji_camera: bool = False,
         interactive: bool = False,
-        name: str | None = None,
         ip_address: str | None = None,
         remote_control_port: int | None = None,
     ):
         self.config = config
+        self.device_name = device_name
         self.arduino = arduino
         self.video_decode_errors = VideoDecodeErrors()
         self.buffered_video_buffers = BufferedBuffers("video")
         self.buffered_audio_buffers = BufferedBuffers("audio")
-        self._device_name = name if name is not None else config.device_name()
         self._remote_control_port = (
             remote_control_port if remote_control_port is not None else config.remote_control_port()
         )
@@ -185,12 +185,10 @@ class Moblin:
             ready=self._wait_until_streamer_is_connected,
         )
         self._events = AssistantEvents(self._remote_control_port, self._handle_log_entry)
-        self.ip_address = ip_address if ip_address is not None else config.moblin_ip_address()
-        self.secondary_ip_address = config.moblin_secondary_ip_address()
+        self.ip_address = ip_address if ip_address is not None else config.moblin_ip_address(device_name)
         self._tester_ip_address = config.tester_ip_address()
         self._tester_media_ip_address = self._tester_ip_address
         self._device_media_ip_address = self.ip_address
-        self._capabilities = config.capabilities()
         self._interactive = interactive
         self._moving_picture = moving_picture
         self._dji_camera = dji_camera
@@ -352,8 +350,12 @@ class Moblin:
 
             wait_until(check, f"TCP port {port} on {address} to accept connections")
 
+    @property
+    def secondary_ip_address(self) -> str | None:
+        return self.config.moblin_secondary_ip_address(self.device_name)
+
     def has_capability(self, capability: Capability) -> bool:
-        return capability in self._capabilities
+        return capability in self.config.capabilities(self.device_name)
 
     def has_secondary_ip_address(self) -> bool:
         return self.secondary_ip_address is not None
@@ -472,7 +474,7 @@ class Moblin:
     def _wait_until_streamer_is_connected(self):
         LOGGER.info(
             "Waiting for %s's remote control streamer to connect to port %d...",
-            self._device_name,
+            self.device_name,
             self._remote_control_port,
         )
 
@@ -487,7 +489,7 @@ class Moblin:
 def create_receiver(config: Config) -> Moblin:
     return Moblin(
         config,
-        name="receiver",
+        "receiver",
         ip_address=config.tester_ip_address(),
         remote_control_port=config.receiver_remote_control_port(),
     )

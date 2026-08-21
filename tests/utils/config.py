@@ -79,14 +79,10 @@ def find_config_toml() -> Path:
 
 
 class Config:
-    def __init__(self, device: str):
+    def __init__(self):
         self.config_toml = find_config_toml()
         self._config = tomllib.loads(self.config_toml.read_text())
-        self._device_name = device
         self._validate(self.config_toml)
-
-    def device_name(self):
-        return self._device_name
 
     def general(self):
         return self._config["general"]
@@ -94,11 +90,11 @@ class Config:
     def remote_control_port(self):
         return self.general()["remote-control-port"]
 
-    def moblin_ip_address(self):
-        return self._device()["moblin-ip-address"]
+    def moblin_ip_address(self, device_name: str):
+        return self._device(device_name)["moblin-ip-address"]
 
-    def moblin_secondary_ip_address(self) -> str | None:
-        return self._device().get("moblin-secondary-ip-address")
+    def moblin_secondary_ip_address(self, device_name: str) -> str | None:
+        return self._device(device_name).get("moblin-secondary-ip-address")
 
     def tester_ip_address(self):
         return self.general()["tester-ip-address"]
@@ -109,8 +105,8 @@ class Config:
     def receiver_remote_control_port(self) -> int:
         return self.general()["receiver-remote-control-port"]
 
-    def capabilities(self):
-        return self._device()["capabilities"]
+    def capabilities(self, device_name: str):
+        return self._device(device_name)["capabilities"]
 
     def generic_stream_urls(self) -> list[str]:
         return self.general()["generic-stream-urls"]
@@ -127,12 +123,13 @@ class Config:
             raise Exception(f"No [shaper] section found in '{self.config_toml.absolute()}'.")
         return shaper
 
-    def _device(self):
-        return self._config["device"][self.device_name()]
+    def _device(self, device_name: str):
+        device = self._config["device"].get(device_name)
+        if device is None:
+            raise Exception(f"Device '{device_name}' not found in '{self.config_toml.absolute()}'.")
+        return device
 
     def _validate(self, config_toml: Path):
-        if self._device_name and self._device_name not in self._config["device"]:
-            raise Exception(f"Device '{self._device_name}' not found in '{config_toml.absolute()}'.")
         for name, device in self._config["device"].items():
             for capability in device["capabilities"]:
                 if capability not in list(Capability):

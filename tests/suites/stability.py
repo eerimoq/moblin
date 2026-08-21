@@ -22,7 +22,6 @@ from ..utils.config import SRT_SERVER_PORT
 from ..utils.config import TESTER_RIST_PORT
 from ..utils.config import TESTER_WEBRTC_PORT
 from ..utils.config import TESTER_WEBRTC_UDP_PORT
-from ..utils.config import Config
 from ..utils.config import rist_listener_url
 from ..utils.config import rtmp_listener_url
 from ..utils.config import rtsp_reader_url
@@ -485,7 +484,7 @@ class StabilityIngestsOneStream(TestCase):
 
     def _capture_settings(self) -> dict[str, str]:
         return {
-            "Device": self.moblin.config.device_name(),
+            "Device": self.moblin.device_name,
             "Stream protocol": self._stream_protocol.name,
             "Video bitrate control": str(self._video_bitrate_control),
             "Video bitrate": f"{STREAM_BITRATE / 1e6:.1f} Mbps",
@@ -674,7 +673,7 @@ def shaped_bitrate_range(
 
 
 def create_traffic_shaper(
-    config: Config,
+    moblin: Moblin,
     stream_protocol: StreamProtocol,
     stream_profile: Profile | None,
     ingests_profile: Profile | None,
@@ -686,7 +685,7 @@ def create_traffic_shaper(
         profiles[Group.INGESTS] = ingests_profile
     if len(profiles) == 0:
         return None
-    return TrafficShaper(config, relays(stream_protocol), profiles)
+    return TrafficShaper(moblin.config, moblin.ip_address, relays(stream_protocol), profiles)
 
 
 def tests(

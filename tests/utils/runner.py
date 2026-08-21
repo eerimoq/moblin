@@ -58,13 +58,14 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     check_dependencies()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
     logging.getLogger("websockets.client").setLevel(logging.INFO)
-    config = Config(args.device)
+    config = Config()
     if args.arduino_serial_port:
         arduino = Arduino(args.arduino_serial_port)
     else:
         arduino = None
     moblin = Moblin(
         config,
+        args.device,
         arduino,
         args.moving_picture,
         args.dji_camera,

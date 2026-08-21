@@ -51,7 +51,7 @@ def parse_traffic_shaping(value: str) -> Profile:
 
 def create_suites(moblin, args):
     shaper = stability.create_traffic_shaper(
-        moblin.config,
+        moblin,
         args.stream_protocol,
         args.stream_traffic_shaping,
         args.ingests_traffic_shaping,

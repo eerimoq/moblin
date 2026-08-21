@@ -16,7 +16,7 @@ def main():
         help="Generate settings for the SRTLA receiver on the tester machine.",
     )
     args = parser.parse_args()
-    config = Config("")
+    config = Config()
     if args.receiver:
         remote_control_port = config.receiver_remote_control_port()
     else:

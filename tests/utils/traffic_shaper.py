@@ -278,14 +278,20 @@ class RandomProfile(Profile):
 
 
 class TrafficShaper:
-    def __init__(self, config: Config, relays: list[Relay], profiles: dict[Group, Profile]):
+    def __init__(
+        self,
+        config: Config,
+        device_ip_address: str,
+        relays: list[Relay],
+        profiles: dict[Group, Profile],
+    ):
         shaper = config.shaper()
         self.ip_address = shaper["ip-address"]
         self._ssh_host = f"{shaper['user']}@{self.ip_address}"
         self._interface = shaper["interface"]
         self._addresses = {
             Side.TESTER: config.tester_ip_address(),
-            Side.DEVICE: config.moblin_ip_address(),
+            Side.DEVICE: device_ip_address,
         }
         self._relays = relays
         self._profiles = profiles
