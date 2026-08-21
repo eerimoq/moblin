@@ -96,13 +96,15 @@ class TestCase(systest.TestCase):
     def assert_live_stream(
         self,
         recording: Path,
-        minimum_length: int = 7,
-        maximum_length: int = 20,
+        minimum_length: float | None = 7,
+        maximum_length: float | None = 20,
         fps: int = 30,
     ):
         metadata = ffprobe(recording)
-        self.assert_greater(metadata.format.duration, minimum_length)
-        self.assert_less(metadata.format.duration, maximum_length)
+        if minimum_length is not None:
+            self.assert_greater(metadata.format.duration, minimum_length, "Minimum live stream length.")
+        if maximum_length is not None:
+            self.assert_less(metadata.format.duration, maximum_length, "Maximum live stream length.")
         self._assert_live_stream_video(metadata.video, fps)
         self._assert_live_stream_audio(metadata.audio)
 
@@ -110,8 +112,7 @@ class TestCase(systest.TestCase):
         self.assert_equal(video.codec, FfmpegVideoCodec.HEVC)
         self.assert_equal(video.width, 1920)
         self.assert_equal(video.height, 1080)
-        self.assert_greater(video.real_base_fps, Fraction(f"{fps - 1}/1"))
-        self.assert_less(video.real_base_fps, Fraction(f"{fps + 1}/1"))
+        self.assert_fps(video.real_base_fps, fps)
 
     def _assert_live_stream_audio(self, audio: FfprobeAudioOutput):
         self.assert_equal(audio.codec, "aac")
@@ -129,8 +130,8 @@ class TestCase(systest.TestCase):
         channels: int = 1,
     ):
         probe = probe_recording(recording, has_qr_codes, duplicated_frames_crops, has_audio_time_codes)
-        self.assert_greater(probe.format.duration, 8)
-        self.assert_less(probe.format.duration, 14)
+        self.assert_greater(probe.format.duration, 8, "Minimum recording length.")
+        self.assert_less(probe.format.duration, 14, "Maximum recording length.")
         self._assert_video(probe, recording, width, height, fps, video_codec)
         self._assert_audio(probe, recording, channels)
 
@@ -151,6 +152,12 @@ class TestCase(systest.TestCase):
         for dropout in dropouts:
             LOGGER.info("Audio dropout from %.3f to %.3f seconds", dropout.start, dropout.end)
         self.assert_equal(len(dropouts), 0)
+
+    def assert_fps(self, actual: Fraction | None, fps: int):
+        if actual is None:
+            raise Exception(f"No frame rate reported by ffprobe. Expected {fps}.")
+        self.assert_greater(actual, Fraction(f"{fps - 1}/1"))
+        self.assert_less(actual, Fraction(f"{fps + 1}/1"))
 
     def assert_video_size(self, recording: Path, width: int, height: int):
         self.assert_equal(ffprobe_video_size(recording), (width, height))
@@ -180,9 +187,10 @@ class TestCase(systest.TestCase):
         self.assert_equal(video.codec, video_codec)
         self.assert_equal(video.width, width)
         self.assert_equal(video.height, height)
-        self.assert_greater(video.average_fps, Fraction(f"{fps - 1}/1"))
-        self.assert_less(video.average_fps, Fraction(f"{fps + 1}/1"))
-        self.assert_presentation_time_stamps(recording, 1 / fps, [frame.pts for frame in video.frames])
+        self.assert_fps(video.average_fps, fps)
+        self.assert_presentation_time_stamps(
+            recording, 1 / fps, [frame.pts for frame in video.frames], "video"
+        )
         self._assert_video_frame_numbers_increasing(probe.qr_codes)
         picture_types = {frame.picture_type for frame in video.frames}
         self.assert_equal(len(picture_types), 3)
@@ -199,7 +207,7 @@ class TestCase(systest.TestCase):
         recording: Path,
         presentation_time_stamps: list[float],
     ):
-        self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps)
+        self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps, "video")
         self.assert_equal(len(presentation_time_stamps), len(video.frames))
 
     def _assert_audio(self, probe: "RecordingProbe", recording: Path, channels: int):
@@ -222,6 +230,7 @@ class TestCase(systest.TestCase):
             recording,
             AUDIO_SAMPLES_PER_FRAME / audio.sample_rate,
             [frame.pts for frame in audio.frames],
+            "audio",
         )
 
     def assert_presentation_time_stamps(
@@ -229,6 +238,7 @@ class TestCase(systest.TestCase):
         recording: Path,
         expected_delta: float,
         presentation_time_stamps: list[float],
+        name: str,
         delta_error: float = 0.002,
     ):
         self.assert_greater(len(presentation_time_stamps), 0)
@@ -240,9 +250,11 @@ class TestCase(systest.TestCase):
                 'Watch video: mpv --osd-msg1="PTS: \\${time-pos/full}" %s',
                 recording.absolute(),
             )
-            for missing_presentation_time_stamp in missing_presentation_time_stamps:
-                LOGGER.info("Missing PTS: %s", missing_presentation_time_stamp)
-        self.assert_equal(len(missing_presentation_time_stamps), 0)
+            for time_stamp, delta in missing_presentation_time_stamps:
+                LOGGER.info("%s: Missing PTS: %s (Delta: %s)", name, time_stamp, delta)
+        self.assert_equal(
+            len(missing_presentation_time_stamps), 0, f"for {name}. Expected delta: {expected_delta}"
+        )
 
     def _assert_video_frame_numbers_increasing(self, qr_codes: list[QrCode] | None):
         if qr_codes is None:
@@ -349,12 +361,12 @@ def _read_audio_time_codes(recording: Path, has_audio_time_codes: bool) -> str |
 
 def find_missing_presentation_time_stamps(
     expected_delta: float, presentation_time_stamps: list[float], delta_error: float
-) -> list[float]:
+) -> list[tuple[float, float]]:
     missing_presentation_time_stamps = []
     for index in range(1, len(presentation_time_stamps)):
         current = presentation_time_stamps[index]
         previous = presentation_time_stamps[index - 1]
         delta = current - previous
         if delta < expected_delta - delta_error or delta > expected_delta + delta_error:
-            missing_presentation_time_stamps.append(current)
+            missing_presentation_time_stamps.append((current, delta))
     return missing_presentation_time_stamps

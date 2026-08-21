@@ -1,5 +1,4 @@
 import logging
-from fractions import Fraction
 from pathlib import Path
 
 from ..utils.config import RTMP_SERVER_PORT
@@ -58,12 +57,12 @@ class DjiCameraRtmpServer(TestCase):
         self.assert_equal(metadata.video.codec, FfmpegVideoCodec.HEVC)
         self.assert_equal(metadata.video.width, 1920)
         self.assert_equal(metadata.video.height, 1080)
-        self.assert_greater(metadata.video.average_fps, Fraction("29/1"))
-        self.assert_less(metadata.video.average_fps, Fraction("31/1"))
+        self.assert_fps(metadata.video.average_fps, 30)
         self.assert_presentation_time_stamps(
             recording,
             1 / 30,
             [frame.pts for frame in metadata.video.frames],
+            "video",
         )
         self.assert_not_all_black(read_video_frame(recording, 5))
         self.assert_equal(metadata.audio.codec, "aac")
@@ -72,6 +71,7 @@ class DjiCameraRtmpServer(TestCase):
             recording,
             1024 / 48000,
             [frame.pts for frame in metadata.audio.frames],
+            "audio",
         )
         mean_volume_db = measure_mean_volume(recording)
         LOGGER.debug("Mean volume: %.1f dB", mean_volume_db)

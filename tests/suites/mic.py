@@ -227,7 +227,9 @@ class MicSwitch(TestCase):
 
     def _assert_nothing_missing(self, path: Path):
         video = ffprobe_video(path)
-        self.assert_presentation_time_stamps(path, 1 / STREAM_FPS, [frame.pts for frame in video.frames])
+        self.assert_presentation_time_stamps(
+            path, 1 / STREAM_FPS, [frame.pts for frame in video.frames], "video"
+        )
         audio = ffprobe_audio(path)
         self.assert_equal(audio.sample_rate, 48000)
         # self.assert_presentation_time_stamps(

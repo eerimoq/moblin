@@ -7,6 +7,7 @@ from ..utils.config import Capability
 from ..utils.config import srt_listener_url
 from ..utils.ffmpeg import FfmpegNoiseStream
 from ..utils.ffmpeg import FfmpegServer
+from ..utils.ffmpeg import ffprobe_format
 from ..utils.ffmpeg import read_unique_frame_presentation_time_stamps
 from ..utils.ffmpeg import read_video_frame
 from ..utils.generate_device_settings import BACK_SCENE_SETTINGS
@@ -257,7 +258,11 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
 
 
 class SceneWidgetsInBackground(GraphicsImplementationTestCase):
-    """Stream in background mode with various widgets showing."""
+    """Stream in background mode with a clock widget showing. Validate that the widget
+    is updated once per second with Core Image, and not updated at all with Metal Petal,
+    which is not allowed to run in background.
+
+    """
 
     def setup(self):
         self.skip_if_missing_capability(Capability.BACKGROUND_STREAMING)
@@ -302,9 +307,20 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
             time.sleep(10)
             self.moblin.end()
             manual_confirmation("Put the app in foreground.")
+        self.assert_live_stream(filename, maximum_length=None)
         crop = Crop(x=0, y=0, width=400, height=100)
         presentation_time_stamps = read_unique_frame_presentation_time_stamps(filename, crop)
-        self.assert_presentation_time_stamps(filename, 1, presentation_time_stamps[-8:], 0.25)
+        if self.graphics_implementation == GraphicsImplementation.CORE_IMAGE:
+            self.assert_presentation_time_stamps(
+                filename, 1, presentation_time_stamps[-8:], "widget", delta_error=0.25
+            )
+        else:
+            background_start = ffprobe_format(filename).duration - 8
+            self.assert_equal(
+                [pts for pts in presentation_time_stamps if pts > background_start],
+                [],
+                "Widgets updated in background",
+            )
 
 
 class WidgetTestCase(GraphicsImplementationTestCase):
@@ -446,12 +462,12 @@ def tests(moblin: Moblin):
         SceneSwitchMultipleTimes(moblin),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
-        SceneWidgetsInBackground(moblin, GraphicsImplementation.CORE_IMAGE),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [
             ScenePiPBackFront(moblin, 30, graphics_implementation),
             ScenePiPBackFront(moblin, 60, graphics_implementation),
+            SceneWidgetsInBackground(moblin, graphics_implementation),
             SceneMapWidget(moblin, graphics_implementation),
             ScenePngTuberWidget(moblin, graphics_implementation),
             SceneVTuberWidget(moblin, graphics_implementation),
