@@ -236,7 +236,7 @@ class IngestWhipServer(IngestTestCase):
 
     def run(self):
         with FfmpegWhipTestStream(url=self.moblin.ingest_whip_url()):
-            recording = self.record_ingest()
+            recording = self.record_ingest(startup_delay=4)
         self.assert_recording(recording)
 
 
@@ -267,7 +267,7 @@ class IngestWhepClient(IngestTestCase):
         with MediaMtx() as mediamtx:
             with FfmpegRtspTestStream(url=rtsp_reader_url("1")):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
-                recording = self.record_ingest()
+                recording = self.record_ingest(startup_delay=4)
         self.assert_recording(recording)
 
 
