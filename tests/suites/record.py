@@ -25,7 +25,6 @@ class Record(TestCase):
     def setup(self):
         if self._fps != 30:
             self.skip_if_missing_capability(Capability.RECORD)
-        self.skip_if_no_moving_picture()
         self.moving_picture_on()
         self.moblin.import_settings(
             overrides={
@@ -47,6 +46,7 @@ class Record(TestCase):
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
+            duplicated_frames_crops=None if self.moblin.has_moving_picture() else [],
             width=width,
             height=height,
             fps=self._fps,
@@ -55,15 +55,13 @@ class Record(TestCase):
 
 
 def tests(moblin: Moblin):
-    test_cases = [
-        Record(
-            moblin,
-            video_codec=VideoCodec.H264,
-            resolution=Resolution.FULL_HD,
-            fps=30,
-        ),
+    return [
+        Record(moblin, VideoCodec.H264, Resolution.FULL_HD, 30),
+        Record(moblin, VideoCodec.H265, Resolution.FULL_HD, 30),
+        Record(moblin, VideoCodec.H265, Resolution.FULL_HD, 60),
+        Record(moblin, VideoCodec.H265, Resolution.QUAD_HD_4_3, 30),
+        Record(moblin, VideoCodec.H265, Resolution.QUAD_HD, 30),
+        Record(moblin, VideoCodec.H265, Resolution.QUAD_HD, 60),
+        Record(moblin, VideoCodec.H265, Resolution.ULTRA_HD, 30),
+        Record(moblin, VideoCodec.H265, Resolution.ULTRA_HD, 60),
     ]
-    for resolution in [Resolution.FULL_HD, Resolution.QUAD_HD, Resolution.ULTRA_HD]:
-        for fps in [30, 60]:
-            test_cases.append(Record(moblin, video_codec=VideoCodec.H265, resolution=resolution, fps=fps))
-    return test_cases

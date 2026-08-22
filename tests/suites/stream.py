@@ -11,6 +11,7 @@ from ..utils.ffmpeg import FfmpegServer
 from ..utils.generate_device_settings import AudioCodec
 from ..utils.generate_device_settings import BitrateRateControl
 from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import Resolution
 from ..utils.generate_device_settings import SceneName
 from ..utils.generate_device_settings import VideoCodec
 from ..utils.generate_device_settings import mic_id
@@ -104,8 +105,9 @@ class StreamSrtToMediaMtx(StreamTestCase):
 class StreamSrtToFfmpeg(StreamTestCase):
     """SRT stream from Moblin to ffmpeg for a few seconds."""
 
-    def __init__(self, moblin: Moblin, fps: int):
-        super().__init__(moblin, f"StreamSrtToFfmpeg{fps}Fps")
+    def __init__(self, moblin: Moblin, resolution: Resolution, fps: int):
+        super().__init__(moblin, f"StreamSrtToFfmpeg-{resolution}@{fps}")
+        self._resolution = resolution
         self._fps = fps
 
     def setup(self):
@@ -115,12 +117,14 @@ class StreamSrtToFfmpeg(StreamTestCase):
             url=self.moblin.tester_srt_publish_url("test"),
             srt={"adaptiveBitrateEnabled": False},
             bitrate=5_000_000,
+            resolution=self._resolution,
             fps=self._fps,
         )
 
     def run(self):
         filename = self.stream_to_ffmpeg(srt_listener_url(), 4_000_000, 6_000_000, 10_000_000)
-        self.assert_live_stream(filename, fps=self._fps)
+        width, height = self._resolution.size()
+        self.assert_live_stream(filename, width=width, height=height, fps=self._fps)
 
 
 class StreamSrtToFfmpegHighBitrate(StreamTestCase):
@@ -324,8 +328,9 @@ def tests(moblin: Moblin):
     return [
         StreamRtmpToMediaMtx(moblin),
         StreamSrtToMediaMtx(moblin),
-        StreamSrtToFfmpeg(moblin, fps=30),
-        StreamSrtToFfmpeg(moblin, fps=60),
+        StreamSrtToFfmpeg(moblin, resolution=Resolution.FULL_HD, fps=30),
+        StreamSrtToFfmpeg(moblin, resolution=Resolution.FULL_HD, fps=60),
+        StreamSrtToFfmpeg(moblin, resolution=Resolution.QUAD_HD_4_3, fps=30),
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.ABR),

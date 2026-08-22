@@ -98,6 +98,8 @@ class TestCase(systest.TestCase):
         recording: Path,
         minimum_length: float | None = 7,
         maximum_length: float | None = 20,
+        width: int = 1920,
+        height: int = 1080,
         fps: int = 30,
     ):
         metadata = ffprobe(recording)
@@ -105,13 +107,13 @@ class TestCase(systest.TestCase):
             self.assert_greater(metadata.format.duration, minimum_length, "Minimum live stream length.")
         if maximum_length is not None:
             self.assert_less(metadata.format.duration, maximum_length, "Maximum live stream length.")
-        self._assert_live_stream_video(metadata.video, fps)
+        self._assert_live_stream_video(metadata.video, width, height, fps)
         self._assert_live_stream_audio(metadata.audio)
 
-    def _assert_live_stream_video(self, video: FfprobeVideoOutput, fps: int):
+    def _assert_live_stream_video(self, video: FfprobeVideoOutput, width: int, height: int, fps: int):
         self.assert_equal(video.codec, FfmpegVideoCodec.HEVC)
-        self.assert_equal(video.width, 1920)
-        self.assert_equal(video.height, 1080)
+        self.assert_equal(video.width, width)
+        self.assert_equal(video.height, height)
         self.assert_fps(video.real_base_fps, fps)
 
     def _assert_live_stream_audio(self, audio: FfprobeAudioOutput):

@@ -101,6 +101,7 @@ class DjiDeviceResolution(StrEnum):
 
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
+    QUAD_HD_4_3 = "1920x1440"
     QUAD_HD = "2560x1440"
     ULTRA_HD = "3840x2160"
 

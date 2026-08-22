@@ -197,7 +197,6 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
 
     def setup(self):
         self.skip_if_missing_capability(Capability.PIP)
-        self.skip_if_no_moving_picture()
         self.moving_picture_on()
         self.moblin.import_settings(
             overrides={
@@ -247,12 +246,16 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
         self.assert_recording(
             recording_file,
             has_qr_codes=False,
-            duplicated_frames_crops=[
-                # Top left
-                Crop(x=0, y=0, width=800, height=500),
-                # Bottom right
-                Crop(x=1120, y=580, width=800, height=500),
-            ],
+            duplicated_frames_crops=(
+                [
+                    # Top left
+                    Crop(x=0, y=0, width=800, height=500),
+                    # Bottom right
+                    Crop(x=1120, y=580, width=800, height=500),
+                ]
+                if self.moblin.has_moving_picture()
+                else []
+            ),
             fps=self._fps,
         )
 
