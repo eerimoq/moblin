@@ -1,10 +1,10 @@
 import Foundation
 
 struct AvcSeiPayloadPictureTiming {
-    private var hours: UInt8
-    private var minutes: UInt8
-    private var seconds: UInt8
-    private var frame: UInt32
+    private(set) var hours: UInt8
+    private(set) var minutes: UInt8
+    private(set) var seconds: UInt8
+    private(set) var frame: UInt32
 
     init(clock: Date, frame: UInt32) {
         hours = UInt8(calendar.component(.hour, from: clock))
@@ -45,7 +45,7 @@ struct AvcSeiPayloadPictureTiming {
         let clockTimestampFlag = true
         let unitFieldBasedFlag = true
         let fullTimestampFlag = true
-        let writer = NalUnitWriter()
+        let writer = NalUnitWriter(emulationPrevention: false)
         writer.writeBits(numClockTs, count: 2)
         writer.writeBit(clockTimestampFlag)
         writer.writeBit(unitFieldBasedFlag)
