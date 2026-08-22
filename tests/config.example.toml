@@ -6,6 +6,7 @@ capabilities = [
     "background-streaming",
     "dual-mics",
     "stereo-mic",
+    "gimbal",
 ]
 
 [device.macpro]

@@ -114,6 +114,12 @@ class AssistantEvents:
         self._stopped = threading.Event()
         self._connection: ClientConnection | None = None
         self._thread = threading.Thread(target=self._listen, daemon=True)
+        self._state_lock = threading.Lock()
+        self._state: dict = {}
+
+    def state(self) -> dict:
+        with self._state_lock:
+            return dict(self._state)
 
     def start(self):
         self._thread.start()
@@ -145,6 +151,9 @@ class AssistantEvents:
                 LOGGER_EVENTS.debug("%s", entry)
                 self._log_entry_observer(entry)
             else:
+                if kind == "state":
+                    with self._state_lock:
+                        self._state.update(data["data"])
                 LOGGER_EVENTS.debug("%s: %s", kind, data)
 
 
@@ -246,6 +255,37 @@ class Moblin:
                 }
             }
         )
+
+    def set_gimbal_tracking(self, on: bool):
+        self._request({"setGimbalTracking": {"on": on}})
+
+    def set_gimbal_movement(self, x: float, y: float):
+        self._request({"setGimbalMovement": {"x": x, "y": y}})
+
+    def animate_gimbal(self, motion: str):
+        self._request({"animateGimbal": {"motion": {motion: {}}}})
+
+    def save_gimbal_preset(self):
+        self._request({"saveGimbalPreset": {}})
+
+    def move_to_gimbal_preset(self, preset_id: str):
+        self._request({"moveToGimbalPreset": {"id": preset_id}})
+
+    def wait_for_gimbal_tracking(self, on: bool):
+        wait_until(
+            lambda: self.get_state().get("gimbalTracking") == on,
+            f"gimbal tracking to be {on}",
+        )
+
+    def wait_for_gimbal_presets(self, number_of_presets: int) -> list[dict]:
+        wait_until(
+            lambda: len(self.get_state().get("gimbalPresets") or []) == number_of_presets,
+            f"{number_of_presets} gimbal preset(s)",
+        )
+        return self.get_state()["gimbalPresets"]
+
+    def get_state(self) -> dict:
+        return self._events.state()
 
     def go_live(self):
         self._request({"setLive": {"on": True}})

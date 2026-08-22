@@ -1,6 +1,7 @@
 from .suites import browser_widget
 from .suites import chat
 from .suites import dji_camera
+from .suites import gimbal
 from .suites import ingests
 from .suites import mic
 from .suites import record
@@ -23,6 +24,7 @@ def create_suites(moblin, _):
         browser_widget.tests(moblin),
         chat.tests(moblin),
         dji_camera.tests(moblin),
+        gimbal.tests(moblin),
         web_remote_control.tests(moblin),
     ]
 
