@@ -10,17 +10,17 @@ interface ButtonProps {
   children?: JSX.Element;
 }
 
-export function Button({ class: extraClass, type = "button", onClick, children }: ButtonProps) {
+export function Button(props: ButtonProps) {
   return (
     <button
-      type={type}
+      type={props.type ?? "button"}
       class={twMerge(
         "cursor-pointer rounded border border-zinc-700 px-3 py-1 text-sm transition-colors hover:bg-zinc-800",
-        extraClass,
+        props.class,
       )}
-      onClick={onClick}
+      onClick={(event) => props.onClick?.(event)}
     >
-      {children}
+      {props.children}
     </button>
   );
 }
