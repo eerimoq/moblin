@@ -42,6 +42,7 @@ class GimbalMovement(GimbalTestCase):
             self.moblin.set_gimbal_movement(x, y)
             time.sleep(MOVEMENT_DURATION)
             self.moblin.set_gimbal_movement(0, 0)
+            time.sleep(MOVEMENT_DURATION)
 
 
 class GimbalPreset(GimbalTestCase):
