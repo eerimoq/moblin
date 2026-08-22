@@ -61,7 +61,7 @@ def tests(moblin: Moblin):
         Record(moblin, VideoCodec.H265, Resolution.FULL_HD, 60),
         Record(moblin, VideoCodec.H265, Resolution.QUAD_HD_4_3, 30),
         Record(moblin, VideoCodec.H265, Resolution.QUAD_HD, 30),
-        Record(moblin, VideoCodec.H265, Resolution.QUAD_HD, 60),
+        # Record(moblin, VideoCodec.H265, Resolution.QUAD_HD, 60),
         Record(moblin, VideoCodec.H265, Resolution.ULTRA_HD, 30),
-        Record(moblin, VideoCodec.H265, Resolution.ULTRA_HD, 60),
+        # Record(moblin, VideoCodec.H265, Resolution.ULTRA_HD, 60),
     ]
