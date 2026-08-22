@@ -14,6 +14,7 @@ class RemoteControl: ObservableObject {
     @Published var bitrate = UUID()
     @Published var zoom = ""
     @Published var zoomPresets: [RemoteControlZoomPreset] = []
+    @Published var gimbalPresets: [RemoteControlSettingsGimbalPreset] = []
     @Published var zoomPreset = UUID()
     @Published var debugLogging = false
     @Published var preview: UIImage?
@@ -608,6 +609,8 @@ extension Model {
         for filter in RemoteControlFilter.allCases {
             state.filters?[filter] = getQuickButtonState(type: filter.toSettings())?.isOn ?? false
         }
+        state.gimbalTracking = database.gimbal.tracking
+        state.gimbalPresets = getRemoteControlGimbalPresets()
         return state
     }
 
@@ -707,9 +710,6 @@ extension Model {
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
-        let gimbalPresets = database.gimbal.presets.map {
-            RemoteControlSettingsGimbalPreset(id: $0.id, name: $0.name)
-        }
         return RemoteControlSettings(
             streams: streams,
             scenes: scenes,
@@ -719,8 +719,7 @@ extension Model {
             srt: RemoteControlSettingsSrt(
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
-            ),
-            gimbalPresets: gimbalPresets
+            )
         )
     }
 }
@@ -748,6 +747,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerDisconnected() {
         makeToast(title: String(localized: "Remote control assistant disconnected"))
+        setGimbalMovement(x: 0, y: 0)
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
         remoteControlStreamerStopStats()
@@ -1064,6 +1064,22 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         moveToGimbalPreset(id: id)
     }
 
+    func remoteControlStreamerSetGimbalTracking(on: Bool) {
+        setGimbalTracking(on: on)
+    }
+
+    func remoteControlStreamerSetGimbalMovement(x: Float, y: Float) {
+        setGimbalMovement(x: x, y: y)
+    }
+
+    func remoteControlStreamerAnimateGimbal(motion: SettingsGimbalMotion) {
+        animateGimbal(motion: motion)
+    }
+
+    func remoteControlStreamerSaveGimbalPreset() {
+        saveGimbalPreset(id: nil)
+    }
+
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void) {
         guard !isLive, !isRecording else {
             onCompleted(false)
@@ -1117,6 +1133,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         if let zoomPresets = state.zoomPresets {
             remoteControlAssistantStreamerState.zoomPresets = zoomPresets
             remoteControl.zoomPresets = zoomPresets
+        }
+        if let gimbalPresets = state.gimbalPresets {
+            remoteControlAssistantStreamerState.gimbalPresets = gimbalPresets
+            remoteControl.gimbalPresets = gimbalPresets
         }
         if let zoomPreset = state.zoomPreset {
             remoteControlAssistantStreamerState.zoomPreset = zoomPreset
@@ -1222,6 +1242,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
 }
 
 extension Model: @preconcurrency RemoteControlWebDelegate {
+    func remoteControlWebDisconnected() {
+        setGimbalMovement(x: 0, y: 0)
+    }
+
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
         remoteControlWeb?.sendGolfScoreboardUpdate(data: getGolfScoreboardForRemoteControl())
@@ -1305,6 +1329,22 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
 
     func remoteControlWebMoveToGimbalPreset(id: UUID) {
         remoteControlStreamerMoveToGimbalPreset(id: id)
+    }
+
+    func remoteControlWebSetGimbalTracking(on: Bool) {
+        remoteControlStreamerSetGimbalTracking(on: on)
+    }
+
+    func remoteControlWebSetGimbalMovement(x: Float, y: Float) {
+        remoteControlStreamerSetGimbalMovement(x: x, y: y)
+    }
+
+    func remoteControlWebAnimateGimbal(motion: SettingsGimbalMotion) {
+        remoteControlStreamerAnimateGimbal(motion: motion)
+    }
+
+    func remoteControlWebSaveGimbalPreset() {
+        remoteControlStreamerSaveGimbalPreset()
     }
 
     func remoteControlWebGetScoreboardSports() -> [String] {

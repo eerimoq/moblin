@@ -571,8 +571,8 @@ private struct GimbalPresetView: View {
         NavigationLink {
             Form {
                 Section {
-                    if let presets = remoteControl.settings?.gimbalPresets, !presets.isEmpty {
-                        ForEach(presets) { preset in
+                    if !remoteControl.gimbalPresets.isEmpty {
+                        ForEach(remoteControl.gimbalPresets) { preset in
                             TextButtonView(title: preset.name) {
                                 model.remoteControlAssistantMoveToGimbalPreset(id: preset.id)
                             }

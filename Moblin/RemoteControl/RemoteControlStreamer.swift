@@ -49,6 +49,10 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
+    func remoteControlStreamerSetGimbalTracking(on: Bool)
+    func remoteControlStreamerSetGimbalMovement(x: Float, y: Float)
+    func remoteControlStreamerAnimateGimbal(motion: SettingsGimbalMotion)
+    func remoteControlStreamerSaveGimbalPreset()
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
@@ -365,6 +369,18 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlStreamerMoveToGimbalPreset(id: presetId)
+            sendEmptyOkResponse(id: id)
+        case let .setGimbalTracking(on: on):
+            delegate.remoteControlStreamerSetGimbalTracking(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setGimbalMovement(x: x, y: y):
+            delegate.remoteControlStreamerSetGimbalMovement(x: x, y: y)
+            sendEmptyOkResponse(id: id)
+        case let .animateGimbal(motion: motion):
+            delegate.remoteControlStreamerAnimateGimbal(motion: motion)
+            sendEmptyOkResponse(id: id)
+        case .saveGimbalPreset:
+            delegate.remoteControlStreamerSaveGimbalPreset()
             sendEmptyOkResponse(id: id)
         case .getGolfScoreboard:
             sendEmptyOkResponse(id: id)

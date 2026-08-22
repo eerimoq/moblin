@@ -3,6 +3,20 @@ import Foundation
 import Testing
 
 struct RemoteControlSuite {
+    private func encode(_ request: RemoteControlRequest) throws -> String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return try String(bytes: encoder.encode(request), encoding: .utf8)
+    }
+
+    @Test
+    func gimbalRequests() throws {
+        #expect(try encode(.setGimbalTracking(on: true)) == #"{"setGimbalTracking":{"on":true}}"#)
+        #expect(try encode(.setGimbalMovement(x: 1, y: -1)) == #"{"setGimbalMovement":{"x":1,"y":-1}}"#)
+        #expect(try encode(.animateGimbal(motion: .kapow)) == #"{"animateGimbal":{"motion":{"kapow":{}}}}"#)
+        #expect(try encode(.saveGimbalPreset) == #"{"saveGimbalPreset":{}}"#)
+    }
+
     @Test
     func remoteSceneDataTextStats() throws {
         let textStats = RemoteControlRemoteSceneDataTextStats(stats: createStats())

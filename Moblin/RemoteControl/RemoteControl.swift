@@ -62,6 +62,10 @@ enum RemoteControlRequest: Codable {
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
     case moveToGimbalPreset(id: UUID)
+    case setGimbalTracking(on: Bool)
+    case setGimbalMovement(x: Float, y: Float)
+    case animateGimbal(motion: SettingsGimbalMotion)
+    case saveGimbalPreset
     case getGolfScoreboard
     case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
     case importSettings(data: Data)
@@ -894,7 +898,6 @@ struct RemoteControlSettings: Codable {
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
-    var gimbalPresets: [RemoteControlSettingsGimbalPreset]
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {
@@ -923,6 +926,8 @@ struct RemoteControlAssistantStreamerState: Codable {
     var torchOn: Bool?
     var batteryCharging: Bool?
     var filters: [RemoteControlFilter: Bool]?
+    var gimbalTracking: Bool?
+    var gimbalPresets: [RemoteControlSettingsGimbalPreset]?
 }
 
 struct RemoteControlScoreboardControl: Codable {

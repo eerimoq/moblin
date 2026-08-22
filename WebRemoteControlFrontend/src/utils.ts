@@ -198,7 +198,6 @@ export interface RemoteControlSettings {
   bitratePresets: BitratePreset[];
   mics: NamedItem[];
   srt: RemoteControlSettingsSrt;
-  gimbalPresets: GimbalPreset[];
 }
 
 export interface ResponseData {
@@ -225,6 +224,8 @@ export interface RemoteControlAssistantStreamerState {
   torchOn?: boolean;
   batteryCharging?: boolean;
   filters?: (object | boolean)[];
+  gimbalTracking?: boolean;
+  gimbalPresets?: GimbalPreset[];
 }
 
 export function convertFilters(filters: (object | boolean)[]): [string, boolean][] {
@@ -392,6 +393,22 @@ export class WebSocketConnection {
 
   moveToGimbalPreset(id: string): void {
     this.sendRequest({ moveToGimbalPreset: { id } });
+  }
+
+  setGimbalTracking(on: boolean): void {
+    this.sendRequest({ setGimbalTracking: { on } });
+  }
+
+  setGimbalMovement(x: number, y: number): void {
+    this.sendRequest({ setGimbalMovement: { x, y } });
+  }
+
+  animateGimbal(motion: string): void {
+    this.sendRequest({ animateGimbal: { motion: { [motion]: {} } } });
+  }
+
+  saveGimbalPreset(): void {
+    this.sendRequest({ saveGimbalPreset: {} });
   }
 
   setFilter(filter: string, on: boolean): void {
