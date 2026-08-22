@@ -89,6 +89,53 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
+private class AudioMeasurement {
+    private var numberOfChannels: Int = 0
+    private var sampleRate: Int = 0
+    private var energy: Float = 0.0
+    private var curpeak: Float = 0.0
+    private var nsamples: Int = 0
+    private var npeakset: Int = 0
+    private let ds: Float = 1.0
+    private let a: Float
+    
+    init(_ numberOfChannels: Int, _ sampleRate: Int) {
+        self.numberOfChannels = numberOfChannels
+        self.sampleRate = sampleRate
+        a = pow(0.01, (1.0 / (ds * Float(sampleRate))))
+    }
+    
+    func update(sampleValue: Float) {
+        energy = a * energy + (1 - a) * (sampleValue * sampleValue)
+        
+        if nsamples - npeakset > sampleRate * 2 {
+            curpeak = abs(sampleValue)
+        }
+        else if abs(sampleValue) > curpeak {
+            curpeak = abs(sampleValue)
+            npeakset = nsamples
+        }
+        nsamples += 1
+    }
+    
+    func reset() {
+        energy = 0.0
+        curpeak = 0.0
+        nsamples = 0
+    }
+    
+    func levelRMS() -> Float {
+        guard nsamples > 0, energy > 0 else {
+            return defaultAudioLevel
+        }
+        return 10 * log10(energy)
+    }
+    
+    func peak() -> Float {
+        return curpeak
+    }
+}
+
 final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: AudioEncoder?
@@ -108,6 +155,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var talkbackPlayer: TalkbackPlayer?
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
+    private var measurement = AudioMeasurement(2, 48000)
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -141,6 +189,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if let device = params.device {
             try attachDevice(device)
         }
+        measurement.reset()
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate) {
@@ -283,6 +332,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
+    
+    
     private func appendNewSampleBuffer(_ processor: Processor,
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ presentationTimeStamp: CMTime)
@@ -308,15 +359,26 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             numberOfDiscardedSampleBuffers = 0
         }
         latestSampleBufferAppendTime = presentationTimeStamp
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            let numberOfAudioChannels = Int(
-                sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
-            )
-            let audioLevel: Float = muted ? .nan : sampleBuffer.audioLevel()
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: audioLevel,
-                             numberOfAudioChannels: numberOfAudioChannels)
-        }
+        //if shouldUpdateAudioLevel(sampleBuffer) {
+        let numberOfAudioChannels = Int(
+            sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
+        )
+        _ = sampleBuffer.foreachAudioSample(float32: {
+            samples, count in
+            for index in 0 ..< count {
+                measurement.update(sampleValue: samples[index])
+            }
+        }, int16: {
+            samples, count in
+            for index in 0 ..< count {
+                measurement.update(sampleValue: Float(samples[index]) / Float(Int16.max))
+            }
+        })
+        let audioLevel: Float = muted ? .nan : measurement.levelRMS()
+        updateAudioLevel(sampleBuffer: sampleBuffer,
+                         audioLevel: audioLevel,
+                         numberOfAudioChannels: numberOfAudioChannels)
+        //}
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
         }
@@ -325,7 +387,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
         previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
-
+    
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
                                             _ presentationTimeStamp: CMTime) -> BufferedAudio?
     {

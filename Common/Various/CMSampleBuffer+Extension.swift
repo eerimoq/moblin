@@ -1,5 +1,6 @@
 @preconcurrency import AVFoundation
 import CoreMedia
+import os
 
 extension CMSampleBuffer {
     static func create(
@@ -87,33 +88,54 @@ extension CMSampleBuffer {
             }
         }
     }
-
-    func audioLevel() -> Float {
+    
+    struct LevelCalcValues
+    {
+        let power: Float
+        let peak: Float
+        let nsamples: Int
+    }
+    
+    func audioLevelCalc() -> LevelCalcValues
+    {
+        let signposter = OSSignposter()
+        let signpostID = signposter.makeSignpostID()
+        let state = signposter.beginInterval("audioLevel", id: signpostID)
         var sumOfSquares: Float = 0.0
         var samplesCount = 0
         let sampleBuffer = foreachAudioSample { samples, count in
-            samplesCount = min(count, 256)
+            samplesCount = count
             for index in 0 ..< samplesCount {
                 sumOfSquares += samples[index] * samples[index]
             }
         } int16: { samples, count in
-            samplesCount = min(count, 256)
+            samplesCount = count
             for index in 0 ..< samplesCount {
                 let normalized = Float(samples[index]) / Float(Int16.max)
                 sumOfSquares += normalized * normalized
             }
         }
         guard sampleBuffer != nil, samplesCount > 0 else {
-            return .infinity
+            signposter.endInterval("audioLevel", state)
+            return LevelCalcValues(power: .nan, peak: .nan, nsamples: 0)
         }
-        let rms = sqrt(sumOfSquares / Float(samplesCount))
-        guard rms > 0 else {
-            return defaultAudioLevel
-        }
-        return 20.0 * log10(rms)
+        let ms = sumOfSquares / Float(samplesCount)
+        signposter.endInterval("audioLevel", state)
+        return LevelCalcValues(power: ms, peak: 0.0, nsamples: samplesCount)
     }
 
-    private func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
+    func audioLevel() -> Float {
+        let values = audioLevelCalc()
+        guard !values.power.isNaN else {
+            return .infinity
+        }
+        guard values.power > 0 else {
+            return defaultAudioLevel
+        }
+        return 10.0 * log10(values.power)
+    }
+
+    func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
                                     int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
     {
         guard let dataBuffer else {
