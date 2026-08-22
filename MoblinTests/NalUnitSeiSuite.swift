@@ -73,6 +73,24 @@ struct NalUnitSeiSuite {
         #expect(decodedTimeCode.frame == 7)
     }
 
+    @Test
+    func hevcNalUnitEmulationPreventionByteInserted() {
+        let timeCode = HevcSeiPayloadTimeCode(clock: clock(0, 0, 0), frame: 0)
+        let sei = HevcNalUnitSei(payload: .timeCode(timeCode))
+        let encoded = HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei))
+            .encode()
+        #expect(encoded == Data([0x4E, 0x01, 0x88, 0x06, 0x70, 0x40, 0x00, 0x00, 0x03, 0x00, 0x10, 0x80]))
+    }
+
+    @Test
+    func hevcNalUnitNoEmulationPreventionByteOnTheHour() {
+        let timeCode = HevcSeiPayloadTimeCode(clock: clock(12, 0, 0), frame: 0)
+        let sei = HevcNalUnitSei(payload: .timeCode(timeCode))
+        let encoded = HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei))
+            .encode()
+        #expect(encoded == Data([0x4E, 0x01, 0x88, 0x06, 0x70, 0x40, 0x00, 0x00, 0x30, 0x10, 0x80]))
+    }
+
     @Test(arguments: [(0, 0, 0, UInt32(0)),
                       (0, 1, 0, UInt32(0)),
                       (0, 2, 8, UInt32(32)),
