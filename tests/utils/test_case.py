@@ -1,10 +1,13 @@
 import logging
 import re
+import statistics
 import subprocess
 import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import UTC
+from datetime import datetime
 from fractions import Fraction
 from pathlib import Path
 
@@ -26,6 +29,7 @@ from .ffmpeg import ffprobe_video_size
 from .ffmpeg import measure_mean_volume
 from .ffmpeg import read_qr_codes
 from .ffmpeg import read_unique_frame_presentation_time_stamps
+from .ffmpeg import read_video_timecodes
 from .moblin import Moblin
 from .utils import FILES_DIR
 from .utils import Crop
@@ -136,6 +140,34 @@ class TestCase(systest.TestCase):
         self.assert_less(probe.format.duration, 14, "Maximum recording length.")
         self._assert_video(probe, recording, width, height, fps, video_codec)
         self._assert_audio(probe, recording, channels)
+
+    def assert_timecodes(self, recording: Path, start: datetime, end: datetime, fps: int = 30):
+        timecodes = read_video_timecodes(recording)
+        first = next((index for index, timecode in enumerate(timecodes) if timecode is not None), None)
+        if first is None:
+            raise Exception("No SEI timecodes in the stream.")
+        self.assert_less(first, 2 * fps, "Frames before the first SEI timecode.")
+        present = [timecode for timecode in timecodes[first:] if timecode is not None]
+        self.assert_equal(len(present), len(timecodes) - first, "Frames with a SEI timecode.")
+        offsets = []
+        for timecode in present:
+            self.assert_less(timecode.frame, fps, "SEI timecode frame number.")
+            timecode_time = anchor_time_of_day(timecode.time_of_day(fps), start)
+            self.assert_greater(timecode_time, start.timestamp() - 2, "SEI timecode before the stream.")
+            self.assert_less(timecode_time, end.timestamp() + 2, "SEI timecode after the stream.")
+            offsets.append(timecode_time - timecode.pts)
+        median = statistics.median(offsets)
+        spread = max(abs(offset - median) for offset in offsets)
+        drift = statistics.median(offsets[-fps:]) - statistics.median(offsets[:fps])
+        LOGGER.debug(
+            "SEI timecodes: %s of %s frames, spread %.3f s, drift %.3f s",
+            len(present),
+            len(timecodes),
+            spread,
+            drift,
+        )
+        self.assert_less(spread, 0.25, "SEI timecode spread.")
+        self.assert_less(abs(drift), 2 / fps, "SEI timecode drift.")
 
     def assert_no_audio_glitches(self, recording: Path):
         audio = ffprobe_audio(recording)
@@ -304,6 +336,14 @@ class TestCase(systest.TestCase):
     def _log_output(self, output: str):
         for line in output.splitlines():
             LOGGER.info("ltcdump: %s", line)
+
+
+def anchor_time_of_day(seconds: float, start: datetime) -> float:
+    midnight = datetime(start.year, start.month, start.day, tzinfo=UTC).timestamp() + seconds
+    for offset in (-86400, 0, 86400):
+        if abs(midnight + offset - start.timestamp()) < 43200:
+            return midnight + offset
+    return midnight
 
 
 @dataclass

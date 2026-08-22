@@ -1,4 +1,6 @@
 from contextlib import contextmanager
+from datetime import UTC
+from datetime import datetime
 from pathlib import Path
 
 from ..utils.config import TESTER_SRTLA_PORT
@@ -162,6 +164,26 @@ class StreamSrtToFfmpegEncrypted(StreamTestCase):
             10_000_000,
         )
         self.assert_live_stream(filename)
+
+
+class StreamSrtToFfmpegTimecodes(StreamTestCase):
+    """SRT stream with SEI timecodes from Moblin to ffmpeg for a few seconds."""
+
+    def setup(self):
+        self.import_stream_settings(
+            url=self.moblin.tester_srt_publish_url("test"),
+            srt={"adaptiveBitrateEnabled": False},
+            codec=VideoCodec.H265,
+            bitrate=5_000_000,
+            timecodesEnabled=True,
+            ntpPoolAddress="time.apple.com",
+        )
+
+    def run(self):
+        started = datetime.now(UTC)
+        filename = self.stream_to_ffmpeg(srt_listener_url(), 4_000_000, 6_000_000, 10_000_000)
+        self.assert_live_stream(filename)
+        self.assert_timecodes(filename, started, datetime.now(UTC))
 
 
 class StreamSrtToFfmpegVideoRateControl(StreamTestCase):
@@ -333,6 +355,7 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpeg(moblin, resolution=Resolution.QUAD_HD_4_3, fps=30),
         StreamSrtToFfmpegHighBitrate(moblin),
         StreamSrtToFfmpegEncrypted(moblin),
+        StreamSrtToFfmpegTimecodes(moblin),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.ABR),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.CBR),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.VBR),

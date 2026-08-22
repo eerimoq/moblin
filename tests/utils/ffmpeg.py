@@ -858,6 +858,33 @@ def read_unique_frame_presentation_time_stamps(path: Path, crop: Crop | None = N
     return [float(pts) for pts in RE_SHOWINFO_PTS.findall(output)]
 
 
+@dataclass
+class VideoTimecode:
+    pts: float
+    hours: int
+    minutes: int
+    seconds: int
+    frame: int
+
+    def time_of_day(self, fps: int) -> float:
+        return 3600 * self.hours + 60 * self.minutes + self.seconds + self.frame / fps
+
+
+def read_video_timecodes(path: Path) -> list[VideoTimecode | None]:
+    output = ffprobe_run(path, "-select_streams", "v:0", "-show_frames")
+    return [_parse_video_timecode(frame) for frame in output["frames"]]
+
+
+def _parse_video_timecode(frame) -> VideoTimecode | None:
+    for side_data in frame.get("side_data_list", []):
+        if side_data.get("side_data_type") != "SMPTE 12-1 timecode":
+            continue
+        for timecode in side_data.get("timecodes", []):
+            hours, minutes, seconds, number = (int(part) for part in timecode["value"].split(":"))
+            return VideoTimecode(float(frame["pts_time"]), hours, minutes, seconds, number)
+    return None
+
+
 def create_qr_codes_video(output_file: Path):
     ffmpeg_run(
         "-t",
