@@ -1,6 +1,7 @@
 @preconcurrency import AVFoundation
 import Collections
 import CoreAudio
+import os
 
 private class TalkbackPlayer {
     private let engine = AVAudioEngine()
@@ -89,50 +90,55 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
-private class AudioMeasurement {
-    private var numberOfChannels: Int = 0
-    private var sampleRate: Int = 0
-    private var energy: Float = 0.0
-    private var curpeak: Float = 0.0
-    private var nsamples: Int = 0
-    private var npeakset: Int = 0
-    private let ds: Float = 1.0
-    private let a: Float
+private class FastAudioMeasurement {
+    private var lastSampleTime: Double = 0.0
+    private var nSamples: Int = 0
+    private var curPeak: Float = 0.0
+    private var timePeakSet: Double = 0.0
+    private var squaresum: Float = 0.0
     
-    init(_ numberOfChannels: Int, _ sampleRate: Int) {
-        self.numberOfChannels = numberOfChannels
-        self.sampleRate = sampleRate
-        a = pow(0.01, (1.0 / (ds * Float(sampleRate))))
+    private var fin_ms: Float = 0.0 //
+    private var fin_peak: Float = 0.0
+    
+    func input(sample: Float, time: Double) {
+        if time > timePeakSet + 2.0 {
+            curPeak = abs(sample)
+            timePeakSet = time
+        } else if abs(sample) > curPeak { // assert time > timePeakSet
+            curPeak = abs(sample)
+            timePeakSet = time
+        }
+        
+        squaresum += sample * sample
+        nSamples += 1 // si evita con input array
+        lastSampleTime = time
     }
     
-    func update(sampleValue: Float) {
-        energy = a * energy + (1 - a) * (sampleValue * sampleValue)
-        
-        if nsamples - npeakset > sampleRate * 2 {
-            curpeak = abs(sampleValue)
-        }
-        else if abs(sampleValue) > curpeak {
-            curpeak = abs(sampleValue)
-            npeakset = nsamples
-        }
-        nsamples += 1
+    func finalize() { // before displaying. can still use input afterwards
+        fin_peak = curPeak
+        timePeakSet = lastSampleTime
+        fin_ms = nSamples != 0 ? squaresum / Float(nSamples) : 0.0
+        nSamples = 0
+        curPeak = 0 //
+        squaresum = 0
     }
     
     func reset() {
-        energy = 0.0
-        curpeak = 0.0
-        nsamples = 0
+        lastSampleTime = 0.0
+        nSamples = 0
+        curPeak = 0.0 //
+        timePeakSet = 0.0
+        squaresum = 0.0
+        fin_ms = 0.0
+        fin_peak = 0.0
     }
     
     func levelRMS() -> Float {
-        guard nsamples > 0, energy > 0 else {
-            return defaultAudioLevel
-        }
-        return 10 * log10(energy)
+        return 10 * log10(fin_ms)
     }
     
     func peak() -> Float {
-        return curpeak
+        return 20 * log10(fin_peak)
     }
 }
 
@@ -150,12 +156,14 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     let session = AVCaptureSession()
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
-    private var latestAudioStatusTime = 0.0
+    private var measurementWindowStart = 0.0
+    private let measurementWindowDuration = 0.03
+    private let measurementWindowInterval = 0.2
     private var talkbackCameraId: UUID?
     private var talkbackPlayer: TalkbackPlayer?
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
-    private var measurement = AudioMeasurement(2, 48000)
+    private var meas = FastAudioMeasurement()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -189,7 +197,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if let device = params.device {
             try attachDevice(device)
         }
-        measurement.reset()
+        measurementWindowStart = 0.0
+        meas.reset()
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate) {
@@ -359,26 +368,24 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             numberOfDiscardedSampleBuffers = 0
         }
         latestSampleBufferAppendTime = presentationTimeStamp
-        //if shouldUpdateAudioLevel(sampleBuffer) {
-        let numberOfAudioChannels = Int(
-            sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
-        )
-        _ = sampleBuffer.foreachAudioSample(float32: {
-            samples, count in
-            for index in 0 ..< count {
-                measurement.update(sampleValue: samples[index])
+        let now = sampleBuffer.presentationTimeStamp.seconds
+        if measurementWindowStart == 0 {
+            measurementWindowStart = now
+        }
+        if now > measurementWindowStart {
+            let numberOfAudioChannels = Int(
+                sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
+            )
+            performMeasurement(sampleBuffer)
+            if now > measurementWindowStart + measurementWindowDuration {
+                measurementWindowStart += measurementWindowInterval
+                meas.finalize()
+                let audioLevel: Float = muted ? .nan : meas.peak()
+                updateAudioLevel(sampleBuffer: sampleBuffer,
+                                    audioLevel: audioLevel,
+                                    numberOfAudioChannels: numberOfAudioChannels)
             }
-        }, int16: {
-            samples, count in
-            for index in 0 ..< count {
-                measurement.update(sampleValue: Float(samples[index]) / Float(Int16.max))
-            }
-        })
-        let audioLevel: Float = muted ? .nan : measurement.levelRMS()
-        updateAudioLevel(sampleBuffer: sampleBuffer,
-                         audioLevel: audioLevel,
-                         numberOfAudioChannels: numberOfAudioChannels)
-        //}
+        }
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
         }
@@ -386,6 +393,27 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
         previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+    }
+    
+    private func performMeasurement(_ sampleBuffer: CMSampleBuffer) {
+        let signposter = OSSignposter()
+        let signpostID = signposter.makeSignpostID()
+        let state = signposter.beginInterval("audioLevel_performMeasurement", id: signpostID)
+        
+        _ = sampleBuffer.foreachAudioSample(float32: {
+            samples, count in
+            for index in 0 ..< count {
+                meas.input(sample: samples[index], time: sampleBuffer.presentationTimeStamp.seconds)
+            }
+        }, int16: {
+            samples, count in
+            for index in 0 ..< count {
+                meas.input(sample: Float(samples[index]) / Float(Int16.max),
+                           time: sampleBuffer.presentationTimeStamp.seconds)
+            }
+        })
+        
+        signposter.endInterval("audioLevel_performMeasurement", state)
     }
     
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
@@ -409,8 +437,10 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func shouldUpdateAudioLevel(_ sampleBuffer: CMSampleBuffer) -> Bool {
         let now = sampleBuffer.presentationTimeStamp.seconds
-        if now - latestAudioStatusTime > 0.2 {
-            latestAudioStatusTime = now
+        if now > measurementWindowStart {
+            if now > measurementWindowStart + measurementWindowDuration {
+                measurementWindowStart += measurementWindowInterval
+            }
             return true
         } else {
             return false
