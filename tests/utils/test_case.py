@@ -6,7 +6,6 @@ import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import UTC
 from datetime import datetime
 from fractions import Fraction
 from pathlib import Path
@@ -35,6 +34,7 @@ from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
 from .utils import Range
+from .utils import anchor_time_of_day
 from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
@@ -336,14 +336,6 @@ class TestCase(systest.TestCase):
     def _log_output(self, output: str):
         for line in output.splitlines():
             LOGGER.info("ltcdump: %s", line)
-
-
-def anchor_time_of_day(seconds: float, start: datetime) -> float:
-    midnight = datetime(start.year, start.month, start.day, tzinfo=UTC).timestamp() + seconds
-    for offset in (-86400, 0, 86400):
-        if abs(midnight + offset - start.timestamp()) < 43200:
-            return midnight + offset
-    return midnight
 
 
 @dataclass

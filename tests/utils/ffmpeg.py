@@ -866,12 +866,25 @@ class VideoTimecode:
     seconds: int
     frame: int
 
+    def second_of_day(self) -> int:
+        return 3600 * self.hours + 60 * self.minutes + self.seconds
+
     def time_of_day(self, fps: int) -> float:
-        return 3600 * self.hours + 60 * self.minutes + self.seconds + self.frame / fps
+        return self.second_of_day() + self.frame / fps
 
 
-def read_video_timecodes(path: Path) -> list[VideoTimecode | None]:
-    output = ffprobe_run(path, "-select_streams", "v:0", "-show_frames")
+def read_video_timecodes(
+    path: Path,
+    start: float | None = None,
+    duration: float | None = None,
+) -> list[VideoTimecode | None]:
+    args = []
+    if start is not None or duration is not None:
+        interval = "" if start is None else f"{start:.3f}"
+        if duration is not None:
+            interval += f"%+{duration:.3f}"
+        args = ["-read_intervals", interval]
+    output = ffprobe_run(path, "-select_streams", "v:0", "-show_frames", *args)
     return [_parse_video_timecode(frame) for frame in output["frames"]]
 
 

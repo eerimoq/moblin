@@ -17,6 +17,7 @@ from .generate_device_settings import uuid
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Pixel
+from .utils import slope_per_hour
 
 LOGGER = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ class AlertSyncReport:
         return max(offsets) - min(offsets)
 
     def drift(self) -> float:
-        return _slope_per_hour([(alert.trigger_time, alert.offset()) for alert in self.alerts])
+        return slope_per_hour([(alert.trigger_time, alert.offset()) for alert in self.alerts])
 
     def log(self):
         LOGGER.debug("Alert audio and video synchronization in %s", self.path)
@@ -336,18 +337,6 @@ def _is_color(color: Pixel, expected: Pixel) -> bool:
         and abs(color.green - expected.green) <= ALERT_COLOR_TOLERANCE
         and abs(color.blue - expected.blue) <= ALERT_COLOR_TOLERANCE
     )
-
-
-def _slope_per_hour(points: list[tuple[float, float]]) -> float:
-    if len(points) < 2:
-        return 0.0
-    mean_x = sum(x for x, _ in points) / len(points)
-    mean_y = sum(y for _, y in points) / len(points)
-    numerator = sum((x - mean_x) * (y - mean_y) for x, y in points)
-    denominator = sum((x - mean_x) ** 2 for x, _ in points)
-    if denominator == 0:
-        return 0.0
-    return 3600 * numerator / denominator
 
 
 def _create_alert_image():

@@ -3,6 +3,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from dataclasses import dataclass
+from datetime import UTC
+from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
 
@@ -47,6 +49,9 @@ from ..utils.monitor import Monitor
 from ..utils.network_capture import CaptureStream
 from ..utils.network_capture import NetworkCapture
 from ..utils.test_case import TestCase
+from ..utils.timecodes import TimecodeReport
+from ..utils.timecodes import measure_timecodes
+from ..utils.timecodes import write_timecodes_html
 from ..utils.traffic_shaper import Group
 from ..utils.traffic_shaper import Profile
 from ..utils.traffic_shaper import Protocol
@@ -116,6 +121,11 @@ ALERT_INTERVAL = 15 * 60
 FIRST_ALERT_DELAY = 60
 MAXIMUM_ALERT_OFFSET_SPREAD = 0.25
 MAXIMUM_ALERT_OFFSET_DRIFT = 0.1
+TIMECODE_STREAM_PROTOCOLS = [StreamProtocol.SRT, StreamProtocol.RIST]
+TIMECODE_WINDOWS = 12
+MAXIMUM_TIMECODE_SPREAD = 0.25
+MAXIMUM_TIMECODE_DRIFT = 0.5
+MINIMUM_TIMECODE_DRIFT_SPAN = 1800
 RTMP_NAME_WIDGET_ID = uuid()
 SRT_NAME_WIDGET_ID = uuid()
 RIST_NAME_WIDGET_ID = uuid()
@@ -159,6 +169,7 @@ class StabilityIngestsOneStream(TestCase):
         self._stream_bitrate_range = STREAM_BITRATE_RANGE
         self._ingests_bitrate_range = ingests_bitrate_range(len(ingests))
         self._alert_times: list[float] = []
+        self._stream_started: datetime | None = None
 
     def setup(self):
         if self._shaper is not None:
@@ -175,6 +186,7 @@ class StabilityIngestsOneStream(TestCase):
                         "bitrate": STREAM_BITRATE,
                         "fps": STREAM_FPS,
                         "resolution": STREAM_RESOLUTION,
+                        "timecodesEnabled": True,
                     }
                 ],
                 "scenes": [
@@ -348,6 +360,7 @@ class StabilityIngestsOneStream(TestCase):
         with ThreadPoolExecutor() as executor:
             audio_futures = [executor.submit(ffprobe_audio, file) for file in files]
             report_futures = [executor.submit(self._measure_alert_synchronization, file) for file in files]
+            timecode_future = executor.submit(self._measure_timecodes, recorder)
             for future in report_futures:
                 report = future.result()
                 if report is None:
@@ -355,9 +368,11 @@ class StabilityIngestsOneStream(TestCase):
                 report.log()
                 reports.append(report)
             audios = [future.result() for future in audio_futures]
+            timecode_report = timecode_future.result()
         for file, audio in zip(files, audios):
             self._assert_audio_presentation_time_stamps(file, audio)
         self._assert_alerts_synchronized(reports, recording)
+        self._assert_timecodes(timecode_report)
 
     def _measure_alert_synchronization(self, file: Path) -> AlertSyncReport | None:
         if len(self._alert_times) < 2:
@@ -376,6 +391,38 @@ class StabilityIngestsOneStream(TestCase):
                 continue
             self.assert_less(report.spread(), MAXIMUM_ALERT_OFFSET_SPREAD)
             self.assert_less(abs(report.drift()), MAXIMUM_ALERT_OFFSET_DRIFT)
+
+    def _assert_timecodes(self, report: TimecodeReport | None):
+        if report is None:
+            return
+        report.log()
+        self._write_timecodes_html(report)
+        self.assert_greater(report.frames, 0)
+        self.assert_equal(report.missing, 0)
+        self.assert_equal(report.outside, 0)
+        self.assert_less(report.spread(), MAXIMUM_TIMECODE_SPREAD)
+        if report.span() > MINIMUM_TIMECODE_DRIFT_SPAN:
+            self.assert_less(abs(report.drift()), MAXIMUM_TIMECODE_DRIFT)
+
+    def _measure_timecodes(self, recorder: StreamRecorder | None) -> TimecodeReport | None:
+        if recorder is None or self._stream_started is None:
+            return None
+        if self._stream_protocol not in TIMECODE_STREAM_PROTOCOLS:
+            return None
+        try:
+            return measure_timecodes(recorder.file, self._stream_started, TIMECODE_WINDOWS)
+        except Exception as error:
+            LOGGER.warning("Failed to measure SEI timecodes in %s. %s", recorder.file, error)
+            return None
+
+    def _write_timecodes_html(self, report: TimecodeReport):
+        file = FILES_DIR / f"{STREAM_PATH}-timecodes.html"
+        try:
+            write_timecodes_html(file, report, self._settings())
+        except Exception as error:
+            LOGGER.warning("Failed to write the SEI timecode graphs. %s", error)
+            return
+        LOGGER.info("Open the timecode graphs with 'open %s'.", file)
 
     def _trigger_alert(self):
         self.moblin.set_scene(SceneName.FRONT)
@@ -447,6 +494,7 @@ class StabilityIngestsOneStream(TestCase):
         )
 
     def _go_live(self, stream_recorder: StreamRecorder):
+        self._stream_started = datetime.now(UTC)
         self.moblin.go_live()
         self.moblin.wait_for_bitrate(
             self._stream_bitrate_range.minimum,
@@ -478,11 +526,11 @@ class StabilityIngestsOneStream(TestCase):
             CaptureStream(relay.name, relay.protocol, relay.port) for relay in relays(self._stream_protocol)
         ]
         self._capture = stack.enter_context(
-            NetworkCapture(hosts, FILES_DIR, STREAM_PATH, streams, self._capture_settings())
+            NetworkCapture(hosts, FILES_DIR, STREAM_PATH, streams, self._settings())
         )
         return self._capture
 
-    def _capture_settings(self) -> dict[str, str]:
+    def _settings(self) -> dict[str, str]:
         return {
             "Device": self.moblin.device_name,
             "Stream protocol": self._stream_protocol.name,
