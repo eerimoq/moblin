@@ -7,6 +7,7 @@ SWIFT_DIRS += "Moblin Screen Recording"
 SWIFT_DIRS += "MoblinTests"
 
 WEB_DIRS += WebRemoteControlFrontend
+WEB_DIRS += tests/utils
 
 PYTHON_DIRS += tests
 PYTHON_DIRS += utils
