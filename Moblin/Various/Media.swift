@@ -26,6 +26,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRistDisconnected()
     func mediaOnWhipConnected()
     func mediaOnWhipDisconnected(_ reason: String)
+    func mediaOnUsbConnected()
+    func mediaOnUsbDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
                             completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
@@ -60,6 +62,7 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
+    private var usbStream: UsbStream?
     private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
     private(set) var processor: Processor?
@@ -116,12 +119,14 @@ final class Media: NSObject, @unchecked Sendable {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
+        usbStopStream()
         stopPreviewStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
+        usbStream = nil
         processor = nil
     }
 
@@ -171,6 +176,8 @@ final class Media: NSObject, @unchecked Sendable {
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
         case .whip:
             whipStream = WhipStream(delegate: self)
+        case .usb:
+            usbStream = UsbStream(delegate: self)
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
@@ -525,6 +532,8 @@ final class Media: NSObject, @unchecked Sendable {
             Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
             0
+        } else if let usbStream {
+            Int64(usbStream.getSpeed())
         } else {
             0
         }
@@ -543,6 +552,9 @@ final class Media: NSObject, @unchecked Sendable {
         }
         if let whipStream {
             return whipStream.getTotalByteCount()
+        }
+        if let usbStream {
+            return usbStream.getTotalByteCount()
         }
         return total
     }
@@ -651,6 +663,16 @@ final class Media: NSObject, @unchecked Sendable {
 
     func whipStopStream() {
         whipStream?.stop()
+    }
+
+    func usbStartStream(port: UInt16) {
+        adaptiveBitrate = nil
+        setAllowFrameReordering(value: false)
+        usbStream?.start(port: port)
+    }
+
+    func usbStopStream() {
+        usbStream?.stop()
     }
 
     func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
@@ -1331,6 +1353,28 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         processor?.stopEncoding(delegate)
+    }
+}
+
+extension Media: UsbStreamDelegate {
+    func usbStreamOnConnected() {
+        delegate.mediaOnUsbConnected()
+    }
+
+    func usbStreamOnDisconnected(reason: String) {
+        delegate.mediaOnUsbDisconnected(reason)
+    }
+
+    func usbStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processorControlQueue.async {
+            self.processor?.startEncoding(delegate)
+        }
+    }
+
+    func usbStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processorControlQueue.async {
+            self.processor?.stopEncoding(delegate)
+        }
     }
 }
 

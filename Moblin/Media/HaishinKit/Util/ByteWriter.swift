@@ -77,6 +77,11 @@ class ByteWriter {
         writeUInt8(UInt8((value >> 24) & 0xFF))
     }
 
+    func writeUInt64(_ value: UInt64) {
+        writeUInt32(UInt32((value >> 32) & 0xFFFF_FFFF))
+        writeUInt32(UInt32(value & 0xFFFF_FFFF))
+    }
+
     func writeInt32(_ value: Int32) {
         writeBytes(value.bigEndian.data)
     }

@@ -23,6 +23,7 @@ enum WizardCustomProtocol {
     case rtmp
     case rist
     case whip
+    case usb
 
     func toDefaultCodec() -> SettingsStreamCodec {
         switch self {
@@ -35,6 +36,8 @@ enum WizardCustomProtocol {
         case .rist:
             .h265hevc
         case .whip:
+            .h264avc
+        case .usb:
             .h264avc
         }
     }
@@ -51,6 +54,8 @@ enum WizardCustomProtocol {
             .aac
         case .whip:
             .opus
+        case .usb:
+            .aac
         }
     }
 }
@@ -95,6 +100,8 @@ extension Model {
             return createStreamWizard.customRistUrl.trim()
         case .whip:
             return createStreamWizard.customWhipUrl.trim()
+        case .usb:
+            return createStreamWizard.customUsbUrl.trim()
         }
         return nil
     }

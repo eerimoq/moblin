@@ -56206,6 +56206,9 @@
         }
       }
     },
+    "Change the port by editing the URL." : {
+
+    },
     "Change timer value." : {
       "localizations" : {
         "de" : {
@@ -62586,6 +62589,9 @@
         }
       }
     },
+    "Computer over USB cable" : {
+
+    },
     "Condition" : {
       "localizations" : {
         "de" : {
@@ -63921,6 +63927,9 @@
           }
         }
       }
+    },
+    "Connect this device to a computer with a USB cable and run the Moblin USB host tool on the computer to receive the stream. The computer connects to the port above over the cable." : {
+
     },
     "Connected" : {
       "localizations" : {
@@ -72215,6 +72224,9 @@
           }
         }
       }
+    },
+    "Custom USB" : {
+
     },
     "Custom WHIP" : {
       "localizations" : {
@@ -129958,6 +129970,9 @@
         }
       }
     },
+    "Malformed USB URL" : {
+
+    },
     "Malformed WHIP URL" : {
       "localizations" : {
         "de" : {
@@ -157071,6 +157086,9 @@
           }
         }
       }
+    },
+    "Only the port number matters. Connect this device to a computer with a USB cable and run the Moblin USB host tool on the computer to receive the stream." : {
+
     },
     "Only when live" : {
       "localizations" : {
@@ -256646,6 +256664,12 @@
           }
         }
       }
+    },
+    "USB" : {
+
+    },
+    "USB port number missing" : {
+
     },
     "Use a golf scoreboard widget to control this widget." : {
       "comment" : "A description of how to control a golf scoreboard widget.",

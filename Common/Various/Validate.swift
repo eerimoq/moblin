@@ -76,6 +76,16 @@ func isValidWhipUrl(url: String) -> String? {
     return nil
 }
 
+func isValidUsbUrl(url: String) -> String? {
+    guard let url = URL(string: url) else {
+        return String(localized: "Malformed USB URL")
+    }
+    if url.port == nil {
+        return String(localized: "USB port number missing")
+    }
+    return nil
+}
+
 private func isValidRtspUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
         return String(localized: "Malformed RTSP URL")
@@ -133,6 +143,10 @@ func isValidUrl(url value: String,
         }
     case "whips":
         if let message = isValidWhipUrl(url: value) {
+            return message
+        }
+    case "usb":
+        if let message = isValidUsbUrl(url: value) {
             return message
         }
     case "http":

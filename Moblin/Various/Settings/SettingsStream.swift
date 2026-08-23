@@ -203,6 +203,7 @@ enum SettingsStreamProtocol: String, Codable {
     case srt = "SRT"
     case rist = "RIST"
     case whip = "WHIP"
+    case usb = "USB"
 
     init(from decoder: any Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -218,6 +219,7 @@ enum SettingsStreamDetailedProtocol {
     case rist
     case whip
     case whips
+    case usb
 }
 
 class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
@@ -1646,6 +1648,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             .whip
         case "whips":
             .whip
+        case "usb":
+            .usb
         default:
             .rtmp
         }
@@ -1667,6 +1671,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             .whip
         case "whips":
             .whips
+        case "usb":
+            .usb
         default:
             .rtmp
         }
@@ -1688,6 +1694,13 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func isSrtla() -> Bool {
         getScheme() == "srtla"
+    }
+
+    func usbPort() -> UInt16 {
+        guard let port = URL(string: url)?.port else {
+            return 7777
+        }
+        return UInt16(exactly: port) ?? 7777
     }
 
     func isBonding() -> Bool {

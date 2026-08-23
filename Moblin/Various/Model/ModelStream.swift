@@ -52,6 +52,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
     @Published var customWhipUrl = ""
+    @Published var customUsbUrl = ""
 }
 
 enum StreamState {
@@ -183,6 +184,8 @@ extension Model {
             startNetStreamRist()
         case .whip:
             startNetStreamWhip()
+        case .usb:
+            startNetStreamUsb()
         }
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
@@ -238,6 +241,10 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
+    private func startNetStreamUsb() {
+        media.usbStartStream(port: stream.usbPort())
+    }
+
     func startPreviewStream() {
         guard !isPreviewStreaming else {
             return
@@ -282,6 +289,7 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
+        media.usbStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
@@ -598,6 +606,29 @@ extension Model {
         DispatchQueue.main.async {
             self.onDisconnected(reason: reason)
         }
+    }
+
+    private func handleUsbConnected() {
+        DispatchQueue.main.async {
+            self.onConnected()
+        }
+    }
+
+    private func handleUsbDisconnected(reason: String) {
+        DispatchQueue.main.async {
+            self.onUsbDisconnected(reason: reason)
+        }
+    }
+
+    private func onUsbDisconnected(reason: String) {
+        guard streaming else {
+            return
+        }
+        logger.info("stream: USB disconnected with reason: \(reason)")
+        streamState = .connecting
+        streamStartTime = nil
+        updateStreamUptime(now: .now)
+        updateSpeed(now: .now)
     }
 
     private func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
@@ -965,6 +996,14 @@ extension Model: @preconcurrency MediaDelegate {
 
     func mediaOnWhipDisconnected(_ reason: String) {
         handleWhipDisconnected(reason: reason)
+    }
+
+    func mediaOnUsbConnected() {
+        handleUsbConnected()
+    }
+
+    func mediaOnUsbDisconnected(_ reason: String) {
+        handleUsbDisconnected(reason: reason)
     }
 
     func mediaOnAudioMuteChange() {

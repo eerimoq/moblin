@@ -24,6 +24,11 @@ let whipExamples: [(LocalizedStringKey, String)] = [
     ("MESHCAST.IO WHIP", "whips://de1.meshcast.io/whip/mystream"),
 ]
 
+@MainActor
+private let usbExamples: [(LocalizedStringKey, String)] = [
+    ("Computer over USB cable", "usb://localhost:7777"),
+]
+
 struct StreamUrlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -34,7 +39,7 @@ struct StreamUrlSettingsView: View {
                         value: stream.url,
                         placeholder: "srtla://foobar.org:4432",
                         allowedSchemes: nil,
-                        examples: rtmpExamples + srtExamples + whipExamples,
+                        examples: rtmpExamples + srtExamples + whipExamples + usbExamples,
                         onSubmitted: {
                             model.reloadStreamIfEnabled(stream: stream)
                         })
