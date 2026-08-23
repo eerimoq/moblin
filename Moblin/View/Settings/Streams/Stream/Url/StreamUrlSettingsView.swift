@@ -25,8 +25,8 @@ let whipExamples: [(LocalizedStringKey, String)] = [
 ]
 
 @MainActor
-private let usbExamples: [(LocalizedStringKey, String)] = [
-    ("Computer over USB cable", "usb://localhost:7777"),
+private let mobcamExamples: [(LocalizedStringKey, String)] = [
+    ("Computer over USB cable", "mobcam://localhost:7777"),
 ]
 
 struct StreamUrlSettingsView: View {
@@ -39,7 +39,7 @@ struct StreamUrlSettingsView: View {
                         value: stream.url,
                         placeholder: "srtla://foobar.org:4432",
                         allowedSchemes: nil,
-                        examples: rtmpExamples + srtExamples + whipExamples + usbExamples,
+                        examples: rtmpExamples + srtExamples + whipExamples + mobcamExamples,
                         onSubmitted: {
                             model.reloadStreamIfEnabled(stream: stream)
                         })

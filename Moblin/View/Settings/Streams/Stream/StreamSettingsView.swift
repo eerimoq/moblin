@@ -233,11 +233,11 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("WHIP")
                         }
-                    case .usb:
+                    case .mobcam:
                         NavigationLink {
-                            StreamUsbSettingsView(stream: stream)
+                            StreamMobcamSettingsView(stream: stream)
                         } label: {
-                            Text("USB")
+                            Text("Mobcam")
                         }
                     }
                 }

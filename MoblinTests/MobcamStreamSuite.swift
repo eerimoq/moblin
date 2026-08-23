@@ -2,79 +2,79 @@ import Foundation
 @testable import Moblin
 import Testing
 
-private func readAll(_ reader: UsbStreamMessageReader) throws -> [(UsbStreamMessageType, Data)] {
-    var messages: [(UsbStreamMessageType, Data)] = []
+private func readAll(_ reader: MobcamStreamMessageReader) throws -> [(MobcamStreamMessageType, Data)] {
+    var messages: [(MobcamStreamMessageType, Data)] = []
     while let message = try reader.read() {
         messages.append(message)
     }
     return messages
 }
 
-struct UsbStreamSuite {
+struct MobcamStreamSuite {
     @Test
     func hostHelloRoundTrip() throws {
-        let reader = UsbStreamMessageReader()
-        reader.append(packUsbStreamHostHello())
+        let reader = MobcamStreamMessageReader()
+        reader.append(packMobcamStreamHostHello())
         let messages = try readAll(reader)
         #expect(messages.count == 1)
         #expect(messages[0].0 == .hostHello)
-        try unpackUsbStreamHostHello(messages[0].1)
+        try unpackMobcamStreamHostHello(messages[0].1)
     }
 
     @Test
     func hostHelloBadMagic() throws {
-        var message = packUsbStreamHostHello()
+        var message = packMobcamStreamHostHello()
         message[5] = 0x58
-        let reader = UsbStreamMessageReader()
+        let reader = MobcamStreamMessageReader()
         reader.append(message)
         let messages = try readAll(reader)
-        #expect(throws: UsbStreamProtocolError.self) {
-            try unpackUsbStreamHostHello(messages[0].1)
+        #expect(throws: MobcamStreamProtocolError.self) {
+            try unpackMobcamStreamHostHello(messages[0].1)
         }
     }
 
     @Test
     func hostHelloBadVersion() throws {
-        var message = packUsbStreamHostHello()
-        message[message.count - 1] = usbStreamProtocolVersion + 1
-        let reader = UsbStreamMessageReader()
+        var message = packMobcamStreamHostHello()
+        message[message.count - 1] = mobcamStreamProtocolVersion + 1
+        let reader = MobcamStreamMessageReader()
         reader.append(message)
         let messages = try readAll(reader)
-        #expect(throws: UsbStreamProtocolError.self) {
-            try unpackUsbStreamHostHello(messages[0].1)
+        #expect(throws: MobcamStreamProtocolError.self) {
+            try unpackMobcamStreamHostHello(messages[0].1)
         }
     }
 
     @Test
     func deviceHello() throws {
-        let reader = UsbStreamMessageReader()
-        reader.append(packUsbStreamDeviceHello(UsbStreamDeviceInfo(name: "Erik", version: "1.2.3")))
+        let reader = MobcamStreamMessageReader()
+        reader.append(packMobcamStreamDeviceHello(MobcamStreamDeviceInfo(name: "Erik", version: "1.2.3")))
         let messages = try readAll(reader)
         #expect(messages.count == 1)
         #expect(messages[0].0 == .deviceHello)
         let payload = ByteReader(data: messages[0].1)
-        #expect(try payload.readUInt8() == usbStreamProtocolVersion)
+        #expect(try payload.readUInt8() == mobcamStreamProtocolVersion)
         let length = try Int(payload.readUInt32())
-        let info = try JSONDecoder().decode(UsbStreamDeviceInfo.self, from: payload.readBytes(length))
+        let info = try JSONDecoder().decode(MobcamStreamDeviceInfo.self, from: payload.readBytes(length))
         #expect(info.name == "Erik")
         #expect(info.version == "1.2.3")
     }
 
     @Test
     func videoConfigAndFrame() throws {
-        let reader = UsbStreamMessageReader()
-        reader.append(packUsbStreamVideoConfig(codec: .hevc,
-                                               width: 1920,
-                                               height: 1080,
-                                               configurationRecord: Data([1, 2, 3])))
-        reader.append(packUsbStreamVideoFrame(presentationTimeStamp: 0x0102_0304_0506_0708,
-                                              isSync: true,
-                                              units: Data([9, 8, 7])))
+        let reader = MobcamStreamMessageReader()
+        reader.append(packMobcamStreamVideoConfig(codec: .hevc,
+                                                  width: 1920,
+                                                  height: 1080,
+                                                  configurationRecord: Data([1, 2, 3])))
+        reader.append(packMobcamStreamVideoFrame(presentationTimeStamp: 0x0102_0304_0506_0708,
+                                                 isSync: true,
+                                                 units: Data([9, 8, 7])))
         let messages = try readAll(reader)
         #expect(messages.count == 2)
         #expect(messages[0].0 == .videoConfig)
         let config = ByteReader(data: messages[0].1)
-        #expect(try config.readUInt8() == UsbStreamVideoCodec.hevc.rawValue)
+        #expect(try config.readUInt8() == MobcamStreamVideoCodec.hevc.rawValue)
         #expect(try config.readUInt16() == 1920)
         #expect(try config.readUInt16() == 1080)
         #expect(try config.readUInt32() == 3)
@@ -88,16 +88,16 @@ struct UsbStreamSuite {
 
     @Test
     func audioConfigAndFrame() throws {
-        let reader = UsbStreamMessageReader()
-        reader.append(packUsbStreamAudioConfig(codec: .aac,
-                                               sampleRate: 48000,
-                                               channels: 2,
-                                               configurationRecord: Data([0x11, 0x90])))
-        reader.append(packUsbStreamAudioFrame(presentationTimeStamp: 42, unit: Data([1, 2])))
+        let reader = MobcamStreamMessageReader()
+        reader.append(packMobcamStreamAudioConfig(codec: .aac,
+                                                  sampleRate: 48000,
+                                                  channels: 2,
+                                                  configurationRecord: Data([0x11, 0x90])))
+        reader.append(packMobcamStreamAudioFrame(presentationTimeStamp: 42, unit: Data([1, 2])))
         let messages = try readAll(reader)
         #expect(messages.count == 2)
         let config = ByteReader(data: messages[0].1)
-        #expect(try config.readUInt8() == UsbStreamAudioCodec.aac.rawValue)
+        #expect(try config.readUInt8() == MobcamStreamAudioCodec.aac.rawValue)
         #expect(try config.readUInt32() == 48000)
         #expect(try config.readUInt8() == 2)
         #expect(try config.readUInt32() == 2)
@@ -109,8 +109,12 @@ struct UsbStreamSuite {
 
     @Test
     func splitOverManyReceives() throws {
-        let message = packUsbStreamVideoFrame(presentationTimeStamp: 1, isSync: false, units: Data([1, 2, 3]))
-        let reader = UsbStreamMessageReader()
+        let message = packMobcamStreamVideoFrame(
+            presentationTimeStamp: 1,
+            isSync: false,
+            units: Data([1, 2, 3])
+        )
+        let reader = MobcamStreamMessageReader()
         for byte in message.dropLast() {
             reader.append(Data([byte]))
             #expect(try reader.read() == nil)
@@ -125,9 +129,12 @@ struct UsbStreamSuite {
     func manyMessagesInOneReceive() throws {
         var data = Data()
         for index in 0 ..< 10 {
-            data += packUsbStreamAudioFrame(presentationTimeStamp: UInt64(index), unit: Data([UInt8(index)]))
+            data += packMobcamStreamAudioFrame(
+                presentationTimeStamp: UInt64(index),
+                unit: Data([UInt8(index)])
+            )
         }
-        let reader = UsbStreamMessageReader()
+        let reader = MobcamStreamMessageReader()
         reader.append(data)
         let messages = try readAll(reader)
         #expect(messages.count == 10)
@@ -140,32 +147,32 @@ struct UsbStreamSuite {
 
     @Test
     func unknownMessageType() {
-        let reader = UsbStreamMessageReader()
+        let reader = MobcamStreamMessageReader()
         var data = Data(count: 5)
         data.setUInt32Be(value: 1)
         data[4] = 0x7F
         reader.append(data)
-        #expect(throws: UsbStreamProtocolError.self) {
+        #expect(throws: MobcamStreamProtocolError.self) {
             _ = try reader.read()
         }
     }
 
     @Test
     func tooLongMessage() {
-        let reader = UsbStreamMessageReader()
+        let reader = MobcamStreamMessageReader()
         var data = Data(count: 5)
         data.setUInt32Be(value: 0xFFFF_FFFF)
         reader.append(data)
-        #expect(throws: UsbStreamProtocolError.self) {
+        #expect(throws: MobcamStreamProtocolError.self) {
             _ = try reader.read()
         }
     }
 
     @Test
     func zeroLengthMessage() {
-        let reader = UsbStreamMessageReader()
+        let reader = MobcamStreamMessageReader()
         reader.append(Data(count: 4))
-        #expect(throws: UsbStreamProtocolError.self) {
+        #expect(throws: MobcamStreamProtocolError.self) {
             _ = try reader.read()
         }
     }

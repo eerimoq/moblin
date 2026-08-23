@@ -4,20 +4,20 @@ import Foundation
 import Network
 import UIKit
 
-private let usbStreamQueue = DispatchQueue(label: "com.eerimoq.usb-stream")
+private let mobcamStreamQueue = DispatchQueue(label: "com.eerimoq.mobcam-stream")
 
-protocol UsbStreamDelegate: AnyObject {
-    func usbStreamOnConnected()
-    func usbStreamOnDisconnected(reason: String)
-    func usbStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
-    func usbStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
+protocol MobcamStreamDelegate: AnyObject {
+    func mobcamStreamOnConnected()
+    func mobcamStreamOnDisconnected(reason: String)
+    func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
+    func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }
 
-final class UsbStream: NSObject, @unchecked Sendable {
-    private weak var delegate: (any UsbStreamDelegate)?
+final class MobcamStream: NSObject, @unchecked Sendable {
+    private weak var delegate: (any MobcamStreamDelegate)?
     private var listener: NWListener?
     private var connection: NWConnection?
-    private var reader = UsbStreamMessageReader()
+    private var reader = MobcamStreamMessageReader()
     private var connectedAt: ContinuousClock.Instant?
     private var acceptedAt: ContinuousClock.Instant?
     private var encoding = false
@@ -27,15 +27,15 @@ final class UsbStream: NSObject, @unchecked Sendable {
     private var congestedAt: ContinuousClock.Instant?
     private var dropUntilSync = false
     private var audioSupported = false
-    private var periodicTimer = SimpleTimer(queue: usbStreamQueue)
+    private var periodicTimer = SimpleTimer(queue: mobcamStreamQueue)
 
-    init(delegate: any UsbStreamDelegate) {
+    init(delegate: any MobcamStreamDelegate) {
         self.delegate = delegate
         super.init()
     }
 
     func start(port: UInt16) {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.port = port
             self.setupListener()
             self.setupPeriodicTimer()
@@ -43,7 +43,7 @@ final class UsbStream: NSObject, @unchecked Sendable {
     }
 
     func stop() {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.periodicTimer.stop()
             self.closeConnection(reason: "Stopping")
             self.listener?.stateUpdateHandler = nil
@@ -54,13 +54,13 @@ final class UsbStream: NSObject, @unchecked Sendable {
     }
 
     func getSpeed() -> UInt64 {
-        usbStreamQueue.sync {
+        mobcamStreamQueue.sync {
             8 * bitrateStats.update().speed
         }
     }
 
     func getTotalByteCount() -> Int64 {
-        usbStreamQueue.sync {
+        mobcamStreamQueue.sync {
             Int64(bitrateStats.totalBytes)
         }
     }
@@ -77,12 +77,12 @@ final class UsbStream: NSObject, @unchecked Sendable {
         do {
             listener = try NWListener(using: parameters)
         } catch {
-            logger.info("usb-stream: Failed to create listener with error \(error)")
+            logger.info("mobcam-stream: Failed to create listener with error \(error)")
             return
         }
         listener?.stateUpdateHandler = handleListenerStateChange(to:)
         listener?.newConnectionHandler = handleNewListenerConnection(connection:)
-        listener?.start(queue: usbStreamQueue)
+        listener?.start(queue: mobcamStreamQueue)
     }
 
     private func setupPeriodicTimer() {
@@ -105,21 +105,21 @@ final class UsbStream: NSObject, @unchecked Sendable {
     }
 
     private func handleListenerStateChange(to state: NWListener.State) {
-        logger.info("usb-stream: Listener state change to \(state)")
+        logger.info("mobcam-stream: Listener state change to \(state)")
     }
 
     private func handleNewListenerConnection(connection: NWConnection) {
         if self.connection != nil {
             closeConnection(reason: "Another host connected")
         }
-        logger.info("usb-stream: Host connected")
+        logger.info("mobcam-stream: Host connected")
         self.connection = connection
-        reader = UsbStreamMessageReader()
+        reader = MobcamStreamMessageReader()
         acceptedAt = .now
         connection.stateUpdateHandler = { [weak self] state in
             self?.handleConnectionStateChange(connection, state)
         }
-        connection.start(queue: usbStreamQueue)
+        connection.start(queue: mobcamStreamQueue)
         receive(connection)
     }
 
@@ -173,12 +173,12 @@ final class UsbStream: NSObject, @unchecked Sendable {
         return true
     }
 
-    private func handleMessage(_ type: UsbStreamMessageType, _ payload: Data) throws {
+    private func handleMessage(_ type: MobcamStreamMessageType, _ payload: Data) throws {
         switch type {
         case .hostHello:
             try handleHostHello(payload)
         default:
-            logger.info("usb-stream: Ignoring message type \(type)")
+            logger.info("mobcam-stream: Ignoring message type \(type)")
         }
     }
 
@@ -186,24 +186,24 @@ final class UsbStream: NSObject, @unchecked Sendable {
         guard connectedAt == nil else {
             return
         }
-        try unpackUsbStreamHostHello(payload)
+        try unpackMobcamStreamHostHello(payload)
         connectedAt = .now
-        let info = UsbStreamDeviceInfo(name: UIDevice.current.name, version: appVersion())
-        send(packUsbStreamDeviceHello(info))
-        logger.info("usb-stream: Host said hello")
-        delegate?.usbStreamOnConnected()
+        let info = MobcamStreamDeviceInfo(name: UIDevice.current.name, version: appVersion())
+        send(packMobcamStreamDeviceHello(info))
+        logger.info("mobcam-stream: Host said hello")
+        delegate?.mobcamStreamOnConnected()
         encoding = true
-        delegate?.usbStreamStartEncoding(self)
+        delegate?.mobcamStreamStartEncoding(self)
     }
 
     private func closeConnection(reason: String) {
         guard let connection else {
             return
         }
-        logger.info("usb-stream: Closing connection. \(reason).")
+        logger.info("mobcam-stream: Closing connection. \(reason).")
         if encoding {
             encoding = false
-            delegate?.usbStreamStopEncoding(self)
+            delegate?.mobcamStreamStopEncoding(self)
         }
         connection.stateUpdateHandler = nil
         connection.cancel()
@@ -216,7 +216,7 @@ final class UsbStream: NSObject, @unchecked Sendable {
         dropUntilSync = false
         audioSupported = false
         if wasConnected {
-            delegate?.usbStreamOnDisconnected(reason: reason)
+            delegate?.mobcamStreamOnDisconnected(reason: reason)
         }
     }
 
@@ -243,7 +243,7 @@ final class UsbStream: NSObject, @unchecked Sendable {
         }
         if congestedAt == nil {
             congestedAt = .now
-            logger.info("usb-stream: Host is falling behind. Dropping video frames.")
+            logger.info("mobcam-stream: Host is falling behind. Dropping video frames.")
         }
         return true
     }
@@ -268,20 +268,20 @@ final class UsbStream: NSObject, @unchecked Sendable {
             guard let record = MpegTsVideoConfigAvc.getAvcC(formatDescription) else {
                 return
             }
-            send(packUsbStreamVideoConfig(codec: .h264,
-                                          width: UInt16(dimensions.width),
-                                          height: UInt16(dimensions.height),
-                                          configurationRecord: record))
+            send(packMobcamStreamVideoConfig(codec: .h264,
+                                             width: UInt16(dimensions.width),
+                                             height: UInt16(dimensions.height),
+                                             configurationRecord: record))
         case .hevc:
             guard let record = MpegTsVideoConfigHevc.getHvcC(formatDescription) else {
                 return
             }
-            send(packUsbStreamVideoConfig(codec: .hevc,
-                                          width: UInt16(dimensions.width),
-                                          height: UInt16(dimensions.height),
-                                          configurationRecord: record))
+            send(packMobcamStreamVideoConfig(codec: .hevc,
+                                             width: UInt16(dimensions.width),
+                                             height: UInt16(dimensions.height),
+                                             configurationRecord: record))
         default:
-            logger.info("usb-stream: Unsupported video codec \(formatDescription.mediaSubType)")
+            logger.info("mobcam-stream: Unsupported video codec \(formatDescription.mediaSubType)")
         }
     }
 
@@ -306,9 +306,9 @@ final class UsbStream: NSObject, @unchecked Sendable {
         guard let (buffer, length) = sampleBuffer.dataBuffer?.getDataPointer(), length > 0 else {
             return
         }
-        send(packUsbStreamVideoFrame(presentationTimeStamp: presentationTimeStamp,
-                                     isSync: isSync,
-                                     units: Data(bytes: buffer, count: length)))
+        send(packMobcamStreamVideoFrame(presentationTimeStamp: presentationTimeStamp,
+                                        isSync: isSync,
+                                        units: Data(bytes: buffer, count: length)))
     }
 
     private func handleAudioEncoderOutputFormat(_ format: AVAudioFormat) {
@@ -320,14 +320,14 @@ final class UsbStream: NSObject, @unchecked Sendable {
         }
         audioSupported = description.mFormatID == kAudioFormatMPEG4AAC
         guard audioSupported else {
-            logger.info("usb-stream: Only AAC audio is supported. Streaming video only.")
+            logger.info("mobcam-stream: Only AAC audio is supported. Streaming video only.")
             return
         }
         let config = MpegTsAudioConfig(formatDescription: format.formatDescription)
-        send(packUsbStreamAudioConfig(codec: .aac,
-                                      sampleRate: UInt32(format.sampleRate),
-                                      channels: UInt8(format.channelCount),
-                                      configurationRecord: config.encode()))
+        send(packMobcamStreamAudioConfig(codec: .aac,
+                                         sampleRate: UInt32(format.sampleRate),
+                                         channels: UInt8(format.channelCount),
+                                         configurationRecord: config.encode()))
     }
 
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
@@ -341,7 +341,7 @@ final class UsbStream: NSObject, @unchecked Sendable {
         }
         let data = Data(bytes: buffer.data, count: Int(buffer.byteLength))
         guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
-            send(packUsbStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: data))
+            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: data))
             return
         }
         for index in 0 ..< Int(buffer.packetCount) {
@@ -351,29 +351,29 @@ final class UsbStream: NSObject, @unchecked Sendable {
             guard size > 0, offset >= 0, offset + size <= data.count else {
                 continue
             }
-            send(packUsbStreamAudioFrame(presentationTimeStamp: presentationTimeStamp,
-                                         unit: data.subdata(in: offset ..< offset + size)))
+            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp,
+                                            unit: data.subdata(in: offset ..< offset + size)))
         }
     }
 }
 
-extension UsbStream: AudioEncoderDelegate {
+extension MobcamStream: AudioEncoderDelegate {
     func audioEncoderOutputFormat(_ format: AVAudioFormat) {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.handleAudioEncoderOutputFormat(format)
         }
     }
 
     func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.handleAudioEncoderOutputBuffer(buffer, presentationTimeStamp)
         }
     }
 }
 
-extension UsbStream: VideoEncoderDelegate {
+extension MobcamStream: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_: VideoEncoder, _ formatDescription: CMFormatDescription) {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.handleVideoEncoderOutputFormat(formatDescription)
         }
     }
@@ -382,7 +382,7 @@ extension UsbStream: VideoEncoderDelegate {
                                         _ sampleBuffer: CMSampleBuffer,
                                         _: CMTime)
     {
-        usbStreamQueue.async {
+        mobcamStreamQueue.async {
             self.handleVideoEncoderOutputSampleBuffer(sampleBuffer)
         }
     }

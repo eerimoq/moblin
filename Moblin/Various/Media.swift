@@ -26,8 +26,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRistDisconnected()
     func mediaOnWhipConnected()
     func mediaOnWhipDisconnected(_ reason: String)
-    func mediaOnUsbConnected()
-    func mediaOnUsbDisconnected(_ reason: String)
+    func mediaOnMobcamConnected()
+    func mediaOnMobcamDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
                             completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
@@ -62,7 +62,7 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
-    private var usbStream: UsbStream?
+    private var mobcamStream: MobcamStream?
     private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
     private(set) var processor: Processor?
@@ -119,14 +119,14 @@ final class Media: NSObject, @unchecked Sendable {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
-        usbStopStream()
+        mobcamStopStream()
         stopPreviewStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
-        usbStream = nil
+        mobcamStream = nil
         processor = nil
     }
 
@@ -176,8 +176,8 @@ final class Media: NSObject, @unchecked Sendable {
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
         case .whip:
             whipStream = WhipStream(delegate: self)
-        case .usb:
-            usbStream = UsbStream(delegate: self)
+        case .mobcam:
+            mobcamStream = MobcamStream(delegate: self)
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
@@ -532,8 +532,8 @@ final class Media: NSObject, @unchecked Sendable {
             Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
             0
-        } else if let usbStream {
-            Int64(usbStream.getSpeed())
+        } else if let mobcamStream {
+            Int64(mobcamStream.getSpeed())
         } else {
             0
         }
@@ -553,8 +553,8 @@ final class Media: NSObject, @unchecked Sendable {
         if let whipStream {
             return whipStream.getTotalByteCount()
         }
-        if let usbStream {
-            return usbStream.getTotalByteCount()
+        if let mobcamStream {
+            return mobcamStream.getTotalByteCount()
         }
         return total
     }
@@ -665,14 +665,14 @@ final class Media: NSObject, @unchecked Sendable {
         whipStream?.stop()
     }
 
-    func usbStartStream(port: UInt16) {
+    func mobcamStartStream(port: UInt16) {
         adaptiveBitrate = nil
         setAllowFrameReordering(value: false)
-        usbStream?.start(port: port)
+        mobcamStream?.start(port: port)
     }
 
-    func usbStopStream() {
-        usbStream?.stop()
+    func mobcamStopStream() {
+        mobcamStream?.stop()
     }
 
     func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
@@ -1356,22 +1356,22 @@ extension Media: WhipStreamDelegate {
     }
 }
 
-extension Media: UsbStreamDelegate {
-    func usbStreamOnConnected() {
-        delegate.mediaOnUsbConnected()
+extension Media: MobcamStreamDelegate {
+    func mobcamStreamOnConnected() {
+        delegate.mediaOnMobcamConnected()
     }
 
-    func usbStreamOnDisconnected(reason: String) {
-        delegate.mediaOnUsbDisconnected(reason)
+    func mobcamStreamOnDisconnected(reason: String) {
+        delegate.mediaOnMobcamDisconnected(reason)
     }
 
-    func usbStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+    func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         processorControlQueue.async {
             self.processor?.startEncoding(delegate)
         }
     }
 
-    func usbStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+    func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         processorControlQueue.async {
             self.processor?.stopEncoding(delegate)
         }

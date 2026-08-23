@@ -346,7 +346,7 @@ class Receiver:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Receive a Moblin USB stream.")
+    parser = argparse.ArgumentParser(description="Receive a Moblin Mobcam stream.")
     parser.add_argument("-p", "--port", type=int, default=7777, help="Port Moblin listens on.")
     parser.add_argument("-s", "--serial", help="Serial number of the device to use.")
     parser.add_argument(

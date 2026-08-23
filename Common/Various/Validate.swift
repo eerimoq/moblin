@@ -76,12 +76,12 @@ func isValidWhipUrl(url: String) -> String? {
     return nil
 }
 
-func isValidUsbUrl(url: String) -> String? {
+func isValidMobcamUrl(url: String) -> String? {
     guard let url = URL(string: url) else {
-        return String(localized: "Malformed USB URL")
+        return String(localized: "Malformed Mobcam URL")
     }
     if url.port == nil {
-        return String(localized: "USB port number missing")
+        return String(localized: "Mobcam port number missing")
     }
     return nil
 }
@@ -145,8 +145,8 @@ func isValidUrl(url value: String,
         if let message = isValidWhipUrl(url: value) {
             return message
         }
-    case "usb":
-        if let message = isValidUsbUrl(url: value) {
+    case "mobcam":
+        if let message = isValidMobcamUrl(url: value) {
             return message
         }
     case "http":

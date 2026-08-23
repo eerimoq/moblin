@@ -63928,7 +63928,7 @@
         }
       }
     },
-    "Connect this device to a computer with a USB cable and run the Moblin USB host tool on the computer to receive the stream. The computer connects to the port above over the cable." : {
+    "Connect this device to a computer with a USB cable and run the Moblin Mobcam host tool on the computer to receive the stream. The computer connects to the port above over the cable." : {
 
     },
     "Connected" : {
@@ -72225,7 +72225,7 @@
         }
       }
     },
-    "Custom USB" : {
+    "Custom Mobcam" : {
 
     },
     "Custom WHIP" : {
@@ -129970,7 +129970,7 @@
         }
       }
     },
-    "Malformed USB URL" : {
+    "Malformed Mobcam URL" : {
 
     },
     "Malformed WHIP URL" : {
@@ -157087,7 +157087,7 @@
         }
       }
     },
-    "Only the port number matters. Connect this device to a computer with a USB cable and run the Moblin USB host tool on the computer to receive the stream." : {
+    "Only the port number matters. Connect this device to a computer with a USB cable and run the Moblin Mobcam host tool on the computer to receive the stream." : {
 
     },
     "Only when live" : {
@@ -256665,10 +256665,10 @@
         }
       }
     },
-    "USB" : {
+    "Mobcam" : {
 
     },
-    "USB port number missing" : {
+    "Mobcam port number missing" : {
 
     },
     "Use a golf scoreboard widget to control this widget." : {

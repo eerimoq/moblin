@@ -52,7 +52,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
     @Published var customWhipUrl = ""
-    @Published var customUsbUrl = ""
+    @Published var customMobcamUrl = ""
 }
 
 enum StreamState {
@@ -184,8 +184,8 @@ extension Model {
             startNetStreamRist()
         case .whip:
             startNetStreamWhip()
-        case .usb:
-            startNetStreamUsb()
+        case .mobcam:
+            startNetStreamMobcam()
         }
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
@@ -241,8 +241,8 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
-    private func startNetStreamUsb() {
-        media.usbStartStream(port: stream.usbPort())
+    private func startNetStreamMobcam() {
+        media.mobcamStartStream(port: stream.mobcamPort())
     }
 
     func startPreviewStream() {
@@ -289,7 +289,7 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
-        media.usbStopStream()
+        media.mobcamStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
@@ -608,23 +608,23 @@ extension Model {
         }
     }
 
-    private func handleUsbConnected() {
+    private func handleMobcamConnected() {
         DispatchQueue.main.async {
             self.onConnected()
         }
     }
 
-    private func handleUsbDisconnected(reason: String) {
+    private func handleMobcamDisconnected(reason: String) {
         DispatchQueue.main.async {
-            self.onUsbDisconnected(reason: reason)
+            self.onMobcamDisconnected(reason: reason)
         }
     }
 
-    private func onUsbDisconnected(reason: String) {
+    private func onMobcamDisconnected(reason: String) {
         guard streaming else {
             return
         }
-        logger.info("stream: USB disconnected with reason: \(reason)")
+        logger.info("stream: Mobcam disconnected with reason: \(reason)")
         streamState = .connecting
         streamStartTime = nil
         updateStreamUptime(now: .now)
@@ -998,12 +998,12 @@ extension Model: @preconcurrency MediaDelegate {
         handleWhipDisconnected(reason: reason)
     }
 
-    func mediaOnUsbConnected() {
-        handleUsbConnected()
+    func mediaOnMobcamConnected() {
+        handleMobcamConnected()
     }
 
-    func mediaOnUsbDisconnected(_ reason: String) {
-        handleUsbDisconnected(reason: reason)
+    func mediaOnMobcamDisconnected(_ reason: String) {
+        handleMobcamDisconnected(reason: reason)
     }
 
     func mediaOnAudioMuteChange() {

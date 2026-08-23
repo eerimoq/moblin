@@ -10,10 +10,10 @@ struct ValidateSuite {
     }
 
     @Test
-    func usbUrlValidation() {
-        #expect(isValidUrl(url: "usb://localhost:7777") == nil)
-        #expect(isValidUrl(url: "usb://localhost") != nil)
-        #expect(isValidUrl(url: "usb://localhost:70000") != nil)
-        #expect(isValidUrl(url: "usb://localhost:7777", allowedSchemes: ["srt"]) != nil)
+    func mobcamUrlValidation() {
+        #expect(isValidUrl(url: "mobcam://localhost:7777") == nil)
+        #expect(isValidUrl(url: "mobcam://localhost") != nil)
+        #expect(isValidUrl(url: "mobcam://localhost:70000") != nil)
+        #expect(isValidUrl(url: "mobcam://localhost:7777", allowedSchemes: ["srt"]) != nil)
     }
 }

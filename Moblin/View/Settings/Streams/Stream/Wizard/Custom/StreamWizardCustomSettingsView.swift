@@ -28,9 +28,9 @@ struct StreamWizardCustomSettingsView: View {
                     Text("WHIP")
                 }
                 NavigationLink {
-                    StreamWizardCustomUsbSettingsView(model: model, createStreamWizard: createStreamWizard)
+                    StreamWizardCustomMobcamSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("USB")
+                    Text("Mobcam")
                 }
             } header: {
                 Text("Protocol")

@@ -1,8 +1,8 @@
-# Moblin USB protocol
+# Moblin Mobcam protocol
 
 Moblin can stream to a computer over the USB cable, mainly to use the phone as a low latency webcam.
-Select it by setting the stream URL to `usb://localhost:7777`, where the port number is the port Moblin
-listens on. The create stream wizard has a USB entry under Custom that fills this in.
+Select it by setting the stream URL to `mobcam://localhost:7777`, where the port number is the port Moblin
+listens on. The create stream wizard has a Mobcam entry under Custom that fills this in.
 
 Only AAC audio is supported. Moblin streams video only if the audio codec is set to something else.
 
@@ -13,13 +13,13 @@ iOS does not give apps direct access to USB. The only channel available is usbmu
 no device to computer direction. Moblin is therefore a server: going live opens a listener on
 `127.0.0.1:<port>`, and the computer connects to it through usbmux.
 
-`utils/usb_host.py` is a reference receiver. It opens the usbmux tunnel, decodes the protocol and pipes
+`utils/mobcam_host.py` is a reference receiver. It opens the usbmux tunnel, decodes the protocol and pipes
 the result to `ffplay`, or writes it to a file with `--output`.
 
 ```sh
-python utils/usb_host.py
-python utils/usb_host.py --output webcam.mkv
-python utils/usb_host.py --address 192.168.0.10:7777
+python utils/mobcam_host.py
+python utils/mobcam_host.py --output webcam.mkv
+python utils/mobcam_host.py --address 192.168.0.10:7777
 ```
 
 It handles **video only** for now. It converts the video to Annex-B and pipes it to `ffmpeg` as an
