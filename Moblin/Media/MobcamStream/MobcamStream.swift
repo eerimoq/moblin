@@ -71,7 +71,7 @@ final class MobcamStream: NSObject, @unchecked Sendable {
         let parameters = NWParameters(tls: nil, tcp: options)
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.loopback),
-            port: NWEndpoint.Port(rawValue: port) ?? 7777
+            port: NWEndpoint.Port(rawValue: port) ?? .init(integerLiteral: DefaultTcpPorts.mobcamStream)
         )
         parameters.allowLocalEndpointReuse = true
         do {

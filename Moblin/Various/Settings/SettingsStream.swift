@@ -1698,9 +1698,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func mobcamPort() -> UInt16 {
         guard let port = URL(string: url)?.port else {
-            return 7777
+            return DefaultTcpPorts.mobcamStream
         }
-        return UInt16(exactly: port) ?? 7777
+        return UInt16(exactly: port) ?? DefaultTcpPorts.mobcamStream
     }
 
     func isBonding() -> Bool {

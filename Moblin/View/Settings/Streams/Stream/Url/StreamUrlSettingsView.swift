@@ -26,7 +26,7 @@ let whipExamples: [(LocalizedStringKey, String)] = [
 
 @MainActor
 private let mobcamExamples: [(LocalizedStringKey, String)] = [
-    ("Computer over USB cable", "mobcam://localhost:7777"),
+    ("Computer over USB cable", "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"),
 ]
 
 struct StreamUrlSettingsView: View {

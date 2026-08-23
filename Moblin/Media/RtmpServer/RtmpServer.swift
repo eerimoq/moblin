@@ -81,7 +81,7 @@ class RtmpServer: @unchecked Sendable {
         let parameters = NWParameters(tls: nil, tcp: options)
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.port) ?? 1935
+            port: .init(rawValue: settings.port) ?? .init(integerLiteral: DefaultTcpPorts.rtmpServer)
         )
         parameters.allowLocalEndpointReuse = true
         do {

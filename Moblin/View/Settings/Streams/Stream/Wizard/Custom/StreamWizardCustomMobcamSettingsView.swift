@@ -21,12 +21,15 @@ struct StreamWizardCustomMobcamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField(String("mobcam://localhost:7777"), text: $createStreamWizard.customMobcamUrl)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .onChange(of: createStreamWizard.customMobcamUrl) { _ in
-                        updateUrlError()
-                    }
+                TextField(
+                    String("mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"),
+                    text: $createStreamWizard.customMobcamUrl
+                )
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .onChange(of: createStreamWizard.customMobcamUrl) { _ in
+                    updateUrlError()
+                }
             } header: {
                 Text("URL")
             } footer: {
@@ -50,7 +53,7 @@ struct StreamWizardCustomMobcamSettingsView: View {
         .onAppear {
             createStreamWizard.customProtocol = .mobcam
             if createStreamWizard.customMobcamUrl.isEmpty {
-                createStreamWizard.customMobcamUrl = "mobcam://localhost:7777"
+                createStreamWizard.customMobcamUrl = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
             }
             createStreamWizard.name = makeUniqueName(name: String(localized: "Custom Mobcam"),
                                                      existingNames: model.database.streams)
