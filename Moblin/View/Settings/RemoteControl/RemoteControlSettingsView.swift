@@ -114,10 +114,9 @@ private struct UrlSettingsInnerView: View {
                     onChange: isValidWebSocketUrl,
                     onSubmit: submitStreamerUrl,
                     footers: [
-                        String(localized: """
-                        Enter assistant's address and port. For \
-                        example ws://132.23.43.43:\(DefaultTcpPorts.remoteControlAssistant).
-                        """),
+                        String(
+                            localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
+                        ),
                     ],
                     placeholder: "ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)"
                 )

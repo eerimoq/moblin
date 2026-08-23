@@ -111,13 +111,16 @@ private struct RelayStreamerUrlView: View {
     var body: some View {
         Form {
             Section {
-                TextField("ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)", text: $streamerUrl)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .submitLabel(.done)
-                    .onSubmit {
-                        submitUrl(value: streamerUrl)
-                    }
+                TextField(
+                    String("ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)"),
+                    text: $streamerUrl
+                )
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .submitLabel(.done)
+                .onSubmit {
+                    submitUrl(value: streamerUrl)
+                }
             }
             if moblink.scannerDiscoveredStreamers.isEmpty {
                 Text("No streamers discovered yet on your local network.")
