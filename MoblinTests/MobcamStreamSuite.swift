@@ -146,16 +146,4 @@ struct MobcamStreamSuite {
             _ = try reader.read()
         }
     }
-
-    @Test
-    func tooLongMessage() {
-        let reader = MobcamStreamMessageReader()
-        var data = Data(count: 5)
-        data[0] = MobcamStreamMessageType.videoFrame.rawValue
-        data.setUInt32Be(value: 0xFFFF_FFFF, offset: 1)
-        reader.append(data)
-        #expect(throws: MobcamStreamProtocolError.self) {
-            _ = try reader.read()
-        }
-    }
 }

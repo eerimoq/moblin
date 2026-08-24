@@ -16,7 +16,7 @@ u32 payloadLength      excluding these five bytes
 ... payload
 ```
 
-The maximum payload length is 4 MB.
+The maximum payload length is 4 GB, that is, the maximum value of the u32 length field.
 
 ### Computer to device
 

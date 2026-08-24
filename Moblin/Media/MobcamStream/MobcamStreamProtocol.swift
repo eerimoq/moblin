@@ -2,8 +2,6 @@ import Foundation
 
 let mobcamStreamProtocolVersion: UInt8 = 1
 
-private let maximumMessageLength = 4 * 1024 * 1024
-
 enum MobcamStreamMessageType: UInt8 {
     case hostHello = 0x01
     case deviceHello = 0x02
@@ -25,7 +23,6 @@ enum MobcamStreamAudioCodec: UInt8 {
 enum MobcamStreamProtocolError: Error {
     case unsupportedVersion(UInt8)
     case unknownMessageType(UInt8)
-    case badLength(Int)
 }
 
 struct MobcamStreamDeviceInfo: Codable {
@@ -128,9 +125,6 @@ class MobcamStreamMessageReader {
             throw MobcamStreamProtocolError.unknownMessageType(type)
         }
         let length = try Int(reader.readUInt32())
-        guard length <= maximumMessageLength else {
-            throw MobcamStreamProtocolError.badLength(length)
-        }
         guard reader.bytesAvailable >= length else {
             return nil
         }
