@@ -9624,7 +9624,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld minimo"
+            "value" : "%lld min"
           }
         },
         "ja" : {
@@ -23869,7 +23869,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "una impostazione predefinita"
+            "value" : "un'impostazione predefinita"
           }
         },
         "ja" : {
@@ -25349,7 +25349,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una piccola stampante in bianco e nero a un piccolo prezzo."
+            "value" : "Una piccola stampante in bianco e nero, economica."
           }
         },
         "ja" : {
@@ -30827,7 +30827,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Consenti il ​​formato pixel dell'intervallo video"
+            "value" : "Consenti il formato pixel dell'intervallo video"
           }
         },
         "ja" : {
@@ -40003,7 +40003,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diventa automaticamente attivo quando si cambia flusso."
+            "value" : "Va in diretta automaticamente quando cambi stream."
           }
         },
         "ja" : {
@@ -41039,7 +41039,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Indietro"
+            "value" : "posteriore"
           }
         },
         "ja" : {
@@ -45479,7 +45479,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stabilità migliore possibile. Può utilizzare il bonding Configurazione più flessibile."
+            "value" : "Stabilità migliore possibile. Può usare il bonding. Configurazione più flessibile."
           }
         },
         "ja" : {
@@ -45627,7 +45627,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stabilità migliore possibile. Utilizza il bonding Servizio di terze parti a pagamento."
+            "value" : "Stabilità migliore possibile. Usa il bonding. Servizio di terze parti a pagamento."
           }
         },
         "ja" : {
@@ -46815,7 +46815,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il Bitrate diminuisce la velocità"
+            "value" : "Velocità riduzione bitrate"
           }
         },
         "ja" : {
@@ -47111,7 +47111,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il bitrate aumenta la velocità"
+            "value" : "Velocità aumento bitrate"
           }
         },
         "ja" : {
@@ -58792,7 +58792,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tifo"
+            "value" : "Cheer"
           }
         },
         "ja" : {
@@ -58940,7 +58940,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tifato %@ bits!"
+            "value" : "ha inviato %@ bit!"
           }
         },
         "ja" : {
@@ -59094,7 +59094,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "tifo con %1$@ bits! %2$@"
+            "value" : "ha inviato %1$@ bit! %2$@"
           }
         },
         "ja" : {
@@ -59242,7 +59242,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grazie"
+            "value" : "Cheer"
           }
         },
         "ja" : {
@@ -61170,7 +61170,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiudi bagaiaio"
+            "value" : "Chiudi bagagliaio"
           }
         },
         "ja" : {
@@ -67990,7 +67990,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Angolo arrotondato"
+            "value" : "Raggio angoli"
           }
         },
         "ja" : {
@@ -82783,7 +82783,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogni flusso può ricevere video da un publisher RTMP, in genere un drone."
+            "value" : "Ogni stream può ricevere video da un publisher RTMP, in genere un drone."
           }
         },
         "ja" : {
@@ -82931,7 +82931,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogni flusso può ricevere video da un publisher SRT(LA)."
+            "value" : "Ogni stream può ricevere video da un publisher SRT(LA)."
           }
         },
         "ja" : {
@@ -86337,7 +86337,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inserisci l'indirizzo e il porto dell'assistente. Ad esempio ws://132.23.43.43:2345."
+            "value" : "Inserisci l'indirizzo e la porta dell'assistente. Ad esempio ws://132.23.43.43:2345."
           }
         },
         "ja" : {
@@ -90915,7 +90915,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Creazione stream maker non riuscito"
+            "value" : "Creazione stream marker non riuscita"
           }
         },
         "ja" : {
@@ -93435,7 +93435,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossibile avviare il flusso OBS"
+            "value" : "Impossibile avviare lo stream OBS"
           }
         },
         "ja" : {
@@ -93879,7 +93879,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impossibile interrompere il flusso OBS"
+            "value" : "Impossibile interrompere lo stream OBS"
           }
         },
         "ja" : {
@@ -94915,7 +94915,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sentiti libero di unirti al server Moblin Discord o di scrivere un problema su Github se hai bisogno di aiuto o vuoi dare un feedback."
+            "value" : "Entra nel server Discord di Moblin o apri una issue su GitHub se ti serve aiuto o vuoi lasciare un feedback."
           }
         },
         "ja" : {
@@ -98033,7 +98033,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fixing..."
+            "value" : "Correzione..."
           }
         },
         "ja" : {
@@ -99945,7 +99945,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seguaci"
+            "value" : "Follower"
           }
         },
         "ja" : {
@@ -102021,7 +102021,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fronte"
+            "value" : "frontale"
           }
         },
         "ja" : {
@@ -102615,7 +102615,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tutti i dati"
+            "value" : "Data completa"
           }
         },
         "ja" : {
@@ -111667,7 +111667,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Orizzonte stabile"
+            "value" : "HorizonSteady"
           }
         },
         "ja" : {
@@ -118625,7 +118625,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nuovo follower!"
+            "value" : "ha iniziato a seguirti!"
           }
         },
         "ja" : {
@@ -119081,7 +119081,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "solo resub livello %1$lld per %2$lld mesi! %3$@ "
+            "value" : "resub livello %1$lld da %2$lld mesi! %3$@"
           }
         },
         "ja" : {
@@ -119229,7 +119229,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "appena iscritto livello %lld!"
+            "value" : "si è appena abbonato al livello %lld!"
           }
         },
         "ja" : {
@@ -119377,7 +119377,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "appena iscritto! Sono stati iscritti per %lld n mes!"
+            "value" : "si è appena abbonato! È abbonato da %lld mesi!"
           }
         },
         "ja" : {
@@ -123529,7 +123529,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vivere"
+            "value" : "In diretta"
           }
         },
         "ja" : {
@@ -124567,7 +124567,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gli overlay locali non vengono visualizzate nello streaming."
+            "value" : "Gli overlay locali non compaiono nello stream."
           }
         },
         "ja" : {
@@ -125159,7 +125159,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "log"
+            "value" : "Log"
           }
         },
         "ja" : {
@@ -137602,7 +137602,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin si interfaccia con il veicolo usando questa chiave. Tocca il pulsante qui sotto per aggiungerlo."
+            "value" : "Moblin si interfaccia con il veicolo usando questa chiave. Tocca il pulsante qui sotto per aggiungerla al veicolo."
           }
         },
         "ja" : {
@@ -138640,7 +138640,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connessione mobile"
+            "value" : "Moblink"
           }
         },
         "ja" : {
@@ -142790,7 +142790,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Audio muto,"
+            "value" : "Disattiva l'audio."
           }
         },
         "ja" : {
@@ -149016,7 +149016,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prossimo"
+            "value" : "Avanti"
           }
         },
         "ja" : {
@@ -149164,7 +149164,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prossima successiva multimediale"
+            "value" : "Traccia multimediale successiva"
           }
         },
         "ja" : {
@@ -151686,7 +151686,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non esiste alcun flusso del server RTMP"
+            "value" : "Non ci sono stream del server RTMP"
           }
         },
         "ja" : {
@@ -158334,7 +158334,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apriri bagagliaio"
+            "value" : "Apri bagagliaio"
           }
         },
         "ja" : {
@@ -160554,7 +160554,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Larghezza di banda aerea"
+            "value" : "Banda di overhead"
           }
         },
         "ja" : {
@@ -166031,7 +166031,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si prega di controllare le impostazioni WiFi"
+            "value" : "Controlla le impostazioni WiFi"
           }
         },
         "ja" : {
@@ -166475,7 +166475,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Per favore esegui l'accesso nuovamente"
+            "value" : "Esegui di nuovo l'accesso"
           }
         },
         "ja" : {
@@ -167959,7 +167959,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Powered da Moblin"
+            "value" : "Powered by Moblin"
           }
         },
         "ja" : {
@@ -174631,7 +174631,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Raid con un gruppo di %lld!"
+            "value" : "ha fatto un raid con un gruppo di %lld!"
           }
         },
         "ja" : {
@@ -177301,7 +177301,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "riscattato %@!"
+            "value" : "ha riscattato %@!"
           }
         },
         "ja" : {
@@ -179965,7 +179965,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ripetere"
+            "value" : "Ripeti"
           }
         },
         "ja" : {
@@ -184267,7 +184267,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Riprovare più tardi"
+            "value" : "Riprovo più tardi"
           }
         },
         "ja" : {
@@ -185155,7 +185155,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giusto"
+            "value" : "Destra"
           }
         },
         "ja" : {
@@ -190481,7 +190481,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scena audio input"
+            "value" : "Ingressi audio della scena"
           }
         },
         "ja" : {
@@ -198211,7 +198211,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "server"
+            "value" : "Server"
           }
         },
         "ja" : {
@@ -199987,7 +199987,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impostare"
+            "value" : "Configurazione"
           }
         },
         "ja" : {
@@ -200579,7 +200579,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spettacolo"
+            "value" : "Mostra"
           }
         },
         "ja" : {
@@ -201467,7 +201467,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mostra l'altitudine"
+            "value" : "Mostra l'altitudine"
           }
         },
         "ja" : {
@@ -202959,7 +202959,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mostra il bitrate e il numero totale di byte inviati"
+            "value" : "Mostra il bitrate e i byte totali inviati"
           }
         },
         "ja" : {
@@ -204291,7 +204291,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mostra debug overlay (se abilitato)"
+            "value" : "Mostra debug overlay (se abilitato)"
           }
         },
         "ja" : {
@@ -206519,7 +206519,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muto"
+            "value" : "Mostra stato muto"
           }
         },
         "ja" : {
@@ -212461,7 +212461,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Misurare"
+            "value" : "Dimensione"
           }
         },
         "ja" : {
@@ -212609,7 +212609,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Saltare"
+            "value" : "Salta"
           }
         },
         "ja" : {
@@ -216753,7 +216753,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Piazza"
+            "value" : "Quadrato"
           }
         },
         "ja" : {
@@ -219287,7 +219287,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome utente"
+            "value" : "SSID"
           }
         },
         "ja" : {
@@ -222081,7 +222081,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Di partenza..."
+            "value" : "Avvio..."
           }
         },
         "ja" : {
@@ -226073,7 +226073,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stream marked creato"
+            "value" : "Stream marker creato"
           }
         },
         "ja" : {
@@ -227701,7 +227701,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cronologia in streaming"
+            "value" : "Cronologia delle dirette"
           }
         },
         "ja" : {
@@ -229331,7 +229331,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo per gli abbonati non è disponibile per tutte le piattaforme."
+            "value" : "\"Solo abbonati\" non è disponibile su tutte le piattaforme."
           }
         },
         "ja" : {
@@ -233335,7 +233335,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scatta uno snapshot"
+            "value" : "Scatta uno snapshot."
           }
         },
         "ja" : {
@@ -233483,7 +233483,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scattare snapshot"
+            "value" : "Scatta snapshot"
           }
         },
         "ja" : {
@@ -233923,7 +233923,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scattare uno snapshot in"
+            "value" : "Scatto snapshot tra"
           }
         },
         "ja" : {
@@ -237921,7 +237921,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il bitrate diminuisce la velocità quando RTT è troppo alto."
+            "value" : "La velocità con cui il bitrate scende quando l'RTT è troppo alto."
           }
         },
         "ja" : {
@@ -238661,7 +238661,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il primo elemento che corrisponde ai bit di incoraggiamento verrà riprodotto-"
+            "value" : "Il primo elemento che corrisponde ai bit inviati verrà riprodotto."
           }
         },
         "ja" : {
@@ -239549,7 +239549,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il bitrate minimo diminuisce la velocità quando RTT è troppo alto."
+            "value" : "La velocità minima con cui il bitrate scende quando l'RTT è troppo alto."
           }
         },
         "ja" : {
@@ -241325,7 +241325,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il server RTMP consente a Moblin di ricevere flussi video sulla rete. Ciò consente l’utilizzo di alcuni droni e altre telecamere come sorgenti."
+            "value" : "Il server RTMP permette a Moblin di ricevere stream video dalla rete. Così puoi usare alcuni droni e altre telecamere come sorgenti."
           }
         },
         "ja" : {
@@ -241621,7 +241621,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La porta TCP su cui il server RTMP ascolta gli editori RTMP."
+            "value" : "La porta TCP su cui il server RTMP ascolta i publisher RTMP."
           }
         },
         "ja" : {
@@ -242213,7 +242213,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La porta UDP su cui il server SRT(LA) ascolta gli editori SRT."
+            "value" : "La porta UDP su cui il server SRT(LA) ascolta i publisher SRT."
           }
         },
         "ja" : {
@@ -242361,7 +242361,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La porta UDP su cui il server SRT(LA) ascolta gli editori SRTLA."
+            "value" : "La porta UDP su cui il server SRT(LA) ascolta i publisher SRTLA."
           }
         },
         "ja" : {
@@ -242953,7 +242953,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'orologio funziona come assistente remoto quando abilitato. Si prega di notare che in questo caso, la chat, lo skip del TTS corrente e altre funzionalità non sono supportate."
+            "value" : "L'orologio fa da assistente remoto quando è attivo. Nota che in questo caso chat, salto del TTS e alcune altre funzioni non sono supportate."
           }
         },
         "ja" : {
@@ -243547,7 +243547,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thermal state"
+            "value" : "Stato termico"
           }
         },
         "ja" : {
@@ -244591,7 +244591,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tmecode"
+            "value" : "Timecode"
           }
         },
         "ja" : {
@@ -247989,7 +247989,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flussi totali"
+            "value" : "Stream totali"
           }
         },
         "ja" : {
@@ -251549,7 +251549,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disattiva CHAT TTS."
+            "value" : "Disattiva il TTS della chat."
           }
         },
         "ja" : {
@@ -251697,7 +251697,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Attiva la chat TTS."
+            "value" : "Attiva il TTS della chat."
           }
         },
         "ja" : {
@@ -254807,7 +254807,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Audio attivo"
+            "value" : "Riattiva l'audio."
           }
         },
         "ja" : {
@@ -254955,7 +254955,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Disattivazione dell'audio"
+            "value" : "Riattivazione dell'audio"
           }
         },
         "ja" : {
@@ -255695,7 +255695,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fino a 50Mbps. Impostare su 0 per automatico."
+            "value" : "Fino a 50 Mbps. Imposta 0 per automatico."
           }
         },
         "ja" : {
@@ -261909,7 +261909,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Video ID "
+            "value" : "Video ID"
           }
         },
         "ja" : {
@@ -263095,7 +263095,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " VIN "
+            "value" : "VIN"
           }
         },
         "ja" : {
@@ -269471,7 +269471,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wifi"
+            "value" : "WiFi"
           }
         },
         "ja" : {
@@ -271100,7 +271100,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Marchio X"
+            "value" : "Simbolo X"
           }
         },
         "ja" : {
@@ -273332,7 +273332,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Youtube"
+            "value" : "YouTube"
           }
         },
         "ja" : {

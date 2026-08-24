@@ -1,9 +1,9 @@
 /* No comment provided by engineer. */
-"${applicationName}, mute" = "${applicationName}, silenziato";
+"${applicationName}, mute" = "${applicationName}, silenzia";
 
 /* No comment provided by engineer. */
-"${applicationName}, take snapshot" = "${applicationName}, ha scattato uno snapshot";
+"${applicationName}, take snapshot" = "${applicationName}, scatta uno snapshot";
 
 /* No comment provided by engineer. */
-"${applicationName}, unmute" = "${applicationName}, attivo";
+"${applicationName}, unmute" = "${applicationName}, riattiva audio";
 

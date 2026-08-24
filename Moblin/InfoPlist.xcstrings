@@ -186,7 +186,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin tcomunica con DJI usando il Bluetooth."
+            "value" : "Moblin comunica con le fotocamere DJI tramite Bluetooth."
           }
         },
         "nl" : {
@@ -810,7 +810,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può mostrare l'immagine selezionata come overlay"
+            "value" : "Moblin mostra le immagini selezionate come overlay."
           }
         },
         "ko" : {
@@ -894,7 +894,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può mostrare l'immagine selezionata come overlay"
+            "value" : "Moblin mostra le immagini selezionate come overlay."
           }
         },
         "ko" : {
@@ -972,7 +972,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può aggiungere la trascrizione alla stream."
+            "value" : "Moblin può aggiungere la trascrizione allo stream."
           }
         },
         "nl" : {
