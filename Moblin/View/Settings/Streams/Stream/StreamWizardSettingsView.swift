@@ -72,11 +72,13 @@ struct StreamWizardSettingsView: View {
             } header: {
                 Text("Platform to stream to")
             }
-            Section {
-                NavigationLink {
-                    StreamWizardMobcamSettingsView(model: model, createStreamWizard: createStreamWizard)
-                } label: {
-                    MobcamLogoAndNameView()
+            if !isMac() {
+                Section {
+                    NavigationLink {
+                        StreamWizardMobcamSettingsView(model: model, createStreamWizard: createStreamWizard)
+                    } label: {
+                        MobcamLogoAndNameView()
+                    }
                 }
             }
             Section {
