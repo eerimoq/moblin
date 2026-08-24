@@ -12,7 +12,7 @@ struct SettingsSuite {
         #expect(stream.mobcamPort() == 7777)
         #expect(!stream.isBonding())
         stream.url = "mobcam://localhost"
-        #expect(stream.mobcamPort() == 7777)
+        #expect(stream.mobcamPort() == DefaultTcpPorts.mobcamStream)
     }
 
     @Test

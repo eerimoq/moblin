@@ -11,7 +11,6 @@ import time
 from usbmux import UsbmuxError
 from usbmux import connect as usbmux_connect
 
-MAGIC = b"MOBL"
 VERSION = 1
 
 MESSAGE_HOST_HELLO = 0x01
@@ -29,7 +28,7 @@ MEASURE_SECONDS = 1.0
 
 
 def pack_message(message_type: int, payload: bytes) -> bytes:
-    return struct.pack(">IB", len(payload) + 1, message_type) + payload
+    return struct.pack(">BI", message_type, len(payload)) + payload
 
 
 class MessageReader:
@@ -40,16 +39,14 @@ class MessageReader:
         self.buffer += data
 
     def read(self) -> tuple[int, bytes] | None:
-        if len(self.buffer) < 4:
+        if len(self.buffer) < 5:
             return None
-        (length,) = struct.unpack(">I", self.buffer[:4])
-        if length < 1:
-            raise ValueError(f"Bad message length {length}")
-        if len(self.buffer) < 4 + length:
+        message_type = self.buffer[0]
+        (length,) = struct.unpack(">I", self.buffer[1:5])
+        if len(self.buffer) < 5 + length:
             return None
-        message_type = self.buffer[4]
-        payload = self.buffer[5 : 4 + length]
-        self.buffer = self.buffer[4 + length :]
+        payload = self.buffer[5 : 5 + length]
+        self.buffer = self.buffer[5 + length :]
         return message_type, payload
 
 
@@ -331,7 +328,7 @@ class Receiver:
         handler(payload)
 
     def receive(self, sock: socket.socket) -> None:
-        sock.sendall(pack_message(MESSAGE_HOST_HELLO, MAGIC + bytes([VERSION])))
+        sock.sendall(pack_message(MESSAGE_HOST_HELLO, bytes([VERSION])))
         while True:
             data = sock.recv(65536)
             if not data:

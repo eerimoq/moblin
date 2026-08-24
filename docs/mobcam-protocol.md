@@ -43,8 +43,8 @@ socket the moment it is produced, with `TCP_NODELAY` set.
 All integers are big endian. Every message is
 
 ```
-u32 payloadLength      excluding these four bytes
 u8  messageType
+u32 payloadLength      excluding these five bytes
 ... payload
 ```
 
@@ -55,9 +55,9 @@ The maximum payload length is 4 MB.
 The computer sends this first. Moblin drops connections that do not say hello within five seconds, and
 connections that say hello with a version it does not implement.
 
-| Type | Name  | Payload                                      |
-|------|-------|----------------------------------------------|
-| 0x01 | hello | `"MOBL"`, `u8` protocol version (currently 1) |
+| Type | Name  | Payload                             |
+|------|-------|-------------------------------------|
+| 0x01 | hello | `u8` protocol version (currently 1) |
 
 ### Device to computer
 

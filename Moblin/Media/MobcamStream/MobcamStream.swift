@@ -308,7 +308,7 @@ final class MobcamStream: NSObject, @unchecked Sendable {
         }
         send(packMobcamStreamVideoFrame(presentationTimeStamp: presentationTimeStamp,
                                         isSync: isSync,
-                                        units: Data(bytes: buffer, count: length)))
+                                        units: UnsafeRawBufferPointer(start: buffer, count: length)))
     }
 
     private func handleAudioEncoderOutputFormat(_ format: AVAudioFormat) {
@@ -339,20 +339,20 @@ final class MobcamStream: NSObject, @unchecked Sendable {
         guard let presentationTimeStamp = toMicroseconds(presentationTimeStamp) else {
             return
         }
-        let data = Data(bytes: buffer.data, count: Int(buffer.byteLength))
+        let units = UnsafeRawBufferPointer(start: buffer.data, count: Int(buffer.byteLength))
         guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
-            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: data))
+            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: units))
             return
         }
         for index in 0 ..< Int(buffer.packetCount) {
             let description = descriptions[index]
             let offset = Int(description.mStartOffset)
             let size = Int(description.mDataByteSize)
-            guard size > 0, offset >= 0, offset + size <= data.count else {
+            guard size > 0, offset >= 0, offset + size <= units.count else {
                 continue
             }
-            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp,
-                                            unit: data.subdata(in: offset ..< offset + size)))
+            let unit = UnsafeRawBufferPointer(rebasing: units[offset ..< offset + size])
+            send(packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: unit))
         }
     }
 }

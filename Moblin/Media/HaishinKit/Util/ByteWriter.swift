@@ -108,6 +108,15 @@ class ByteWriter {
         }
     }
 
+    func writeBytes(_ value: UnsafeRawBufferPointer) {
+        if position == data.count {
+            data.append(value.baseAddress!.assumingMemoryBound(to: UInt8.self), count: value.count)
+            position = data.count
+        } else {
+            writeBytes(Data(value))
+        }
+    }
+
     func sequence(_ length: Int, lambda: (ByteWriter) -> Void) {
         let r = (data.count - position) % length
         for index in stride(

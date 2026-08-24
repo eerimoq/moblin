@@ -2,6 +2,18 @@ import Foundation
 @testable import Moblin
 import Testing
 
+private func packVideoFrame(_ presentationTimeStamp: UInt64, _ isSync: Bool, _ units: Data) -> Data {
+    units.withUnsafeBytes {
+        packMobcamStreamVideoFrame(presentationTimeStamp: presentationTimeStamp, isSync: isSync, units: $0)
+    }
+}
+
+private func packAudioFrame(_ presentationTimeStamp: UInt64, _ unit: Data) -> Data {
+    unit.withUnsafeBytes {
+        packMobcamStreamAudioFrame(presentationTimeStamp: presentationTimeStamp, unit: $0)
+    }
+}
+
 private func readAll(_ reader: MobcamStreamMessageReader) throws -> [(MobcamStreamMessageType, Data)] {
     var messages: [(MobcamStreamMessageType, Data)] = []
     while let message = try reader.read() {
@@ -19,18 +31,6 @@ struct MobcamStreamSuite {
         #expect(messages.count == 1)
         #expect(messages[0].0 == .hostHello)
         try unpackMobcamStreamHostHello(messages[0].1)
-    }
-
-    @Test
-    func hostHelloBadMagic() throws {
-        var message = packMobcamStreamHostHello()
-        message[5] = 0x58
-        let reader = MobcamStreamMessageReader()
-        reader.append(message)
-        let messages = try readAll(reader)
-        #expect(throws: MobcamStreamProtocolError.self) {
-            try unpackMobcamStreamHostHello(messages[0].1)
-        }
     }
 
     @Test
@@ -67,9 +67,7 @@ struct MobcamStreamSuite {
                                                   width: 1920,
                                                   height: 1080,
                                                   configurationRecord: Data([1, 2, 3])))
-        reader.append(packMobcamStreamVideoFrame(presentationTimeStamp: 0x0102_0304_0506_0708,
-                                                 isSync: true,
-                                                 units: Data([9, 8, 7])))
+        reader.append(packVideoFrame(0x0102_0304_0506_0708, true, Data([9, 8, 7])))
         let messages = try readAll(reader)
         #expect(messages.count == 2)
         #expect(messages[0].0 == .videoConfig)
@@ -93,7 +91,7 @@ struct MobcamStreamSuite {
                                                   sampleRate: 48000,
                                                   channels: 2,
                                                   configurationRecord: Data([0x11, 0x90])))
-        reader.append(packMobcamStreamAudioFrame(presentationTimeStamp: 42, unit: Data([1, 2])))
+        reader.append(packAudioFrame(42, Data([1, 2])))
         let messages = try readAll(reader)
         #expect(messages.count == 2)
         let config = ByteReader(data: messages[0].1)
@@ -109,11 +107,7 @@ struct MobcamStreamSuite {
 
     @Test
     func splitOverManyReceives() throws {
-        let message = packMobcamStreamVideoFrame(
-            presentationTimeStamp: 1,
-            isSync: false,
-            units: Data([1, 2, 3])
-        )
+        let message = packVideoFrame(1, false, Data([1, 2, 3]))
         let reader = MobcamStreamMessageReader()
         for byte in message.dropLast() {
             reader.append(Data([byte]))
@@ -129,10 +123,7 @@ struct MobcamStreamSuite {
     func manyMessagesInOneReceive() throws {
         var data = Data()
         for index in 0 ..< 10 {
-            data += packMobcamStreamAudioFrame(
-                presentationTimeStamp: UInt64(index),
-                unit: Data([UInt8(index)])
-            )
+            data += packAudioFrame(UInt64(index), Data([UInt8(index)]))
         }
         let reader = MobcamStreamMessageReader()
         reader.append(data)
@@ -149,8 +140,7 @@ struct MobcamStreamSuite {
     func unknownMessageType() {
         let reader = MobcamStreamMessageReader()
         var data = Data(count: 5)
-        data.setUInt32Be(value: 1)
-        data[4] = 0x7F
+        data[0] = 0x7F
         reader.append(data)
         #expect(throws: MobcamStreamProtocolError.self) {
             _ = try reader.read()
@@ -161,17 +151,9 @@ struct MobcamStreamSuite {
     func tooLongMessage() {
         let reader = MobcamStreamMessageReader()
         var data = Data(count: 5)
-        data.setUInt32Be(value: 0xFFFF_FFFF)
+        data[0] = MobcamStreamMessageType.videoFrame.rawValue
+        data.setUInt32Be(value: 0xFFFF_FFFF, offset: 1)
         reader.append(data)
-        #expect(throws: MobcamStreamProtocolError.self) {
-            _ = try reader.read()
-        }
-    }
-
-    @Test
-    func zeroLengthMessage() {
-        let reader = MobcamStreamMessageReader()
-        reader.append(Data(count: 4))
         #expect(throws: MobcamStreamProtocolError.self) {
             _ = try reader.read()
         }
