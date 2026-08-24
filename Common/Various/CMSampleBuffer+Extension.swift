@@ -88,16 +88,14 @@ extension CMSampleBuffer {
             }
         }
     }
-    
-    struct LevelCalcValues
-    {
+
+    struct LevelCalcValues {
         let power: Float
         let peak: Float
         let nsamples: Int
     }
-    
-    func audioLevelCalc() -> LevelCalcValues
-    {
+
+    func audioLevelCalc() -> LevelCalcValues {
         let signposter = OSSignposter()
         let signpostID = signposter.makeSignpostID()
         let state = signposter.beginInterval("audioLevel", id: signpostID)
@@ -136,7 +134,7 @@ extension CMSampleBuffer {
     }
 
     func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
-                                    int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
+                            int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
     {
         guard let dataBuffer else {
             return nil
