@@ -44,6 +44,8 @@ extension Model {
             handleChatBotMessageMute(command: command)
         case "unmute":
             handleChatBotMessageUnmute(command: command)
+        case "weather":
+            handleChatBotMessageWeather(command: command)
         default:
             switch command.popFirstLowerCased() {
             case "alert":
@@ -272,6 +274,26 @@ extension Model {
             self.setMuted(value: false)
             self.setQuickButton(type: .mute, isOn: false)
             self.updateQuickButtonStates()
+        }
+    }
+    
+    private func handleChatBotMessageWeather(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.weather,
+            command: command
+        ) {
+            let weather = self.weatherManager.getLatestWeather()?.currentWeather
+            let placemark = self.geographyManager.getLatestPlacemark()
+            let conditions = weather?.symbolName ?? ""
+            let temperature = weather?.temperature.converted(to: .celsius).value ?? -1.0
+            let countryFlag = emojiFlag(countryCode: placemark?.isoCountryCode)
+            let city = placemark?.locality ?? ""
+            let shortTime = Date().formatted(textEffectShortTimeFormat)
+            logger.info("xxx \(conditions) \(temperature) 🕑 \(shortTime) \(countryFlag) \(city)")
+            self.sendChatBotReply(
+                message: "\(conditions) \(temperature) 🕑 \(shortTime) \(countryFlag) \(city)",
+                platform: command.message.platform
+            )
         }
     }
 

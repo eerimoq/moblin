@@ -211337,6 +211337,9 @@
         }
       }
     },
+    "Show weather and location." : {
+
+    },
     "Show wind" : {
       "localizations" : {
         "de" : {

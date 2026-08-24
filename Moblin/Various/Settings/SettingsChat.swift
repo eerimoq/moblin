@@ -160,6 +160,7 @@ class SettingsChatBotPermissions: Codable {
     var zoom: SettingsChatBotPermissionsCommand = .init()
     var tesla: SettingsChatBotPermissionsCommand = .init()
     var audio: SettingsChatBotPermissionsCommand = .init()
+    var weather: SettingsChatBotPermissionsCommand = .init()
     var reaction: SettingsChatBotPermissionsCommand = .init()
     var scene: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var stream: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
@@ -184,6 +185,7 @@ class SettingsChatBotPermissions: Codable {
         case zoom
         case tesla
         case audio
+        case weather
         case reaction
         case scene
         case stream
@@ -210,6 +212,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.zoom, zoom)
         try container.encode(.tesla, tesla)
         try container.encode(.audio, audio)
+        try container.encode(.weather, weather)
         try container.encode(.reaction, reaction)
         try container.encode(.scene, scene)
         try container.encode(.stream, stream)
@@ -238,6 +241,7 @@ class SettingsChatBotPermissions: Codable {
         zoom = container.decode(.zoom, SettingsChatBotPermissionsCommand.self, .init())
         tesla = container.decode(.tesla, SettingsChatBotPermissionsCommand.self, .init())
         audio = container.decode(.audio, SettingsChatBotPermissionsCommand.self, .init())
+        weather = container.decode(.audio, SettingsChatBotPermissionsCommand.self, .init())
         reaction = container.decode(.reaction, SettingsChatBotPermissionsCommand.self, .init())
         scene = container.decode(.scene, SettingsChatBotPermissionsCommand.self, .init())
         stream = container.decode(.stream, SettingsChatBotPermissionsCommand.self, .init())

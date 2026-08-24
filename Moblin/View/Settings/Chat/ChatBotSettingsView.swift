@@ -278,6 +278,24 @@ private struct LocationPermissionsSettingsView: View {
     }
 }
 
+private struct WeatherPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin weather",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin weather"))
+                Text("Show weather and location.")
+            }
+        }
+    }
+}
+
 private struct MapPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -496,6 +514,7 @@ private struct ChatBotCommandsSettingsView: View {
             FixPermissionsSettingsView(permissions: permissions.fix)
             GimbalPermissionsSettingsView(permissions: permissions.gimbal)
             LocationPermissionsSettingsView(permissions: permissions.location)
+            WeatherPermissionsSettingsView(permissions: permissions.weather)
             MacroPermissionsSettingsView(permissions: permissions.macro)
             MapPermissionsSettingsView(permissions: permissions.map)
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
