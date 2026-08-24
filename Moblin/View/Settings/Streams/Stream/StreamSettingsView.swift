@@ -4,13 +4,14 @@ private struct PlatformLogoAndNameView: View {
     let logo: String
     let name: String
     var channel: String = ""
+    var scale = 1.0
 
     var body: some View {
         HStack {
             Image(logo)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 25)
+                .frame(width: 30 * scale, height: 25 * scale)
             if channel.isEmpty {
                 Text(name)
             } else {
@@ -76,6 +77,12 @@ struct DiscordLogoAndNameView: View {
 struct TtsMonsterLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
+    }
+}
+
+struct MobcamLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "MobcamLogo", name: String(localized: "Mobcam"), scale: 1.25)
     }
 }
 

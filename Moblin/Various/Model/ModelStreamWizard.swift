@@ -7,10 +7,10 @@ enum WizardPlatform {
     case soop
     case custom
     case obs
+    case mobcam
 }
 
 enum WizardNetworkSetup {
-    case none
     case obs
     case belaboxCloudObs
     case direct
@@ -23,7 +23,6 @@ enum WizardCustomProtocol {
     case rtmp
     case rist
     case whip
-    case mobcam
 
     func toDefaultCodec() -> SettingsStreamCodec {
         switch self {
@@ -36,8 +35,6 @@ enum WizardCustomProtocol {
         case .rist:
             .h265hevc
         case .whip:
-            .h264avc
-        case .mobcam:
             .h264avc
         }
     }
@@ -54,8 +51,6 @@ enum WizardCustomProtocol {
             .aac
         case .whip:
             .opus
-        case .mobcam:
-            .aac
         }
     }
 }
@@ -100,22 +95,21 @@ extension Model {
             return createStreamWizard.customRistUrl.trim()
         case .whip:
             return createStreamWizard.customWhipUrl.trim()
-        case .mobcam:
-            return createStreamWizard.customMobcamUrl.trim()
         }
         return nil
     }
 
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
-        if createStreamWizard.platform == .custom {
+        switch createStreamWizard.platform {
+        case .custom:
             if let customUrl = createStreamFromWizardCustomUrl() {
                 url = customUrl
             }
-        } else {
+        case .mobcam:
+            url = createStreamWizard.mobcamUrl.trim()
+        default:
             switch createStreamWizard.networkSetup {
-            case .none:
-                break
             case .obs:
                 url = "srt://\(createStreamWizard.obsAddress):\(createStreamWizard.obsPort)"
             case .belaboxCloudObs:
@@ -183,31 +177,41 @@ extension Model {
             break
         case .custom:
             break
+        case .mobcam:
+            break
         }
         stream.chat.bttvEmotes = false
         stream.chat.ffzEmotes = false
         stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
-        if stream.url.starts(with: "rtmp") {
+        if stream.url.starts(with: "rtmp") || stream.url.starts(with: "mobcam") {
             stream.rateControl = .cbr
         } else {
             stream.rateControl = .abr
         }
-        switch createStreamWizard.networkSetup {
-        case .none:
-            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
-            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
-        case .obs:
-            stream.codec = .h265hevc
-        case .belaboxCloudObs:
-            stream.codec = .h265hevc
-        case .direct:
-            stream.codec = .h264avc
-        case .myServers:
-            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
-            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
-        }
         stream.audioBitrate = 128_000
+        switch createStreamWizard.platform {
+        case .custom:
+            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
+        case .mobcam:
+            stream.codec = .h265hevc
+            stream.bitrate = getHighestBitratePreset()
+            stream.audioCodec = .aac
+            stream.audioBitrate = 192_000
+        default:
+            switch createStreamWizard.networkSetup {
+            case .obs:
+                stream.codec = .h265hevc
+            case .belaboxCloudObs:
+                stream.codec = .h265hevc
+            case .direct:
+                stream.codec = .h264avc
+            case .myServers:
+                stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+                stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
+            }
+        }
         database.streams.append(stream)
         setCurrentStream(stream: stream)
         reloadStream()
@@ -216,7 +220,7 @@ extension Model {
 
     func resetWizard() {
         createStreamWizard.platform = .custom
-        createStreamWizard.networkSetup = .none
+        createStreamWizard.networkSetup = .direct
         createStreamWizard.name = ""
         createStreamWizard.backgroundStreaming = false
         createStreamWizard.twitchChannelName = ""
@@ -245,8 +249,6 @@ extension Model {
 
     func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
         switch createStreamWizard.networkSetup {
-        case .none:
-            break
         case .obs:
             break
         case .belaboxCloudObs:

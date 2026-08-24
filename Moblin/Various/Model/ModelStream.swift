@@ -11,7 +11,7 @@ let lowBatteryMessage = String(localized: "Low battery")
 
 class CreateStreamWizard: ObservableObject {
     var platform: WizardPlatform = .custom
-    var networkSetup: WizardNetworkSetup = .none
+    var networkSetup: WizardNetworkSetup = .direct
     var customProtocol: WizardCustomProtocol = .none
     let twitchStream = SettingsStream(name: "")
     var twitchAccessToken = ""
@@ -52,7 +52,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
     @Published var customWhipUrl = ""
-    @Published var customMobcamUrl = ""
+    @Published var mobcamUrl = ""
 }
 
 enum StreamState {
@@ -140,6 +140,12 @@ extension Model {
             streamingHistory.store()
         }
         return true
+    }
+
+    func getHighestBitratePreset() -> UInt32 {
+        database.bitratePresets.sorted { lhs, rhs in
+            lhs.bitrate > rhs.bitrate
+        }.first?.bitrate ?? 5_000_000
     }
 
     func isGoLiveNotificationConfigured() -> Bool {

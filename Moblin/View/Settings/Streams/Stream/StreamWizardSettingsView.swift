@@ -74,6 +74,13 @@ struct StreamWizardSettingsView: View {
             }
             Section {
                 NavigationLink {
+                    StreamWizardMobcamSettingsView(model: model, createStreamWizard: createStreamWizard)
+                } label: {
+                    MobcamLogoAndNameView()
+                }
+            }
+            Section {
+                NavigationLink {
                     StreamWizardCustomSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     Text("Custom")

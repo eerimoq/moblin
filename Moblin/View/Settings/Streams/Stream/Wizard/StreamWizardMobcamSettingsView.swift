@@ -1,16 +1,16 @@
 import SwiftUI
 
-struct StreamWizardCustomMobcamSettingsView: View {
+struct StreamWizardMobcamSettingsView: View {
     let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        createStreamWizard.customMobcamUrl.isEmpty || !urlError.isEmpty
+        createStreamWizard.mobcamUrl.isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {
-        let url = cleanUrl(url: createStreamWizard.customMobcamUrl)
+        let url = cleanUrl(url: createStreamWizard.mobcamUrl)
         if url.isEmpty {
             urlError = ""
         } else {
@@ -23,23 +23,33 @@ struct StreamWizardCustomMobcamSettingsView: View {
             Section {
                 TextField(
                     String("mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"),
-                    text: $createStreamWizard.customMobcamUrl
+                    text: $createStreamWizard.mobcamUrl
                 )
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
-                .onChange(of: createStreamWizard.customMobcamUrl) { _ in
+                .onChange(of: createStreamWizard.mobcamUrl) { _ in
                     updateUrlError()
                 }
             } header: {
                 Text("URL")
             } footer: {
+                FormFieldError(error: urlError)
+            }
+            Section {
                 VStack(alignment: .leading) {
-                    FormFieldError(error: urlError)
                     Text("""
-                    Only the port number matters. Connect this device to a computer with a USB cable \
-                    and run the Moblin Mobcam host tool on the computer to receive the stream.
+                    1. Install the OBS Mobcam Plugin as described \
+                    [here](https://github.com/eerimoq/obs-mobcam-plugin#obs-mobcam-plugin).
                     """)
+                    Text("")
+                    Text("2. Connect Moblin to the computer with a USB cable.")
+                    Text("")
+                    Text("3. Add a Mobcam source in OBS.")
+                    Text("")
+                    Text("4. Press Go live in Moblin to start the stream to OBS.")
                 }
+            } header: {
+                Text("Configure OBS on your computer")
             }
             Section {
                 NavigationLink {
@@ -51,9 +61,9 @@ struct StreamWizardCustomMobcamSettingsView: View {
             }
         }
         .onAppear {
-            createStreamWizard.customProtocol = .mobcam
-            if createStreamWizard.customMobcamUrl.isEmpty {
-                createStreamWizard.customMobcamUrl = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
+            createStreamWizard.platform = .mobcam
+            if createStreamWizard.mobcamUrl.isEmpty {
+                createStreamWizard.mobcamUrl = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
             }
             createStreamWizard.name = makeUniqueName(name: String(localized: "Custom Mobcam"),
                                                      existingNames: model.database.streams)
