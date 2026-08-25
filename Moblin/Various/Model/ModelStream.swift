@@ -52,7 +52,6 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
     @Published var customWhipUrl = ""
-    @Published var mobcamUrl = ""
 }
 
 enum StreamState {

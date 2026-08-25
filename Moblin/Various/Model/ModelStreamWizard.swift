@@ -107,7 +107,7 @@ extension Model {
                 url = customUrl
             }
         case .mobcam:
-            url = createStreamWizard.mobcamUrl.trim()
+            url = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
         default:
             switch createStreamWizard.networkSetup {
             case .obs:
