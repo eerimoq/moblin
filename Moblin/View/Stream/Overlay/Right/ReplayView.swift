@@ -18,7 +18,7 @@ private struct ReplayPreview: View {
             ZStack {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(maxWidth: width())
                     .cornerRadius(7)
                     .onTapGesture {
@@ -228,7 +228,7 @@ private struct ReplayHistoryItem: View {
             if let image {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .cornerRadius(5)
                     .frame(height: height())
                     .onTapGesture {

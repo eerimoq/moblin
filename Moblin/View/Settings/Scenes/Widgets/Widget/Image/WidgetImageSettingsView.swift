@@ -26,7 +26,7 @@ struct WidgetImagePickerView: View {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(width: 1920 / sizeScale, height: 1080 / sizeScale)
                     }
                 } else {

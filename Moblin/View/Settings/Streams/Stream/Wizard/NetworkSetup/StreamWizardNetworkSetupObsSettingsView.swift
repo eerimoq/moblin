@@ -56,7 +56,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                     HCenter {
                         Image("ObsMediaSourceSrt")
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     }
                 }
             } header: {

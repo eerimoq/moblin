@@ -36,13 +36,13 @@ struct MoblinWidgetAppEntryView: View {
         case .accented:
             Image("AppIconAccented")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .padding()
                 .widgetAccentable(true)
         default:
             Image("AppIcon")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .padding()
         }
     }

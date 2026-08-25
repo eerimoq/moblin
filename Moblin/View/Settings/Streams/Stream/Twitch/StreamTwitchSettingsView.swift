@@ -68,7 +68,7 @@ private struct TwitchCategoryPickerView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         Color.gray.opacity(0.3)
                     }

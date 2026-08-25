@@ -29,7 +29,7 @@ private struct ViewersLogoView: View {
     var body: some View {
         Image(platform.imageName())
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .padding(.vertical, 2)
             .frame(height: 18)
     }

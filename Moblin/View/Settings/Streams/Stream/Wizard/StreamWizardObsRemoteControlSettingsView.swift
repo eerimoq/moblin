@@ -68,7 +68,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                             Spacer()
                             Image("ObsRemoteControl")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                             Spacer()
                         }
                     }

@@ -57,7 +57,7 @@ private struct LineView: View {
             if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .padding(2)
                     .frame(height: fontSizeScaleFactor * CGFloat(chat.fontSize * 1.4))
                     .opacity(imageOpacity())
@@ -67,7 +67,7 @@ private struct LineView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         EmptyView()
                     }
@@ -98,14 +98,14 @@ private struct LineView: View {
                     if chat.animatedEmotes {
                         WebImage(url: url)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(height: fontSizeScaleFactor * 25)
                             .opacity(imageOpacity())
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                         } placeholder: {
                             EmptyView()
                         }

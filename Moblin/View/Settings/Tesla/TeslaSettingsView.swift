@@ -73,7 +73,7 @@ struct TeslaSettingsView: View {
                 HCenter {
                     Image("Tesla")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 }
             }
             Section {

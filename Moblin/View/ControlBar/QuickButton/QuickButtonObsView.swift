@@ -112,7 +112,7 @@ private struct ObsSnapshotView: View {
             if let image = obsQuickButton.screenshot {
                 Image(image, scale: 1, label: Text(""))
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .background(.black)
             } else {
                 Text("No snapshot received yet.")

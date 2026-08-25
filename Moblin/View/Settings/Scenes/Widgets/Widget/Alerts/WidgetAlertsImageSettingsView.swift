@@ -60,7 +60,7 @@ private struct CustomImageView: View {
                         if let image {
                             AnimatedImage(data: image)
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 1920 / 6, height: 1080 / 6)
                         } else {
                             Text("Select image")
@@ -143,7 +143,7 @@ struct AlertImageSelectorView: View {
                             if let image = loadAlertImage(model: model, imageId: image.id) {
                                 AnimatedImage(data: image)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                                     .frame(width: 90, height: 50)
                             } else {
                                 Image(systemName: "photo")

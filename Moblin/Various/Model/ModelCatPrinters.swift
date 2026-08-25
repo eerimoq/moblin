@@ -200,7 +200,7 @@ extension Model {
                 .font(.system(size: 36, weight: .bold))
             Image(uiImage: profileImage ?? UIImage(named: "AppIconNoBackground")!)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(width: 120, height: 120)
                 .clipShape(Circle())
             Text(username)

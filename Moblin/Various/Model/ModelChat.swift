@@ -444,11 +444,11 @@ extension Model {
                             CacheAsyncImage(url: url) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                             } placeholder: {
                                 Image("AppIconNoBackground")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                             }
                             .frame(height: 45)
                             Text(" ")

@@ -256,7 +256,7 @@ private struct AlertPositionFaceView: View {
             if let image = loadAlertImage(model: model, imageId: alert.imageId) {
                 AnimatedImage(data: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: imageWidth, height: imageHeight)
                     .offset(imageOffset)
                     .allowsHitTesting(false)

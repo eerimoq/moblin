@@ -5,7 +5,7 @@ private struct MoblinLiveActivityIcon: View {
     var body: some View {
         Image("AppIcon")
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
     }
 }
 

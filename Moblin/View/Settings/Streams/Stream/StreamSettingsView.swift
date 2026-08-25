@@ -10,7 +10,7 @@ private struct PlatformLogoAndNameView: View {
         HStack {
             Image(logo)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(width: 30 * scale, height: 25 * scale)
             if channel.isEmpty {
                 Text(name)

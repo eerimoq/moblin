@@ -161,7 +161,7 @@ private struct VoiceView: View {
             case let .ttsMonster(name: name, voiceId: voiceId):
                 Image("TtsMonster")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 15)
                 Text("\(voiceItem.flagEmoji) \(name)")
                 Spacer()
@@ -316,7 +316,7 @@ struct VoicesView: View {
                             case .ttsMonster:
                                 Image("TtsMonster")
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                                     .frame(width: 15)
                                 Text(selectedVoice.ttsMonster.name)
                             }

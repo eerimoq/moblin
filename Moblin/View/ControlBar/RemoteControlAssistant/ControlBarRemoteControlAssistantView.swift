@@ -227,7 +227,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                 if let preview = remoteControl.preview {
                     Image(uiImage: preview)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, 3)
                         .onTapGesture(count: 2) { _ in
@@ -824,7 +824,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                     if let preview = remoteControl.preview {
                         Image(uiImage: preview)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
                                 remoteControl.presentingPreviewFullScreen = false

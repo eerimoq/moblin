@@ -932,7 +932,7 @@ struct QuickButtonsInnerView: View {
                             }
                             Image("MoblinInMouth")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 21, height: 40)
                                 .offset(.init(width: 0, height: 3))
                         }
