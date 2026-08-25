@@ -1186,6 +1186,10 @@ class Database: Codable, ObservableObject {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
     }
 
+    func getHighestBitratePreset() -> UInt32 {
+        bitratePresets.sorted { $0.bitrate > $1.bitrate }.first?.bitrate ?? 5_000_000
+    }
+
     @MainActor
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(

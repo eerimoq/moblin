@@ -196,7 +196,7 @@ extension Model {
             stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
         case .mobcam:
             stream.codec = .h265hevc
-            stream.bitrate = getHighestBitratePreset()
+            stream.bitrate = database.getHighestBitratePreset()
             stream.audioCodec = .aac
             stream.audioBitrate = 192_000
         default:

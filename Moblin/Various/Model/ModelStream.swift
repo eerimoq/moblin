@@ -142,12 +142,6 @@ extension Model {
         return true
     }
 
-    func getHighestBitratePreset() -> UInt32 {
-        database.bitratePresets.sorted { lhs, rhs in
-            lhs.bitrate > rhs.bitrate
-        }.first?.bitrate ?? 5_000_000
-    }
-
     func isGoLiveNotificationConfigured() -> Bool {
         guard !stream.goLiveNotificationDiscordMessage.isEmpty else {
             return false
