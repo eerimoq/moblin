@@ -26,6 +26,10 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 
 - Stream using RTMP, RTMPS, SRT, SRTLA, RIST or WHIP (WebRTC) to any
   platform that supports them.
+- Mobcam. Use the phone as a low latency webcam over USB.
+  - Streams to a computer, for example as a camera source in OBS
+    Studio using the
+    [OBS Mobcam Plugin](https://github.com/eerimoq/obs-mobcam-plugin).
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
 - SRTLA and RIST.
