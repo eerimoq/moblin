@@ -4,7 +4,6 @@ import SwiftUI
 protocol ProcessorDelegate: AnyObject {
     func streamAudioLevel(
         audioLevel: Float,
-        rmsAudioLevel: Float,
         numberOfAudioChannels: Int,
         sampleRate: Double
     )

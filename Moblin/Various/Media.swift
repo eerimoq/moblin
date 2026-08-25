@@ -70,7 +70,6 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtTransportBitrate: Int64 = 0
     private var currentAudioLevel: Float = defaultAudioLevel
-    private var currentRmsAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var audioSampleRate: Double = 0
     private var srtUrl: String = ""
@@ -187,10 +186,6 @@ final class Media: NSObject, @unchecked Sendable {
 
     func getAudioLevel() -> Float {
         currentAudioLevel
-    }
-
-    func getRmsAudioLevel() -> Float {
-        currentRmsAudioLevel
     }
 
     func getNumberOfAudioChannels() -> Int {
@@ -1116,7 +1111,6 @@ final class Media: NSObject, @unchecked Sendable {
 extension Media: ProcessorDelegate {
     func streamAudioLevel(
         audioLevel: Float,
-        rmsAudioLevel: Float,
         numberOfAudioChannels: Int,
         sampleRate: Double
     ) {
@@ -1130,7 +1124,6 @@ extension Media: ProcessorDelegate {
             } else {
                 self.currentAudioLevel = audioLevel
             }
-            self.currentRmsAudioLevel = rmsAudioLevel
             self.numberOfAudioChannels = numberOfAudioChannels
             self.audioSampleRate = sampleRate
         }

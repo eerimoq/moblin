@@ -15,7 +15,6 @@ class AudioLevel: ObservableObject {
 
 class AudioProvider: ObservableObject {
     let level = AudioLevel()
-    @Published var rmsLevel: Float = defaultAudioLevel
     @Published var numberOfChannels: Int = 0
     @Published var sampleRate: Double = 0
 }
@@ -255,7 +254,6 @@ extension Model {
 
     func updateAudioLevel() {
         let newAudioLevel = media.getAudioLevel()
-        let newRmsLevel = media.getRmsAudioLevel()
         let newNumberOfAudioChannels = media.getNumberOfAudioChannels()
         let newSampleRate = media.getAudioSampleRate()
         if newNumberOfAudioChannels != audio.numberOfChannels {
@@ -263,9 +261,6 @@ extension Model {
         }
         if newSampleRate != audio.sampleRate {
             audio.sampleRate = newSampleRate
-        }
-        if newRmsLevel != audio.rmsLevel {
-            audio.rmsLevel = newRmsLevel
         }
         if newAudioLevel == audio.level.level {
             return

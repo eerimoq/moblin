@@ -6,7 +6,6 @@ private let bigBarScale: CGFloat = 2.5
 
 private struct AudioBarView: View {
     @ObservedObject var level: AudioLevel
-    @ObservedObject var audio: AudioProvider
     var big: Bool = false
 
     private func clippingBar(scale: CGFloat) -> CGFloat? {
@@ -41,13 +40,6 @@ private struct AudioBarView: View {
         return CGFloat(db * barWidthPerDb) * scale
     }
 
-    private func rmsMarker(scale: CGFloat) -> CGFloat? {
-        guard audio.rmsLevel.isFinite, audio.rmsLevel >= zeroThresholdDb else {
-            return nil
-        }
-        return CGFloat((audio.rmsLevel - zeroThresholdDb) * barWidthPerDb) * scale
-    }
-
     var body: some View {
         let scale = big ? bigBarScale : 1.0
         if level.isMuted() {
@@ -57,35 +49,27 @@ private struct AudioBarView: View {
             Text("Unknown")
                 .foregroundStyle(.white)
         } else {
-            ZStack(alignment: .leading) {
-                HStack(spacing: 0) {
-                    if let width = clippingBar(scale: scale) {
+            HStack(spacing: 0) {
+                if let width = clippingBar(scale: scale) {
+                    Rectangle()
+                        .frame(width: width, height: barHeight * scale)
+                        .foregroundStyle(.red)
+                } else {
+                    if let width = redBar(scale: scale) {
                         Rectangle()
                             .frame(width: width, height: barHeight * scale)
                             .foregroundStyle(.red)
-                    } else {
-                        if let width = redBar(scale: scale) {
-                            Rectangle()
-                                .frame(width: width, height: barHeight * scale)
-                                .foregroundStyle(.red)
-                        }
-                        if let width = yellowBar(scale: scale) {
-                            Rectangle()
-                                .frame(width: width, height: barHeight * scale)
-                                .foregroundStyle(.yellow)
-                        }
-                        if let width = greenBar(scale: scale) {
-                            Rectangle()
-                                .frame(width: width, height: barHeight * scale)
-                                .foregroundStyle(.green)
-                        }
                     }
-                }
-                if let x = rmsMarker(scale: scale) {
-                    Rectangle()
-                        .frame(width: 10, height: barHeight * scale)
-                        .foregroundStyle(.black)
-                        .offset(x: x)
+                    if let width = yellowBar(scale: scale) {
+                        Rectangle()
+                            .frame(width: width, height: barHeight * scale)
+                            .foregroundStyle(.yellow)
+                    }
+                    if let width = greenBar(scale: scale) {
+                        Rectangle()
+                            .frame(width: width, height: barHeight * scale)
+                            .foregroundStyle(.green)
+                    }
                 }
             }
             .padding(.vertical, 2)
@@ -122,7 +106,7 @@ struct AudioLevelView: View {
     var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                AudioBarView(level: model.audio.level, audio: model.audio, big: big)
+                AudioBarView(level: model.audio.level, big: big)
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }

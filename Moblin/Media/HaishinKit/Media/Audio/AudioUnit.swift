@@ -439,7 +439,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     ) {
         let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
         processor?.delegate.streamAudioLevel(audioLevel: audioLevel,
-                                             rmsAudioLevel: meas.levelRMS(),
                                              numberOfAudioChannels: numberOfAudioChannels,
                                              sampleRate: sampleRate)
     }
