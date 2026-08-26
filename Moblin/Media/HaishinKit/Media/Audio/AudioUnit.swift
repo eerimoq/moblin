@@ -398,10 +398,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     }
 
     private func performMeasurement(_ sampleBuffer: CMSampleBuffer) {
-        let signposter = OSSignposter()
-        let signpostID = signposter.makeSignpostID()
-        let state = signposter.beginInterval("audioLevel_performMeasurement", id: signpostID)
-
         _ = sampleBuffer.foreachAudioSample(float32: {
             samples, count in
             meas.input(samples: samples, count: count, time: sampleBuffer.presentationTimeStamp.seconds)
@@ -409,8 +405,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             samples, count in
             meas.input(samples: samples, count: count, time: sampleBuffer.presentationTimeStamp.seconds)
         })
-
-        signposter.endInterval("audioLevel_performMeasurement", state)
     }
 
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
