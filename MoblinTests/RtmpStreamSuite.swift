@@ -30,9 +30,9 @@ extension ModelMock: RtmpStreamDelegate {
 }
 
 extension ModelMock: ProcessorDelegate {
-    func stream(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
+    func streamAudioLevel(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
 
-    func streamVideo(lowFpsImage _: Data?, frameNumber _: UInt64) {}
+    func streamLowFpsImage(lowFpsImage _: Data?, frameNumber _: UInt64) {}
 
     func streamVideoAttachCameraError() {}
 

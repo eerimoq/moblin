@@ -2,8 +2,8 @@ import AVFoundation
 import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
-    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideoAttachCameraError()
     func streamVideoCaptureSessionError(_ message: String)
     func streamVideoBufferedVideoReady(cameraId: UUID)
