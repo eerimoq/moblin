@@ -29,7 +29,7 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Mobcam. Use the phone as a low latency webcam over USB.
   - Streams to a computer, for example as a camera source in OBS
     Studio using the
-    [OBS Mobcam Plugin](https://github.com/eerimoq/obs-mobcam-plugin).
+    [OBS Mobcam Plugin](https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin).
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
 - SRTLA and RIST.
