@@ -264,7 +264,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin trasmette in streaming video dalla videocamera."
+            "value" : "Moblin trasmette in diretta il video della fotocamera."
           }
         },
         "ko" : {
@@ -342,7 +342,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+            "value" : "Moblin può mostrare la tua frequenza cardiaca in diretta."
           }
         },
         "nl" : {
@@ -408,7 +408,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+            "value" : "Moblin può mostrare la tua frequenza cardiaca in diretta."
           }
         },
         "nl" : {
@@ -474,7 +474,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può mostrare la tua frequenza cardiaca in live."
+            "value" : "Moblin può mostrare la tua frequenza cardiaca in diretta."
           }
         },
         "nl" : {
@@ -648,7 +648,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin può visualizzare la tua posizione e/o la velocità sullo schermo e in streaming."
+            "value" : "Moblin può mostrare la tua posizione e/o velocità sullo schermo e in diretta."
           }
         },
         "nl" : {
@@ -726,7 +726,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin trasmette l'audio in live streaming dal microfono."
+            "value" : "Moblin trasmette in diretta l'audio del microfono."
           }
         },
         "ko" : {
