@@ -1109,11 +1109,7 @@ final class Media: NSObject, @unchecked Sendable {
 }
 
 extension Media: ProcessorDelegate {
-    func streamAudioLevel(
-        audioLevel: Float,
-        numberOfAudioChannels: Int,
-        sampleRate: Double
-    ) {
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,

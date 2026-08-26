@@ -1,7 +1,6 @@
 @preconcurrency import AVFoundation
 import Collections
 import CoreAudio
-import os
 
 private class TalkbackPlayer {
     private let engine = AVAudioEngine()
