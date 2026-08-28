@@ -11,6 +11,7 @@ from fractions import Fraction
 from pathlib import Path
 
 import systest
+from systest import wait_until
 
 from .config import Capability
 from .ffmpeg import FfmpegVideoCodec
@@ -35,7 +36,6 @@ from .utils import Crop
 from .utils import Image
 from .utils import Range
 from .utils import anchor_time_of_day
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")

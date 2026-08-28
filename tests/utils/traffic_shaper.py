@@ -14,9 +14,10 @@ from dataclasses import replace
 from enum import StrEnum
 from pathlib import Path
 
+from systest import _log_output as log_output
+from systest import wait_until
+
 from .config import Config
-from .process import log_output
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 

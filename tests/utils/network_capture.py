@@ -11,13 +11,13 @@ from pathlib import Path
 
 from humanfriendly import format_size
 from humanfriendly import format_timespan
+from systest import ManagedProcess
+from systest import wait_until
 
 from .ffmpeg import file_size
 from .monitor import log_table
-from .process import ManagedProcess
 from .traffic_shaper import PROTOCOL_NUMBERS
 from .traffic_shaper import Protocol
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 

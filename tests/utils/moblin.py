@@ -14,6 +14,8 @@ from pathlib import Path
 
 import requests
 from moblin_assistant import make_client_request
+from systest import ManagedProcess
+from systest import wait_until
 from websockets.sync.client import ClientConnection
 from websockets.sync.client import connect
 
@@ -35,10 +37,8 @@ from .config import Config
 from .generate_device_settings import SceneName
 from .generate_device_settings import base_settings
 from .generate_device_settings import create_settings_file
-from .process import ManagedProcess
 from .utils import FILES_DIR
 from .utils import Range
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 LOGGER_ASSISTANT = logging.getLogger(__name__ + ".assistant")

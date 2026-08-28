@@ -1,8 +1,9 @@
 import logging
 from pathlib import Path
 
+from systest import ManagedProcess
+
 from .config import WEB_SERVER_PORT
-from .process import ManagedProcess
 
 LOGGER = logging.getLogger(__name__)
 

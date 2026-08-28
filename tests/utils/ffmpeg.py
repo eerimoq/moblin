@@ -14,12 +14,13 @@ from fractions import Fraction
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from .process import ManagedProcess
+from systest import ManagedProcess
+from systest import wait_until
+
 from .utils import FILES_DIR
 from .utils import Crop
 from .utils import Image
 from .utils import Pixel
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-y"]

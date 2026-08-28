@@ -9,6 +9,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from humanfriendly import format_size
+from systest import wait_until
 
 from ..utils.audio_video_sync import AlertSyncReport
 from ..utils.audio_video_sync import alert_chat_message
@@ -62,7 +63,6 @@ from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
 from ..utils.utils import manual_requirement
 from ..utils.utils import manual_volume_requirement
-from ..utils.utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 
