@@ -17,6 +17,12 @@ from ..utils.audio_video_sync import alert_media_files
 from ..utils.audio_video_sync import alerts_media_gallery_settings
 from ..utils.audio_video_sync import alerts_widget_settings
 from ..utils.audio_video_sync import measure_alert_synchronization
+from ..utils.common.ffmpeg import FfmpegCommand
+from ..utils.common.ffmpeg import FfmpegRtspTestStream
+from ..utils.common.ffmpeg import FfmpegTestStream
+from ..utils.common.ffmpeg import StreamRecorder
+from ..utils.common.ffmpeg import TransportFormat
+from ..utils.common.ffmpeg import ffprobe_audio
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
@@ -29,12 +35,6 @@ from ..utils.config import rist_listener_url
 from ..utils.config import rtmp_listener_url
 from ..utils.config import rtsp_reader_url
 from ..utils.config import srt_listener_url
-from ..utils.ffmpeg import FfmpegCommand
-from ..utils.ffmpeg import FfmpegRtspTestStream
-from ..utils.ffmpeg import FfmpegTestStream
-from ..utils.ffmpeg import StreamRecorder
-from ..utils.ffmpeg import TransportFormat
-from ..utils.ffmpeg import ffprobe_audio
 from ..utils.generate_device_settings import Alignment
 from ..utils.generate_device_settings import BitrateRateControl
 from ..utils.generate_device_settings import CameraPosition

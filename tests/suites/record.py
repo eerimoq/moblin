@@ -1,7 +1,7 @@
 import time
 
+from ..utils.common.ffmpeg import FfmpegVideoCodec
 from ..utils.config import Capability
-from ..utils.ffmpeg import FfmpegVideoCodec
 from ..utils.generate_device_settings import Resolution
 from ..utils.generate_device_settings import VideoCodec
 from ..utils.moblin import Moblin

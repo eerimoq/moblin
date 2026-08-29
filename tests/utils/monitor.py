@@ -7,7 +7,7 @@ from dataclasses import field
 from humanfriendly import format_size
 from humanfriendly import format_timespan
 
-from .ffmpeg import StreamRecorder
+from .common.ffmpeg import StreamRecorder
 from .moblin import BufferedBuffers
 from .moblin import Moblin
 from .moblin import parse_bitrate_status

@@ -1,10 +1,11 @@
 from pathlib import Path
 
+from ..utils.common.ffmpeg import Crop
+from ..utils.common.ffmpeg import QrCode
+from ..utils.common.ffmpeg import create_qr_codes_video
+from ..utils.common.ffmpeg import read_qr_codes
+from ..utils.common.web_server import WebServer
 from ..utils.config import WEB_SERVER_PORT
-from ..utils.ffmpeg import Crop
-from ..utils.ffmpeg import QrCode
-from ..utils.ffmpeg import create_qr_codes_video
-from ..utils.ffmpeg import read_qr_codes
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import BrowserMode
 from ..utils.generate_device_settings import CameraPosition
@@ -15,7 +16,6 @@ from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
 from ..utils.utils import WEBSITES_DIR
 from ..utils.utils import create_qr_code_image
-from ..utils.web_server import WebServer
 
 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = uuid()
 AUDIO_AND_VIDEO_ONLY_WIDGET_ID = uuid()
@@ -78,7 +78,7 @@ class BrowserWidgetModes(TestCase):
     def run(self):
         create_qr_code_image("n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg")
         create_qr_codes_video(WEBSITES_DIR / "BrowserWidgetHighFpsVideo.mp4")
-        with WebServer(WEBSITES_DIR):
+        with WebServer(WEB_SERVER_PORT, WEBSITES_DIR):
             self.import_settings()
             recording_file = self.moblin.record(16, "BrowserWidgetHighFpsVideo.mp4")
             self.assert_image_qr_codes_periodic_audio_and_video(recording_file)

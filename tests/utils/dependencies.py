@@ -1,7 +1,7 @@
 import shutil
 import sys
 
-from . import ffmpeg
+from .common import ffmpeg
 
 
 def _is_executable_in_path(name: str) -> bool:
