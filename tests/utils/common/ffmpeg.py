@@ -102,12 +102,16 @@ class TransportFormat(StrEnum):
 
 
 HARDWARE_VIDEO_ENCODERS = {
-    FfmpegVideoCodec.H264: "h264_videotoolbox",
-    FfmpegVideoCodec.HEVC: "hevc_videotoolbox",
+    FfmpegVideoCodec.H264: ["h264_videotoolbox", "h264_rkmpp"],
+    FfmpegVideoCodec.HEVC: ["hevc_videotoolbox", "hevc_rkmpp"],
 }
 SOFTWARE_VIDEO_ENCODERS = {
     FfmpegVideoCodec.H264: "libx264",
     FfmpegVideoCodec.HEVC: "libx265",
+}
+HARDWARE_REALTIME_ARGS = {
+    "h264_videotoolbox": ["-realtime", "1"],
+    "hevc_videotoolbox": ["-realtime", "1"],
 }
 
 
@@ -118,10 +122,24 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
+def _log_output(name: str, output: str | bytes | None) -> None:
+    if not output:
+        return
+    if isinstance(output, bytes):
+        output = output.decode(errors="replace")
+    for line in output.splitlines():
+        LOGGER.error("%s: %s", name, line)
+
+
 def _run_logged(command: list[str], text: bool) -> subprocess.CompletedProcess[Any]:
     started = time.monotonic()
     try:
         return subprocess.run(command, check=True, capture_output=True, text=text)
+    except subprocess.CalledProcessError as error:
+        LOGGER.error("Command failed with exit status %d: %s", error.returncode, " ".join(command))
+        _log_output("stdout", error.stdout)
+        _log_output("stderr", error.stderr)
+        raise
     finally:
         LOGGER.debug("Command (%.3f s): %s", time.monotonic() - started, " ".join(command))
 
@@ -155,24 +173,25 @@ def ffmpeg_run(*args: str) -> subprocess.CompletedProcess[str]:
 
 
 @functools.cache
-def video_encoder(codec: FfmpegVideoCodec) -> str:
-    hardware_encoder = HARDWARE_VIDEO_ENCODERS[codec]
-    if f" {hardware_encoder} " in ffmpeg_run("-encoders").stdout:
-        return hardware_encoder
+def video_encoder(codec: FfmpegVideoCodec) -> tuple[str, bool]:
+    hardware_encoders = HARDWARE_VIDEO_ENCODERS[codec]
+    for hardware_encoder in hardware_encoders:
+        if f" {hardware_encoder} " in ffmpeg_run("-encoders").stdout:
+            return hardware_encoder, True
     LOGGER.warning(
-        "The hardware video encoder %s is not supported by ffmpeg. Encoding %s in software.",
-        hardware_encoder,
+        "The hardware video encoders %s are not supported by ffmpeg. Encoding %s in software.",
+        hardware_encoders,
         codec,
     )
-    return SOFTWARE_VIDEO_ENCODERS[codec]
+    return SOFTWARE_VIDEO_ENCODERS[codec], False
 
 
 def video_encoder_args(bitrate: int, codec: FfmpegVideoCodec, realtime: bool) -> list[str]:
-    encoder = video_encoder(codec)
+    encoder, is_hardware = video_encoder(codec)
     args = ["-c:v", encoder, "-b:v", str(bitrate)]
-    if encoder in HARDWARE_VIDEO_ENCODERS.values():
+    if is_hardware:
         if realtime:
-            args += ["-realtime", "1"]
+            args += HARDWARE_REALTIME_ARGS.get(encoder, [])
     else:
         args += [
             "-maxrate",

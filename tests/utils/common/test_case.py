@@ -71,14 +71,35 @@ class TestCase(systest.TestCase):
         fps: int = 30,
         video_codec: FfmpegVideoCodec = FfmpegVideoCodec.HEVC,
         channels: int = 1,
+        audio_bitrate: int = 128000,
+        check_video_presentation_time_stamps: bool = True,
+        check_number_of_samples: bool = True,
+        check_picture_types: bool = True,
+        check_audio_presentation_time_stamps: bool = True,
     ) -> None:
         probe = probe_recording(
             recording, has_qr_codes, duplicated_frames_crops, has_audio_time_codes, files_dir
         )
         self.assert_greater(probe.format.duration, 8, "Minimum recording length.")
         self.assert_less(probe.format.duration, 14, "Maximum recording length.")
-        self._assert_video(probe, recording, width, height, fps, video_codec)
-        self._assert_audio(probe, recording, channels)
+        self._assert_video(
+            probe,
+            recording,
+            width,
+            height,
+            fps,
+            video_codec,
+            check_video_presentation_time_stamps,
+            check_picture_types,
+        )
+        self._assert_audio(
+            probe,
+            recording,
+            channels,
+            audio_bitrate,
+            check_number_of_samples,
+            check_audio_presentation_time_stamps,
+        )
 
     def assert_timecodes(self, recording: Path, start: datetime, end: datetime, fps: int = 30) -> None:
         timecodes = read_video_timecodes(recording)
@@ -155,23 +176,29 @@ class TestCase(systest.TestCase):
         height: int,
         fps: int,
         video_codec: FfmpegVideoCodec,
+        check_presentation_time_stamps: bool,
+        check_picture_types: bool,
     ) -> None:
         video = probe.video
         self.assert_equal(video.codec, video_codec)
         self.assert_equal(video.width, width)
         self.assert_equal(video.height, height)
         self.assert_fps(video.average_fps, fps)
-        self.assert_presentation_time_stamps(
-            recording, 1 / fps, [frame.pts for frame in video.frames], "video"
-        )
+        if check_presentation_time_stamps:
+            self.assert_presentation_time_stamps(
+                recording, 1 / fps, [frame.pts for frame in video.frames], "video"
+            )
         self._assert_video_frame_numbers_increasing(probe.qr_codes)
-        picture_types = {frame.picture_type for frame in video.frames}
-        self.assert_equal(len(picture_types), 3)
-        self.assert_in("I", picture_types)
-        self.assert_in("P", picture_types)
-        self.assert_in("B", picture_types)
+        if check_picture_types:
+            picture_types = {frame.picture_type for frame in video.frames}
+            self.assert_equal(len(picture_types), 3)
+            self.assert_in("I", picture_types)
+            self.assert_in("P", picture_types)
+            self.assert_in("B", picture_types)
         for presentation_time_stamps in probe.unique_frame_presentation_time_stamps:
-            self._assert_no_duplicated_frames(fps, video, recording, presentation_time_stamps)
+            self._assert_no_duplicated_frames(
+                fps, video, recording, presentation_time_stamps, check_presentation_time_stamps
+            )
 
     def _assert_no_duplicated_frames(
         self,
@@ -179,24 +206,36 @@ class TestCase(systest.TestCase):
         video: FfprobeVideoOutput,
         recording: Path,
         presentation_time_stamps: list[float],
+        check_presentation_time_stamps: bool,
     ) -> None:
-        self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps, "video")
+        if check_presentation_time_stamps:
+            self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps, "video")
         self.assert_equal(len(presentation_time_stamps), len(video.frames))
 
-    def _assert_audio(self, probe: RecordingProbe, recording: Path, channels: int) -> None:
+    def _assert_audio(
+        self,
+        probe: RecordingProbe,
+        recording: Path,
+        channels: int,
+        bitrate: int,
+        check_number_of_samples: bool,
+        check_presentation_time_stamps: bool,
+    ) -> None:
         audio = probe.audio
         self.assert_equal(audio.codec, "aac")
         self.assert_equal(audio.profile, "LC")
         self.assert_equal(audio.sample_rate, 48000)
         self.assert_equal(audio.channels, channels)
         self.assert_equal(audio.channel_layout, CHANNEL_LAYOUTS[channels])
-        self.assert_greater(audio.bit_rate, 115_000)
-        self.assert_less(audio.bit_rate, 136_000)
-        self._assert_audio_presentation_time_stamps(recording, audio)
+        self.assert_greater(audio.bit_rate, bitrate - 13000)
+        self.assert_less(audio.bit_rate, bitrate + 13000)
+        if check_presentation_time_stamps:
+            self._assert_audio_presentation_time_stamps(recording, audio)
         self._assert_audio_time_codes(probe.audio_time_codes)
         for frame in audio.frames:
             self.assert_equal(frame.channels, channels)
-            self.assert_equal(frame.number_of_samples, AUDIO_SAMPLES_PER_FRAME)
+            if check_number_of_samples:
+                self.assert_equal(frame.number_of_samples, AUDIO_SAMPLES_PER_FRAME)
 
     def _assert_audio_presentation_time_stamps(self, recording: Path, audio: FfprobeAudioOutput) -> None:
         self.assert_presentation_time_stamps(
