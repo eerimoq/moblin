@@ -17,11 +17,6 @@ from urllib.parse import urlsplit
 from systest import ManagedProcess
 from systest import wait_until
 
-from .utils import FILES_DIR
-from .utils import Crop
-from .utils import Image
-from .utils import Pixel
-
 LOGGER = logging.getLogger(__name__)
 FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-y"]
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
@@ -35,6 +30,59 @@ BEEP_BANDWIDTH = 400
 BEEP_DURATION = 0.4
 BEEP_INTERVAL = 2
 BEEP_LEVEL_MARGIN = 12
+BLACK_MAXIMUM_VALUE = 40
+
+
+@dataclass
+class Crop:
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+@dataclass
+class Pixel:
+    red: int
+    green: int
+    blue: int
+
+    def is_black(self) -> bool:
+        return max(self.red, self.green, self.blue) <= BLACK_MAXIMUM_VALUE
+
+
+class Image:
+    """A RGB image, typically a cropped part of a video frame."""
+
+    def __init__(self, width: int, height: int, data: bytes):
+        self.width = width
+        self.height = height
+        self._data = data
+
+    def pixel(self, x: int, y: int) -> Pixel:
+        offset = 3 * (self.width * y + x)
+        return Pixel(*self._data[offset : offset + 3])
+
+    def contains(self, x: int, y: int) -> bool:
+        return 0 <= x < self.width and 0 <= y < self.height
+
+    def is_all_black(self) -> bool:
+        return max(self._data, default=0) <= BLACK_MAXIMUM_VALUE
+
+    def find_non_black_pixel(self) -> tuple[int, int] | None:
+        for y in range(self.height):
+            for x in range(self.width):
+                if not self.pixel(x, y).is_black():
+                    return x, y
+        return None
+
+    def non_black_ratio(self) -> float:
+        non_black = sum(
+            1
+            for offset in range(0, len(self._data), 3)
+            if max(self._data[offset : offset + 3]) > BLACK_MAXIMUM_VALUE
+        )
+        return non_black / (self.width * self.height)
 
 
 class FfmpegVideoCodec(StrEnum):
@@ -220,6 +268,7 @@ class FfmpegTestStream(FfmpegCommand):
     def __init__(
         self,
         url,
+        files_dir: Path,
         transport_format=TransportFormat.FLV,
         video_codec=FfmpegVideoCodec.H264,
         video_profile=None,
@@ -240,7 +289,7 @@ class FfmpegTestStream(FfmpegCommand):
         self._audio_channels = audio_channels
         self._muxer_args = muxer_args or []
         self._loop_audio = loop_audio
-        self._audio_file = FILES_DIR / "FfmpegTestStream.wav"
+        self._audio_file = files_dir / "FfmpegTestStream.wav"
         self._ensure_audio_file_exists()
 
     def _ensure_audio_file_exists(self):
@@ -301,12 +350,13 @@ class FfmpegTestStream(FfmpegCommand):
 
 
 class FfmpegWhipTestStream(FfmpegTestStream):
-    def __init__(self, url, **kwargs):
-        certificate_file = FILES_DIR / "FfmpegWhipTestStream.crt"
-        key_file = FILES_DIR / "FfmpegWhipTestStream.key"
+    def __init__(self, url, files_dir: Path, **kwargs):
+        certificate_file = files_dir / "FfmpegWhipTestStream.crt"
+        key_file = files_dir / "FfmpegWhipTestStream.key"
         _ensure_certificate_exists(certificate_file, key_file)
         super().__init__(
             url=url,
+            files_dir=files_dir,
             transport_format=TransportFormat.WHIP,
             video_profile="baseline",
             audio_codec="libopus",
@@ -322,9 +372,10 @@ class FfmpegWhipTestStream(FfmpegTestStream):
 
 
 class FfmpegRtspTestStream(FfmpegTestStream):
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, files_dir: Path, **kwargs):
         super().__init__(
             url=url,
+            files_dir=files_dir,
             transport_format=TransportFormat.RTSP,
             video_profile="baseline",
             audio_codec="libopus",

@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .ffmpeg import AudioBandLevel
+from .ffmpeg import Crop
+from .ffmpeg import Pixel
 from .ffmpeg import detect_audio_onsets
 from .ffmpeg import ffmpeg_run
 from .ffmpeg import ffprobe_format
@@ -15,8 +17,6 @@ from .ffmpeg import read_video_region_colors
 from .generate_device_settings import WidgetType
 from .generate_device_settings import uuid
 from .utils import FILES_DIR
-from .utils import Crop
-from .utils import Pixel
 from .utils import slope_per_hour
 
 LOGGER = logging.getLogger(__name__)

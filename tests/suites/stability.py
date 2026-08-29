@@ -443,6 +443,7 @@ class StabilityIngestsOneStream(TestCase):
             case Ingest.RTMP:
                 return FfmpegTestStream(
                     url=self.moblin.ingest_rtmp_url(),
+                    files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
@@ -450,6 +451,7 @@ class StabilityIngestsOneStream(TestCase):
             case Ingest.SRT:
                 return FfmpegTestStream(
                     url=self.moblin.ingest_srt_url(),
+                    files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
@@ -458,6 +460,7 @@ class StabilityIngestsOneStream(TestCase):
             case Ingest.RIST:
                 return FfmpegTestStream(
                     url=self.moblin.ingest_rist_url(),
+                    files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,
@@ -466,6 +469,7 @@ class StabilityIngestsOneStream(TestCase):
             case Ingest.WHEP:
                 return FfmpegRtspTestStream(
                     url=rtsp_reader_url(WHEP_PATH),
+                    files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
                     quiet=True,

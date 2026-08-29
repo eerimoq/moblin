@@ -14,10 +14,12 @@ import systest
 from systest import wait_until
 
 from .config import Capability
+from .ffmpeg import Crop
 from .ffmpeg import FfmpegVideoCodec
 from .ffmpeg import FfprobeAudioOutput
 from .ffmpeg import FfprobeFormatOutput
 from .ffmpeg import FfprobeVideoOutput
+from .ffmpeg import Image
 from .ffmpeg import QrCode
 from .ffmpeg import detect_silence
 from .ffmpeg import extract_ltc_wav
@@ -32,8 +34,6 @@ from .ffmpeg import read_unique_frame_presentation_time_stamps
 from .ffmpeg import read_video_timecodes
 from .moblin import Moblin
 from .utils import FILES_DIR
-from .utils import Crop
-from .utils import Image
 from .utils import Range
 from .utils import anchor_time_of_day
 
