@@ -13,6 +13,7 @@ disable =
     too-many-instance-attributes,
     too-few-public-methods,
     too-many-public-methods,
+    too-many-lines,
     broad-exception-caught,
     broad-exception-raised,
     duplicate-code,

@@ -12,6 +12,9 @@ from dataclasses import field
 from enum import StrEnum
 from fractions import Fraction
 from pathlib import Path
+from types import TracebackType
+from typing import Any
+from typing import Self
 from urllib.parse import urlsplit
 
 from systest import ManagedProcess
@@ -22,6 +25,7 @@ FFMPEG_COMMAND = ["ffmpeg", "-hide_banner", "-nostdin", "-nostats", "-y"]
 RE_VOLUME_DETECT = re.compile(r"(n_samples|mean_volume|max_volume): (-?[\d.]+|-?inf)")
 RE_SILENCE_DETECT = re.compile(r"silence_(start|end): (-?[\d.]+)")
 RE_SHOWINFO_PTS = re.compile(r"^\[Parsed_showinfo.*? pts_time:(\S+)", re.MULTILINE)
+RE_DUPLICATE_FRAME = re.compile(r"drop pts:\d+ pts_time:([\d.]+) drop_count:(\d+)")
 RE_METADATA_TIME = re.compile(r"^\[Parsed_ametadata.*? pts_time:(\S+)", re.MULTILINE)
 RE_ASTATS_RMS_LEVEL = re.compile(r"^\[Parsed_ametadata.*? lavfi\.astats\.(\d)\.RMS_level=(\S+)", re.MULTILINE)
 AUDIO_BAND_SAMPLE_RATE = 16000
@@ -54,7 +58,7 @@ class Pixel:
 class Image:
     """A RGB image, typically a cropped part of a video frame."""
 
-    def __init__(self, width: int, height: int, data: bytes):
+    def __init__(self, width: int, height: int, data: bytes) -> None:
         self.width = width
         self.height = height
         self._data = data
@@ -114,7 +118,7 @@ def _log_level(line: str) -> int:
         return logging.DEBUG
 
 
-def _run_logged(command: list[str], text: bool):
+def _run_logged(command: list[str], text: bool) -> subprocess.CompletedProcess[Any]:
     started = time.monotonic()
     try:
         return subprocess.run(command, check=True, capture_output=True, text=text)
@@ -122,15 +126,19 @@ def _run_logged(command: list[str], text: bool):
         LOGGER.debug("Command (%.3f s): %s", time.monotonic() - started, " ".join(command))
 
 
-def _run(command: list[str]):
+def _run(command: list[str]) -> subprocess.CompletedProcess[str]:
     return _run_logged(command, True)
 
 
+def _run_bytes(command: list[str]) -> subprocess.CompletedProcess[bytes]:
+    return _run_logged(command, False)
+
+
 def _run_binary(command: list[str]) -> bytes:
-    return _run_logged(command, False).stdout
+    return _run_bytes(command).stdout
 
 
-def ffprobe_run(path: Path, *args):
+def ffprobe_run(path: Path, *args: str) -> dict[str, Any]:
     command = [
         "ffprobe",
         "-output_format",
@@ -138,11 +146,11 @@ def ffprobe_run(path: Path, *args):
         *args,
         str(path),
     ]
-    output = _run(command).stdout
-    return json.loads(output)
+    output: dict[str, Any] = json.loads(_run(command).stdout)
+    return output
 
 
-def ffmpeg_run(*args):
+def ffmpeg_run(*args: str) -> subprocess.CompletedProcess[str]:
     return _run(FFMPEG_COMMAND + [*args])
 
 
@@ -186,7 +194,7 @@ def check_dependencies() -> list[str]:
     return missing_dependencies
 
 
-def _ensure_certificate_exists(certificate_file: Path, key_file: Path):
+def _ensure_certificate_exists(certificate_file: Path, key_file: Path) -> None:
     if certificate_file.exists() and key_file.exists():
         return
     _run(
@@ -220,31 +228,36 @@ def _ensure_certificate_exists(certificate_file: Path, key_file: Path):
 
 
 class FfmpegCommand:
-    def __init__(self, quiet: bool = False):
+    def __init__(self, quiet: bool = False) -> None:
         self._process: ManagedProcess | None = None
         self._quiet = quiet
 
     def args(self) -> list[str]:
         raise NotImplementedError
 
-    def _wait_until_ready(self):
+    def _wait_until_ready(self) -> None:
         pass
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         self.stop()
 
     def is_running(self) -> bool:
         return self._process is not None and self._process.is_running()
 
-    def restart(self):
+    def restart(self) -> None:
         self.stop()
         self.start()
 
-    def start(self):
+    def start(self) -> None:
         command = list(FFMPEG_COMMAND)
         if self._quiet:
             command += ["-loglevel", "warning"]
@@ -258,7 +271,7 @@ class FfmpegCommand:
         )
         self._process.start()
 
-    def stop(self):
+    def stop(self) -> None:
         if self._process is not None:
             self._process.stop()
             self._process = None
@@ -267,18 +280,18 @@ class FfmpegCommand:
 class FfmpegTestStream(FfmpegCommand):
     def __init__(
         self,
-        url,
+        url: str,
         files_dir: Path,
-        transport_format=TransportFormat.FLV,
-        video_codec=FfmpegVideoCodec.H264,
-        video_profile=None,
-        video_bitrate=8_000_000,
-        audio_codec="aac",
-        audio_channels=1,
-        muxer_args=None,
-        loop_audio=False,
-        quiet=False,
-    ):
+        transport_format: TransportFormat = TransportFormat.FLV,
+        video_codec: FfmpegVideoCodec = FfmpegVideoCodec.H264,
+        video_profile: str | None = None,
+        video_bitrate: int = 8_000_000,
+        audio_codec: str = "aac",
+        audio_channels: int = 1,
+        muxer_args: list[str] | None = None,
+        loop_audio: bool = False,
+        quiet: bool = False,
+    ) -> None:
         super().__init__(quiet)
         self._url = url
         self._transport_format = transport_format
@@ -292,7 +305,7 @@ class FfmpegTestStream(FfmpegCommand):
         self._audio_file = files_dir / "FfmpegTestStream.wav"
         self._ensure_audio_file_exists()
 
-    def _ensure_audio_file_exists(self):
+    def _ensure_audio_file_exists(self) -> None:
         if not self._audio_file.exists():
             _run(
                 [
@@ -307,7 +320,7 @@ class FfmpegTestStream(FfmpegCommand):
                 ]
             )
 
-    def args(self):
+    def args(self) -> list[str]:
         video_profile = []
         if self._video_profile is not None:
             video_profile = ["-profile:v", self._video_profile]
@@ -350,7 +363,7 @@ class FfmpegTestStream(FfmpegCommand):
 
 
 class FfmpegWhipTestStream(FfmpegTestStream):
-    def __init__(self, url, files_dir: Path, **kwargs):
+    def __init__(self, url: str, files_dir: Path, **kwargs: Any) -> None:
         certificate_file = files_dir / "FfmpegWhipTestStream.crt"
         key_file = files_dir / "FfmpegWhipTestStream.key"
         _ensure_certificate_exists(certificate_file, key_file)
@@ -372,7 +385,7 @@ class FfmpegWhipTestStream(FfmpegTestStream):
 
 
 class FfmpegRtspTestStream(FfmpegTestStream):
-    def __init__(self, url, files_dir: Path, **kwargs):
+    def __init__(self, url: str, files_dir: Path, **kwargs: Any) -> None:
         super().__init__(
             url=url,
             files_dir=files_dir,
@@ -386,13 +399,19 @@ class FfmpegRtspTestStream(FfmpegTestStream):
 
 
 class FfmpegAudioStream(FfmpegCommand):
-    def __init__(self, url, source: str, transport_format=TransportFormat.FLV, quiet=False):
+    def __init__(
+        self,
+        url: str,
+        source: str,
+        transport_format: TransportFormat = TransportFormat.FLV,
+        quiet: bool = False,
+    ) -> None:
         super().__init__(quiet)
         self._url = url
         self._source = source
         self._transport_format = transport_format
 
-    def args(self):
+    def args(self) -> list[str]:
         return [
             "-re",
             "-f",
@@ -410,7 +429,7 @@ class FfmpegAudioStream(FfmpegCommand):
 
 
 class FfmpegAudioTestStream(FfmpegAudioStream):
-    def __init__(self, url, transport_format=TransportFormat.FLV):
+    def __init__(self, url: str, transport_format: TransportFormat = TransportFormat.FLV) -> None:
         super().__init__(
             url,
             f"aevalsrc=exprs='if(lt(mod(t,{BEEP_INTERVAL}),{BEEP_DURATION}),"
@@ -420,7 +439,12 @@ class FfmpegAudioTestStream(FfmpegAudioStream):
 
 
 class FfmpegNoiseStream(FfmpegAudioStream):
-    def __init__(self, url, transport_format=TransportFormat.FLV, amplitude: float = 0.5):
+    def __init__(
+        self,
+        url: str,
+        transport_format: TransportFormat = TransportFormat.FLV,
+        amplitude: float = 0.5,
+    ) -> None:
         super().__init__(
             url,
             f"anoisesrc=amplitude={amplitude}:sample_rate=48000",
@@ -440,12 +464,12 @@ def _holds_port(pid: int, transport: str, port: int) -> bool:
 
 
 class FfmpegServer(FfmpegCommand):
-    def __init__(self, url: str, filename: Path):
+    def __init__(self, url: str, filename: Path) -> None:
         super().__init__()
         self._url = url
         self._filename = filename
 
-    def args(self):
+    def args(self) -> list[str]:
         listen = []
         if self._transport() == "TCP":
             listen = ["-listen", "1"]
@@ -461,7 +485,7 @@ class FfmpegServer(FfmpegCommand):
     def _transport(self) -> str:
         return "TCP" if urlsplit(self._url).scheme in ["rtmp", "rtmps"] else "UDP"
 
-    def _wait_until_ready(self):
+    def _wait_until_ready(self) -> None:
         port = urlsplit(self._url).port
         pid = self._process.pid() if self._process is not None else None
         if port is None or pid is None:
@@ -479,17 +503,22 @@ class FfmpegServer(FfmpegCommand):
 
 
 class StreamRecorder:
-    def __init__(self, url: str, path: Path):
+    def __init__(self, url: str, path: Path) -> None:
         self._url = url
         self._server: FfmpegServer | None = None
         self.file = path
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         self._server = FfmpegServer(url=self._url, filename=self.file)
         self._server.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         self._stop()
 
     def is_running(self) -> bool:
@@ -498,13 +527,13 @@ class StreamRecorder:
     def total_bytes(self) -> int:
         return file_size(self.file)
 
-    def poll(self):
+    def poll(self) -> None:
         if self._server is None or self._server.is_running():
             return
         LOGGER.warning("The stream recorder exited. No longer receiving the stream.")
         self._stop()
 
-    def _stop(self):
+    def _stop(self) -> None:
         if self._server is not None:
             self._server.stop()
             self._server = None
@@ -522,7 +551,7 @@ class FfprobeVideoOutputFrame:
     pts: float
     picture_type: str
 
-    def __init__(self, frame):
+    def __init__(self, frame: dict[str, Any]) -> None:
         self.pts = float(frame["pts_time"])
         self.picture_type = frame["pict_type"]
 
@@ -543,7 +572,7 @@ class FfprobeAudioOutputFrame:
     channels: int
     number_of_samples: int
 
-    def __init__(self, frame):
+    def __init__(self, frame: dict[str, Any]) -> None:
         self.pts = float(frame["pts_time"])
         self.channels = frame["channels"]
         self.number_of_samples = frame["nb_samples"]
@@ -573,7 +602,7 @@ class FfprobeOutput:
     format: FfprobeFormatOutput
 
 
-def ffprobe_video(path: Path):
+def ffprobe_video(path: Path) -> FfprobeVideoOutput:
     output = ffprobe_run(
         path,
         "-select_streams",
@@ -601,14 +630,14 @@ def ffprobe_video_size(path: Path) -> tuple[int, int]:
     return stream["width"], stream["height"]
 
 
-def _get_fps(stream, name: str) -> Fraction | None:
+def _get_fps(stream: dict[str, Any], name: str) -> Fraction | None:
     try:
         return Fraction(stream[name])
     except Exception:
         return None
 
 
-def ffprobe_audio(path) -> FfprobeAudioOutput:
+def ffprobe_audio(path: Path) -> FfprobeAudioOutput:
     output = ffprobe_run(
         path,
         "-select_streams",
@@ -632,7 +661,7 @@ def ffprobe_audio(path) -> FfprobeAudioOutput:
     )
 
 
-def ffprobe_format(path):
+def ffprobe_format(path: Path) -> FfprobeFormatOutput:
     output = ffprobe_run(path, "-show_entries", "format=duration,start_time")
     return FfprobeFormatOutput(
         duration=float(output["format"]["duration"]),
@@ -640,7 +669,7 @@ def ffprobe_format(path):
     )
 
 
-def ffprobe(path: Path):
+def ffprobe(path: Path) -> FfprobeOutput:
     return FfprobeOutput(
         video=ffprobe_video(path),
         audio=ffprobe_audio(path),
@@ -653,7 +682,7 @@ class QrCode:
     number: int
     pts: float
 
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         parts = text.split(" ")
         if len(parts) == 4:
             self.number = int(parts[1])
@@ -729,7 +758,7 @@ def read_video_region_colors(
         "rgb24",
         "-",
     ]
-    proc = _run_logged(command, False)
+    proc = _run_bytes(command)
     presentation_time_stamps = [
         float(pts) for pts in RE_SHOWINFO_PTS.findall(proc.stderr.decode("utf-8", "replace"))
     ]
@@ -886,8 +915,35 @@ def detect_silence(path: Path, noise_db: float, minimum_duration: float) -> list
     return silences
 
 
-def extract_ltc_wav(path: Path, output: Path):
+def extract_ltc_wav(path: Path, output: Path) -> None:
     ffmpeg_run("-i", str(path), "-vn", "-map", "0:a:0", "-c:a", "pcm_s16le", str(output))
+
+
+@dataclass
+class FfmpegDuplicateFrame:
+    pts: float
+    count: int
+
+
+def ffmpeg_duplicate_frames(path: Path) -> list[FfmpegDuplicateFrame]:
+    output = ffmpeg_run(
+        "-loglevel",
+        "debug",
+        "-i",
+        str(path),
+        "-map",
+        "0:v:0",
+        "-an",
+        "-vf",
+        "mpdecimate",
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    return [
+        FfmpegDuplicateFrame(pts=float(found.group(1)), count=int(found.group(2)))
+        for found in RE_DUPLICATE_FRAME.finditer(output)
+    ]
 
 
 def read_unique_frame_presentation_time_stamps(path: Path, crop: Crop | None = None) -> list[float]:
@@ -940,7 +996,7 @@ def read_video_timecodes(
     return [_parse_video_timecode(frame) for frame in output["frames"]]
 
 
-def _parse_video_timecode(frame) -> VideoTimecode | None:
+def _parse_video_timecode(frame: dict[str, Any]) -> VideoTimecode | None:
     for side_data in frame.get("side_data_list", []):
         if side_data.get("side_data_type") != "SMPTE 12-1 timecode":
             continue
@@ -950,7 +1006,7 @@ def _parse_video_timecode(frame) -> VideoTimecode | None:
     return None
 
 
-def create_qr_codes_video(output_file: Path):
+def create_qr_codes_video(output_file: Path) -> None:
     ffmpeg_run(
         "-t",
         "10",
