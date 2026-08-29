@@ -1,11 +1,8 @@
 import logging
 import re
 import statistics
-import subprocess
 import time
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
 from datetime import datetime
 from fractions import Fraction
 from pathlib import Path
@@ -16,21 +13,18 @@ from systest import wait_until
 from .common.ffmpeg import Crop
 from .common.ffmpeg import FfmpegVideoCodec
 from .common.ffmpeg import FfprobeAudioOutput
-from .common.ffmpeg import FfprobeFormatOutput
 from .common.ffmpeg import FfprobeVideoOutput
 from .common.ffmpeg import Image
 from .common.ffmpeg import QrCode
 from .common.ffmpeg import detect_silence
-from .common.ffmpeg import extract_ltc_wav
 from .common.ffmpeg import ffprobe
 from .common.ffmpeg import ffprobe_audio
-from .common.ffmpeg import ffprobe_format
-from .common.ffmpeg import ffprobe_video
 from .common.ffmpeg import ffprobe_video_size
 from .common.ffmpeg import measure_mean_volume
-from .common.ffmpeg import read_qr_codes
-from .common.ffmpeg import read_unique_frame_presentation_time_stamps
 from .common.ffmpeg import read_video_timecodes
+from .common.utils import RecordingProbe
+from .common.utils import find_missing_presentation_time_stamps
+from .common.utils import probe_recording
 from .config import Capability
 from .moblin import Moblin
 from .utils import FILES_DIR
@@ -135,7 +129,9 @@ class TestCase(systest.TestCase):
         video_codec: FfmpegVideoCodec = FfmpegVideoCodec.HEVC,
         channels: int = 1,
     ):
-        probe = probe_recording(recording, has_qr_codes, duplicated_frames_crops, has_audio_time_codes)
+        probe = probe_recording(
+            recording, has_qr_codes, duplicated_frames_crops, has_audio_time_codes, FILES_DIR
+        )
         self.assert_greater(probe.format.duration, 8, "Minimum recording length.")
         self.assert_less(probe.format.duration, 14, "Maximum recording length.")
         self._assert_video(probe, recording, width, height, fps, video_codec)
@@ -210,7 +206,7 @@ class TestCase(systest.TestCase):
 
     def _assert_video(
         self,
-        probe: "RecordingProbe",
+        probe: RecordingProbe,
         recording: Path,
         width,
         height,
@@ -336,71 +332,3 @@ class TestCase(systest.TestCase):
     def _log_output(self, output: str):
         for line in output.splitlines():
             LOGGER.info("ltcdump: %s", line)
-
-
-@dataclass
-class RecordingProbe:
-    format: FfprobeFormatOutput
-    video: FfprobeVideoOutput
-    audio: FfprobeAudioOutput
-    qr_codes: list[QrCode] | None
-    unique_frame_presentation_time_stamps: list[list[float]]
-    audio_time_codes: str | None
-
-
-def probe_recording(
-    recording: Path,
-    has_qr_codes: bool,
-    duplicated_frames_crops: list[Crop] | None,
-    has_audio_time_codes: bool,
-) -> RecordingProbe:
-    crops = duplicated_frames_crops if duplicated_frames_crops is not None else [None]
-    with ThreadPoolExecutor() as executor:
-        format_future = executor.submit(ffprobe_format, recording)
-        video_future = executor.submit(ffprobe_video, recording)
-        audio_future = executor.submit(ffprobe_audio, recording)
-        qr_codes_future = executor.submit(_read_qr_codes, recording, has_qr_codes)
-        unique_frames_futures = [
-            executor.submit(read_unique_frame_presentation_time_stamps, recording, crop) for crop in crops
-        ]
-        audio_time_codes_future = executor.submit(_read_audio_time_codes, recording, has_audio_time_codes)
-        return RecordingProbe(
-            format=format_future.result(),
-            video=video_future.result(),
-            audio=audio_future.result(),
-            qr_codes=qr_codes_future.result(),
-            unique_frame_presentation_time_stamps=[future.result() for future in unique_frames_futures],
-            audio_time_codes=audio_time_codes_future.result(),
-        )
-
-
-def _read_qr_codes(recording: Path, has_qr_codes: bool) -> list[QrCode] | None:
-    if not has_qr_codes:
-        return None
-    return read_qr_codes(recording, Crop(x=150, y=0, width=400, height=400))
-
-
-def _read_audio_time_codes(recording: Path, has_audio_time_codes: bool) -> str | None:
-    if not has_audio_time_codes:
-        return None
-    ltc_wav = FILES_DIR / "ltc.wav"
-    extract_ltc_wav(recording, ltc_wav)
-    return subprocess.run(
-        ["ltcdump", "--fps", "30", str(ltc_wav)],
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
-
-
-def find_missing_presentation_time_stamps(
-    expected_delta: float, presentation_time_stamps: list[float], delta_error: float
-) -> list[tuple[float, float]]:
-    missing_presentation_time_stamps = []
-    for index in range(1, len(presentation_time_stamps)):
-        current = presentation_time_stamps[index]
-        previous = presentation_time_stamps[index - 1]
-        delta = current - previous
-        if delta < expected_delta - delta_error or delta > expected_delta + delta_error:
-            missing_presentation_time_stamps.append((current, delta))
-    return missing_presentation_time_stamps
