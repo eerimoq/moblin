@@ -9,7 +9,7 @@ from pathlib import Path
 from .common.ffmpeg import VideoTimecode
 from .common.ffmpeg import ffprobe_format
 from .common.ffmpeg import read_video_timecodes
-from .utils import anchor_time_of_day
+from .common.utils import anchor_time_of_day
 from .utils import slope_per_hour
 
 LOGGER = logging.getLogger(__name__)

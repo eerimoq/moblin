@@ -84,7 +84,7 @@ class IngestRtmpServer(IngestTestCase):
     def run(self):
         with FfmpegTestStream(url=self.moblin.ingest_rtmp_url(), files_dir=FILES_DIR):
             recording = self.record_ingest()
-        self.assert_recording(recording, has_audio_time_codes=True)
+        self.assert_recording(recording, FILES_DIR, has_audio_time_codes=True)
 
 
 class IngestSrtServer(IngestTestCase):
@@ -112,7 +112,7 @@ class IngestSrtServer(IngestTestCase):
         )
         with stream:
             recording = self.record_ingest()
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class IngestSrtClient(IngestTestCase):
@@ -145,7 +145,7 @@ class IngestSrtClient(IngestTestCase):
         )
         with stream:
             recording = self.record_ingest()
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class IngestRtspClient(IngestTestCase):
@@ -184,7 +184,7 @@ class IngestRtspClient(IngestTestCase):
             with stream:
                 mediamtx.wait_for_rtsp_stream("1", 2_000_000)
                 recording = self.record_ingest()
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class IngestRistServer(IngestTestCase):
@@ -212,7 +212,7 @@ class IngestRistServer(IngestTestCase):
         )
         with stream:
             recording = self.record_ingest()
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class IngestWhipServer(IngestTestCase):
@@ -242,7 +242,7 @@ class IngestWhipServer(IngestTestCase):
     def run(self):
         with FfmpegWhipTestStream(url=self.moblin.ingest_whip_url(), files_dir=FILES_DIR):
             recording = self.record_ingest(startup_delay=4)
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class IngestWhepClient(IngestTestCase):
@@ -273,7 +273,7 @@ class IngestWhepClient(IngestTestCase):
             with FfmpegRtspTestStream(url=rtsp_reader_url("1"), files_dir=FILES_DIR):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 recording = self.record_ingest(startup_delay=4)
-        self.assert_recording(recording)
+        self.assert_recording(recording, FILES_DIR)
 
 
 class ParallelIngestTestCase(IngestTestCase):
@@ -314,7 +314,7 @@ class ParallelIngestTestCase(IngestTestCase):
         return self.record_ingest(startup_delay=startup_delay, number_of_ingests=2)
 
     def assert_parallel_recording(self, recording: Path):
-        self.assert_recording(recording, has_qr_codes=False)
+        self.assert_recording(recording, FILES_DIR, has_qr_codes=False)
 
 
 class IngestParallelRtmpServer(ParallelIngestTestCase):

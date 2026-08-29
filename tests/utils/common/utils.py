@@ -1,6 +1,8 @@
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import UTC
+from datetime import datetime
 from pathlib import Path
 
 from .ffmpeg import Crop
@@ -85,3 +87,11 @@ def find_missing_presentation_time_stamps(
         if delta < expected_delta - delta_error or delta > expected_delta + delta_error:
             missing_presentation_time_stamps.append((current, delta))
     return missing_presentation_time_stamps
+
+
+def anchor_time_of_day(seconds: float, start: datetime) -> float:
+    midnight = datetime(start.year, start.month, start.day, tzinfo=UTC).timestamp() + seconds
+    for offset in (-86400, 0, 86400):
+        if abs(midnight + offset - start.timestamp()) < 43200:
+            return midnight + offset
+    return midnight

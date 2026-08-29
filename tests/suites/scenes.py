@@ -245,6 +245,7 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
         recording_file = self.moblin.record(10, f"{self.name}.mp4")
         self.assert_recording(
             recording_file,
+            FILES_DIR,
             has_qr_codes=False,
             duplicated_frames_crops=(
                 [

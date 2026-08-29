@@ -6,6 +6,7 @@ from ..utils.generate_device_settings import Resolution
 from ..utils.generate_device_settings import VideoCodec
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
+from ..utils.utils import FILES_DIR
 
 FFMPEG_VIDEO_CODECS = {
     VideoCodec.H264: FfmpegVideoCodec.H264,
@@ -45,6 +46,7 @@ class Record(TestCase):
         width, height = self._resolution.size()
         self.assert_recording(
             recording_file,
+            FILES_DIR,
             has_qr_codes=False,
             duplicated_frames_crops=None if self.moblin.has_moving_picture() else [],
             width=width,

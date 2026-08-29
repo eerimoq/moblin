@@ -264,7 +264,9 @@ class MicStereo(TestCase):
         self.moblin.set_mic("Front")
         self.wait_until(lambda: self.moblin.get_number_of_audio_channels() == 2)
         recording = self.moblin.record(10, f"{self.name}.mp4")
-        self.assert_recording(recording, has_qr_codes=False, duplicated_frames_crops=[], channels=2)
+        self.assert_recording(
+            recording, FILES_DIR, has_qr_codes=False, duplicated_frames_crops=[], channels=2
+        )
 
 
 def tests(moblin: Moblin):
