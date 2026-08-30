@@ -5,6 +5,7 @@ import Network
 import UIKit
 
 private let mobcamStreamQueue = DispatchQueue(label: "com.eerimoq.mobcam-stream")
+private let congestionThresholeBytes = 10_000_000
 
 protocol MobcamStreamDelegate: AnyObject {
     func mobcamStreamOnConnected()
@@ -235,14 +236,14 @@ final class MobcamStream: @unchecked Sendable {
                 return
             }
             outstandingByteCount -= data.count
-            if outstandingByteCount < 1_000_000 {
+            if outstandingByteCount < congestionThresholeBytes {
                 congestedAt = nil
             }
         })
     }
 
     private func isCongested() -> Bool {
-        guard outstandingByteCount > 1_000_000 else {
+        guard outstandingByteCount > congestionThresholeBytes else {
             return false
         }
         if congestedAt == nil {
