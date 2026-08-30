@@ -45,10 +45,7 @@ final class MobcamStream: @unchecked Sendable {
         mobcamStreamQueue.async {
             self.periodicTimer.stop()
             self.closeConnection(reason: "Stopping")
-            self.listener?.stateUpdateHandler = nil
-            self.listener?.newConnectionHandler = nil
-            self.listener?.cancel()
-            self.listener = nil
+            self.stopListener()
         }
     }
 
@@ -64,7 +61,15 @@ final class MobcamStream: @unchecked Sendable {
         }
     }
 
+    private func stopListener() {
+        listener?.stateUpdateHandler = nil
+        listener?.newConnectionHandler = nil
+        listener?.cancel()
+        listener = nil
+    }
+
     private func setupListener() {
+        stopListener()
         let options = NWProtocolTCP.Options()
         options.noDelay = true
         let parameters = NWParameters(tls: nil, tcp: options)
