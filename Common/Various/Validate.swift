@@ -80,6 +80,9 @@ func isValidMobcamUrl(url: String) -> String? {
     guard let url = URL(string: url) else {
         return String(localized: "Malformed Mobcam URL")
     }
+    guard let host = url.host(), ["localhost", "127.0.0.1"].contains(host.lowercased()) else {
+        return String(localized: "Mobcam host must be localhost")
+    }
     if url.port == nil {
         return String(localized: "Mobcam port number missing")
     }
