@@ -19,6 +19,7 @@ from .ffmpeg import detect_silence
 from .ffmpeg import ffprobe
 from .ffmpeg import ffprobe_audio
 from .ffmpeg import ffprobe_video_size
+from .ffmpeg import measure_max_volume
 from .ffmpeg import measure_mean_volume
 from .ffmpeg import read_video_timecodes
 from .utils import RecordingProbe
@@ -30,6 +31,7 @@ LOGGER = logging.getLogger(__name__)
 RE_LTCDUMP = re.compile(r"\S+\s+00:(\d+):(\d+):.*")
 CHANNEL_LAYOUTS = {1: "mono", 2: "stereo"}
 AUDIO_SAMPLES_PER_FRAME = 1024
+SILENCE_DB = -60
 
 
 class TestCase(systest.TestCase):
@@ -233,11 +235,18 @@ class TestCase(systest.TestCase):
         self.assert_less(audio.bit_rate, bitrate + 13000)
         if check_presentation_time_stamps:
             self._assert_audio_presentation_time_stamps(recording, audio)
-        self._assert_audio_time_codes(probe.audio_time_codes)
+        if probe.audio_time_codes is not None:
+            self._assert_audio_time_codes(probe.audio_time_codes)
+        self._assert_audio_not_silent(recording)
         for frame in audio.frames:
             self.assert_equal(frame.channels, channels)
             if check_number_of_samples:
                 self.assert_equal(frame.number_of_samples, AUDIO_SAMPLES_PER_FRAME)
+
+    def _assert_audio_not_silent(self, recording: Path) -> None:
+        max_volume_db = measure_max_volume(recording)
+        LOGGER.debug("Max volume: %.1f dB", max_volume_db)
+        self.assert_greater(max_volume_db, SILENCE_DB, "The audio track is silent.")
 
     def _assert_audio_presentation_time_stamps(self, recording: Path, audio: FfprobeAudioOutput) -> None:
         self.assert_presentation_time_stamps(
@@ -286,9 +295,7 @@ class TestCase(systest.TestCase):
                 bad_frame_numbers = True
         self.assert_false(bad_frame_numbers)
 
-    def _assert_audio_time_codes(self, output: str | None) -> None:
-        if output is None:
-            return
+    def _assert_audio_time_codes(self, output: str) -> None:
         has_seen_start_time = False
         has_seen_end_time = False
         for line in output.splitlines():
