@@ -13,7 +13,7 @@ struct StreamWizardMobcamSettingsView: View {
                 VStack(alignment: .leading) {
                     Text("""
                     1. Install the OBS Mobcam Plugin as described \
-                    [here](https://github.com/eerimoq/obs-mobcam-plugin#obs-mobcam-plugin).
+                    [here](https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin).
                     """)
                     Text("")
                     Text("2. Connect Moblin to the computer with a USB cable.")

@@ -13,7 +13,7 @@ protocol MobcamStreamDelegate: AnyObject {
     func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }
 
-final class MobcamStream: NSObject, @unchecked Sendable {
+final class MobcamStream: @unchecked Sendable {
     private weak var delegate: (any MobcamStreamDelegate)?
     private var listener: NWListener?
     private var connection: NWConnection?
@@ -31,7 +31,6 @@ final class MobcamStream: NSObject, @unchecked Sendable {
 
     init(delegate: any MobcamStreamDelegate) {
         self.delegate = delegate
-        super.init()
     }
 
     func start(port: UInt16) {
