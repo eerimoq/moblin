@@ -11,9 +11,14 @@ struct ValidateSuite {
 
     @Test
     func mobcamUrlValidation() {
-        #expect(isValidUrl(url: "mobcam://localhost:7777") == nil)
+        #expect(isValidUrl(url: "mobcam://localhost:7790") == nil)
+        #expect(isValidUrl(url: "mobcam://127.0.0.1:7790") == nil)
+        #expect(isValidUrl(url: "mobcam://LocalHost:7790") == nil)
         #expect(isValidUrl(url: "mobcam://localhost") != nil)
         #expect(isValidUrl(url: "mobcam://localhost:70000") != nil)
-        #expect(isValidUrl(url: "mobcam://localhost:7777", allowedSchemes: ["srt"]) != nil)
+        #expect(isValidUrl(url: "mobcam://192.168.1.5:7790") != nil)
+        #expect(isValidUrl(url: "mobcam://example.com:7790") != nil)
+        #expect(isValidUrl(url: "mobcam://[::1]:7790") != nil)
+        #expect(isValidUrl(url: "mobcam://localhost:7790", allowedSchemes: ["srt"]) != nil)
     }
 }

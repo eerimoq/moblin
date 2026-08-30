@@ -1,7 +1,7 @@
 # Moblin Mobcam protocol
 
 Moblin can stream to a computer over the USB cable, mainly to use the phone as a low latency webcam.
-Select it by setting the stream URL to `mobcam://localhost:7777`, where the port number is the port Moblin
+Select it by setting the stream URL to `mobcam://localhost:7790`, where the port number is the port Moblin
 listens on. The create stream wizard has a Mobcam entry under Custom that fills this in.
 
 Only AAC audio is supported. Moblin streams video only if the audio codec is set to something else.
