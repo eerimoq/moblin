@@ -106,6 +106,33 @@ struct MobcamStreamSuite {
     }
 
     @Test
+    func opusAudioConfig() throws {
+        let reader = MobcamStreamMessageReader()
+        reader.append(packMobcamStreamAudioConfig(
+            codec: .opus,
+            sampleRate: 48000,
+            channels: 2,
+            configurationRecord: packMobcamStreamOpusHead(sampleRate: 48000, channels: 2)
+        ))
+        let messages = try readAll(reader)
+        #expect(messages.count == 1)
+        let config = ByteReader(data: messages[0].1)
+        #expect(try config.readUInt8() == MobcamStreamAudioCodec.opus.rawValue)
+        #expect(try config.readUInt32() == 48000)
+        #expect(try config.readUInt8() == 2)
+        #expect(try config.readUInt32() == 19)
+        #expect(try config.readBytes(19) == Data([
+            0x4F, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64,
+            1,
+            2,
+            0, 0,
+            0x80, 0xBB, 0x00, 0x00,
+            0, 0,
+            0,
+        ]))
+    }
+
+    @Test
     func splitOverManyReceives() throws {
         let message = packVideoFrame(1, false, Data([1, 2, 3]))
         let reader = MobcamStreamMessageReader()

@@ -323,16 +323,28 @@ final class MobcamStream: @unchecked Sendable {
         guard let description = format.formatDescription.audioStreamBasicDescription else {
             return
         }
-        audioSupported = description.mFormatID == kAudioFormatMPEG4AAC
-        guard audioSupported else {
-            logger.info("mobcam-stream: Only AAC audio is supported. Streaming video only.")
-            return
+        let sampleRate = UInt32(format.sampleRate)
+        let channels = UInt8(format.channelCount)
+        audioSupported = true
+        switch description.mFormatID {
+        case kAudioFormatMPEG4AAC:
+            let config = MpegTsAudioConfig(formatDescription: format.formatDescription)
+            send(packMobcamStreamAudioConfig(codec: .aac,
+                                             sampleRate: sampleRate,
+                                             channels: channels,
+                                             configurationRecord: config.encode()))
+        case kAudioFormatOpus:
+            send(packMobcamStreamAudioConfig(codec: .opus,
+                                             sampleRate: sampleRate,
+                                             channels: channels,
+                                             configurationRecord: packMobcamStreamOpusHead(
+                                                 sampleRate: sampleRate,
+                                                 channels: channels
+                                             )))
+        default:
+            audioSupported = false
+            logger.info("mobcam-stream: Only AAC and Opus audio is supported. Streaming video only.")
         }
-        let config = MpegTsAudioConfig(formatDescription: format.formatDescription)
-        send(packMobcamStreamAudioConfig(codec: .aac,
-                                         sampleRate: UInt32(format.sampleRate),
-                                         channels: UInt8(format.channelCount),
-                                         configurationRecord: config.encode()))
     }
 
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,

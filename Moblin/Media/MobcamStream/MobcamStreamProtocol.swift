@@ -18,6 +18,7 @@ enum MobcamStreamVideoCodec: UInt8 {
 
 enum MobcamStreamAudioCodec: UInt8 {
     case aac = 0
+    case opus = 1
 }
 
 enum MobcamStreamProtocolError: Error {
@@ -98,6 +99,18 @@ func packMobcamStreamAudioConfig(codec: MobcamStreamAudioCodec,
     writer.writeUInt8(channels)
     writer.writeUInt32(UInt32(configurationRecord.count))
     writer.writeBytes(configurationRecord)
+    return writer.data
+}
+
+func packMobcamStreamOpusHead(sampleRate: UInt32, channels: UInt8) -> Data {
+    let writer = ByteWriter(data: Data(capacity: 19))
+    writer.writeUTF8Bytes("OpusHead")
+    writer.writeUInt8(1)
+    writer.writeUInt8(channels)
+    writer.writeUInt16Le(0)
+    writer.writeUInt32Le(sampleRate)
+    writer.writeUInt16Le(0)
+    writer.writeUInt8(0)
     return writer.data
 }
 

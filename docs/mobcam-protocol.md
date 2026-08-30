@@ -30,5 +30,9 @@ connections that say hello with a version it does not implement.
 | 0x02 | hello       | `u8` version, `u32` length, UTF-8 JSON `{"name": …, "version": …}`                     |
 | 0x03 | videoConfig | `u8` codec (0 = H.264, 1 = HEVC), `u16` width, `u16` height, `u32` length, `avcC`/`hvcC` |
 | 0x04 | videoFrame  | `u64` presentation timestamp, `u8` flags (bit 0 = keyframe), access unit               |
-| 0x05 | audioConfig | `u8` codec (0 = AAC-LC), `u32` sample rate, `u8` channels, `u32` length, AudioSpecificConfig |
+| 0x05 | audioConfig | `u8` codec (0 = AAC-LC, 1 = Opus), `u32` sample rate, `u8` channels, `u32` length, AudioSpecificConfig/`OpusHead` |
 | 0x06 | audioFrame  | `u64` presentation timestamp, one access unit                                          |
+
+The audio configuration record is an `AudioSpecificConfig` for AAC-LC and an `OpusHead` identification
+header (RFC 7845, little endian, pre-skip and output gain always zero) for Opus. One Opus audio frame
+message carries one Opus packet.
