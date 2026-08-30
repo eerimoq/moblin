@@ -190,27 +190,29 @@ class TestCase(systest.TestCase):
             )
         self._assert_video_frame_numbers_increasing(probe.qr_codes)
         if check_picture_types:
-            picture_types = {frame.picture_type for frame in video.frames}
-            self.assert_equal(len(picture_types), 3)
-            self.assert_in("I", picture_types)
-            self.assert_in("P", picture_types)
-            self.assert_in("B", picture_types)
-        for presentation_time_stamps in probe.unique_frame_presentation_time_stamps:
-            self._assert_no_duplicated_frames(
-                fps, video, recording, presentation_time_stamps, check_presentation_time_stamps
-            )
+            self._assert_picture_types(video)
+        for unique_presentation_time_stamps in probe.unique_frame_presentation_time_stamps:
+            self._assert_no_duplicated_frames(video, recording, unique_presentation_time_stamps)
+
+    def _assert_picture_types(self, video: FfprobeVideoOutput) -> None:
+        picture_types = {frame.picture_type for frame in video.frames}
+        self.assert_equal(len(picture_types), 3)
+        self.assert_in("I", picture_types)
+        self.assert_in("P", picture_types)
+        self.assert_in("B", picture_types)
 
     def _assert_no_duplicated_frames(
-        self,
-        fps: int,
-        video: FfprobeVideoOutput,
-        recording: Path,
-        presentation_time_stamps: list[float],
-        check_presentation_time_stamps: bool,
+        self, video: FfprobeVideoOutput, recording: Path, unique_presentation_time_stamps: list[float]
     ) -> None:
-        if check_presentation_time_stamps:
-            self.assert_presentation_time_stamps(recording, 1 / fps, presentation_time_stamps, "video")
-        self.assert_equal(len(presentation_time_stamps), len(video.frames))
+        unique = {round(pts, 3) for pts in unique_presentation_time_stamps}
+        missing_presentation_time_stamps = [
+            frame.pts for frame in video.frames if round(frame.pts, 3) not in unique
+        ]
+        if len(missing_presentation_time_stamps) > 0:
+            log_watch_video(recording)
+            for missing_presentation_time_stamp in missing_presentation_time_stamps:
+                LOGGER.info("Duplicated frame at PTS: %s", missing_presentation_time_stamp)
+        self.assert_equal(len(missing_presentation_time_stamps), 0)
 
     def _assert_audio(
         self,
@@ -258,10 +260,7 @@ class TestCase(systest.TestCase):
             expected_delta, presentation_time_stamps, delta_error
         )
         if len(missing_presentation_time_stamps) > 0:
-            LOGGER.info(
-                'Watch video: mpv --osd-msg1="PTS: \\${time-pos/full}" %s',
-                recording.absolute(),
-            )
+            log_watch_video(recording)
             for time_stamp, delta in missing_presentation_time_stamps:
                 LOGGER.info("%s: Missing PTS: %s (Delta: %s)", name, time_stamp, delta)
         self.assert_equal(
@@ -314,3 +313,7 @@ class TestCase(systest.TestCase):
     def _log_output(self, output: str) -> None:
         for line in output.splitlines():
             LOGGER.info("ltcdump: %s", line)
+
+
+def log_watch_video(recording: Path) -> None:
+    LOGGER.info('Watch video: mpv --osd-msg1="PTS: \\${time-pos/full}" %s', recording.absolute())
