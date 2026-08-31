@@ -179,6 +179,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private let effectsProcessor: VideoEffectsProcessor
     private let snapshots: VideoSnapshots
     private let lowFpsImage: VideoLowFpsImage
+    private let fpsEstimator = VideoFpsEstimator()
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var videoPreviews: [UUID: PreviewView] = [:]
@@ -202,6 +203,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     weak var processor: Processor? {
         didSet {
             lowFpsImage.processor = processor
+            fpsEstimator.processor = processor
         }
     }
 
@@ -237,9 +239,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
-    private var framesCounter = 0
-    private var latestReportedFps = -1
-    private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
     private var macScreenCaptureActive = false
 
@@ -1000,7 +999,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        updateFps(presentationTimeStamp)
+        fpsEstimator.update(presentationTimeStamp, fps)
         let enabledEffects = effectsProcessor.getEnabledEffects()
         let detectionJobs = prepareDetectionJobs(
             effectsProcessor.needsFaceDetections(enabledEffects, presentationTimeStamp, sceneVideoSourceId),
@@ -1027,26 +1026,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             detectObjectsComplete(completion)
         }
         return true
-    }
-
-    private func updateFps(_ presentationTimeStamp: Double) {
-        if nextFpsReportTime == 0 {
-            reportAndResetFps(fps: Int(fps), presentationTimeStamp)
-        } else {
-            framesCounter += 1
-            if presentationTimeStamp > nextFpsReportTime {
-                reportAndResetFps(fps: framesCounter / 2, presentationTimeStamp)
-            }
-        }
-    }
-
-    private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
-        if fps != latestReportedFps {
-            processor?.delegate.streamVideoFps(fps: fps)
-            latestReportedFps = fps
-        }
-        framesCounter = 0
-        nextFpsReportTime = presentationTimeStamp + 2
     }
 
     private func detectObjects(detectionJob: DetectionJob, completion: DetectionsCompletion) {
