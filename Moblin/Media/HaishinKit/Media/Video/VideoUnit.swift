@@ -453,7 +453,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setCleanSnapshots(enabled: Bool) {
         processorPipelineQueue.async {
-            self.snapshots.cleanSnapshots = enabled
+            self.snapshots.setCleanSnapshots(enabled: enabled)
         }
     }
 
@@ -1128,11 +1128,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         )
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         lowFpsImage.handleImageBuffer(modImageBuffer, presentationTimeStamp)
-        if snapshots.cleanSnapshots {
-            snapshots.handleTakeSnapshot(sampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
-        } else {
-            snapshots.handleTakeSnapshot(modSampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
-        }
+        snapshots.handleTakeSnapshot(
+            sampleBuffer,
+            modSampleBuffer,
+            presentationTimeStamp,
+            makeCopy(sampleBuffer:)
+        )
     }
 
     private func prepareDetectionJobs(

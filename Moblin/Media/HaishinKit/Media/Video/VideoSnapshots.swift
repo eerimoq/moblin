@@ -6,13 +6,17 @@ import UIKit
 
 final class VideoSnapshots {
     private let context: CIContext
-    var cleanSnapshots = false
+    private var cleanSnapshots = false
     private var takeSnapshotAge: Float = 0.0
     private var takeSnapshotComplete: (@MainActor (UIImage, CIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
 
     init(context: CIContext) {
         self.context = context
+    }
+
+    func setCleanSnapshots(enabled: Bool) {
+        cleanSnapshots = enabled
     }
 
     func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
@@ -32,10 +36,12 @@ final class VideoSnapshots {
         DispatchQueue.main.async { onComplete(uiImage) }
     }
 
-    func handleTakeSnapshot(_ sampleBuffer: CMSampleBuffer,
+    func handleTakeSnapshot(_ cleanSampleBuffer: CMSampleBuffer,
+                            _ modSampleBuffer: CMSampleBuffer,
                             _ presentationTimeStamp: Double,
                             _ makeCopy: (CMSampleBuffer) -> CMSampleBuffer?)
     {
+        let sampleBuffer = cleanSnapshots ? cleanSampleBuffer : modSampleBuffer
         let latestPresentationTimeStamp = takeSnapshotSampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
         if presentationTimeStamp > latestPresentationTimeStamp + 3.0 {
             guard let sampleBuffer = makeCopy(sampleBuffer) else {
