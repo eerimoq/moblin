@@ -91,7 +91,6 @@ private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
 )
-private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
     device: AVCaptureDevice?,
@@ -179,6 +178,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var captureSessionDevices: [CaptureSessionDevice] = []
     private let effectsProcessor: VideoEffectsProcessor
     private let snapshots: VideoSnapshots
+    private let lowFpsImage: VideoLowFpsImage
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var videoPreviews: [UUID: PreviewView] = [:]
@@ -199,7 +199,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: VideoEncoder?
-    weak var processor: Processor?
+    weak var processor: Processor? {
+        didSet {
+            lowFpsImage.processor = processor
+        }
+    }
+
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
@@ -216,10 +221,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var configuredIgnoreFramesAfterAttachSeconds = 0.0
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedFrames = 0
-    private var lowFpsImageEnabled: Bool = false
-    private var lowFpsImageInterval: Double = 1.0
-    private var lowFpsImageLatest: Double = 0.0
-    private var lowFpsImageFrameNumber: UInt64 = 0
     private var cleanRecordings = false
     private var cleanExternalDisplay = false
     private var bufferedPool: CVPixelBufferPool?
@@ -285,6 +286,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         let effectsProcessor = VideoEffectsProcessor()
         self.effectsProcessor = effectsProcessor
         snapshots = VideoSnapshots(context: effectsProcessor.context)
+        lowFpsImage = VideoLowFpsImage(context: effectsProcessor.context)
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
         NotificationCenter.default.addObserver(self,
@@ -410,7 +412,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setLowFpsImage(fps: Float) {
         processorPipelineQueue.async {
-            self.setLowFpsImageInternal(fps: fps)
+            self.lowFpsImage.setFps(fps: fps)
         }
     }
 
@@ -893,12 +895,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return outputImageBuffer
     }
 
-    private func setLowFpsImageInternal(fps: Float) {
-        lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
-        lowFpsImageEnabled = fps != 0.0
-        lowFpsImageLatest = 0.0
-    }
-
     private func takePhotoInternal() {
         for device in captureSessionDevices {
             guard let photoOutput = device.photoOutput else {
@@ -1187,39 +1183,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             duration: modSampleBuffer.duration
         )
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        handleLowFpsImage(modImageBuffer, presentationTimeStamp)
+        lowFpsImage.handleImageBuffer(modImageBuffer, presentationTimeStamp)
         if snapshots.cleanSnapshots {
             snapshots.handleTakeSnapshot(sampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
         } else {
             snapshots.handleTakeSnapshot(modSampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
         }
-    }
-
-    private func handleLowFpsImage(_ imageBuffer: CVImageBuffer, _ presentationTimeStamp: Double) {
-        guard lowFpsImageEnabled else {
-            return
-        }
-        guard presentationTimeStamp > lowFpsImageLatest + lowFpsImageInterval else {
-            return
-        }
-        lowFpsImageLatest = presentationTimeStamp
-        lowFpsImageQueue.async {
-            self.createLowFpsImage(imageBuffer: imageBuffer)
-        }
-    }
-
-    private func createLowFpsImage(imageBuffer: CVImageBuffer) {
-        var ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let scale = 400.0 /
-            (imageBuffer.isPortrait() ? Double(imageBuffer.height) : Double(imageBuffer.width))
-        ciImage = ciImage.scaled(x: scale, y: scale)
-        let cgImage = effectsProcessor.context.createCGImage(ciImage, from: ciImage.extent)!
-        let image = UIImage(cgImage: cgImage)
-        processor?.delegate.streamLowFpsImage(
-            lowFpsImage: image.jpegData(compressionQuality: 0.3),
-            frameNumber: lowFpsImageFrameNumber
-        )
-        lowFpsImageFrameNumber += 1
     }
 
     private func prepareDetectionJobs(
