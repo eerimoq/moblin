@@ -1093,7 +1093,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
-        let (modImageBuffer, modSampleBuffer) = effectsProcessor.process(
+        let (modImageBuffer, modSampleBuffer) = effectsProcessor.render(
             imageBuffer,
             completion,
             self,

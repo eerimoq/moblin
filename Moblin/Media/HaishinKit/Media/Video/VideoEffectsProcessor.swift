@@ -192,10 +192,10 @@ final class VideoEffectsProcessor {
         return ids
     }
 
-    func process(_ imageBuffer: CVImageBuffer,
-                 _ completion: DetectionsCompletion,
-                 _ videoUnit: VideoUnit,
-                 _ videoOrientation: AVCaptureVideoOrientation) -> (CVImageBuffer, CMSampleBuffer)
+    func render(_ imageBuffer: CVImageBuffer,
+                _ completion: DetectionsCompletion,
+                _ videoUnit: VideoUnit,
+                _ videoOrientation: AVCaptureVideoOrientation) -> (CVImageBuffer, CMSampleBuffer)
     {
         let sampleBuffer = completion.sampleBuffer
         if completion.isFirstAfterAttach {
