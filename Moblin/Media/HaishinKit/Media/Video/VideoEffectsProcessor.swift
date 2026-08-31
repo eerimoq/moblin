@@ -10,8 +10,8 @@ final class VideoEffectsProcessor {
     var fillFrame = true
     var sceneSwitchTransition: SceneSwitchTransition = .blur
     var latestSampleBufferTime: ContinuousClock.Instant?
-    private(set) var rotation: Double = 0.0
-    private(set) var mirror: Bool = false
+    private var rotation: Double = 0.0
+    private var mirror: Bool = false
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
@@ -106,11 +106,11 @@ final class VideoEffectsProcessor {
         }
     }
 
-    func getEnabledEffects() -> [VideoEffect] {
+    private func getEnabledEffects() -> [VideoEffect] {
         effects.filter { $0.isEnabled() }
     }
 
-    func removeEffects() {
+    private func removeEffects() {
         effects.removeAll { effect in
             guard effect.shouldRemove() else {
                 return false
@@ -120,13 +120,10 @@ final class VideoEffectsProcessor {
         }
     }
 
-    func needsFaceDetections(_ enabledEffects: [VideoEffect],
-                             _ presentationTimeStamp: Double,
-                             _ sceneVideoSourceId: UUID) -> Set<UUID>
-    {
+    func needsFaceDetections(_ presentationTimeStamp: Double, _ sceneVideoSourceId: UUID) -> Set<UUID> {
         var detectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
-        for effect in enabledEffects {
+        for effect in getEnabledEffects() {
             switch effect.needsFaceDetections(presentationTimeStamp) {
             case .off:
                 break
@@ -159,13 +156,10 @@ final class VideoEffectsProcessor {
         return ids
     }
 
-    func needsTextDetections(_ enabledEffects: [VideoEffect],
-                             _ presentationTimeStamp: Double,
-                             _ sceneVideoSourceId: UUID) -> Set<UUID>
-    {
+    func needsTextDetections(_ presentationTimeStamp: Double, _ sceneVideoSourceId: UUID) -> Set<UUID> {
         var detectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
-        for effect in enabledEffects {
+        for effect in getEnabledEffects() {
             switch effect.needsTextDetections(presentationTimeStamp) {
             case .off:
                 break
@@ -198,31 +192,57 @@ final class VideoEffectsProcessor {
         return ids
     }
 
-    func applyEffects(_ imageBuffer: CVImageBuffer,
-                      _ sampleBuffer: CMSampleBuffer,
-                      _ enabledEffects: [VideoEffect],
-                      _ sceneVideoSourceId: UUID,
-                      _ detectionJobs: [DetectionJob],
-                      _ detections: [UUID: Detections],
-                      _ isSceneSwitchTransition: Bool,
-                      _ isFirstAfterAttach: Bool,
-                      _ videoUnit: VideoUnit,
-                      _ videoOrientation: AVCaptureVideoOrientation) -> (CVImageBuffer?, CMSampleBuffer?)
+    func process(_ imageBuffer: CVImageBuffer,
+                 _ completion: DetectionsCompletion,
+                 _ videoUnit: VideoUnit,
+                 _ videoOrientation: AVCaptureVideoOrientation) -> (CVImageBuffer, CMSampleBuffer)
     {
+        let sampleBuffer = completion.sampleBuffer
+        if completion.isFirstAfterAttach {
+            usePendingAfterAttachEffects()
+        }
+        let enabledEffects = getEnabledEffects()
+        guard !enabledEffects.isEmpty
+            || completion.isSceneSwitchTransition
+            || imageBuffer.size != canvasSize
+            || rotation != 0.0
+            || mirror
+        else {
+            return (imageBuffer, sampleBuffer)
+        }
+        let (newImageBuffer, newSampleBuffer) = applyEffects(
+            imageBuffer,
+            enabledEffects,
+            completion,
+            videoUnit,
+            videoOrientation
+        )
+        removeEffects()
+        return (newImageBuffer ?? imageBuffer, newSampleBuffer ?? sampleBuffer)
+    }
+
+    private func applyEffects(_ imageBuffer: CVImageBuffer,
+                              _ enabledEffects: [VideoEffect],
+                              _ completion: DetectionsCompletion,
+                              _ videoUnit: VideoUnit,
+                              _ videoOrientation: AVCaptureVideoOrientation)
+        -> (CVImageBuffer?, CMSampleBuffer?)
+    {
+        let sampleBuffer = completion.sampleBuffer
         let info = VideoEffectInfo(
-            sceneVideoSourceId: sceneVideoSourceId,
-            detectionJobs: detectionJobs,
-            detections: detections,
+            sceneVideoSourceId: completion.sceneVideoSourceId,
+            detectionJobs: completion.detectionJobs,
+            detections: completion.detections,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: videoUnit,
-            isFirstAfterAttach: isFirstAfterAttach
+            isFirstAfterAttach: completion.isFirstAfterAttach
         )
         if isMetalPetalGraphicsEnabled() {
             return applyEffectsMetalPetal(
                 imageBuffer,
                 sampleBuffer,
                 enabledEffects,
-                isSceneSwitchTransition,
+                completion.isSceneSwitchTransition,
                 videoOrientation,
                 info
             )
@@ -231,7 +251,7 @@ final class VideoEffectsProcessor {
                 imageBuffer,
                 sampleBuffer,
                 enabledEffects,
-                isSceneSwitchTransition,
+                completion.isSceneSwitchTransition,
                 videoOrientation,
                 info
             )

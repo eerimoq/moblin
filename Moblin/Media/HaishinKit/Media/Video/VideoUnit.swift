@@ -118,7 +118,7 @@ struct Detections {
     let text: [TextDetection]
 }
 
-private class DetectionsCompletion: @unchecked Sendable {
+class DetectionsCompletion: @unchecked Sendable {
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
@@ -1000,10 +1000,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         fpsEstimator.update(presentationTimeStamp, fps)
-        let enabledEffects = effectsProcessor.getEnabledEffects()
         let detectionJobs = prepareDetectionJobs(
-            effectsProcessor.needsFaceDetections(enabledEffects, presentationTimeStamp, sceneVideoSourceId),
-            effectsProcessor.needsTextDetections(enabledEffects, presentationTimeStamp, sceneVideoSourceId),
+            effectsProcessor.needsFaceDetections(presentationTimeStamp, sceneVideoSourceId),
+            effectsProcessor.needsTextDetections(presentationTimeStamp, sceneVideoSourceId),
             sampleBuffer.presentationTimeStamp,
             imageBuffer
         )
@@ -1084,63 +1083,29 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         while let completion = completedDetections
             .removeValue(forKey: nextCompletedDetectionsSequenceNumber)
         {
-            appendSampleBufferWithDetections(
-                completion.sampleBuffer,
-                completion.isFirstAfterAttach,
-                completion.isSceneSwitchTransition,
-                completion.sceneVideoSourceId,
-                completion.detectionJobs,
-                completion.detections
-            )
+            appendSampleBufferWithDetections(completion)
             nextCompletedDetectionsSequenceNumber += 1
         }
     }
 
-    private func appendSampleBufferWithDetections(
-        _ sampleBuffer: CMSampleBuffer,
-        _ isFirstAfterAttach: Bool,
-        _ isSceneSwitchTransition: Bool,
-        _ sceneVideoSourceId: UUID,
-        _ detectionJobs: [DetectionJob],
-        _ detections: [UUID: Detections]
-    ) {
+    private func appendSampleBufferWithDetections(_ completion: DetectionsCompletion) {
+        let sampleBuffer = completion.sampleBuffer
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
         }
-        var newImageBuffer: CVImageBuffer?
-        var newSampleBuffer: CMSampleBuffer?
-        if isFirstAfterAttach {
-            effectsProcessor.usePendingAfterAttachEffects()
-        }
-        let enabledEffects = effectsProcessor.getEnabledEffects()
-        if !enabledEffects.isEmpty
-            || isSceneSwitchTransition
-            || imageBuffer.size != canvasSize
-            || effectsProcessor.rotation != 0.0
-            || effectsProcessor.mirror
-        {
-            (newImageBuffer, newSampleBuffer) = effectsProcessor.applyEffects(
-                imageBuffer,
-                sampleBuffer,
-                enabledEffects,
-                sceneVideoSourceId,
-                detectionJobs,
-                detections,
-                isSceneSwitchTransition,
-                isFirstAfterAttach,
-                self,
-                videoOrientation
-            )
-            effectsProcessor.removeEffects()
-        }
-        let modImageBuffer = newImageBuffer ?? imageBuffer
-        let modSampleBuffer = newSampleBuffer ?? sampleBuffer
+        let (modImageBuffer, modSampleBuffer) = effectsProcessor.process(
+            imageBuffer,
+            completion,
+            self,
+            videoOrientation
+        )
         if cleanRecordings {
             processor?.recorder.appendVideo(sampleBuffer)
         } else {
             processor?.recorder.appendVideo(modSampleBuffer)
         }
         modSampleBuffer.setAttachmentDisplayImmediately()
+        let isFirstAfterAttach = completion.isFirstAfterAttach
         if !showCameraPreview, screenPreviewEnabled {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
