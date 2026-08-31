@@ -68,8 +68,8 @@ private let chatBotSuggestions = createChatBotSuggestions()
 @MainActor
 private func createChatBotSuggestions() -> [Suggestion] {
     [
-        Suggestion(id: 0, name: "Travel", text: suggestionTravel.replacingOccurrences(of: "\n", with: " ")),
-        Suggestion(id: 1, name: "Debug", text: suggestionDebug.replacingOccurrences(of: "\n", with: " ")),
+        Suggestion(id: 0, name: "Travel", text: suggestionTravel.replace("\n", " ")),
+        Suggestion(id: 1, name: "Debug", text: suggestionDebug.replace("\n", " ")),
     ]
 }
 
@@ -1457,8 +1457,8 @@ private struct FontFamilyPickerView: View {
 }
 
 func fontStyleName(family: String, fontName: String) -> String {
-    let prefix = family.replacingOccurrences(of: " ", with: "")
-    let name = fontName.replacingOccurrences(of: "-", with: "")
+    let prefix = family.replace(" ", "")
+    let name = fontName.replace("-", "")
     if name.hasPrefix(prefix) {
         let suffix = String(name.dropFirst(prefix.count))
         return suffix.isEmpty ? "Regular" : suffix

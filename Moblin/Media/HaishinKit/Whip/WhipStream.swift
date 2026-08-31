@@ -576,7 +576,7 @@ final class WhipStream: @unchecked Sendable {
         guard !offerSent, let endpointUrl else {
             return
         }
-        logger.debug("whip: Sending offer: \(offer.replacingOccurrences(of: "\r", with: ""))")
+        logger.debug("whip: Sending offer: \(offer.replace("\r", ""))")
         var request = URLRequest(url: endpointUrl)
         request.httpMethod = "POST"
         request.setContentType("application/sdp")
@@ -610,7 +610,7 @@ final class WhipStream: @unchecked Sendable {
             stopInternal(reason: "WHIP answer missing")
             return
         }
-        logger.debug("whip: Got answer: \(answer.replacingOccurrences(of: "\r", with: ""))")
+        logger.debug("whip: Got answer: \(answer.replace("\r", ""))")
         do {
             try peerConnection?.setRemoteAnswer(answer)
         } catch {

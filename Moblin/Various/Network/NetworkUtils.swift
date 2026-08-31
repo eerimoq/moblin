@@ -63,7 +63,7 @@ func makeUrl(_ path: String, _ parameters: [(String, String)]) -> String {
 func makeMdnsHostname(deviceName: String) -> String {
     let name = deviceName
         .lowercased()
-        .replacingOccurrences(of: " ", with: "-")
+        .replace(" ", "-")
         .replacing(/-+/, with: "-")
         .trimmingCharacters(in: ["-"])
         .replacing(/[^\w\d-]/, with: "")

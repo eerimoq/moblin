@@ -71,8 +71,8 @@ struct TwitchApiGameData: Decodable, Identifiable {
 
     func boxArtUrl(width: Int, height: Int) -> String? {
         box_art_url?
-            .replacingOccurrences(of: "{width}", with: String(width))
-            .replacingOccurrences(of: "{height}", with: String(height))
+            .replace("{width}", String(width))
+            .replace("{height}", String(height))
     }
 }
 

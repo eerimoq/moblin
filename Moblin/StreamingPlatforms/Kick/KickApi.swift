@@ -140,7 +140,7 @@ struct KickStreamInfo {
 private let userUrl = URL(string: "https://kick.com/api/v1/user")!
 
 private func makeSlug(channelName: String) -> String {
-    channelName.replacingOccurrences(of: "_", with: "-")
+    channelName.replace("_", "-")
 }
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
@@ -194,7 +194,7 @@ func fetchKickProfilePicture(username: String) async -> UIImage? {
         return image
     }
     if username.contains("_") {
-        let kebabUsername = username.replacingOccurrences(of: "_", with: "-")
+        let kebabUsername = username.replace("_", "-")
         return await fetchKickProfilePictureWithUsername(kebabUsername)
     }
     return nil

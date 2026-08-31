@@ -33,6 +33,10 @@ extension String {
         let endIndex = index(startIndex, offsetBy: end)
         return String(self[beginIndex ..< endIndex])
     }
+
+    func replace(_ of: String, _ with: String) -> String {
+        replacingOccurrences(of: of, with: with)
+    }
 }
 
 extension Substring {
@@ -58,7 +62,7 @@ func makeRtmpStreamKey(url: String) -> String {
 }
 
 func cleanUrl(url value: String) -> String {
-    let stripped = value.replacingOccurrences(of: " ", with: "")
+    let stripped = value.replace(" ", "")
     guard var components = URLComponents(string: stripped) else {
         return stripped
     }
@@ -103,8 +107,8 @@ var speedFormatterUnit: ByteCountFormatter {
 func formatBytesPerSecond(speed: Int64) -> String {
     let value = speedFormatterValue.string(fromByteCount: speed)
     var unit = speedFormatterUnit.string(fromByteCount: speed)
-    unit = unit.replacingOccurrences(of: "bytes", with: "bps")
-    unit = unit.replacingOccurrences(of: "byte", with: "bps")
+    unit = unit.replace("bytes", "bps")
+    unit = unit.replace("byte", "bps")
     if unit.count == 2 {
         unit = "\(unit.remove(at: unit.startIndex))bps"
     }
