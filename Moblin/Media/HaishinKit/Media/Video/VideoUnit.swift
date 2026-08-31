@@ -1569,10 +1569,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 }
 
-// private var baseTimestamp: Double = .nan
-// private var previousTimestamp: Double = 0.0
-// private var nowStart: ContinuousClock.Instant?
-
 extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
@@ -1582,31 +1578,6 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        // if baseTimestamp.isNaN {
-        //     baseTimestamp = sampleBuffer.presentationTimeStamp.seconds
-        // }
-        // if nowStart == nil {
-        //     nowStart = .now
-        // }
-        // let timestamp = sampleBuffer.presentationTimeStamp.seconds - baseTimestamp
-        // let delta = timestamp - previousTimestamp
-        // let hostTime = currentPresentationTimeStamp().seconds - baseTimestamp
-        // let now = nowStart!.duration(to: .now).seconds
-        // logger.info("""
-        // xxx video \
-        // t: \(formatFourDecimals(timestamp)) \
-        // d: \(formatFourDecimals(delta)) \
-        // h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
-        // """)
-        // if delta > 0.04 || delta < 0.02 {
-        //     logger.info("""
-        //     xxx video abnormal \
-        //     t: \(formatFourDecimals(timestamp)) \
-        //     d: \(formatFourDecimals(delta)) \
-        //     h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
-        //     """)
-        // }
-        // previousTimestamp = timestamp
         if videoPreviewEnabled {
             enqueueVideoPreview(device: input.device, sampleBuffer: sampleBuffer)
         }
