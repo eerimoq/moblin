@@ -975,12 +975,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 detectionJobs.removeAll()
                 break
             }
-            detectionJobs.append(DetectionJob(videoSourceId: videoSourceId,
-                                              imageBuffer: videoSourceImageBuffer,
-                                              detectFaces: faceDetectionVideoSourceIds
-                                                  .contains(videoSourceId),
-                                              detectText: textDetectionVideoSourceIds
-                                                  .contains(videoSourceId)))
+            detectionJobs.append(
+                DetectionJob(videoSourceId: videoSourceId,
+                             imageBuffer: videoSourceImageBuffer,
+                             detectFaces: faceDetectionVideoSourceIds.contains(videoSourceId),
+                             detectText: textDetectionVideoSourceIds.contains(videoSourceId))
+            )
         }
         return detectionJobs
     }
