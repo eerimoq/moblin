@@ -8,6 +8,9 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "34.2138.0", date: "2026-08-31", changes: [
+        "• !moblin custom <name> to define custom chat bot commands. Define format string with variables, much like for the text widget.",
+    ]),
     Version(version: "34.2137.0", date: "2026-08-30", changes: [
         "• Make SRT server ingest work when your device has multiple network interfaces.",
         "• Torch brightness slider. 💡 Kosta X",
