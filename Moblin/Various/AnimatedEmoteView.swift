@@ -3,28 +3,10 @@ import SwiftUI
 
 private let maxFramesBytes = 32 * 1024 * 1024
 private let unusedEmoteTimeout = 60.0
-private let borderOffsetsCount = 16
-private let borderWidthToHaloWidth = 2.0
-
-struct EmoteBorder: Equatable {
-    let color: Color
-    let width: CGFloat
-}
 
 private struct EmoteKey: Hashable {
     let url: URL
     let height: Int
-    let borderColor: UInt32
-    let borderWidth: Int
-}
-
-private func packColor(color: Color) -> UInt32 {
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-    return UInt32(red * 255) << 24 | UInt32(green * 255) << 16 | UInt32(blue * 255) << 8 | UInt32(alpha * 255)
 }
 
 private struct WeakEmoteUiView {
@@ -36,8 +18,6 @@ private class AnimatedEmote {
     private let sourceImage: CGImage?
     private let width: Int
     private let height: Int
-    private let borderColor: CGColor?
-    private let borderWidth: CGFloat
     private var frames: [CGImage?]
     private var startTimes: [Double]
     private let totalDuration: Double
@@ -46,17 +26,9 @@ private class AnimatedEmote {
     private(set) var framesBytes = 0
     private(set) var lastUsedTime = CACurrentMediaTime()
 
-    init(image: UIImage, key: EmoteKey, border: EmoteBorder?) {
-        if let border, key.borderWidth > 0 {
-            borderColor = UIColor(border.color).cgColor
-            borderWidth = CGFloat(key.borderWidth)
-        } else {
-            borderColor = nil
-            borderWidth = 0
-        }
-        height = key.height + 2 * key.borderWidth
+    init(image: UIImage, key: EmoteKey) {
+        height = key.height
         width = max(Int((CGFloat(key.height) * image.size.width / image.size.height).rounded()), 1)
-            + 2 * key.borderWidth
         if let animatedImage = image as? SDAnimatedImage, animatedImage.animatedImageFrameCount > 1 {
             self.animatedImage = animatedImage
             sourceImage = nil
@@ -163,24 +135,7 @@ private class AnimatedEmote {
             return nil
         }
         context.interpolationQuality = .high
-        let rect = CGRect(x: 0, y: 0, width: width, height: height).insetBy(dx: borderWidth, dy: borderWidth)
-        if let borderColor {
-            for index in 0 ..< borderOffsetsCount {
-                let angle = Double(index) * 2 * .pi / Double(borderOffsetsCount)
-                context.draw(sourceFrame, in: rect.offsetBy(dx: borderWidth * cos(angle),
-                                                            dy: borderWidth * sin(angle)))
-            }
-            for index in 0 ..< borderOffsetsCount / 2 {
-                let angle = Double(index) * 4 * .pi / Double(borderOffsetsCount)
-                context.draw(sourceFrame, in: rect.offsetBy(dx: borderWidth * cos(angle) / 2,
-                                                            dy: borderWidth * sin(angle) / 2))
-            }
-            context.setBlendMode(.sourceIn)
-            context.setFillColor(borderColor)
-            context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-            context.setBlendMode(.normal)
-        }
-        context.draw(sourceFrame, in: rect)
+        context.draw(sourceFrame, in: CGRect(x: 0, y: 0, width: width, height: height))
         return context.makeImage()
     }
 }
@@ -190,6 +145,7 @@ private class EmotesPlayer: NSObject {
     private var emotes: [EmoteKey: AnimatedEmote] = [:]
     private var pendingViews: [EmoteKey: [WeakEmoteUiView]] = [:]
     private var sizes: [URL: CGSize] = [:]
+    private var states: [URL: AnimatedEmoteState] = [:]
     private var loadingHandlers: [URL: [(UIImage) -> Void]] = [:]
     private var displayLink: CADisplayLink?
 
@@ -199,6 +155,21 @@ private class EmotesPlayer: NSObject {
                                                selector: #selector(handleMemoryWarning),
                                                name: UIApplication.didReceiveMemoryWarningNotification,
                                                object: nil)
+    }
+
+    func state(url: URL) -> AnimatedEmoteState {
+        if let state = states[url] {
+            return state
+        }
+        let state = AnimatedEmoteState()
+        states[url] = state
+        loadSize(url: url) { [weak state] size in
+            guard state?.size != size else {
+                return
+            }
+            state?.size = size
+        }
+        return state
     }
 
     func loadSize(url: URL, onLoaded: @escaping (CGSize) -> Void) {
@@ -214,7 +185,7 @@ private class EmotesPlayer: NSObject {
         }
     }
 
-    func register(view: EmoteUiView, key: EmoteKey, border: EmoteBorder?) {
+    func register(view: EmoteUiView, key: EmoteKey) {
         if let emote = emotes[key] {
             emote.add(view: view, time: CACurrentMediaTime())
             updateDisplayLink()
@@ -228,7 +199,7 @@ private class EmotesPlayer: NSObject {
                 guard !views.isEmpty else {
                     return
                 }
-                let emote = emotes[key] ?? AnimatedEmote(image: image, key: key, border: border)
+                let emote = emotes[key] ?? AnimatedEmote(image: image, key: key)
                 emotes[key] = emote
                 let time = CACurrentMediaTime()
                 for view in views.compactMap(\.view) {
@@ -312,10 +283,7 @@ private class EmotesPlayer: NSObject {
 }
 
 private class EmoteUiView: UIView {
-    var onSize: ((CGSize) -> Void)?
     private var url: URL?
-    private var border: EmoteBorder?
-    private var draw = false
     private var key: EmoteKey?
     private let contentLayer = CALayer()
 
@@ -333,18 +301,8 @@ private class EmoteUiView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setEmote(url: URL, border: EmoteBorder?, draw: Bool) {
-        if url != self.url {
-            self.url = url
-            EmotesPlayer.shared.loadSize(url: url) { [weak self] size in
-                guard self?.url == url else {
-                    return
-                }
-                self?.onSize?(size)
-            }
-        }
-        self.border = border
-        self.draw = draw
+    func setEmote(url: URL) {
+        self.url = url
         updateKey()
     }
 
@@ -361,13 +319,12 @@ private class EmoteUiView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let halo = (border?.width ?? 0) * borderWidthToHaloWidth
-        contentLayer.frame = bounds.insetBy(dx: -halo, dy: -halo)
+        contentLayer.frame = bounds
         updateKey()
     }
 
     private func updateKey() {
-        guard let url, draw else {
+        guard let url else {
             unregister()
             setFrame(image: nil)
             return
@@ -377,17 +334,13 @@ private class EmoteUiView: UIView {
         guard height > 0 else {
             return
         }
-        let key = EmoteKey(url: url,
-                           height: height,
-                           borderColor: border.map { packColor(color: $0.color) } ?? 0,
-                           borderWidth: Int(((border?.width ?? 0) * borderWidthToHaloWidth * scale)
-                               .rounded()))
+        let key = EmoteKey(url: url, height: height)
         guard key != self.key else {
             return
         }
         unregister()
         self.key = key
-        EmotesPlayer.shared.register(view: self, key: key, border: border)
+        EmotesPlayer.shared.register(view: self, key: key)
     }
 }
 
@@ -397,24 +350,16 @@ private class AnimatedEmoteState: ObservableObject {
 
 private struct AnimatedEmoteViewRepresentable: UIViewRepresentable {
     let url: URL
-    let border: EmoteBorder?
-    let draw: Bool
     @ObservedObject var state: AnimatedEmoteState
 
     func makeUIView(context _: Context) -> EmoteUiView {
         let view = EmoteUiView()
-        view.onSize = { [weak state] size in
-            guard state?.size != size else {
-                return
-            }
-            state?.size = size
-        }
-        view.setEmote(url: url, border: border, draw: draw)
+        view.setEmote(url: url)
         return view
     }
 
     func updateUIView(_ view: EmoteUiView, context _: Context) {
-        view.setEmote(url: url, border: border, draw: draw)
+        view.setEmote(url: url)
     }
 
     static func dismantleUIView(_ view: EmoteUiView, coordinator _: ()) {
@@ -437,11 +382,8 @@ private struct AnimatedEmoteViewRepresentable: UIViewRepresentable {
 
 struct AnimatedEmoteView: View {
     let url: URL
-    var border: EmoteBorder?
-    var mask = false
-    @StateObject private var state = AnimatedEmoteState()
 
     var body: some View {
-        AnimatedEmoteViewRepresentable(url: url, border: mask ? nil : border, draw: !mask, state: state)
+        AnimatedEmoteViewRepresentable(url: url, state: EmotesPlayer.shared.state(url: url))
     }
 }
