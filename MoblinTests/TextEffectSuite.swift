@@ -1,6 +1,7 @@
 import AVFoundation
 @testable import Moblin
 import Testing
+import WeatherKit
 
 @MainActor
 struct TextEffectSuite {
@@ -20,8 +21,9 @@ struct TextEffectSuite {
     func conditions() {
         var lines = format(format: "{conditions}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
-        lines = format(format: "{conditions}", stats: createStats(conditions: "sun.max"))
-        #expect(lines == createLine(data: .imageSystemNameTryFill("sun.max")))
+        lines = format(format: "{conditions}",
+                       stats: createStats(conditions: "sun.max", condition: .clear))
+        #expect(lines == createLine(data: .imageSystemNameTryFill("sun.max", plainText: "☀️")))
     }
 
     @Test
@@ -293,6 +295,18 @@ struct TextEffectSuite {
         #expect(parts == [.subtitles("dk")])
     }
 
+    @Test
+    func plainText() {
+        var lines = format(format: "Speed {speed:km/h}\\nGravity {gForce}", stats: createStats())
+        #expect(lines.toPlainText() == "Speed 18 km/h Gravity -")
+        lines = format(format: "{conditions} {speed:m/s}",
+                       stats: createStats(conditions: "sun.max", condition: .clear))
+        #expect(lines.toPlainText() == "☀️ 5 m/s")
+        lines = format(format: "Speed {speed:m/s} {conditions} today",
+                       stats: createStats(conditions: "cloud.rain", condition: .rain))
+        #expect(lines.toPlainText() == "Speed 5 m/s 🌧️ today")
+    }
+
     private func format(format: String, stats: TextEffectStats) -> [TextEffectLine] {
         let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: format),
                                             timersEndTime: [],
@@ -304,6 +318,7 @@ struct TextEffectSuite {
     }
 
     private func createStats(conditions: String? = nil,
+                             condition: WeatherCondition? = nil,
                              heartRates: [String: Int?] = [:],
                              gForce: GForce? = nil) -> TextEffectStats
     {
@@ -325,6 +340,7 @@ struct TextEffectSuite {
                         splitAltitudeDescent: 30,
                         slope: "",
                         conditions: conditions,
+                        condition: condition,
                         temperature: Measurement(value: 22, unit: UnitTemperature.celsius),
                         feelsLikeTemperature: Measurement(value: 17, unit: UnitTemperature.celsius),
                         windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),

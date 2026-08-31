@@ -80,6 +80,8 @@ extension Model {
                 handleChatBotMessageSend(command: command)
             case "music":
                 handleChatBotMessageMusic(command: command)
+            case "custom":
+                handleChatBotMessageCustom(command: command)
             default:
                 break
             }
@@ -405,6 +407,58 @@ extension Model {
             self.sendChatBotReply(message: command.rest(),
                                   platform: command.message.platform)
         }
+    }
+
+    func isChatBotCustomCommandsWeatherNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsWeather)
+    }
+
+    func isChatBotCustomCommandsGeographyNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGeography)
+    }
+
+    func isChatBotCustomCommandsGForceNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGForce)
+    }
+
+    func chatBotCustomCommandsTextChanged() {
+        for customCommand in database.chat.customCommands {
+            let parts = loadTextFormat(format: customCommand.formatString)
+            customCommand.needsWeather = parts.isWeatherVariable()
+            customCommand.needsGeography = parts.isGeographyVariable()
+            customCommand.needsGForce = parts.isGForceVariable()
+        }
+        startWeatherManager()
+        startGeographyManager()
+        startGForceManager()
+    }
+
+    private func handleChatBotMessageCustom(command: ChatBotCommand) {
+        let name = command.rest().lowercased()
+        guard let customCommand = database.chat.customCommands.first(where: {
+            $0.name.lowercased() == name
+        }) else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: customCommand.permissions,
+            command: command
+        ) {
+            let message = self.formatChatBotCustomCommand(customCommand: customCommand)
+            self.sendChatBotReply(message: message, platform: command.message.platform)
+        }
+    }
+
+    private func formatChatBotCustomCommand(customCommand: SettingsChatBotCustomCommand) -> String {
+        let now = ContinuousClock.now
+        let stats = createTextEffectStats(now: .now, timestamp: now)
+        let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: customCommand.formatString),
+                                            timersEndTime: [],
+                                            stopwatches: [],
+                                            checkboxes: [],
+                                            ratings: [],
+                                            lapTimes: [])
+        return formatter.format(stats: stats, now: now).toPlainText()
     }
 
     private func handleChatBotMessageMusic(command: ChatBotCommand) {

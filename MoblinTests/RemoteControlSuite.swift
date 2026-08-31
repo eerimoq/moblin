@@ -1,6 +1,7 @@
 import Foundation
 @testable import Moblin
 import Testing
+import WeatherKit
 
 struct RemoteControlSuite {
     private func encode(_ request: RemoteControlRequest) throws -> String? {
@@ -35,6 +36,7 @@ struct RemoteControlSuite {
           "bitrateAndTotal" : "5000 kbps, 1.2 GB",
           "browserTitle" : "Title",
           "city" : "Malmö",
+          "condition" : "clear",
           "conditions" : "sun.max",
           "country" : "Sweden",
           "countryFlag" : "🇸🇪",
@@ -269,6 +271,7 @@ struct RemoteControlSuite {
                         splitAltitudeDescent: 30.25,
                         slope: "5%",
                         conditions: "sun.max",
+                        condition: .clear,
                         temperature: Measurement(value: 22, unit: UnitTemperature.celsius),
                         feelsLikeTemperature: Measurement(value: 17, unit: UnitTemperature.celsius),
                         windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),

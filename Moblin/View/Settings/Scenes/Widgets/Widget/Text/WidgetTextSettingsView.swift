@@ -726,21 +726,24 @@ private struct TextWidgetSuggestionsInnerView: View {
 }
 
 private struct GeneralVariablesView: View {
+    let widget: Bool
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                VariableView(
-                    title: "{checkbox}",
-                    description: String(localized: "Show a checkbox"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{rating}",
-                    description: String(localized: "Show a 0-5 rating"),
-                    text: $value
-                )
+                if widget {
+                    VariableView(
+                        title: "{checkbox}",
+                        description: String(localized: "Show a checkbox"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{rating}",
+                        description: String(localized: "Show a 0-5 rating"),
+                        text: $value
+                    )
+                }
                 VariableView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 VariableView(
                     title: "{browserTitle}",
@@ -767,6 +770,7 @@ private struct GeneralVariablesView: View {
 }
 
 private struct TimeVariablesView: View {
+    let widget: Bool
     @Binding var value: String
 
     var body: some View {
@@ -793,17 +797,21 @@ private struct TimeVariablesView: View {
                 VariableView(title: "{fullDate}",
                              description: String(localized: "Show date as \(fullDate)"),
                              text: $value)
-                VariableView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                VariableView(
-                    title: "{stopwatch}",
-                    description: String(localized: "Show a stopwatch"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{lapTimes}",
-                    description: String(localized: "Show lap times"),
-                    text: $value
-                )
+                if widget {
+                    VariableView(title: "{timer}",
+                                 description: String(localized: "Show a timer"),
+                                 text: $value)
+                    VariableView(
+                        title: "{stopwatch}",
+                        description: String(localized: "Show a stopwatch"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{lapTimes}",
+                        description: String(localized: "Show lap times"),
+                        text: $value
+                    )
+                }
             }
             .navigationTitle("Time")
         } label: {
@@ -1184,6 +1192,30 @@ private struct DebugVariablesView: View {
     }
 }
 
+struct TextFormatVariablesView: View {
+    @EnvironmentObject var model: Model
+    let widget: Bool
+    @Binding var value: String
+
+    var body: some View {
+        Section {
+            GeneralVariablesView(widget: widget, value: $value)
+            TimeVariablesView(widget: widget, value: $value)
+            LocationVariablesView(model: model, value: $value)
+            WeatherVariablesView(model: model, value: $value)
+            if widget {
+                LanguageVariablesView(value: $value)
+            }
+            WorkoutVariablesView(model: model, value: $value)
+            TeslaVariablesView(value: $value)
+            StreamingVariablesView(value: $value)
+            DebugVariablesView(value: $value)
+        } header: {
+            Text("Variables")
+        }
+    }
+}
+
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -1194,23 +1226,11 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             TextWidgetTextView(value: $value)
-            WarningsView(model: model, location: model.database.location, value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
             Section {
                 TextWidgetSuggestionsView(text: $value)
             }
-            Section {
-                GeneralVariablesView(value: $value)
-                TimeVariablesView(value: $value)
-                LocationVariablesView(model: model, value: $value)
-                WeatherVariablesView(model: model, value: $value)
-                LanguageVariablesView(value: $value)
-                WorkoutVariablesView(model: model, value: $value)
-                TeslaVariablesView(value: $value)
-                StreamingVariablesView(value: $value)
-                DebugVariablesView(value: $value)
-            } header: {
-                Text("Variables")
-            }
+            TextFormatVariablesView(widget: true, value: $value)
         }
         .onChange(of: value) { _ in
             widget.text.formatString = value
@@ -1237,7 +1257,7 @@ struct TextWidgetTextView: View {
     }
 }
 
-private struct WarningsView: View {
+struct TextFormatWarningsView: View {
     @ObservedObject var model: Model
     @ObservedObject var location: SettingsLocation
     @Binding var value: String
@@ -1519,9 +1539,9 @@ struct WidgetTextSettingsView: View {
                 TextItemLocalizedView(name: "Text", value: widget.text.formatString)
             }
         }
-        WarningsView(model: model,
-                     location: model.database.location,
-                     value: $text.formatString)
+        TextFormatWarningsView(model: model,
+                               location: model.database.location,
+                               value: $text.formatString)
         let textEffects = model.getTextEffects(id: widget.id)
         if !textEffects.isEmpty {
             if !text.timers.isEmpty {

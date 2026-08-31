@@ -1196,6 +1196,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
+        chatBotCustomCommandsTextChanged()
         loadStealthModeImage()
         loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
@@ -1243,12 +1244,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGForceManagerNeeded() -> Bool {
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
-            guard widget.widget.type == .text else {
-                continue
+            switch widget.widget.type {
+            case .text:
+                if widget.widget.text.needsGForce {
+                    return true
+                }
+            case .slideshow:
+                for slide in widget.widget.slideshow.slides
+                    where getTextWidget(id: slide.widgetId)?.text.needsGForce == true
+                {
+                    return true
+                }
+            default:
+                break
             }
-            guard widget.widget.text.needsGForce else {
-                continue
-            }
+        }
+        if isChatBotCustomCommandsGForceNeeded() {
             return true
         }
         if isRemoteControlStreamerGForceStatsFilterEnabled() {
@@ -1319,6 +1330,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 break
             }
         }
+        if isChatBotCustomCommandsWeatherNeeded() {
+            return true
+        }
         if isRemoteControlStreamerWeatherStatsFilterEnabled() {
             return true
         }
@@ -1346,6 +1360,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             default:
                 break
             }
+        }
+        if isChatBotCustomCommandsGeographyNeeded() {
+            return true
         }
         if isRemoteControlStreamerGeographyStatsFilterEnabled() {
             return true

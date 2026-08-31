@@ -620,6 +620,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     let splitAltitudeDescent: Double
     let slope: String
     let conditions: String?
+    let condition: String?
     let temperature: Measurement<UnitTemperature>?
     let feelsLikeTemperature: Measurement<UnitTemperature>?
     let windSpeed: Measurement<UnitSpeed>?
@@ -665,6 +666,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         splitAltitudeDescent = stats.splitAltitudeDescent
         slope = stats.slope
         conditions = stats.conditions
+        condition = stats.condition?.rawValue
         temperature = stats.temperature
         feelsLikeTemperature = stats.feelsLikeTemperature
         windSpeed = stats.windSpeed
@@ -712,6 +714,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                         splitAltitudeDescent: splitAltitudeDescent,
                         slope: slope,
                         conditions: conditions,
+                        condition: condition.flatMap { WeatherCondition(rawValue: $0) },
                         temperature: temperature,
                         feelsLikeTemperature: feelsLikeTemperature,
                         windSpeed: windSpeed,

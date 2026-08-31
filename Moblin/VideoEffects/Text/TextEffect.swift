@@ -23,6 +23,7 @@ struct TextEffectStats {
     let splitAltitudeDescent: Double
     let slope: String
     let conditions: String?
+    let condition: WeatherCondition?
     let temperature: Measurement<UnitTemperature>?
     let feelsLikeTemperature: Measurement<UnitTemperature>?
     let windSpeed: Measurement<UnitSpeed>?
@@ -127,10 +128,10 @@ private struct TextView: View {
                             case let .text(text):
                                 Text(text)
                                     .foregroundStyle(state.foregroundColor)
-                            case let .imageSystemName(name):
+                            case let .imageSystemName(name, _):
                                 Image(systemName: name)
                                     .foregroundStyle(state.foregroundColor)
-                            case let .imageSystemNameTryFill(name):
+                            case let .imageSystemNameTryFill(name, _):
                                 if UIImage(systemName: "\(name).fill") != nil {
                                     Image(systemName: "\(name).fill")
                                         .symbolRenderingMode(.multicolor)

@@ -19,7 +19,12 @@ private struct ChatSettingsGeneralView: View {
         NavigationLink {
             ChatBotSettingsView()
         } label: {
-            Toggle(isOn: $chat.botEnabled) {
+            Toggle(isOn: Binding(get: {
+                chat.botEnabled
+            }, set: { value in
+                chat.botEnabled = value
+                model.chatBotCustomCommandsTextChanged()
+            })) {
                 Text("Bot")
             }
         }

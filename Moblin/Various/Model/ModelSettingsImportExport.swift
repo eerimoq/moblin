@@ -78,6 +78,7 @@ extension Model {
         updateIconImageFromDatabase()
         updateMicsList()
         reloadStream()
+        chatBotCustomCommandsTextChanged()
         resetSelectedScene()
         setupAudioAfterSettingsImport()
         updateQuickButtonStates()

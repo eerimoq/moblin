@@ -17,6 +17,7 @@
 | !moblin stream title \<title> | Set stream title. |
 | !moblin widget \<name> timer \<number> add \<seconds> | Add time to a timer. |
 | !moblin ai ask \<question> | Ask AI a question. |
+| !moblin custom \<name> | Send the text of given custom command to chat. Configure custom commands in Moblin. |
 | !moblin mute | Mute audio. |
 | !moblin unmute | Unmute audio. |
 | !moblin music add <song> | Add a song. Free text search or share link. |

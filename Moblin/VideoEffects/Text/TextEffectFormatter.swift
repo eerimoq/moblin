@@ -1,4 +1,5 @@
 import Foundation
+import WeatherKit
 
 private func createDateFormatter() -> DateFormatter {
     let formatter = DateFormatter()
@@ -19,8 +20,8 @@ let textEffectShortTimeFormat: Date.FormatStyle = .dateTime.hour().minute()
 
 enum TextEffectPartData: Equatable {
     case text(String)
-    case imageSystemName(String)
-    case imageSystemNameTryFill(String)
+    case imageSystemName(String, plainText: String)
+    case imageSystemNameTryFill(String, plainText: String)
     case rating(Int)
 }
 
@@ -32,6 +33,45 @@ struct TextEffectPart: Equatable, Identifiable {
 struct TextEffectLine: Equatable, Identifiable {
     var id: Int
     var parts: [TextEffectPart]
+}
+
+private func conditionToEmoji(_ condition: WeatherCondition?) -> String {
+    switch condition {
+    case .clear:
+        "☀️"
+    case .mostlyClear:
+        "🌤️"
+    case .partlyCloudy:
+        "⛅"
+    case .mostlyCloudy:
+        "🌥️"
+    case .cloudy:
+        "☁️"
+    case .foggy, .haze, .smoky, .blowingDust:
+        "🌫️"
+    case .breezy, .windy:
+        "💨"
+    case .drizzle, .sunShowers:
+        "🌦️"
+    case .rain, .heavyRain, .freezingRain, .freezingDrizzle:
+        "🌧️"
+    case .isolatedThunderstorms, .scatteredThunderstorms:
+        "🌩️"
+    case .thunderstorms, .strongStorms:
+        "⛈️"
+    case .flurries, .snow, .sunFlurries, .blowingSnow, .blizzard, .sleet, .wintryMix, .hail:
+        "🌨️"
+    case .heavySnow:
+        "❄️"
+    case .frigid:
+        "🥶"
+    case .hot:
+        "🥵"
+    case .hurricane, .tropicalStorm:
+        "🌀"
+    default:
+        ""
+    }
 }
 
 class TextEffectFormatter {
@@ -350,7 +390,9 @@ class TextEffectFormatter {
 
     private func formatConditions(stats: TextEffectStats) {
         if let conditions = stats.conditions {
-            parts.append(.init(id: partId, data: .imageSystemNameTryFill(conditions)))
+            parts.append(.init(id: partId,
+                               data: .imageSystemNameTryFill(conditions,
+                                                             plainText: conditionToEmoji(stats.condition))))
         } else {
             appendTextPart(value: "-")
         }
@@ -404,9 +446,11 @@ class TextEffectFormatter {
 
     private func formatCheckbox() {
         if checkboxIndex < checkboxes.count {
+            let checked = checkboxes[checkboxIndex]
             parts.append(.init(
                 id: partId,
-                data: .imageSystemName(checkboxes[checkboxIndex] ? "checkmark.square" : "square")
+                data: .imageSystemName(checked ? "checkmark.square" : "square",
+                                       plainText: checked ? "☑️" : "⬜")
             ))
         }
         checkboxIndex += 1
@@ -441,7 +485,7 @@ class TextEffectFormatter {
 
     private func formatMuted(stats: TextEffectStats) {
         if stats.muted {
-            parts.append(.init(id: partId, data: .imageSystemName("mic.slash")))
+            parts.append(.init(id: partId, data: .imageSystemName("mic.slash", plainText: "🔇")))
         }
     }
 
@@ -648,5 +692,24 @@ class TextEffectFormatter {
 
     private func appendTextPart(value: String) {
         parts.append(.init(id: partId, data: .text(value)))
+    }
+}
+
+extension [TextEffectLine] {
+    func toPlainText() -> String {
+        map { line in
+            line.parts.map { part in
+                switch part.data {
+                case let .text(text):
+                    text
+                case let .imageSystemName(_, plainText), let .imageSystemNameTryFill(_, plainText):
+                    plainText
+                case let .rating(rating):
+                    String(repeating: "⭐", count: rating)
+                }
+            }
+            .joined()
+        }
+        .joined(separator: " ")
     }
 }

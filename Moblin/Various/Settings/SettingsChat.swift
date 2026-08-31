@@ -285,6 +285,41 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
     }
 }
 
+class SettingsChatBotCustomCommand: Codable, ObservableObject, Identifiable {
+    var id: UUID = .init()
+    @Published var name: String = "myCommand"
+    @Published var formatString: String = ""
+    var permissions: SettingsChatBotPermissionsCommand = .init()
+    var needsWeather: Bool = false
+    var needsGeography: Bool = false
+    var needsGForce: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+        case formatString
+        case permissions
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.formatString, formatString)
+        try container.encode(.permissions, permissions)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        formatString = container.decode(.formatString, String.self, "")
+        permissions = container.decode(.permissions, SettingsChatBotPermissionsCommand.self, .init())
+    }
+}
+
 class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     static let tagRed = "🌹"
     static let tagGreen = "🐸"
@@ -602,6 +637,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
     @Published var showDeletedMessages: Bool = false
     @Published var aliases: [SettingsChatBotAlias] = []
+    @Published var customCommands: [SettingsChatBotCustomCommand] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
@@ -653,6 +689,7 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechPauseBetweenMessages
         case showDeletedMessages
         case aliases
+        case customCommands
         case predefinedMessages
         case predefinedMessagesFilter
         case sendMessagesTo
@@ -707,6 +744,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
         try container.encode(.showDeletedMessages, showDeletedMessages)
         try container.encode(.aliases, aliases)
+        try container.encode(.customCommands, customCommands)
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
         try container.encode(.nicknames, nicknames)
@@ -794,6 +832,7 @@ class SettingsChat: Codable, ObservableObject {
         )
         showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
         aliases = container.decode(.aliases, [SettingsChatBotAlias].self, [])
+        customCommands = container.decode(.customCommands, [SettingsChatBotCustomCommand].self, [])
         predefinedMessages = container.decode(.predefinedMessages, [SettingsChatPredefinedMessage].self, [])
         predefinedMessagesFilter = container.decode(
             .predefinedMessagesFilter,
