@@ -130,6 +130,7 @@ extension Model {
     func createStreamFromWizard() {
         let stream = SettingsStream(name: createStreamWizard.name.trim())
         stream.backgroundStreaming = createStreamWizard.backgroundStreaming
+        stream.autoGoLive = createStreamWizard.autoGoLive
         if createStreamWizard.platform != .custom {
             if createStreamWizard.networkSetup != .direct {
                 if createStreamWizard.obsRemoteControlEnabled {
@@ -216,6 +217,7 @@ extension Model {
         setCurrentStream(stream: stream)
         reloadStream()
         sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        startStreamIfAutoGoLive()
     }
 
     func resetWizard() {
@@ -223,6 +225,7 @@ extension Model {
         createStreamWizard.networkSetup = .direct
         createStreamWizard.name = ""
         createStreamWizard.backgroundStreaming = false
+        createStreamWizard.autoGoLive = false
         createStreamWizard.twitchChannelName = ""
         createStreamWizard.twitchChannelId = ""
         createStreamWizard.twitchAccessToken = ""

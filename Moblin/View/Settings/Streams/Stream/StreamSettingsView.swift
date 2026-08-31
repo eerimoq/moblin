@@ -160,6 +160,12 @@ struct BackgroundStreamingFooterView: View {
     }
 }
 
+struct AutoGoLiveFooterView: View {
+    var body: some View {
+        Text("Automatically go live when the app enters foreground.")
+    }
+}
+
 private struct BackgroundStreamingView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
@@ -309,6 +315,13 @@ struct StreamSettingsView: View {
             }
             if !isMac() {
                 BackgroundStreamingView(model: model, stream: stream)
+            }
+            if stream.getProtocol() == .mobcam {
+                Section {
+                    Toggle("Auto go live", isOn: $stream.autoGoLive)
+                } footer: {
+                    AutoGoLiveFooterView()
+                }
             }
             Section {
                 NavigationLink {

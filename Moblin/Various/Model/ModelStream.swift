@@ -26,6 +26,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var showKickAuth = false
     @Published var name = ""
     @Published var backgroundStreaming = false
+    @Published var autoGoLive = false
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
@@ -823,6 +824,13 @@ extension Model {
             currentFps = fps
             updateStatusStreamText()
         }
+    }
+
+    func startStreamIfAutoGoLive() {
+        guard stream.autoGoLive, stream.getProtocol() == .mobcam, !isLive else {
+            return
+        }
+        startStream()
     }
 
     func toggleStream() {

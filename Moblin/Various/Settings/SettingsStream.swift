@@ -1222,6 +1222,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
     @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
     var previewStream: SettingsStreamPreviewStream = .init()
+    @Published var autoGoLive: Bool = false
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -1320,6 +1321,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case goLiveNotificationDiscordWebhookUrl
         case multiStreaming
         case previewStream
+        case autoGoLive
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1413,6 +1415,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
         try container.encode(.multiStreaming, multiStreaming)
         try container.encode(.previewStream, previewStream)
+        try container.encode(.autoGoLive, autoGoLive)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1535,6 +1538,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
         previewStream = container.decode(.previewStream, SettingsStreamPreviewStream.self, .init())
+        autoGoLive = container.decode(.autoGoLive, Bool.self, false)
     }
 
     func getYouTubeVideoIds() -> [String] {
@@ -1625,6 +1629,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
         new.multiStreaming = multiStreaming.clone()
         new.previewStream = previewStream.clone()
+        new.autoGoLive = autoGoLive
         return new
     }
 

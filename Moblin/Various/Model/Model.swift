@@ -1218,6 +1218,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         setupStreamDeck()
         setSelectedStreamDeck()
+        startStreamIfAutoGoLive()
     }
 
     func reloadIngests() {
@@ -1534,6 +1535,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadCameraLevel()
             updateIsStreamDeckDeviceDriverInstalled()
+            startStreamIfAutoGoLive()
         }
     }
 
