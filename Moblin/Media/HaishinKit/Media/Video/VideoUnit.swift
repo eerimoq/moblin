@@ -1,5 +1,4 @@
 import AVFoundation
-import Collections
 import CoreImage
 import MetalPetal
 import Photos
@@ -178,7 +177,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
-    private let effectsProcessor = VideoEffectsProcessor()
+    private let effectsProcessor: VideoEffectsProcessor
+    private let snapshots: VideoSnapshots
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var videoPreviews: [UUID: PreviewView] = [:]
@@ -220,11 +220,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var lowFpsImageInterval: Double = 1.0
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
-    private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: (@MainActor (UIImage, CIImage, CIImage) -> Void)?
-    private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var cleanRecordings = false
-    private var cleanSnapshots = false
     private var cleanExternalDisplay = false
     private var bufferedPool: CVPixelBufferPool?
     private var bufferedPoolFormatDescriptionExtension: CFDictionary?
@@ -286,6 +282,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     override init() {
+        let effectsProcessor = VideoEffectsProcessor()
+        self.effectsProcessor = effectsProcessor
+        snapshots = VideoSnapshots(context: effectsProcessor.context)
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
         NotificationCenter.default.addObserver(self,
@@ -423,8 +422,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         processorPipelineQueue.async {
-            self.takeSnapshotAge = age
-            self.takeSnapshotComplete = onComplete
+            self.snapshots.takeSnapshot(age: age, onComplete: onComplete)
         }
     }
 
@@ -436,16 +434,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 DispatchQueue.main.async { onComplete(nil) }
                 return
             }
-            let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-            guard let cgImage = self.effectsProcessor.context.createCGImage(
-                ciImage,
-                from: ciImage.extent
-            ) else {
-                DispatchQueue.main.async { onComplete(nil) }
-                return
-            }
-            let uiImage = UIImage(cgImage: cgImage)
-            DispatchQueue.main.async { onComplete(uiImage) }
+            self.snapshots.takeVideoSourceSnapshot(imageBuffer, onComplete)
         }
     }
 
@@ -463,7 +452,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setCleanSnapshots(enabled: Bool) {
         processorPipelineQueue.async {
-            self.cleanSnapshots = enabled
+            self.snapshots.cleanSnapshots = enabled
         }
     }
 
@@ -1199,10 +1188,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         )
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         handleLowFpsImage(modImageBuffer, presentationTimeStamp)
-        if cleanSnapshots {
-            handleTakeSnapshot(sampleBuffer, presentationTimeStamp)
+        if snapshots.cleanSnapshots {
+            snapshots.handleTakeSnapshot(sampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
         } else {
-            handleTakeSnapshot(modSampleBuffer, presentationTimeStamp)
+            snapshots.handleTakeSnapshot(modSampleBuffer, presentationTimeStamp, makeCopy(sampleBuffer:))
         }
     }
 
@@ -1231,109 +1220,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             frameNumber: lowFpsImageFrameNumber
         )
         lowFpsImageFrameNumber += 1
-    }
-
-    private func handleTakeSnapshot(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: Double) {
-        let latestPresentationTimeStamp = takeSnapshotSampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-        if presentationTimeStamp > latestPresentationTimeStamp + 3.0 {
-            guard let sampleBuffer = makeCopy(sampleBuffer: sampleBuffer) else {
-                return
-            }
-            takeSnapshotSampleBuffers.append(sampleBuffer)
-            if takeSnapshotSampleBuffers.count > 3 {
-                takeSnapshotSampleBuffers.removeFirst()
-            }
-        }
-        guard let takeSnapshotComplete else {
-            return
-        }
-        guard let sampleBuffer = makeCopy(sampleBuffer: sampleBuffer) else {
-            return
-        }
-        DispatchQueue.global().async {
-            self.takeSnapshot(
-                sampleBuffer,
-                self.takeSnapshotSampleBuffers,
-                presentationTimeStamp,
-                self.takeSnapshotAge,
-                takeSnapshotComplete
-            )
-        }
-        self.takeSnapshotComplete = nil
-    }
-
-    private func findBestSnapshot(_ sampleBuffer: CMSampleBuffer,
-                                  _ sampleBuffers: Deque<CMSampleBuffer>,
-                                  _ presentationTimeStamp: Double,
-                                  _ age: Float,
-                                  _ onCompleted: @escaping @MainActor (CVImageBuffer?) -> Void)
-    {
-        if age == 0.0 {
-            DispatchQueue.main.async {
-                onCompleted(sampleBuffer.imageBuffer)
-            }
-        } else {
-            let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
-            let sampleBufferAtAge = sampleBuffers.last(where: {
-                $0.presentationTimeStamp.seconds <= requestedPresentationTimeStamp
-            }) ?? sampleBuffers.first ?? sampleBuffer
-            if #available(iOS 18, *) {
-                var sampleBuffers = sampleBuffers
-                sampleBuffers.append(sampleBuffer)
-                findBestSnapshotUsingAesthetics(sampleBufferAtAge, sampleBuffers, onCompleted)
-            } else {
-                DispatchQueue.main.async {
-                    onCompleted(sampleBufferAtAge.imageBuffer)
-                }
-            }
-        }
-    }
-
-    @available(iOS 18, *)
-    private func findBestSnapshotUsingAesthetics(_ preferredSampleBuffer: CMSampleBuffer,
-                                                 _ sampleBuffers: Deque<CMSampleBuffer>,
-                                                 _ onComplete: @escaping @MainActor (CVImageBuffer?) -> Void)
-    {
-        Task {
-            var bestSampleBuffer = preferredSampleBuffer
-            var bestResult = try? await CalculateImageAestheticsScoresRequest()
-                .perform(on: preferredSampleBuffer)
-            for sampleBuffer in sampleBuffers {
-                guard let result = try? await CalculateImageAestheticsScoresRequest()
-                    .perform(on: sampleBuffer)
-                else {
-                    continue
-                }
-                if bestResult == nil || result.overallScore > bestResult!.overallScore + 0.2 {
-                    bestSampleBuffer = sampleBuffer
-                    bestResult = result
-                }
-            }
-            DispatchQueue.main.async {
-                onComplete(bestSampleBuffer.imageBuffer)
-            }
-        }
-    }
-
-    private func takeSnapshot(_ sampleBuffer: CMSampleBuffer,
-                              _ sampleBuffers: Deque<CMSampleBuffer>,
-                              _ presentationTimeStamp: Double,
-                              _ age: Float,
-                              _ onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void)
-    {
-        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { @MainActor imageBuffer in
-            guard let imageBuffer else {
-                return
-            }
-            let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-            let cgImage = self.effectsProcessor.context.createCGImage(ciImage, from: ciImage.extent)!
-            let image = UIImage(cgImage: cgImage)
-            var portraitImage = ciImage
-            if !imageBuffer.isPortrait() {
-                portraitImage = portraitImage.oriented(.left)
-            }
-            onComplete(image, ciImage, portraitImage)
-        }
     }
 
     private func prepareDetectionJobs(
