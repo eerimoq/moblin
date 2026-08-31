@@ -178,8 +178,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
-    private let context = CIContext()
-    private let metalPetalContext: MTIContext?
+    private let effectsProcessor = VideoEffectsProcessor()
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var videoPreviews: [UUID: PreviewView] = [:]
@@ -188,16 +187,19 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
     private var completedDetections: [UInt64: DetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
-    var canvasSize = CGSize(width: 1920, height: 1080)
-    private var fillFrame = true
+    var canvasSize: CGSize {
+        get {
+            effectsProcessor.canvasSize
+        }
+        set {
+            effectsProcessor.canvasSize = newValue
+        }
+    }
+
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: VideoEncoder?
     weak var processor: Processor?
-    private var effects: [VideoEffect] = []
-    private var pendingAfterAttachEffects: [VideoEffect]?
-    private var pendingAfterAttachRotation: Double?
-    private var pendingAfterAttachMirror: Bool?
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
@@ -206,15 +208,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var blackFormatDescription: CMVideoFormatDescription?
     private var blackPixelBufferPool: CVPixelBufferPool?
     private var latestSampleBuffer: CMSampleBuffer?
-    private var latestSampleBufferTime: ContinuousClock.Instant?
     private var sceneSwitchEndRendered = false
     private var frameTimer = SimpleTimer(queue: processorPipelineQueue)
     private var firstFrameTime: ContinuousClock.Instant?
     private var isFirstAfterAttach = false
     private var ignoreFramesAfterAttachSeconds = 0.0
     private var configuredIgnoreFramesAfterAttachSeconds = 0.0
-    private var rotation: Double = 0.0
-    private var mirror: Bool = false
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedFrames = 0
     private var lowFpsImageEnabled: Bool = false
@@ -227,9 +226,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var cleanRecordings = false
     private var cleanSnapshots = false
     private var cleanExternalDisplay = false
-    private var pool: CVPixelBufferPool?
-    private var poolColorSpace: CGColorSpace?
-    private var poolFormatDescriptionExtension: CFDictionary?
     private var bufferedPool: CVPixelBufferPool?
     private var bufferedPoolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
@@ -237,15 +233,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var showCameraPreview = false
     private var screenPreviewEnabled = true
     private var externalDisplayPreview = false
-    private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
-    private var previousFaceDetectionTimes: [UUID: Double] = [:]
-    private var previousTextDetectionTimes: [UUID: Double] = [:]
     private var fps = VideoUnit.defaultFrameRate
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
-    private var blackImage: CIImage?
-    private var blackImageMetalPetal: MTIImage?
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
     private var isLandscapeStreamAndPortraitUi = false
@@ -253,8 +244,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var latestReportedFps = -1
     private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
-    private var isMetalPetalGraphicsForcedByEffects: Bool = false
-    private var isMetalPetalGraphics: Bool = false
     private var macScreenCaptureActive = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
@@ -297,11 +286,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     override init() {
-        if let metalDevice = MTLCreateSystemDefaultDevice() {
-            metalPetalContext = try? MTIContext(device: metalDevice)
-        } else {
-            metalPetalContext = nil
-        }
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
         NotificationCenter.default.addObserver(self,
@@ -357,34 +341,34 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func registerEffect(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.registerEffectInternal(effect)
+            self.effectsProcessor.registerEffect(effect)
         }
     }
 
     func registerEffectBack(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.registerEffectBackInternal(effect)
+            self.effectsProcessor.registerEffectBack(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.unregisterEffectInternal(effect)
+            self.effectsProcessor.unregisterEffect(effect)
         }
     }
 
     func unregisterAllEffects() {
         processorPipelineQueue.async {
-            self.unregisterAllEffectsInternal()
+            self.effectsProcessor.unregisterAllEffects()
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.setPendingAfterAttachEffectsInternal(effects: effects,
-                                                          rotation: rotation,
-                                                          mirror: mirror)
+                self.effectsProcessor.setPendingAfterAttachEffects(effects: effects,
+                                                                   rotation: rotation,
+                                                                   mirror: mirror)
             }
         }
     }
@@ -392,7 +376,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     func usePendingAfterAttachEffects() {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.usePendingAfterAttachEffectsInternal()
+                self.effectsProcessor.usePendingAfterAttachEffects()
             }
         }
     }
@@ -433,7 +417,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setSceneSwitchTransition(sceneSwitchTransition: SceneSwitchTransition) {
         processorPipelineQueue.async {
-            self.sceneSwitchTransition = sceneSwitchTransition
+            self.effectsProcessor.sceneSwitchTransition = sceneSwitchTransition
         }
     }
 
@@ -453,7 +437,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 return
             }
             let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-            guard let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent) else {
+            guard let cgImage = self.effectsProcessor.context.createCGImage(
+                ciImage,
+                from: ciImage.extent
+            ) else {
                 DispatchQueue.main.async { onComplete(nil) }
                 return
             }
@@ -548,9 +535,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         canvasSize = canvas
         updateDevicesFormat()
         processorPipelineQueue.async {
-            self.blackImage = nil
-            self.blackImageMetalPetal = nil
-            self.pool = nil
+            self.effectsProcessor.reset()
             self.bufferedPool = nil
         }
         processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
@@ -558,12 +543,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setGraphicsImplementation(value: SettingsGraphicsImplementation) {
         processorPipelineQueue.async {
-            switch value {
-            case .coreImage:
-                self.isMetalPetalGraphics = false
-            case .metalPetal:
-                self.isMetalPetalGraphics = true
-            }
+            self.effectsProcessor.setGraphicsImplementation(value: value)
         }
     }
 
@@ -599,7 +579,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             self.selectedBufferedVideoCameraId = params.bufferedVideo
             self.isFirstAfterAttach = true
             self.externalDisplayPreview = params.externalDisplayPreview
-            self.fillFrame = params.fillFrame
+            self.effectsProcessor.fillFrame = params.fillFrame
             if let bufferedVideo = params.bufferedVideo {
                 self.sceneVideoSourceId = bufferedVideo
             } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
@@ -607,12 +587,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             } else {
                 self.sceneVideoSourceId = UUID()
             }
-            if self.pendingAfterAttachEffects == nil {
-                self.pendingAfterAttachEffects = self.effects
-            }
-            for effect in self.effects where effect is VideoSourceEffect {
-                self.unregisterEffectInternal(effect)
-            }
+            self.effectsProcessor.prepareForAttach()
         }
     }
 
@@ -627,7 +602,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             self.prepareFirstFrame()
             self.showCameraPreview = params.showCameraPreview
             self.externalDisplayPreview = params.externalDisplayPreview
-            self.fillFrame = params.fillFrame
+            self.effectsProcessor.fillFrame = params.fillFrame
             if let bufferedVideo = params.bufferedVideo {
                 self.sceneVideoSourceId = bufferedVideo
             } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
@@ -647,12 +622,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 self.bufferedVideos[device.id] = bufferedVideo
                 self.bufferedVideoBuiltins[device.device] = bufferedVideo
             }
-            if self.pendingAfterAttachEffects == nil {
-                self.pendingAfterAttachEffects = self.effects
-            }
-            for effect in self.effects where effect is VideoSourceEffect {
-                self.unregisterEffectInternal(effect)
-            }
+            self.effectsProcessor.prepareForAttach()
         }
         isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
         for device in params.devices.devices {
@@ -834,14 +804,15 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard isFirstAfterAttach else {
             return
         }
-        guard var latestSampleBuffer, let latestSampleBufferTime else {
+        guard var latestSampleBuffer, let latestSampleBufferTime = effectsProcessor.latestSampleBufferTime
+        else {
             return
         }
         let delta = latestSampleBufferTime.duration(to: .now)
         guard delta > .seconds(0.05) else {
             return
         }
-        let isSceneSwitchTransition = !isAtEndOfSceneSwitchTransition()
+        let isSceneSwitchTransition = !effectsProcessor.isAtEndOfSceneSwitchTransition()
         if !isSceneSwitchTransition, !sceneSwitchEndRendered {
             latestSampleBuffer = renderSceneSwitchTransitionEnd(sampleBuffer: latestSampleBuffer)
             self.latestSampleBuffer = latestSampleBuffer
@@ -860,23 +831,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         )
     }
 
-    private func isMetalPetalGraphicsEnabled() -> Bool {
-        isMetalPetalGraphics || isMetalPetalGraphicsForcedByEffects
-    }
-
-    private func isAtEndOfSceneSwitchTransition() -> Bool {
-        if let latestSampleBufferTime {
-            let offset = ContinuousClock.now - latestSampleBufferTime
-            if sceneSwitchTransition == .blurAndZoom {
-                return offset.seconds >= 5
-            } else {
-                return offset.seconds >= 2
-            }
-        } else {
-            return false
-        }
-    }
-
     private func renderSceneSwitchTransitionEnd(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return sampleBuffer
@@ -884,106 +838,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
             return sampleBuffer
         }
-        if isMetalPetalGraphicsEnabled() {
-            let image = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-            do {
-                try metalPetalContext?.render(applySceneSwitchTransitionMetalPetal(image),
-                                              to: outputImageBuffer)
-            } catch {
-                return sampleBuffer
-            }
-        } else {
-            let image = applySceneSwitchTransition(CIImage(cvPixelBuffer: imageBuffer))
-            if let poolColorSpace {
-                context.render(image, to: outputImageBuffer, bounds: image.extent, colorSpace: poolColorSpace)
-            } else {
-                context.render(image, to: outputImageBuffer)
-            }
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return sampleBuffer
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
-        else {
-            return sampleBuffer
-        }
-        return outputSampleBuffer
+        return effectsProcessor.renderSceneSwitchTransitionEnd(sampleBuffer, imageBuffer, outputImageBuffer)
     }
 
     private func prepareFirstFrame() {
         firstFrameTime = nil
         isFirstAfterAttach = true
         ignoreFramesAfterAttachSeconds = configuredIgnoreFramesAfterAttachSeconds
-    }
-
-    private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
-        let formatDescriptionExtension = formatDescription.extensions()
-        if let pool, formatDescriptionExtension == poolFormatDescriptionExtension {
-            return pool
-        }
-        var pixelBufferAttributes: [NSString: AnyObject] = [
-            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
-            kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
-            kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: canvasSize.width),
-            kCVPixelBufferHeightKey: NSNumber(value: canvasSize.height),
-        ]
-        poolColorSpace = nil
-        // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
-        if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
-            let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
-            if let colorPrimaries {
-                var colorSpaceProperties: [NSString: AnyObject] =
-                    [kCVImageBufferColorPrimariesKey: colorPrimaries]
-                if let yCbCrMatrix = formatDescriptionExtension[kCVImageBufferYCbCrMatrixKey] {
-                    colorSpaceProperties[kCVImageBufferYCbCrMatrixKey] = yCbCrMatrix
-                }
-                if let transferFunction = formatDescriptionExtension[kCVImageBufferTransferFunctionKey] {
-                    colorSpaceProperties[kCVImageBufferTransferFunctionKey] = transferFunction
-                }
-                pixelBufferAttributes[kCVBufferPropagatedAttachmentsKey] = colorSpaceProperties as AnyObject
-            }
-            if let colorSpace = formatDescriptionExtension[kCVImageBufferCGColorSpaceKey] {
-                poolColorSpace = (colorSpace as! CGColorSpace)
-            } else if let colorPrimaries = colorPrimaries as? String {
-                if colorPrimaries == (kCVImageBufferColorPrimaries_P3_D65 as String) {
-                    poolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
-                } else if #available(iOS 17.2, *),
-                          formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
-                          kCVImageBufferLogTransferFunction_AppleLog as String
-                {
-                    poolColorSpace = CGColorSpace(name: CGColorSpace.itur_2020)
-                    // poolColorSpace = CGColorSpace(name: CGColorSpace.extendedITUR_2020)
-                    // poolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
-                    // poolColorSpace = nil
-                }
-            }
-        }
-        poolFormatDescriptionExtension = formatDescriptionExtension
-        pool = nil
-        CVPixelBufferPoolCreate(
-            nil,
-            nil,
-            pixelBufferAttributes as NSDictionary?,
-            &pool
-        )
-        return pool
-    }
-
-    private func createPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
-        guard let pool = getBufferPool(formatDescription: sampleBuffer.formatDescription!) else {
-            return nil
-        }
-        var outputImageBuffer: CVPixelBuffer?
-        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) == kCVReturnSuccess else {
-            return nil
-        }
-        return outputImageBuffer
     }
 
     private func getBufferedBufferPool(sampleBuffer: CMSampleBuffer) -> CVPixelBufferPool? {
@@ -1041,357 +902,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             return nil
         }
         return outputImageBuffer
-    }
-
-    private func applyEffects(_ imageBuffer: CVImageBuffer,
-                              _ sampleBuffer: CMSampleBuffer,
-                              _ enabledEffects: [VideoEffect],
-                              _ sceneVideoSourceId: UUID,
-                              _ detectionJobs: [DetectionJob],
-                              _ detections: [UUID: Detections],
-                              _ isSceneSwitchTransition: Bool,
-                              _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
-    {
-        let info = VideoEffectInfo(
-            sceneVideoSourceId: sceneVideoSourceId,
-            detectionJobs: detectionJobs,
-            detections: detections,
-            presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            videoUnit: self,
-            isFirstAfterAttach: isFirstAfterAttach
-        )
-        if isMetalPetalGraphicsEnabled() {
-            return applyEffectsMetalPetal(
-                imageBuffer,
-                sampleBuffer,
-                enabledEffects,
-                isSceneSwitchTransition,
-                info
-            )
-        } else {
-            return applyEffectsCoreImage(
-                imageBuffer,
-                sampleBuffer,
-                enabledEffects,
-                isSceneSwitchTransition,
-                info
-            )
-        }
-    }
-
-    private func removeEffects() {
-        effects.removeAll { effect in
-            guard effect.shouldRemove() else {
-                return false
-            }
-            effect.removed()
-            return true
-        }
-    }
-
-    private func getBlackImage(width: Double, height: Double) -> CIImage {
-        if blackImage == nil {
-            blackImage = createBlackImage(width: width, height: height)
-        }
-        return blackImage!
-    }
-
-    private func scaleImage(_ image: CIImage) -> CIImage {
-        let scaleFactor = calcScaleFactor(image.extent.size)
-        let x = (canvasSize.width - image.extent.width * scaleFactor) / 2
-        let y = (canvasSize.height - image.extent.height * scaleFactor) / 2
-        return image
-            .scaled(x: scaleFactor, y: scaleFactor)
-            .translated(x: x, y: y)
-            .cropped(to: CGRect(x: 0, y: 0, width: canvasSize.width, height: canvasSize.height))
-            .composited(over: getBlackImage(
-                width: Double(canvasSize.width),
-                height: Double(canvasSize.height)
-            ))
-    }
-
-    private func getBlackImageMetalPetal(size: CGSize) -> MTIImage {
-        if blackImageMetalPetal == nil {
-            blackImageMetalPetal = MTIImage(color: .black, sRGB: false, size: size)
-        }
-        return blackImageMetalPetal!
-    }
-
-    private func calcScaleFactor(_ size: CGSize) -> Double {
-        let imageRatio = size.height / size.width
-        let canvasRatio = canvasSize.height / canvasSize.width
-        if (fillFrame && (canvasRatio < imageRatio)) || (!fillFrame && (canvasRatio > imageRatio)) {
-            return canvasSize.width / size.width
-        } else {
-            return canvasSize.height / size.height
-        }
-    }
-
-    private func scaleImageMetalPetal(_ image: MTIImage, _ rotation: Double) -> MTIImage {
-        var shape = MetalPetalWidgetShape(contentRegion: image.extent)
-        shape.rotation = rotation
-        let scaleFactor = calcScaleFactor(shape.rotated(image.size))
-        let size = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
-        let position = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = getBlackImageMetalPetal(size: canvasSize)
-        filter.layers = [
-            .init(content: image,
-                  contentFlipOptions: mirror ? shape.mirrorFlipOptions() : [],
-                  position: position,
-                  size: size,
-                  rotation: shape.rotationRadians()),
-        ]
-        return filter.outputImage ?? image
-    }
-
-    private func rotateCoreImage(_ image: CIImage, _ rotation: Double) -> CIImage {
-        switch rotation {
-        case 90:
-            image.oriented(.right)
-        case 180:
-            image.oriented(.down)
-        case 270:
-            image.oriented(.left)
-        default:
-            image
-        }
-    }
-
-    private func mirrorCoreImage(_ image: CIImage) -> CIImage {
-        image.scaled(x: -1, y: 1).translated(x: image.extent.width, y: 0)
-    }
-
-    private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
-                                       _ sampleBuffer: CMSampleBuffer,
-                                       _ enabledEffects: [VideoEffect],
-                                       _ isSceneSwitchTransition: Bool,
-                                       _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
-    {
-        var image = CIImage(cvPixelBuffer: imageBuffer)
-        let originalImage = image
-        if videoOrientation != .portrait, imageBuffer.isPortrait() {
-            image = image.oriented(.left)
-        }
-        image = rotateCoreImage(image, rotation)
-        if mirror {
-            image = mirrorCoreImage(image)
-        }
-        if image.extent.size != canvasSize {
-            image = scaleImage(image)
-        }
-        let extent = image.extent
-        if isSceneSwitchTransition {
-            image = applySceneSwitchTransition(image)
-        }
-        for effect in enabledEffects {
-            let effectOutputImage = effect.execute(image, info)
-            if effectOutputImage.extent == extent {
-                image = effectOutputImage
-            }
-        }
-        guard image !== originalImage else {
-            return (nil, nil)
-        }
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
-            return (nil, nil)
-        }
-        if let poolColorSpace {
-            context.render(image, to: outputImageBuffer, bounds: extent, colorSpace: poolColorSpace)
-        } else {
-            context.render(image, to: outputImageBuffer)
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
-        else {
-            return (nil, nil)
-        }
-        return (outputImageBuffer, outputSampleBuffer)
-    }
-
-    private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
-                                        _ sampleBuffer: CMSampleBuffer,
-                                        _ enabledEffects: [VideoEffect],
-                                        _ isSceneSwitchTransition: Bool,
-                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
-    {
-        let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-        let originalImage = image
-        guard var image else {
-            return (nil, nil)
-        }
-        var rotation = rotation
-        if videoOrientation != .portrait, imageBuffer.isPortrait() {
-            rotation = (rotation + 270).truncatingRemainder(dividingBy: 360)
-        }
-        if image.size != canvasSize || rotation != 0 || mirror {
-            image = scaleImageMetalPetal(image, rotation)
-        }
-        if isSceneSwitchTransition {
-            image = applySceneSwitchTransitionMetalPetal(image)
-        }
-        for effect in enabledEffects {
-            image = effect.executeMetalPetal(image, info)
-        }
-        guard image != originalImage,
-              let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer)
-        else {
-            return (nil, nil)
-        }
-        do {
-            try metalPetalContext?.render(image, to: outputImageBuffer)
-        } catch {
-            logger.info("video-unit: Metal petal error: \(error)")
-            return (nil, nil)
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
-        else {
-            return (nil, nil)
-        }
-        return (outputImageBuffer, outputSampleBuffer)
-    }
-
-    private func calcBlurRadius() -> Float {
-        if let latestSampleBufferTime {
-            let offset = ContinuousClock.now - latestSampleBufferTime
-            if sceneSwitchTransition == .blurAndZoom {
-                return 0 + min(Float(offset.seconds), 5) * 5
-            } else {
-                return 15 + min(Float(offset.seconds), 2) * 15
-            }
-        } else {
-            return 25
-        }
-    }
-
-    private func calcBlurScale() -> Double {
-        if let latestSampleBufferTime {
-            let offset = ContinuousClock.now - latestSampleBufferTime
-            return 1.0 - min(offset.seconds, 5) * 0.05
-        } else {
-            return 0.75
-        }
-    }
-
-    private func applySceneSwitchTransition(_ image: CIImage) -> CIImage {
-        switch sceneSwitchTransition {
-        case .blur:
-            let filter = CIFilter.gaussianBlur()
-            filter.inputImage = image
-            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-            return filter.outputImage?.cropped(to: image.extent) ?? image
-        case .freeze:
-            return image
-        case .blurAndZoom:
-            let filter = CIFilter.gaussianBlur()
-            filter.inputImage = image
-            filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-            let width = image.extent.width
-            let height = image.extent.height
-            let cropScaleDownFactor = calcBlurScale()
-            let scaleUpFactor = 1 / cropScaleDownFactor
-            let smallWidth = width * cropScaleDownFactor
-            let smallHeight = height * cropScaleDownFactor
-            let smallOffsetX = (width - smallWidth) / 2
-            let smallOffsetY = (height - smallHeight) / 2
-            return filter.outputImage?
-                .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
-                .translated(x: -smallOffsetX, y: -smallOffsetY)
-                .scaled(x: scaleUpFactor, y: scaleUpFactor)
-                .cropped(to: image.extent) ?? image
-        }
-    }
-
-    private func blurMetalPetal(_ image: MTIImage) -> MTIImage {
-        let filter = MTIMPSGaussianBlurFilter()
-        filter.inputImage = image
-        filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-        return filter.outputImage ?? image
-    }
-
-    private func applySceneSwitchTransitionMetalPetal(_ image: MTIImage) -> MTIImage {
-        switch sceneSwitchTransition {
-        case .blur:
-            return blurMetalPetal(image)
-        case .freeze:
-            return image
-        case .blurAndZoom:
-            let cropScaleDownFactor = calcBlurScale()
-            let filter = MTICropFilter()
-            filter.inputImage = blurMetalPetal(image)
-            filter.cropRegion = .fractional(CGRect(x: (1 - cropScaleDownFactor) / 2,
-                                                   y: (1 - cropScaleDownFactor) / 2,
-                                                   width: cropScaleDownFactor,
-                                                   height: cropScaleDownFactor))
-            filter.scale = Float(1 / cropScaleDownFactor)
-            return filter.outputImage ?? image
-        }
-    }
-
-    private func registerEffectInternal(_ effect: VideoEffect) {
-        if !effects.contains(effect) {
-            effects.append(effect)
-        }
-    }
-
-    private func registerEffectBackInternal(_ effect: VideoEffect) {
-        if !effects.contains(effect) {
-            effects.insert(effect, at: 0)
-        }
-    }
-
-    private func unregisterEffectInternal(_ effect: VideoEffect) {
-        effect.removed()
-        if let index = effects.firstIndex(of: effect) {
-            effects.remove(at: index)
-        }
-    }
-
-    private func unregisterAllEffectsInternal() {
-        for effect in effects {
-            effect.removed()
-        }
-        effects.removeAll()
-    }
-
-    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect],
-                                                      rotation: Double,
-                                                      mirror: Bool)
-    {
-        pendingAfterAttachEffects = effects
-        pendingAfterAttachRotation = rotation
-        pendingAfterAttachMirror = mirror
-    }
-
-    private func usePendingAfterAttachEffectsInternal() {
-        if let pendingAfterAttachEffects {
-            effects = pendingAfterAttachEffects
-            isMetalPetalGraphicsForcedByEffects = effects.contains(where: { $0.isMetalPetal() })
-            self.pendingAfterAttachEffects = nil
-        }
-        if let pendingAfterAttachRotation {
-            rotation = pendingAfterAttachRotation
-            self.pendingAfterAttachRotation = nil
-        }
-        if let pendingAfterAttachMirror {
-            mirror = pendingAfterAttachMirror
-            self.pendingAfterAttachMirror = nil
-        }
     }
 
     private func setLowFpsImageInternal(fps: Float) {
@@ -1506,10 +1016,10 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         updateFps(presentationTimeStamp)
-        let enabledEffects = effects.filter { $0.isEnabled() }
+        let enabledEffects = effectsProcessor.getEnabledEffects()
         let detectionJobs = prepareDetectionJobs(
-            needsFaceDetections(enabledEffects, presentationTimeStamp),
-            needsTextDetections(enabledEffects, presentationTimeStamp),
+            effectsProcessor.needsFaceDetections(enabledEffects, presentationTimeStamp, sceneVideoSourceId),
+            effectsProcessor.needsTextDetections(enabledEffects, presentationTimeStamp, sceneVideoSourceId),
             sampleBuffer.presentationTimeStamp,
             imageBuffer
         )
@@ -1636,16 +1146,16 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
         if isFirstAfterAttach {
-            usePendingAfterAttachEffectsInternal()
+            effectsProcessor.usePendingAfterAttachEffects()
         }
-        let enabledEffects = effects.filter { $0.isEnabled() }
+        let enabledEffects = effectsProcessor.getEnabledEffects()
         if !enabledEffects.isEmpty
             || isSceneSwitchTransition
             || imageBuffer.size != canvasSize
-            || rotation != 0.0
-            || mirror
+            || effectsProcessor.rotation != 0.0
+            || effectsProcessor.mirror
         {
-            (newImageBuffer, newSampleBuffer) = applyEffects(
+            (newImageBuffer, newSampleBuffer) = effectsProcessor.applyEffects(
                 imageBuffer,
                 sampleBuffer,
                 enabledEffects,
@@ -1653,9 +1163,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 detectionJobs,
                 detections,
                 isSceneSwitchTransition,
-                isFirstAfterAttach
+                isFirstAfterAttach,
+                self,
+                videoOrientation
             )
-            removeEffects()
+            effectsProcessor.removeEffects()
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
@@ -1712,7 +1224,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         let scale = 400.0 /
             (imageBuffer.isPortrait() ? Double(imageBuffer.height) : Double(imageBuffer.width))
         ciImage = ciImage.scaled(x: scale, y: scale)
-        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
+        let cgImage = effectsProcessor.context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
         processor?.delegate.streamLowFpsImage(
             lowFpsImage: image.jpegData(compressionQuality: 0.3),
@@ -1814,7 +1326,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 return
             }
             let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-            let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
+            let cgImage = self.effectsProcessor.context.createCGImage(ciImage, from: ciImage.extent)!
             let image = UIImage(cgImage: cgImage)
             var portraitImage = ciImage
             if !imageBuffer.isPortrait() {
@@ -1822,82 +1334,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             onComplete(image, ciImage, portraitImage)
         }
-    }
-
-    private func needsFaceDetections(_ enabledEffects: [VideoEffect],
-                                     _ presentationTimeStamp: Double) -> Set<UUID>
-    {
-        var detectionsIntervals: [UUID: Double] = [:]
-        var ids: Set<UUID> = []
-        for effect in enabledEffects {
-            switch effect.needsFaceDetections(presentationTimeStamp) {
-            case .off:
-                break
-            case let .now(videoSourceId):
-                let videoSourceId = videoSourceId ?? sceneVideoSourceId
-                ids.insert(videoSourceId)
-                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
-            case let .interval(videoSourceId, interval):
-                let videoSourceId = videoSourceId ?? sceneVideoSourceId
-                if let currentInterval = detectionsIntervals[videoSourceId] {
-                    if interval < currentInterval {
-                        detectionsIntervals[videoSourceId] = interval
-                    }
-                } else {
-                    detectionsIntervals[videoSourceId] = interval
-                }
-            }
-        }
-        for (videoSourceId, interval) in detectionsIntervals {
-            if let previousPresentationTimeStamp = previousFaceDetectionTimes[videoSourceId] {
-                if presentationTimeStamp - previousPresentationTimeStamp > interval {
-                    ids.insert(videoSourceId)
-                    previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
-                }
-            } else {
-                ids.insert(videoSourceId)
-                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
-            }
-        }
-        return ids
-    }
-
-    private func needsTextDetections(_ enabledEffects: [VideoEffect],
-                                     _ presentationTimeStamp: Double) -> Set<UUID>
-    {
-        var detectionsIntervals: [UUID: Double] = [:]
-        var ids: Set<UUID> = []
-        for effect in enabledEffects {
-            switch effect.needsTextDetections(presentationTimeStamp) {
-            case .off:
-                break
-            case let .now(videoSourceId):
-                let videoSourceId = videoSourceId ?? sceneVideoSourceId
-                ids.insert(videoSourceId)
-                previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
-            case let .interval(videoSourceId, interval):
-                let videoSourceId = videoSourceId ?? sceneVideoSourceId
-                if let currentInterval = detectionsIntervals[videoSourceId] {
-                    if interval < currentInterval {
-                        detectionsIntervals[videoSourceId] = interval
-                    }
-                } else {
-                    detectionsIntervals[videoSourceId] = interval
-                }
-            }
-        }
-        for (videoSourceId, interval) in detectionsIntervals {
-            if let previousPresentationTimeStamp = previousTextDetectionTimes[videoSourceId] {
-                if presentationTimeStamp - previousPresentationTimeStamp > interval {
-                    ids.insert(videoSourceId)
-                    previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
-                }
-            } else {
-                ids.insert(videoSourceId)
-                previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
-            }
-        }
-        return ids
     }
 
     private func prepareDetectionJobs(
@@ -2215,7 +1651,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             return
         }
         latestSampleBuffer = sampleBuffer
-        latestSampleBufferTime = now
+        effectsProcessor.latestSampleBufferTime = now
         sceneSwitchEndRendered = false
         if appendSampleBuffer(
             sampleBuffer,
@@ -2393,7 +1829,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
     }
 }
 
-private func createBlackImage(width: Double, height: Double) -> CIImage {
+func createBlackImage(width: Double, height: Double) -> CIImage {
     CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
 }
 
