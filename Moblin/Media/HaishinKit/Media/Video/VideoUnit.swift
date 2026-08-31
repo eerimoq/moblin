@@ -1603,7 +1603,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func detectObjectsComplete(_ completion: DetectionsCompletion) {
-        guard completion.detections.count == completion.detections.count else {
+        guard completion.detections.count == completion.detectionJobs.count else {
             return
         }
         completedDetections[completion.sequenceNumber] = completion
