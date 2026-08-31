@@ -1,6 +1,5 @@
 import AVFoundation
 import Foundation
-import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
@@ -96,9 +95,7 @@ private struct LineView: View {
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .scaledToFit()
+                        AnimatedEmoteView(url: url)
                             .frame(height: fontSizeScaleFactor * 25)
                             .opacity(imageOpacity())
                     } else {
