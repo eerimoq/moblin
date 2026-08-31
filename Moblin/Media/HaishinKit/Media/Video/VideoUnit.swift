@@ -1,7 +1,6 @@
 import AVFoundation
 import CoreImage
 import MetalPetal
-import Photos
 import SwiftUI
 import VideoToolbox
 @preconcurrency import Vision
@@ -74,40 +73,12 @@ enum SceneSwitchTransition {
     case blurAndZoom
 }
 
-struct CaptureDevice {
-    let device: AVCaptureDevice
-    let id: UUID
-    let isVideoMirrored: Bool
-}
-
-struct CaptureDevices {
-    var hasSceneDevice: Bool
-    var devices: [CaptureDevice]
-}
-
 nonisolated(unsafe) var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 nonisolated(unsafe) var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
 )
-
-private func setOrientation(
-    device: AVCaptureDevice?,
-    isLandscapeStreamAndPortraitUi: Bool,
-    connection: AVCaptureConnection,
-    orientation: AVCaptureVideoOrientation
-) {
-    #if !targetEnvironment(macCatalyst)
-    if #available(iOS 17.0, *), device?.deviceType == .external {
-        connection.videoOrientation = .landscapeRight
-    } else if useLandscapeStreamAndPortraitUi(device, isLandscapeStreamAndPortraitUi) {
-        connection.videoOrientation = .portrait
-    } else {
-        connection.videoOrientation = orientation
-    }
-    #endif
-}
 
 struct TextDetection {
     let boundingBox: CGRect
@@ -145,37 +116,9 @@ class DetectionsCompletion: @unchecked Sendable {
     }
 }
 
-private struct CaptureSessionDevice {
-    let device: CaptureDevice
-    let input: AVCaptureInput
-    let output: AVCaptureVideoDataOutput
-    let connection: AVCaptureConnection
-    let photoOutput: AVCapturePhotoOutput?
-    let photoConnection: AVCaptureConnection?
-
-    func connections() -> [AVCaptureConnection] {
-        if let photoConnection {
-            [connection, photoConnection]
-        } else {
-            [connection]
-        }
-    }
-}
-
-private func makeCaptureSession() -> AVCaptureSession {
-    let session = AVCaptureMultiCamSession()
-    #if !targetEnvironment(macCatalyst)
-    if session.isMultitaskingCameraAccessSupported {
-        session.isMultitaskingCameraAccessEnabled = true
-    }
-    #endif
-    return session
-}
-
 final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
-    private var device: AVCaptureDevice?
-    private var captureSessionDevices: [CaptureSessionDevice] = []
+    private let captureSession = VideoCaptureSession()
     private let effectsProcessor: VideoEffectsProcessor
     private let snapshots: VideoSnapshots
     private let lowFpsImage: VideoLowFpsImage
@@ -187,7 +130,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var nextDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
     private var completedDetections: [UInt64: DetectionsCompletion] = [:]
-    private var captureSize = CGSize(width: 1920, height: 1080)
     var canvasSize: CGSize {
         get {
             effectsProcessor.canvasSize
@@ -197,11 +139,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: VideoEncoder?
     weak var processor: Processor? {
         didSet {
+            captureSession.processor = processor
             lowFpsImage.processor = processor
             fpsEstimator.processor = processor
         }
@@ -227,57 +169,39 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var cleanExternalDisplay = false
     private var bufferedPool: CVPixelBufferPool?
     private var bufferedPoolFormatDescriptionExtension: CFDictionary?
-    private var cameraControlsEnabled = false
-    private var isRunning = false
     private var showCameraPreview = false
     private var screenPreviewEnabled = true
     private var externalDisplayPreview = false
     private var pixelTransferSession: VTPixelTransferSession?
-    private var fps = VideoUnit.defaultFrameRate
-    private var preferAutoFps = false
-    private var colorSpace: AVCaptureColorSpace = .sRGB
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
-    private var isLandscapeStreamAndPortraitUi = false
     private var currentAttachParams: VideoUnitAttachParams?
     private var macScreenCaptureActive = false
 
-    var videoOrientation: AVCaptureVideoOrientation = .portrait {
-        didSet {
-            guard videoOrientation != oldValue else {
-                return
-            }
-            session.beginConfiguration()
-            for device in captureSessionDevices {
-                for connection in device.connections().filter(\.isVideoOrientationSupported) {
-                    setOrientation(device: device.device.device,
-                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                                   connection: connection,
-                                   orientation: videoOrientation)
-                }
-            }
-            session.commitConfiguration()
+    var videoOrientation: AVCaptureVideoOrientation {
+        get {
+            captureSession.videoOrientation
+        }
+        set {
+            captureSession.videoOrientation = newValue
         }
     }
 
-    var torch = false {
-        didSet {
-            guard let device else {
-                if torch {
-                    processor?.delegate.streamNoTorch()
-                }
-                return
-            }
-            setTorchMode(device, torch ? .on : .off)
+    var torch: Bool {
+        get {
+            captureSession.torch
+        }
+        set {
+            captureSession.torch = newValue
         }
     }
 
-    var torchLevel: Float = 1.0 {
-        didSet {
-            guard let device, torch else {
-                return
-            }
-            setTorchMode(device, .on)
+    var torchLevel: Float {
+        get {
+            captureSession.torchLevel
+        }
+        set {
+            captureSession.torchLevel = newValue
         }
     }
 
@@ -288,10 +212,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         lowFpsImage = VideoLowFpsImage(context: effectsProcessor.context)
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleSessionRuntimeError),
-                                               name: .AVCaptureSessionRuntimeError,
-                                               object: session)
+        captureSession.delegate = self
         startFrameTimer()
     }
 
@@ -305,38 +226,28 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     func startRunning() {
-        isRunning = true
-        addSessionObservers()
-        session.startRunning()
+        captureSession.startRunning()
     }
 
     func stopRunning() {
-        isRunning = false
-        removeSessionObservers()
-        session.stopRunning()
+        captureSession.stopRunning()
     }
 
     func setFps(fps: Float64, preferAutoFps: Bool) {
-        self.fps = fps
-        self.preferAutoFps = preferAutoFps
-        updateDevicesFormat()
+        captureSession.setFps(fps: fps, preferAutoFps: preferAutoFps)
         startFrameTimer()
     }
 
     func getFps() -> Double {
-        fps
+        captureSession.getFps()
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace) {
-        self.colorSpace = colorSpace
-        updateDevicesFormat()
+        captureSession.setColorSpace(colorSpace: colorSpace)
     }
 
     func setCameraControl(enabled: Bool) {
-        cameraControlsEnabled = enabled
-        session.beginConfiguration()
-        updateCameraControls()
-        session.commitConfiguration()
+        captureSession.setCameraControl(enabled: enabled)
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -441,7 +352,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func takePhoto() {
         processorPipelineQueue.async {
-            self.takePhotoInternal()
+            self.captureSession.takePhoto()
         }
     }
 
@@ -521,9 +432,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     func setSize(capture: CGSize, canvas: CGSize) {
-        captureSize = capture
         canvasSize = canvas
-        updateDevicesFormat()
+        captureSession.setCaptureSize(capture)
         processorPipelineQueue.async {
             self.effectsProcessor.reset()
             self.bufferedPool = nil
@@ -583,9 +493,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     private func attachDefault(params: VideoUnitAttachParams) throws {
         updateMacScreenCapture(enabled: params.macScreenCapture)
-        for device in captureSessionDevices {
-            device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
-        }
+        captureSession.stopOutputtingSampleBuffers()
         processorPipelineQueue.async {
             self.configuredIgnoreFramesAfterAttachSeconds = params.ignoreFramesAfterAttachSeconds
             self.selectedBufferedVideoCameraId = params.bufferedVideo
@@ -614,55 +522,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
             self.effectsProcessor.prepareForAttach()
         }
-        isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
-        for device in params.devices.devices {
-            setDeviceFormat(
-                device: device.device,
-                fps: fps,
-                preferAutoFrameRate: preferAutoFps,
-                colorSpace: colorSpace
-            )
-        }
-        try configureCaptureSession(params: params)
-        // FPS must be set after starting the capture session.
-        updateDevicesFormat()
-    }
-
-    private func configureCaptureSession(params: VideoUnitAttachParams) throws {
-        session.beginConfiguration()
-        defer {
-            session.commitConfiguration()
-        }
-        removeDevices(session)
-        for device in params.devices.devices {
-            try attachDevice(device, session, params.photoShoot)
-        }
-        session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
-        for device in captureSessionDevices {
-            for connection in device.output.connections {
-                if connection.isVideoMirroringSupported {
-                    connection.isVideoMirrored = device.device.isVideoMirrored
-                }
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
-                }
-            }
-            for connection in device.connections() where connection.isVideoOrientationSupported {
-                setOrientation(device: device.device.device,
-                               isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                               connection: connection,
-                               orientation: videoOrientation)
-            }
-        }
-        for device in captureSessionDevices {
-            device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
-        }
-        updateCameraControls()
-        params.cameraPreviewLayer.session = nil
-        if params.showCameraPreview {
-            params.cameraPreviewLayer.session = session
-        }
+        try captureSession.attach(params: params)
     }
 
     private func updateMacScreenCapture(enabled: Bool) {
@@ -671,38 +531,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             if enabled, !macScreenCaptureActive {
                 macScreenCaptureActive = true
                 MacScreenCapture.shared.delegate = self
-                MacScreenCapture.shared.start(fps: fps)
+                MacScreenCapture.shared.start(fps: captureSession.getFps())
             } else if !enabled, macScreenCaptureActive {
                 macScreenCaptureActive = false
                 MacScreenCapture.shared.stop()
             }
         }
         #endif
-    }
-
-    @objc
-    private func handleSessionRuntimeError(_ notification: NSNotification) {
-        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
-            return
-        }
-        let message = error._nsError.localizedFailureReason ?? "\(error.code)"
-        processor?.delegate.streamVideoCaptureSessionError(message)
-        processorControlQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
-            if self.isRunning {
-                self.session.startRunning()
-            }
-        }
-    }
-
-    private func updateDevicesFormat() {
-        for device in captureSessionDevices {
-            setDeviceFormat(
-                device: device.device.device,
-                fps: fps,
-                preferAutoFrameRate: preferAutoFps,
-                colorSpace: colorSpace
-            )
-        }
     }
 
     private func setBufferedVideoDriftInternal(cameraId: UUID, drift: Double) {
@@ -714,7 +549,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func startFrameTimer() {
-        let frameInterval = 1 / fps
+        let frameInterval = 1 / captureSession.getFps()
         outputCounter = -1
         startPresentationTimeStamp = .zero
         frameTimer.startPeriodic(interval: frameInterval) { [weak self] in
@@ -727,7 +562,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func makePresentationTimeStamp() -> CMTime {
-        CMTime(value: outputCounter, timescale: Int32(fps)) + startPresentationTimeStamp
+        CMTime(value: outputCounter, timescale: Int32(captureSession.getFps())) + startPresentationTimeStamp
     }
 
     private func handleFrameTimer() {
@@ -766,7 +601,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             if videoPreviewEnabled,
                let sampleBuffer = bufferedVideo.getSampleBuffer(presentationTimeStamp)
             {
-                enqueueVideoPreviewForBufferedVideo(cameraId: cameraId, sampleBuffer: sampleBuffer)
+                enqueueVideoPreview(cameraId: cameraId, sampleBuffer: sampleBuffer)
             }
         }
         guard let selectedBufferedVideoCameraId else {
@@ -894,21 +729,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return outputImageBuffer
     }
 
-    private func takePhotoInternal() {
-        for device in captureSessionDevices {
-            guard let photoOutput = device.photoOutput else {
-                continue
-            }
-            let settings = AVCapturePhotoSettings()
-            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-            settings.photoQualityPrioritization = .balanced
-            if #available(iOS 18, *) {
-                settings.isShutterSoundSuppressionEnabled = true
-            }
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
-    }
-
     private func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let bufferedVideo = bufferedVideos[cameraId] else {
             return
@@ -999,7 +819,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        fpsEstimator.update(presentationTimeStamp, fps)
+        fpsEstimator.update(presentationTimeStamp, captureSession.getFps())
         let detectionJobs = prepareDetectionJobs(
             effectsProcessor.needsFaceDetections(presentationTimeStamp, sceneVideoSourceId),
             effectsProcessor.needsTextDetections(presentationTimeStamp, sceneVideoSourceId),
@@ -1165,283 +985,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return detectionJobs
     }
 
-    private func addSessionObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(sessionWasInterrupted),
-            name: .AVCaptureSessionWasInterrupted,
-            object: session
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(sessionInterruptionEnded),
-            name: .AVCaptureSessionInterruptionEnded,
-            object: session
-        )
-    }
-
-    private func removeSessionObservers() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .AVCaptureSessionWasInterrupted,
-            object: session
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .AVCaptureSessionInterruptionEnded,
-            object: session
-        )
-    }
-
-    @objc
-    private func sessionWasInterrupted(_: Notification) {
-        logger.debug("video-unit: Session interruption started")
-        processorPipelineQueue.async {
-            self.prepareFirstFrame()
-        }
-    }
-
-    @objc
-    private func sessionInterruptionEnded(_: Notification) {
-        logger.debug("video-unit: Session interruption ended")
-    }
-
-    private func findVideoFormat(
-        device: AVCaptureDevice,
-        width: Int32,
-        height: Int32,
-        fps: Float64,
-        preferAutoFrameRate: Bool,
-        colorSpace: AVCaptureColorSpace
-    ) -> (AVCaptureDevice.Format?, Bool, Bool, String?) {
-        var useAutoFrameRate = false
-        var useLandscapeInPortrait = false
-        var formats = device.formats
-        formats = formats.filter { $0.isFrameRateSupported(fps) }
-        if #available(iOS 18, *), preferAutoFrameRate {
-            let autoFrameRateFormats = formats.filter(\.isAutoVideoFrameRateSupported)
-            if !autoFrameRateFormats.isEmpty {
-                formats = autoFrameRateFormats
-                useAutoFrameRate = true
-            }
-        }
-        formats = formats.filter { $0.formatDescription.dimensions.width == width }
-        if #available(iOS 26, *), isLandscapeStreamAndPortraitUi {
-            #if targetEnvironment(macCatalyst)
-            let formatsWithRatio9x16: [AVCaptureDevice.Format] = []
-            #else
-            let formatsWithRatio9x16 = formats.filter { $0.supportedDynamicAspectRatios.contains(.ratio9x16) }
-            #endif
-            if !formatsWithRatio9x16.isEmpty {
-                formats = formatsWithRatio9x16
-                useLandscapeInPortrait = true
-            } else {
-                formats = formats.filter { $0.formatDescription.dimensions.height == height }
-            }
-        } else {
-            formats = formats.filter { $0.formatDescription.dimensions.height == height }
-        }
-        formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
-        if formats.isEmpty {
-            return (
-                nil,
-                useAutoFrameRate,
-                useLandscapeInPortrait,
-                "No format found matching \(height)p\(Int(fps)), \(colorSpace)"
-            )
-        }
-        formats = formats.filter { !$0.isVideoBinned }
-        if formats.isEmpty {
-            return (nil, useAutoFrameRate, useLandscapeInPortrait, "No unbinned video format found")
-        }
-        // 420v does not work with OA4.
-        formats = formats.filter {
-            $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-                || allowVideoRangePixelFormat
-        }
-        if formats.isEmpty {
-            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported pixel format")
-        }
-        return (formats.first, useAutoFrameRate, useLandscapeInPortrait, nil)
-    }
-
-    private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
-        let (minFps, maxFps) = device.fps
-        let activeFormat = """
-        Using default: \
-        \(device.activeFormat.formatDescription.dimensions.height)p, \
-        \(minFps)-\(maxFps) FPS, \
-        \(device.activeColorSpace), \
-        \(device.activeFormat.formatDescription.mediaSubType)
-        """
-        logger.info("video-unit: \(error)")
-        logger.info("video-unit: \(activeFormat)")
-        for format in device.formats {
-            logger.info("video-unit: Available format: \(format)")
-        }
-    }
-
-    private func setDeviceFormat(
-        device: AVCaptureDevice?,
-        fps: Float64,
-        preferAutoFrameRate: Bool,
-        colorSpace: AVCaptureColorSpace
-    ) {
-        guard let device else {
-            return
-        }
-        let (format, useAutoFrameRate, useLandscapeInPortrait, error) = findVideoFormat(
-            device: device,
-            width: Int32(captureSize.width),
-            height: Int32(captureSize.height),
-            fps: fps,
-            preferAutoFrameRate: preferAutoFrameRate,
-            colorSpace: colorSpace
-        )
-        if let error {
-            reportFormatNotFound(device, error)
-            return
-        }
-        guard let format else {
-            return
-        }
-        logger.debug("video-unit: Selected format: \(format)")
-        do {
-            try device.lockForConfiguration()
-            if device.activeFormat != format {
-                device.activeFormat = format
-            }
-            device.activeColorSpace = colorSpace
-            if useAutoFrameRate {
-                device.setAutoFps()
-                processor?.delegate.streamSelectedFps(auto: true)
-            } else {
-                device.setFps(frameRate: fps)
-                processor?.delegate.streamSelectedFps(auto: false)
-            }
-            if #available(iOS 26, *), useLandscapeInPortrait {
-                #if !targetEnvironment(macCatalyst)
-                if format.supportedDynamicAspectRatios.contains(.ratio9x16) {
-                    device.setDynamicAspectRatio(.ratio9x16)
-                }
-                #endif
-            }
-            device.unlockForConfiguration()
-        } catch {
-            logger.info("video-unit: Error while locking device: \(error)")
-        }
-    }
-
-    private func attachDevice(_ device: CaptureDevice,
-                              _ session: AVCaptureSession,
-                              _ photoShoot: Bool) throws
-    {
-        let input = try AVCaptureDeviceInput(device: device.device)
-        let output = AVCaptureVideoDataOutput()
-        output.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
-        ]
-        var connection: AVCaptureConnection?
-        if let port = input.ports.first(where: { $0.mediaType == .video }) {
-            connection = AVCaptureConnection(inputPorts: [port], output: output)
-        }
-        var failed = false
-        if session.canAddInput(input) {
-            session.addInputWithNoConnections(input)
-        } else {
-            failed = true
-        }
-        if session.canAddOutput(output) {
-            session.addOutputWithNoConnections(output)
-        } else {
-            failed = true
-        }
-        if let connection, session.canAddConnection(connection) {
-            session.addConnection(connection)
-        } else {
-            failed = true
-        }
-        var photoOutput: AVCapturePhotoOutput?
-        var photoConnection: AVCaptureConnection?
-        if photoShoot {
-            photoOutput = AVCapturePhotoOutput()
-            if let port = input.ports.first(where: { $0.mediaType == .video }) {
-                photoConnection = AVCaptureConnection(inputPorts: [port], output: photoOutput!)
-            }
-            if session.canAddOutput(photoOutput!) {
-                session.addOutputWithNoConnections(photoOutput!)
-            } else {
-                failed = true
-            }
-            if let photoConnection, session.canAddConnection(photoConnection) {
-                session.addConnection(photoConnection)
-            } else {
-                failed = true
-            }
-            photoOutput!.maxPhotoDimensions = device.device.activeFormat.supportedMaxPhotoDimensions.last!
-            photoOutput!.maxPhotoQualityPrioritization = .balanced
-        }
-        if failed {
-            processor?.delegate.streamVideoAttachCameraError()
-        } else {
-            captureSessionDevices.append(CaptureSessionDevice(
-                device: device,
-                input: input,
-                output: output,
-                connection: connection!,
-                photoOutput: photoOutput,
-                photoConnection: photoConnection
-            ))
-        }
-    }
-
-    private func removeDevices(_ session: AVCaptureSession) {
-        for device in captureSessionDevices {
-            removeConnection(session, device.connection)
-            removeInput(session, device.input)
-            removeOutput(session, device.output)
-        }
-        captureSessionDevices.removeAll()
-    }
-
-    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) {
-        if let connection, session.connections.contains(connection) {
-            session.removeConnection(connection)
-        }
-    }
-
-    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) {
-        if let input, session.inputs.contains(input) {
-            session.removeInput(input)
-        }
-    }
-
-    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) {
-        if let output, session.outputs.contains(output) {
-            session.removeOutput(output)
-        }
-    }
-
-    private func setTorchMode(_ device: AVCaptureDevice, _ torchMode: AVCaptureDevice.TorchMode) {
-        guard device.isTorchModeSupported(torchMode) else {
-            if torchMode == .on {
-                processor?.delegate.streamNoTorch()
-            }
-            return
-        }
-        do {
-            try device.lockForConfiguration()
-            if torchMode == .on {
-                try device.setTorchModeOn(level: torchLevel.clamped(to: 0.01 ... 1.0))
-            } else {
-                device.torchMode = torchMode
-            }
-            device.unlockForConfiguration()
-        } catch {
-            logger.info("video-unit: Error while setting torch: \(error)")
-        }
-    }
-
     private func appendNewSampleBuffer(sampleBuffer: CMSampleBuffer) {
         let now = ContinuousClock.now
         if firstFrameTime == nil {
@@ -1480,47 +1023,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         )
     }
 
-    private func updateCameraControls() {
-        guard #available(iOS 18, *) else {
-            return
-        }
-        if session.supportsControls {
-            removeCameraControls()
-            addCameraControls()
-        }
-    }
-
-    @available(iOS 18.0, *)
-    func addCameraControls() {
-        guard cameraControlsEnabled, let device else {
-            return
-        }
-        let displayVideoZoomFactorMultiplier = device.displayVideoZoomFactorMultiplier
-        let zoomSlider = AVCaptureSystemZoomSlider(device: device) { [weak self] zoomFactor in
-            let x = Float(displayVideoZoomFactorMultiplier * zoomFactor)
-            self?.processor?.delegate.streamSetZoomX(x: x)
-        }
-        if session.canAddControl(zoomSlider) {
-            session.addControl(zoomSlider)
-        }
-        let exposureBiasSlider =
-            AVCaptureSystemExposureBiasSlider(device: device) { [weak self] exposureBias in
-                self?.processor?.delegate.streamSetExposureBias(bias: exposureBias)
-            }
-        if session.canAddControl(exposureBiasSlider) {
-            session.addControl(exposureBiasSlider)
-        }
-        session.setControlsDelegate(self, queue: processorControlQueue)
-    }
-
-    @available(iOS 18.0, *)
-    func removeCameraControls() {
-        for control in session.controls {
-            session.removeControl(control)
-        }
-        session.setControlsDelegate(nil, queue: nil)
-    }
-
     fileprivate func appendBufferedBuiltinVideo(_ sampleBuffer: CMSampleBuffer,
                                                 _ device: AVCaptureDevice) -> BufferedVideo?
     {
@@ -1544,23 +1046,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         return bufferedVideo
     }
 
-    private func isSceneVideoSource(device: AVCaptureDevice) -> Bool {
-        captureSessionDevices.first(where: { $0.device.device == device })?.device
-            .id == sceneVideoSourceId
-    }
-
-    private func enqueueVideoPreview(device: AVCaptureDevice, sampleBuffer: CMSampleBuffer) {
-        guard let captureDevice = captureSessionDevices.first(where: { $0.device.device == device }) else {
-            return
-        }
-        guard let drawable = videoPreviews[captureDevice.device.id] else {
-            return
-        }
-        sampleBuffer.setAttachmentDisplayImmediately()
-        drawable.enqueue(sampleBuffer, isFirstAfterAttach: false)
-    }
-
-    private func enqueueVideoPreviewForBufferedVideo(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    private func enqueueVideoPreview(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         guard let drawable = videoPreviews[cameraId] else {
             return
         }
@@ -1569,21 +1055,17 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 }
 
-extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
-            return
+extension VideoUnit: VideoCaptureSessionDelegate {
+    func videoCaptureSessionDidOutput(_ device: AVCaptureDevice,
+                                      _ cameraId: UUID?,
+                                      _ sampleBuffer: CMSampleBuffer)
+    {
+        if videoPreviewEnabled, let cameraId {
+            enqueueVideoPreview(cameraId: cameraId, sampleBuffer: sampleBuffer)
         }
-        if videoPreviewEnabled {
-            enqueueVideoPreview(device: input.device, sampleBuffer: sampleBuffer)
-        }
-        if isSceneVideoSource(device: input.device) {
+        if cameraId == sceneVideoSourceId {
             var sampleBuffer = sampleBuffer
-            if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
+            if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, device) {
                 for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
                     bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
                 }
@@ -1595,24 +1077,19 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
             }
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else {
-            _ = appendBufferedBuiltinVideo(sampleBuffer, input.device)
+            _ = appendBufferedBuiltinVideo(sampleBuffer, device)
+        }
+    }
+
+    func videoCaptureSessionWasInterrupted() {
+        processorPipelineQueue.async {
+            self.prepareFirstFrame()
         }
     }
 }
 
 func createBlackImage(width: Double, height: Double) -> CIImage {
     CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
-}
-
-@available(iOS 18.0, *)
-extension VideoUnit: AVCaptureSessionControlsDelegate {
-    func sessionControlsDidBecomeActive(_: AVCaptureSession) {}
-
-    func sessionControlsWillEnterFullscreenAppearance(_: AVCaptureSession) {}
-
-    func sessionControlsWillExitFullscreenAppearance(_: AVCaptureSession) {}
-
-    func sessionControlsDidBecomeInactive(_: AVCaptureSession) {}
 }
 
 extension VideoUnit: VideoEncoderControlDelegate {
@@ -1642,23 +1119,3 @@ extension VideoUnit: MacScreenCaptureDelegate {
     }
 }
 #endif
-
-extension VideoUnit: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error {
-            logger.info("video-unit: Photo error: \(error)")
-            return
-        }
-        if let photoData = photo.fileDataRepresentation() {
-            PHPhotoLibrary.shared().performChanges {
-                let creationRequest = PHAssetCreationRequest.forAsset()
-                creationRequest.addResource(with: .photo, data: photoData, options: nil)
-            } completionHandler: { _, error in
-                if let error {
-                    logger.info("video-unit: Error saving photo: \(error.localizedDescription)")
-                    return
-                }
-            }
-        }
-    }
-}
