@@ -97,4 +97,102 @@ struct TwitchChatSuite {
         #expect(message.targetMessageId == nil)
         #expect(message.targetUserId == nil)
     }
+
+    @Test
+    func unescapedTagValues() throws {
+        let message = try TwitchChatMessage(string: """
+        @display-name=eerimoq;\
+        reply-parent-display-name=someone;\
+        reply-parent-msg-body=a\\sb\\:c\\rd\\ne\\\\f\\qg \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :hi
+        """)
+        #expect(message.replySender == "someone")
+        #expect(message.replyText == "a b;c\rd\ne\\fqg")
+    }
+
+    @Test
+    func unescapedTagValueEndingInBackslash() throws {
+        let message = try TwitchChatMessage(string: """
+        @reply-parent-msg-body=a\\sb\\ \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :hi
+        """)
+        #expect(message.replyText == "a b")
+    }
+
+    @Test
+    func unescapedTagValueWithoutEscapes() throws {
+        let message = try TwitchChatMessage(string: """
+        @reply-parent-msg-body=hello;\
+        display-name=eerimoq \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :hi
+        """)
+        #expect(message.replyText == "hello")
+        #expect(message.displayName == "eerimoq")
+    }
+
+    @Test
+    func emotesTag() throws {
+        let message = try TwitchChatMessage(string: """
+        @display-name=eerimoq;\
+        emotes=25:0-4,12-16/1902:6-10 \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :Kappa Keepo Kappa
+        """)
+        #expect(message.emotes.map(\.range) == [0 ... 4, 12 ... 16, 6 ... 10])
+        #expect(message.emotes.map(\.url.absoluteString) == [
+            "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0",
+            "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0",
+            "https://static-cdn.jtvnw.net/emoticons/v2/1902/default/dark/3.0",
+        ])
+    }
+
+    @Test
+    func clearMessage() throws {
+        let message = try TwitchChatMessage(string: """
+        @login=eerimoq;\
+        target-msg-id=8b4f-4dda-a4e6 \
+        :tmi.twitch.tv \
+        CLEARMSG \
+        #eerimoq \
+        :bye
+        """)
+        #expect(message.command == .clearMsg)
+        #expect(message.targetMessageId == "8b4f-4dda-a4e6")
+    }
+
+    @Test
+    func clearChat() throws {
+        let message = try TwitchChatMessage(string: """
+        @target-user-id=63482386 \
+        :tmi.twitch.tv \
+        CLEARCHAT \
+        #eerimoq \
+        :baduser
+        """)
+        #expect(message.command == .clearChat)
+        #expect(message.targetUserId == "63482386")
+    }
+
+    @Test
+    func ping() throws {
+        let message = try TwitchChatMessage(string: "PING :tmi.twitch.tv")
+        #expect(message.command == .ping)
+        #expect(message.parameters == ["tmi.twitch.tv"])
+    }
+
+    @Test
+    func unknownCommand() {
+        #expect((try? TwitchChatMessage(string: ":tmi.twitch.tv 001 eerimoq :Welcome")) == nil)
+    }
 }

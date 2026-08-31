@@ -490,17 +490,7 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
     }
 
     private func createSegments(message: String, id: inout Int) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
-        for var segment in makeChatPostTextSegments(text: message, id: &id) {
-            if let text = segment.text {
-                segments += emotes.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
-        return segments
+        emotes.createSegments(text: message, id: &id)
     }
 
     private func fetch(from: URL) async throws -> (Data, HTTPURLResponse) {

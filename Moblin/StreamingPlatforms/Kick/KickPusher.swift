@@ -22,6 +22,26 @@ private enum BadgeType {
 
 private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
+private let emoteRegex = /\[emote:(\d+):[^\]]+\]/
+
+func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -> [ChatPostSegment] {
+    var segments: [ChatPostSegment] = []
+    var startIndex = message.startIndex
+    for match in message[startIndex...].matches(of: emoteRegex) {
+        let emoteId = match.output.1
+        let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
+        let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
+        segments += emotesManager.createSegments(text: String(textBeforeEmote), id: &id)
+        segments.append(ChatPostSegment(id: id, url: url))
+        id += 1
+        startIndex = match.range.upperBound
+    }
+    if startIndex != message.endIndex {
+        segments += emotesManager.createSegments(text: String(message[startIndex...]), id: &id)
+    }
+    return segments
+}
+
 private struct KickBadge {
     let months: Int
     let url: URL
@@ -443,18 +463,8 @@ final class KickPusher: NSObject, @unchecked Sendable {
     }
 
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
         var id = 0
-        for var segment in createKickSegments(message: content, id: &id) {
-            if let text = segment.text {
-                segments += emotes.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
-        return segments
+        return createKickSegments(message: content, emotesManager: emotes, id: &id)
     }
 
     private func makeHighlight(message: ChatMessageEvent) -> ChatHighlight? {
@@ -474,24 +484,6 @@ final class KickPusher: NSObject, @unchecked Sendable {
     private func sendMessage(message: String) {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
         webSocket.send(string: message)
-    }
-
-    private func createKickSegments(message: String, id: inout Int) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
-        var startIndex = message.startIndex
-        for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
-            let emoteId = match.output.1
-            let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
-            let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
-            segments += makeChatPostTextSegments(text: String(textBeforeEmote), id: &id)
-            segments.append(ChatPostSegment(id: id, url: url))
-            id += 1
-            startIndex = match.range.upperBound
-        }
-        if startIndex != message.endIndex {
-            segments += makeChatPostTextSegments(text: String(message[startIndex...]), id: &id)
-        }
-        return segments
     }
 
     func sendSubscribe(channel: String) {
