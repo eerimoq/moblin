@@ -11,7 +11,7 @@ struct WidgetWizardTextSettingsView: View {
         Form {
             TextWidgetTextView(value: $text.formatString)
             Section {
-                TextWidgetSuggestionsView(text: $text.formatString)
+                TextWidgetSuggestionsView(widget: true, text: $text.formatString)
             }
             WidgetWizardSelectScenesNavigationView(model: model,
                                                    database: database,

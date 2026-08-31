@@ -35819,6 +35819,9 @@
         }
       }
     },
+    "Are you sure you want to replace the text of the current command?" : {
+
+    },
     "Are you sure?" : {
       "localizations" : {
         "de" : {

@@ -62,8 +62,20 @@ private func createSuggestions() -> [Suggestion] {
     return suggestions
 }
 
+@MainActor
+private let chatBotSuggestions = createChatBotSuggestions()
+
+@MainActor
+private func createChatBotSuggestions() -> [Suggestion] {
+    [
+        Suggestion(id: 0, name: "Travel", text: suggestionTravel.replacingOccurrences(of: "\n", with: " ")),
+        Suggestion(id: 1, name: "Debug", text: suggestionDebug.replacingOccurrences(of: "\n", with: " ")),
+    ]
+}
+
 private struct SuggestionView: View {
     let suggestion: Suggestion
+    let widget: Bool
     @Binding var text: String
     let dismiss: () -> Void
     @State private var presentingConfirmation = false
@@ -71,6 +83,14 @@ private struct SuggestionView: View {
     private func submit() {
         text = suggestion.text
         dismiss()
+    }
+
+    private func confirmationTitle() -> String {
+        if widget {
+            String(localized: "Are you sure you want to replace the content of the current text widget?")
+        } else {
+            String(localized: "Are you sure you want to replace the text of the current command?")
+        }
     }
 
     var body: some View {
@@ -85,7 +105,7 @@ private struct SuggestionView: View {
                 Text(suggestion.name)
                     .font(.title3)
             }
-            .confirmationDialog("Are you sure you want to replace the content of the current text widget?",
+            .confirmationDialog(confirmationTitle(),
                                 isPresented: $presentingConfirmation,
                                 titleVisibility: .visible)
             {
@@ -708,13 +728,14 @@ private struct LapTimesWidgetView: View {
 
 private struct TextWidgetSuggestionsInnerView: View {
     @Environment(\.dismiss) var dismiss
+    let widget: Bool
     @Binding var text: String
 
     var body: some View {
         Form {
             Section {
-                ForEach(suggestions) { suggestion in
-                    SuggestionView(suggestion: suggestion, text: $text) {
+                ForEach(widget ? suggestions : chatBotSuggestions) { suggestion in
+                    SuggestionView(suggestion: suggestion, widget: widget, text: $text) {
                         dismiss()
                     }
                     .tag(suggestion.id)
@@ -1228,7 +1249,7 @@ private struct TextSelectionView: View {
             TextWidgetTextView(value: $value)
             TextFormatWarningsView(model: model, location: model.database.location, value: $value)
             Section {
-                TextWidgetSuggestionsView(text: $value)
+                TextWidgetSuggestionsView(widget: true, text: $value)
             }
             TextFormatVariablesView(widget: true, value: $value)
         }
@@ -1357,11 +1378,12 @@ struct WidgetTextQuickButtonControlsView: View {
 }
 
 struct TextWidgetSuggestionsView: View {
+    let widget: Bool
     @Binding var text: String
 
     var body: some View {
         NavigationLink {
-            TextWidgetSuggestionsInnerView(text: $text)
+            TextWidgetSuggestionsInnerView(widget: widget, text: $text)
         } label: {
             Text("Suggestions")
         }

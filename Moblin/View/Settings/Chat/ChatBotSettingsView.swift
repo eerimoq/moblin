@@ -598,6 +598,9 @@ private struct ChatBotCustomCommandTextSettingsView: View {
         Form {
             TextWidgetTextView(value: $value)
             TextFormatWarningsView(model: model, location: model.database.location, value: $value)
+            Section {
+                TextWidgetSuggestionsView(widget: false, text: $value)
+            }
             TextFormatVariablesView(widget: false, value: $value)
         }
         .onChange(of: value) { _ in
