@@ -681,6 +681,22 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         latestSubscriber = event.user_name
     }
 
+    func twitchEventSubChannelWatchStreak(event: TwitchEventSubNotificationChannelWatchStreakEvent) {
+        let text = String(localized: "just watched \(event.streak_count) streams in a row!")
+        if stream.twitchToastAlerts.isWatchStreakEnabled(count: event.streak_count) {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        if stream.twitchChatAlerts.isWatchStreakEnabled(count: event.streak_count) {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "Watch streak"),
+                color: .orange,
+                image: "flame"
+            )
+        }
+    }
+
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {

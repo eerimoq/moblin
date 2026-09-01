@@ -60,6 +60,11 @@ struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
     }
 }
 
+struct TwitchEventSubNotificationChannelWatchStreakEvent {
+    var user_name: String
+    var streak_count: Int
+}
+
 struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var user_name: String?
     var total: Int
@@ -123,6 +128,10 @@ private struct NotificationChannelChatNotificationPrimePaidUpgrade: Decodable {
     var sub_tier: String
 }
 
+private struct NotificationChannelChatNotificationWatchStreak: Decodable {
+    var streak_count: Int
+}
+
 private struct NotificationChannelChatNotificationEvent: Decodable {
     var chatter_user_name: String
     var chatter_is_anonymous: Bool
@@ -133,6 +142,7 @@ private struct NotificationChannelChatNotificationEvent: Decodable {
     var sub_gift: NotificationChannelChatNotificationSubGift?
     var community_sub_gift: NotificationChannelChatNotificationCommunitySubGift?
     var prime_paid_upgrade: NotificationChannelChatNotificationPrimePaidUpgrade?
+    var watch_streak: NotificationChannelChatNotificationWatchStreak?
 }
 
 private struct NotificationChannelChatNotificationPayload: Decodable {
@@ -317,6 +327,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelSubscriptionUpgrade(
         event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
     )
+    func twitchEventSubChannelWatchStreak(event: TwitchEventSubNotificationChannelWatchStreakEvent)
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     )
@@ -695,6 +706,13 @@ final class TwitchEventSub: NSObject {
         case "gift_paid_upgrade":
             delegate.twitchEventSubChannelSubscriptionUpgrade(
                 event: .init(user_name: event.chatter_user_name, tier: nil)
+            )
+        case "watch_streak":
+            guard let watchStreak = event.watch_streak else {
+                return
+            }
+            delegate.twitchEventSubChannelWatchStreak(
+                event: .init(user_name: event.chatter_user_name, streak_count: watchStreak.streak_count)
             )
         default:
             break

@@ -1015,6 +1015,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     @Published var raids: Bool = true
     @Published var cheers: Bool = true
     @Published var minimumCheerBits: Int = 0
+    @Published var watchStreaks: Bool = true
+    @Published var minimumWatchStreak: Int = 5
 
     init() {}
 
@@ -1027,6 +1029,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         case raids
         case cheers
         case minimumCheerBits
+        case watchStreaks
+        case minimumWatchStreak
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1039,6 +1043,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         try container.encode(.raids, raids)
         try container.encode(.cheers, cheers)
         try container.encode(.minimumCheerBits, minimumCheerBits)
+        try container.encode(.watchStreaks, watchStreaks)
+        try container.encode(.minimumWatchStreak, minimumWatchStreak)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1051,6 +1057,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         raids = container.decode(.raids, Bool.self, true)
         cheers = container.decode(.cheers, Bool.self, true)
         minimumCheerBits = container.decode(.minimumCheerBits, Int.self, 0)
+        watchStreaks = container.decode(.watchStreaks, Bool.self, true)
+        minimumWatchStreak = container.decode(.minimumWatchStreak, Int.self, 5)
     }
 
     func clone() -> SettingsTwitchAlerts {
@@ -1063,11 +1071,17 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         new.raids = raids
         new.cheers = cheers
         new.minimumCheerBits = minimumCheerBits
+        new.watchStreaks = watchStreaks
+        new.minimumWatchStreak = minimumWatchStreak
         return new
     }
 
     func isBitsEnabled(amount: Int) -> Bool {
         cheers && amount >= minimumCheerBits
+    }
+
+    func isWatchStreakEnabled(count: Int) -> Bool {
+        watchStreaks && count >= minimumWatchStreak && count.isMultiple(of: 25)
     }
 }
 
