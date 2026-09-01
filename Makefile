@@ -66,6 +66,9 @@ test-generate-device-settings-clipboard:
 test-generate-device-settings-stdout:
 	python -m tests.generate_device_settings --force-stdout $(TEST_ARGS)
 
+publish:
+	python utils/publish.py $(PUBLISH_ARGS)
+
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings
 
