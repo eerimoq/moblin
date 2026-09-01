@@ -1198,6 +1198,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         chatBotCustomCommandsTextChanged()
+        macrosChatMessageTextChanged()
         loadStealthModeImage()
         loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
@@ -1262,6 +1263,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         }
         if isChatBotCustomCommandsGForceNeeded() {
+            return true
+        }
+        if isMacrosGForceNeeded() {
             return true
         }
         if isRemoteControlStreamerGForceStatsFilterEnabled() {
@@ -1335,6 +1339,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isChatBotCustomCommandsWeatherNeeded() {
             return true
         }
+        if isMacrosWeatherNeeded() {
+            return true
+        }
         if isRemoteControlStreamerWeatherStatsFilterEnabled() {
             return true
         }
@@ -1364,6 +1371,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         }
         if isChatBotCustomCommandsGeographyNeeded() {
+            return true
+        }
+        if isMacrosGeographyNeeded() {
             return true
         }
         if isRemoteControlStreamerGeographyStatsFilterEnabled() {

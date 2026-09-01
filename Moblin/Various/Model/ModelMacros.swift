@@ -37,6 +37,34 @@ extension Model {
         }
     }
 
+    func isMacrosWeatherNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsWeather)
+    }
+
+    func isMacrosGeographyNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsGeography)
+    }
+
+    func isMacrosGForceNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsGForce)
+    }
+
+    func macrosChatMessageTextChanged() {
+        for action in macrosChatMessageActions() {
+            let parts = loadTextFormat(format: action.chatMessage)
+            action.needsWeather = parts.isWeatherVariable()
+            action.needsGeography = parts.isGeographyVariable()
+            action.needsGForce = parts.isGForceVariable()
+        }
+        startWeatherManager()
+        startGeographyManager()
+        startGForceManager()
+    }
+
+    private func macrosChatMessageActions() -> [SettingsMacrosAction] {
+        database.macros.macros.flatMap { $0.actions.filter { $0.function == .sendChatMessage } }
+    }
+
     func removeDeadMacrosSettings() {
         for macro in database.macros.macros {
             for action in macro.actions {
@@ -96,6 +124,8 @@ extension Model {
             executeZoom(action: action)
         case .gimbalPreset:
             executeGimbalPreset(action: action)
+        case .sendChatMessage:
+            executeSendChatMessage(action: action)
         case .delay:
             executeDelay(currentMacro: currentMacro,
                          action: action,
@@ -153,6 +183,11 @@ extension Model {
         if let gimbalPresetId = action.gimbalPresetId {
             moveToGimbalPreset(id: gimbalPresetId)
         }
+        return true
+    }
+
+    private func executeSendChatMessage(action: SettingsMacrosAction) -> Bool {
+        sendChatMessage(message: formatPlainText(formatString: action.chatMessage))
         return true
     }
 

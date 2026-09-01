@@ -90,6 +90,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case autoSceneSwitcher = "Auto scene switcher"
     case djiDevices = "DJI devices"
     case gimbalPreset = "Move to gimbal preset"
+    case sendChatMessage = "Send chat message"
     case delay = "Delay"
     case macro = "Macro"
 
@@ -119,6 +120,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "DJI devices")
         case .gimbalPreset:
             String(localized: "Move to gimbal preset")
+        case .sendChatMessage:
+            String(localized: "Send chat message")
         case .delay:
             String(localized: "Delay")
         case .macro:
@@ -135,6 +138,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var autoSceneSwitcherId: UUID?
     @Published var zoomX: Float = 1
     @Published var gimbalPresetId: UUID?
+    @Published var chatMessage: String = ""
     @Published var delay: Double = 3
     @Published var macroId: UUID?
     @Published var djiDevices: Set<UUID> = []
@@ -143,6 +147,9 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var mute: Bool = true
     @Published var torch: Bool = true
     @Published var reaction: SettingsReaction = .fireworks
+    var needsWeather: Bool = false
+    var needsGeography: Bool = false
+    var needsGForce: Bool = false
 
     init() {}
 
@@ -154,6 +161,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case autoSceneSwitcherId
         case zoomX
         case gimbalPresetId
+        case chatMessage
         case delay
         case macroId
         case djiDevices
@@ -173,6 +181,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.autoSceneSwitcherId, autoSceneSwitcherId)
         try container.encode(.zoomX, zoomX)
         try container.encode(.gimbalPresetId, gimbalPresetId)
+        try container.encode(.chatMessage, chatMessage)
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
         try container.encode(.djiDevices, djiDevices)
@@ -192,6 +201,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         autoSceneSwitcherId = container.decode(.autoSceneSwitcherId, UUID?.self, nil)
         zoomX = container.decode(.zoomX, Float.self, 1)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        chatMessage = container.decode(.chatMessage, String.self, "")
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
         djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])

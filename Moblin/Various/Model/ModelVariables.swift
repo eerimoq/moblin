@@ -54,6 +54,18 @@ extension Model {
         )
     }
 
+    func formatPlainText(formatString: String) -> String {
+        let now = ContinuousClock.now
+        let variables = createVariables(now: .now, timestamp: now)
+        let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: formatString),
+                                            timersEndTime: [],
+                                            stopwatches: [],
+                                            checkboxes: [],
+                                            ratings: [],
+                                            lapTimes: [])
+        return formatter.format(variables: variables, now: now).toPlainText()
+    }
+
     private func getBrowserTitle() -> String {
         if showBrowser {
             getWebBrowser().title ?? ""

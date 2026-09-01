@@ -444,21 +444,9 @@ extension Model {
             permissions: customCommand.permissions,
             command: command
         ) {
-            let message = self.formatChatBotCustomCommand(customCommand: customCommand)
-            self.sendChatBotReply(message: message, platform: command.message.platform)
+            self.sendChatBotReply(message: self.formatPlainText(formatString: customCommand.formatString),
+                                  platform: command.message.platform)
         }
-    }
-
-    private func formatChatBotCustomCommand(customCommand: SettingsChatBotCustomCommand) -> String {
-        let now = ContinuousClock.now
-        let variables = createVariables(now: .now, timestamp: now)
-        let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: customCommand.formatString),
-                                            timersEndTime: [],
-                                            stopwatches: [],
-                                            checkboxes: [],
-                                            ratings: [],
-                                            lapTimes: [])
-        return formatter.format(variables: variables, now: now).toPlainText()
     }
 
     private func handleChatBotMessageMusic(command: ChatBotCommand) {

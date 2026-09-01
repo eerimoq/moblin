@@ -196398,6 +196398,9 @@
         }
       }
     },
+    "Send chat message" : {
+
+    },
     "Send chat responses" : {
       "localizations" : {
         "de" : {

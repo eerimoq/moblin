@@ -12,6 +12,28 @@ private func setSelected<T>(_ values: inout Set<T>, _ type: T, _ selected: Bool)
     }
 }
 
+private struct ChatMessageTextView: View {
+    @EnvironmentObject var model: Model
+    let action: SettingsMacrosAction
+    @State var value: String
+
+    var body: some View {
+        Form {
+            TextWidgetTextView(value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
+            Section {
+                TextWidgetSuggestionsView(widget: false, text: $value)
+            }
+            TextFormatVariablesView(widget: false, value: $value)
+        }
+        .onChange(of: value) { _ in
+            action.chatMessage = value
+            model.macrosChatMessageTextChanged()
+        }
+        .navigationTitle("Message")
+    }
+}
+
 private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -84,6 +106,12 @@ private struct ActionView: View {
                                 Text($0.name)
                                     .tag($0.id as UUID?)
                             }
+                        }
+                    case .sendChatMessage:
+                        NavigationLink {
+                            ChatMessageTextView(action: action, value: action.chatMessage)
+                        } label: {
+                            TextItemLocalizedView(name: "Message", value: action.chatMessage)
                         }
                     case .delay:
                         HStack {
@@ -189,6 +217,9 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: presetName)
                     }
+                case .sendChatMessage:
+                    Spacer()
+                    GrayTextView(text: action.chatMessage)
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")

@@ -79,6 +79,7 @@ extension Model {
         updateMicsList()
         reloadStream()
         chatBotCustomCommandsTextChanged()
+        macrosChatMessageTextChanged()
         resetSelectedScene()
         setupAudioAfterSettingsImport()
         updateQuickButtonStates()
