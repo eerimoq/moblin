@@ -128,7 +128,7 @@ private struct VariableView: View {
         VStack(alignment: .leading) {
             Button {
                 text += title
-                model.makeToast(title: "Appended \(title) to widget text")
+                model.makeToast(title: "Appended \(title) to text")
             } label: {
                 Text(title)
                     .font(.title3)
@@ -179,7 +179,7 @@ private struct SubtitlesWithLanguageView: View {
                                 Button {
                                     let value = "{subtitles:\(language.identifier)}"
                                     text += value
-                                    model.makeToast(title: "Appended \(value) to widget text")
+                                    model.makeToast(title: "Appended \(value) to text")
                                     presentingLanguagePicker = false
                                 } label: {
                                     Text(language.name)
@@ -244,7 +244,7 @@ private struct VariableWithUnitView: View {
                             Button {
                                 let value = "{\(variable):\(symbol)}"
                                 text += value
-                                model.makeToast(title: "Appended \(value) to widget text")
+                                model.makeToast(title: "Appended \(value) to text")
                                 presentingPicker = false
                             } label: {
                                 Text(name)
