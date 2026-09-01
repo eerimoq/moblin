@@ -21,7 +21,7 @@ class BufferedVideo {
         update: Bool,
         latency: Double,
         processor: Processor?,
-        trackDrift: Bool = true
+        trackDrift: Bool
     ) {
         self.cameraId = cameraId
         self.name = name

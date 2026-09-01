@@ -988,8 +988,11 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.attachAudio(params: params)
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        processor?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+        processor?.addBufferedAudio(cameraId: cameraId,
+                                    name: name,
+                                    latency: latency,
+                                    trackDrift: trackDrift)
     }
 
     func removeBufferedAudio(cameraId: UUID) {

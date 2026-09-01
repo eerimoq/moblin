@@ -77,6 +77,15 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    Toggle("Drift tracking", isOn: $stream.trackDrift)
+                        .disabled(model.rtmpServerEnabled())
+                } footer: {
+                    Text("""
+                    Automatically compensate for clock differences between this device and the \
+                    publisher to keep the audio and video buffers at their target latency.
+                    """)
+                }
+                Section {
                     UrlsView(
                         status: status,
                         formatUrl: { "rtmp://\($0):\(rtmpServer.port)\(rtmpServerApp)/\(stream.streamKey)" }

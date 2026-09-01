@@ -380,7 +380,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
         processorPipelineQueue.async {
             self.addBufferedVideoInternal(cameraId: cameraId,
                                           name: name,
@@ -515,7 +515,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                     name: device.device.localizedName,
                     update: false,
                     latency: params.builtinDelay,
-                    processor: self.processor
+                    processor: self.processor, trackDrift: true
                 )
                 self.bufferedVideos[device.id] = bufferedVideo
                 self.bufferedVideoBuiltins[device.device] = bufferedVideo
@@ -739,7 +739,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private func addBufferedVideoInternal(cameraId: UUID,
                                           name: String,
                                           latency: Double,
-                                          trackDrift: Bool = true)
+                                          trackDrift: Bool)
     {
         bufferedVideos[cameraId] = BufferedVideo(
             cameraId: cameraId,

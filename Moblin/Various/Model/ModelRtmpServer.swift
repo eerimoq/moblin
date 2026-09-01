@@ -36,8 +36,14 @@ extension Model {
             let camera = stream.camera()
             self.makeToast(title: String(localized: "\(camera) connected"))
             let latency = stream.latencySeconds()
-            self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+            self.media.addBufferedVideo(cameraId: stream.id,
+                                        name: camera,
+                                        latency: latency,
+                                        trackDrift: stream.trackDrift)
+            self.media.addBufferedAudio(cameraId: stream.id,
+                                        name: camera,
+                                        latency: latency,
+                                        trackDrift: stream.trackDrift)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
         }
     }
