@@ -3,7 +3,8 @@ from datetime import UTC
 from datetime import datetime
 from pathlib import Path
 
-from ..utils.common.ffmpeg import FfmpegServer
+from systest_moblin.ffmpeg import FfmpegServer
+
 from ..utils.config import TESTER_SRTLA_PORT
 from ..utils.config import TESTER_SRTLA_SRT_PORT
 from ..utils.config import WEB_REMOTE_CONTROL_PORT

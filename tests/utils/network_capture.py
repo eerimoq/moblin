@@ -13,8 +13,8 @@ from humanfriendly import format_size
 from humanfriendly import format_timespan
 from systest import ManagedProcess
 from systest import wait_until
+from systest_moblin.ffmpeg import file_size
 
-from .common.ffmpeg import file_size
 from .monitor import log_table
 from .traffic_shaper import PROTOCOL_NUMBERS
 from .traffic_shaper import Protocol

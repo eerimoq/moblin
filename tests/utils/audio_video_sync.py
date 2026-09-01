@@ -5,15 +5,16 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
-from .common.ffmpeg import AudioBandLevel
-from .common.ffmpeg import Crop
-from .common.ffmpeg import Pixel
-from .common.ffmpeg import detect_audio_onsets
-from .common.ffmpeg import ffmpeg_run
-from .common.ffmpeg import ffprobe_format
-from .common.ffmpeg import ffprobe_video_size
-from .common.ffmpeg import measure_audio_band_levels
-from .common.ffmpeg import read_video_region_colors
+from systest_moblin.ffmpeg import AudioBandLevel
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import Pixel
+from systest_moblin.ffmpeg import detect_audio_onsets
+from systest_moblin.ffmpeg import ffmpeg_run
+from systest_moblin.ffmpeg import ffprobe_format
+from systest_moblin.ffmpeg import ffprobe_video_size
+from systest_moblin.ffmpeg import measure_audio_band_levels
+from systest_moblin.ffmpeg import read_video_region_colors
+
 from .generate_device_settings import WidgetType
 from .generate_device_settings import uuid
 from .utils import FILES_DIR

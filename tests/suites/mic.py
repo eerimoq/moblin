@@ -3,14 +3,15 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from systest_moblin.ffmpeg import FfmpegServer
+from systest_moblin.ffmpeg import ffprobe_audio
+from systest_moblin.ffmpeg import ffprobe_video
+
 from ..utils.audio_video_sync import alert_chat_message
 from ..utils.audio_video_sync import alert_media_files
 from ..utils.audio_video_sync import alerts_media_gallery_settings
 from ..utils.audio_video_sync import alerts_widget_settings
 from ..utils.audio_video_sync import measure_alert_synchronization
-from ..utils.common.ffmpeg import FfmpegServer
-from ..utils.common.ffmpeg import ffprobe_audio
-from ..utils.common.ffmpeg import ffprobe_video
 from ..utils.config import Capability
 from ..utils.config import srt_listener_url
 from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS

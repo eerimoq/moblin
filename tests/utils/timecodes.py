@@ -6,10 +6,11 @@ from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
 
-from .common.ffmpeg import VideoTimecode
-from .common.ffmpeg import ffprobe_format
-from .common.ffmpeg import read_video_timecodes
-from .common.utils import anchor_time_of_day
+from systest_moblin.ffmpeg import VideoTimecode
+from systest_moblin.ffmpeg import ffprobe_format
+from systest_moblin.ffmpeg import read_video_timecodes
+from systest_moblin.utils import anchor_time_of_day
+
 from .utils import slope_per_hour
 
 LOGGER = logging.getLogger(__name__)

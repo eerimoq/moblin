@@ -2,10 +2,11 @@ import logging
 import time
 from pathlib import Path
 
-from ..utils.common.ffmpeg import BEEP_INTERVAL
-from ..utils.common.ffmpeg import FfmpegAudioTestStream
-from ..utils.common.ffmpeg import TransportFormat
-from ..utils.common.ffmpeg import detect_beeps
+from systest_moblin.ffmpeg import BEEP_INTERVAL
+from systest_moblin.ffmpeg import FfmpegAudioTestStream
+from systest_moblin.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import detect_beeps
+
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
 from ..utils.config import SRT_SERVER_PORT

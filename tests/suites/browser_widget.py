@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from ..utils.common.ffmpeg import Crop
-from ..utils.common.ffmpeg import QrCode
-from ..utils.common.ffmpeg import create_qr_codes_video
-from ..utils.common.ffmpeg import read_qr_codes
-from ..utils.common.web_server import WebServer
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import QrCode
+from systest_moblin.ffmpeg import create_qr_codes_video
+from systest_moblin.ffmpeg import read_qr_codes
+from systest_moblin.web_server import WebServer
+
 from ..utils.config import WEB_SERVER_PORT
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import BrowserMode

@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
 
-from ..utils.common.ffmpeg import FfmpegVideoCodec
-from ..utils.common.ffmpeg import ffprobe
-from ..utils.common.ffmpeg import measure_mean_volume
-from ..utils.common.ffmpeg import read_video_frame
+from systest_moblin.ffmpeg import FfmpegVideoCodec
+from systest_moblin.ffmpeg import ffprobe
+from systest_moblin.ffmpeg import measure_mean_volume
+from systest_moblin.ffmpeg import read_video_frame
+
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import CameraPosition

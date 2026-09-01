@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from ..utils.common.ffmpeg import FfmpegRtspTestStream
-from ..utils.common.ffmpeg import FfmpegTestStream
-from ..utils.common.ffmpeg import FfmpegVideoCodec
-from ..utils.common.ffmpeg import FfmpegWhipTestStream
-from ..utils.common.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import FfmpegRtspTestStream
+from systest_moblin.ffmpeg import FfmpegTestStream
+from systest_moblin.ffmpeg import FfmpegVideoCodec
+from systest_moblin.ffmpeg import FfmpegWhipTestStream
+from systest_moblin.ffmpeg import TransportFormat
+
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import SRT_CLIENT_1_SERVER_PORT

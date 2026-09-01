@@ -10,6 +10,12 @@ from pathlib import Path
 
 from humanfriendly import format_size
 from systest import wait_until
+from systest_moblin.ffmpeg import FfmpegCommand
+from systest_moblin.ffmpeg import FfmpegRtspTestStream
+from systest_moblin.ffmpeg import FfmpegTestStream
+from systest_moblin.ffmpeg import StreamRecorder
+from systest_moblin.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import ffprobe_audio
 
 from ..utils.audio_video_sync import AlertSyncReport
 from ..utils.audio_video_sync import alert_chat_message
@@ -17,12 +23,6 @@ from ..utils.audio_video_sync import alert_media_files
 from ..utils.audio_video_sync import alerts_media_gallery_settings
 from ..utils.audio_video_sync import alerts_widget_settings
 from ..utils.audio_video_sync import measure_alert_synchronization
-from ..utils.common.ffmpeg import FfmpegCommand
-from ..utils.common.ffmpeg import FfmpegRtspTestStream
-from ..utils.common.ffmpeg import FfmpegTestStream
-from ..utils.common.ffmpeg import StreamRecorder
-from ..utils.common.ffmpeg import TransportFormat
-from ..utils.common.ffmpeg import ffprobe_audio
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT

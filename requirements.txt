@@ -1,4 +1,5 @@
 systest
+systest_moblin
 ruff
 pylint
 deep_translator

@@ -3,8 +3,8 @@ import re
 import time
 
 import systest
+from systest_moblin import test_case
 
-from .common import test_case
 from .config import Capability
 from .moblin import Moblin
 from .utils import Range
