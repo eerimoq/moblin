@@ -50,6 +50,7 @@ class CameraState: ObservableObject {
     @Published var isFocusLocked = false
     @Published var lockedIso: Float = 1.0
     @Published var lockedExposure: Float = 1.0
+    @Published var exposure: CMTime = .zero
     @Published var isExposureAndIsoLocked = false
     @Published var lockedWhiteBalance: Float = 0
     @Published var isWhiteBalanceLocked = false
@@ -222,6 +223,7 @@ extension Model {
             device: device,
             exposure: device.exposureDuration
         )
+        camera.exposure = device.exposureDuration
         camera.isExposureAndIsoLocked = camera.isExposuresAndIsosLocked[device] ?? false
         if camera.isExposureAndIsoLocked {
             setManualExposureAndIso(exposureFactor: camera.lockedExposure, isoFactor: camera.lockedIso)
@@ -257,12 +259,14 @@ extension Model {
         if let exposureFactor {
             exposure = factorToExposure(device: device, factor: exposureFactor)
             camera.lockedExposures[device] = exposureFactor
+            camera.exposure = exposure
         } else {
             exposure = AVCaptureDevice.currentExposureDuration
             camera.lockedExposures[device] = factorFromExposure(
                 device: device,
                 exposure: device.exposureDuration
             )
+            camera.exposure = device.exposureDuration
         }
         camera.isExposuresAndIsosLocked[device] = true
         camera.isExposureAndIsoLocked = true
@@ -307,11 +311,19 @@ extension Model {
         setManualExposureAndIso(exposureFactor: factor, isoFactor: nil)
     }
 
+    func getExposureFactorStep() -> Float {
+        guard let device = cameraDevice else {
+            return 0.01
+        }
+        return exposureFactorStep(device: device)
+    }
+
     func startObservingExposure() {
         guard let device = cameraDevice else {
             return
         }
         camera.lockedExposure = factorFromExposure(device: device, exposure: device.exposureDuration)
+        camera.exposure = device.exposureDuration
         camera.exposureObservation = device.observe(\.exposureDuration) { [weak self] _, _ in
             guard let self else {
                 return
@@ -323,6 +335,7 @@ extension Model {
                 let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
                 self.camera.lockedExposures[device] = exposure
                 self.camera.lockedExposure = exposure
+                self.camera.exposure = device.exposureDuration
             }
         }
     }

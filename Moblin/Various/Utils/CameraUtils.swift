@@ -188,28 +188,78 @@ func factorFromIso(device: AVCaptureDevice, iso: Float) -> Float {
     return factor.clamped(to: 0 ... 1)
 }
 
-private let minimumExposure: Double = 0.001
-private let maximumExposure: Double = 0.05
+private let shutterSpeeds = [
+    8000, 6400, 5000, 4000, 3200, 2500, 2000, 1600, 1250, 1000, 800, 640, 500, 400, 320, 250, 240,
+    200, 160, 125, 120, 100, 80, 60, 50, 48, 40, 30, 25, 24, 20, 15, 13, 10, 8,
+].map { CMTime(value: 1, timescale: CMTimeScale($0)) }
+private let slowestExposureWithoutFrameDuration = CMTime(value: 1, timescale: 20)
+
+func exposures(device: AVCaptureDevice) -> [CMTime] {
+    let fastest = device.activeFormat.minExposureDuration
+    var slowest = device.activeFormat.maxExposureDuration
+    let frameDuration = device.activeVideoMaxFrameDuration
+    if frameDuration.isValid, frameDuration.isNumeric, frameDuration.seconds > 0 {
+        slowest = min(slowest, frameDuration)
+    } else {
+        slowest = min(slowest, slowestExposureWithoutFrameDuration)
+    }
+    slowest = max(fastest, slowest)
+    let exposures = shutterSpeeds.filter { $0 >= fastest && $0 <= slowest }
+    if exposures.isEmpty {
+        return [slowest]
+    }
+    return exposures
+}
 
 func factorToExposure(device: AVCaptureDevice, factor: Float) -> CMTime {
-    let minExposureDuration = device.activeFormat.minExposureDuration
-    let maxExposureDuration = device.activeFormat.maxExposureDuration
-    let minExposure = max(minimumExposure, minExposureDuration.seconds)
-    var maxExposure = min(maximumExposure, maxExposureDuration.seconds)
-    maxExposure = max(minExposure, maxExposure)
-    let exposure = CMTime(seconds: minExposure + (maxExposure - minExposure) * Double(factor))
-    return exposure.clamped(to: minExposureDuration ... maxExposureDuration)
+    factorToExposure(exposures: exposures(device: device), factor: factor)
+}
+
+func factorToExposure(exposures: [CMTime], factor: Float) -> CMTime {
+    guard exposures.count > 1 else {
+        return exposures.first ?? CMTime(value: 1, timescale: 60)
+    }
+    let index = (factor.clamped(to: 0 ... 1) * Float(exposures.count - 1)).rounded()
+    return exposures[Int(index)]
 }
 
 func factorFromExposure(device: AVCaptureDevice, exposure: CMTime) -> Float {
-    let minExposure = max(minimumExposure, device.activeFormat.minExposureDuration.seconds)
-    var maxExposure = min(maximumExposure, device.activeFormat.maxExposureDuration.seconds)
-    maxExposure = max(minExposure, maxExposure)
-    var factor = Float((exposure.seconds - minExposure) / (maxExposure - minExposure))
-    if !factor.isFinite {
-        factor = 0
+    factorFromExposure(exposures: exposures(device: device), exposure: exposure)
+}
+
+func factorFromExposure(exposures: [CMTime], exposure: CMTime) -> Float {
+    guard exposures.count > 1, exposure.seconds > 0 else {
+        return 0
     }
-    return factor.clamped(to: 0 ... 1)
+    var bestIndex = 0
+    var bestDistance = Double.infinity
+    for (index, candidate) in exposures.enumerated() {
+        let distance = abs(log(candidate.seconds / exposure.seconds))
+        if distance < bestDistance {
+            bestDistance = distance
+            bestIndex = index
+        }
+    }
+    return Float(bestIndex) / Float(exposures.count - 1)
+}
+
+func exposureFactorStep(device: AVCaptureDevice) -> Float {
+    exposureFactorStep(exposures: exposures(device: device))
+}
+
+func exposureFactorStep(exposures: [CMTime]) -> Float {
+    guard exposures.count > 1 else {
+        return 1
+    }
+    return 1 / Float(exposures.count - 1)
+}
+
+func formatExposure(exposure: CMTime) -> String {
+    let seconds = exposure.seconds
+    guard seconds > 0, seconds.isFinite else {
+        return ""
+    }
+    return "1/\(Int((1 / seconds).rounded()))"
 }
 
 let minimumWhiteBalanceTemperature: Float = 2200
