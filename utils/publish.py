@@ -54,6 +54,15 @@ def write_export_options(path, team_id):
         plistlib.dump(options, fout)
 
 
+def check_in_app_purchases():
+    project = Path(f"{PROJECT}/project.pbxproj").read_text(encoding="utf-8")
+    if "StoreKit.framework in Frameworks" not in project:
+        sys.exit(
+            f"StoreKit.framework is not linked to the {SCHEME} target, so in-app purchases "
+            "are not configured."
+        )
+
+
 def create_archive(platform, destination, archive_path):
     run(
         f"Creating {platform} archive",
@@ -121,6 +130,7 @@ def publish(platform, archive_path, work_path, export_options_path):
 
 
 def main():
+    check_in_app_purchases()
     version = read_setting("Config/Base.xcconfig", "MARKETING_VERSION")
     team_id = read_setting("Config/User.xcconfig", "DEVELOPMENT_TEAM")
     shutil.rmtree(BUILD_PATH, ignore_errors=True)
