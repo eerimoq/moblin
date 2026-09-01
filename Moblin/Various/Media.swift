@@ -953,7 +953,7 @@ final class Media: NSObject, @unchecked Sendable {
     func attachBufferedCamera(
         devices: CaptureDevices,
         builtinDelay: Double,
-        cameraPreviewLayer: AVCaptureVideoPreviewLayer,
+        cameraPreviewLayers: [UUID: AVCaptureVideoPreviewLayer],
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,
         cameraId: UUID,
@@ -967,7 +967,7 @@ final class Media: NSObject, @unchecked Sendable {
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
-                                           cameraPreviewLayer: cameraPreviewLayer,
+                                           cameraPreviewLayers: cameraPreviewLayers,
                                            showCameraPreview: showCameraPreview,
                                            externalDisplayPreview: externalDisplayPreview,
                                            bufferedVideo: cameraId,

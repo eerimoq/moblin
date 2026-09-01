@@ -525,6 +525,19 @@ extension Model {
         return devices
     }
 
+    func getCameraPreviewDeviceIds(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> [UUID] {
+        var devices: [CaptureDevice] = []
+        if let sceneDevice {
+            devices.append(makeCaptureDevice(device: sceneDevice))
+        }
+        if let quickSwitchGroup = scene.quickSwitchGroup {
+            for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
+                getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices)
+            }
+        }
+        return devices.map(\.id)
+    }
+
     private func createGlobalVideoEffects() {
         faceEffect = FaceEffect()
         updateFaceFilterSettings()

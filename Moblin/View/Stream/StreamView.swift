@@ -12,12 +12,42 @@ struct StreamPreviewView: UIViewRepresentable {
 }
 
 class CameraPreviewUiView: UIView {
-    override class var layerClass: AnyClass {
-        AVCaptureVideoPreviewLayer.self
+    private(set) var previewLayers: [UUID: AVCaptureVideoPreviewLayer] = [:]
+
+    func setDevices(ids: [UUID]) {
+        for (id, previewLayer) in previewLayers where !ids.contains(id) {
+            previewLayer.removeFromSuperlayer()
+            previewLayers.removeValue(forKey: id)
+        }
+        for id in ids where previewLayers[id] == nil {
+            let previewLayer = AVCaptureVideoPreviewLayer()
+            previewLayer.frame = bounds
+            previewLayer.isHidden = true
+            layer.addSublayer(previewLayer)
+            previewLayers[id] = previewLayer
+        }
     }
 
-    var previewLayer: AVCaptureVideoPreviewLayer {
-        layer as! AVCaptureVideoPreviewLayer
+    func select(id: UUID?) {
+        for (previewLayerId, previewLayer) in previewLayers {
+            previewLayer.isHidden = previewLayerId != id
+        }
+    }
+
+    func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
+        for previewLayer in previewLayers.values {
+            previewLayer.connection?.videoOrientation = videoOrientation
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for previewLayer in previewLayers.values {
+            previewLayer.frame = bounds
+        }
+        CATransaction.commit()
     }
 }
 

@@ -368,7 +368,7 @@ extension Model {
     }
 
     private func setNetStream() {
-        cameraPreviewLayer?.session = nil
+        cameraPreviewView.setDevices(ids: [])
         media.setNetStream(
             proto: stream.getProtocol(),
             portrait: stream.portrait,

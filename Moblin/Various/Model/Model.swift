@@ -518,7 +518,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let streamPreviewView = PreviewView()
     let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
-    var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     let videoPreview = VideoPreviewProvider()
     var pipController: AVPictureInPictureController?
     var textEffects: [UUID: TextEffect] = [:]
@@ -1013,7 +1012,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         removeUnusedKeychainItems()
-        cameraPreviewLayer = cameraPreviewView.previewLayer
         media = Media(delegate: self)
         setupAppIntents()
         faxReceiver.delegate = self
@@ -2706,7 +2704,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func detachCamera() {
         let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
                                            builtinDelay: 0,
-                                           cameraPreviewLayer: cameraPreviewLayer!,
+                                           cameraPreviewLayers: cameraPreviewView.previewLayers,
                                            showCameraPreview: false,
                                            externalDisplayPreview: false,
                                            bufferedVideo: nil,
@@ -2729,17 +2727,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateCameraPreviewRotation() {
         if useLandscapeStreamAndPortraitUi(cameraDevice, isLandscapeStreamAndPortraitUi()) {
-            cameraPreviewLayer?.connection?.videoOrientation = .portrait
+            cameraPreviewView.setVideoOrientation(.portrait)
         } else if stream.portrait {
-            cameraPreviewLayer?.connection?.videoOrientation = .portrait
+            cameraPreviewView.setVideoOrientation(.portrait)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
-                cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+                cameraPreviewView.setVideoOrientation(.landscapeRight)
             case .landscapeRight:
-                cameraPreviewLayer?.connection?.videoOrientation = .landscapeLeft
+                cameraPreviewView.setVideoOrientation(.landscapeLeft)
             default:
-                cameraPreviewLayer?.connection?.videoOrientation = .landscapeRight
+                cameraPreviewView.setVideoOrientation(.landscapeRight)
             }
         }
     }
@@ -2871,11 +2869,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func attachCameraFinalize(scene: SettingsScene) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
+        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        let showCameraPreview = updateShowCameraPreview()
+        cameraPreviewView.setDevices(ids: showCameraPreview
+            ? getCameraPreviewDeviceIds(scene: scene, sceneDevice: cameraDevice)
+            : [])
         let params = VideoUnitAttachParams(
-            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+            devices: devices,
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
-            cameraPreviewLayer: cameraPreviewLayer!,
-            showCameraPreview: updateShowCameraPreview(),
+            cameraPreviewLayers: cameraPreviewView.previewLayers,
+            showCameraPreview: showCameraPreview,
             externalDisplayPreview: externalDisplayPreview,
             bufferedVideo: nil,
             preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
@@ -2902,6 +2905,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
+                self.cameraPreviewView.select(id: devices.hasSceneDevice ? devices.devices.first?.id : nil)
                 self.updateCameraPreviewRotation()
                 self.updateVideoPreviews()
             }
@@ -2930,10 +2934,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
         zoom.hasZoom = false
+        cameraPreviewView.setDevices(ids: [])
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
-            cameraPreviewLayer: cameraPreviewLayer!,
+            cameraPreviewLayers: cameraPreviewView.previewLayers,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,

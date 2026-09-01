@@ -230,9 +230,28 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
         }
         updateCameraControls()
-        params.cameraPreviewLayer.session = nil
-        if params.showCameraPreview {
-            params.cameraPreviewLayer.session = session
+        attachCameraPreviewLayers(params: params)
+    }
+
+    private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
+        for (id, previewLayer) in params.cameraPreviewLayers {
+            guard params.showCameraPreview,
+                  let device = captureSessionDevices.first(where: { $0.device.id == id }),
+                  let port = device.input.ports.first(where: { $0.mediaType == .video })
+            else {
+                if previewLayer.session != nil {
+                    previewLayer.session = nil
+                }
+                continue
+            }
+            if previewLayer.session !== session {
+                previewLayer.setSessionWithNoConnection(session)
+            }
+            let connection = AVCaptureConnection(inputPort: port, videoPreviewLayer: previewLayer)
+            guard session.canAddConnection(connection) else {
+                continue
+            }
+            session.addConnection(connection)
         }
     }
 
