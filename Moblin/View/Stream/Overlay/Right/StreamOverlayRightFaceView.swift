@@ -83,6 +83,8 @@ struct StreamOverlayRightFaceView: View {
                                 }
                             }
                         }
+                    case .icon:
+                        EmptyView()
                     }
                     Picker("", selection: $face.privacyMode) {
                         ForEach(SettingsFacePrivacyMode.allCases, id: \.self) {

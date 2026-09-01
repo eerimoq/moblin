@@ -131,6 +131,7 @@ private struct StoreSettingsMyIconsView: View {
             }
             .onChange(of: store.iconImage) { iconImage in
                 model.database.iconImage = iconImage
+                model.updateFaceFilterSettings()
                 setAppIcon(iconImage: iconImage)
             }
             .pickerStyle(.inline)

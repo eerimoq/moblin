@@ -946,6 +946,7 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case blur
     case pixellate
     case backgroundImage
+    case icon
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -955,6 +956,8 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
             "Pixellate"
         case .backgroundImage:
             "Background image"
+        case .icon:
+            "Icon"
         }
     }
 }
@@ -994,7 +997,7 @@ class SettingsFace: Codable, ObservableObject {
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
     }
 
-    func toEffectSettings(backgroundImage: CIImage?) -> FaceEffectSettings {
+    func toEffectSettings(backgroundImage: CIImage?, iconImage: CGImage?) -> FaceEffectSettings {
         let faceEffectPrivacyMode: FaceEffectPrivacyMode = switch privacyMode {
         case .blur:
             .blur(strength: blurStrength)
@@ -1002,6 +1005,8 @@ class SettingsFace: Codable, ObservableObject {
             .pixellate(strength: pixellateStrength)
         case .backgroundImage:
             .backgroundImage(backgroundImage)
+        case .icon:
+            .icon(iconImage)
         }
         return FaceEffectSettings(blurFaces: blurFaces,
                                   blurText: blurText,

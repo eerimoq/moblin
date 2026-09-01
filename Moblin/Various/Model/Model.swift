@@ -1408,7 +1408,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        faceEffect.setSettings(settings: database.face.toEffectSettings(backgroundImage: faceBackgroundImage))
+        faceEffect.setSettings(settings: database.face.toEffectSettings(
+            backgroundImage: faceBackgroundImage,
+            iconImage: loadFaceIconImage()
+        ))
+    }
+
+    private func loadFaceIconImage() -> CGImage? {
+        UIImage(named: "\(database.iconImage)NoBackground")?.cgImage
     }
 
     func updateImageButtonState() {

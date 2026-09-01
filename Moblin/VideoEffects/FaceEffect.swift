@@ -35,13 +35,14 @@ enum FaceEffectPrivacyMode {
     case blur(strength: Float)
     case pixellate(strength: Float)
     case backgroundImage(CIImage?)
-    case faceImage(CIImage)
+    case icon(CGImage?)
 }
 
 final class FaceEffect: VideoEffect, @unchecked Sendable {
     private var settings = FaceEffectSettings()
     private let moblinImage: EffectImageCgImage?
     private var backgroundImage: EffectImageCiImage?
+    private var iconImage: EffectImageCgImage?
     private var faceMasks: [Float: MTIMask?] = [:]
 
     override init() {
@@ -60,9 +61,15 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         } else {
             nil
         }
+        let iconImage: EffectImageCgImage? = if case let .icon(image) = settings.privacyMode {
+            image?.toEffectImage()
+        } else {
+            nil
+        }
         processorPipelineQueue.async {
             self.settings = settings
             self.backgroundImage = backgroundImage
+            self.iconImage = iconImage
         }
     }
 
@@ -114,17 +121,25 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         guard blurFaces || blurText || settings.blurBackground || settings.showMouth else {
             return image
         }
-        guard let privacyImage = makePrivacyImageMetalPetal(image: image) else {
-            return image
+        let icon = blurFaces ? iconImage?.getMetalPetalImage() : nil
+        var privacyImage = image
+        if blurText || settings.blurBackground || (blurFaces && icon == nil) {
+            guard let madePrivacyImage = makePrivacyImageMetalPetal(image: image) else {
+                return image
+            }
+            privacyImage = madePrivacyImage
         }
         let backgroundImage = settings.blurBackground ? privacyImage : image
         var layers: [MTILayer] = []
-        if blurFaces || settings.blurBackground {
+        if icon == nil, blurFaces || settings.blurBackground {
             let facesImage = settings.blurBackground ? image : privacyImage
             layers += makeFaceLayers(image, facesImage, detections.face)
         }
         if blurText {
             layers += makeTextLayers(image, privacyImage, detections.text)
+        }
+        if let icon {
+            layers += makeIconLayers(image, icon, detections.face)
         }
         if settings.showMouth {
             layers += makeMouthLayers(image, detections.face)
@@ -164,8 +179,50 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
                 CGSize(width: backgroundImage.extent.width * scale,
                        height: backgroundImage.extent.height * scale)
             )
-        case .faceImage:
+        case .icon:
+            let filter = MTIMPSGaussianBlurFilter()
+            filter.inputImage = image
+            filter.radius = Float(image.extent.width / 50.0)
+            return filter.outputImage
+        }
+    }
+
+    private func calcIconPlacement(_ detection: VNFaceObservation,
+                                   _ imageSize: CGSize) -> (center: CGPoint,
+                                                            height: Double,
+                                                            rotation: CGFloat)?
+    {
+        let rotation = detection.calcFaceAngle(imageSize: imageSize) ?? 0
+        guard let boundingBox = detection.stableBoundingBox(imageSize: imageSize, rotationAngle: rotation)
+        else {
             return nil
+        }
+        return (CGPoint(x: boundingBox.midX, y: boundingBox.midY + 0.3 * boundingBox.height),
+                1.5 * boundingBox.height,
+                rotation)
+    }
+
+    private func makeIconLayers(_ image: MTIImage,
+                                _ icon: MTIImage,
+                                _ detections: [VNFaceObservation]) -> [MTILayer]
+    {
+        let imageSize = image.extent.size
+        return detections.compactMap { detection in
+            guard let placement = calcIconPlacement(detection, imageSize) else {
+                return nil
+            }
+            let scale = placement.height / icon.extent.height
+            let size = CGSize(width: icon.extent.width * scale, height: placement.height)
+            let centerPoint = rotatePoint(point: .init(x: placement.center.x - size.width / 2,
+                                                       y: placement.center.y - size.height / 2),
+                                          alpha: placement.rotation)
+            let rotatedCenter = rotatePoint(point: .init(x: size.width / 2, y: size.height / 2),
+                                            alpha: placement.rotation)
+            let center = CGPoint(x: rotatedCenter.x + centerPoint.x, y: rotatedCenter.y + centerPoint.y)
+            return .init(content: icon,
+                         position: CGPoint(x: center.x, y: imageSize.height - center.y),
+                         size: size,
+                         rotation: Float(-placement.rotation))
         }
     }
 
@@ -176,10 +233,8 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         let ratio: Float = switch settings.privacyMode {
         case .blur, .pixellate:
             1.5
-        case .backgroundImage:
+        case .backgroundImage, .icon:
             1.2
-        case .faceImage:
-            1
         }
         if faceMasks[ratio] == nil {
             faceMasks[ratio] = makeFaceMask(ratio)
@@ -259,8 +314,10 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             return backgroundImage?
                 .scaledToFill(size: image.extent.size)
                 .cropped(to: image.extent)
-        case .faceImage:
-            return nil
+        case .icon:
+            return image
+                .applyingGaussianBlur(sigma: image.extent.width / 50.0)
+                .cropped(to: image.extent)
         }
     }
 
@@ -280,10 +337,8 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
                 faceMask.radius1 = faceMask.radius0 * 1.5
             case .pixellate:
                 faceMask.radius1 = faceMask.radius0 * 1.5
-            case .backgroundImage:
+            case .backgroundImage, .icon:
                 faceMask.radius1 = faceMask.radius0 * 1.2
-            case .faceImage:
-                faceMask.radius1 = faceMask.radius0
             }
             faceMask.color0 = CIColor.white
             faceMask.color1 = CIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0)
@@ -319,11 +374,12 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
                            blurText: Bool,
                            blurBackground: Bool) -> CIImage?
     {
+        let icon = blurFaces ? iconImage?.getCiImage() : nil
         let privacyImage = makePrivacyImage(image: image)
         var outputImage: CIImage? = image
         if (blurFaces && !detections.face.isEmpty) || blurBackground {
             let mask = createFacesMaskImage(imageExtent: image.extent, detections: detections.face)
-            if blurFaces {
+            if blurFaces, icon == nil {
                 let blender = CIFilter.blendWithMask()
                 blender.inputImage = privacyImage
                 blender.backgroundImage = image
@@ -346,7 +402,32 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
             blender.maskImage = mask
             outputImage = blender.outputImage
         }
+        if let icon {
+            outputImage = addIcons(image: outputImage, icon: icon, detections: detections.face)
+        }
         return outputImage
+    }
+
+    private func addIcons(image: CIImage?, icon: CIImage, detections: [VNFaceObservation]) -> CIImage? {
+        guard let image else {
+            return nil
+        }
+        var outputImage = image
+        for detection in detections {
+            guard let placement = calcIconPlacement(detection, image.extent.size) else {
+                continue
+            }
+            let scale = placement.height / icon.extent.height
+            let iconImage = icon.scaled(x: scale, y: scale)
+            let centerPoint = rotatePoint(point: .init(x: placement.center.x - iconImage.extent.midX,
+                                                       y: placement.center.y - iconImage.extent.midY),
+                                          alpha: placement.rotation)
+            outputImage = iconImage
+                .transformed(by: CGAffineTransform(rotationAngle: placement.rotation))
+                .translated(x: centerPoint.x, y: centerPoint.y)
+                .composited(over: outputImage)
+        }
+        return outputImage.cropped(to: image.extent)
     }
 
     private func calcMouth(_ detection: VNFaceObservation,
