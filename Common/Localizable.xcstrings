@@ -119197,6 +119197,9 @@
         }
       }
     },
+    "just resubscribed tier %lld for %lld months, %lld in a row! %@" : {
+
+    },
     "just subscribed tier %lld!" : {
       "localizations" : {
         "de" : {
@@ -119344,6 +119347,9 @@
           }
         }
       }
+    },
+    "just subscribed with Prime!" : {
+
     },
     "just subscribed! They've been subscribed for %lld months!" : {
       "localizations" : {

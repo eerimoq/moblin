@@ -582,7 +582,11 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         guard !event.is_gift else {
             return
         }
-        let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        let text = if event.isPrime() {
+            String(localized: "just subscribed with Prime!")
+        } else {
+            String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        }
         if stream.twitchToastAlerts.subscriptions {
             makeToast(title: "\(event.user_name) \(text)")
         }
@@ -624,10 +628,17 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelSubscriptionMessage(
         event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
     ) {
-        let text = String(localized: """
-        just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-        months! \(event.message.text)
-        """)
+        let text = if let streakMonths = event.streak_months {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
+            \(streakMonths) in a row! \(event.message.text)
+            """)
+        } else {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """)
+        }
         if stream.twitchToastAlerts.resubscriptions {
             makeToast(title: "\(event.user_name) \(text)")
         }

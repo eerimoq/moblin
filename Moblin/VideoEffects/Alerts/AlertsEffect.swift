@@ -675,10 +675,15 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let message = if event.isPrime() {
+            String(localized: "just subscribed with Prime!")
+        } else {
+            String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        }
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }
@@ -701,13 +706,21 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let message = if let streakMonths = event.streak_months {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
+            \(streakMonths) in a row! \(event.message.text)
+            """)
+        } else {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """)
+        }
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """),
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }
