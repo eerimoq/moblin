@@ -14,3 +14,5 @@ irwin
 xdg-base-dirs
 pyleetspeak2
 humanfriendly
+yaspin
+termcolor

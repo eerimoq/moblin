@@ -7,6 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from termcolor import colored
+from yaspin import yaspin
+from yaspin.spinners import Spinners
+
 PROJECT = "Moblin.xcodeproj"
 SCHEME = "Moblin"
 BUILD_PATH = Path("build/publish")
@@ -17,13 +21,16 @@ DESTINATIONS = {
 }
 
 
-def run(command):
-    print(" ".join(command))
-    try:
-        return subprocess.run(command, capture_output=True, text=True, check=True).stdout
-    except subprocess.CalledProcessError as e:
-        print(e.stdout)
-        raise
+def run(description, command):
+    with yaspin(Spinners.dots, text=description, color="cyan", timer=True) as spinner:
+        try:
+            output = subprocess.run(command, capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            spinner.fail(colored("✘", "red"))
+            print(e.stdout)
+            raise
+        spinner.ok(colored("✔", "green"))
+    return output
 
 
 def read_setting(path, name):
@@ -47,8 +54,9 @@ def write_export_options(path, team_id):
         plistlib.dump(options, fout)
 
 
-def create_archive(destination, archive_path):
+def create_archive(platform, destination, archive_path):
     run(
+        f"Creating {platform} archive",
         [
             "xcodebuild",
             "archive",
@@ -63,12 +71,13 @@ def create_archive(destination, archive_path):
             "-archivePath",
             str(archive_path),
             "-allowProvisioningUpdates",
-        ]
+        ],
     )
 
 
-def upload_archive(archive_path, export_options_path, export_path):
+def upload_archive(platform, archive_path, export_options_path, export_path):
     return run(
+        f"Uploading {platform} archive to App Store Connect",
         [
             "xcodebuild",
             "-exportArchive",
@@ -79,7 +88,7 @@ def upload_archive(archive_path, export_options_path, export_path):
             "-exportPath",
             str(export_path),
             "-allowProvisioningUpdates",
-        ]
+        ],
     )
 
 
@@ -92,18 +101,19 @@ def find_build_number(archive_path):
 
 
 def create_tag(platform, version, build_number):
-    run(["git", "tag", f"{platform}-{version}-{build_number}"])
+    tag = f"{platform}-{version}-{build_number}"
+    run(f"Creating tag {tag}", ["git", "tag", tag])
 
 
-def archive(destination, work_path):
+def archive(platform, destination, work_path):
     archive_path = work_path / f"{SCHEME}.xcarchive"
-    create_archive(destination, archive_path)
+    create_archive(platform, destination, archive_path)
     return archive_path
 
 
-def publish(archive_path, work_path, export_options_path):
+def publish(platform, archive_path, work_path, export_options_path):
     export_path = work_path / "export"
-    upload_archive(archive_path, export_options_path, export_path)
+    upload_archive(platform, archive_path, export_options_path, export_path)
     build_number = find_build_number(archive_path)
     if build_number is None:
         sys.exit("Uploaded, but could not find the build number assigned by App Store Connect.")
@@ -120,8 +130,8 @@ def main():
     for platform, destination in DESTINATIONS.items():
         work_path = BUILD_PATH / platform
         work_path.mkdir(parents=True)
-        archive_path = archive(destination, work_path)
-        build_number = publish(archive_path, work_path, export_options_path)
+        archive_path = archive(platform, destination, work_path)
+        build_number = publish(platform, archive_path, work_path, export_options_path)
         create_tag(platform, version, build_number)
 
 
