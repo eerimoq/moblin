@@ -162,7 +162,8 @@ private func createBufferedAudio() -> BufferedAudio {
                   name: "",
                   latency: 0.1,
                   processor: nil,
-                  manualOutput: true)
+                  manualOutput: true,
+                  trackDrift: true)
 }
 
 private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer {
