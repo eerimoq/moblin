@@ -1515,88 +1515,27 @@ extension Model {
         }
     }
 
-    func createTextEffectStats(now: Date, timestamp: ContinuousClock.Instant) -> TextEffectStats {
-        let location = locationManager.getLatestKnownLocation()
-        let weather = weatherManager.getLatestWeather()?.currentWeather
-        let placemark = geographyManager.getLatestPlacemark()
-        return TextEffectStats(
-            timestamp: timestamp,
-            bitrate: bitrate.speedMbpsOneDecimal,
-            bitrateAndTotal: bitrate.speedAndTotal,
-            resolution: currentResolution,
-            fps: currentFps,
-            date: now,
-            debugOverlayLines: debugOverlay.debugLines,
-            speed: location?.speed ?? 0,
-            averageSpeed: averageSpeed,
-            altitude: location?.altitude ?? 0,
-            distance: database.location.distance,
-            splitDistance: database.location.splitDistance,
-            altitudeAscent: database.location.altitudeAscent,
-            altitudeDescent: database.location.altitudeDescent,
-            splitAltitudeAscent: database.location.splitAltitudeAscent,
-            splitAltitudeDescent: database.location.splitAltitudeDescent,
-            slope: "\(Int(slopePercent))%",
-            conditions: weather?.symbolName,
-            condition: weather?.condition,
-            temperature: weather?.temperature,
-            feelsLikeTemperature: weather?.apparentTemperature,
-            windSpeed: weather?.wind.speed,
-            windGust: weather?.wind.gust,
-            country: placemark?.country ?? "",
-            countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
-            state: placemark?.administrativeArea,
-            area: placemark?.subAdministrativeArea,
-            city: placemark?.locality,
-            neighborhood: placemark?.subLocality,
-            muted: isMuteOn,
-            heartRates: heartRates,
-            activeEnergyBurned: workoutActiveEnergyBurned,
-            workoutDistance: workoutDistance,
-            power: workoutPower,
-            stepCount: workoutStepCount,
-            teslaBatteryLevel: textEffectTeslaBatteryLevel(),
-            teslaDrive: textEffectTeslaDrive(),
-            teslaMedia: textEffectTeslaMedia(),
-            cyclingPower: "\(cyclingPower) W",
-            cyclingCadence: "\(cyclingCadence)",
-            runningMetrics: runningMetrics,
-            browserTitle: getBrowserTitle(),
-            gForce: gForceManager?.getLatest(),
-            latestSubscriber: latestSubscriber,
-            latestFollower: latestFollower
-        )
-    }
-
     func updateTextEffects(now: Date, timestamp: ContinuousClock.Instant) {
         guard !textEffects.isEmpty else {
             return
         }
-        let stats: TextEffectStats
+        let variables: Variables
         if let textStats = remoteSceneData.textStats {
-            stats = textStats.toStats()
+            variables = textStats.toVariables()
         } else {
             updateTextWidgetsLapTimes(now: now)
-            stats = createTextEffectStats(now: now, timestamp: timestamp)
-            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
+            variables = createVariables(now: now, timestamp: timestamp)
+            remoteControlAssistantSetRemoteSceneDataVariables(variables: variables)
         }
         for effect in textEffects.values {
-            effect.updateStats(stats: stats)
+            effect.updateVariables(variables: variables)
         }
         for effect in slideshowEffects.values {
             for slide in effect.slides {
                 if let textEffect = slide.effect as? TextEffect {
-                    textEffect.updateStats(stats: stats)
+                    textEffect.updateVariables(variables: variables)
                 }
             }
-        }
-    }
-
-    private func getBrowserTitle() -> String {
-        if showBrowser {
-            getWebBrowser().title ?? ""
-        } else {
-            ""
         }
     }
 

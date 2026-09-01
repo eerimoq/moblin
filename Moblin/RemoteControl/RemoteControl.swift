@@ -598,11 +598,11 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
 }
 
 struct RemoteControlRemoteSceneData: Codable {
-    var textStats: RemoteControlRemoteSceneDataTextStats?
+    var textStats: RemoteControlRemoteSceneDataVariables?
     var location: RemoteControlRemoteSceneDataLocation?
 }
 
-struct RemoteControlRemoteSceneDataTextStats: Codable {
+struct RemoteControlRemoteSceneDataVariables: Codable {
     let bitrate: String
     let bitrateAndTotal: String
     let resolution: String?
@@ -648,99 +648,99 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     let latestSubscriber: String
     let latestFollower: String
 
-    init(stats: TextEffectStats) {
-        bitrate = stats.bitrate
-        bitrateAndTotal = stats.bitrateAndTotal
-        resolution = stats.resolution
-        fps = stats.fps
-        date = stats.date
-        debugOverlayLines = stats.debugOverlayLines
-        speed = stats.speed
-        averageSpeed = stats.averageSpeed
-        altitude = stats.altitude
-        distance = stats.distance
-        splitDistance = stats.splitDistance
-        altitudeAscent = stats.altitudeAscent
-        altitudeDescent = stats.altitudeDescent
-        splitAltitudeAscent = stats.splitAltitudeAscent
-        splitAltitudeDescent = stats.splitAltitudeDescent
-        slope = stats.slope
-        conditions = stats.conditions
-        condition = stats.condition?.rawValue
-        temperature = stats.temperature
-        feelsLikeTemperature = stats.feelsLikeTemperature
-        windSpeed = stats.windSpeed
-        windGust = stats.windGust
-        country = stats.country
-        countryFlag = stats.countryFlag
-        state = stats.state
-        area = stats.area
-        city = stats.city
-        neighborhood = stats.neighborhood
-        muted = stats.muted
-        heartRates = stats.heartRates
-        activeEnergyBurned = stats.activeEnergyBurned
-        workoutDistance = stats.workoutDistance
-        power = stats.power
-        stepCount = stats.stepCount
-        teslaBatteryLevel = stats.teslaBatteryLevel
-        teslaDrive = stats.teslaDrive
-        teslaMedia = stats.teslaMedia
-        cyclingPower = stats.cyclingPower
-        cyclingCadence = stats.cyclingCadence
-        runningMetrics = stats.runningMetrics
-        browserTitle = stats.browserTitle
-        gForce = stats.gForce
-        latestSubscriber = stats.latestSubscriber
-        latestFollower = stats.latestFollower
+    init(variables: Variables) {
+        bitrate = variables.bitrate
+        bitrateAndTotal = variables.bitrateAndTotal
+        resolution = variables.resolution
+        fps = variables.fps
+        date = variables.date
+        debugOverlayLines = variables.debugOverlayLines
+        speed = variables.speed
+        averageSpeed = variables.averageSpeed
+        altitude = variables.altitude
+        distance = variables.distance
+        splitDistance = variables.splitDistance
+        altitudeAscent = variables.altitudeAscent
+        altitudeDescent = variables.altitudeDescent
+        splitAltitudeAscent = variables.splitAltitudeAscent
+        splitAltitudeDescent = variables.splitAltitudeDescent
+        slope = variables.slope
+        conditions = variables.conditions
+        condition = variables.condition?.rawValue
+        temperature = variables.temperature
+        feelsLikeTemperature = variables.feelsLikeTemperature
+        windSpeed = variables.windSpeed
+        windGust = variables.windGust
+        country = variables.country
+        countryFlag = variables.countryFlag
+        state = variables.state
+        area = variables.area
+        city = variables.city
+        neighborhood = variables.neighborhood
+        muted = variables.muted
+        heartRates = variables.heartRates
+        activeEnergyBurned = variables.activeEnergyBurned
+        workoutDistance = variables.workoutDistance
+        power = variables.power
+        stepCount = variables.stepCount
+        teslaBatteryLevel = variables.teslaBatteryLevel
+        teslaDrive = variables.teslaDrive
+        teslaMedia = variables.teslaMedia
+        cyclingPower = variables.cyclingPower
+        cyclingCadence = variables.cyclingCadence
+        runningMetrics = variables.runningMetrics
+        browserTitle = variables.browserTitle
+        gForce = variables.gForce
+        latestSubscriber = variables.latestSubscriber
+        latestFollower = variables.latestFollower
     }
 
-    func toStats() -> TextEffectStats {
-        TextEffectStats(timestamp: .now,
-                        bitrate: bitrate,
-                        bitrateAndTotal: bitrateAndTotal,
-                        resolution: resolution,
-                        fps: fps,
-                        date: date,
-                        debugOverlayLines: debugOverlayLines,
-                        speed: speed,
-                        averageSpeed: averageSpeed,
-                        altitude: altitude,
-                        distance: distance,
-                        splitDistance: splitDistance,
-                        altitudeAscent: altitudeAscent,
-                        altitudeDescent: altitudeDescent,
-                        splitAltitudeAscent: splitAltitudeAscent,
-                        splitAltitudeDescent: splitAltitudeDescent,
-                        slope: slope,
-                        conditions: conditions,
-                        condition: condition.flatMap { WeatherCondition(rawValue: $0) },
-                        temperature: temperature,
-                        feelsLikeTemperature: feelsLikeTemperature,
-                        windSpeed: windSpeed,
-                        windGust: windGust,
-                        country: country,
-                        countryFlag: countryFlag,
-                        state: state,
-                        area: area,
-                        city: city,
-                        neighborhood: neighborhood,
-                        muted: muted,
-                        heartRates: heartRates,
-                        activeEnergyBurned: activeEnergyBurned,
-                        workoutDistance: workoutDistance,
-                        power: power,
-                        stepCount: stepCount,
-                        teslaBatteryLevel: teslaBatteryLevel,
-                        teslaDrive: teslaDrive,
-                        teslaMedia: teslaMedia,
-                        cyclingPower: cyclingPower,
-                        cyclingCadence: cyclingCadence,
-                        runningMetrics: runningMetrics,
-                        browserTitle: browserTitle,
-                        gForce: gForce,
-                        latestSubscriber: latestSubscriber,
-                        latestFollower: latestFollower)
+    func toVariables() -> Variables {
+        Variables(timestamp: .now,
+                  bitrate: bitrate,
+                  bitrateAndTotal: bitrateAndTotal,
+                  resolution: resolution,
+                  fps: fps,
+                  date: date,
+                  debugOverlayLines: debugOverlayLines,
+                  speed: speed,
+                  averageSpeed: averageSpeed,
+                  altitude: altitude,
+                  distance: distance,
+                  splitDistance: splitDistance,
+                  altitudeAscent: altitudeAscent,
+                  altitudeDescent: altitudeDescent,
+                  splitAltitudeAscent: splitAltitudeAscent,
+                  splitAltitudeDescent: splitAltitudeDescent,
+                  slope: slope,
+                  conditions: conditions,
+                  condition: condition.flatMap { WeatherCondition(rawValue: $0) },
+                  temperature: temperature,
+                  feelsLikeTemperature: feelsLikeTemperature,
+                  windSpeed: windSpeed,
+                  windGust: windGust,
+                  country: country,
+                  countryFlag: countryFlag,
+                  state: state,
+                  area: area,
+                  city: city,
+                  neighborhood: neighborhood,
+                  muted: muted,
+                  heartRates: heartRates,
+                  activeEnergyBurned: activeEnergyBurned,
+                  workoutDistance: workoutDistance,
+                  power: power,
+                  stepCount: stepCount,
+                  teslaBatteryLevel: teslaBatteryLevel,
+                  teslaDrive: teslaDrive,
+                  teslaMedia: teslaMedia,
+                  cyclingPower: cyclingPower,
+                  cyclingCadence: cyclingCadence,
+                  runningMetrics: runningMetrics,
+                  browserTitle: browserTitle,
+                  gForce: gForce,
+                  latestSubscriber: latestSubscriber,
+                  latestFollower: latestFollower)
     }
 }
 

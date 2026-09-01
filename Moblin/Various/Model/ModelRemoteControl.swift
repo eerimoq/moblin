@@ -191,12 +191,14 @@ extension Model {
         database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
     }
 
-    func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
+    func remoteControlAssistantSetRemoteSceneDataVariables(variables: Variables) {
         guard shouldSendRemoteScene() else {
             return
         }
         let data =
-            RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
+            RemoteControlRemoteSceneData(
+                textStats: RemoteControlRemoteSceneDataVariables(variables: variables)
+            )
         remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 

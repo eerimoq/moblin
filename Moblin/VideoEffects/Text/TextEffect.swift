@@ -2,55 +2,6 @@ import Collections
 import Combine
 import MetalPetal
 import SwiftUI
-import WeatherKit
-
-struct TextEffectStats {
-    let timestamp: ContinuousClock.Instant
-    let bitrate: String
-    let bitrateAndTotal: String
-    let resolution: String?
-    let fps: Int?
-    let date: Date
-    let debugOverlayLines: [String]
-    let speed: Double
-    let averageSpeed: Double
-    let altitude: Double
-    let distance: Double
-    let splitDistance: Double
-    let altitudeAscent: Double
-    let altitudeDescent: Double
-    let splitAltitudeAscent: Double
-    let splitAltitudeDescent: Double
-    let slope: String
-    let conditions: String?
-    let condition: WeatherCondition?
-    let temperature: Measurement<UnitTemperature>?
-    let feelsLikeTemperature: Measurement<UnitTemperature>?
-    let windSpeed: Measurement<UnitSpeed>?
-    let windGust: Measurement<UnitSpeed>?
-    let country: String?
-    let countryFlag: String?
-    let state: String?
-    let area: String?
-    let city: String?
-    let neighborhood: String?
-    let muted: Bool
-    let heartRates: [String: Int?]
-    let activeEnergyBurned: Int?
-    let workoutDistance: Int?
-    let power: Int?
-    let stepCount: Int?
-    let teslaBatteryLevel: String
-    let teslaDrive: String
-    let teslaMedia: String
-    let cyclingPower: String
-    let cyclingCadence: String
-    let runningMetrics: [String: WorkoutDeviceRunningMetrics]
-    let browserTitle: String
-    let gForce: GForce?
-    let latestSubscriber: String
-    let latestFollower: String
-}
 
 private class TextViewState: ObservableObject {
     @Published var fontSize: CGFloat
@@ -175,7 +126,7 @@ private struct TextView: View {
 }
 
 final class TextEffect: VideoEffect, @unchecked Sendable {
-    private var stats: Deque<TextEffectStats> = []
+    private var variables: Deque<Variables> = []
     private var overlay: EffectImageCgImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
@@ -381,10 +332,10 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         forceOverlayUpdate()
     }
 
-    func updateStats(stats: TextEffectStats) {
-        self.stats.append(stats)
-        if self.stats.count > 10 {
-            self.stats.removeFirst()
+    func updateVariables(variables: Variables) {
+        self.variables.append(variables)
+        if self.variables.count > 10 {
+            self.variables.removeFirst()
         }
     }
 
@@ -406,13 +357,13 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func formatted(now: ContinuousClock.Instant) -> [TextEffectLine] {
-        guard let stats = stats
-            .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? stats
+        guard let variables = variables
+            .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? variables
             .first
         else {
             return []
         }
-        return formatter.format(stats: stats, now: now)
+        return formatter.format(variables: variables, now: now)
     }
 
     private func updateOverlayIfNeeded(size: CGSize) {

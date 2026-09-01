@@ -451,14 +451,14 @@ extension Model {
 
     private func formatChatBotCustomCommand(customCommand: SettingsChatBotCustomCommand) -> String {
         let now = ContinuousClock.now
-        let stats = createTextEffectStats(now: .now, timestamp: now)
+        let variables = createVariables(now: .now, timestamp: now)
         let formatter = TextEffectFormatter(formatParts: loadTextFormat(format: customCommand.formatString),
                                             timersEndTime: [],
                                             stopwatches: [],
                                             checkboxes: [],
                                             ratings: [],
                                             lapTimes: [])
-        return formatter.format(stats: stats, now: now).toPlainText()
+        return formatter.format(variables: variables, now: now).toPlainText()
     }
 
     private func handleChatBotMessageMusic(command: ChatBotCommand) {
