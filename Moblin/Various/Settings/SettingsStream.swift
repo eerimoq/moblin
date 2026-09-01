@@ -1081,7 +1081,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     }
 
     func isWatchStreakEnabled(count: Int) -> Bool {
-        watchStreaks && count >= minimumWatchStreak && count.isMultiple(of: 25)
+        watchStreaks && count >= minimumWatchStreak
     }
 }
 

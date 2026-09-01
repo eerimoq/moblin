@@ -132,7 +132,7 @@ struct TwitchAlertsSettingsView: View {
                 )
                 Toggle("Watch streaks", isOn: $alerts.watchStreaks)
                 Picker("Minimum watch streak", selection: $alerts.minimumWatchStreak) {
-                    ForEach([5, 10, 25], id: \.self) {
+                    ForEach([1, 3, 5, 10, 15, 20, 25], id: \.self) {
                         Text(String($0))
                     }
                 }
