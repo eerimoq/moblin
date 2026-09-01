@@ -220,7 +220,7 @@ private struct ChatView: View {
     var body: some View {
         VStack(spacing: 1) {
             Spacer()
-            ForEach(chat.posts.reversed()) { post in
+            ForEach(chat.posts.prefix(settings.maximumNumberOfMessages).reversed()) { post in
                 HStack {
                     PostView(settings: settings,
                              post: post,

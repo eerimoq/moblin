@@ -34,6 +34,14 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            Picker("Messages", selection: $chat.maximumNumberOfMessages) {
+                ForEach([1, 2, 3, 4, 5], id: \.self) {
+                    Text(String($0))
+                }
+            }
+            .onChange(of: chat.maximumNumberOfMessages) { _ in
+                setEffectSettings()
+            }
             HStack {
                 Text("Height")
                 Slider(value: $chat.height, in: 0.1 ... 1, step: 0.01)
