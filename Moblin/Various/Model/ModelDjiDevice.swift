@@ -88,6 +88,17 @@ extension Model {
         }
     }
 
+    func reloadDjiDevicesAfterSettingsImport() {
+        for (deviceId, djiDeviceWrapper) in djiDeviceWrappers
+            where !database.djiDevices.devices.contains(where: { $0.id == deviceId })
+        {
+            djiDeviceWrapper.device.stopLiveStream()
+            djiDeviceWrapper.autoRestartStreamTimer.stop()
+            djiDeviceWrappers.removeValue(forKey: deviceId)
+        }
+        autoStartDjiDevices()
+    }
+
     func autoStartDjiDevices() {
         for device in database.djiDevices.devices where device.isStarted {
             startDjiDeviceLiveStream(device: device)

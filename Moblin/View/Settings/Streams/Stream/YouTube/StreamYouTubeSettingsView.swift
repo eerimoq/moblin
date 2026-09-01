@@ -42,11 +42,11 @@ private struct StreamDescriptionView: View {
                 CacheAsyncImage(url: thumbnailUrl) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 } placeholder: {
                     Image("AppIconNoBackground")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 }
                 .frame(width: 50, height: 50)
                 .clipShape(RoundedRectangle(cornerRadius: 5))

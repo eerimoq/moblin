@@ -49,7 +49,7 @@ private struct HighlightMessageView: View {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                         } placeholder: {
                             EmptyView()
                         }
@@ -117,13 +117,13 @@ private struct LineView: View {
             if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .padding(2)
                     .frame(height: frameHeightBadges())
             }
             if settings.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
                 CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().aspectRatio(contentMode: .fit)
+                    image.resizable().scaledToFit()
                 } placeholder: {
                     EmptyView()
                 }
@@ -135,7 +135,7 @@ private struct LineView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         EmptyView()
                     }
@@ -164,7 +164,7 @@ private struct LineView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         EmptyView()
                     }
@@ -220,7 +220,7 @@ private struct ChatView: View {
     var body: some View {
         VStack(spacing: 1) {
             Spacer()
-            ForEach(chat.posts.reversed()) { post in
+            ForEach(chat.posts.prefix(settings.maximumNumberOfMessages).reversed()) { post in
                 HStack {
                     PostView(settings: settings,
                              post: post,

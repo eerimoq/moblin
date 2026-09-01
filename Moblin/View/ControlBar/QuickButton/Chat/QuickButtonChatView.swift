@@ -1,5 +1,4 @@
 import Foundation
-import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
@@ -33,16 +32,14 @@ private struct HighlightMessageView: View {
                     }
                     if let url = segment.url {
                         if chat.animatedEmotes {
-                            WebImage(url: url)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
+                            AnimatedEmoteView(url: url)
                                 .frame(height: 25)
                                 .opacity(imageOpacity())
                         } else {
                             CacheAsyncImage(url: url) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                             } placeholder: {
                                 EmptyView()
                             }
@@ -85,14 +82,14 @@ private struct LineView: View {
             if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .padding(2)
                     .frame(height: CGFloat(chat.fontSize * 1.4))
                     .opacity(imageOpacity())
             }
             if chat.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
                 CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().aspectRatio(contentMode: .fit)
+                    image.resizable().scaledToFit()
                 } placeholder: {
                     EmptyView()
                 }
@@ -105,7 +102,7 @@ private struct LineView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         EmptyView()
                     }
@@ -138,16 +135,14 @@ private struct LineView: View {
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+                        AnimatedEmoteView(url: url)
                             .frame(height: 25)
                             .opacity(imageOpacity())
                     } else {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                         } placeholder: {
                             EmptyView()
                         }
@@ -746,7 +741,7 @@ private struct SendMessagesToView: View {
         HStack {
             Image(platform.imageName())
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(width: 24, height: 24)
             Text(platform.name())
                 .padding(.leading, 6)
@@ -766,7 +761,7 @@ private struct PlatformIconView: View {
     var body: some View {
         Image(image)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: 25, height: 25)
     }
 }

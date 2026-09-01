@@ -26,15 +26,18 @@ class SrtClient: @unchecked Sendable {
     private var bitrateStats: Atomic<BitrateStats> = .init(.init())
     private let reconnectTimer = SimpleTimer(queue: srtClientQueue)
     private var reader: MpegTsReader
+    private let softwareDecoding: Bool
 
-    init(cameraId: UUID, url: URL, delegate: any SrtClientDelegate) {
+    init(cameraId: UUID, url: URL, softwareDecoding: Bool, delegate: any SrtClientDelegate) {
         self.cameraId = cameraId
         self.url = url
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         reader = MpegTsReader(
             name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
             targetLatency: srtClientLatency
         )
         reader.delegate = self
@@ -85,7 +88,7 @@ class SrtClient: @unchecked Sendable {
             return
         }
         self.socket = socket
-        DispatchQueue(label: "com.eerimoq.moblin.srt-client-connection", qos: .userInteractive).async {
+        startBlockingThread(name: "com.eerimoq.moblin.srt-client-connection") {
             self.main(socket: socket)
         }
     }
@@ -125,6 +128,7 @@ class SrtClient: @unchecked Sendable {
             name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
             targetLatency: srtClientLatency
         )
         reader.delegate = self
@@ -141,21 +145,27 @@ class SrtClient: @unchecked Sendable {
         nonisolated(unsafe)
         var packet = Data(count: packetSize)
         while true {
-            packet.count = packetSize
-            let count = packet.withUnsafeMutableBytes { pointer in
-                srt_recvmsg(socket, pointer.baseAddress, Int32(packetSize))
+            let done = autoreleasepool { () -> Bool in
+                packet.count = packetSize
+                let count = packet.withUnsafeMutableBytes { pointer in
+                    srt_recvmsg(socket, pointer.baseAddress, Int32(packetSize))
+                }
+                guard count != SRT_ERROR else {
+                    return true
+                }
+                packet.count = Int(count)
+                bitrateStats.mutate {
+                    $0.add(bytesTransferred: Int(count))
+                }
+                do {
+                    try reader.handlePacketFromClient(packet: packet)
+                } catch {
+                    logger.info("srt-client: \(cameraId): Got corrupt packet: \(error).")
+                }
+                return false
             }
-            guard count != SRT_ERROR else {
+            if done {
                 break
-            }
-            packet.count = Int(count)
-            bitrateStats.mutate {
-                $0.add(bytesTransferred: Int(count))
-            }
-            do {
-                try reader.handlePacketFromClient(packet: packet)
-            } catch {
-                logger.info("srt-client: \(cameraId): Got corrupt packet: \(error).")
             }
         }
     }

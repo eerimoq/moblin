@@ -98,11 +98,7 @@ Config/User.xcconfig
 
 # Node.js
 node_modules/
-tests/*.log
-tests/*.json
-tests/*.png
-tests/*.dot
-tests/logs
+logs
 tests/files/
 __pycache__
 

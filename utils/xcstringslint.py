@@ -30,10 +30,7 @@ def check_format_specifiers(string_in_code, localized_string, language_code):
         )
     elif len(code_specs) > 1:
         if any(pos is None for pos, _ in loc_specs):
-            errors.append(
-                f"  [{language_code}] Missing positional prefixes in: "
-                f"{localized_string}"
-            )
+            errors.append(f"  [{language_code}] Missing positional prefixes in: {localized_string}")
         else:
             n = len(code_specs)
             positions = [int(pos.rstrip("$")) for pos, _ in loc_specs]
@@ -74,9 +71,7 @@ def fix_localized_string(string_in_code, localized_string):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Lint format specifiers in xcstrings localization files."
-    )
+    parser = argparse.ArgumentParser(description="Lint format specifiers in xcstrings localization files.")
     parser.add_argument("xcstrings_path", help="Path to the .xcstrings file")
     parser.add_argument(
         "--fix",
@@ -106,9 +101,7 @@ def main():
                 continue
 
             localized_string = string_unit.get("value", "")
-            errors = check_format_specifiers(
-                string_in_code, localized_string, language_code
-            )
+            errors = check_format_specifiers(string_in_code, localized_string, language_code)
 
             if errors:
                 string_errors.extend(errors)
@@ -129,9 +122,7 @@ def main():
 
     if args.fix and modified:
         xcstrings_path.write_text(
-            json.dumps(
-                localizable, indent=2, ensure_ascii=False, separators=(",", " : ")
-            ),
+            json.dumps(localizable, indent=2, ensure_ascii=False, separators=(",", " : ")),
             encoding="utf-8",
         )
 

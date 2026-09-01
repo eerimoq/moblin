@@ -2,8 +2,8 @@ import AVFoundation
 import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
-    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideoAttachCameraError()
     func streamVideoCaptureSessionError(_ message: String)
     func streamVideoBufferedVideoReady(cameraId: UUID)
@@ -51,6 +51,12 @@ final class Processor: @unchecked Sendable {
     func setTorch(value: Bool) {
         processorControlQueue.async {
             self.video.torch = value
+        }
+    }
+
+    func setTorchLevel(value: Float) {
+        processorControlQueue.async {
+            self.video.torchLevel = value
         }
     }
 
@@ -103,6 +109,10 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func setAudioDelay(delay: Double) {
+        audio.setDelay(delay: delay)
+    }
+
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         audio.encoder.setSettings(settings: settings)
     }
@@ -150,7 +160,7 @@ final class Processor: @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
         video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
     }
 
@@ -166,8 +176,8 @@ final class Processor: @unchecked Sendable {
         video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
+        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
     }
 
     func removeBufferedAudio(cameraId: UUID) {

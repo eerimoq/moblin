@@ -1879,6 +1879,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
     @Published var sharedChatIcons: Bool = false
     @Published var height: Float = 1
+    @Published var maximumNumberOfMessages: Int = 5
 
     enum CodingKeys: CodingKey {
         case id
@@ -1895,6 +1896,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
         case displayStyle
         case sharedChatIcons
         case height
+        case maximumNumberOfMessages
     }
 
     init() {}
@@ -1915,6 +1917,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
         try container.encode(.displayStyle, displayStyle)
         try container.encode(.sharedChatIcons, sharedChatIcons)
         try container.encode(.height, height)
+        try container.encode(.maximumNumberOfMessages, maximumNumberOfMessages)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1937,6 +1940,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, false)
         height = container.decode(.height, Float.self, 1)
+        maximumNumberOfMessages = container.decode(.maximumNumberOfMessages, Int.self, 5)
     }
 
     func update(other: SettingsWidgetChat) {
@@ -1957,6 +1961,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
         displayStyle = other.displayStyle
         sharedChatIcons = other.sharedChatIcons
         height = other.height
+        maximumNumberOfMessages = other.maximumNumberOfMessages
     }
 }
 

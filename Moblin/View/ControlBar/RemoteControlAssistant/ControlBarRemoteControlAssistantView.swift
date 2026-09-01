@@ -227,7 +227,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                 if let preview = remoteControl.preview {
                     Image(uiImage: preview)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, 3)
                         .onTapGesture(count: 2) { _ in
@@ -571,8 +571,8 @@ private struct GimbalPresetView: View {
         NavigationLink {
             Form {
                 Section {
-                    if let presets = remoteControl.settings?.gimbalPresets, !presets.isEmpty {
-                        ForEach(presets) { preset in
+                    if !remoteControl.gimbalPresets.isEmpty {
+                        ForEach(remoteControl.gimbalPresets) { preset in
                             TextButtonView(title: preset.name) {
                                 model.remoteControlAssistantMoveToGimbalPreset(id: preset.id)
                             }
@@ -587,6 +587,60 @@ private struct GimbalPresetView: View {
             .navigationTitle("Gimbal presets")
         } label: {
             Text("Gimbal presets")
+        }
+    }
+}
+
+private struct MacroView: View {
+    let model: Model
+    let macro: RemoteControlMacro
+
+    var body: some View {
+        HStack {
+            Text(macro.name)
+            Spacer()
+            if macro.running {
+                Button {
+                    model.remoteControlAssistantStopMacro(id: macro.id)
+                } label: {
+                    Text("Cancel")
+                }
+                .tint(.red)
+                .buttonStyle(.borderless)
+            } else {
+                Button {
+                    model.remoteControlAssistantStartMacro(id: macro.id)
+                } label: {
+                    Text("Run")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+    }
+}
+
+private struct MacrosView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    if !remoteControl.macros.isEmpty {
+                        ForEach(remoteControl.macros) { macro in
+                            MacroView(model: model, macro: macro)
+                        }
+                    } else {
+                        HCenter {
+                            Text("No macros configured in streamer")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Macros")
+        } label: {
+            Text("Macros")
         }
     }
 }
@@ -704,6 +758,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 BitrateView(model: model, remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
                 GimbalPresetView(model: model, remoteControl: remoteControl)
+                MacrosView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
@@ -824,7 +879,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                     if let preview = remoteControl.preview {
                         Image(uiImage: preview)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
                                 remoteControl.presentingPreviewFullScreen = false

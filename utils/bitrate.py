@@ -22,9 +22,7 @@ def set_bitrate_and_loss(bitrate, loss):
         print(f" - Loss {loss} %")
         args += f" loss {loss}%"
 
-    subprocess.run(
-        "sudo tc qdisc replace dev eno1 root netem" + args, shell=True, check=True
-    )
+    subprocess.run("sudo tc qdisc replace dev eno1 root netem" + args, shell=True, check=True)
 
 
 def do_constant(args):
@@ -68,18 +66,10 @@ def main():
     subparser.set_defaults(func=do_constant)
 
     subparser = subparsers.add_parser("square")
-    subparser.add_argument(
-        "--low-bitrate", default=2, type=float, help="Low bitrate in Mbps."
-    )
-    subparser.add_argument(
-        "--high-bitrate", default=10, type=float, help="High bitrate in Mbps."
-    )
-    subparser.add_argument(
-        "--low-time", default=15, type=float, help="Low bitrate time in seconds."
-    )
-    subparser.add_argument(
-        "--high-time", default=15, type=float, help="High bitrate time in seconds."
-    )
+    subparser.add_argument("--low-bitrate", default=2, type=float, help="Low bitrate in Mbps.")
+    subparser.add_argument("--high-bitrate", default=10, type=float, help="High bitrate in Mbps.")
+    subparser.add_argument("--low-time", default=15, type=float, help="Low bitrate time in seconds.")
+    subparser.add_argument("--high-time", default=15, type=float, help="High bitrate time in seconds.")
     subparser.add_argument("--loss", type=float, help="Loss in %%.")
     subparser.set_defaults(func=do_square)
 

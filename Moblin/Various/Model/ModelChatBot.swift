@@ -1,91 +1,12 @@
 import AVFoundation
 import Foundation
-import NaturalLanguage
 
-private let askedByLanguage = [
-    "ar": "سأل",
-    "bg": "попита",
-    "ca": "va preguntar",
-    "cs": "se zeptal",
-    "da": "spurgte",
-    "de": "fragte",
-    "en": "asked",
-    "el": "ερωτηθείς",
-    "es": "preguntó",
-    "fi": "kysyi",
-    "fr": "demandée",
-    "he": "שאל",
-    "hi": "पूछा",
-    "hr": "pitao",
-    "hu": "kérdezte",
-    "id": "diminta",
-    "it": "chiesto",
-    "ja": "尋ねた",
-    "ko": "질문",
-    "ms": "bertanya",
-    "nb": "spurte",
-    "nl": "vroeg",
-    "no": "spurte",
-    "pl": "zapytał",
-    "pt": "perguntou",
-    "ro": "a întrebat",
-    "ru": "спросил",
-    "sk": "sa spýtal",
-    "sl": "vprašal",
-    "sv": "frågade",
-    "ta": "என்று கேட்டார்",
-    "th": "ถาม",
-    "tr": "sordu",
-    "uk": "запитав",
-    "vi": "yêu cầu",
-    "zh": "问",
-]
-
-private let answerByLanguage = [
-    "ar": "إجابة",
-    "bg": "отговор",
-    "ca": "Respon",
-    "cs": "Odpověď",
-    "da": "Svar",
-    "de": "Antwort",
-    "en": "Answer",
-    "el": "Ερωτηθείς",
-    "es": "Respuesta",
-    "fi": "Vastaus",
-    "fr": "Répondre",
-    "he": "תְשׁוּבָה",
-    "hi": "उत्तर",
-    "hr": "Odgovor",
-    "hu": "Válasz",
-    "id": "Menjawab",
-    "it": "Risposta",
-    "ja": "答え",
-    "ko": "답변",
-    "ms": "Jawab",
-    "nb": "Svare",
-    "nl": "Antwoord",
-    "no": "Svare",
-    "pl": "Odpowiedź",
-    "pt": "Resposta",
-    "ro": "Răspuns",
-    "ru": "Отвечать",
-    "sk": "Odpoveď",
-    "sl": "Odgovori",
-    "sv": "Svar",
-    "ta": "பதில்",
-    "th": "คำตอบ",
-    "tr": "Cevap",
-    "uk": "Відповідь",
-    "vi": "Trả lời",
-    "zh": "回答",
-]
-
-private func getAsked(_ language: String) -> String {
-    askedByLanguage[language] ?? ""
-}
-
-private func getAnswer(_ language: String) -> String {
-    answerByLanguage[language] ?? ""
+private func formatAiAnswer(user: String, question: String, answer: String) -> String {
+    var question = question
+    if question.last?.isPunctuation != true {
+        question += ","
+    }
+    return String(localized: "\(user) asked: \(question) Answer: \(answer)")
 }
 
 extension Model {
@@ -159,6 +80,8 @@ extension Model {
                 handleChatBotMessageSend(command: command)
             case "music":
                 handleChatBotMessageMusic(command: command)
+            case "custom":
+                handleChatBotMessageCustom(command: command)
             default:
                 break
             }
@@ -369,31 +292,26 @@ extension Model {
     }
 
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
-        var question = command.rest()
+        let question = command.rest()
         let ai = database.chat.botCommandAi
         guard let baseUrl = URL(string: ai.baseUrl) else {
             return
         }
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
-            .ask(question, model: ai.model, role: ai.personality) { answer in
-                guard let answer else {
-                    return
+            .ask(question, model: ai.model, role: ai.personality) { result in
+                switch result {
+                case let .success(answer):
+                    self.sendChatBotReply(
+                        message: formatAiAnswer(user: user, question: question, answer: answer),
+                        platform: platform
+                    )
+                case let .failure(error):
+                    self.sendChatBotReply(message: String(localized: """
+                    \(user), sorry, I could not answer your question (\(error.description)). 😢
+                    """), platform: platform)
                 }
-                guard let user = command.message.user else {
-                    return
-                }
-                let recognizer = NLLanguageRecognizer()
-                recognizer.processString(question)
-                let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?
-                    .identifier
-                guard let language else {
-                    return
-                }
-                if question.last?.isPunctuation != true {
-                    question += ","
-                }
-                let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
-                self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
             }
     }
 
@@ -491,6 +409,46 @@ extension Model {
         }
     }
 
+    func isChatBotCustomCommandsWeatherNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsWeather)
+    }
+
+    func isChatBotCustomCommandsGeographyNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGeography)
+    }
+
+    func isChatBotCustomCommandsGForceNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGForce)
+    }
+
+    func chatBotCustomCommandsTextChanged() {
+        for customCommand in database.chat.customCommands {
+            let parts = loadTextFormat(format: customCommand.formatString)
+            customCommand.needsWeather = parts.isWeatherVariable()
+            customCommand.needsGeography = parts.isGeographyVariable()
+            customCommand.needsGForce = parts.isGForceVariable()
+        }
+        startWeatherManager()
+        startGeographyManager()
+        startGForceManager()
+    }
+
+    private func handleChatBotMessageCustom(command: ChatBotCommand) {
+        let name = command.rest().lowercased()
+        guard let customCommand = database.chat.customCommands.first(where: {
+            $0.name.lowercased() == name
+        }) else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: customCommand.permissions,
+            command: command
+        ) {
+            self.sendChatBotReply(message: self.formatPlainText(formatString: customCommand.formatString),
+                                  platform: command.message.platform)
+        }
+    }
+
     private func handleChatBotMessageMusic(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.music,
@@ -532,13 +490,16 @@ extension Model {
         let user = command.user() ?? String(localized: "Unknown")
         addMusic(title: title) { result in
             switch result {
-            case let .success(song):
+            case let .added(song: song):
                 self.sendChatBotReply(
                     message: String(localized: "\(song) added to the queue by \(user)."),
                     platform: platform
                 )
-            case let .failure(message):
-                self.sendChatBotReply(message: message, platform: platform)
+            case .songNotFound:
+                self.sendChatBotReply(
+                    message: String(localized: "\(title) requested by \(user) not found."),
+                    platform: platform
+                )
             }
         }
     }

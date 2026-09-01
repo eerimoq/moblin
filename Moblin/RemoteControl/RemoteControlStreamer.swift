@@ -49,9 +49,15 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
+    func remoteControlStreamerSetGimbalTracking(on: Bool)
+    func remoteControlStreamerSetGimbalMovement(x: Float, y: Float)
+    func remoteControlStreamerAnimateGimbal(motion: SettingsGimbalMotion)
+    func remoteControlStreamerSaveGimbalPreset()
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
+    func remoteControlStreamerStartMacro(id: UUID)
+    func remoteControlStreamerStopMacro(id: UUID)
 }
 
 private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
@@ -366,6 +372,18 @@ class RemoteControlStreamer {
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlStreamerMoveToGimbalPreset(id: presetId)
             sendEmptyOkResponse(id: id)
+        case let .setGimbalTracking(on: on):
+            delegate.remoteControlStreamerSetGimbalTracking(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setGimbalMovement(x: x, y: y):
+            delegate.remoteControlStreamerSetGimbalMovement(x: x, y: y)
+            sendEmptyOkResponse(id: id)
+        case let .animateGimbal(motion: motion):
+            delegate.remoteControlStreamerAnimateGimbal(motion: motion)
+            sendEmptyOkResponse(id: id)
+        case .saveGimbalPreset:
+            delegate.remoteControlStreamerSaveGimbalPreset()
+            sendEmptyOkResponse(id: id)
         case .getGolfScoreboard:
             sendEmptyOkResponse(id: id)
         case .updateGolfScoreboard:
@@ -379,6 +397,12 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case .stopStats:
             delegate.remoteControlStreamerStopStats()
+            sendEmptyOkResponse(id: id)
+        case let .startMacro(id: macroId):
+            delegate.remoteControlStreamerStartMacro(id: macroId)
+            sendEmptyOkResponse(id: id)
+        case let .stopMacro(id: macroId):
+            delegate.remoteControlStreamerStopMacro(id: macroId)
             sendEmptyOkResponse(id: id)
         }
     }

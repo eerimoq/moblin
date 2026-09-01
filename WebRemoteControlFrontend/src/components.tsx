@@ -1,26 +1,87 @@
 import type { Accessor, JSX, ParentProps } from "solid-js";
-import { For, Show } from "solid-js";
+import { For, onCleanup, onMount, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 import { connectionStatus, NamedItem } from "./utils.ts";
 
 interface ButtonProps {
   class?: string;
   type?: "button" | "submit" | "reset";
+  disabled?: boolean;
   onClick?: (event: MouseEvent) => void;
   children?: JSX.Element;
 }
 
-export function Button({ class: extraClass, type = "button", onClick, children }: ButtonProps) {
+export function Button(props: ButtonProps) {
   return (
     <button
-      type={type}
+      type={props.type ?? "button"}
+      disabled={props.disabled}
       class={twMerge(
         "cursor-pointer rounded border border-zinc-700 px-3 py-1 text-sm transition-colors hover:bg-zinc-800",
-        extraClass,
+        props.disabled && "cursor-not-allowed opacity-40 hover:bg-transparent",
+        props.class,
       )}
-      onClick={onClick}
+      onClick={(event) => props.onClick?.(event)}
     >
-      {children}
+      {props.children}
+    </button>
+  );
+}
+
+interface HoldButtonProps {
+  class?: string;
+  disabled?: boolean;
+  onStart: () => void;
+  onStop: () => void;
+  children?: JSX.Element;
+}
+
+export function HoldButton(props: HoldButtonProps) {
+  let holding = false;
+
+  function start(event: PointerEvent): void {
+    event.preventDefault();
+    if (holding || props.disabled) return;
+    holding = true;
+    const target = event.currentTarget as HTMLElement;
+    try {
+      target.setPointerCapture(event.pointerId);
+    } catch {
+      // Ignore, the button still works without pointer capture.
+    }
+    props.onStart();
+  }
+
+  function stop(): void {
+    if (!holding) return;
+    holding = false;
+    props.onStop();
+  }
+
+  onMount(() => {
+    window.addEventListener("blur", stop);
+    onCleanup(() => {
+      window.removeEventListener("blur", stop);
+      stop();
+    });
+  });
+
+  return (
+    <button
+      type="button"
+      disabled={props.disabled}
+      class={twMerge(
+        "touch-none cursor-pointer select-none rounded border border-zinc-700 px-3 py-1 text-sm transition-colors hover:bg-zinc-800 active:bg-zinc-700",
+        props.disabled &&
+          "cursor-not-allowed opacity-40 hover:bg-transparent active:bg-transparent",
+        props.class,
+      )}
+      onPointerDown={start}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      onLostPointerCapture={stop}
+    >
+      {props.children}
     </button>
   );
 }

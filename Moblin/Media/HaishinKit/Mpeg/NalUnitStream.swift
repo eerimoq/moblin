@@ -22,7 +22,6 @@ func getNalUnits(data: Data) -> [NalUnitInfo] {
     return nalUnits
 }
 
-// Should escape as well?
 func addNalUnitStartCodes(_ data: inout Data) {
     var index = 0
     while index + 3 < data.count {
@@ -32,7 +31,6 @@ func addNalUnitStartCodes(_ data: inout Data) {
     }
 }
 
-// Should unescape as well?
 func removeNalUnitStartCodes(_ data: inout Data, _ nalUnits: [NalUnitInfo]) {
     var numberOfThreeBytesStartCodes = nalUnits.count(where: { $0.startCodeLength != 4 })
     if numberOfThreeBytesStartCodes == 0 {

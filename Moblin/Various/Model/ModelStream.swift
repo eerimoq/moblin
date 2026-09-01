@@ -11,7 +11,7 @@ let lowBatteryMessage = String(localized: "Low battery")
 
 class CreateStreamWizard: ObservableObject {
     var platform: WizardPlatform = .custom
-    var networkSetup: WizardNetworkSetup = .none
+    var networkSetup: WizardNetworkSetup = .direct
     var customProtocol: WizardCustomProtocol = .none
     let twitchStream = SettingsStream(name: "")
     var twitchAccessToken = ""
@@ -26,6 +26,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var showKickAuth = false
     @Published var name = ""
     @Published var backgroundStreaming = false
+    @Published var autoGoLive = false
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
@@ -183,6 +184,8 @@ extension Model {
             startNetStreamRist()
         case .whip:
             startNetStreamWhip()
+        case .mobcam:
+            startNetStreamMobcam()
         }
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
@@ -238,6 +241,10 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
+    private func startNetStreamMobcam() {
+        media.mobcamStartStream(port: stream.mobcamPort())
+    }
+
     func startPreviewStream() {
         guard !isPreviewStreaming else {
             return
@@ -282,6 +289,7 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
+        media.mobcamStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
@@ -340,6 +348,7 @@ extension Model {
             1: database.audio.outputToInputChannelsMap.channel2,
         ])
         setAudioGain(gainDb: database.audio.gainDb)
+        updateMicDelay()
         startRecorderIfNeeded()
         reloadConnections()
         resetChat()
@@ -501,6 +510,13 @@ extension Model {
         makeToast(title: String(localized: "🤟 Stream ended 🤟"), subTitle: subTitle, onTapped: onTapped)
     }
 
+    func makeNotLoggedInToToast(platform: Platform) {
+        makeErrorToast(
+            title: String(localized: "Not logged in to \(platform.name())"),
+            subTitle: String(localized: "Please login again")
+        )
+    }
+
     private func makeConnectFailureToast(subTitle: String) {
         makeErrorToast(title: failedToConnectMessage(stream.name),
                        subTitle: subTitle,
@@ -590,6 +606,29 @@ extension Model {
         DispatchQueue.main.async {
             self.onDisconnected(reason: reason)
         }
+    }
+
+    private func handleMobcamConnected() {
+        DispatchQueue.main.async {
+            self.onConnected()
+        }
+    }
+
+    private func handleMobcamDisconnected(reason: String) {
+        DispatchQueue.main.async {
+            self.onMobcamDisconnected(reason: reason)
+        }
+    }
+
+    private func onMobcamDisconnected(reason: String) {
+        guard streaming else {
+            return
+        }
+        logger.info("stream: Mobcam disconnected with reason: \(reason)")
+        streamState = .connecting
+        streamStartTime = nil
+        updateStreamUptime(now: .now)
+        updateSpeed(now: .now)
     }
 
     private func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
@@ -787,6 +826,13 @@ extension Model {
         }
     }
 
+    func startStreamIfAutoGoLive() {
+        guard stream.autoGoLive, stream.getProtocol() == .mobcam, !isLive else {
+            return
+        }
+        startStream()
+    }
+
     func toggleStream() {
         if isLive {
             _ = stopStream()
@@ -957,6 +1003,14 @@ extension Model: @preconcurrency MediaDelegate {
 
     func mediaOnWhipDisconnected(_ reason: String) {
         handleWhipDisconnected(reason: reason)
+    }
+
+    func mediaOnMobcamConnected() {
+        handleMobcamConnected()
+    }
+
+    func mediaOnMobcamDisconnected(_ reason: String) {
+        handleMobcamDisconnected(reason: reason)
     }
 
     func mediaOnAudioMuteChange() {

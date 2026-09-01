@@ -6,6 +6,7 @@ from uuid import uuid7
 
 import requests
 
+from .config import REMOTE_CONTROL_PASSWORD
 from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .utils import TEST_DIR
@@ -15,6 +16,8 @@ CACHE_DIR = TEST_DIR / "cache"
 
 
 class SceneName(StrEnum):
+    BACK = "Back"
+    EMPTY = "Empty"
     FRONT = "Front"
     SCREEN = "Screen"
 
@@ -34,6 +37,7 @@ class CameraPosition(StrEnum):
 
 
 class WidgetType(StrEnum):
+    ALERTS = "Alerts"
     BROWSER = "Browser"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
@@ -77,8 +81,27 @@ class GraphicsImplementation(StrEnum):
     METAL_PETAL = "metalPetal"
 
 
+class VideoStabilizationMode(StrEnum):
+    OFF = "Off"
+    STANDARD = "Standard"
+    CINEMATIC = "Cinematic"
+    CINEMATIC_EXTENDED_ENHANCED = "Cinematic extended enhanced"
+
+
+class DjiDeviceUrlType(StrEnum):
+    SERVER = "Server"
+    CUSTOM = "Custom"
+
+
+class DjiDeviceResolution(StrEnum):
+    R1080P = "1080p"
+    R720P = "720p"
+    R480P = "480p"
+
+
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
+    QUAD_HD_4_3 = "1920x1440"
     QUAD_HD = "2560x1440"
     ULTRA_HD = "3840x2160"
 
@@ -87,9 +110,24 @@ class Resolution(StrEnum):
         return int(width), int(height)
 
 
+BACK_SCENE_SETTINGS = {
+    "name": SceneName.BACK,
+    "cameraPosition": CameraPosition.BACK,
+    "enabled": True,
+}
+EMPTY_SCENE_SETTINGS = {
+    "name": SceneName.EMPTY,
+    "cameraPosition": CameraPosition.NONE,
+    "enabled": True,
+}
 FRONT_SCENE_SETTINGS = {
     "name": SceneName.FRONT,
     "cameraPosition": CameraPosition.FRONT,
+    "enabled": True,
+}
+SCREEN_SCENE_SETTINGS = {
+    "name": SceneName.SCREEN,
+    "cameraPosition": CameraPosition.SCREEN_CAPTURE,
     "enabled": True,
 }
 RECORD_STREAM_SETTINGS = {
@@ -106,6 +144,39 @@ def uuid() -> str:
 
 def mic_id(stream_id: str) -> str:
     return f"{stream_id} 0"
+
+
+def mics_settings(mics: list[dict], delay: float):
+    return {"all": [mic_settings(mic, delay) for mic in mics]}
+
+
+def mic_settings(mic: dict, delay: float):
+    input_uid, data_source_id = mic["id"].rsplit(" ", 1)
+    return {
+        "name": mic["name"],
+        "inputUid": input_uid,
+        "dataSourceID": int(data_source_id) if data_source_id != "0" else None,
+        "delay": delay,
+    }
+
+
+def dji_device_settings(rtmp_stream_id: str, dji_camera: dict):
+    return {
+        "name": "Camera",
+        "bluetoothPeripheralName": dji_camera["bluetooth-peripheral-name"],
+        "bluetoothPeripheralId": dji_camera["bluetooth-peripheral-id"],
+        "wifiSsid": dji_camera["wifi-ssid"],
+        "wifiPassword": dji_camera["wifi-password"],
+        "model": dji_camera["model"],
+        "rtmpUrlType": DjiDeviceUrlType.SERVER,
+        "serverRtmpStreamId": rtmp_stream_id,
+        "resolution": DjiDeviceResolution.R1080P,
+        "fps": 30,
+        "bitrate": 6_000_000,
+        "videoCodec": VideoCodec.H265,
+        "autoRestartStream": True,
+        "isStarted": True,
+    }
 
 
 def download_model(name: str) -> Path:
@@ -167,28 +238,29 @@ def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
     }
 
 
-def base_settings(config: Config):
+def base_settings(config: Config, remote_control_port: int):
     return {
         "scenes": [FRONT_SCENE_SETTINGS],
         "remoteControl": {
             "server": {
                 "enabled": True,
-                "url": f"ws://{config.tester_ip_address()}:{config.remote_control_port()}",
+                "url": f"ws://{config.tester_ip_address()}:{remote_control_port}",
+                "reliableChatAndEvents": True,
             },
             "web": {"enabled": True, "port": WEB_REMOTE_CONTROL_PORT},
-            "password": "1234",
+            "password": REMOTE_CONTROL_PASSWORD,
+            "hasMigratedAssistant": True,
         },
         "location": {"enabled": True},
         "verboseStatuses": True,
         "showAllSettings": True,
         "debug": {"logLevel": "Debug"},
-        "show": {"stream": True, "cpu": True, "microphone": True},
+        "show": {"stream": True, "cpu": True, "microphone": True, "cameras": True},
+        "chat": {"timestampColorEnabled": True},
     }
 
 
-def create_settings_file(
-    settings, output_file: Path, files: dict[str, Path] | None = None
-):
+def create_settings_file(settings, output_file: Path, files: dict[str, Path] | None = None):
     with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("settings.json", json.dumps(settings, indent=4))
         for name, path in (files or {}).items():

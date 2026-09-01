@@ -400,9 +400,9 @@ class RtmpStream: @unchecked Sendable {
             count: Int(audioBuffer.byteLength)
         )
         prevRebasedAudioTimeStamp = rebasedTimestamp
+        audioTimeStampDelta += delta
         handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
         audioTimeStampDelta -= floor(audioTimeStampDelta)
-        audioTimeStampDelta += delta
     }
 
     private func videoEncoderOutputFormatInternal(
@@ -459,9 +459,9 @@ class RtmpStream: @unchecked Sendable {
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
         prevRebasedVideoTimeStamp = rebasedTimestamp
+        videoTimeStampDelta += delta
         handleEncodedVideoBuffer(buffer, UInt32(videoTimeStampDelta))
         videoTimeStampDelta -= floor(videoTimeStampDelta)
-        videoTimeStampDelta += delta
     }
 
     private func rebaseTimeStamp(timestamp: Double) -> Double? {

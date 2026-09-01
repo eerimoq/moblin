@@ -1,14 +1,29 @@
 import Foundation
 @testable import Moblin
 import Testing
+import WeatherKit
 
 struct RemoteControlSuite {
+    private func encode(_ request: RemoteControlRequest) throws -> String? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return try String(bytes: encoder.encode(request), encoding: .utf8)
+    }
+
     @Test
-    func remoteSceneDataTextStats() throws {
-        let textStats = RemoteControlRemoteSceneDataTextStats(stats: createStats())
+    func gimbalRequests() throws {
+        #expect(try encode(.setGimbalTracking(on: true)) == #"{"setGimbalTracking":{"on":true}}"#)
+        #expect(try encode(.setGimbalMovement(x: 1, y: -1)) == #"{"setGimbalMovement":{"x":1,"y":-1}}"#)
+        #expect(try encode(.animateGimbal(motion: .kapow)) == #"{"animateGimbal":{"motion":{"kapow":{}}}}"#)
+        #expect(try encode(.saveGimbalPreset) == #"{"saveGimbalPreset":{}}"#)
+    }
+
+    @Test
+    func remoteSceneDataVariables() throws {
+        let variables = RemoteControlRemoteSceneDataVariables(variables: createVariables())
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
-        let encoded = try String(bytes: encoder.encode(textStats), encoding: .utf8)
+        let encoded = try String(bytes: encoder.encode(variables), encoding: .utf8)
         #expect(encoded == """
         {
           "activeEnergyBurned" : 350,
@@ -21,6 +36,7 @@ struct RemoteControlSuite {
           "bitrateAndTotal" : "5000 kbps, 1.2 GB",
           "browserTitle" : "Title",
           "city" : "Malmö",
+          "condition" : "clear",
           "conditions" : "sun.max",
           "country" : "Sweden",
           "countryFlag" : "🇸🇪",
@@ -236,50 +252,51 @@ struct RemoteControlSuite {
                            gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5))
     }
 
-    private func createStats() -> TextEffectStats {
-        TextEffectStats(timestamp: .now,
-                        bitrate: "5000 kbps",
-                        bitrateAndTotal: "5000 kbps, 1.2 GB",
-                        resolution: "1920x1080",
-                        fps: 30,
-                        date: Date(timeIntervalSince1970: 1_723_350_366),
-                        debugOverlayLines: ["First line", "Second line"],
-                        speed: 5.5,
-                        averageSpeed: 7.25,
-                        altitude: 243.5,
-                        distance: 1700.75,
-                        splitDistance: 5400.5,
-                        altitudeAscent: 120.25,
-                        altitudeDescent: 80.5,
-                        splitAltitudeAscent: 40.75,
-                        splitAltitudeDescent: 30.25,
-                        slope: "5%",
-                        conditions: "sun.max",
-                        temperature: Measurement(value: 22, unit: UnitTemperature.celsius),
-                        feelsLikeTemperature: Measurement(value: 17, unit: UnitTemperature.celsius),
-                        windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),
-                        windGust: Measurement(value: 8.5, unit: UnitSpeed.metersPerSecond),
-                        country: "Sweden",
-                        countryFlag: "🇸🇪",
-                        state: "Skåne",
-                        area: "Malmö",
-                        city: "Malmö",
-                        neighborhood: "Möllevången",
-                        muted: true,
-                        heartRates: ["Watch": 75, "Belt": nil],
-                        activeEnergyBurned: 350,
-                        workoutDistance: 4200,
-                        power: 210,
-                        stepCount: 8000,
-                        teslaBatteryLevel: "80%",
-                        teslaDrive: "D",
-                        teslaMedia: "Song",
-                        cyclingPower: "250 W",
-                        cyclingCadence: "90",
-                        runningMetrics: ["Foot pod": .init(speed: 3.5, cadence: 180, distance: 4200)],
-                        browserTitle: "Title",
-                        gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5),
-                        latestSubscriber: "Subscriber",
-                        latestFollower: "Follower")
+    private func createVariables() -> Variables {
+        Variables(timestamp: .now,
+                  bitrate: "5000 kbps",
+                  bitrateAndTotal: "5000 kbps, 1.2 GB",
+                  resolution: "1920x1080",
+                  fps: 30,
+                  date: Date(timeIntervalSince1970: 1_723_350_366),
+                  debugOverlayLines: ["First line", "Second line"],
+                  speed: 5.5,
+                  averageSpeed: 7.25,
+                  altitude: 243.5,
+                  distance: 1700.75,
+                  splitDistance: 5400.5,
+                  altitudeAscent: 120.25,
+                  altitudeDescent: 80.5,
+                  splitAltitudeAscent: 40.75,
+                  splitAltitudeDescent: 30.25,
+                  slope: "5%",
+                  conditions: "sun.max",
+                  condition: .clear,
+                  temperature: Measurement(value: 22, unit: UnitTemperature.celsius),
+                  feelsLikeTemperature: Measurement(value: 17, unit: UnitTemperature.celsius),
+                  windSpeed: Measurement(value: 3, unit: UnitSpeed.metersPerSecond),
+                  windGust: Measurement(value: 8.5, unit: UnitSpeed.metersPerSecond),
+                  country: "Sweden",
+                  countryFlag: "🇸🇪",
+                  state: "Skåne",
+                  area: "Malmö",
+                  city: "Malmö",
+                  neighborhood: "Möllevången",
+                  muted: true,
+                  heartRates: ["Watch": 75, "Belt": nil],
+                  activeEnergyBurned: 350,
+                  workoutDistance: 4200,
+                  power: 210,
+                  stepCount: 8000,
+                  teslaBatteryLevel: "80%",
+                  teslaDrive: "D",
+                  teslaMedia: "Song",
+                  cyclingPower: "250 W",
+                  cyclingCadence: "90",
+                  runningMetrics: ["Foot pod": .init(speed: 3.5, cadence: 180, distance: 4200)],
+                  browserTitle: "Title",
+                  gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5),
+                  latestSubscriber: "Subscriber",
+                  latestFollower: "Follower")
     }
 }

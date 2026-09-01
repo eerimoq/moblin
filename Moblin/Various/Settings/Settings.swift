@@ -1179,9 +1179,15 @@ class Database: Codable, ObservableObject {
     var streamDecks: SettingsStreamDecks = .init()
     @Published var graphicsImplementation: SettingsGraphicsImplementation = .coreImage
     @Published var graphicsHighQualityDownsampling: Bool = false
+    @Published var ingestsSoftwareVideoDecoding: Bool = false
+    @Published var torchLevel: Float = 1.0
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
+    }
+
+    func getHighestBitratePreset() -> UInt32 {
+        bitratePresets.sorted { $0.bitrate > $1.bitrate }.first?.bitrate ?? 5_000_000
     }
 
     @MainActor
@@ -1301,6 +1307,8 @@ class Database: Codable, ObservableObject {
         case streamDecks
         case graphicsImplementation
         case graphicsHighQualityDownsampling
+        case ingestsSoftwareVideoDecoding
+        case torchLevel
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1388,6 +1396,8 @@ class Database: Codable, ObservableObject {
         try container.encode(.streamDecks, streamDecks)
         try container.encode(.graphicsImplementation, graphicsImplementation)
         try container.encode(.graphicsHighQualityDownsampling, graphicsHighQualityDownsampling)
+        try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
+        try container.encode(.torchLevel, torchLevel)
     }
 
     init() {}
@@ -1431,6 +1441,10 @@ class Database: Codable, ObservableObject {
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, SettingsAudio.self, .init())
+        if debug.preferStereoMicToBeRemoved {
+            audio.preferStereoMic = true
+            debug.preferStereoMicToBeRemoved = false
+        }
         macros = container.decode(.macros, SettingsMacros.self, .init())
         webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
         deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
@@ -1539,6 +1553,8 @@ class Database: Codable, ObservableObject {
         graphicsHighQualityDownsampling = container.decode(.graphicsHighQualityDownsampling,
                                                            Bool.self,
                                                            debug.highQualityDownsamplingToBeRemoved)
+        ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
+        torchLevel = container.decode(.torchLevel, Float.self, 1.0)
     }
 }
 

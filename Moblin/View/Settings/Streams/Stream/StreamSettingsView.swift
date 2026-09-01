@@ -4,13 +4,14 @@ private struct PlatformLogoAndNameView: View {
     let logo: String
     let name: String
     var channel: String = ""
+    var scale = 1.0
 
     var body: some View {
         HStack {
             Image(logo)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 25)
+                .scaledToFit()
+                .frame(width: 30 * scale, height: 25 * scale)
             if channel.isEmpty {
                 Text(name)
             } else {
@@ -76,6 +77,12 @@ struct DiscordLogoAndNameView: View {
 struct TtsMonsterLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
+    }
+}
+
+struct MobcamLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "MobcamLogo", name: String(localized: "Mobcam"), scale: 1.25)
     }
 }
 
@@ -150,6 +157,12 @@ struct StreamPlatformsSettingsView: View {
 struct BackgroundStreamingFooterView: View {
     var body: some View {
         Text("Live stream and record when the app is in background mode.")
+    }
+}
+
+struct AutoGoLiveFooterView: View {
+    var body: some View {
+        Text("Automatically go live when the app enters foreground.")
     }
 }
 
@@ -233,6 +246,12 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("WHIP")
                         }
+                    case .mobcam:
+                        NavigationLink {
+                            StreamMobcamSettingsView(stream: stream)
+                        } label: {
+                            Text("Mobcam")
+                        }
                     }
                 }
             }
@@ -296,6 +315,13 @@ struct StreamSettingsView: View {
             }
             if !isMac() {
                 BackgroundStreamingView(model: model, stream: stream)
+            }
+            if stream.getProtocol() == .mobcam {
+                Section {
+                    Toggle("Auto go live", isOn: $stream.autoGoLive)
+                } footer: {
+                    AutoGoLiveFooterView()
+                }
             }
             Section {
                 NavigationLink {

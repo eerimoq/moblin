@@ -139,7 +139,7 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 
 class SettingsRemoteControlWeb: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 80
+    @Published var port: UInt16 = DefaultTcpPorts.remoteControlWeb
     @Published var deviceName: String = ""
 
     enum CodingKeys: CodingKey {
@@ -160,7 +160,7 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 80)
+        port = container.decode(.port, UInt16.self, DefaultTcpPorts.remoteControlWeb)
         deviceName = container.decode(.deviceName, String.self, "")
     }
 }

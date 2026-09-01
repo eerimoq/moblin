@@ -12,7 +12,13 @@ struct StreamWizardGeneralSettingsView: View {
                 Text("Stream name")
                     .disableAutocorrection(true)
             }
-            if !isMac() {
+            if createStreamWizard.platform == .mobcam {
+                Section {
+                    Toggle("Auto go live", isOn: $createStreamWizard.autoGoLive)
+                } footer: {
+                    AutoGoLiveFooterView()
+                }
+            } else if !isMac() {
                 Section {
                     Toggle("Background streaming", isOn: $createStreamWizard.backgroundStreaming)
                 } footer: {

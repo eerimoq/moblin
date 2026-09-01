@@ -3,6 +3,7 @@ import Network
 
 protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebConnected()
+    func remoteControlWebDisconnected()
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     func remoteControlWebGetSettings() -> RemoteControlSettings
@@ -23,6 +24,10 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool)
     func remoteControlWebSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
     func remoteControlWebMoveToGimbalPreset(id: UUID)
+    func remoteControlWebSetGimbalTracking(on: Bool)
+    func remoteControlWebSetGimbalMovement(x: Float, y: Float)
+    func remoteControlWebAnimateGimbal(motion: SettingsGimbalMotion)
+    func remoteControlWebSaveGimbalPreset()
     func remoteControlWebGetScoreboardSports() -> [String]
     func remoteControlWebSetScoreboardSport(sportId: String)
     func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
@@ -321,6 +326,7 @@ class RemoteControlWeb: @unchecked Sendable {
     private func handleDisconnected(connection: NWConnection) {
         connection.cancel()
         connections.removeAll(where: { $0 === connection })
+        delegate?.remoteControlWebDisconnected()
         let id = ObjectIdentifier(connection)
         if connectionsRequestingPreview.contains(id) {
             connectionsRequestingPreview.remove(id)
@@ -417,6 +423,18 @@ class RemoteControlWeb: @unchecked Sendable {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlWebMoveToGimbalPreset(id: presetId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setGimbalTracking(on: on):
+            delegate.remoteControlWebSetGimbalTracking(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setGimbalMovement(x: x, y: y):
+            delegate.remoteControlWebSetGimbalMovement(x: x, y: y)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .animateGimbal(motion: motion):
+            delegate.remoteControlWebAnimateGimbal(motion: motion)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .saveGimbalPreset:
+            delegate.remoteControlWebSaveGimbalPreset()
             sendEmptyOkResponse(connection: connection, id: id)
         case .getScoreboardSports:
             let sports = delegate.remoteControlWebGetScoreboardSports()

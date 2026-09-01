@@ -20,10 +20,12 @@ class WhipServer: @unchecked Sendable {
     private var clients: [UUID: WhipServerClient] = [:]
     private let delegate: any WhipServerDelegate
     var settings: SettingsWhipServer
+    private let softwareDecoding: Bool
     private var bitrateStats = BitrateStats()
 
-    init(settings: SettingsWhipServer, delegate: any WhipServerDelegate) {
+    init(settings: SettingsWhipServer, softwareDecoding: Bool, delegate: any WhipServerDelegate) {
         self.settings = settings
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
     }
 
@@ -145,6 +147,7 @@ class WhipServer: @unchecked Sendable {
         let client = WhipServerClient(streamId: stream.id,
                                       latency: stream.latencySeconds(),
                                       syncTimestamps: stream.syncTimestamps,
+                                      softwareDecoding: softwareDecoding,
                                       iceServers: [defaultStunServer],
                                       delegate: self)
         let streamId = client.streamId

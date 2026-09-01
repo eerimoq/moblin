@@ -30,7 +30,10 @@ extension Model {
             guard let url = URL(string: stream.url) else {
                 continue
             }
-            let client = SrtClient(cameraId: stream.id, url: url, delegate: self)
+            let client = SrtClient(cameraId: stream.id,
+                                   url: url,
+                                   softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                   delegate: self)
             client.start()
             ingests.srt.append(client)
         }

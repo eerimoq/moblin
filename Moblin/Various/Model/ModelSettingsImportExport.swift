@@ -78,8 +78,12 @@ extension Model {
         updateIconImageFromDatabase()
         updateMicsList()
         reloadStream()
+        chatBotCustomCommandsTextChanged()
+        macrosChatMessageTextChanged()
         resetSelectedScene()
+        setupAudioAfterSettingsImport()
         updateQuickButtonStates()
+        reloadDjiDevicesAfterSettingsImport()
         makeToast(title: String(localized: "Settings imported"))
     }
 

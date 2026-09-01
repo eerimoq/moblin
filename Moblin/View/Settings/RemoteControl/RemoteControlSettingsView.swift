@@ -118,7 +118,7 @@ private struct UrlSettingsInnerView: View {
                             localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
                         ),
                     ],
-                    placeholder: "ws://32.143.32.12:2345"
+                    placeholder: "ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)"
                 )
             }
             Section {
@@ -303,7 +303,7 @@ private struct StreamerView: View {
                         onChange: isValidPort,
                         onSubmit: submitAssistantPort,
                         keyboardType: .numbersAndPunctuation,
-                        placeholder: "2345"
+                        placeholder: String(DefaultTcpPorts.remoteControlAssistant)
                     )
                 } header: {
                     Text("Assistant")
@@ -427,7 +427,7 @@ struct RemoteControlStreamersView: View {
                 streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
                                                existingNames: remoteControlSettings.streamers)
                 streamer.enabled = true
-                streamer.port = 2345
+                streamer.port = DefaultTcpPorts.remoteControlAssistant
                 remoteControlSettings.streamers.append(streamer)
             }
         } footer: {

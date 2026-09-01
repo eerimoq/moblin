@@ -28,13 +28,22 @@ class BufferedAudio {
     let latency: Double
     private var stats = BufferedStats()
     private let manualOutput: Bool
+    private let trackDrift: Bool
 
-    init(cameraId: UUID, name: String, latency: Double, processor: Processor?, manualOutput: Bool) {
+    init(
+        cameraId: UUID,
+        name: String,
+        latency: Double,
+        processor: Processor?,
+        manualOutput: Bool,
+        trackDrift: Bool
+    ) {
         self.cameraId = cameraId
         self.name = name
         self.latency = latency
         self.processor = processor
         self.manualOutput = manualOutput
+        self.trackDrift = trackDrift
         if manualOutput {
             isOutputting = true
         }
@@ -104,7 +113,7 @@ class BufferedAudio {
         }
         if !isInitialBuffering, hasBufferBeenAppended, !manualOutput {
             hasBufferBeenAppended = false
-            if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
+            if trackDrift, let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
                 processor?.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
             }
         }

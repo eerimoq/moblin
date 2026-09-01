@@ -72,6 +72,7 @@ let fallbackStream = SettingsStream(name: "Fallback")
 let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
+let maxNotLoggedInToastCount = 10
 
 private func randomBuyIconsTitle() -> String {
     [
@@ -235,6 +236,7 @@ class SystemMonitor: ObservableObject {
 
 class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatusChanged = false
+    @Published var remoteControlOk = false
     @Published var remoteControlStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
@@ -951,6 +953,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 button.enabled && button.page == page + 1
             }.map { button in
                 if let state = getQuickButtonState(type: button.type) {
+                    state.button = button
                     state.isOn = button.isOn
                     return state
                 } else {
@@ -999,10 +1002,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
     }
 
+    private func removeUnusedKeychainItems() {
+        let streamIds = database.streams.map(\.id)
+        removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: streamIds)
+        removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: streamIds)
+    }
+
     func setup() {
         battery.level = Double(UIDevice.current.batteryLevel)
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
+        removeUnusedKeychainItems()
         cameraPreviewLayer = cameraPreviewView.previewLayer
         media = Media(delegate: self)
         setupAppIntents()
@@ -1187,6 +1197,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
+        chatBotCustomCommandsTextChanged()
+        macrosChatMessageTextChanged()
         loadStealthModeImage()
         loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
@@ -1208,6 +1220,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         setupStreamDeck()
         setSelectedStreamDeck()
+        startStreamIfAutoGoLive()
     }
 
     func reloadIngests() {
@@ -1234,12 +1247,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGForceManagerNeeded() -> Bool {
         for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
-            guard widget.widget.type == .text else {
-                continue
+            switch widget.widget.type {
+            case .text:
+                if widget.widget.text.needsGForce {
+                    return true
+                }
+            case .slideshow:
+                for slide in widget.widget.slideshow.slides
+                    where getTextWidget(id: slide.widgetId)?.text.needsGForce == true
+                {
+                    return true
+                }
+            default:
+                break
             }
-            guard widget.widget.text.needsGForce else {
-                continue
-            }
+        }
+        if isChatBotCustomCommandsGForceNeeded() {
+            return true
+        }
+        if isMacrosGForceNeeded() {
             return true
         }
         if isRemoteControlStreamerGForceStatsFilterEnabled() {
@@ -1310,6 +1336,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 break
             }
         }
+        if isChatBotCustomCommandsWeatherNeeded() {
+            return true
+        }
+        if isMacrosWeatherNeeded() {
+            return true
+        }
         if isRemoteControlStreamerWeatherStatsFilterEnabled() {
             return true
         }
@@ -1337,6 +1369,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             default:
                 break
             }
+        }
+        if isChatBotCustomCommandsGeographyNeeded() {
+            return true
+        }
+        if isMacrosGeographyNeeded() {
+            return true
         }
         if isRemoteControlStreamerGeographyStatsFilterEnabled() {
             return true
@@ -1471,6 +1509,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !makeBuyIconsToastIfNeeded() {
                 makeReplayShouldBeDisabledToastIfNeeded()
             }
+            makeNotLoggedInToTwitchToastIfNeeded()
+            makeNotLoggedInToKickToastIfNeeded()
+            makeNotLoggedInToYouTubeToastIfNeeded()
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
@@ -1505,6 +1546,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadCameraLevel()
             updateIsStreamDeckDeviceDriverInstalled()
+            startStreamIfAutoGoLive()
         }
     }
 
@@ -2958,8 +3000,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateTorch() {
+        media.setTorchLevel(level: database.torchLevel)
         media.setTorch(on: streamOverlay.isTorchOn)
         remoteControlStateChanged(state: .init(torchOn: streamOverlay.isTorchOn))
+    }
+
+    func setTorchLevel(level: Float) {
+        media.setTorchLevel(level: level)
     }
 
     func toggleMute() {

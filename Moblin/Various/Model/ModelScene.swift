@@ -1519,79 +1519,23 @@ extension Model {
         guard !textEffects.isEmpty else {
             return
         }
-        var stats: TextEffectStats
+        let variables: Variables
         if let textStats = remoteSceneData.textStats {
-            stats = textStats.toStats()
+            variables = textStats.toVariables()
         } else {
             updateTextWidgetsLapTimes(now: now)
-            let location = locationManager.getLatestKnownLocation()
-            let weather = weatherManager.getLatestWeather()?.currentWeather
-            let placemark = geographyManager.getLatestPlacemark()
-            stats = TextEffectStats(
-                timestamp: timestamp,
-                bitrate: bitrate.speedMbpsOneDecimal,
-                bitrateAndTotal: bitrate.speedAndTotal,
-                resolution: currentResolution,
-                fps: currentFps,
-                date: now,
-                debugOverlayLines: debugOverlay.debugLines,
-                speed: location?.speed ?? 0,
-                averageSpeed: averageSpeed,
-                altitude: location?.altitude ?? 0,
-                distance: database.location.distance,
-                splitDistance: database.location.splitDistance,
-                altitudeAscent: database.location.altitudeAscent,
-                altitudeDescent: database.location.altitudeDescent,
-                splitAltitudeAscent: database.location.splitAltitudeAscent,
-                splitAltitudeDescent: database.location.splitAltitudeDescent,
-                slope: "\(Int(slopePercent))%",
-                conditions: weather?.symbolName,
-                temperature: weather?.temperature,
-                feelsLikeTemperature: weather?.apparentTemperature,
-                windSpeed: weather?.wind.speed,
-                windGust: weather?.wind.gust,
-                country: placemark?.country ?? "",
-                countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
-                state: placemark?.administrativeArea,
-                area: placemark?.subAdministrativeArea,
-                city: placemark?.locality,
-                neighborhood: placemark?.subLocality,
-                muted: isMuteOn,
-                heartRates: heartRates,
-                activeEnergyBurned: workoutActiveEnergyBurned,
-                workoutDistance: workoutDistance,
-                power: workoutPower,
-                stepCount: workoutStepCount,
-                teslaBatteryLevel: textEffectTeslaBatteryLevel(),
-                teslaDrive: textEffectTeslaDrive(),
-                teslaMedia: textEffectTeslaMedia(),
-                cyclingPower: "\(cyclingPower) W",
-                cyclingCadence: "\(cyclingCadence)",
-                runningMetrics: runningMetrics,
-                browserTitle: getBrowserTitle(),
-                gForce: gForceManager?.getLatest(),
-                latestSubscriber: latestSubscriber,
-                latestFollower: latestFollower
-            )
-            remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
+            variables = createVariables(now: now, timestamp: timestamp)
+            remoteControlAssistantSetRemoteSceneDataVariables(variables: variables)
         }
         for effect in textEffects.values {
-            effect.updateStats(stats: stats)
+            effect.updateVariables(variables: variables)
         }
         for effect in slideshowEffects.values {
             for slide in effect.slides {
                 if let textEffect = slide.effect as? TextEffect {
-                    textEffect.updateStats(stats: stats)
+                    textEffect.updateVariables(variables: variables)
                 }
             }
-        }
-    }
-
-    private func getBrowserTitle() -> String {
-        if showBrowser {
-            getWebBrowser().title ?? ""
-        } else {
-            ""
         }
     }
 
@@ -1769,38 +1713,17 @@ extension Model {
     }
 
     private func updateNeedsWeather(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsWeather = parts.contains(where: {
-            switch $0 {
-            case .conditions, .temperature, .wind:
-                true
-            default:
-                false
-            }
-        })
+        text.needsWeather = parts.isWeatherVariable()
         startWeatherManager()
     }
 
     private func updateNeedsGeography(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGeography = parts.contains(where: {
-            switch $0 {
-            case .country, .countryFlag, .state, .area, .city, .neighborhood:
-                true
-            default:
-                false
-            }
-        })
+        text.needsGeography = parts.isGeographyVariable()
         startGeographyManager()
     }
 
     private func updateNeedsGForce(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGForce = parts.contains(where: {
-            switch $0 {
-            case .gForce, .gForceRecentMax, .gForceMax:
-                true
-            default:
-                false
-            }
-        })
+        text.needsGForce = parts.isGForceVariable()
         startGForceManager()
     }
 }

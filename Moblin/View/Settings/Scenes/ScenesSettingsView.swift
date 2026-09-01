@@ -174,6 +174,9 @@ private struct GraphicsView: View {
                     .onChange(of: database.graphicsImplementation) { _ in
                         model.setGraphicsImplementation()
                     }
+                    if database.graphicsImplementation == .metalPetal {
+                        Text("⚠️ MetalPetal does not work when Moblin is in background.")
+                    }
                 } footer: {
                     Text("""
                     Core Image is Apple's image processing framework. MetalPetal is experimental. \

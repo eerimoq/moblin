@@ -206,13 +206,13 @@ private struct MaskCanvasView: View {
                     if let previewImage {
                         Image(uiImage: previewImage)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                             .frame(width: size.width, height: size.height)
                             .clipped()
                     } else {
                         Image("GamlaLinkoping")
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                             .frame(width: size.width, height: size.height)
                             .clipped()
                     }

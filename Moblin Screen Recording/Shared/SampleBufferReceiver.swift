@@ -88,7 +88,7 @@ class SampleBufferReceiver: @unchecked Sendable {
         let config = MpegTsVideoConfigHevc(hvcC: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
-            videoDecoder = VideoDecoder(name: "", lockQueue: lockQueue)
+            videoDecoder = VideoDecoder(name: "", lockQueue: lockQueue, softwareDecoding: false)
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         }

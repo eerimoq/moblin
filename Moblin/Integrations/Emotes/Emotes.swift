@@ -43,19 +43,19 @@ class Emotes: @unchecked Sendable {
                     channelId: channelId,
                     enabled: settings.bttvEmotes
                 )
-                self.emotes = self.emotes.merging(bttvEmotes) { $1 }
+                self.addEmotes(bttvEmotes)
                 let (ffzEmotes, ffzError) = await fetchFfzEmotes(
                     platform: platform,
                     channelId: channelId,
                     enabled: settings.ffzEmotes
                 )
-                self.emotes = self.emotes.merging(ffzEmotes) { $1 }
+                self.addEmotes(ffzEmotes)
                 let (seventvEmotes, seventvError) = await fetchSeventvEmotes(
                     platform: platform,
                     channelId: channelId,
                     enabled: settings.seventvEmotes
                 )
-                self.emotes = self.emotes.merging(seventvEmotes) { $1 }
+                self.addEmotes(seventvEmotes)
                 if Task.isCancelled {
                     return
                 }
@@ -84,6 +84,10 @@ class Emotes: @unchecked Sendable {
         }
     }
 
+    func addEmotes(_ emotes: [String: Emote]) {
+        self.emotes = self.emotes.merging(emotes) { $1 }
+    }
+
     func stop() {
         ready = false
         task?.cancel()
@@ -92,22 +96,15 @@ class Emotes: @unchecked Sendable {
 
     func createSegments(text: String, id: inout Int) -> [ChatPostSegment] {
         var segments: [ChatPostSegment] = []
-        var parts: [String] = []
-        for word in text.components(separatedBy: .whitespaces) {
-            guard let emote = emotes[word] else {
-                parts.append(word)
+        for word in text.split(whereSeparator: { $0.isWhitespace }) {
+            guard let emote = emotes[String(word)] else {
+                segments.append(ChatPostSegment(id: id, text: "\(word) "))
+                id += 1
                 continue
             }
-            segments.append(ChatPostSegment(
-                id: id,
-                text: parts.joined(separator: " "),
-                url: emote.url
-            ))
+            segments.append(ChatPostSegment(id: id, text: "", url: emote.url))
             id += 1
-            parts.removeAll()
-        }
-        if !parts.isEmpty {
-            segments.append(ChatPostSegment(id: id, text: parts.joined(separator: " ")))
+            segments.append(ChatPostSegment(id: id, text: ""))
             id += 1
         }
         return segments

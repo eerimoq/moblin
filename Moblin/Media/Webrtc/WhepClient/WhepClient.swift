@@ -21,6 +21,7 @@ class WhepClient: @unchecked Sendable {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
+    private let softwareDecoding: Bool
     private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
@@ -29,11 +30,18 @@ class WhepClient: @unchecked Sendable {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: any WhepClientDelegate) {
+    init(streamId: UUID,
+         url: URL,
+         latency: Double,
+         syncTimestamps: Bool,
+         softwareDecoding: Bool,
+         delegate: any WhepClientDelegate)
+    {
         self.streamId = streamId
         self.url = url
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
     }
 
@@ -55,7 +63,7 @@ class WhepClient: @unchecked Sendable {
 
     func isConnected() -> Bool {
         dispatchQueue.sync {
-            ingestClient != nil
+            connected
         }
     }
 
@@ -75,6 +83,7 @@ class WhepClient: @unchecked Sendable {
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
+            softwareDecoding: softwareDecoding,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self
@@ -106,7 +115,7 @@ class WhepClient: @unchecked Sendable {
             try ingestClient.setLocalDescription("offer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to create offer: \(error)")
-            stopInternal()
+            reconnectSoon(reason: "Failed to create offer")
         }
     }
 
@@ -121,9 +130,9 @@ class WhepClient: @unchecked Sendable {
         connected = false
     }
 
-    private func reconnectSoon() {
+    private func reconnectSoon(reason: String) {
         stopInternal()
-        logger.debug("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds")
+        logger.debug("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds (\(reason))")
         reconnectTimer.startSingleShot(timeout: reconnectDelay) { [weak self] in
             self?.startInternal()
         }
@@ -151,7 +160,7 @@ class WhepClient: @unchecked Sendable {
               let answer = String(data: data, encoding: .utf8)
         else {
             logger.info("whep-client: \(streamId): HTTP response not ok")
-            reconnectSoon()
+            reconnectSoon(reason: "Bad HTTP response")
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
@@ -162,7 +171,7 @@ class WhepClient: @unchecked Sendable {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to set remote answer: \(error)")
-            reconnectSoon()
+            reconnectSoon(reason: "Failed to set remote answer")
         }
     }
 
@@ -184,7 +193,7 @@ extension WhepClient: WebrtcIngestClientDelegate {
             delegate.whepClientOnPublishStop(streamId: streamId, reason: reason)
             connected = false
         }
-        reconnectSoon()
+        reconnectSoon(reason: reason)
     }
 
     func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {

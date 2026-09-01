@@ -43,7 +43,7 @@ struct UrlSettingsView: View {
                         error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
                         changed = true
                         if value.contains("\n") {
-                            value = value.replacingOccurrences(of: "\n", with: "")
+                            value = value.replace("\n", "")
                             submitUrl()
                         }
                     }

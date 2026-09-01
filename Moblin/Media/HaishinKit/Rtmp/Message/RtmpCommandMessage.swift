@@ -18,7 +18,7 @@ enum RtmpCommandName: String {
 }
 
 final class RtmpCommandMessage: RtmpMessage {
-    private(set) var commandName: RtmpCommandName = .close
+    private(set) var commandName: RtmpCommandName = .unknown
     private(set) var transactionId: Int = 0
     private(set) var commandObject: AsObject?
     private(set) var arguments: [AsValue] = []
@@ -81,6 +81,9 @@ final class RtmpCommandMessage: RtmpMessage {
                     }
                 } catch {
                     logger.info("rtmp: Command message error: \(error): \(newValue.hexString())")
+                    commandName = .unknown
+                    commandObject = nil
+                    arguments.removeAll()
                 }
             }
             super.encoded = newValue

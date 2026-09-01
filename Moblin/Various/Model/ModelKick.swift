@@ -13,6 +13,8 @@ extension Model {
     func kickLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
         kickAuthOnComplete = { accessToken in
             stream.kickLoggedIn = true
+            stream.kickWantsToBeLoggedIn = true
+            stream.kickNotLoggedInCount = 0
             stream.kickAccessToken = accessToken
             self.createStreamWizard.showKickAuth = false
             self.createKickApi(stream: stream).getUser { userData in
@@ -39,6 +41,7 @@ extension Model {
     func kickLogout(stream: SettingsStream) {
         stream.kickAccessToken = ""
         stream.kickLoggedIn = false
+        stream.kickWantsToBeLoggedIn = false
         stream.kickChannelName = ""
         stream.kickChannelId = nil
         stream.kickSlug = nil
@@ -130,11 +133,15 @@ extension Model {
         }
     }
 
-    func makeNotLoggedInToKickToast() {
-        makeErrorToast(
-            title: String(localized: "Not logged in to Kick"),
-            subTitle: String(localized: "Please login again")
-        )
+    func makeNotLoggedInToKickToastIfNeeded() {
+        guard stream.kickWantsToBeLoggedIn, !stream.kickLoggedIn else {
+            return
+        }
+        stream.kickNotLoggedInCount += 1
+        if stream.kickNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.kickWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .kick)
     }
 
     func sendKickChatMessage(message: String) {
@@ -312,9 +319,11 @@ extension Model {
     }
 
     func createKickApi(stream: SettingsStream) -> KickApi {
-        KickApi(channelId: stream.kickChannelId ?? "",
-                slug: stream.kickSlug ?? "",
-                accessToken: stream.kickAccessToken)
+        let kickApi = KickApi(channelId: stream.kickChannelId ?? "",
+                              slug: stream.kickSlug ?? "",
+                              accessToken: stream.kickAccessToken)
+        kickApi.delegate = self
+        return kickApi
     }
 
     private func appendKickChatAlertMessage(
@@ -519,5 +528,15 @@ extension Model: @preconcurrency KickPusherDelegate {
         }
         playAlert(alert: .kickKicks(event: event))
         printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
+    }
+}
+
+extension Model: @preconcurrency KickApiDelegate {
+    func kickApiUnauthorized() {
+        guard stream.kickLoggedIn else {
+            return
+        }
+        stream.kickLoggedIn = false
+        makeNotLoggedInToToast(platform: .kick)
     }
 }

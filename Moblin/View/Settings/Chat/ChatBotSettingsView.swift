@@ -589,6 +589,114 @@ private struct ChatBotAliasSettingsView: View {
     }
 }
 
+private struct ChatBotCustomCommandTextSettingsView: View {
+    @EnvironmentObject var model: Model
+    let customCommand: SettingsChatBotCustomCommand
+    @State var value: String
+
+    var body: some View {
+        Form {
+            TextWidgetTextView(value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
+            Section {
+                TextWidgetSuggestionsView(widget: false, text: $value)
+            }
+            TextFormatVariablesView(widget: false, value: $value)
+        }
+        .onChange(of: value) { _ in
+            customCommand.formatString = value
+            model.chatBotCustomCommandsTextChanged()
+        }
+        .navigationTitle("Text")
+    }
+}
+
+private struct ChatBotCustomCommandSettingsView: View {
+    @ObservedObject var customCommand: SettingsChatBotCustomCommand
+
+    private func onNameChange(value: String) -> String? {
+        guard !value.isEmpty else {
+            return String(localized: "The name must not be empty.")
+        }
+        return nil
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Name"),
+                            value: customCommand.name,
+                            onChange: onNameChange
+                        ) {
+                            customCommand.name = $0
+                        }
+                    } label: {
+                        TextItemLocalizedView(name: "Name", value: customCommand.name)
+                    }
+                    NavigationLink {
+                        ChatBotCustomCommandTextSettingsView(
+                            customCommand: customCommand,
+                            value: customCommand.formatString
+                        )
+                    } label: {
+                        TextItemLocalizedView(name: "Text", value: customCommand.formatString)
+                    }
+                } footer: {
+                    Text("Send the text to chat when a user sends !moblin custom <name>.")
+                }
+                PermissionsSettingsInnerView(permissions: customCommand.permissions)
+            }
+            .navigationTitle("Command")
+        } label: {
+            HStack {
+                Text(customCommand.name)
+                Spacer()
+                GrayTextView(text: customCommand.formatString)
+            }
+        }
+    }
+}
+
+private struct ChatBotCustomCommandsSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var chat: SettingsChat
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(chat.customCommands) { customCommand in
+                        ChatBotCustomCommandSettingsView(customCommand: customCommand)
+                            .contextMenuDeleteButton {
+                                chat.customCommands.removeAll { $0.id == customCommand.id }
+                                model.chatBotCustomCommandsTextChanged()
+                            }
+                    }
+                    .onMove { froms, to in
+                        chat.customCommands.move(fromOffsets: froms, toOffset: to)
+                    }
+                    .onDelete { offsets in
+                        chat.customCommands.remove(atOffsets: offsets)
+                        model.chatBotCustomCommandsTextChanged()
+                    }
+                }
+                CreateButtonView {
+                    chat.customCommands.append(SettingsChatBotCustomCommand())
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin custom <name>")
+                    Text("Send the text of the command with given name to chat.")
+                }
+            }
+        }
+        .navigationTitle("Custom commands")
+    }
+}
+
 private struct ChatBotAliasesSettingsView: View {
     @ObservedObject var chat: SettingsChat
 
@@ -628,6 +736,11 @@ struct ChatBotSettingsView: View {
                     ChatBotCommandsSettingsView()
                 } label: {
                     Text("Commands")
+                }
+                NavigationLink {
+                    ChatBotCustomCommandsSettingsView(chat: model.database.chat)
+                } label: {
+                    Text("Custom commands")
                 }
                 NavigationLink {
                     ChatBotAliasesSettingsView(chat: model.database.chat)

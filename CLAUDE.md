@@ -14,7 +14,7 @@ a home screen widget, a screen recording broadcast extension, and a SolidJS web 
 ```sh
 make style           # swiftformat + oxfmt + isort + black (auto-fix)
 make style-check     # same, lint-only
-make lint            # swiftlint --strict + oxlint + pylint + xcstringslint
+make lint            # swiftlint --strict + oxlint + pylint + ruff check + mypy + xcstringslint
 make lint-fix        # auto-fix Localizable.xcstrings issues
 make spell-check     # codespell
 make periphery       # dead code detection (needs full index; slow)
@@ -34,6 +34,12 @@ web assets in `Moblin/RemoteControl/Web/` are committed and must be regenerated 
 
 Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `@Test` and `#expect`.
 
+**Always run the unit tests for Mac Catalyst, never for a simulator or a device, when a test run is needed:**
+
+```sh
+xcodebuild test -scheme Moblin -destination 'platform=macOS,variant=Mac Catalyst'
+```
+
 ### System tests
 
 `tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. Ask user to 
@@ -44,6 +50,13 @@ make test
 make test TEST_ARGS="--device macpro Talkback"
 make test-stability                        # long-running soak test, 12 hours by default
 ```
+
+The harness runs with `tests/` as the working directory, so its imports are `from utils.moblin import
+Moblin`, while `make lint` type checks `tests/` and `utils/` from the repo root. That only works while
+every module name is unique across both trees — `tests/suites/` and `tests/utils/` are packages
+(`__init__.py`) so that `tests/suites/stability.py` does not collide with the `tests/stability.py` entry
+point. Adding a `utils/x.py` that shadows a `tests/x.py` (or dropping an `__init__.py`) makes mypy abort
+with "Duplicate module named ..." instead of checking anything.
 
 ## Architecture
 

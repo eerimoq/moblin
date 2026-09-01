@@ -7,10 +7,10 @@ enum WizardPlatform {
     case soop
     case custom
     case obs
+    case mobcam
 }
 
 enum WizardNetworkSetup {
-    case none
     case obs
     case belaboxCloudObs
     case direct
@@ -101,14 +101,15 @@ extension Model {
 
     private func createStreamFromWizardUrl() -> String {
         var url = defaultStreamUrl
-        if createStreamWizard.platform == .custom {
+        switch createStreamWizard.platform {
+        case .custom:
             if let customUrl = createStreamFromWizardCustomUrl() {
                 url = customUrl
             }
-        } else {
+        case .mobcam:
+            url = "mobcam://localhost:\(DefaultTcpPorts.mobcamStream)"
+        default:
             switch createStreamWizard.networkSetup {
-            case .none:
-                break
             case .obs:
                 url = "srt://\(createStreamWizard.obsAddress):\(createStreamWizard.obsPort)"
             case .belaboxCloudObs:
@@ -129,6 +130,7 @@ extension Model {
     func createStreamFromWizard() {
         let stream = SettingsStream(name: createStreamWizard.name.trim())
         stream.backgroundStreaming = createStreamWizard.backgroundStreaming
+        stream.autoGoLive = createStreamWizard.autoGoLive
         if createStreamWizard.platform != .custom {
             if createStreamWizard.networkSetup != .direct {
                 if createStreamWizard.obsRemoteControlEnabled {
@@ -151,6 +153,7 @@ extension Model {
             stream.twitchChannelId = createStreamWizard.twitchChannelId.trim()
             stream.twitchAccessToken = createStreamWizard.twitchAccessToken
             stream.twitchLoggedIn = createStreamWizard.twitchLoggedIn
+            stream.twitchWantsToBeLoggedIn = createStreamWizard.twitchLoggedIn
             if stream.twitchLoggedIn, !stream.twitchAccessToken.isEmpty {
                 storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: stream.twitchAccessToken)
             }
@@ -158,12 +161,14 @@ extension Model {
             stream.kickChannelName = createStreamWizard.kickChannelName.trim()
             stream.kickAccessToken = createStreamWizard.kickAccessToken
             stream.kickLoggedIn = createStreamWizard.kickLoggedIn
+            stream.kickWantsToBeLoggedIn = createStreamWizard.kickLoggedIn
             stream.kickChannelId = createStreamWizard.kickChannelId
             stream.kickSlug = createStreamWizard.kickSlug
             stream.kickChatroomChannelId = createStreamWizard.kickChatroomChannelId
         case .youTube:
             stream.youTubeHandle = createStreamWizard.youTubeHandle.trim()
             stream.youTubeAuthState = createStreamWizard.youTubeStream.youTubeAuthState
+            stream.youTubeWantsToBeLoggedIn = createStreamWizard.youTubeStream.youTubeWantsToBeLoggedIn
         case .soop:
             if !createStreamWizard.soopChannelName.isEmpty, !createStreamWizard.soopStreamId.isEmpty {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()
@@ -173,42 +178,54 @@ extension Model {
             break
         case .custom:
             break
+        case .mobcam:
+            break
         }
         stream.chat.bttvEmotes = false
         stream.chat.ffzEmotes = false
         stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
-        if stream.url.starts(with: "rtmp") {
+        if stream.url.starts(with: "rtmp") || stream.url.starts(with: "mobcam") {
             stream.rateControl = .cbr
         } else {
             stream.rateControl = .abr
         }
-        switch createStreamWizard.networkSetup {
-        case .none:
-            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
-            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
-        case .obs:
-            stream.codec = .h265hevc
-        case .belaboxCloudObs:
-            stream.codec = .h265hevc
-        case .direct:
-            stream.codec = .h264avc
-        case .myServers:
-            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
-            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
-        }
         stream.audioBitrate = 128_000
+        switch createStreamWizard.platform {
+        case .custom:
+            stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
+        case .mobcam:
+            stream.codec = .h265hevc
+            stream.bitrate = database.getHighestBitratePreset()
+            stream.audioCodec = .aac
+            stream.audioBitrate = 192_000
+        default:
+            switch createStreamWizard.networkSetup {
+            case .obs:
+                stream.codec = .h265hevc
+            case .belaboxCloudObs:
+                stream.codec = .h265hevc
+            case .direct:
+                stream.codec = .h264avc
+            case .myServers:
+                stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+                stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
+            }
+        }
         database.streams.append(stream)
         setCurrentStream(stream: stream)
         reloadStream()
         sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        startStreamIfAutoGoLive()
     }
 
     func resetWizard() {
         createStreamWizard.platform = .custom
-        createStreamWizard.networkSetup = .none
+        createStreamWizard.networkSetup = .direct
         createStreamWizard.name = ""
         createStreamWizard.backgroundStreaming = false
+        createStreamWizard.autoGoLive = false
         createStreamWizard.twitchChannelName = ""
         createStreamWizard.twitchChannelId = ""
         createStreamWizard.twitchAccessToken = ""
@@ -235,8 +252,6 @@ extension Model {
 
     func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {
         switch createStreamWizard.networkSetup {
-        case .none:
-            break
         case .obs:
             break
         case .belaboxCloudObs:

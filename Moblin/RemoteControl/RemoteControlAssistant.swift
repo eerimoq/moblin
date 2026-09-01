@@ -177,6 +177,14 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .moveToGimbalPreset(id: id), onSuccess: onSuccess)
     }
 
+    func startMacro(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .startMacro(id: id), onSuccess: onSuccess)
+    }
+
+    func stopMacro(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .stopMacro(id: id), onSuccess: onSuccess)
+    }
+
     func setRemoteSceneSettings(data: RemoteControlRemoteSceneSettings, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setRemoteSceneSettings(data: data), onSuccess: onSuccess)
     }
@@ -640,6 +648,12 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event _: TwitchEventSubNotificationChannelFollowEvent) {}
 
     func twitchEventSubChannelSubscribe(event _: TwitchEventSubNotificationChannelSubscribeEvent) {}
+
+    func twitchEventSubChannelSubscriptionUpgrade(
+        event _: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {}
+
+    func twitchEventSubChannelWatchStreak(event _: TwitchEventSubNotificationChannelWatchStreakEvent) {}
 
     func twitchEventSubChannelSubscriptionGift(
         event _: TwitchEventSubNotificationChannelSubscriptionGiftEvent

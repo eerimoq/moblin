@@ -113,4 +113,15 @@ struct UtilsSuite {
         df
         """.removeAllWhitespaces() == "fdsdfdf")
     }
+
+    @Test
+    func truncate() {
+        #expect("".truncate(length: 5) == "")
+        #expect("hi".truncate(length: 5) == "hi")
+        #expect("hello".truncate(length: 5) == "hello")
+        #expect("hello!".truncate(length: 5) == "he...")
+        #expect("hello!".truncate(length: 3) == "...")
+        #expect("hello!".truncate(length: 2) == "..")
+        #expect("hello!".truncate(length: 0) == "")
+    }
 }

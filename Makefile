@@ -1,102 +1,73 @@
-SWIFTFORMAT_ARGS = \
-	--maxwidth 110 \
-	--swiftversion 5.9 \
-	--exclude Moblin/Integrations/Tesla/Protobuf \
-	--disable docComments \
-	--ifdef no-indent
-SWIFTLINT_ARGS = --strict --quiet
-OXFMT_ARGS = "WebRemoteControlFrontend"
-OXLINT_ARGS = "WebRemoteControlFrontend"
-PYTHON_DIRS = \
-	tests \
-	utils
-RUFF_FORMAT_ARGS = $(PYTHON_DIRS)
-PERIPHERY_ARGS = \
-	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
-	--disable-update-check
-CODESPELL_ARGS = \
-	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log" \
-	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro,lightyears"
-PYLINT_ARGS = \
-	--disable missing-module-docstring \
-	--disable missing-class-docstring \
-	--disable missing-function-docstring \
-	--disable too-many-nested-blocks \
-	--disable too-many-locals \
-	--disable too-many-arguments \
-	--disable too-many-positional-arguments \
-	--disable too-many-instance-attributes \
-	--disable too-few-public-methods \
-	--disable too-many-public-methods \
-	--disable broad-exception-caught \
-	--disable broad-exception-raised \
-	--disable duplicate-code \
-	--disable line-too-long \
-	--disable consider-using-with \
-	--disable no-else-return \
-	--recursive yes \
-	$(PYTHON_DIRS)
-ISORT_ARGS = \
-	--force-single-line-imports \
-	$(PYTHON_DIRS)
+SWIFT_DIRS += "Common"
+SWIFT_DIRS += "Moblin"
+SWIFT_DIRS += "Moblin Watch"
+SWIFT_DIRS += "Moblin Widget"
+SWIFT_DIRS += "Moblin Live Activity"
+SWIFT_DIRS += "Moblin Screen Recording"
+SWIFT_DIRS += "MoblinTests"
 
-CODE_DIRS += "Common"
-CODE_DIRS += "Moblin"
-CODE_DIRS += "Moblin Watch"
-CODE_DIRS += "Moblin Widget"
-CODE_DIRS += "Moblin Live Activity"
-CODE_DIRS += "Moblin Screen Recording"
-CODE_DIRS += "MoblinTests"
-CODE_DIRS += "WebRemoteControlFrontend"
+WEB_DIRS += WebRemoteControlFrontend
+WEB_DIRS += tests/utils
 
-CONFIG_TOML ?= config.toml
-TEST_MAKE_ARGS = -C tests CONFIG_TOML=$(CONFIG_TOML) TEST_ARGS="$(TEST_ARGS)"
+PYTHON_DIRS += tests
+PYTHON_DIRS += utils
+
+CODE_DIRS += $(SWIFT_DIRS)
+CODE_DIRS += $(WEB_DIRS)
+CODE_DIRS += $(PYTHON_DIRS)
+
+TEST_MAKE_ARGS = -C tests TEST_ARGS="$(TEST_ARGS)"
 
 SHELL = /usr/bin/env bash
 
 default:
 
 style:
-	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
-	oxfmt $(OXFMT_ARGS)
-	isort $(ISORT_ARGS)
-	ruff format $(RUFF_FORMAT_ARGS)
+	swiftformat $(SWIFT_DIRS)
+	oxfmt $(WEB_DIRS)
+	isort $(PYTHON_DIRS)
+	ruff format $(PYTHON_DIRS)
 
 style-check:
-	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
-	oxfmt $(OXFMT_ARGS) --check
-	isort $(ISORT_ARGS) --check
-	ruff format $(RUFF_FORMAT_ARGS) --check
+	swiftformat $(SWIFT_DIRS) --lint
+	oxfmt $(WEB_DIRS) --check
+	isort $(PYTHON_DIRS) --check
+	ruff format $(PYTHON_DIRS) --check
 
 lint:
-	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
-	oxlint $(OXLINT_ARGS)
-	pylint $(PYLINT_ARGS)
+	swiftlint lint --quiet $(SWIFT_DIRS)
+	oxlint $(WEB_DIRS)
+	pylint $(PYTHON_DIRS)
+	ruff check $(PYTHON_DIRS)
+	mypy $(PYTHON_DIRS)
 	python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:
 	python utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
-	periphery scan $(PERIPHERY_ARGS)
+	periphery scan
 
 spell-check:
-	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
+	codespell $(CODE_DIRS)
 
 test:
-	$(MAKE) $(TEST_MAKE_ARGS) test
+	python -m tests.test $(TEST_ARGS)
 
 test-stability:
-	$(MAKE) $(TEST_MAKE_ARGS) stability
+	python -m tests.stability $(TEST_ARGS)
 
 test-stability-watch:
-	$(MAKE) $(TEST_MAKE_ARGS) stability-watch
+	python -m tests.watch
 
 test-generate-device-settings-clipboard:
-	$(MAKE) $(TEST_MAKE_ARGS) generate-device-settings-clipboard
+	python -m tests.generate_device_settings $(TEST_ARGS)
 
 test-generate-device-settings-stdout:
-	@$(MAKE) --no-print-directory --silent $(TEST_MAKE_ARGS) generate-device-settings-stdout
+	python -m tests.generate_device_settings --force-stdout $(TEST_ARGS)
+
+publish:
+	python utils/publish.py $(PUBLISH_ARGS)
 
 machine-translate:
 	python utils/translate.py Common/Localizable.xcstrings

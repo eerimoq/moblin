@@ -92,7 +92,7 @@ struct QuickButtonChatChatterInfoView: View {
                     if let image = post.platform?.imageName() {
                         Image(image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(height: 16)
                     }
                 }
@@ -101,7 +101,7 @@ struct QuickButtonChatChatterInfoView: View {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                         } placeholder: {
                             EmptyView()
                         }

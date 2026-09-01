@@ -203,6 +203,7 @@ enum SettingsStreamProtocol: String, Codable {
     case srt = "SRT"
     case rist = "RIST"
     case whip = "WHIP"
+    case mobcam = "Mobcam"
 
     init(from decoder: any Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -218,6 +219,7 @@ enum SettingsStreamDetailedProtocol {
     case rist
     case whip
     case whips
+    case mobcam
 }
 
 class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
@@ -1013,6 +1015,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     @Published var raids: Bool = true
     @Published var cheers: Bool = true
     @Published var minimumCheerBits: Int = 0
+    @Published var watchStreaks: Bool = true
+    @Published var minimumWatchStreak: Int = 5
 
     init() {}
 
@@ -1025,6 +1029,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         case raids
         case cheers
         case minimumCheerBits
+        case watchStreaks
+        case minimumWatchStreak
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1037,6 +1043,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         try container.encode(.raids, raids)
         try container.encode(.cheers, cheers)
         try container.encode(.minimumCheerBits, minimumCheerBits)
+        try container.encode(.watchStreaks, watchStreaks)
+        try container.encode(.minimumWatchStreak, minimumWatchStreak)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1049,6 +1057,8 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         raids = container.decode(.raids, Bool.self, true)
         cheers = container.decode(.cheers, Bool.self, true)
         minimumCheerBits = container.decode(.minimumCheerBits, Int.self, 0)
+        watchStreaks = container.decode(.watchStreaks, Bool.self, true)
+        minimumWatchStreak = container.decode(.minimumWatchStreak, Int.self, 5)
     }
 
     func clone() -> SettingsTwitchAlerts {
@@ -1061,11 +1071,17 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         new.raids = raids
         new.cheers = cheers
         new.minimumCheerBits = minimumCheerBits
+        new.watchStreaks = watchStreaks
+        new.minimumWatchStreak = minimumWatchStreak
         return new
     }
 
     func isBitsEnabled(amount: Int) -> Bool {
         cheers && amount >= minimumCheerBits
+    }
+
+    func isWatchStreakEnabled(count: Int) -> Bool {
+        watchStreaks && count >= minimumWatchStreak && count.isMultiple(of: 25)
     }
 }
 
@@ -1145,6 +1161,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchToastAlerts: SettingsTwitchAlerts = .init()
     var twitchAccessToken: String = ""
     var twitchLoggedIn: Bool = false
+    var twitchWantsToBeLoggedIn: Bool = false
+    var twitchNotLoggedInCount: Int = 0
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
@@ -1154,10 +1172,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickSlug: String?
     var kickAccessToken: String = ""
     @Published var kickLoggedIn: Bool = false
+    var kickWantsToBeLoggedIn: Bool = false
+    var kickNotLoggedInCount: Int = 0
     @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
     @Published var youTubeAuthState: OIDAuthState?
+    var youTubeWantsToBeLoggedIn: Bool = false
+    var youTubeNotLoggedInCount: Int = 0
     @Published var youTubeVideoIds: String = ""
     @Published var youTubeChatEnabled: Bool = true
     @Published var youTubeHandle: String = ""
@@ -1219,6 +1241,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
     @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
     var previewStream: SettingsStreamPreviewStream = .init()
+    @Published var autoGoLive: Bool = false
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -1241,6 +1264,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case twitchToastAlerts
         case twitchAccessToken
         case twitchLoggedIn
+        case twitchWantsToBeLoggedIn
+        case twitchNotLoggedInCount
         case twitchRewards
         case twitchSendMessagesTo
         case kickChannelName
@@ -1250,11 +1275,15 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickSlug
         case kickAccessToken
         case kickLoggedIn
+        case kickWantsToBeLoggedIn
+        case kickNotLoggedInCount
         case kickSendMessagesTo
         case kickChatAlerts
         case kickToastAlerts
         case youTubeVideoId
         case youTubeChatEnabled
+        case youTubeWantsToBeLoggedIn
+        case youTubeNotLoggedInCount
         case youTubeHandle
         case youTubeScheduleStreamTitle
         case youTubeScheduleStreamVisibility
@@ -1316,6 +1345,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case goLiveNotificationDiscordWebhookUrl
         case multiStreaming
         case previewStream
+        case autoGoLive
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1330,6 +1360,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.twitchShowFollows, twitchShowFollows)
         try container.encode(.twitchAccessToken, twitchAccessToken)
         try container.encode(.twitchLoggedIn, twitchLoggedIn)
+        try container.encode(.twitchWantsToBeLoggedIn, twitchWantsToBeLoggedIn)
+        try container.encode(.twitchNotLoggedInCount, twitchNotLoggedInCount)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.twitchChatAlerts, twitchChatAlerts)
@@ -1341,6 +1373,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickSlug, kickSlug)
         try container.encode(.kickAccessToken, kickAccessToken)
         try container.encode(.kickLoggedIn, kickLoggedIn)
+        try container.encode(.kickWantsToBeLoggedIn, kickWantsToBeLoggedIn)
+        try container.encode(.kickNotLoggedInCount, kickNotLoggedInCount)
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
@@ -1349,6 +1383,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
         try container.encode(.youTubeVideoId, youTubeVideoIds)
         try container.encode(.youTubeChatEnabled, youTubeChatEnabled)
+        try container.encode(.youTubeWantsToBeLoggedIn, youTubeWantsToBeLoggedIn)
+        try container.encode(.youTubeNotLoggedInCount, youTubeNotLoggedInCount)
         try container.encode(.youTubeHandle, youTubeHandle)
         try container.encode(.youTubeScheduleStreamTitle, youTubeScheduleStreamTitle)
         try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
@@ -1408,6 +1444,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
         try container.encode(.multiStreaming, multiStreaming)
         try container.encode(.previewStream, previewStream)
+        try container.encode(.autoGoLive, autoGoLive)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1422,6 +1459,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         twitchShowFollows = container.decode(.twitchShowFollows, Bool?.self, nil)
         twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
         twitchLoggedIn = container.decode(.twitchLoggedIn, Bool.self, false)
+        twitchWantsToBeLoggedIn = container.decode(.twitchWantsToBeLoggedIn, Bool.self, twitchLoggedIn)
+        twitchNotLoggedInCount = container.decode(.twitchNotLoggedInCount, Int.self, 0)
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
         twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         twitchChatAlerts = container.decode(.twitchChatAlerts, SettingsTwitchAlerts.self, .init())
@@ -1438,6 +1477,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickSlug = container.decode(.kickSlug, String?.self, nil)
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
+        kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
+        kickNotLoggedInCount = container.decode(.kickNotLoggedInCount, Int.self, 0)
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
@@ -1446,6 +1487,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
         youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
         youTubeChatEnabled = container.decode(.youTubeChatEnabled, Bool.self, true)
+        youTubeWantsToBeLoggedIn = container.decode(.youTubeWantsToBeLoggedIn,
+                                                    Bool.self,
+                                                    youTubeAuthState != nil)
+        youTubeNotLoggedInCount = container.decode(.youTubeNotLoggedInCount, Int.self, 0)
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
         youTubeScheduleStreamTitle = container.decode(.youTubeScheduleStreamTitle, String.self, "")
         youTubeScheduleStreamVisibility = container.decode(.youTubeScheduleStreamVisibility,
@@ -1531,6 +1576,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
         previewStream = container.decode(.previewStream, SettingsStreamPreviewStream.self, .init())
+        autoGoLive = container.decode(.autoGoLive, Bool.self, false)
     }
 
     func getYouTubeVideoIds() -> [String] {
@@ -1550,6 +1596,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.twitchToastAlerts = twitchToastAlerts.clone()
         new.twitchAccessToken = twitchAccessToken
         new.twitchLoggedIn = twitchLoggedIn
+        new.twitchWantsToBeLoggedIn = twitchWantsToBeLoggedIn
+        new.twitchNotLoggedInCount = twitchNotLoggedInCount
         if twitchLoggedIn {
             storeTwitchAccessTokenInKeychain(streamId: new.id, accessToken: twitchAccessToken)
         }
@@ -1560,10 +1608,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.kickSlug = kickSlug
         new.kickAccessToken = kickAccessToken
         new.kickLoggedIn = kickLoggedIn
+        new.kickWantsToBeLoggedIn = kickWantsToBeLoggedIn
+        new.kickNotLoggedInCount = kickNotLoggedInCount
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
         new.youTubeAuthState = youTubeAuthState
+        new.youTubeWantsToBeLoggedIn = youTubeWantsToBeLoggedIn
+        new.youTubeNotLoggedInCount = youTubeNotLoggedInCount
         new.youTubeVideoIds = youTubeVideoIds
         new.youTubeChatEnabled = youTubeChatEnabled
         new.youTubeHandle = youTubeHandle
@@ -1620,6 +1672,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
         new.multiStreaming = multiStreaming.clone()
         new.previewStream = previewStream.clone()
+        new.autoGoLive = autoGoLive
         return new
     }
 
@@ -1643,6 +1696,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             .whip
         case "whips":
             .whip
+        case "mobcam":
+            .mobcam
         default:
             .rtmp
         }
@@ -1664,6 +1719,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             .whip
         case "whips":
             .whips
+        case "mobcam":
+            .mobcam
         default:
             .rtmp
         }
@@ -1685,6 +1742,13 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func isSrtla() -> Bool {
         getScheme() == "srtla"
+    }
+
+    func mobcamPort() -> UInt16 {
+        guard let port = URL(string: url)?.port else {
+            return DefaultTcpPorts.mobcamStream
+        }
+        return UInt16(exactly: port) ?? DefaultTcpPorts.mobcamStream
     }
 
     func isBonding() -> Bool {

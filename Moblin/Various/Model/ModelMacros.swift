@@ -10,7 +10,15 @@ extension Model {
         macro.nextActionIndex = 0
         macro.repeatCurrentCount = 0
         macro.stack = [macro]
+        remoteControlMacrosStateChanged()
         executeNextAction(macro: macro)
+    }
+
+    func startMacro(id: UUID) {
+        guard let macro = database.macros.macros.first(where: { $0.id == id }) else {
+            return
+        }
+        startMacro(macro: macro)
     }
 
     func stopMacro(macro: SettingsMacrosMacro) {
@@ -24,6 +32,14 @@ extension Model {
             macro.finishedTimer.stop()
         }
         macro.stack.removeAll()
+        remoteControlMacrosStateChanged()
+    }
+
+    func stopMacro(id: UUID) {
+        guard let macro = database.macros.macros.first(where: { $0.id == id }) else {
+            return
+        }
+        stopMacro(macro: macro)
     }
 
     func toggleMacroStartStop(id: UUID) {
@@ -35,6 +51,44 @@ extension Model {
         } else if !macro.finished {
             startMacro(macro: macro)
         }
+    }
+
+    func getRemoteControlMacros() -> [RemoteControlMacro] {
+        database.macros.macros.map { RemoteControlMacro(id: $0.id, name: $0.name, running: $0.running) }
+    }
+
+    func remoteControlMacrosStateChanged() {
+        remoteControlStateChanged(
+            state: RemoteControlAssistantStreamerState(macros: getRemoteControlMacros())
+        )
+    }
+
+    func isMacrosWeatherNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsWeather)
+    }
+
+    func isMacrosGeographyNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsGeography)
+    }
+
+    func isMacrosGForceNeeded() -> Bool {
+        macrosChatMessageActions().contains(where: \.needsGForce)
+    }
+
+    func macrosChatMessageTextChanged() {
+        for action in macrosChatMessageActions() {
+            let parts = loadTextFormat(format: action.chatMessage)
+            action.needsWeather = parts.isWeatherVariable()
+            action.needsGeography = parts.isGeographyVariable()
+            action.needsGForce = parts.isGForceVariable()
+        }
+        startWeatherManager()
+        startGeographyManager()
+        startGForceManager()
+    }
+
+    private func macrosChatMessageActions() -> [SettingsMacrosAction] {
+        database.macros.macros.flatMap { $0.actions.filter { $0.function == .sendChatMessage } }
     }
 
     func removeDeadMacrosSettings() {
@@ -71,6 +125,9 @@ extension Model {
                 currentMacro.finished = false
             }
             macro.stack.removeLast()
+            if macro.stack.isEmpty {
+                remoteControlMacrosStateChanged()
+            }
         }
         executeNextAction(macro: macro)
     }
@@ -96,6 +153,8 @@ extension Model {
             executeZoom(action: action)
         case .gimbalPreset:
             executeGimbalPreset(action: action)
+        case .sendChatMessage:
+            executeSendChatMessage(action: action)
         case .delay:
             executeDelay(currentMacro: currentMacro,
                          action: action,
@@ -153,6 +212,11 @@ extension Model {
         if let gimbalPresetId = action.gimbalPresetId {
             moveToGimbalPreset(id: gimbalPresetId)
         }
+        return true
+    }
+
+    private func executeSendChatMessage(action: SettingsMacrosAction) -> Bool {
+        sendChatMessage(message: formatPlainText(formatString: action.chatMessage))
         return true
     }
 

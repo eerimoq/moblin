@@ -9,9 +9,12 @@ class VideoDecoder: @unchecked Sendable {
     private var isRunning = false
     private let name: String
     private let lockQueue: DispatchQueue
+    private let softwareDecoding: Bool
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
+    private var numberOfFailedFrames = 0
+    private var latestFailedFrameStatus: OSStatus = noErr
     private var session: VTDecompressionSession? {
         didSet {
             oldValue?.invalidate()
@@ -19,26 +22,24 @@ class VideoDecoder: @unchecked Sendable {
         }
     }
 
-    init(name: String, lockQueue: DispatchQueue) {
+    init(name: String, lockQueue: DispatchQueue, softwareDecoding: Bool) {
         self.name = name
         self.lockQueue = lockQueue
+        self.softwareDecoding = softwareDecoding
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
-        lockQueue.async {
-            self.isRunning = true
-            self.invalidateSession = true
-            self.formatDescription = formatDescription
-        }
+        isRunning = true
+        invalidateSession = true
+        numberOfFailedFrames = 0
+        self.formatDescription = formatDescription
     }
 
     func stopRunning() {
-        lockQueue.async {
-            self.session = nil
-            self.invalidateSession = true
-            self.formatDescription = nil
-            self.isRunning = false
-        }
+        session = nil
+        invalidateSession = true
+        formatDescription = nil
+        isRunning = false
     }
 
     func decodeSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -56,7 +57,10 @@ class VideoDecoder: @unchecked Sendable {
                     return
                 }
                 guard let imageBuffer, status == noErr else {
-                    logger.info("video-decoder: \(name): Failed to decode frame status \(status)")
+                    lockQueue.async {
+                        self.numberOfFailedFrames += 1
+                        self.latestFailedFrameStatus = status
+                    }
                     return
                 }
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -71,6 +75,7 @@ class VideoDecoder: @unchecked Sendable {
                     return
                 }
                 lockQueue.async {
+                    self.logFailedFrames()
                     self.delegate?.videoDecoderOutputSampleBuffer(self, sampleBuffer)
                 }
             }
@@ -78,6 +83,17 @@ class VideoDecoder: @unchecked Sendable {
             logger.info("video-decoder: \(name): Decode failed. Resetting session.")
             invalidateSession = true
         }
+    }
+
+    private func logFailedFrames() {
+        guard numberOfFailedFrames > 0 else {
+            return
+        }
+        logger.info("""
+        video-decoder: \(name): Failed to decode \(numberOfFailedFrames) frame(s). \
+        Latest status \(latestFailedFrameStatus).
+        """)
+        numberOfFailedFrames = 0
     }
 
     private func makeSession() -> VTDecompressionSession? {
@@ -90,11 +106,17 @@ class VideoDecoder: @unchecked Sendable {
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
         ]
+        var decoderSpecification: [NSString: AnyObject]?
+        if #available(iOS 17.0, *), softwareDecoding {
+            decoderSpecification = [
+                kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder: kCFBooleanFalse,
+            ]
+        }
         var session: VTDecompressionSession?
         let status = VTDecompressionSessionCreate(
             allocator: kCFAllocatorDefault,
             formatDescription: formatDescription,
-            decoderSpecification: nil,
+            decoderSpecification: decoderSpecification as CFDictionary?,
             imageBufferAttributes: attributes as CFDictionary?,
             outputCallback: nil,
             decompressionSessionOut: &session

@@ -140,7 +140,7 @@ struct KickStreamInfo {
 private let userUrl = URL(string: "https://kick.com/api/v1/user")!
 
 private func makeSlug(channelName: String) -> String {
-    channelName.replacingOccurrences(of: "_", with: "-")
+    channelName.replace("_", "-")
 }
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
@@ -194,7 +194,7 @@ func fetchKickProfilePicture(username: String) async -> UIImage? {
         return image
     }
     if username.contains("_") {
-        let kebabUsername = username.replacingOccurrences(of: "_", with: "-")
+        let kebabUsername = username.replace("_", "-")
         return await fetchKickProfilePictureWithUsername(kebabUsername)
     }
     return nil
@@ -216,10 +216,15 @@ private func fetchKickProfilePictureWithUsername(_ username: String) async -> UI
     return UIImage(data: data)
 }
 
+protocol KickApiDelegate: AnyObject {
+    func kickApiUnauthorized()
+}
+
 class KickApi {
     private let channelId: String
     private let slug: String
     private let accessToken: String
+    weak var delegate: (any KickApiDelegate)?
 
     init(channelId: String, slug: String, accessToken: String) {
         self.channelId = channelId
@@ -572,6 +577,7 @@ class KickApi {
                     logger.info("kick-api: Error response body: \(data)")
                 }
                 if response?.http?.isUnauthorized == true {
+                    self.delegate?.kickApiUnauthorized()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

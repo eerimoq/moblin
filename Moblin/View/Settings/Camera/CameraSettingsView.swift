@@ -28,7 +28,7 @@ struct CustomLutView: View {
                         HCenter {
                             Image(uiImage: image)
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 1920 / 6, height: 1080 / 6)
                         }
                     }

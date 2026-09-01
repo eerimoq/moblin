@@ -4,8 +4,8 @@ class WrappingTimestamp {
     private let name: String
     private let maximumTimestamp: CMTime
     private let halfMaximumTimestamp: CMTime
-    private var highTimestamp = CMTime(seconds: 0.0)
-    private var previousTimestamp = CMTime(seconds: 0.0)
+    private var highTimestamp: CMTime
+    private var previousTimestamp: CMTime
 
     init(name: String, maximumTimestamp: CMTime) {
         self.name = name
@@ -14,6 +14,8 @@ class WrappingTimestamp {
             value: maximumTimestamp.value / 2,
             timescale: maximumTimestamp.timescale
         )
+        highTimestamp = CMTime(value: 0, timescale: maximumTimestamp.timescale)
+        previousTimestamp = CMTime(value: 0, timescale: maximumTimestamp.timescale)
     }
 
     func update(_ timestamp: CMTime) -> CMTime {

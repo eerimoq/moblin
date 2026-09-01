@@ -284,17 +284,7 @@ final class SoopChat: NSObject, @unchecked Sendable {
     }
 
     private func createSegments(message: String) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
         var id = 0
-        for var segment in makeChatPostTextSegments(text: message, id: &id) {
-            if let text = segment.text {
-                segments += emotes.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
-        return segments
+        return emotes.createSegments(text: message, id: &id)
     }
 }

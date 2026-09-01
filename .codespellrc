@@ -1,0 +1,3 @@
+[codespell]
+skip = *.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json,*.log
+ignore-words-list = inout,froms,soop,medias,deactive,upto,datas,ro,lightyears,thirdParty

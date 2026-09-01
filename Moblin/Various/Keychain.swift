@@ -11,6 +11,25 @@ class Keychain {
         self.logPrefix = logPrefix
     }
 
+    static func loadStreamIds(server: String) -> [String] {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassInternetPassword,
+            kSecAttrServer as String: server,
+            kSecMatchLimit as String: kSecMatchLimitAll,
+            kSecReturnAttributes as String: true,
+        ]
+        var items: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &items)
+        guard status != errSecItemNotFound else {
+            return []
+        }
+        guard status == errSecSuccess, let items = items as? [[String: Any]] else {
+            logger.info("keychain: Failed to query items of server \(server) with status \(status)")
+            return []
+        }
+        return items.compactMap { $0[kSecAttrAccount as String] as? String }
+    }
+
     func store(value: String) {
         guard let valueData = value.data(using: .utf8) else {
             return

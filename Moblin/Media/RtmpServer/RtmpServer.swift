@@ -23,11 +23,13 @@ class RtmpServer: @unchecked Sendable {
     private var clients: [RtmpServerClient]
     let delegate: any RtmpServerDelegate
     var settings: SettingsRtmpServer
+    private let softwareDecoding: Bool
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var bitrateStats = BitrateStats()
 
-    init(settings: SettingsRtmpServer, delegate: any RtmpServerDelegate) {
+    init(settings: SettingsRtmpServer, softwareDecoding: Bool, delegate: any RtmpServerDelegate) {
         self.settings = settings
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         clients = []
     }
@@ -79,7 +81,7 @@ class RtmpServer: @unchecked Sendable {
         let parameters = NWParameters(tls: nil, tcp: options)
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.port) ?? 1935
+            port: .init(rawValue: settings.port) ?? .init(integerLiteral: DefaultTcpPorts.rtmpServer)
         )
         parameters.allowLocalEndpointReuse = true
         do {
@@ -129,7 +131,9 @@ class RtmpServer: @unchecked Sendable {
 
     private func handleNewListenerConnection(connection: NWConnection) {
         logger.info("rtmp-server: Client TCP connected")
-        let client = RtmpServerClient(server: self, connection: connection)
+        let client = RtmpServerClient(server: self,
+                                      connection: connection,
+                                      softwareDecoding: softwareDecoding)
         client.start()
         clients.append(client)
     }

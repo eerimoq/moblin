@@ -2,32 +2,40 @@ import logging
 import time
 from pathlib import Path
 
-from utils.config import Capability
-from utils.config import srt_listener_url
-from utils.ffmpeg import FfmpegServer
-from utils.ffmpeg import ffprobe_video
-from utils.ffmpeg import read_video_frame
-from utils.ffmpeg import remove_duplicated_frames
-from utils.generate_device_settings import FRONT_SCENE_SETTINGS
-from utils.generate_device_settings import RECORD_STREAM_SETTINGS
-from utils.generate_device_settings import Alignment
-from utils.generate_device_settings import BitrateRateControl
-from utils.generate_device_settings import CameraPosition
-from utils.generate_device_settings import GraphicsImplementation
-from utils.generate_device_settings import SceneName
-from utils.generate_device_settings import WidgetType
-from utils.generate_device_settings import download_model
-from utils.generate_device_settings import scene_widget_settings
-from utils.generate_device_settings import text_widget_settings
-from utils.generate_device_settings import uuid
-from utils.generate_device_settings import video_source_widget_settings
-from utils.moblin import Moblin
-from utils.test_case import TestCase
-from utils.utils import FILES_DIR
-from utils.utils import Crop
-from utils.utils import Image
-from utils.utils import Pixel
-from utils.utils import manual_confirmation
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import FfmpegNoiseStream
+from systest_moblin.ffmpeg import FfmpegServer
+from systest_moblin.ffmpeg import Image
+from systest_moblin.ffmpeg import Pixel
+from systest_moblin.ffmpeg import ffprobe_format
+from systest_moblin.ffmpeg import read_unique_frame_presentation_time_stamps
+from systest_moblin.ffmpeg import read_video_frame
+
+from ..utils.config import RTMP_SERVER_PORT
+from ..utils.config import Capability
+from ..utils.config import srt_listener_url
+from ..utils.generate_device_settings import BACK_SCENE_SETTINGS
+from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from ..utils.generate_device_settings import SCREEN_SCENE_SETTINGS
+from ..utils.generate_device_settings import Alignment
+from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import GraphicsImplementation
+from ..utils.generate_device_settings import SceneName
+from ..utils.generate_device_settings import VideoStabilizationMode
+from ..utils.generate_device_settings import WidgetType
+from ..utils.generate_device_settings import download_model
+from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import scene_widget_settings
+from ..utils.generate_device_settings import text_widget_settings
+from ..utils.generate_device_settings import uuid
+from ..utils.generate_device_settings import video_source_widget_settings
+from ..utils.moblin import Moblin
+from ..utils.moblin import Recorder
+from ..utils.test_case import TestCase
+from ..utils.utils import FILES_DIR
+from ..utils.utils import manual_confirmation
 
 LOGGER = logging.getLogger(__name__)
 WIDTH = 1920
@@ -47,13 +55,9 @@ MAP_SMALL_WIDGET_ID = uuid()
 MAP_LARGE_WIDGET_ID = uuid()
 PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
-SCREEN_SCENE_SETTINGS = {
-    "name": SceneName.SCREEN,
-    "cameraPosition": CameraPosition.SCREEN_CAPTURE,
-    "enabled": True,
-}
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
+NOISE_TALKBACK_STREAM_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 GRAPHICS_IMPLEMENTATION_NAMES = {
@@ -63,11 +67,7 @@ GRAPHICS_IMPLEMENTATION_NAMES = {
 
 
 def is_map_dot(pixel: Pixel) -> bool:
-    return (
-        pixel.blue > 180
-        and pixel.blue - pixel.red > 80
-        and pixel.blue - pixel.green > 60
-    )
+    return pixel.blue > 180 and pixel.blue - pixel.red > 80 and pixel.blue - pixel.green > 60
 
 
 def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
@@ -97,6 +97,74 @@ class SceneSwitchMultipleTimes(TestCase):
         for _ in range(10):
             self.moblin.set_scene(SceneName.SCREEN)
             self.moblin.set_scene(SceneName.FRONT)
+
+
+class SceneSwitchBackAndFrontCameraAudio(TestCase):
+    """Switch between a back camera scene and a front camera scene every two seconds
+    while recording and streaming over SRT to the test runner computer with the default
+    builtin microphone. White noise is played on the device's speaker over talkback for
+    the microphone to pick up. Validate that the recorded and streamed audio has no
+    glitches.
+
+    """
+
+    def __init__(self, moblin: Moblin, video_stabilization_mode: VideoStabilizationMode):
+        super().__init__(moblin, f"{type(self).__name__}{video_stabilization_mode.name.title()}")
+        self.video_stabilization_mode = video_stabilization_mode
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        **RECORD_STREAM_SETTINGS,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                    }
+                ],
+                "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
+                "videoStabilizationMode": self.video_stabilization_mode,
+                "rtmpServer": {
+                    "enabled": True,
+                    "port": RTMP_SERVER_PORT,
+                    "streams": [
+                        {
+                            "id": NOISE_TALKBACK_STREAM_ID,
+                            "name": "Noise",
+                            "streamKey": "noise",
+                        }
+                    ],
+                },
+                "talkBack": {"enabled": True, "micId": mic_id(NOISE_TALKBACK_STREAM_ID)},
+            }
+        )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
+
+    def run(self):
+        back_camera = self.select_scene(SceneName.BACK)
+        front_camera = self.select_scene(SceneName.FRONT)
+        self.assert_not_equal(back_camera, front_camera)
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        stream_file = FILES_DIR / f"{self.name}.ts"
+        with FfmpegNoiseStream(self.moblin.ingest_rtmp_url("noise")):
+            with FfmpegServer(url=srt_listener_url(), filename=stream_file):
+                self.moblin.go_live()
+                with recorder:
+                    for _ in range(5):
+                        self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                        time.sleep(2)
+                        self.assert_equal(self.select_scene(SceneName.FRONT), front_camera)
+                        time.sleep(2)
+                self.moblin.end()
+        self.assert_no_audio_glitches(recorder.recording)
+        self.assert_no_audio_glitches(stream_file)
+
+    def select_scene(self, name: SceneName) -> str:
+        self.moblin.set_scene(name)
+        return self.moblin.get_camera_status()
 
 
 class GraphicsImplementationTestCase(TestCase):
@@ -130,7 +198,6 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
 
     def setup(self):
         self.skip_if_missing_capability(Capability.PIP)
-        self.skip_if_no_moving_picture()
         self.moving_picture_on()
         self.moblin.import_settings(
             overrides={
@@ -179,22 +246,32 @@ class ScenePiPBackFront(GraphicsImplementationTestCase):
         recording_file = self.moblin.record(10, f"{self.name}.mp4")
         self.assert_recording(
             recording_file,
+            FILES_DIR,
             has_qr_codes=False,
-            duplicated_frames_crops=[
-                # Top left
-                Crop(x=0, y=0, width=800, height=500),
-                # Bottom right
-                Crop(x=1120, y=580, width=800, height=500),
-            ],
+            duplicated_frames_crops=(
+                [
+                    # Top left
+                    Crop(x=0, y=0, width=800, height=500),
+                    # Bottom right
+                    Crop(x=1120, y=580, width=800, height=500),
+                ]
+                if self.moblin.has_moving_picture()
+                else []
+            ),
             fps=self._fps,
         )
 
 
 class SceneWidgetsInBackground(GraphicsImplementationTestCase):
-    """Stream in background mode with various widgets showing."""
+    """Stream in background mode with a clock widget showing. Validate that the widget
+    is updated once per second with Core Image, and not updated at all with Metal Petal,
+    which is not allowed to run in background.
+
+    """
 
     def setup(self):
         self.skip_if_missing_capability(Capability.BACKGROUND_STREAMING)
+        self.skip_if_not_interactive()
         self.moblin.import_settings(
             overrides={
                 "graphicsImplementation": self.graphics_implementation,
@@ -212,9 +289,7 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
                 "scenes": [
                     {
                         "cameraPosition": CameraPosition.SCREEN_CAPTURE,
-                        "widgets": [
-                            scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)
-                        ],
+                        "widgets": [scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)],
                         "enabled": True,
                     }
                 ],
@@ -237,17 +312,24 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
             time.sleep(10)
             self.moblin.end()
             manual_confirmation("Put the app in foreground.")
+        self.assert_live_stream(filename, maximum_length=None)
         crop = Crop(x=0, y=0, width=400, height=100)
-        filtered_video = ffprobe_video(remove_duplicated_frames(filename, crop))
-        self.assert_presentation_time_stamps(
-            filename, 1, [frame.pts for frame in filtered_video.frames[-8:]], 0.25
-        )
+        presentation_time_stamps = read_unique_frame_presentation_time_stamps(filename, crop)
+        if self.graphics_implementation == GraphicsImplementation.CORE_IMAGE:
+            self.assert_presentation_time_stamps(
+                filename, 1, presentation_time_stamps[-8:], "widget", delta_error=0.25
+            )
+        else:
+            background_start = ffprobe_format(filename).duration - 8
+            self.assert_equal(
+                [pts for pts in presentation_time_stamps if pts > background_start],
+                [],
+                "Widgets updated in background",
+            )
 
 
 class WidgetTestCase(GraphicsImplementationTestCase):
-    def import_settings(
-        self, scene_widgets, widgets, files: dict[str, Path] | None = None
-    ):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None):
         self.moblin.import_settings(
             overrides={
                 "graphicsImplementation": self.graphics_implementation,
@@ -271,14 +353,10 @@ class WidgetTestCase(GraphicsImplementationTestCase):
         return recording_file
 
     def assert_widget_rendered(self, recording_file: Path, crop: Crop):
-        self.assert_not_all_black(
-            read_video_frame(recording_file, FRAME_TIMESTAMP, crop)
-        )
+        self.assert_not_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, crop))
 
     def assert_black_background(self, recording_file: Path):
-        self.assert_all_black(
-            read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP)
-        )
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP))
 
 
 class SceneMapWidget(WidgetTestCase):
@@ -334,9 +412,7 @@ class ScenePngTuberWidget(WidgetTestCase):
 
     def setup(self):
         self.import_settings(
-            scene_widgets=[
-                scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)
-            ],
+            scene_widgets=[scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)],
             widgets=[
                 {
                     "id": PNG_TUBER_WIDGET_ID,
@@ -348,9 +424,7 @@ class ScenePngTuberWidget(WidgetTestCase):
                     },
                 }
             ],
-            files={
-                f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)
-            },
+            files={f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)},
         )
 
     def run(self):
@@ -389,7 +463,11 @@ class SceneVTuberWidget(WidgetTestCase):
 
 
 def tests(moblin: Moblin):
-    test_cases = [SceneSwitchMultipleTimes(moblin)]
+    test_cases = [
+        SceneSwitchMultipleTimes(moblin),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
+    ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [
             ScenePiPBackFront(moblin, 30, graphics_implementation),

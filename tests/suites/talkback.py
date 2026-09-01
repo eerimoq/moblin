@@ -1,22 +1,28 @@
 import logging
 import time
+from pathlib import Path
 
-from utils.config import RTMP_SERVER_PORT
-from utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
-from utils.config import SRT_SERVER_PORT
-from utils.config import srt_listener_url
-from utils.ffmpeg import FfmpegAudioTestStream
-from utils.ffmpeg import TransportFormat
-from utils.generate_device_settings import mic_id
-from utils.generate_device_settings import uuid
-from utils.moblin import Moblin
-from utils.test_case import TestCase
-from utils.utils import manual_validation
+from systest_moblin.ffmpeg import BEEP_INTERVAL
+from systest_moblin.ffmpeg import FfmpegAudioTestStream
+from systest_moblin.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import detect_beeps
+
+from ..utils.config import RTMP_SERVER_PORT
+from ..utils.config import SRT_CLIENT_TALKBACK_SERVER_PORT
+from ..utils.config import SRT_SERVER_PORT
+from ..utils.config import srt_listener_url
+from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import uuid
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
+from ..utils.utils import manual_volume_requirement
 
 LOGGER = logging.getLogger(__name__)
 RTMP_TALKBACK_STREAM_ID = uuid()
 SRT_TALKBACK_STREAM_ID = uuid()
 SRT_CLIENT_TALKBACK_STREAM_ID = uuid()
+RECORDING_DURATION = 10
+MINIMUM_NUMBER_OF_BEEPS = 3
 
 
 class TalkbackTestCase(TestCase):
@@ -29,14 +35,31 @@ class TalkbackTestCase(TestCase):
         )
         time.sleep(1)
 
-    def play_beeps(self, url: str, transport_format=TransportFormat.FLV):
+    def play_beeps(
+        self,
+        url: str,
+        transport_format=TransportFormat.FLV,
+        recording_duration=RECORDING_DURATION,
+    ):
+        manual_volume_requirement(LOGGER)
         with FfmpegAudioTestStream(url=url, transport_format=transport_format):
-            manual_validation(LOGGER, "Listen for periodic beeps")
-            time.sleep(10)
+            time.sleep(BEEP_INTERVAL)
+            recording = self.moblin.record(recording_duration, f"{self.name}.mp4")
+        self.assert_beeps(recording)
+
+    def assert_beeps(self, recording: Path):
+        beeps = detect_beeps(recording)
+        LOGGER.debug(
+            "Found %s beeps in %s at %s.",
+            len(beeps),
+            recording,
+            ", ".join(f"{beep:.3f} s" for beep in beeps),
+        )
+        self.assert_greater_equal(len(beeps), MINIMUM_NUMBER_OF_BEEPS)
 
 
 class TalkbackRtmpServer(TalkbackTestCase):
-    """Play talkback sound over RTMP server through the speaker for 10 seconds."""
+    """Play talkback sound over RTMP server through the speaker and record the beeps."""
 
     def setup(self):
         self.import_settings(
@@ -53,13 +76,14 @@ class TalkbackRtmpServer(TalkbackTestCase):
                 ],
             },
         )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
 
     def run(self):
         self.play_beeps(self.moblin.ingest_rtmp_url("talkback"))
 
 
 class TalkbackSrtlaServer(TalkbackTestCase):
-    """Play talkback sound over SRTLA server through the speaker for 10 seconds."""
+    """Play talkback sound over SRTLA server through the speaker and record the beeps."""
 
     def setup(self):
         self.import_settings(
@@ -82,7 +106,7 @@ class TalkbackSrtlaServer(TalkbackTestCase):
 
 
 class TalkbackSrtClient(TalkbackTestCase):
-    """Play talkback sound over SRT client through the speaker for 10 seconds."""
+    """Play talkback sound over SRT client through the speaker and record the beeps."""
 
     def setup(self):
         self.import_settings(
@@ -92,9 +116,7 @@ class TalkbackSrtClient(TalkbackTestCase):
                     {
                         "id": SRT_CLIENT_TALKBACK_STREAM_ID,
                         "name": "Talkback",
-                        "url": self.moblin.tester_srt_url(
-                            SRT_CLIENT_TALKBACK_SERVER_PORT
-                        ),
+                        "url": self.moblin.tester_srt_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
                         "enabled": True,
                     }
                 ],
@@ -103,7 +125,9 @@ class TalkbackSrtClient(TalkbackTestCase):
 
     def run(self):
         self.play_beeps(
-            srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT), TransportFormat.MPEGTS
+            srt_listener_url(SRT_CLIENT_TALKBACK_SERVER_PORT),
+            TransportFormat.MPEGTS,
+            RECORDING_DURATION + 5,
         )
 
 

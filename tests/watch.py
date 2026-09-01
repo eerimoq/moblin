@@ -254,9 +254,7 @@ def make_grid_plot(title, regex, value_parser, fin):
 
 def watch_grid(watches):
     with contextlib.ExitStack() as stack:
-        files = [
-            stack.enter_context(open(LOG_FILE, "r", encoding="utf-8")) for _ in watches
-        ]
+        files = [stack.enter_context(open(LOG_FILE, "r", encoding="utf-8")) for _ in watches]
 
         def grid(stdscr):
             stdscr.keypad(True)
@@ -296,9 +294,7 @@ def do_grid(_args):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Watch the device resource usage and video statistics."
-    )
+    parser = argparse.ArgumentParser(description="Watch the device resource usage and video statistics.")
     subparsers = parser.add_subparsers(required=True)
 
     subparser = subparsers.add_parser("ram", description="Watch the device RAM usage.")

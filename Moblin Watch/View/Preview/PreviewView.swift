@@ -94,7 +94,7 @@ struct PreviewView: View {
                 if let image = preview.image {
                     Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
                 }
                 if preview.showPreviewDisconnected {

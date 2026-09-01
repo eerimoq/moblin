@@ -73,10 +73,6 @@ class Gimbal {
         }
     }
 
-    func cancelMovement() {
-        setMovement(velocity: .init(x: 0, y: 0, z: 0))
-    }
-
     func getCurrentOrientation() async throws -> Vector3D? {
         guard !tracking else {
             return nil
@@ -191,8 +187,6 @@ class Gimbal {
     func animate(motion _: SettingsGimbalMotion) {}
 
     func setMovement(velocity _: Vector3D) {}
-
-    func cancelMovement() {}
 
     func getCurrentOrientation() async throws -> Vector3D? {
         nil

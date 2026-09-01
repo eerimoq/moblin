@@ -62,8 +62,20 @@ private func createSuggestions() -> [Suggestion] {
     return suggestions
 }
 
+@MainActor
+private let chatBotSuggestions = createChatBotSuggestions()
+
+@MainActor
+private func createChatBotSuggestions() -> [Suggestion] {
+    [
+        Suggestion(id: 0, name: "Travel", text: suggestionTravel.replace("\n", " ")),
+        Suggestion(id: 1, name: "Debug", text: suggestionDebug.replace("\n", " ")),
+    ]
+}
+
 private struct SuggestionView: View {
     let suggestion: Suggestion
+    let widget: Bool
     @Binding var text: String
     let dismiss: () -> Void
     @State private var presentingConfirmation = false
@@ -71,6 +83,14 @@ private struct SuggestionView: View {
     private func submit() {
         text = suggestion.text
         dismiss()
+    }
+
+    private func confirmationTitle() -> String {
+        if widget {
+            String(localized: "Are you sure you want to replace the content of the current text widget?")
+        } else {
+            String(localized: "Are you sure you want to replace the text of the current command?")
+        }
     }
 
     var body: some View {
@@ -85,7 +105,7 @@ private struct SuggestionView: View {
                 Text(suggestion.name)
                     .font(.title3)
             }
-            .confirmationDialog("Are you sure you want to replace the content of the current text widget?",
+            .confirmationDialog(confirmationTitle(),
                                 isPresented: $presentingConfirmation,
                                 titleVisibility: .visible)
             {
@@ -708,13 +728,14 @@ private struct LapTimesWidgetView: View {
 
 private struct TextWidgetSuggestionsInnerView: View {
     @Environment(\.dismiss) var dismiss
+    let widget: Bool
     @Binding var text: String
 
     var body: some View {
         Form {
             Section {
-                ForEach(suggestions) { suggestion in
-                    SuggestionView(suggestion: suggestion, text: $text) {
+                ForEach(widget ? suggestions : chatBotSuggestions) { suggestion in
+                    SuggestionView(suggestion: suggestion, widget: widget, text: $text) {
                         dismiss()
                     }
                     .tag(suggestion.id)
@@ -726,21 +747,24 @@ private struct TextWidgetSuggestionsInnerView: View {
 }
 
 private struct GeneralVariablesView: View {
+    let widget: Bool
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                VariableView(
-                    title: "{checkbox}",
-                    description: String(localized: "Show a checkbox"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{rating}",
-                    description: String(localized: "Show a 0-5 rating"),
-                    text: $value
-                )
+                if widget {
+                    VariableView(
+                        title: "{checkbox}",
+                        description: String(localized: "Show a checkbox"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{rating}",
+                        description: String(localized: "Show a 0-5 rating"),
+                        text: $value
+                    )
+                }
                 VariableView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 VariableView(
                     title: "{browserTitle}",
@@ -767,6 +791,7 @@ private struct GeneralVariablesView: View {
 }
 
 private struct TimeVariablesView: View {
+    let widget: Bool
     @Binding var value: String
 
     var body: some View {
@@ -793,17 +818,21 @@ private struct TimeVariablesView: View {
                 VariableView(title: "{fullDate}",
                              description: String(localized: "Show date as \(fullDate)"),
                              text: $value)
-                VariableView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                VariableView(
-                    title: "{stopwatch}",
-                    description: String(localized: "Show a stopwatch"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{lapTimes}",
-                    description: String(localized: "Show lap times"),
-                    text: $value
-                )
+                if widget {
+                    VariableView(title: "{timer}",
+                                 description: String(localized: "Show a timer"),
+                                 text: $value)
+                    VariableView(
+                        title: "{stopwatch}",
+                        description: String(localized: "Show a stopwatch"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{lapTimes}",
+                        description: String(localized: "Show lap times"),
+                        text: $value
+                    )
+                }
             }
             .navigationTitle("Time")
         } label: {
@@ -1184,6 +1213,30 @@ private struct DebugVariablesView: View {
     }
 }
 
+struct TextFormatVariablesView: View {
+    @EnvironmentObject var model: Model
+    let widget: Bool
+    @Binding var value: String
+
+    var body: some View {
+        Section {
+            GeneralVariablesView(widget: widget, value: $value)
+            TimeVariablesView(widget: widget, value: $value)
+            LocationVariablesView(model: model, value: $value)
+            WeatherVariablesView(model: model, value: $value)
+            if widget {
+                LanguageVariablesView(value: $value)
+            }
+            WorkoutVariablesView(model: model, value: $value)
+            TeslaVariablesView(value: $value)
+            StreamingVariablesView(value: $value)
+            DebugVariablesView(value: $value)
+        } header: {
+            Text("Variables")
+        }
+    }
+}
+
 private struct TextSelectionView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -1194,23 +1247,11 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             TextWidgetTextView(value: $value)
-            WarningsView(model: model, location: model.database.location, value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
             Section {
-                TextWidgetSuggestionsView(text: $value)
+                TextWidgetSuggestionsView(widget: true, text: $value)
             }
-            Section {
-                GeneralVariablesView(value: $value)
-                TimeVariablesView(value: $value)
-                LocationVariablesView(model: model, value: $value)
-                WeatherVariablesView(model: model, value: $value)
-                LanguageVariablesView(value: $value)
-                WorkoutVariablesView(model: model, value: $value)
-                TeslaVariablesView(value: $value)
-                StreamingVariablesView(value: $value)
-                DebugVariablesView(value: $value)
-            } header: {
-                Text("Variables")
-            }
+            TextFormatVariablesView(widget: true, value: $value)
         }
         .onChange(of: value) { _ in
             widget.text.formatString = value
@@ -1237,7 +1278,7 @@ struct TextWidgetTextView: View {
     }
 }
 
-private struct WarningsView: View {
+struct TextFormatWarningsView: View {
     @ObservedObject var model: Model
     @ObservedObject var location: SettingsLocation
     @Binding var value: String
@@ -1337,11 +1378,12 @@ struct WidgetTextQuickButtonControlsView: View {
 }
 
 struct TextWidgetSuggestionsView: View {
+    let widget: Bool
     @Binding var text: String
 
     var body: some View {
         NavigationLink {
-            TextWidgetSuggestionsInnerView(text: $text)
+            TextWidgetSuggestionsInnerView(widget: widget, text: $text)
         } label: {
             Text("Suggestions")
         }
@@ -1415,8 +1457,8 @@ private struct FontFamilyPickerView: View {
 }
 
 func fontStyleName(family: String, fontName: String) -> String {
-    let prefix = family.replacingOccurrences(of: " ", with: "")
-    let name = fontName.replacingOccurrences(of: "-", with: "")
+    let prefix = family.replace(" ", "")
+    let name = fontName.replace("-", "")
     if name.hasPrefix(prefix) {
         let suffix = String(name.dropFirst(prefix.count))
         return suffix.isEmpty ? "Regular" : suffix
@@ -1519,9 +1561,9 @@ struct WidgetTextSettingsView: View {
                 TextItemLocalizedView(name: "Text", value: widget.text.formatString)
             }
         }
-        WarningsView(model: model,
-                     location: model.database.location,
-                     value: $text.formatString)
+        TextFormatWarningsView(model: model,
+                               location: model.database.location,
+                               value: $text.formatString)
         let textEffects = model.getTextEffects(id: widget.id)
         if !textEffects.isEmpty {
             if !text.timers.isEmpty {

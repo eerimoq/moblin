@@ -163,6 +163,8 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 EmptyView()
             case .obs:
                 EmptyView()
+            case .mobcam:
+                EmptyView()
             }
             Section {
                 NavigationLink {

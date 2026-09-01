@@ -1,5 +1,4 @@
 import Collections
-import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
 
@@ -51,9 +50,7 @@ private struct HighlightMessageView: View {
                     }
                     if let url = segment.url {
                         if chat.animatedEmotes {
-                            WebImage(url: url)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
+                            AnimatedEmoteView(url: url)
                                 .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                                 .frame(height: frameHeightEmotes())
                                 .opacity(imageOpacity())
@@ -61,7 +58,7 @@ private struct HighlightMessageView: View {
                             CacheAsyncImage(url: url) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                             } placeholder: {
                                 EmptyView()
                             }
@@ -144,14 +141,14 @@ private struct LineView: View {
             if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .padding(2)
                     .frame(height: frameHeightBadges())
                     .opacity(imageOpacity())
             }
             if chat.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
                 CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().aspectRatio(contentMode: .fit)
+                    image.resizable().scaledToFit()
                 } placeholder: {
                     EmptyView()
                 }
@@ -164,7 +161,7 @@ private struct LineView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         EmptyView()
                     }
@@ -194,9 +191,7 @@ private struct LineView: View {
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
+                        AnimatedEmoteView(url: url)
                             .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                             .frame(height: frameHeightEmotes())
                             .opacity(imageOpacity())
@@ -204,7 +199,7 @@ private struct LineView: View {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                         } placeholder: {
                             EmptyView()
                         }

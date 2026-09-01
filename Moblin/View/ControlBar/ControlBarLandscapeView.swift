@@ -141,7 +141,7 @@ private struct IconAndSettingsView: View {
                 Image("\(store.iconImage)NoBackground")
                     .interpolation(.high)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
             .buttonStyle(.borderless)

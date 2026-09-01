@@ -1,7 +1,5 @@
 import GameController
-import Spatial
 
-private let gimbalAngularVelocity: Double = 0.3
 private let thumbStickDeadZone: Float = 0.1
 
 extension Model {
@@ -28,25 +26,13 @@ extension Model {
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
         case .gimbalUp:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: gimbalAngularVelocity, y: 0, z: 0)
-            )
+            setGimbalMovement(x: pressed ? 1 : 0, y: 0)
         case .gimbalDown:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: -gimbalAngularVelocity, y: 0, z: 0)
-            )
+            setGimbalMovement(x: pressed ? -1 : 0, y: 0)
         case .gimbalLeft:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: 0, y: gimbalAngularVelocity, z: 0)
-            )
+            setGimbalMovement(x: 0, y: pressed ? 1 : 0)
         case .gimbalRight:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
-            )
+            setGimbalMovement(x: 0, y: pressed ? -1 : 0)
         case .gimbalPreset:
             let timer = gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
             timer?.stop()
@@ -203,18 +189,6 @@ extension Model {
         }
     }
 
-    private func handleGameControllerButtonGimbal(pressed: Bool, velocity: Vector3D) {
-        if #available(iOS 18.0, *) {
-            DispatchQueue.main.async {
-                if pressed {
-                    Gimbal.shared?.setMovement(velocity: velocity)
-                } else {
-                    Gimbal.shared?.cancelMovement()
-                }
-            }
-        }
-    }
-
     private func handleGameControllerThumbStick(
         function: SettingsControllerThumbStickFunction,
         xValue: Float,
@@ -227,19 +201,9 @@ extension Model {
         case .unused:
             break
         case .gimbalPanTilt:
-            if #available(iOS 18.0, *) {
-                let x = abs(xValue) > thumbStickDeadZone ? xValue : 0
-                let y = abs(yValue) > thumbStickDeadZone ? yValue : 0
-                if x == 0, y == 0 {
-                    Gimbal.shared?.cancelMovement()
-                } else {
-                    Gimbal.shared?.setMovement(velocity: .init(
-                        x: Double(y) * gimbalAngularVelocity,
-                        y: Double(-x) * gimbalAngularVelocity,
-                        z: 0
-                    ))
-                }
-            }
+            let x = abs(xValue) > thumbStickDeadZone ? xValue : 0
+            let y = abs(yValue) > thumbStickDeadZone ? yValue : 0
+            setGimbalMovement(x: y, y: -x)
         }
     }
 

@@ -42,7 +42,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
                     HCenter {
                         Image("BelaboxCloudIngest")
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(maxWidth: 400)
                     }
                 }

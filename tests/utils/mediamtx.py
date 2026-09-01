@@ -4,10 +4,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 import requests
+from systest import ManagedProcess
+from systest import wait_until
 
 from .config import MEDIAMTX_API_PORT
-from .process import ManagedProcess
-from .utils import wait_until
 
 LOGGER = logging.getLogger(__name__)
 UTILS_DIR = Path(__file__).parent.resolve()
@@ -36,18 +36,14 @@ class MediaMtx:
         self._wait_for_connection(
             "rtmpconns/list",
             "RTMP stream to MediaMTX",
-            lambda stream: (
-                stream["path"] == path and stream["bytesReceived"] > bytes_received
-            ),
+            lambda stream: stream["path"] == path and stream["bytesReceived"] > bytes_received,
         )
 
     def wait_for_srt_stream(self, path, bytes_received):
         self._wait_for_connection(
             "srtconns/list",
             "SRT stream to MediaMTX",
-            lambda stream: (
-                stream["path"] == path and stream["bytesReceived"] > bytes_received
-            ),
+            lambda stream: stream["path"] == path and stream["bytesReceived"] > bytes_received,
         )
 
     def wait_for_webrtc_stream(self, path, bytes_received):
@@ -72,22 +68,18 @@ class MediaMtx:
             ),
         )
 
-    def wait_for_rtsp_stream(self, outbound_bytes):
+    def wait_for_rtsp_stream(self, path, outbound_bytes):
         self._wait_for_connection(
-            "rtspconns/list",
+            "rtspsessions/list",
             "RTSP stream from MediaMTX",
-            lambda stream: stream["outboundBytes"] > outbound_bytes,
+            lambda stream: (
+                stream["path"] == path
+                and stream["state"] == "read"
+                and stream["outboundBytes"] > outbound_bytes
+            ),
         )
 
-    def get_srt_publisher(self, path) -> tuple[str, int] | None:
-        for stream in self._api_get("srtconns/list")["items"]:
-            if stream["path"] == path and stream["state"] == "publish":
-                return stream["id"], stream["bytesReceived"]
-        return None
-
-    def _wait_for_connection(
-        self, endpoint: str, description: str, match: Callable[[dict], bool]
-    ):
+    def _wait_for_connection(self, endpoint: str, description: str, match: Callable[[dict], bool]):
         wait_until(
             lambda: any(match(stream) for stream in self._api_get(endpoint)["items"]),
             description,
@@ -105,17 +97,9 @@ class MediaMtx:
         return {**os.environ, **env}
 
     def _wait_until_server_is_ready(self):
-        wait_until(
-            lambda: self._api_get("info") is not None,
-            "MediaMTX to start",
-            timeout=15,
-            interval=0.5,
-            ignore_errors=True,
-        )
+        wait_until(lambda: self._api_get("info") is not None, "MediaMTX to start", ignore_errors=True)
 
     def _api_get(self, path):
-        response = requests.get(
-            f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5
-        )
+        response = requests.get(f"http://localhost:{MEDIAMTX_API_PORT}/v3/{path}", timeout=5)
         response.raise_for_status()
         return response.json()

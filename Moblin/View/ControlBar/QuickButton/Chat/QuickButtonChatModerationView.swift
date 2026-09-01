@@ -456,16 +456,16 @@ struct ChannelImageView: View {
                 CacheAsyncImage(url: url) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 } placeholder: {
                     Image("AppIconNoBackground")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 }
             } else {
                 Image("AppIconNoBackground")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
             }
         }
         .frame(width: 50, height: 50)
@@ -622,7 +622,7 @@ private struct KickHostChannelSearchView: View {
         Section {
             ExecutorView(executor: executor, centerNonContent: true) {
                 ForEach(channels) { channel in
-                    RaidChannelView(buttonText: "Host",
+                    RaidChannelView(buttonText: "Raid",
                                     channel: channel.username,
                                     category: channel.category ?? "",
                                     title: "",
@@ -659,11 +659,11 @@ private struct KickHostChannelView: View {
     }
 
     var body: some View {
-        NavigationLinkView(text: "Host channel", image: "play.tv") {
+        NavigationLinkView(text: "Raid channel", image: "play.tv") {
             KickHostChannelSearchView(model: model)
             Section {
                 ForEach(channels.filter(\.is_live)) { channel in
-                    RaidChannelView(buttonText: "Host",
+                    RaidChannelView(buttonText: "Raid",
                                     channel: channel.user_username,
                                     category: channel.category_name ?? "",
                                     title: channel.session_title ?? "",

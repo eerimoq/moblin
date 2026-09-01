@@ -48,11 +48,50 @@ private enum VideoCodec {
     }
 }
 
+private class TrackTimestamper {
+    private let clockRate: Double
+    private let syncTimestamps: Bool
+    private let wrappingTimestamp: WrappingTimestamp
+    private var offset: Double?
+
+    init(name: String, clockRate: Double, syncTimestamps: Bool) {
+        self.clockRate = clockRate
+        self.syncTimestamps = syncTimestamps
+        wrappingTimestamp = WrappingTimestamp(
+            name: name,
+            maximumTimestamp: CMTime(value: 0x1_0000_0000, timescale: 1)
+        )
+    }
+
+    func timestampSeconds(trackId: Int32, timestamp: UInt32) -> Double? {
+        let timestampSeconds = unwrap(timestamp)
+        guard syncTimestamps else {
+            return timestampSeconds
+        }
+        if offset == nil {
+            var rtpTimestamp: UInt64 = 0
+            var ntpTimestamp: UInt64 = 0
+            rtcGetTrackRtcpSyncTimestamps(trackId, &rtpTimestamp, &ntpTimestamp)
+            guard let ntpTimestamp = decodeNtpTimestamp(v: ntpTimestamp) else {
+                return nil
+            }
+            offset = ntpTimestamp - unwrap(UInt32(truncatingIfNeeded: rtpTimestamp))
+        }
+        return timestampSeconds + offset!
+    }
+
+    private func unwrap(_ timestamp: UInt32) -> Double {
+        let timestamp = CMTime(value: Int64(timestamp), timescale: 1)
+        return Double(wrappingTimestamp.update(timestamp).value) / clockRate
+    }
+}
+
 final class WebrtcIngestClient: @unchecked Sendable {
     private let name: String
     let streamId: UUID
     private let latency: Double
     private let syncTimestamps: Bool
+    private let softwareDecoding: Bool
     private(set) var peerConnectionId: Int32 = -1
     weak var delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
@@ -69,14 +108,15 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private var videoCodec: VideoCodec = .h264
     private var videoTrackId: Int32 = -1
     private var audioTrackId: Int32 = -1
-    private var videoTimestampOffset: Double?
-    private var audioTimestampOffset: Double?
+    private let videoTimestamper: TrackTimestamper
+    private let audioTimestamper: TrackTimestamper
     private let dispatchQueue: DispatchQueue
 
     init(name: String,
          streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
+         softwareDecoding: Bool,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
          delegate: any WebrtcIngestClientDelegate)
@@ -85,9 +125,16 @@ final class WebrtcIngestClient: @unchecked Sendable {
         self.streamId = streamId
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.softwareDecoding = softwareDecoding
         self.iceServers = iceServers
         self.dispatchQueue = dispatchQueue
         targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
+        videoTimestamper = TrackTimestamper(name: "\(name) video",
+                                            clockRate: 90000,
+                                            syncTimestamps: syncTimestamps)
+        audioTimestamper = TrackTimestamper(name: "\(name) audio",
+                                            clockRate: 48000,
+                                            syncTimestamps: syncTimestamps)
         self.delegate = delegate
     }
 
@@ -193,9 +240,8 @@ final class WebrtcIngestClient: @unchecked Sendable {
                     return
                 }
                 let frameData = Data(bytes: data, count: Int(size))
-                let timestampSeconds = info.pointee.timestampSeconds
-                toIngestClient(pointer: pointer)?.handleVideoMessage(data: frameData,
-                                                                     timestampSeconds: timestampSeconds)
+                let timestamp = info.pointee.timestamp
+                toIngestClient(pointer: pointer)?.handleVideoMessage(data: frameData, timestamp: timestamp)
             }
         } else if descriptionLower.contains("opus") {
             audioTrackId = trackId
@@ -207,9 +253,8 @@ final class WebrtcIngestClient: @unchecked Sendable {
                     return
                 }
                 let frameData = Data(bytes: data, count: Int(size))
-                let timestampSeconds = info.pointee.timestampSeconds
-                toIngestClient(pointer: pointer)?.handleAudioMessage(data: frameData,
-                                                                     timestampSeconds: timestampSeconds)
+                let timestamp = info.pointee.timestamp
+                toIngestClient(pointer: pointer)?.handleAudioMessage(data: frameData, timestamp: timestamp)
             }
         }
     }
@@ -223,8 +268,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
         rtcDeletePeerConnection(peerConnectionId)
         peerConnectionId = -1
         connected = false
-        videoTimestampOffset = nil
-        audioTimestampOffset = nil
         if let reason {
             delegate?.webrtcIngestClientOnDisconnected(streamId: streamId, reason: reason)
         }
@@ -295,18 +338,16 @@ final class WebrtcIngestClient: @unchecked Sendable {
         setTrackCodec(trackId: trackId, description: description)
     }
 
-    private func handleVideoMessage(data: Data, timestampSeconds: Double) {
+    private func handleVideoMessage(data: Data, timestamp: UInt32) {
         dispatchQueue.async {
-            self.handleVideoMessageInternal(data: data, timestampSeconds: timestampSeconds)
+            self.handleVideoMessageInternal(data: data, timestamp: timestamp)
         }
     }
 
-    private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
+    private func handleVideoMessageInternal(data: Data, timestamp: UInt32) {
         delegate?.webrtcIngestClientOnDataReceived(streamId: streamId, count: data.count)
-        guard let timestampSeconds = syncTimestampIfEnabled(videoTrackId,
-                                                            timestampSeconds,
-                                                            &videoTimestampOffset,
-                                                            90000)
+        guard let timestampSeconds = videoTimestamper.timestampSeconds(trackId: videoTrackId,
+                                                                       timestamp: timestamp)
         else {
             return
         }
@@ -363,7 +404,9 @@ final class WebrtcIngestClient: @unchecked Sendable {
             return
         }
         if videoDecoder == nil {
-            videoDecoder = VideoDecoder(name: name, lockQueue: dispatchQueue)
+            videoDecoder = VideoDecoder(name: name,
+                                        lockQueue: dispatchQueue,
+                                        softwareDecoding: softwareDecoding)
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }
@@ -372,18 +415,16 @@ final class WebrtcIngestClient: @unchecked Sendable {
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
-    private func handleAudioMessage(data: Data, timestampSeconds: Double) {
+    private func handleAudioMessage(data: Data, timestamp: UInt32) {
         dispatchQueue.async {
-            self.handleAudioMessageInternal(data: data, timestampSeconds: timestampSeconds)
+            self.handleAudioMessageInternal(data: data, timestamp: timestamp)
         }
     }
 
-    private func handleAudioMessageInternal(data: Data, timestampSeconds: Double) {
+    private func handleAudioMessageInternal(data: Data, timestamp: UInt32) {
         delegate?.webrtcIngestClientOnDataReceived(streamId: streamId, count: data.count)
-        guard let timestampSeconds = syncTimestampIfEnabled(audioTrackId,
-                                                            timestampSeconds,
-                                                            &audioTimestampOffset,
-                                                            48000)
+        guard let timestampSeconds = audioTimestamper.timestampSeconds(trackId: audioTrackId,
+                                                                       timestamp: timestamp)
         else {
             return
         }
@@ -490,28 +531,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
             videoTargetLatency,
             audioTargetLatency
         )
-    }
-
-    private func syncTimestampIfEnabled(_ trackId: Int32,
-                                        _ timestampSeconds: Double,
-                                        _ timestampOffset: inout Double?,
-                                        _ rate: Double) -> Double?
-    {
-        guard syncTimestamps else {
-            return timestampSeconds
-        }
-        if timestampOffset == nil {
-            var rtpTimestamp: UInt64 = 0
-            var ntpTimestamp: UInt64 = 0
-            rtcGetTrackRtcpSyncTimestamps(trackId, &rtpTimestamp, &ntpTimestamp)
-            guard let ntpTimestamp = decodeNtpTimestamp(v: ntpTimestamp) else {
-                return nil
-            }
-            let syncRtpTimestampSeconds = Double(rtpTimestamp) / rate
-            let syncNtpTimestampSeconds = ntpTimestamp
-            timestampOffset = syncNtpTimestampSeconds - syncRtpTimestampSeconds
-        }
-        return timestampSeconds + timestampOffset!
     }
 }
 

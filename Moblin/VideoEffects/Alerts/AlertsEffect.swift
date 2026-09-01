@@ -15,6 +15,7 @@ enum AlertsEffectAlert {
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
     case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
+    case twitchSubscriptionUpgrade(TwitchEventSubNotificationChannelSubscriptionUpgradeEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchRedemption(TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
@@ -215,6 +216,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchSubscriptionGift(event: event)
         case let .twitchResubscribe(event):
             playTwitchResubscribe(event: event)
+        case let .twitchSubscriptionUpgrade(event):
+            playTwitchSubscriptionUpgrade(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
         case let .twitchRedemption(event: event):
@@ -293,12 +296,16 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
-                .ask(message, model: ai.model, role: ai.personality) { answer in
+                .ask(message, model: ai.model, role: ai.personality) { result in
                     var message = message
-                    if let answer {
+                    switch result {
+                    case let .success(answer):
                         message += ". " + answer
-                    } else {
-                        self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
+                    case let .failure(error):
+                        self.delegate?
+                            .alertsMakeErrorToast(
+                                title: String(localized: "Got no AI response: \(error.description)")
+                            )
                     }
                     self.play(player: player,
                               username: username,
@@ -671,10 +678,15 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let message = if event.isPrime() {
+            String(localized: "just subscribed with Prime!")
+        } else {
+            String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        }
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }
@@ -697,13 +709,41 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let message = if let streakMonths = event.streak_months {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
+            \(streakMonths) in a row! \(event.message.text)
+            """)
+        } else {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """)
+        }
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """),
+            message: message,
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        let message = if let tier = event.tierAsNumber() {
+            String(localized: "just converted their Prime subscription to tier \(tier)!")
+        } else {
+            String(localized: "just continued their gift subscription!")
+        }
+        play(
+            media: twitchSubscribeMedia,
+            username: event.user_name,
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }

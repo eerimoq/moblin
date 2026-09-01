@@ -12,6 +12,7 @@ extension Model {
         if database.ristServer.enabled {
             ingests.rist = RistServer(port: database.ristServer.port,
                                       streams: database.ristServer.streams.map { $0.clone() },
+                                      softwareDecoding: database.ingestsSoftwareVideoDecoding,
                                       delegate: self)
             ingests.rist?.start()
         }

@@ -333,12 +333,11 @@ private struct RemoteControlStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
-        if model.isRemoteControlStreamerConfigured(), !model.isRemoteControlStreamerConnected() {
-            return .red
-        } else if model.isRemoteControlAssistantConfigured(), !model.isRemoteControlAssistantConnected() {
-            return .red
+        if status.remoteControlOk {
+            .white
+        } else {
+            .red
         }
-        return .white
     }
 
     var body: some View {
@@ -751,6 +750,9 @@ private struct RightOverlayBottomVerticalView: View {
                                                                     camera: model.camera,
                                                                     show: model.camera.show)
                     }
+                    if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                        StreamOverlayRightTorchView(model: model, database: database)
+                    }
                 }
                 if show.zoomPresets, zoom.hasZoom {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
@@ -791,6 +793,9 @@ private struct RightOverlayBottomHorizontalView: View {
                 StreamOverlayRightCameraSettingsControlView(model: model,
                                                             camera: model.camera,
                                                             show: model.camera.show)
+            }
+            if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                StreamOverlayRightTorchView(model: model, database: database)
             }
             if show.zoomPresets, zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,

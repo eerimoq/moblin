@@ -53,11 +53,14 @@ class RtmpServerClient: @unchecked Sendable {
     private var basePresentationTimeStamp: Double
     private var inputBuffer = Data()
     private var receiveSize: Int = 0
+    private var receiveMinimumSize: Int = 0
     private var isProcessing = false
+    private let softwareDecoding: Bool
 
-    init(server: RtmpServer, connection: NWConnection) {
+    init(server: RtmpServer, connection: NWConnection, softwareDecoding: Bool) {
         self.server = server
         self.connection = connection
+        self.softwareDecoding = softwareDecoding
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
@@ -203,7 +206,9 @@ class RtmpServerClient: @unchecked Sendable {
             break
         }
         if chunkStreams[chunkStreamId] == nil {
-            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
+            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self,
+                                                                streamId: chunkStreamId,
+                                                                softwareDecoding: softwareDecoding)
         }
         chunkStream = chunkStreams[chunkStreamId]
         // logger.info("rtmp-server: \(chunkStreamId): Chunk message header format: \(format)")
@@ -319,6 +324,7 @@ class RtmpServerClient: @unchecked Sendable {
 
     func receiveData(size: Int) {
         receiveSize = size
+        receiveMinimumSize = size
         if isProcessing {
             return
         }
@@ -326,8 +332,8 @@ class RtmpServerClient: @unchecked Sendable {
     }
 
     private func receiveDataFromNetwork() {
-        connection.receive(minimumIncompleteLength: receiveSize, maximumLength: max(
-            receiveSize,
+        connection.receive(minimumIncompleteLength: receiveMinimumSize, maximumLength: max(
+            receiveMinimumSize,
             8192
         )) { data, _, isComplete, error in
             if let data {
@@ -363,6 +369,7 @@ class RtmpServerClient: @unchecked Sendable {
             }
         }
         inputBuffer = inputBuffer.advanced(by: offset)
+        receiveMinimumSize = max(receiveSize - inputBuffer.count, 1)
         if totalBytesReceived - totalBytesReceivedAcked > windowAcknowledgementSize {
             sendAck()
             totalBytesReceivedAcked = totalBytesReceived

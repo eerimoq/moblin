@@ -636,6 +636,44 @@ extension [TextFormatPart] {
         return false
     }
 
+    func isGeographyVariable() -> Bool {
+        for variable in self {
+            switch variable {
+            case .country:
+                return true
+            case .countryFlag:
+                return true
+            case .state:
+                return true
+            case .area:
+                return true
+            case .city:
+                return true
+            case .neighborhood:
+                return true
+            default:
+                break
+            }
+        }
+        return false
+    }
+
+    func isGForceVariable() -> Bool {
+        for variable in self {
+            switch variable {
+            case .gForce:
+                return true
+            case .gForceRecentMax:
+                return true
+            case .gForceMax:
+                return true
+            default:
+                break
+            }
+        }
+        return false
+    }
+
     func isLocationVariable() -> Bool {
         for variable in self {
             switch variable {

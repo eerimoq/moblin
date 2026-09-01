@@ -34,6 +34,7 @@ extension Model {
                                     url: url,
                                     latency: stream.latencySeconds(),
                                     syncTimestamps: stream.syncTimestamps,
+                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
                                     delegate: self)
             client.start()
             ingests.whep.append(client)

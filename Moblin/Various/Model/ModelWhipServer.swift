@@ -99,7 +99,9 @@ extension Model {
     func reloadWhipServer() {
         stopWhipServer()
         if database.whipServer.enabled {
-            ingests.whip = WhipServer(settings: database.whipServer.clone(), delegate: self)
+            ingests.whip = WhipServer(settings: database.whipServer.clone(),
+                                      softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      delegate: self)
             ingests.whip?.start()
         }
     }

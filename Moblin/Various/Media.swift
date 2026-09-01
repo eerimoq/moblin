@@ -26,6 +26,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRistDisconnected()
     func mediaOnWhipConnected()
     func mediaOnWhipDisconnected(_ reason: String)
+    func mediaOnMobcamConnected()
+    func mediaOnMobcamDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
                             completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
@@ -60,6 +62,7 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
+    private var mobcamStream: MobcamStream?
     private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
     private(set) var processor: Processor?
@@ -116,12 +119,14 @@ final class Media: NSObject, @unchecked Sendable {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
+        mobcamStopStream()
         stopPreviewStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
+        mobcamStream = nil
         processor = nil
     }
 
@@ -171,6 +176,8 @@ final class Media: NSObject, @unchecked Sendable {
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
         case .whip:
             whipStream = WhipStream(delegate: self)
+        case .mobcam:
+            mobcamStream = MobcamStream(delegate: self)
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
@@ -525,6 +532,8 @@ final class Media: NSObject, @unchecked Sendable {
             Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
             0
+        } else if let mobcamStream {
+            Int64(mobcamStream.getSpeed())
         } else {
             0
         }
@@ -543,6 +552,9 @@ final class Media: NSObject, @unchecked Sendable {
         }
         if let whipStream {
             return whipStream.getTotalByteCount()
+        }
+        if let mobcamStream {
+            return mobcamStream.getTotalByteCount()
         }
         return total
     }
@@ -653,6 +665,16 @@ final class Media: NSObject, @unchecked Sendable {
         whipStream?.stop()
     }
 
+    func mobcamStartStream(port: UInt16) {
+        adaptiveBitrate = nil
+        setAllowFrameReordering(value: false)
+        mobcamStream?.start(port: port)
+    }
+
+    func mobcamStopStream() {
+        mobcamStream?.stop()
+    }
+
     func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
         previewStreamHandler?.stop()
         previewStreamHandler = PreviewStreamHandler(media: self,
@@ -671,12 +693,20 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setTorch(value: on)
     }
 
+    func setTorchLevel(level: Float) {
+        processor?.setTorchLevel(value: level)
+    }
+
     func setMute(on: Bool) {
         processor?.setHasAudio(value: !on)
     }
 
     func setAudioGain(gain: Float) {
         processor?.setAudioGain(gain: gain)
+    }
+
+    func setAudioDelay(delay: Double) {
+        processor?.setAudioDelay(delay: delay)
     }
 
     func registerEffect(_ effect: VideoEffect) {
@@ -958,8 +988,11 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.attachAudio(params: params)
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        processor?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+        processor?.addBufferedAudio(cameraId: cameraId,
+                                    name: name,
+                                    latency: latency,
+                                    trackDrift: trackDrift)
     }
 
     func removeBufferedAudio(cameraId: UUID) {
@@ -1079,7 +1112,7 @@ final class Media: NSObject, @unchecked Sendable {
 }
 
 extension Media: ProcessorDelegate {
-    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
             if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
                 old: self.currentAudioLevel,
@@ -1095,7 +1128,7 @@ extension Media: ProcessorDelegate {
         }
     }
 
-    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64) {
+    func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64) {
         delegate.mediaOnLowFpsImage(lowFpsImage, frameNumber)
     }
 
@@ -1323,6 +1356,28 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         processor?.stopEncoding(delegate)
+    }
+}
+
+extension Media: MobcamStreamDelegate {
+    func mobcamStreamOnConnected() {
+        delegate.mediaOnMobcamConnected()
+    }
+
+    func mobcamStreamOnDisconnected(reason: String) {
+        delegate.mediaOnMobcamDisconnected(reason)
+    }
+
+    func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processorControlQueue.async {
+            self.processor?.startEncoding(delegate)
+        }
+    }
+
+    func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processorControlQueue.async {
+            self.processor?.stopEncoding(delegate)
+        }
     }
 }
 

@@ -22,11 +22,17 @@ class RistServer: @unchecked Sendable {
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
     let delegate: any RistServerDelegate
     private let streams: [SettingsRistServerStream]
+    private let softwareDecoding: Bool
     private var bitrateStats = BitrateStats()
 
-    init?(port: UInt16, streams: [SettingsRistServerStream], delegate: any RistServerDelegate) {
+    init?(port: UInt16,
+          streams: [SettingsRistServerStream],
+          softwareDecoding: Bool,
+          delegate: any RistServerDelegate)
+    {
         self.port = port
         self.streams = streams
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
     }
 
@@ -79,7 +85,8 @@ class RistServer: @unchecked Sendable {
             return
         }
         let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
-                                      latency: stream.latencySeconds())
+                                      latency: stream.latencySeconds(),
+                                      softwareDecoding: softwareDecoding)
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         delegate.ristServerOnConnected(port: virtualDestinationPort)

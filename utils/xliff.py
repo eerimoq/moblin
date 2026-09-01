@@ -14,7 +14,7 @@ def main():
     tree = ElementTree.parse(args.xliff)
 
     for body in tree.findall("./file/body", namespaces=NS):
-        sorted_trans_units = []
+        sorted_trans_units: list[ElementTree.Element] = []
 
         for trans_unit in body.findall("./trans-unit", namespaces=NS):
             target = trans_unit.find("./target", namespaces=NS)

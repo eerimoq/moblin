@@ -5,16 +5,15 @@ let nalUnitEmulationPreventionByte: UInt8 = 0x03
 final class NalUnitWriter {
     private(set) var data: Data
     private(set) var bitOffset = 0
+    private let emulationPrevention: Bool
 
-    init() {
+    init(emulationPrevention: Bool = true) {
         data = Data()
+        self.emulationPrevention = emulationPrevention
     }
 
     func writeBit(_ value: Bool) {
         if bitOffset == 0 {
-            if data.count >= 2, data[data.count - 2] == 0, data[data.count - 1] == 0 {
-                data.append(nalUnitEmulationPreventionByte)
-            }
             data.append(0)
         }
         if value {
@@ -22,6 +21,21 @@ final class NalUnitWriter {
         }
         bitOffset += 1
         bitOffset %= 8
+        if bitOffset == 0 {
+            insertEmulationPreventionByteIfNeeded()
+        }
+    }
+
+    private func insertEmulationPreventionByteIfNeeded() {
+        guard emulationPrevention,
+              data.count >= 3,
+              data[data.count - 1] <= nalUnitEmulationPreventionByte,
+              data[data.count - 2] == 0,
+              data[data.count - 3] == 0
+        else {
+            return
+        }
+        data.insert(nalUnitEmulationPreventionByte, at: data.count - 1)
     }
 
     func writeBits(_ value: UInt8, count: Int) {

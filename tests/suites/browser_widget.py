@@ -1,21 +1,22 @@
 from pathlib import Path
 
-from utils.config import WEB_SERVER_PORT
-from utils.ffmpeg import QrCode
-from utils.ffmpeg import create_qr_codes_video
-from utils.ffmpeg import read_qr_codes
-from utils.generate_device_settings import RECORD_STREAM_SETTINGS
-from utils.generate_device_settings import BrowserMode
-from utils.generate_device_settings import CameraPosition
-from utils.generate_device_settings import browser_widget_settings
-from utils.generate_device_settings import scene_widget_settings
-from utils.generate_device_settings import uuid
-from utils.moblin import Moblin
-from utils.test_case import TestCase
-from utils.utils import WEBSITES_DIR
-from utils.utils import Crop
-from utils.utils import create_qr_code_image
-from utils.web_server import WebServer
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import QrCode
+from systest_moblin.ffmpeg import create_qr_codes_video
+from systest_moblin.ffmpeg import read_qr_codes
+from systest_moblin.web_server import WebServer
+
+from ..utils.config import WEB_SERVER_PORT
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from ..utils.generate_device_settings import BrowserMode
+from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import browser_widget_settings
+from ..utils.generate_device_settings import scene_widget_settings
+from ..utils.generate_device_settings import uuid
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
+from ..utils.utils import WEBSITES_DIR
+from ..utils.utils import create_qr_code_image
 
 PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID = uuid()
 AUDIO_AND_VIDEO_ONLY_WIDGET_ID = uuid()
@@ -38,12 +39,8 @@ class BrowserWidgetModes(TestCase):
                     {
                         "cameraPosition": CameraPosition.NONE,
                         "widgets": [
-                            scene_widget_settings(
-                                PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100
-                            ),
-                            scene_widget_settings(
-                                AUDIO_AND_VIDEO_ONLY_WIDGET_ID, 50, 0, 100
-                            ),
+                            scene_widget_settings(PERIODIC_AUDIO_AND_VIDEO_WIDGET_ID, 0, 0, 100),
+                            scene_widget_settings(AUDIO_AND_VIDEO_ONLY_WIDGET_ID, 50, 0, 100),
                             scene_widget_settings(AUDIO_ONLY_WIDGET_ID, 0, 50, 100),
                             scene_widget_settings(LOCAL_ONLY_WIDGET_ID, 50, 50, 100),
                         ],
@@ -80,11 +77,9 @@ class BrowserWidgetModes(TestCase):
         )
 
     def run(self):
-        create_qr_code_image(
-            "n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg"
-        )
+        create_qr_code_image("n 1 pts 999.0", WEBSITES_DIR / "BrowserWidgetHighFpsVideo.jpg")
         create_qr_codes_video(WEBSITES_DIR / "BrowserWidgetHighFpsVideo.mp4")
-        with WebServer(WEBSITES_DIR):
+        with WebServer(WEB_SERVER_PORT, WEBSITES_DIR):
             self.import_settings()
             recording_file = self.moblin.record(16, "BrowserWidgetHighFpsVideo.mp4")
             self.assert_image_qr_codes_periodic_audio_and_video(recording_file)
@@ -156,9 +151,7 @@ class BrowserWidgetModes(TestCase):
                 seen_frame_number_count += 1
             else:
                 seen_frame_number_count = 1
-            self.assert_greater_equal(
-                qr_code.number, previous_frame_number, f"Index {index}"
-            )
+            self.assert_greater_equal(qr_code.number, previous_frame_number, f"Index {index}")
             self.assert_less(seen_frame_number_count, 4, f"Index {index}")
             previous_frame_number = qr_code.number
 

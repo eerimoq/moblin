@@ -1,46 +1,18 @@
 import SwiftUI
 
+private let shadowRadius = 0.5
+
 extension View {
+    @ViewBuilder
     func stroke(color: Color, width: CGFloat = 1) -> some View {
-        modifier(StrokeModifier(strokeSize: width, strokeColor: color))
-    }
-}
-
-private struct StrokeModifier: ViewModifier {
-    private let id = UUID()
-    var strokeSize: CGFloat = 1
-    var strokeColor: Color = .blue
-
-    func body(content: Content) -> some View {
-        if strokeSize > 0 {
-            applyStrokeBackground(content: content)
+        if width > 0 {
+            compositingGroup()
+                .shadow(color: color, radius: shadowRadius, x: width, y: 0)
+                .shadow(color: color, radius: shadowRadius, x: -width, y: 0)
+                .shadow(color: color, radius: shadowRadius, x: 0, y: width)
+                .shadow(color: color, radius: shadowRadius, x: 0, y: -width)
         } else {
-            content
-        }
-    }
-
-    private func applyStrokeBackground(content: Content) -> some View {
-        content
-            // .padding(strokeSize * 2)
-            .background(
-                Rectangle()
-                    .foregroundStyle(strokeColor)
-                    .mask(alignment: .center) {
-                        mask(content: content)
-                    }
-            )
-    }
-
-    func mask(content: Content) -> some View {
-        Canvas { context, size in
-            context.addFilter(.alphaThreshold(min: 0.01))
-            if let resolvedView = context.resolveSymbol(id: id) {
-                context.draw(resolvedView, at: .init(x: size.width / 2, y: size.height / 2))
-            }
-        } symbols: {
-            content
-                .tag(id)
-                .blur(radius: strokeSize)
+            self
         }
     }
 }

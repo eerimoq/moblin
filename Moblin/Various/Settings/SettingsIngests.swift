@@ -8,12 +8,14 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
+    @Published var trackDrift: Bool = true
 
     enum CodingKeys: CodingKey {
         case id
         case name
         case streamKey
         case latency
+        case trackDrift
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -22,6 +24,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
+        try container.encode(.trackDrift, trackDrift)
     }
 
     init() {}
@@ -32,6 +35,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
+        trackDrift = container.decode(.trackDrift, Bool.self, true)
     }
 
     func camera() -> String {
@@ -48,13 +52,14 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.trackDrift = trackDrift
         return new
     }
 }
 
 class SettingsRtmpServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 1935
+    @Published var port: UInt16 = DefaultTcpPorts.rtmpServer
     @Published var streams: [SettingsRtmpServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -75,7 +80,7 @@ class SettingsRtmpServer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 1935)
+        port = container.decode(.port, UInt16.self, DefaultTcpPorts.rtmpServer)
         streams = container.decode(.streams, [SettingsRtmpServerStream].self, [])
     }
 
@@ -133,8 +138,8 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
 
 class SettingsSrtlaServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var srtPort: UInt16 = 4000
-    @Published var srtlaPort: UInt16 = 5000
+    @Published var srtPort: UInt16 = DefaultUdpPorts.srtServer
+    @Published var srtlaPort: UInt16 = DefaultUdpPorts.srtlaServer
     @Published var streams: [SettingsSrtlaServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -157,8 +162,8 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        srtPort = container.decode(.srtPort, UInt16.self, 4000)
-        srtlaPort = container.decode(.srtlaPort, UInt16.self, 5000)
+        srtPort = container.decode(.srtPort, UInt16.self, DefaultUdpPorts.srtServer)
+        srtlaPort = container.decode(.srtlaPort, UInt16.self, DefaultUdpPorts.srtlaServer)
         streams = container.decode(.streams, [SettingsSrtlaServerStream].self, [])
     }
 
@@ -287,7 +292,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
 
 class SettingsRistServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 6500
+    @Published var port: UInt16 = DefaultUdpPorts.ristServer
     @Published var streams: [SettingsRistServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -308,7 +313,7 @@ class SettingsRistServer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 6500)
+        port = container.decode(.port, UInt16.self, DefaultUdpPorts.ristServer)
         streams = container.decode(.streams, [SettingsRistServerStream].self, [])
     }
 
@@ -461,7 +466,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
 
 class SettingsWhipServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 8310
+    @Published var port: UInt16 = DefaultTcpPorts.whipServer
     @Published var streams: [SettingsWhipServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -482,7 +487,7 @@ class SettingsWhipServer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 8310)
+        port = container.decode(.port, UInt16.self, DefaultTcpPorts.whipServer)
         streams = container.decode(.streams, [SettingsWhipServerStream].self, [])
     }
 

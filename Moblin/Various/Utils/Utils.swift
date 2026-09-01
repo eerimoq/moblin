@@ -5,6 +5,13 @@ func randomString() -> String {
     Data.random(length: 64).base64EncodedString()
 }
 
+func startBlockingThread(name: String, _ block: @escaping @Sendable () -> Void) {
+    let thread = Thread(block: block)
+    thread.name = name
+    thread.qualityOfService = .userInteractive
+    thread.start()
+}
+
 func randomHumanString() -> String {
     Data.random(length: 15).base64EncodedString().replacingOccurrences(
         of: "[+/=]",
@@ -16,6 +23,13 @@ func randomHumanString() -> String {
 extension String {
     func removeAllWhitespaces() -> String {
         replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+    }
+
+    func truncate(length: Int) -> String {
+        guard count > length else {
+            return self
+        }
+        return prefix(max(length - 3, 0)) + String("...".prefix(length))
     }
 }
 

@@ -70,37 +70,46 @@ struct AudioSettingsView: View {
             }
             Section {
                 MicView(model: model, mics: database.mics, mic: model.mic)
+                if database.showAllSettings {
+                    NavigationLink {
+                        MicsDelaySettingsView(model: model, mics: database.mics)
+                    } label: {
+                        Text("Delays")
+                    }
+                }
             }
-            Section {
-                HStack {
-                    Image(systemName: "speaker.fill")
-                    Slider(value: $mic.inputGain, in: 0.0 ... 1.0, step: 0.1)
-                    Image(systemName: "speaker.wave.3.fill")
+            if database.showAllSettings {
+                Section {
+                    HStack {
+                        Image(systemName: "speaker.fill")
+                        Slider(value: $mic.inputGain, in: 0.0 ... 1.0, step: 0.1)
+                        Image(systemName: "speaker.wave.3.fill")
+                    }
+                    .disabled(mic.current.isAudioSession() && !mic.inputGainSettable)
+                    .onChange(of: mic.inputGain) { _ in
+                        model.setInputGainIfSupported(inputGain: mic.inputGain)
+                    }
+                } header: {
+                    Text("Input gain")
+                } footer: {
+                    Text("Typically only supported by external mics.")
                 }
-                .disabled(mic.current.isAudioSession() && !mic.inputGainSettable)
-                .onChange(of: mic.inputGain) { _ in
-                    model.setInputGainIfSupported(inputGain: mic.inputGain)
+                Section {
+                    HStack {
+                        Image(systemName: "speaker.wave.1.fill")
+                        Slider(value: $audio.gainDb, in: 0.0 ... 24.0, step: 1.0)
+                            .onChange(of: audio.gainDb) { _ in
+                                model.setAudioGain(gainDb: audio.gainDb)
+                            }
+                        Image(systemName: "speaker.wave.3.fill")
+                        Text("\(formatOneDecimal(audio.gainDb)) dB")
+                            .frame(width: 65)
+                    }
+                } header: {
+                    Text("Output gain")
+                } footer: {
+                    Text("0.0 dB by default, leaving the input level unchanged.")
                 }
-            } header: {
-                Text("Input gain")
-            } footer: {
-                Text("Typically only supported by external mics.")
-            }
-            Section {
-                HStack {
-                    Image(systemName: "speaker.wave.1.fill")
-                    Slider(value: $audio.gainDb, in: 0.0 ... 24.0, step: 1.0)
-                        .onChange(of: audio.gainDb) { _ in
-                            model.setAudioGain(gainDb: audio.gainDb)
-                        }
-                    Image(systemName: "speaker.wave.3.fill")
-                    Text("\(formatOneDecimal(audio.gainDb)) dB")
-                        .frame(width: 65)
-                }
-            } header: {
-                Text("Output gain")
-            } footer: {
-                Text("0.0 dB by default, leaving the input level unchanged.")
             }
             Section {
                 Toggle("Bluetooth output only", isOn: $debug.bluetoothOutputOnly)
@@ -110,40 +119,42 @@ struct AudioSettingsView: View {
             } footer: {
                 Text("Makes most Bluetooth speakers work better.")
             }
-            Section {
-                Toggle("Prefer stereo mic", isOn: $debug.preferStereoMic)
-                    .onChange(of: debug.preferStereoMic) { _ in
-                        if mic.current.isAudioSession() {
-                            model.reloadAudioSession()
-                            model.selectMicDefault(mic: mic.current)
+            if database.showAllSettings {
+                Section {
+                    Toggle("Prefer stereo mic", isOn: $audio.preferStereoMic)
+                        .onChange(of: audio.preferStereoMic) { _ in
+                            if mic.current.isAudioSession() {
+                                model.reloadAudioSession()
+                                model.selectMicDefault(mic: mic.current)
+                            }
                         }
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("Only works when front or back mic is selected.")
+                        Text("")
+                        Text("Switching between mono and stereo mics may not work.")
                     }
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("Only works when front or back mic is selected.")
-                    Text("")
-                    Text("Switching between mono and stereo mics may not work.")
                 }
-            }
-            Section {
-                TextEditNavigationView(
-                    title: String(localized: "Output channel 1"),
-                    value: String(audio.outputToInputChannelsMap.channel1 + 1),
-                    onChange: changeOutputChannel,
-                    onSubmit: submitOutputChannel1
-                )
-                .disabled(model.isLive || model.isRecording)
-                TextEditNavigationView(
-                    title: String(localized: "Output channel 2"),
-                    value: String(audio.outputToInputChannelsMap.channel2 + 1),
-                    onChange: changeOutputChannel,
-                    onSubmit: submitOutputChannel2
-                )
-                .disabled(model.isLive || model.isRecording)
-            } header: {
-                Text("Input to output channel mapping")
-            } footer: {
-                Text("Mono audio only uses output channel 1. Stereo audio uses both output channels.")
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Output channel 1"),
+                        value: String(audio.outputToInputChannelsMap.channel1 + 1),
+                        onChange: changeOutputChannel,
+                        onSubmit: submitOutputChannel1
+                    )
+                    .disabled(model.isLive || model.isRecording)
+                    TextEditNavigationView(
+                        title: String(localized: "Output channel 2"),
+                        value: String(audio.outputToInputChannelsMap.channel2 + 1),
+                        onChange: changeOutputChannel,
+                        onSubmit: submitOutputChannel2
+                    )
+                    .disabled(model.isLive || model.isRecording)
+                } header: {
+                    Text("Input to output channel mapping")
+                } footer: {
+                    Text("Mono audio only uses output channel 1. Stereo audio uses both output channels.")
+                }
             }
         }
         .navigationTitle("Audio")

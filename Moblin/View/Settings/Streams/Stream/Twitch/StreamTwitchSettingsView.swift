@@ -68,7 +68,7 @@ private struct TwitchCategoryPickerView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         Color.gray.opacity(0.3)
                     }
@@ -130,6 +130,12 @@ struct TwitchAlertsSettingsView: View {
                         alerts.minimumCheerBits = Int($0) ?? 0
                     }
                 )
+                Toggle("Watch streaks", isOn: $alerts.watchStreaks)
+                Picker("Minimum watch streak", selection: $alerts.minimumWatchStreak) {
+                    ForEach([5, 10, 25], id: \.self) {
+                        Text(String($0))
+                    }
+                }
             }
         }
         .navigationTitle(title)

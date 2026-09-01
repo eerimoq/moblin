@@ -1,11 +1,11 @@
 from playwright.sync_api import sync_playwright
 
-from utils.config import WEB_REMOTE_CONTROL_PORT
-from utils.generate_device_settings import BitrateRateControl
-from utils.generate_device_settings import SceneName
-from utils.mediamtx import MediaMtx
-from utils.moblin import Moblin
-from utils.test_case import TestCase
+from ..utils.config import WEB_REMOTE_CONTROL_PORT
+from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import SceneName
+from ..utils.mediamtx import MediaMtx
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
 
 
 class WebRemoteControlLive(TestCase):

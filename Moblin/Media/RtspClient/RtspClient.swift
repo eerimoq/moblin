@@ -335,7 +335,9 @@ private class RtpVideoProcessor: RtpProcessor {
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
-        decoder = VideoDecoder(name: "rtsp-client", lockQueue: rtspClientQueue)
+        decoder = VideoDecoder(name: "rtsp-client",
+                               lockQueue: rtspClientQueue,
+                               softwareDecoding: client.softwareDecoding)
         super.init()
         decoder.delegate = self
         decoder.startRunning(formatDescription: formatDescription)
@@ -481,6 +483,8 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
         switch type {
         case 1 ... 47:
             try processBufferTypeSingle(packet: packet, timestamp: timestamp)
+        case 48:
+            try processBufferTypeAp(packet: packet, timestamp: timestamp)
         case 49:
             try processBufferTypeFu(packet: packet, timestamp: timestamp)
         default:
@@ -491,6 +495,23 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
     private func processBufferTypeSingle(packet: Data, timestamp: Int64) throws {
         decodeFrame()
         startNewFrame(timestamp: timestamp, first: packet[12...])
+    }
+
+    private func processBufferTypeAp(packet: Data, timestamp: Int64) throws {
+        var offset = 14
+        while offset < packet.count {
+            guard offset + 2 <= packet.count else {
+                throw "AP packet short NAL header"
+            }
+            let nalUnitSize = Int(UInt16(packet[offset]) << 8 | UInt16(packet[offset + 1]))
+            offset += 2
+            guard offset + nalUnitSize <= packet.count else {
+                throw "AP packet short NAL data"
+            }
+            decodeFrame()
+            startNewFrame(timestamp: timestamp, first: packet[offset ..< offset + nalUnitSize])
+            offset += nalUnitSize
+        }
     }
 
     private func processBufferTypeFu(packet: Data, timestamp: Int64) throws {
@@ -527,7 +548,7 @@ private class Rtp {
     var processor: RtpProcessor?
     private let wrappingTimestamp = WrappingTimestamp(
         name: "RTP",
-        maximumTimestamp: CMTime(seconds: 0x1_0000_0000)
+        maximumTimestamp: CMTime(value: 0x1_0000_0000, timescale: 1)
     )
 
     func handlePacket(packet: Data) throws {
@@ -592,6 +613,7 @@ class RtspClient: @unchecked Sendable {
     private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
+    fileprivate let softwareDecoding: Bool
     private let username: String?
     private let password: String?
     private let port: Int
@@ -614,10 +636,12 @@ class RtspClient: @unchecked Sendable {
          url: URL,
          latency: Double,
          transport: SettingsRtspTransport,
+         softwareDecoding: Bool,
          delegate: any RtspClientDelegate)
     {
         self.cameraId = cameraId
         self.latency = latency
+        self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         transportType = transport
         username = url.user()

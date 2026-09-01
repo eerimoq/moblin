@@ -30,6 +30,7 @@ struct MpegTsReaderSuite {
         let reader = MpegTsReader(name: "",
                                   decoderQueue: .main,
                                   timecodesEnabled: false,
+                                  softwareDecoding: false,
                                   targetLatency: 1.0)
         reader.delegate = mock
         var packet =

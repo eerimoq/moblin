@@ -71,8 +71,8 @@ struct TwitchApiGameData: Decodable, Identifiable {
 
     func boxArtUrl(width: Int, height: Int) -> String? {
         box_art_url?
-            .replacingOccurrences(of: "{width}", with: String(width))
-            .replacingOccurrences(of: "{height}", with: String(height))
+            .replace("{width}", String(width))
+            .replace("{height}", String(height))
     }
 }
 
@@ -192,7 +192,7 @@ class TwitchApi {
         let body = [
             "broadcaster_id": broadcasterId,
             "sender_id": broadcasterId,
-            "message": message,
+            "message": message.truncate(length: 500),
         ]
         doPost(subPath: "chat/messages", body: serialize(body), onComplete: onComplete)
     }

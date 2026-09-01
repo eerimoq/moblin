@@ -56,6 +56,11 @@ extension Model {
         }
     }
 
+    func setupAudioAfterSettingsImport() {
+        mic.current = noMic
+        setupAudio()
+    }
+
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
@@ -218,9 +223,13 @@ extension Model {
         }
     }
 
+    func updateMicDelay() {
+        media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+    }
+
     func selectMicDefault(mic: SettingsMicsMic) {
         media.attachBufferedAudio(cameraId: nil)
-        let preferStereoMic = database.debug.preferStereoMic
+        let preferStereoMic = database.audio.preferStereoMic
         processorControlQueue.async {
             let session = AVAudioSession.sharedInstance()
             guard let inputPort = session.availableInputs?.first(where: { $0.uid == mic.inputUid }) else {
@@ -603,6 +612,7 @@ extension Model {
             selectMicDefault(mic: mic)
         }
         self.mic.current = mic
+        updateMicDelay()
         self.mic.isSwitchTimerRunning = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.mic.isSwitchTimerRunning = false

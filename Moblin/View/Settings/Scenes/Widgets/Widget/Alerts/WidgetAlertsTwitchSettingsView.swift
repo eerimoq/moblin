@@ -78,7 +78,8 @@ private struct TwitchSubscriptionsView: View {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
                         user_name: alertTestNames.randomElement()!,
                         tier: "2000",
-                        is_gift: false
+                        is_gift: false,
+                        is_prime: false
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
                 }

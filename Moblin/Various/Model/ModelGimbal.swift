@@ -1,4 +1,7 @@
 import Foundation
+import Spatial
+
+private let gimbalAngularVelocity: Double = 0.3
 
 extension Model {
     func setGimbalTracking(on: Bool) {
@@ -8,6 +11,32 @@ extension Model {
         }
         setQuickButton(type: .gimbalTracking, isOn: on)
         updateQuickButtonStates()
+        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(gimbalTracking: on))
+    }
+
+    func setGimbalMovement(x: Float, y: Float) {
+        guard #available(iOS 18.0, *) else {
+            return
+        }
+        let velocity = Vector3D(x: Double(x) * gimbalAngularVelocity,
+                                y: Double(y) * gimbalAngularVelocity,
+                                z: 0)
+        DispatchQueue.main.async {
+            Gimbal.shared?.setMovement(velocity: velocity)
+        }
+    }
+
+    func animateGimbal(motion: SettingsGimbalMotion) {
+        guard #available(iOS 18.0, *) else {
+            return
+        }
+        DispatchQueue.main.async {
+            Gimbal.shared?.animate(motion: motion)
+        }
+    }
+
+    func getRemoteControlGimbalPresets() -> [RemoteControlSettingsGimbalPreset] {
+        database.gimbal.presets.map { RemoteControlSettingsGimbalPreset(id: $0.id, name: $0.name) }
     }
 
     func toggleGimbalTracking() {
@@ -38,6 +67,9 @@ extension Model {
                     preset.zoomX = zoom.x
                     database.gimbal.presets.append(preset)
                 }
+                remoteControlStateChanged(state: RemoteControlAssistantStreamerState(
+                    gimbalPresets: getRemoteControlGimbalPresets()
+                ))
             } catch {
                 makeErrorToast(
                     title: String(localized: "Failed to get gimbal orientation"),

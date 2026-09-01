@@ -16,7 +16,7 @@ private struct QuickButtonStealthModeView: View {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     }
                 } else {
                     HCenter {

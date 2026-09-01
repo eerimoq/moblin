@@ -26,12 +26,17 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 
 - Stream using RTMP, RTMPS, SRT, SRTLA, RIST or WHIP (WebRTC) to any
   platform that supports them.
+- Mobcam. Use the phone as a low latency webcam over USB.
+  - Streams to a computer, for example as a camera source in OBS
+    Studio using the
+    [Mobcam OBS Plugin](https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin).
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
 - SRTLA and RIST.
   - Can use one cellular, one WiFi and multiple Ethernet connections
     simultaneously. Often called bonding.
   - Upload statistics per active connection.
+  - Connection priorities.
 - Twitch integration.
   - Number of viewers.
   - Chat.
@@ -48,9 +53,11 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
     - Start ads.
     - Hype train.
     - Cheered bits in chat.
+    - Stream markers.
 - Kick integration.
   - Number of viewers.
-  - Subscription, host, and kicks.
+  - Subscription, raid, and kicks.
+  - Level badges.
   - Chat.
     - Set stream title and category.
     - Ban.
@@ -59,9 +66,16 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
     - Gray out or hide deleted messages.
     - Show reply.
 - YouTube integration.
+  - Number of viewers.
   - Chat.
+    - Multiple video ids at once.
+    - Moderator support.
+  - Optional login.
+    - Create, end and delete streams.
 - SOOP integration.
   - Scuffed chat.
+- Open Streaming Platform integration.
+  - Chat.
 - Basic scenes.
   - Alerts widget.
     - Trigged by Twitch events and chat messages.
@@ -70,39 +84,62 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
     - Any text.
     - Weather conditions.
     - Temperature.
+    - Wind.
     - Timer.
     - Stopwatch.
+    - Lap times.
     - Country.
-    - City.
+    - City, area, neighborhood and state.
     - Subtitles. Speech to text.
     - Local time.
-    - Speed.
-    - Altitude.
+    - Speed and average speed.
+    - Altitude, ascent, descent and slope.
     - Distance. Reset manually.
+    - Heart rate, step count and cycling power.
+    - Bitrate, resolution and FPS.
+    - Latest follower and subscriber.
     - Debug information.
     - Muted.
     - Checkboxes.
     - Ratings.
     - Date.
     - G-force.
+    - Configurable distance, altitude, temperature and speed units.
     - ...
   - Browser widget. Show a web page on stream.
     - Optional style sheet.
+    - Optional JavaScript API access.
   - Map widget with location.
   - QR code widget.
   - Scene widget.
-  - Video soure widget (for multi cam).
+  - Video source widget (for multi cam).
+  - Snapshot widget.
+  - Chat widget.
+  - Chat emote combo widget.
+  - Slideshow widget.
+  - VTuber and PNGTuber widgets.
+  - Wheel of luck widget.
+  - Bingo card widget.
+  - Crop widget.
+  - Pomodoro timer widget.
   - Scoreboard widget.
     - Padel.
-    - Golf.
+    - Golf, with optional full scorecard.
+    - Basketball.
+    - Hockey.
+    - Football.
+    - Tennis.
     - Volleyball.
+    - Generic.
     - ...
+  - Core Image or MetalPetal graphics processing.
   - ...
 - Back, front or multi camera.
   - Front camera mirrored on screen for natural experience.
 - Low energy triple and dual cameras.
 - Back, front, top, bottom or external mic.
   - Automatically changes to external mic when connected.
+  - Configurable mic delay.
 - Video stabilization.
 - Zoom.
   - Pinch-to-zoom.
@@ -110,21 +147,25 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Back camera lens selection.
 - Record to disk (MP4-file).
   - Configurable bitrate, video codec and key frame interval.
-- RTMP, SRT(LA), RIST, RTSP and WHIP (WebRTC) ingests.
+- Ingests.
+  - RTMP, SRT(LA), RIST and WHIP (WebRTC) servers.
+  - SRT, RTSP and WHEP (WebRTC) clients, pulling streams from a server.
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
 - Tap screen for manual focus.
   - Return to auto focus with long press.
 - Stream connection status and uptime.
 - OBS WebSocket (remote control)
-  - See current scene, streaming state and recoring state.
+  - See current scene, streaming state and recording state.
   - Change scene.
   - Start and stop the stream.
   - Snapshot.
   - Audio levels.
   - Set audio sync.
   - Mute/unmute audio inputs.
+  - Edit media source input.
 - Make phone screen black by pressing a button.
+- Stealth mode. Show a custom image instead of the app.
 - Supports UVC (USB-C) cameras on iPad.
 - Basic support for Mac.
 - Video effects.
@@ -132,10 +173,23 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Movie. Paint top and bottom of 16:9 video black to look like
     2.35:1.
   - 4:3. Paint left and right of 16:9 video black to look like 4:3.
-  - Seipa.
+  - Sepia.
   - Noise reduction.
-  - Random. A single effect that applies a random effect.
+  - Pixellate.
+  - CRT.
+  - Whirlpool and pinch.
+  - Twin. Show center of image two times.
   - Triple. Show center of image three times. Experimental.
+  - Blur faces, blur text and blur background.
+  - Beauty filter.
+  - Face effects. Moblin in mouth, glasses and sparkle.
+  - Remove background.
+  - Mask and shape.
+  - Fixed horizon.
+  - Anamorphic lens.
+  - 360 camera dewarp.
+  - Camera man. Automatic panning and zooming.
+  - Random. A single effect that applies a random effect.
   - ...
 - Alerts.
   - Optional text to speech (TTS).
@@ -158,6 +212,8 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Optionally remove old messages.
   - Width and height.
   - Optional message timestamp.
+  - Predefined messages.
+  - Moderation.
 - Color spaces (for devices that supports them).
   - sRGB.
   - P3 D65.
@@ -174,7 +230,11 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Change scene.
   - Torch.
   - Mute.
+  - Pan and tilt gimbal with thumb sticks.
   - ...
+- Stream Deck support.
+- Keyboard shortcuts.
+- Selfie stick button support.
 - Moblink for more connection.
 - Low light boost.
 - Cosmetics.
@@ -182,17 +242,28 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Optionally purchase additional Moblin icons to support developers.
 - Configure stream resolution, FPS, video codec, bitrate and more.
 - Configurable bitrate presets.
-- Adaptive bitrate for SRT(LA).
+- Adaptive bitrate for SRT(LA), RIST and RTMP.
+- Macros. Run a sequence of actions, optionally repeatedly.
+  - Enable/disable scene widgets, switch scene, delay and more.
 - Optionally remote control the streamer's Moblin app over the network.
   - Shows basic status information.
   - Change scene.
   - Change mic.
   - Change bitrate.
   - Change zoom.
+  - Control gimbal.
+  - Update scoreboards.
+  - Save and play replays.
+  - Import settings.
   - Show logs.
+  - Video preview.
   - ...
+- Web remote control. Control the streamer's Moblin app from a web
+  browser.
 - Torch.
+  - Configurable brightness.
 - Mute audio.
+- Talkback.
 - Deep link settings (moblin://).
   - Including a deep link creator for service providers.
 - Landscape.
@@ -214,13 +285,21 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
     - Fax.
     - Turn filters on and off.
     - Let chat take snapshot.
+    - Change scene.
+    - Set stream title and category.
+    - Ask AI.
+    - Move gimbal to preset.
+    - Run macros.
+    - Control Apple Music.
+    - Spin the wheel of luck.
     - ...
   - Send low battery warning to chat periodically.
 - Screen capture as video source.
 - Basic video player as video source and mic.
+- Apple Music control. Experimental.
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
-  - Tested with OA4, OA3 and OP3.
+  - Tested with OA4, OA3, OA6, OP3 and Pocket 4.
 - GoPro QR-code creator.
 - Show grid for easier positioning.
 - Camera settings (on some cameras).
@@ -231,23 +310,34 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Cat printer.
   - Print chat and faxes (images).
   - Optional meow sound when printing.
+- Black Shark cooler support.
 - Take snapshots.
   - And optionally automatically upload to your Discord server.
+- Photo shoot. Take clean pictures periodically.
 - Save and play replays.
+  - Including instant replay.
 - Tesla vehicle status and control.
 - Support for DockKit gimbals.
+  - Presets, tracking and zoom.
 - Cycling power monitor.
 - Heart rate monitor.
-- Show video on external dispaly. Aka clean HDMI out.
+- Workout. Walking, running and cycling.
+- Show video on external display. Aka clean HDMI out.
 - Basic VTuber and PNGTuber.
 - Auto scene switcher.
+- Disconnect protection. Automatically switch to a fallback scene when
+  the video source disconnects.
+- Navigation. Walking, cycling and driving directions.
+  - Only visible to the streamer.
 - RTMP(S) multi streaming.
+- Preview stream. Low bitrate copy of the stream.
 
 ## Apple Watch companion app
 
 - Stream preview.
 - Show audio level.
 - Show bitrate.
+- Show number of viewers.
 - Show iPhone thermal state.
 - Chat.
   - Limited to 50 messages.
@@ -258,6 +348,11 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Record.
   - Mute.
   - Skip current TTS message.
+  - Instant replay and save replay.
+  - Create stream marker.
+  - Start and stop workout.
+- Scoreboards.
+  - Padel and generic.
 - Watch face complication.
 
 # Import settings using moblin:// (custom URL)

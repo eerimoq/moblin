@@ -31,7 +31,8 @@ class SettingsDebug: Codable, ObservableObject {
     var faceToBeRemoved: SettingsFace = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
-    @Published var preferStereoMic: Bool = false
+    // To be removed.
+    var preferStereoMicToBeRemoved: Bool = false
     @Published var twitchRewards: Bool = false
     var tesla: SettingsTesla = .init()
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
@@ -114,7 +115,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.beautyFilterSettings, faceToBeRemoved)
         try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
-        try container.encode(.preferStereoMic, preferStereoMic)
+        try container.encode(.preferStereoMic, preferStereoMicToBeRemoved)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.tesla, tesla)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
@@ -159,7 +160,7 @@ class SettingsDebug: Codable, ObservableObject {
         faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
-        preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
+        preferStereoMicToBeRemoved = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)

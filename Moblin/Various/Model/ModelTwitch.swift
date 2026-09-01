@@ -170,6 +170,8 @@ extension Model {
         twitchAuthOnComplete = { accessToken in
             storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
             stream.twitchLoggedIn = true
+            stream.twitchWantsToBeLoggedIn = true
+            stream.twitchNotLoggedInCount = 0
             stream.twitchAccessToken = accessToken
             self.showTwitchAuth = false
             self.showModerationAuth = false
@@ -190,6 +192,7 @@ extension Model {
 
     func twitchLogout(stream: SettingsStream) {
         stream.twitchLoggedIn = false
+        stream.twitchWantsToBeLoggedIn = false
         stream.twitchAccessToken = ""
         removeTwitchAccessTokenInKeychain(streamId: stream.id)
         if stream.enabled {
@@ -201,6 +204,17 @@ extension Model {
 
     func handleTwitchAccessToken(accessToken: String) {
         twitchAuthOnComplete?(accessToken)
+    }
+
+    func makeNotLoggedInToTwitchToastIfNeeded() {
+        guard stream.twitchWantsToBeLoggedIn, !stream.twitchLoggedIn else {
+            return
+        }
+        stream.twitchNotLoggedInCount += 1
+        if stream.twitchNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.twitchWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .twitch)
     }
 
     func createStreamMarker() {
@@ -576,7 +590,11 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         guard !event.is_gift else {
             return
         }
-        let text = String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        let text = if event.isPrime() {
+            String(localized: "just subscribed with Prime!")
+        } else {
+            String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        }
         if stream.twitchToastAlerts.subscriptions {
             makeToast(title: "\(event.user_name) \(text)")
         }
@@ -618,10 +636,17 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelSubscriptionMessage(
         event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
     ) {
-        let text = String(localized: """
-        just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-        months! \(event.message.text)
-        """)
+        let text = if let streakMonths = event.streak_months {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
+            \(streakMonths) in a row! \(event.message.text)
+            """)
+        } else {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """)
+        }
         if stream.twitchToastAlerts.resubscriptions {
             makeToast(title: "\(event.user_name) \(text)")
         }
@@ -637,6 +662,47 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
         latestSubscriber = event.user_name
+    }
+
+    func twitchEventSubChannelSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {
+        let text = if let tier = event.tierAsNumber() {
+            String(localized: "just converted their Prime subscription to tier \(tier)!")
+        } else {
+            String(localized: "just continued their gift subscription!")
+        }
+        if stream.twitchToastAlerts.subscriptions {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        playAlert(alert: .twitchSubscriptionUpgrade(event))
+        if stream.twitchChatAlerts.subscriptions {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
+    }
+
+    func twitchEventSubChannelWatchStreak(event: TwitchEventSubNotificationChannelWatchStreakEvent) {
+        let text = String(localized: "just watched \(event.streak_count) streams in a row!")
+        if stream.twitchToastAlerts.isWatchStreakEnabled(count: event.streak_count) {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        if stream.twitchChatAlerts.isWatchStreakEnabled(count: event.streak_count) {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "Watch streak"),
+                color: .orange,
+                image: "flame"
+            )
+        }
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
@@ -819,6 +885,10 @@ extension Model: @preconcurrency TwitchChatDelegate {
 
 extension Model: @preconcurrency TwitchApiDelegate {
     func twitchApiUnauthorized() {
+        guard stream.twitchLoggedIn else {
+            return
+        }
         stream.twitchLoggedIn = false
+        makeNotLoggedInToToast(platform: .twitch)
     }
 }

@@ -1,0 +1,23 @@
+[MAIN]
+recursive = yes
+
+[MESSAGES CONTROL]
+disable =
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-many-nested-blocks,
+    too-many-locals,
+    too-many-arguments,
+    too-many-positional-arguments,
+    too-many-instance-attributes,
+    too-few-public-methods,
+    too-many-public-methods,
+    too-many-lines,
+    broad-exception-caught,
+    broad-exception-raised,
+    duplicate-code,
+    line-too-long,
+    consider-using-with,
+    no-else-return,
+    fixme

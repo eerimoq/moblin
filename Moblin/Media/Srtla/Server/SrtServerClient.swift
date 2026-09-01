@@ -8,12 +8,13 @@ class SrtServerClient {
     private let cameraId: UUID
     private let reader: MpegTsReader
 
-    init(server: SrtServer, cameraId: UUID, timecodesEnabled: Bool) {
+    init(server: SrtServer, cameraId: UUID, timecodesEnabled: Bool, softwareDecoding: Bool) {
         self.server = server
         self.cameraId = cameraId
         reader = MpegTsReader(name: "srt-server",
                               decoderQueue: srtlaServerQueue,
                               timecodesEnabled: timecodesEnabled,
+                              softwareDecoding: softwareDecoding,
                               targetLatency: srtServerClientLatency)
         reader.delegate = self
     }
@@ -23,22 +24,28 @@ class SrtServerClient {
         nonisolated(unsafe)
         var packet = Data(count: packetSize)
         while server?.running == true {
-            // No idea why, but OBS does not work without this.
-            packet.count = packetSize
-            let count = packet.withUnsafeMutableBytes { pointer in
-                srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
+            let done = autoreleasepool { () -> Bool in
+                // No idea why, but OBS does not work without this.
+                packet.count = packetSize
+                let count = packet.withUnsafeMutableBytes { pointer in
+                    srt_recvmsg(clientSocket, pointer.baseAddress, Int32(packetSize))
+                }
+                guard count != SRT_ERROR else {
+                    return true
+                }
+                packet.count = Int(count)
+                server?.srtlaServer?.bitrateStats.mutate {
+                    $0.add(bytesTransferred: packet.count)
+                }
+                do {
+                    try reader.handlePacketFromClient(packet: packet)
+                } catch {
+                    logger.info("srt-server-client: Got corrupt packet \(error).")
+                }
+                return false
             }
-            guard count != SRT_ERROR else {
+            if done {
                 break
-            }
-            packet.count = Int(count)
-            server?.srtlaServer?.bitrateStats.mutate {
-                $0.add(bytesTransferred: packet.count)
-            }
-            do {
-                try reader.handlePacketFromClient(packet: packet)
-            } catch {
-                logger.info("srt-server-client: Got corrupt packet \(error).")
             }
         }
         srt_close(clientSocket)

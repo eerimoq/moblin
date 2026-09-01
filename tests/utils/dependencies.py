@@ -1,7 +1,7 @@
 import shutil
 import sys
 
-from . import ffmpeg
+from systest_moblin import ffmpeg
 
 
 def _is_executable_in_path(name: str) -> bool:
@@ -18,6 +18,8 @@ def check_dependencies():
         "ltcdump",
         "openssl",
         "ssh",
+        "lsof",
+        "tcpdump",
     ]:
         if not _is_executable_in_path(executable):
             missing_dependencies.append(f"{executable} executable not found")

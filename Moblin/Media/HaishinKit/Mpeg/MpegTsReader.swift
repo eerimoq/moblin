@@ -26,16 +26,25 @@ class MpegTsReader: @unchecked Sendable {
     private var videoDecoder: VideoDecoder?
     private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
+    private let softwareDecoding: Bool
     private let targetLatency: Double
     weak var delegate: (any MpegTsReaderDelegate)?
     private let decoderQueue: DispatchQueue
-    private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
-                                                      maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
+    private let wrappingTimestamp = WrappingTimestamp(
+        name: "MpegTsReader",
+        maximumTimestamp: CMTime(value: 0x2_0000_0000, timescale: CMTimeScale(TSTimestamp.resolution))
+    )
 
-    init(name: String, decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
+    init(name: String,
+         decoderQueue: DispatchQueue,
+         timecodesEnabled: Bool,
+         softwareDecoding: Bool,
+         targetLatency: Double)
+    {
         self.name = name
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
+        self.softwareDecoding = softwareDecoding
         self.targetLatency = targetLatency
         targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
     }
@@ -216,7 +225,9 @@ class MpegTsReader: @unchecked Sendable {
         let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         logger.info("mpeg-ts-reader: Got new video dimensions \(dimensions)")
         videoDecoder?.stopRunning()
-        videoDecoder = VideoDecoder(name: name, lockQueue: decoderQueue)
+        videoDecoder = VideoDecoder(name: name,
+                                    lockQueue: decoderQueue,
+                                    softwareDecoding: softwareDecoding)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
@@ -360,7 +371,7 @@ class MpegTsReader: @unchecked Sendable {
         var dataOffset = AdtsHeader.size
         let optionalHeader = packetizedElementaryStream.optionalHeader
         while let dataLength = iterator.next() {
-            let delta = CMTime(seconds: offset)
+            let delta = CMTime(seconds: offset, preferredTimescale: CMTimeScale(TSTimestamp.resolution))
             let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: dataOffset,
                                                                               length: dataLength)
             var sampleSizes = [dataLength]

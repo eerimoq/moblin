@@ -1,11 +1,14 @@
 import argparse
 
-from suites import stability
-from suites.stability import Ingest
-
-from utils.runner import create_parser
-from utils.runner import run
-from utils.traffic_shaper import ProfileName
+from .suites import stability
+from .suites.stability import Ingest
+from .suites.stability import StreamProtocol
+from .utils.generate_device_settings import BitrateRateControl
+from .utils.runner import create_parser
+from .utils.runner import run
+from .utils.traffic_shaper import PROFILES_HELP
+from .utils.traffic_shaper import Profile
+from .utils.traffic_shaper import parse_profile
 
 
 def parse_ingests(value: str) -> list[Ingest]:
@@ -17,30 +20,53 @@ def parse_ingests(value: str) -> list[Ingest]:
             ingest = Ingest(name.strip().lower())
         except ValueError:
             choices = ", ".join(Ingest)
-            raise argparse.ArgumentTypeError(
-                f"'{name}' is not one of {choices}"
-            ) from None
+            raise argparse.ArgumentTypeError(f"'{name}' is not one of {choices}") from None
         if ingest not in ingests:
             ingests.append(ingest)
     return ingests
 
 
+def parse_stream_protocol(value: str) -> StreamProtocol:
+    try:
+        return StreamProtocol(value.strip().lower())
+    except ValueError:
+        choices = ", ".join(StreamProtocol)
+        raise argparse.ArgumentTypeError(f"'{value}' is not one of {choices}") from None
+
+
+def parse_video_bitrate_control(value: str) -> BitrateRateControl:
+    try:
+        return BitrateRateControl(value.strip().upper())
+    except ValueError:
+        choices = ", ".join(BitrateRateControl)
+        raise argparse.ArgumentTypeError(f"'{value}' is not one of {choices}") from None
+
+
+def parse_traffic_shaping(value: str) -> Profile:
+    try:
+        return parse_profile(value)
+    except Exception as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+
+
 def create_suites(moblin, args):
     shaper = stability.create_traffic_shaper(
-        moblin.config,
-        args.stream_traffic_shaping_profile,
-        args.stream_traffic_shaping_parameters,
-        args.ingests_traffic_shaping_profile,
-        args.ingests_traffic_shaping_parameters,
+        moblin,
+        args.stream_protocol,
+        args.stream_traffic_shaping,
+        args.ingests_traffic_shaping,
     )
     return [
         stability.tests(
             moblin,
             args.ingests,
             not args.no_stream,
-            not args.no_silent_audio_check,
+            args.stream_protocol,
+            not args.no_record,
             3600 * args.duration,
             shaper,
+            args.video_bitrate_control,
+            args.network_capture,
         )
     ]
 
@@ -48,16 +74,17 @@ def create_suites(moblin, args):
 def main():
     parser = create_parser("Run the app for a long time and monitor it.")
     parser.add_argument(
+        "-d",
         "--duration",
         type=float,
-        default=12,
+        default=8,
         help="Duration in hours (default: %(default)s).",
     )
     parser.add_argument(
         "--ingests",
         type=parse_ingests,
         default=list(Ingest),
-        help="Comma separated list of ingests to stream to, for example 'rtmp,whep'. "
+        help="Comma separated list of ingests to stream to, for example 'rtmp,whep'.\n\n"
         "Give an empty list to disable all ingests (default: all).",
     )
     parser.add_argument(
@@ -66,31 +93,41 @@ def main():
         help="Do not start the outgoing stream, only run the ingests.",
     )
     parser.add_argument(
-        "--no-silent-audio-check",
+        "-p",
+        "--stream-protocol",
+        type=parse_stream_protocol,
+        choices=list(StreamProtocol),
+        default=StreamProtocol.SRT,
+        help="Outgoing stream protocol (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--no-record",
         action="store_true",
-        help="Do not check that the audio in the stream content is audible.",
+        help="Do not record to disk in the app.",
     )
     parser.add_argument(
-        "--stream-traffic-shaping-profile",
-        type=ProfileName,
-        choices=list(ProfileName),
-        help="Traffic shaping profile of the outgoing stream.",
+        "--video-bitrate-control",
+        type=parse_video_bitrate_control,
+        choices=list(BitrateRateControl),
+        default=BitrateRateControl.ABR,
+        help="Video bitrate control (default: %(default)s).",
     )
     parser.add_argument(
-        "--stream-traffic-shaping-parameters",
-        help="Traffic shaping parameters of the outgoing stream, for example "
-        "'rate=3Mbit,delay=60,loss=0.5'.",
+        "--network-capture",
+        action="store_true",
+        help="Capture the packets to and from the device to a pcap file for the whole test run.",
     )
     parser.add_argument(
-        "--ingests-traffic-shaping-profile",
-        type=ProfileName,
-        choices=list(ProfileName),
-        help="Traffic shaping profile of the ingests.",
+        "-s",
+        "--stream-traffic-shaping",
+        type=parse_traffic_shaping,
+        help=f"Traffic shaping of the outgoing stream as '<profile>,<name>=<value>,...'.\n{PROFILES_HELP}",
     )
     parser.add_argument(
-        "--ingests-traffic-shaping-parameters",
-        help="Traffic shaping parameters of the ingests, for example "
-        "'low-rate=10Mbit,high-rate=25Mbit,period=120'.",
+        "-i",
+        "--ingests-traffic-shaping",
+        type=parse_traffic_shaping,
+        help="Traffic shaping of each ingest. See --stream-traffic-shaping for details.",
     )
     run("stability", parser, create_suites)
 

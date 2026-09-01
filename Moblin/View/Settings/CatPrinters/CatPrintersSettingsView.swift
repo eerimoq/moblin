@@ -7,7 +7,7 @@ struct IntegrationImageView: View {
     var body: some View {
         Image(imageName)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .background(.white)
             .frame(height: height ?? 130.0)
     }

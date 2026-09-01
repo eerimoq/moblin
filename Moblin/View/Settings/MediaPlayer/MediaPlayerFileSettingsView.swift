@@ -31,7 +31,7 @@ struct MediaPlayerFileSettingsView: View {
                 if let image {
                     Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(width: 90)
                 } else {
                     Image(systemName: "photo")
