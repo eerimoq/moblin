@@ -71,6 +71,8 @@ enum RemoteControlRequest: Codable {
     case importSettings(data: Data)
     case startStats(filter: RemoteControlStartStatsFilter?)
     case stopStats
+    case startMacro(id: UUID)
+    case stopMacro(id: UUID)
 }
 
 enum RemoteControlResponse: Codable {
@@ -912,6 +914,12 @@ struct RemoteControlZoomPreset: Codable, Identifiable {
     let name: String
 }
 
+struct RemoteControlMacro: Codable, Identifiable {
+    let id: UUID
+    let name: String
+    let running: Bool
+}
+
 struct RemoteControlAssistantStreamerState: Codable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
@@ -931,6 +939,7 @@ struct RemoteControlAssistantStreamerState: Codable {
     var filters: [RemoteControlFilter: Bool]?
     var gimbalTracking: Bool?
     var gimbalPresets: [RemoteControlSettingsGimbalPreset]?
+    var macros: [RemoteControlMacro]?
 }
 
 struct RemoteControlScoreboardControl: Codable {

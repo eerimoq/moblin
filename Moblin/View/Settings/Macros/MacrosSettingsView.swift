@@ -267,6 +267,9 @@ private struct MacroView: View {
             Form {
                 Section {
                     NameEditView(name: $macro.name, existingNames: macros.macros)
+                        .onChange(of: macro.name) { _ in
+                            model.remoteControlMacrosStateChanged()
+                        }
                 }
                 Section {
                     List {
@@ -352,9 +355,11 @@ struct MacrosSettingsView: View {
                     }
                     .onMove { froms, to in
                         macros.macros.move(fromOffsets: froms, toOffset: to)
+                        model.remoteControlMacrosStateChanged()
                     }
                     .onDelete { offsets in
                         macros.macros.remove(atOffsets: offsets)
+                        model.remoteControlMacrosStateChanged()
                     }
                 }
                 CreateButtonView {
@@ -364,6 +369,7 @@ struct MacrosSettingsView: View {
                         existingNames: macros.macros
                     )
                     macros.macros.append(macro)
+                    model.remoteControlMacrosStateChanged()
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a macro"))

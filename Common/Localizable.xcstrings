@@ -151219,6 +151219,9 @@
         }
       }
     },
+    "No macros configured in streamer" : {
+
+    },
     "No preview received yet." : {
       "localizations" : {
         "de" : {

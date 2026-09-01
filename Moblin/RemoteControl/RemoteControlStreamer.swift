@@ -56,6 +56,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
+    func remoteControlStreamerStartMacro(id: UUID)
+    func remoteControlStreamerStopMacro(id: UUID)
 }
 
 private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
@@ -395,6 +397,12 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case .stopStats:
             delegate.remoteControlStreamerStopStats()
+            sendEmptyOkResponse(id: id)
+        case let .startMacro(id: macroId):
+            delegate.remoteControlStreamerStartMacro(id: macroId)
+            sendEmptyOkResponse(id: id)
+        case let .stopMacro(id: macroId):
+            delegate.remoteControlStreamerStopMacro(id: macroId)
             sendEmptyOkResponse(id: id)
         }
     }

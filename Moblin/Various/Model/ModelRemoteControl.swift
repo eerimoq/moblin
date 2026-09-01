@@ -15,6 +15,7 @@ class RemoteControl: ObservableObject {
     @Published var zoom = ""
     @Published var zoomPresets: [RemoteControlZoomPreset] = []
     @Published var gimbalPresets: [RemoteControlSettingsGimbalPreset] = []
+    @Published var macros: [RemoteControlMacro] = []
     @Published var zoomPreset = UUID()
     @Published var debugLogging = false
     @Published var preview: UIImage?
@@ -317,6 +318,14 @@ extension Model {
         remoteControlAssistant?.moveToGimbalPreset(id: id) {}
     }
 
+    func remoteControlAssistantStartMacro(id: UUID) {
+        remoteControlAssistant?.startMacro(id: id) {}
+    }
+
+    func remoteControlAssistantStopMacro(id: UUID) {
+        remoteControlAssistant?.stopMacro(id: id) {}
+    }
+
     func remoteControlAssistantSetFilter(filter: RemoteControlFilter, on: Bool) {
         remoteControlAssistant?.setFilter(filter: filter, on: on)
     }
@@ -613,6 +622,7 @@ extension Model {
         }
         state.gimbalTracking = database.gimbal.tracking
         state.gimbalPresets = getRemoteControlGimbalPresets()
+        state.macros = getRemoteControlMacros()
         return state
     }
 
@@ -998,6 +1008,14 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         startGForceManager()
     }
 
+    func remoteControlStreamerStartMacro(id: UUID) {
+        startMacro(id: id)
+    }
+
+    func remoteControlStreamerStopMacro(id: UUID) {
+        stopMacro(id: id)
+    }
+
     func remoteControlStreamerGetScoreboardSports() -> [String] {
         getScoreboardSports()
     }
@@ -1139,6 +1157,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         if let gimbalPresets = state.gimbalPresets {
             remoteControlAssistantStreamerState.gimbalPresets = gimbalPresets
             remoteControl.gimbalPresets = gimbalPresets
+        }
+        if let macros = state.macros {
+            remoteControlAssistantStreamerState.macros = macros
+            remoteControl.macros = macros
         }
         if let zoomPreset = state.zoomPreset {
             remoteControlAssistantStreamerState.zoomPreset = zoomPreset

@@ -591,6 +591,60 @@ private struct GimbalPresetView: View {
     }
 }
 
+private struct MacroView: View {
+    let model: Model
+    let macro: RemoteControlMacro
+
+    var body: some View {
+        HStack {
+            Text(macro.name)
+            Spacer()
+            if macro.running {
+                Button {
+                    model.remoteControlAssistantStopMacro(id: macro.id)
+                } label: {
+                    Text("Cancel")
+                }
+                .tint(.red)
+                .buttonStyle(.borderless)
+            } else {
+                Button {
+                    model.remoteControlAssistantStartMacro(id: macro.id)
+                } label: {
+                    Text("Run")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+    }
+}
+
+private struct MacrosView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    if !remoteControl.macros.isEmpty {
+                        ForEach(remoteControl.macros) { macro in
+                            MacroView(model: model, macro: macro)
+                        }
+                    } else {
+                        HCenter {
+                            Text("No macros configured in streamer")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Macros")
+        } label: {
+            Text("Macros")
+        }
+    }
+}
+
 private struct SrtConnectionPrioritiesView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -704,6 +758,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 BitrateView(model: model, remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
                 GimbalPresetView(model: model, remoteControl: remoteControl)
+                MacrosView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
