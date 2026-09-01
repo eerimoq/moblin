@@ -656,6 +656,31 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         latestSubscriber = event.user_name
     }
 
+    func twitchEventSubChannelSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {
+        let text = if let tier = event.tierAsNumber() {
+            String(localized: "just converted their Prime subscription to tier \(tier)!")
+        } else {
+            String(localized: "just continued their gift subscription!")
+        }
+        if stream.twitchToastAlerts.subscriptions {
+            makeToast(title: "\(event.user_name) \(text)")
+        }
+        playAlert(alert: .twitchSubscriptionUpgrade(event))
+        if stream.twitchChatAlerts.subscriptions {
+            appendTwitchChatAlertMessage(
+                user: event.user_name,
+                text: text,
+                title: String(localized: "New subscriber"),
+                color: .cyan,
+                image: "party.popper"
+            )
+        }
+        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
+    }
+
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
     ) {

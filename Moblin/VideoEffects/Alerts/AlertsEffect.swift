@@ -15,6 +15,7 @@ enum AlertsEffectAlert {
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
     case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
+    case twitchSubscriptionUpgrade(TwitchEventSubNotificationChannelSubscriptionUpgradeEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchRedemption(TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
@@ -215,6 +216,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchSubscriptionGift(event: event)
         case let .twitchResubscribe(event):
             playTwitchResubscribe(event: event)
+        case let .twitchSubscriptionUpgrade(event):
+            playTwitchSubscriptionUpgrade(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
         case let .twitchRedemption(event: event):
@@ -716,6 +719,26 @@ extension AlertsEffect {
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
             months! \(event.message.text)
             """)
+        }
+        play(
+            media: twitchSubscribeMedia,
+            username: event.user_name,
+            message: message,
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        let message = if let tier = event.tierAsNumber() {
+            String(localized: "just converted their Prime subscription to tier \(tier)!")
+        } else {
+            String(localized: "just continued their gift subscription!")
         }
         play(
             media: twitchSubscribeMedia,

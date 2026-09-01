@@ -48,6 +48,18 @@ private struct NotificationChannelSubscribeMessage: Decodable {
     var payload: NotificationChannelSubscribePayload
 }
 
+struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
+    var user_name: String
+    var tier: String?
+
+    func tierAsNumber() -> Int? {
+        guard let tier else {
+            return nil
+        }
+        return twitchTierAsNumber(tier: tier)
+    }
+}
+
 struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var user_name: String?
     var total: Int
@@ -107,6 +119,10 @@ private struct NotificationChannelChatNotificationCommunitySubGift: Decodable {
     var sub_tier: String
 }
 
+private struct NotificationChannelChatNotificationPrimePaidUpgrade: Decodable {
+    var sub_tier: String
+}
+
 private struct NotificationChannelChatNotificationEvent: Decodable {
     var chatter_user_name: String
     var chatter_is_anonymous: Bool
@@ -116,6 +132,7 @@ private struct NotificationChannelChatNotificationEvent: Decodable {
     var resub: NotificationChannelChatNotificationResub?
     var sub_gift: NotificationChannelChatNotificationSubGift?
     var community_sub_gift: NotificationChannelChatNotificationCommunitySubGift?
+    var prime_paid_upgrade: NotificationChannelChatNotificationPrimePaidUpgrade?
 }
 
 private struct NotificationChannelChatNotificationPayload: Decodable {
@@ -296,6 +313,9 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     func twitchEventSubChannelSubscriptionMessage(
         event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
+    )
+    func twitchEventSubChannelSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
     )
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
         event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
@@ -665,6 +685,17 @@ final class TwitchEventSub: NSObject {
             handleChatNotificationGift(event: event,
                                        total: communitySubGift.total,
                                        tier: communitySubGift.sub_tier)
+        case "prime_paid_upgrade":
+            guard let primePaidUpgrade = event.prime_paid_upgrade else {
+                return
+            }
+            delegate.twitchEventSubChannelSubscriptionUpgrade(
+                event: .init(user_name: event.chatter_user_name, tier: primePaidUpgrade.sub_tier)
+            )
+        case "gift_paid_upgrade":
+            delegate.twitchEventSubChannelSubscriptionUpgrade(
+                event: .init(user_name: event.chatter_user_name, tier: nil)
+            )
         default:
             break
         }

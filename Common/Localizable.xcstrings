@@ -118593,6 +118593,12 @@
         }
       }
     },
+    "just continued their gift subscription!" : {
+
+    },
+    "just converted their Prime subscription to tier %lld!" : {
+
+    },
     "just followed!" : {
       "localizations" : {
         "de" : {
