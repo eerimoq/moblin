@@ -953,6 +953,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 button.enabled && button.page == page + 1
             }.map { button in
                 if let state = getQuickButtonState(type: button.type) {
+                    state.button = button
                     state.isOn = button.isOn
                     return state
                 } else {
