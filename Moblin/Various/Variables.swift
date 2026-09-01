@@ -5,6 +5,7 @@ struct Variables {
     let timestamp: ContinuousClock.Instant
     let bitrate: String
     let bitrateAndTotal: String
+    let bonding: String
     let resolution: String?
     let fps: Int?
     let date: Date

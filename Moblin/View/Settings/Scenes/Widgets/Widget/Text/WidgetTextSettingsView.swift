@@ -1191,6 +1191,11 @@ private struct DebugVariablesView: View {
                     text: $value
                 )
                 VariableView(
+                    title: "{bonding}",
+                    description: String(localized: "Show bonding percentage split"),
+                    text: $value
+                )
+                VariableView(
                     title: "{resolution}",
                     description: String(localized: "Show resolution"),
                     text: $value

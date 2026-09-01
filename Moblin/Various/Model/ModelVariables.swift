@@ -9,6 +9,7 @@ extension Model {
             timestamp: timestamp,
             bitrate: bitrate.speedMbpsOneDecimal,
             bitrateAndTotal: bitrate.speedAndTotal,
+            bonding: bonding.statistics,
             resolution: currentResolution,
             fps: currentFps,
             date: now,

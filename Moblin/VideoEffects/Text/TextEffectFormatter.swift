@@ -145,6 +145,8 @@ class TextEffectFormatter {
                 formatBitrate(variables: variables)
             case .bitrateAndTotal:
                 formatBitrateAndTotal(variables: variables)
+            case .bonding:
+                formatBonding(variables: variables)
             case .resolution:
                 formatResolution(variables: variables)
             case .fps:
@@ -285,6 +287,10 @@ class TextEffectFormatter {
 
     private func formatBitrateAndTotal(variables: Variables) {
         appendTextPart(value: variables.bitrateAndTotal)
+    }
+
+    private func formatBonding(variables: Variables) {
+        appendTextPart(value: variables.bonding)
     }
 
     private func formatResolution(variables: Variables) {

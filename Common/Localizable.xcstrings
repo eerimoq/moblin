@@ -203123,6 +203123,9 @@
         }
       }
     },
+    "Show bonding percentage split" : {
+
+    },
     "Show browser title" : {
       "localizations" : {
         "de" : {

@@ -607,6 +607,7 @@ struct RemoteControlRemoteSceneData: Codable {
 struct RemoteControlRemoteSceneDataVariables: Codable {
     let bitrate: String
     let bitrateAndTotal: String
+    let bonding: String
     let resolution: String?
     let fps: Int?
     let date: Date
@@ -653,6 +654,7 @@ struct RemoteControlRemoteSceneDataVariables: Codable {
     init(variables: Variables) {
         bitrate = variables.bitrate
         bitrateAndTotal = variables.bitrateAndTotal
+        bonding = variables.bonding
         resolution = variables.resolution
         fps = variables.fps
         date = variables.date
@@ -701,6 +703,7 @@ struct RemoteControlRemoteSceneDataVariables: Codable {
         Variables(timestamp: .now,
                   bitrate: bitrate,
                   bitrateAndTotal: bitrateAndTotal,
+                  bonding: bonding,
                   resolution: resolution,
                   fps: fps,
                   date: date,

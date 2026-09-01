@@ -231,6 +231,7 @@ enum TextFormatPart: Equatable {
     case fullDate
     case bitrate
     case bitrateAndTotal
+    case bonding
     case resolution
     case fps
     case debugOverlay
@@ -310,6 +311,8 @@ class TextFormatLoader {
                     loadItem(part: .bitrate, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
                     loadItem(part: .bitrateAndTotal, offsetBy: 17)
+                } else if formatFromIndex.hasPrefix("{bonding}") {
+                    loadItem(part: .bonding, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{resolution}") {
                     loadItem(part: .resolution, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{fps}") {

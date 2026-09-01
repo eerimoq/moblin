@@ -331,6 +331,7 @@ struct TextEffectSuite {
         Variables(timestamp: .now,
                   bitrate: "",
                   bitrateAndTotal: "",
+                  bonding: "",
                   resolution: nil,
                   fps: nil,
                   date: Date(timeIntervalSince1970: 1_723_350_366),
