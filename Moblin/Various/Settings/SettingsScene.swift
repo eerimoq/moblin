@@ -1725,7 +1725,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
         videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
         videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
@@ -1808,7 +1808,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
         videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
         videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
@@ -2777,7 +2777,7 @@ private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
 ]
 
 struct SettingsVideoSource {
-    var cameraPosition: SettingsSceneCameraPosition = .screenCapture
+    var cameraPosition: SettingsSceneCameraPosition = .none
     var backCameraId: CameraId = bestBackCameraId
     var frontCameraId: CameraId = bestFrontCameraId
     var rtmpCameraId: UUID = .init()
@@ -3011,7 +3011,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0)
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
+        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
         videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
         videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
