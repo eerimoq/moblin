@@ -1148,6 +1148,7 @@ class Database: Codable, ObservableObject {
     var moblink: SettingsMoblink = .init()
     @Published var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     @Published var forceSceneSwitchTransition: Bool = false
+    @Published var alwaysAttachCameraPreview: Bool = false
     @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
@@ -1276,6 +1277,7 @@ class Database: Codable, ObservableObject {
         case moblink
         case sceneSwitchTransition
         case forceSceneSwitchTransition
+        case alwaysAttachCameraPreview
         case cameraControlsEnabled
         case externalDisplayContent
         case cyclingPowerDevices
@@ -1365,6 +1367,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.moblink, moblink)
         try container.encode(.sceneSwitchTransition, sceneSwitchTransition)
         try container.encode(.forceSceneSwitchTransition, forceSceneSwitchTransition)
+        try container.encode(.alwaysAttachCameraPreview, alwaysAttachCameraPreview)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
@@ -1477,6 +1480,7 @@ class Database: Codable, ObservableObject {
             .blur
         )
         forceSceneSwitchTransition = container.decode(.forceSceneSwitchTransition, Bool.self, false)
+        alwaysAttachCameraPreview = container.decode(.alwaysAttachCameraPreview, Bool.self, false)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, false)
         externalDisplayContent = container.decode(
             .externalDisplayContent,

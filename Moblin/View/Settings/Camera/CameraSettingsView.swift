@@ -193,6 +193,25 @@ private struct CameraSettingsAppleLogLutView: View {
     }
 }
 
+private struct CameraPreviewSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Section {
+            Toggle("Instant camera preview", isOn: $database.alwaysAttachCameraPreview)
+                .onChange(of: database.alwaysAttachCameraPreview) { _ in
+                    model.reattachCamera()
+                }
+        } footer: {
+            Text("""
+            The Camera preview quick button shows and hides the camera preview instantly, without \
+            the scene switch transition. Uses slightly more system resources.
+            """)
+        }
+    }
+}
+
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -242,6 +261,7 @@ struct CameraSettingsView: View {
                 }
             }
             if database.showAllSettings {
+                CameraPreviewSettingsView(database: database)
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: $color.space) {

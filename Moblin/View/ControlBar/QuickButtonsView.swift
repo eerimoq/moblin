@@ -290,7 +290,7 @@ struct QuickButtonsInnerView: View {
             )
         }
         model.updateQuickButtonStates()
-        model.reattachCamera()
+        model.toggleCameraPreview()
     }
 
     private func snapshotAction() {

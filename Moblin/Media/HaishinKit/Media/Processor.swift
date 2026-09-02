@@ -220,6 +220,10 @@ final class Processor: @unchecked Sendable {
         video.setScreenPreview(enabled: enabled)
     }
 
+    func setShowCameraPreview(_ show: Bool) {
+        video.setShowCameraPreview(show)
+    }
+
     func setVideoPreviewEnabled(enabled: Bool) {
         video.setVideoPreviewEnabled(enabled: enabled)
     }

@@ -235,7 +235,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
 
     private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
         for (id, previewLayer) in params.cameraPreviewLayers {
-            guard params.showCameraPreview,
+            guard params.attachCameraPreview,
                   let device = captureSessionDevices.first(where: { $0.device.id == id }),
                   let port = device.input.ports.first(where: { $0.mediaType == .video })
             else {

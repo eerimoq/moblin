@@ -18,6 +18,7 @@ struct VideoUnitAttachParams: @unchecked Sendable {
     let devices: CaptureDevices
     let builtinDelay: Double
     let cameraPreviewLayers: [UUID: AVCaptureVideoPreviewLayer]
+    let attachCameraPreview: Bool
     let showCameraPreview: Bool
     let externalDisplayPreview: Bool
     let bufferedVideo: UUID?
@@ -42,7 +43,7 @@ struct VideoUnitAttachParams: @unchecked Sendable {
                 return false
             }
         }
-        if showCameraPreview != other.showCameraPreview {
+        if attachCameraPreview != other.attachCameraPreview {
             return false
         }
         if builtinDelay != other.builtinDelay {
@@ -300,6 +301,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    func setShowCameraPreview(_ show: Bool) {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
+                self.showCameraPreview = show
+            }
+        }
+    }
+
     func setVideoPreviewEnabled(enabled: Bool) {
         processorControlQueue.async {
             processorPipelineQueue.async {
@@ -478,6 +487,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.selectedBufferedVideoCameraId = params.bufferedVideo
             self.isFirstAfterAttach = true
+            self.showCameraPreview = params.showCameraPreview
             self.externalDisplayPreview = params.externalDisplayPreview
             self.effectsProcessor.fillFrame = params.fillFrame
             if let bufferedVideo = params.bufferedVideo {

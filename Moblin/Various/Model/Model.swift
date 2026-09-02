@@ -2705,6 +2705,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let params = VideoUnitAttachParams(devices: CaptureDevices(hasSceneDevice: false, devices: []),
                                            builtinDelay: 0,
                                            cameraPreviewLayers: cameraPreviewView.previewLayers,
+                                           attachCameraPreview: false,
                                            showCameraPreview: false,
                                            externalDisplayPreview: false,
                                            bufferedVideo: nil,
@@ -2871,13 +2872,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let isMirrored = getVideoMirroredOnScreen()
         let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
         let showCameraPreview = updateShowCameraPreview()
-        cameraPreviewView.setDevices(ids: showCameraPreview
+        let attachCameraPreview = showCameraPreview || database.alwaysAttachCameraPreview
+        cameraPreviewView.setDevices(ids: attachCameraPreview
             ? getCameraPreviewDeviceIds(scene: scene, sceneDevice: cameraDevice)
             : [])
         let params = VideoUnitAttachParams(
             devices: devices,
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
             cameraPreviewLayers: cameraPreviewView.previewLayers,
+            attachCameraPreview: attachCameraPreview,
             showCameraPreview: showCameraPreview,
             externalDisplayPreview: externalDisplayPreview,
             bufferedVideo: nil,
@@ -2939,6 +2942,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
             cameraPreviewLayers: cameraPreviewView.previewLayers,
+            attachCameraPreview: false,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,
             cameraId: cameraId,

@@ -532,6 +532,14 @@ extension Model {
         return show
     }
 
+    func toggleCameraPreview() {
+        if database.alwaysAttachCameraPreview {
+            media.setShowCameraPreview(updateShowCameraPreview())
+        } else {
+            reattachCamera()
+        }
+    }
+
     private func shouldShowCameraPreview() -> Bool {
         if !(getQuickButton(type: .cameraPreview)?.isOn ?? false) {
             return false

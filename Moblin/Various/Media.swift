@@ -737,6 +737,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setScreenPreview(enabled: enabled)
     }
 
+    func setShowCameraPreview(_ show: Bool) {
+        processor?.setShowCameraPreview(show)
+    }
+
     func setVideoPreviewEnabled(enabled: Bool) {
         processor?.setVideoPreviewEnabled(enabled: enabled)
     }
@@ -954,6 +958,7 @@ final class Media: NSObject, @unchecked Sendable {
         devices: CaptureDevices,
         builtinDelay: Double,
         cameraPreviewLayers: [UUID: AVCaptureVideoPreviewLayer],
+        attachCameraPreview: Bool,
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,
         cameraId: UUID,
@@ -968,6 +973,7 @@ final class Media: NSObject, @unchecked Sendable {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
                                            cameraPreviewLayers: cameraPreviewLayers,
+                                           attachCameraPreview: attachCameraPreview,
                                            showCameraPreview: showCameraPreview,
                                            externalDisplayPreview: externalDisplayPreview,
                                            bufferedVideo: cameraId,
