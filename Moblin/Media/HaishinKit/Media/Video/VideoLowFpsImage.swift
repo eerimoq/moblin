@@ -3,7 +3,7 @@ import UIKit
 
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
-final class VideoLowFpsImage {
+final class VideoLowFpsImage: @unchecked Sendable {
     private let context: CIContext
     weak var processor: Processor?
     private var enabled: Bool = false

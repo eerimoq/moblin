@@ -13,6 +13,7 @@ private struct WeakEmoteUiView {
     weak var view: EmoteUiView?
 }
 
+@MainActor
 private class AnimatedEmote {
     private let animatedImage: SDAnimatedImage?
     private let sourceImage: CGImage?
@@ -140,6 +141,7 @@ private class AnimatedEmote {
     }
 }
 
+@MainActor
 private class EmotesPlayer: NSObject {
     static let shared = EmotesPlayer()
     private var emotes: [EmoteKey: AnimatedEmote] = [:]
@@ -230,12 +232,14 @@ private class EmotesPlayer: NSObject {
             guard let self else {
                 return
             }
-            let handlers = loadingHandlers.removeValue(forKey: url) ?? []
-            guard let image, image.size.width > 0, image.size.height > 0 else {
-                return
-            }
-            for handler in handlers {
-                handler(image)
+            MainActor.assumeIsolated {
+                let handlers = self.loadingHandlers.removeValue(forKey: url) ?? []
+                guard let image, image.size.width > 0, image.size.height > 0 else {
+                    return
+                }
+                for handler in handlers {
+                    handler(image)
+                }
             }
         }
     }

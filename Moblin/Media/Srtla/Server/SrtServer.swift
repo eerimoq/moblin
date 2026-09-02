@@ -82,7 +82,8 @@ class SrtServer: @unchecked Sendable {
         guard srt_getsockflag(socket, SRTO_STREAMID, &streamId, &size) != SRT_ERROR else {
             return ""
         }
-        return String(cString: streamId)
+        let bytes = streamId.prefix(while: { $0 != 0 }).map { UInt8(bitPattern: $0) }
+        return String(bytes: bytes, encoding: .utf8) ?? ""
     }
 
     private func open() throws {

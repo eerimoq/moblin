@@ -2,3 +2,7 @@
 
 MARKETING_VERSION = 34.2138.0
 CURRENT_PROJECT_VERSION = 192
+
+// Swift 6 traps when a @preconcurrency delegate callback reaches a main actor
+// isolated Model method from a background queue. Keep the Swift 5 behavior.
+OTHER_SWIFT_FLAGS = $(inherited) -disable-dynamic-actor-isolation

@@ -665,10 +665,10 @@ final class Media: NSObject, @unchecked Sendable {
         whipStream?.stop()
     }
 
-    func mobcamStartStream(port: UInt16) {
+    func mobcamStartStream(port: UInt16, deviceName: String) {
         adaptiveBitrate = nil
         setAllowFrameReordering(value: false)
-        mobcamStream?.start(port: port)
+        mobcamStream?.start(port: port, deviceName: deviceName)
     }
 
     func mobcamStopStream() {
@@ -1375,12 +1375,14 @@ extension Media: MobcamStreamDelegate {
     }
 
     func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        nonisolated(unsafe) let delegate = delegate
         processorControlQueue.async {
             self.processor?.startEncoding(delegate)
         }
     }
 
     func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        nonisolated(unsafe) let delegate = delegate
         processorControlQueue.async {
             self.processor?.stopEncoding(delegate)
         }

@@ -156,7 +156,7 @@ final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
             minimumBrightnessFloor,
             Double(min(fromHsv.brightness, toHsv.brightness)) * adaptiveThresholdMultiplier
         )
-        let chromaKeySettings = makeChromaKeySettings(from: from, to: to)
+        nonisolated(unsafe) let chromaKeySettings = makeChromaKeySettings(from: from, to: to)
         processorPipelineQueue.async {
             self.chromaKeySettings = chromaKeySettings
         }

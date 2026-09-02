@@ -61,6 +61,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var stopped = false
     private var suspended = false
     private let snapshotConfiguration: WKSnapshotConfiguration
+    private let userContentController: WKUserContentController
 
     @MainActor
     init(
@@ -94,6 +95,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         }
         addScript(configuration, videoScript(), .atDocumentStart)
         configuration.setHttpProxy(endpoint: proxyServer)
+        userContentController = configuration.userContentController
         server = BrowserEffectServer(configuration: configuration, moblinAccess: moblinAccess)
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)
@@ -108,7 +110,10 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     deinit {
-        webView.configuration.userContentController.removeAllScriptMessageHandlers()
+        let userContentController = userContentController
+        DispatchQueue.main.async {
+            userContentController.removeAllScriptMessageHandlers()
+        }
         stopTakeSnapshots()
     }
 

@@ -4,7 +4,7 @@ import CoreImage
 import UIKit
 @preconcurrency import Vision
 
-final class VideoSnapshots {
+final class VideoSnapshots: @unchecked Sendable {
     private let context: CIContext
     private var cleanSnapshots = false
     private var takeSnapshotAge: Float = 0.0
@@ -129,12 +129,12 @@ final class VideoSnapshots {
                               _ age: Float,
                               _ onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void)
     {
-        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { @MainActor imageBuffer in
+        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { [context] imageBuffer in
             guard let imageBuffer else {
                 return
             }
             let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-            let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent)!
+            let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
             let image = UIImage(cgImage: cgImage)
             var portraitImage = ciImage
             if !imageBuffer.isPortrait() {

@@ -2,7 +2,7 @@ import CoreImage
 import MetalPetal
 import simd
 
-private let colorMatrix = MTIColorMatrix(matrix: .init(
+private nonisolated(unsafe) let colorMatrix = MTIColorMatrix(matrix: .init(
     .init(0.393, 0.769, 0.189, 0),
     .init(0.349, 0.686, 0.168, 0),
     .init(0.272, 0.534, 0.131, 0),

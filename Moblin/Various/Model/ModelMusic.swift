@@ -1,7 +1,7 @@
 import Combine
 import DequeModule
 import Foundation
-import MusicKit
+@preconcurrency import MusicKit
 
 private enum Action {
     case add(title: String, onCompleted: (MusicAddResult) -> Void)
@@ -12,11 +12,11 @@ private enum Action {
     case status(onCompleted: (MusicStatus) -> Void)
 }
 
-private var songs: [Song] = []
-let musicPlayer = ApplicationMusicPlayer.shared
-private var isActionRunning = false
-private var actions: Deque<Action> = []
-private var playRequested = true
+@MainActor private var songs: [Song] = []
+@MainActor let musicPlayer = ApplicationMusicPlayer.shared
+@MainActor private var isActionRunning = false
+@MainActor private var actions: Deque<Action> = []
+@MainActor private var playRequested = true
 
 struct MusicStatusSong {
     let title: String

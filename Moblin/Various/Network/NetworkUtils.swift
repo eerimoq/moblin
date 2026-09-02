@@ -74,6 +74,7 @@ func httpRequest(request: URLRequest,
                  queue: DispatchQueue = .main,
                  completion: ((Data?, URLResponse?, (any Error)?) -> Void)? = nil)
 {
+    nonisolated(unsafe) let completion = completion
     URLSession.shared.dataTask(with: request) { data, response, error in
         queue.async {
             completion?(data, response, error)

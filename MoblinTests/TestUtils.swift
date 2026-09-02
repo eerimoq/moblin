@@ -16,7 +16,7 @@ func areEqual<T: FloatingPoint>(_ actual: [T], _ expected: [T], epsilon: T) -> B
     return true
 }
 
-class MessageQueue<Message> {
+class MessageQueue<Message: Sendable>: @unchecked Sendable {
     private var buffer: [Message] = []
     private var continuations: [CheckedContinuation<Message, Never>] = []
 

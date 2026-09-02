@@ -22,7 +22,7 @@ private enum BadgeType {
 
 private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
-private let emoteRegex = /\[emote:(\d+):[^\]]+\]/
+private nonisolated(unsafe) let emoteRegex = /\[emote:(\d+):[^\]]+\]/
 
 func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -> [ChatPostSegment] {
     var segments: [ChatPostSegment] = []

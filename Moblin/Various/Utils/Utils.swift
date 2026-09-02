@@ -323,9 +323,10 @@ extension Locale.Language {
 extension AVAsset {
     func duration() -> Double {
         let semaphore = DispatchSemaphore(value: 0)
-        var duration: Double?
+        nonisolated(unsafe) var duration: Double?
+        nonisolated(unsafe) let asset = self
         Task {
-            duration = try? await load(.duration).seconds
+            duration = try? await asset.load(.duration).seconds
             semaphore.signal()
         }
         semaphore.wait()

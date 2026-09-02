@@ -1,8 +1,7 @@
-import AVFAudio
+@preconcurrency import AVFAudio
 import CoreMedia
 import Foundation
 import Network
-import UIKit
 
 private let mobcamStreamQueue = DispatchQueue(label: "com.eerimoq.mobcam-stream")
 private let congestionThresholeBytes = 10_000_000
@@ -29,14 +28,16 @@ final class MobcamStream: @unchecked Sendable {
     private var dropUntilSync = false
     private var audioSupported = false
     private var periodicTimer = SimpleTimer(queue: mobcamStreamQueue)
+    private var deviceName = ""
 
     init(delegate: any MobcamStreamDelegate) {
         self.delegate = delegate
     }
 
-    func start(port: UInt16) {
+    func start(port: UInt16, deviceName: String) {
         mobcamStreamQueue.async {
             self.port = port
+            self.deviceName = deviceName
             self.setupListener()
             self.setupPeriodicTimer()
         }
@@ -193,7 +194,7 @@ final class MobcamStream: @unchecked Sendable {
         }
         try unpackMobcamStreamHostHello(payload)
         connectedAt = .now
-        let info = MobcamStreamDeviceInfo(name: UIDevice.current.name, version: appVersion())
+        let info = MobcamStreamDeviceInfo(name: deviceName, version: appVersion())
         send(packMobcamStreamDeviceHello(info))
         logger.info("mobcam-stream: Host said hello")
         delegate?.mobcamStreamOnConnected()

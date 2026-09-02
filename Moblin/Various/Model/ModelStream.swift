@@ -242,7 +242,7 @@ extension Model {
     }
 
     private func startNetStreamMobcam() {
-        media.mobcamStartStream(port: stream.mobcamPort())
+        media.mobcamStartStream(port: stream.mobcamPort(), deviceName: UIDevice.current.name)
     }
 
     func startPreviewStream() {
