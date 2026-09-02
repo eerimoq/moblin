@@ -682,7 +682,11 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelWatchStreak(event: TwitchEventSubNotificationChannelWatchStreakEvent) {
-        let text = String(localized: "just watched \(event.streak_count) streams in a row!")
+        let text = if event.message.text.isEmpty {
+            String(localized: "just watched \(event.streak_count) streams in a row!")
+        } else {
+            String(localized: "just watched \(event.streak_count) streams in a row! \(event.message.text)")
+        }
         if stream.twitchToastAlerts.isWatchStreakEnabled(count: event.streak_count) {
             makeToast(title: "\(event.user_name) \(text)")
         }
