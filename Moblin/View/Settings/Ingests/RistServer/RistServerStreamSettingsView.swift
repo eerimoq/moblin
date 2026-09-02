@@ -58,6 +58,12 @@ struct RistServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                    }
+                    .disabled(ristServer.enabled)
+                }
+                Section {
                     UrlsView(
                         status: status,
                         showIPv6: false,

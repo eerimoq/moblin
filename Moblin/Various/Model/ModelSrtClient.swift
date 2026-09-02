@@ -32,6 +32,7 @@ extension Model {
             }
             let client = SrtClient(cameraId: stream.id,
                                    url: url,
+                                   latency: stream.latencySeconds(),
                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
                                    delegate: self)
             client.start()
@@ -46,14 +47,22 @@ extension Model {
         ingests.srt = []
     }
 
-    private func srtClientConnectedInternal(cameraId: UUID) {
+    private func srtClientConnectedInternal(cameraId: UUID, latency: Double) {
         guard let stream = getSrtClientStream(id: cameraId) else {
             return
         }
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
-        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: srtClientLatency)
-        media.addBufferedAudio(cameraId: cameraId, name: camera, latency: srtClientLatency)
+        let previousLatency = networkSourceNegotiatedLatencies[cameraId]
+        let previousBuiltinDelay = currentSceneSynchronizationBuiltinDelay()
+        networkSourceNegotiatedLatencies[cameraId] = latency
+        networkSourceConnectedIds.insert(cameraId)
+        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: latency)
+        media.addBufferedAudio(cameraId: cameraId, name: camera, latency: latency)
+        setBufferedTargetLatencies(cameraId: cameraId, videoLatency: latency, audioLatency: latency)
+        if previousLatency != latency || previousBuiltinDelay != currentSceneSynchronizationBuiltinDelay() {
+            sceneUpdated(updateRemoteScene: false)
+        }
     }
 
     private func srtClientDisconnectedInternal(cameraId: UUID) {
@@ -63,13 +72,14 @@ extension Model {
         makeToast(title: String(localized: "\(stream.camera()) disconnected"))
         media.removeBufferedVideo(cameraId: cameraId)
         media.removeBufferedAudio(cameraId: cameraId)
+        networkSourceConnectedIds.remove(cameraId)
     }
 }
 
 extension Model: @preconcurrency SrtClientDelegate {
-    func srtClientConnected(cameraId: UUID) {
+    func srtClientConnected(cameraId: UUID, latency: Double) {
         DispatchQueue.main.async {
-            self.srtClientConnectedInternal(cameraId: cameraId)
+            self.srtClientConnectedInternal(cameraId: cameraId, latency: latency)
         }
     }
 
@@ -92,7 +102,8 @@ extension Model: @preconcurrency SrtClientDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        setBufferedTargetLatencies(cameraId: cameraId,
+                                   videoLatency: videoTargetLatency,
+                                   audioLatency: audioTargetLatency)
     }
 }

@@ -100,18 +100,6 @@ struct DebugSettingsView: View {
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
-                VStack(alignment: .leading) {
-                    Text("Builtin audio and video delay")
-                    HStack {
-                        Slider(
-                            value: $debug.builtinAudioAndVideoDelay,
-                            in: 0.0 ... 4.0,
-                            step: 0.01
-                        )
-                        Text(formatTwoDecimals(debug.builtinAudioAndVideoDelay))
-                            .frame(width: 40)
-                    }
-                }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
                 Toggle("Web browser bonding", isOn: $debug.httpProxy)
                     .onChange(of: debug.httpProxy) { _ in

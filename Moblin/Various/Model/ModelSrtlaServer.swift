@@ -46,9 +46,9 @@ extension Model {
 }
 
 extension Model: @preconcurrency SrtlaServerDelegate {
-    func srtlaServerOnClientStart(cameraId: UUID, name: String) {
+    func srtlaServerOnClientStart(cameraId: UUID, name: String, latency: Double) {
         DispatchQueue.main.async {
-            self.srtlaServerOnClientStartInternal(cameraId: cameraId, name: name)
+            self.srtlaServerOnClientStartInternal(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
@@ -58,16 +58,28 @@ extension Model: @preconcurrency SrtlaServerDelegate {
         }
     }
 
-    private func srtlaServerOnClientStartInternal(cameraId: UUID, name: String) {
+    private func srtlaServerOnClientStartInternal(cameraId: UUID, name: String, latency: Double) {
+        guard let stream = getSrtlaStream(id: cameraId) else {
+            return
+        }
         makeToast(title: String(localized: "\(name) connected"))
-        media.addBufferedVideo(cameraId: cameraId, name: name, latency: srtServerClientLatency)
-        media.addBufferedAudio(cameraId: cameraId, name: name, latency: srtServerClientLatency)
+        let previousLatency = networkSourceNegotiatedLatencies[cameraId]
+        let previousBuiltinDelay = currentSceneSynchronizationBuiltinDelay()
+        networkSourceNegotiatedLatencies[cameraId] = latency
+        networkSourceConnectedIds.insert(cameraId)
+        media.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+        media.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+        setBufferedTargetLatencies(cameraId: cameraId, videoLatency: latency, audioLatency: latency)
+        if previousLatency != latency || previousBuiltinDelay != currentSceneSynchronizationBuiltinDelay() {
+            sceneUpdated(updateRemoteScene: false)
+        }
     }
 
     private func srtlaServerOnClientStopInternal(cameraId: UUID, name: String) {
         makeToast(title: String(localized: "\(name) disconnected"))
         media.removeBufferedVideo(cameraId: cameraId)
         media.removeBufferedAudio(cameraId: cameraId)
+        networkSourceConnectedIds.remove(cameraId)
     }
 
     func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
@@ -83,7 +95,8 @@ extension Model: @preconcurrency SrtlaServerDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        setBufferedTargetLatencies(cameraId: cameraId,
+                                   videoLatency: videoTargetLatency,
+                                   audioLatency: audioTargetLatency)
     }
 }

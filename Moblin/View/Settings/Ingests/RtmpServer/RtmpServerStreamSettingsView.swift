@@ -77,6 +77,12 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                    }
+                    .disabled(model.rtmpServerEnabled())
+                }
+                Section {
                     Toggle("Drift tracking", isOn: $stream.trackDrift)
                         .disabled(model.rtmpServerEnabled())
                 } footer: {

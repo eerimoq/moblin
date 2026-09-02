@@ -64,7 +64,7 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
+        media.attachDefaultAudioDevice(builtinDelay: currentSceneSynchronizationBuiltinDelay())
     }
 
     func setInputGainIfSupported(inputGain: Float) {
@@ -244,7 +244,7 @@ extension Model {
             try? setBuiltInMicAudioMode(dataSource: dataSource, preferStereoMic: preferStereoMic)
             try? session.setInputDataSource(dataSource)
         }
-        media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
+        media.attachDefaultAudioDevice(builtinDelay: currentSceneSynchronizationBuiltinDelay())
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(mic: mic.id))
     }
 

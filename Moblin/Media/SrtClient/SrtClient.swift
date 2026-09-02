@@ -5,7 +5,7 @@ private let srtClientQueue = DispatchQueue(label: "com.eerimoq.moblin.srt-client
                                            qos: .userInteractive)
 
 protocol SrtClientDelegate: AnyObject {
-    func srtClientConnected(cameraId: UUID)
+    func srtClientConnected(cameraId: UUID, latency: Double)
     func srtClientDisconnected(cameraId: UUID)
     func srtClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func srtClientOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
@@ -14,12 +14,12 @@ protocol SrtClientDelegate: AnyObject {
                                      _ audioTargetLatency: Double)
 }
 
-let srtClientLatency = 0.5
 private let reconnectDelay = 5.0
 
 class SrtClient: @unchecked Sendable {
     private let cameraId: UUID
     private let url: URL
+    private let latency: Double
     private weak var delegate: (any SrtClientDelegate)?
     private var running = false
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
@@ -28,9 +28,10 @@ class SrtClient: @unchecked Sendable {
     private var reader: MpegTsReader
     private let softwareDecoding: Bool
 
-    init(cameraId: UUID, url: URL, softwareDecoding: Bool, delegate: any SrtClientDelegate) {
+    init(cameraId: UUID, url: URL, latency: Double, softwareDecoding: Bool, delegate: any SrtClientDelegate) {
         self.cameraId = cameraId
         self.url = url
+        self.latency = latency
         self.softwareDecoding = softwareDecoding
         self.delegate = delegate
         reader = MpegTsReader(
@@ -38,7 +39,7 @@ class SrtClient: @unchecked Sendable {
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
             softwareDecoding: softwareDecoding,
-            targetLatency: srtClientLatency
+            targetLatency: latency
         )
         reader.delegate = self
     }
@@ -124,15 +125,16 @@ class SrtClient: @unchecked Sendable {
         if !postFailures.isEmpty {
             logger.info("srt-client: \(cameraId): Failed to set post-bind options: \(postFailures).")
         }
+        let negotiatedLatency = srtNegotiatedReceiveLatency(socket: socket) ?? 0.5
         reader = MpegTsReader(
             name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
             softwareDecoding: softwareDecoding,
-            targetLatency: srtClientLatency
+            targetLatency: negotiatedLatency
         )
         reader.delegate = self
-        delegate?.srtClientConnected(cameraId: cameraId)
+        delegate?.srtClientConnected(cameraId: cameraId, latency: negotiatedLatency)
         receive(socket: socket)
         delegate?.srtClientDisconnected(cameraId: cameraId)
         srtClientQueue.async {

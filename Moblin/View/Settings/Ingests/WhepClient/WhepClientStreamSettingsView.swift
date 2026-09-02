@@ -46,6 +46,13 @@ struct WhepClientStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                        model.reloadWhepClient()
+                    }
+                    .disabled(stream.enabled)
+                }
+                Section {
                     Toggle("Sync timestamps", isOn: $stream.syncTimestamps)
                         .onChange(of: stream.syncTimestamps) { _ in
                             model.reloadWhepClient()

@@ -340,6 +340,29 @@ struct SceneShortcutView: View {
     }
 }
 
+private struct NetworkSourceSynchronizationView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        Section {
+            Toggle("Synchronize network sources", isOn: $scene.networkSourceSynchronizationEnabled)
+                .onChange(of: scene.networkSourceSynchronizationEnabled) { _ in
+                    if model.getSelectedScene() === scene {
+                        model.sceneUpdated(updateRemoteScene: false)
+                    }
+                }
+        } footer: {
+            Text(
+                """
+                Align visible network sources with built-in cameras and microphones using \
+                            each source's latency and camera processing delay.
+                """
+            )
+        }
+    }
+}
+
 struct SceneSettingsView: View {
     let database: Database
     @ObservedObject var scene: SettingsScene
@@ -348,6 +371,7 @@ struct SceneSettingsView: View {
         Form {
             NameEditView(name: $scene.name, existingNames: database.scenes)
             VideoSourceView(database: database, scene: scene)
+            NetworkSourceSynchronizationView(scene: scene)
             QuickSwitchGroupView(database: database, scene: scene)
             SceneMicView(database: database, scene: scene)
             WidgetsView(database: database, scene: scene)

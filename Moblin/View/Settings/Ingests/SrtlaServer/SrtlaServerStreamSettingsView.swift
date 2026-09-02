@@ -55,6 +55,25 @@ struct SrtlaServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Latency"),
+                        value: String(stream.latency),
+                        onChange: isValidIngestLatency,
+                        onSubmit: { value in
+                            guard let latency = Int32(value) else { return }
+                            stream.latency = latency
+                        },
+                        footers: [String(localized: "5 or more milliseconds. 500 ms by default.")],
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) ms" }
+                    )
+                    .disabled(srtlaServer.enabled)
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                    }
+                    .disabled(srtlaServer.enabled)
+                }
+                Section {
                     UrlsView(
                         status: status,
                         title: String(localized: "SRT URLs"),

@@ -15,7 +15,6 @@ let pixelFormatTypes = [
 ]
 
 class SettingsDebug: Codable, ObservableObject {
-    static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
     @Published var logFilter: String = ""
     @Published var debugLogging: Bool = false
@@ -43,8 +42,6 @@ class SettingsDebug: Codable, ObservableObject {
     var videoSourceWidgetTrackFace: Bool = false
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
-    @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
-    var builtinAudioAndVideoDelay70msMigrated: Bool = false
     @Published var cameraManMoveVertically: Bool = false
     @Published var cameraManSpeed: Double = 1.0
     @Published var cameraManAlwaysMove: Bool = false
@@ -85,10 +82,8 @@ class SettingsDebug: Codable, ObservableObject {
         case srtlaBatchSendEnabled
         case replay
         case recordSegmentLength
-        case builtinAudioAndVideoDelay
         case overrideSceneMic
         case autoLowPowerMode
-        case builtinAudioAndVideoDelay70msMigrated
         case cameraManMoveVertically
         case cameraManSpeed
         case cameraManAlwaysMove
@@ -126,8 +121,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.videoSourceWidgetTrackFace, videoSourceWidgetTrackFace)
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
-        try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
         try container.encode(.cameraManMoveVertically, cameraManMoveVertically)
         try container.encode(.cameraManSpeed, cameraManSpeed)
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
@@ -171,16 +164,6 @@ class SettingsDebug: Codable, ObservableObject {
         videoSourceWidgetTrackFace = container.decode(.videoSourceWidgetTrackFace, Bool.self, false)
         replay = container.decode(.replay, Bool.self, false)
         recordSegmentLength = container.decode(.recordSegmentLength, Double.self, 5.0)
-        builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay,
-                                                     Double.self,
-                                                     Self.builtinAudioAndVideoDelayDefault)
-        builtinAudioAndVideoDelay70msMigrated = container.decode(.builtinAudioAndVideoDelay70msMigrated,
-                                                                 Bool.self,
-                                                                 false)
-        if !builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay == 0 {
-            builtinAudioAndVideoDelay = Self.builtinAudioAndVideoDelayDefault
-        }
-        builtinAudioAndVideoDelay70msMigrated = true
         cameraManMoveVertically = container.decode(.cameraManMoveVertically, Bool.self, false)
         cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)

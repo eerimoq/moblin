@@ -3889,6 +3889,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var videoStabilizationMode: SettingsVideoStabilizationMode = .off
     @Published var overrideVideoStabilizationMode: Bool = false
     @Published var fillFrame: Bool = false
+    @Published var networkSourceSynchronizationEnabled: Bool = false
     @Published var overrideMic: Bool = false
     @Published var micId: String = ""
     @Published var quickSwitchGroup: Int?
@@ -3925,6 +3926,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         case videoStabilizationMode
         case overrideVideoStabilizationMode
         case fillFrame
+        case networkSourceSynchronizationEnabled
         case overrideMic
         case micId
         case quickSwitchGroup
@@ -3954,6 +3956,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
         try container.encode(.overrideVideoStabilizationMode, overrideVideoStabilizationMode)
         try container.encode(.fillFrame, fillFrame)
+        try container.encode(.networkSourceSynchronizationEnabled, networkSourceSynchronizationEnabled)
         try container.encode(.overrideMic, overrideMic)
         try container.encode(.micId, micId)
         try container.encode(.quickSwitchGroup, quickSwitchGroup)
@@ -3991,6 +3994,11 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         )
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
+        networkSourceSynchronizationEnabled = container.decode(
+            .networkSourceSynchronizationEnabled,
+            Bool.self,
+            false
+        )
         overrideMic = container.decode(.overrideMic, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
         quickSwitchGroup = container.decode(.quickSwitchGroup, Int?.self, nil)
@@ -4008,6 +4016,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         new.videoStabilizationMode = videoStabilizationMode
         new.overrideVideoStabilizationMode = overrideVideoStabilizationMode
         new.fillFrame = fillFrame
+        new.networkSourceSynchronizationEnabled = networkSourceSynchronizationEnabled
         new.overrideMic = overrideMic
         new.micId = micId
         new.quickSwitchGroup = quickSwitchGroup
