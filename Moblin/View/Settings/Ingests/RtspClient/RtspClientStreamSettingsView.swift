@@ -139,6 +139,12 @@ struct RtspClientStreamSettingsView: View {
                 } footer: {
                     Text("The higher, the lower risk of stuttering.")
                 }
+                Section {
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                        model.reloadRtspClient()
+                    }
+                }
             }
             .navigationTitle("Stream")
         } label: {

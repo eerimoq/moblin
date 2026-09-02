@@ -61,11 +61,13 @@ class SrtServer: @unchecked Sendable {
             logger.info("srt-server: \(port): Accepted client \(stream.name).")
             let cameraId = stream.id
             let name = stream.camera()
+            let latency = srtNegotiatedReceiveLatency(socket: clientSocket) ?? 0.5
             startBlockingThread(name: "com.eerimoq.Moblin.SrtClient") {
                 srtlaServer.connectedStreamIds.mutate { $0.append(streamId) }
-                srtlaServer.clientConnected(cameraId: cameraId, name: name)
+                srtlaServer.clientConnected(cameraId: cameraId, name: name, latency: latency)
                 SrtServerClient(server: self,
                                 cameraId: cameraId,
+                                latency: latency,
                                 timecodesEnabled: self.timecodesEnabled,
                                 softwareDecoding: self.softwareDecoding)
                     .run(clientSocket: clientSocket)

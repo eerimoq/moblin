@@ -1,6 +1,17 @@
 import Foundation
 import libsrt
 
+func srtNegotiatedReceiveLatency(socket: SRTSOCKET) -> Double? {
+    var latency: Int32 = 0
+    var size = Int32(MemoryLayout.size(ofValue: latency))
+    guard srt_getsockflag(socket, SRTO_RCVLATENCY, &latency, &size) != SRT_ERROR,
+          latency >= 0
+    else {
+        return nil
+    }
+    return Double(latency) / 1000
+}
+
 private nonisolated(unsafe) let enummapTranstype: [String: Any] = [
     "live": SRTT_LIVE,
     "file": SRTT_FILE,

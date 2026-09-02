@@ -17295,6 +17295,9 @@
         }
       }
     },
+    "0 ms by default." : {
+
+    },
     "0.0 dB by default, leaving the input level unchanged." : {
       "localizations" : {
         "de" : {
@@ -18346,6 +18349,9 @@
           }
         }
       }
+    },
+    "5 or more milliseconds. 500 ms by default." : {
+
     },
     "5 or more milliseconds. 2000 ms by default." : {
       "localizations" : {
@@ -29747,6 +29753,9 @@
         }
       }
     },
+    "Additional delay introduced by this camera before its stream reaches Moblin." : {
+
+    },
     "Advanced" : {
       "localizations" : {
         "de" : {
@@ -30634,6 +30643,9 @@
           }
         }
       }
+    },
+    "Align visible network sources with built-in cameras and microphones using each source's latency and camera processing delay." : {
+
     },
     "Alignment" : {
       "localizations" : {
@@ -52091,6 +52103,7 @@
       }
     },
     "Builtin audio and video delay" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -53571,6 +53584,12 @@
           }
         }
       }
+    },
+    "Camera processing delay" : {
+
+    },
+    "Camera processing delay is additional delay introduced before the stream reaches Moblin." : {
+
     },
     "Camera switching" : {
       "localizations" : {
@@ -142200,6 +142219,9 @@
           }
         }
       }
+    },
+    "Must be zero or more milliseconds" : {
+
     },
     "Mute" : {
       "localizations" : {
@@ -232761,6 +232783,9 @@
           }
         }
       }
+    },
+    "Synchronize network sources" : {
+
     },
     "System" : {
       "localizations" : {

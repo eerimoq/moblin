@@ -60,6 +60,12 @@ struct WhipServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                    }
+                    .disabled(whipServer.enabled)
+                }
+                Section {
                     Toggle("Sync timestamps", isOn: $stream.syncTimestamps)
                         .disabled(whipServer.enabled)
                 }

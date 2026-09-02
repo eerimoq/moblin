@@ -1,21 +1,24 @@
 import AVFoundation
 import libsrt
 
-let srtServerClientLatency = 0.5
-
 class SrtServerClient {
     private weak var server: SrtServer?
     private let cameraId: UUID
     private let reader: MpegTsReader
 
-    init(server: SrtServer, cameraId: UUID, timecodesEnabled: Bool, softwareDecoding: Bool) {
+    init(server: SrtServer,
+         cameraId: UUID,
+         latency: Double,
+         timecodesEnabled: Bool,
+         softwareDecoding: Bool)
+    {
         self.server = server
         self.cameraId = cameraId
         reader = MpegTsReader(name: "srt-server",
                               decoderQueue: srtlaServerQueue,
                               timecodesEnabled: timecodesEnabled,
                               softwareDecoding: softwareDecoding,
-                              targetLatency: srtServerClientLatency)
+                              targetLatency: latency)
         reader.delegate = self
     }
 

@@ -62,6 +62,9 @@ extension Model {
             let latency = stream.latencySeconds()
             self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
             self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+            self.setBufferedTargetLatencies(cameraId: stream.id,
+                                            videoLatency: latency,
+                                            audioLatency: latency)
         }
     }
 
@@ -86,8 +89,9 @@ extension Model {
                                             _ videoTargetLatency: Double,
                                             _ audioTargetLatency: Double)
     {
-        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
+        setBufferedTargetLatencies(cameraId: streamId,
+                                   videoLatency: videoTargetLatency,
+                                   audioLatency: audioTargetLatency)
     }
 
     func stopWhipServer() {

@@ -428,6 +428,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     var activeBufferedVideoIds: Set<UUID> = []
+    var sceneSynchronizationBuiltinDelay: Double?
+    var sceneSynchronizationAdditionalDelays: [UUID: Double] = [:]
+    var networkSourceTargetLatencies: [UUID: (video: Double, audio: Double)] = [:]
+    var networkSourceNegotiatedLatencies: [UUID: Double] = [:]
+    var networkSourceConnectedIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, any Error>?
     var wiFiAwareReceiverTask: Task<Void, any Error>?
     nonisolated(unsafe) let youTube = YouTube()
@@ -2876,13 +2881,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             : [])
         let params = VideoUnitAttachParams(
             devices: devices,
-            builtinDelay: database.debug.builtinAudioAndVideoDelay,
+            builtinDelay: sceneSynchronizationPlan(scene: scene).builtinDelay,
             cameraPreviewLayers: cameraPreviewView.previewLayers,
             showCameraPreview: showCameraPreview,
             externalDisplayPreview: externalDisplayPreview,
             bufferedVideo: nil,
             preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
-            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(scene: scene),
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
@@ -2916,8 +2921,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBackZoomPresets()
     }
 
-    private func getIgnoreFramesAfterAttachSeconds() -> Double {
-        Double(database.debug.cameraSwitchRemoveBlackish) + database.debug.builtinAudioAndVideoDelay
+    private func getIgnoreFramesAfterAttachSeconds(scene: SettingsScene) -> Double {
+        Double(database.debug.cameraSwitchRemoveBlackish) + sceneSynchronizationPlan(scene: scene).builtinDelay
     }
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
@@ -2937,7 +2942,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPreviewView.setDevices(ids: [])
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
-            builtinDelay: database.debug.builtinAudioAndVideoDelay,
+            builtinDelay: sceneSynchronizationPlan(scene: scene).builtinDelay,
             cameraPreviewLayers: cameraPreviewView.previewLayers,
             showCameraPreview: updateShowCameraPreview(),
             externalDisplayPreview: externalDisplayPreview,

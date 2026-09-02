@@ -37,6 +37,35 @@ struct WidgetInScene: Identifiable {
 
 let defaultScoreboardSize = 18.52
 
+struct NetworkSourceDelay: Equatable {
+    let id: UUID
+    let latency: Double
+    let intrinsicDelay: Double
+
+    var effectiveDelay: Double {
+        latency + intrinsicDelay
+    }
+}
+
+struct SceneSynchronizationPlan: Equatable {
+    let builtinDelay: Double
+    let additionalDelays: [UUID: Double]
+
+    static func make(sources: [NetworkSourceDelay]) -> Self {
+        let sourcesById = Dictionary(sources.map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest })
+        let uniqueSources = Array(sourcesById.values)
+        guard let builtinDelay = uniqueSources.map(\.effectiveDelay).max() else {
+            return .init(builtinDelay: 0, additionalDelays: [:])
+        }
+        return .init(
+            builtinDelay: builtinDelay,
+            additionalDelays: Dictionary(uniqueKeysWithValues: uniqueSources.map {
+                ($0.id, max(0, builtinDelay - $0.effectiveDelay))
+            })
+        )
+    }
+}
+
 extension Model {
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
@@ -1042,8 +1071,15 @@ extension Model {
             }
         }
         media.setSpeechToText(enabled: needsSpeechToText)
-        if attachCamera {
+        let synchronizationPlan = sceneSynchronizationPlan(scene: scene)
+        applySceneSynchronizationPlan(synchronizationPlan)
+        let reattachBuiltinMedia = synchronizationPlan.builtinDelay != sceneSynchronizationBuiltinDelay
+        sceneSynchronizationBuiltinDelay = synchronizationPlan.builtinDelay
+        if attachCamera || reattachBuiltinMedia {
             attachSingleLayout(scene: scene)
+            if reattachBuiltinMedia, mic.current.isBuiltin() {
+                media.attachDefaultAudioDevice(builtinDelay: synchronizationPlan.builtinDelay)
+            }
         } else {
             media.usePendingAfterAttachEffects()
         }
@@ -1599,6 +1635,168 @@ extension Model {
             getBuiltinCameraDevicesInScene(scene: scene,
                                            devices: &devices,
                                            addedSceneIds: &addedSceneIds)
+        }
+    }
+
+    func sceneSynchronizationPlan(scene: SettingsScene) -> SceneSynchronizationPlan {
+        guard scene.networkSourceSynchronizationEnabled else {
+            return .init(builtinDelay: 0, additionalDelays: [:])
+        }
+        let sourceIds = getVisibleNetworkSourceIds(scene: scene)
+        return .make(sources: sourceIds.compactMap(networkSourceDelay(id:)))
+    }
+
+    func currentSceneSynchronizationBuiltinDelay() -> Double {
+        guard let scene = getSelectedScene() else {
+            return 0
+        }
+        return sceneSynchronizationPlan(scene: scene).builtinDelay
+    }
+
+    func setBufferedTargetLatencies(
+        cameraId: UUID,
+        videoLatency: Double,
+        audioLatency: Double
+    ) {
+        networkSourceTargetLatencies[cameraId] = (videoLatency, audioLatency)
+        let plan = getSelectedScene().map { sceneSynchronizationPlan(scene: $0) }
+        let additionalDelay = plan?.additionalDelays[cameraId] ?? 0
+        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoLatency + additionalDelay)
+        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioLatency + additionalDelay)
+    }
+
+    private func applySceneSynchronizationPlan(_ plan: SceneSynchronizationPlan) {
+        let sourceIds = Set(plan.additionalDelays.keys)
+            .union(sceneSynchronizationAdditionalDelays.keys)
+        for id in sourceIds {
+            guard let source = networkSourceDelay(id: id) else {
+                continue
+            }
+            let targetLatencies = networkSourceTargetLatencies[id] ?? (source.latency, source.latency)
+            let additionalDelay = plan.additionalDelays[id] ?? 0
+            media.setBufferedVideoTargetLatency(cameraId: id, latency: targetLatencies.video + additionalDelay)
+            media.setBufferedAudioTargetLatency(cameraId: id, latency: targetLatencies.audio + additionalDelay)
+        }
+        sceneSynchronizationAdditionalDelays = plan.additionalDelays
+    }
+
+    private func networkSourceDelay(id: UUID) -> NetworkSourceDelay? {
+        if let stream = getRtmpStream(id: id) {
+            return makeNetworkSourceDelay(id: id,
+                                          latency: stream.latencySeconds(),
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getSrtlaStream(id: id) {
+            guard networkSourceConnectedIds.contains(id),
+                  let latency = networkSourceNegotiatedLatencies[id]
+            else {
+                return nil
+            }
+            return makeNetworkSourceDelay(id: id,
+                                          latency: latency,
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getSrtClientStream(id: id) {
+            guard networkSourceConnectedIds.contains(id),
+                  let latency = networkSourceNegotiatedLatencies[id]
+            else {
+                return nil
+            }
+            return makeNetworkSourceDelay(id: id,
+                                          latency: latency,
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getRistStream(id: id) {
+            return makeNetworkSourceDelay(id: id,
+                                          latency: stream.latencySeconds(),
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getRtspStream(id: id) {
+            return makeNetworkSourceDelay(id: id,
+                                          latency: stream.latencySeconds(),
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getWhipStream(id: id) {
+            return makeNetworkSourceDelay(id: id,
+                                          latency: stream.latencySeconds(),
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        if let stream = getWhepStream(id: id) {
+            return makeNetworkSourceDelay(id: id,
+                                          latency: stream.latencySeconds(),
+                                          intrinsicDelay: stream.intrinsicDelaySeconds())
+        }
+        return nil
+    }
+
+    private func makeNetworkSourceDelay(id: UUID, latency: Double, intrinsicDelay: Double) -> NetworkSourceDelay {
+        .init(id: id, latency: max(0, latency), intrinsicDelay: max(0, intrinsicDelay))
+    }
+
+    private func getVisibleNetworkSourceIds(scene: SettingsScene) -> Set<UUID> {
+        var ids: Set<UUID> = []
+        var visitedSceneIds: Set<UUID> = []
+        getVisibleNetworkSourceIds(scene: scene,
+                                   includeSceneVideoSource: true,
+                                   ids: &ids,
+                                   visitedSceneIds: &visitedSceneIds)
+        return ids
+    }
+
+    private func getVisibleNetworkSourceIds(
+        scene: SettingsScene,
+        includeSceneVideoSource: Bool,
+        ids: inout Set<UUID>,
+        visitedSceneIds: inout Set<UUID>
+    ) {
+        guard visitedSceneIds.insert(scene.id).inserted else {
+            return
+        }
+        if includeSceneVideoSource {
+            addVisibleNetworkSourceId(videoSource: scene.videoSource, ids: &ids)
+        }
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
+                continue
+            }
+            switch widget.type {
+            case .videoSource:
+                addVisibleNetworkSourceId(videoSource: widget.videoSource.videoSource, ids: &ids)
+            case .vTuber:
+                addVisibleNetworkSourceId(videoSource: widget.vTuber.videoSource, ids: &ids)
+            case .pngTuber:
+                addVisibleNetworkSourceId(videoSource: widget.pngTuber.videoSource, ids: &ids)
+            case .scene:
+                if let nestedScene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
+                    getVisibleNetworkSourceIds(scene: nestedScene,
+                                               includeSceneVideoSource: false,
+                                               ids: &ids,
+                                               visitedSceneIds: &visitedSceneIds)
+                }
+            default:
+                break
+            }
+        }
+    }
+
+    private func addVisibleNetworkSourceId(videoSource: SettingsVideoSource, ids: inout Set<UUID>) {
+        switch videoSource.cameraPosition {
+        case .rtmp:
+            ids.insert(videoSource.rtmpCameraId)
+        case .srtla:
+            ids.insert(videoSource.srtlaCameraId)
+        case .srtClient:
+            ids.insert(videoSource.srtClientCameraId)
+        case .rist:
+            ids.insert(videoSource.ristCameraId)
+        case .rtsp:
+            ids.insert(videoSource.rtspCameraId)
+        case .whip:
+            ids.insert(videoSource.whipCameraId)
+        case .whep:
+            ids.insert(videoSource.whepCameraId)
+        default:
+            break
         }
     }
 

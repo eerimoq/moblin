@@ -78,8 +78,9 @@ extension Model: @preconcurrency RistServerDelegate {
         guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
             return
         }
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        setBufferedTargetLatencies(cameraId: cameraId,
+                                   videoLatency: videoTargetLatency,
+                                   audioLatency: audioTargetLatency)
     }
 
     private func ristServerOnConnectedInternal(virtualDestinationPort: UInt16) {
@@ -91,6 +92,7 @@ extension Model: @preconcurrency RistServerDelegate {
         let latency = stream.latencySeconds()
         media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
         media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+        setBufferedTargetLatencies(cameraId: stream.id, videoLatency: latency, audioLatency: latency)
     }
 
     private func ristServerOnDisconnectedInternal(virtualDestinationPort: UInt16, reason _: String) {

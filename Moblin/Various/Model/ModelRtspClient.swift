@@ -50,7 +50,9 @@ extension Model {
         }
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
-        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: stream.latencySeconds())
+        let latency = stream.latencySeconds()
+        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: latency)
+        setBufferedTargetLatencies(cameraId: cameraId, videoLatency: latency, audioLatency: latency)
     }
 
     func rtspClientDisconnectedInternal(cameraId: UUID) {

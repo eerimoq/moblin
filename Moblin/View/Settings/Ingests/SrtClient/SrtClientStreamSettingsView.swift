@@ -31,6 +31,25 @@ struct SrtClientStreamSettingsView: View {
                         TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                     }
                 }
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Latency"),
+                        value: String(stream.latency),
+                        onChange: isValidIngestLatency,
+                        onSubmit: { value in
+                            guard let latency = Int32(value) else { return }
+                            stream.latency = latency
+                            model.reloadSrtClient()
+                        },
+                        footers: [String(localized: "5 or more milliseconds. 500 ms by default.")],
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) ms" }
+                    )
+                    CameraProcessingDelayEditView(value: stream.intrinsicDelay) {
+                        stream.intrinsicDelay = $0
+                        model.reloadSrtClient()
+                    }
+                }
             }
             .navigationTitle("Stream")
         } label: {

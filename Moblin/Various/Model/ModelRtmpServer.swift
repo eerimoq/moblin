@@ -44,6 +44,9 @@ extension Model {
                                         name: camera,
                                         latency: latency,
                                         trackDrift: stream.trackDrift)
+            self.setBufferedTargetLatencies(cameraId: stream.id,
+                                            videoLatency: latency,
+                                            audioLatency: latency)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
         }
     }
@@ -127,7 +130,8 @@ extension Model: @preconcurrency RtmpServerDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
+        setBufferedTargetLatencies(cameraId: cameraId,
+                                   videoLatency: videoTargetLatency,
+                                   audioLatency: audioTargetLatency)
     }
 }
