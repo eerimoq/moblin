@@ -134,13 +134,12 @@ extension CGSize {
 }
 
 class ResourceUsage {
-    private var previousTime: ContinuousClock.Instant?
-    private var previousUsage: rusage?
+    private var previousCpuTicks: [[UInt32]]?
     private var cpuUsage: Float = 0
     private var memoryUsage: UInt64 = 0
 
-    func update(now: ContinuousClock.Instant) {
-        updateCpuUsage(now: now)
+    func update() {
+        updateCpuUsage()
         updateMemoryUsage()
     }
 
@@ -152,19 +151,42 @@ class ResourceUsage {
         Int(memoryUsage)
     }
 
-    private func updateCpuUsage(now: ContinuousClock.Instant) {
-        var usage = rusage()
-        guard getrusage(RUSAGE_SELF, &usage) == 0 else {
+    private func updateCpuUsage() {
+        var numberOfCpus: natural_t = 0
+        var info: processor_info_array_t?
+        var infoCount: mach_msg_type_number_t = 0
+        let kerr = host_processor_info(mach_host_self(),
+                                       PROCESSOR_CPU_LOAD_INFO,
+                                       &numberOfCpus,
+                                       &info,
+                                       &infoCount)
+        guard kerr == KERN_SUCCESS, let info else {
             return
         }
-        if let previousTime, let previousUsage {
-            let systemTime = usage.ru_stime.milliseconds - previousUsage.ru_stime.milliseconds
-            let userTime = usage.ru_utime.milliseconds - previousUsage.ru_utime.milliseconds
-            let time = Float(systemTime + userTime)
-            cpuUsage = 100 * time / Float(previousTime.duration(to: now).milliseconds)
+        defer {
+            vm_deallocate(mach_task_self_,
+                          vm_address_t(bitPattern: UnsafeRawPointer(info)),
+                          vm_size_t(infoCount) * vm_size_t(MemoryLayout<integer_t>.size))
         }
-        previousTime = now
-        previousUsage = usage
+        let states = Int(CPU_STATE_MAX)
+        let ticks = (0 ..< Int(numberOfCpus)).map { cpu in
+            (0 ..< states).map { UInt32(bitPattern: info[cpu * states + $0]) }
+        }
+        if let previousCpuTicks, previousCpuTicks.count == ticks.count {
+            var usage: Float = 0
+            for (current, previous) in zip(ticks, previousCpuTicks) {
+                let user = Float(current[Int(CPU_STATE_USER)] &- previous[Int(CPU_STATE_USER)])
+                let system = Float(current[Int(CPU_STATE_SYSTEM)] &- previous[Int(CPU_STATE_SYSTEM)])
+                let idle = Float(current[Int(CPU_STATE_IDLE)] &- previous[Int(CPU_STATE_IDLE)])
+                let nice = Float(current[Int(CPU_STATE_NICE)] &- previous[Int(CPU_STATE_NICE)])
+                let total = user + system + idle + nice
+                if total > 0 {
+                    usage += 100 * (user + system + nice) / total
+                }
+            }
+            cpuUsage = usage
+        }
+        previousCpuTicks = ticks
     }
 
     private func updateMemoryUsage() {

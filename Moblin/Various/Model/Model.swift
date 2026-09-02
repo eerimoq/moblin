@@ -1766,7 +1766,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBitrateStatus()
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
-            resourceUsage.update(now: monotonicNow)
+            resourceUsage.update()
             systemMonitor.cpu = resourceUsage.getCpuUsage()
             systemMonitor.ram = resourceUsage.getMemoryUsage()
         }
