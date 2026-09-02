@@ -25,14 +25,14 @@ struct SceneSynchronizationPlanSuite {
     }
 
     @Test
-    func oneSourceKeepsItsConfiguredLatencyTarget() {
+    func oneSourceKeepsItsConfiguredLatencyTarget() throws {
         let id = UUID()
         let plan = SceneSynchronizationPlan.make(sources: [
             .init(id: id, latency: 2.0, intrinsicDelay: 0.4),
         ])
 
         #expect(abs(plan.builtinDelay - 2.4) < accuracy)
-        #expect(plan.additionalDelays[id] == 0)
+        #expect(try abs(#require(plan.additionalDelays[id])) < accuracy)
     }
 
     @Test
@@ -48,7 +48,7 @@ struct SceneSynchronizationPlanSuite {
         let plan = SceneSynchronizationPlan.make(sources: sources)
 
         #expect(abs(plan.builtinDelay - 2.4) < accuracy)
-        #expect(plan.additionalDelays[rtmp] == 0)
+        #expect(try abs(#require(plan.additionalDelays[rtmp])) < accuracy)
         #expect(try abs(#require(plan.additionalDelays[srt]) - 1.3) < accuracy)
         #expect(try abs(#require(plan.additionalDelays[rist]) - 0.3) < accuracy)
         for source in sources {
@@ -58,7 +58,7 @@ struct SceneSynchronizationPlanSuite {
     }
 
     @Test
-    func equalEffectiveDelaysNeedNoAdditionalDelay() {
+    func equalEffectiveDelaysNeedNoAdditionalDelay() throws {
         let first = UUID()
         let second = UUID()
         let plan = SceneSynchronizationPlan.make(sources: [
@@ -67,7 +67,20 @@ struct SceneSynchronizationPlanSuite {
         ])
 
         #expect(abs(plan.builtinDelay - 1.5) < accuracy)
-        #expect(plan.additionalDelays[first] == 0)
-        #expect(plan.additionalDelays[second] == 0)
+        #expect(try abs(#require(plan.additionalDelays[first])) < accuracy)
+        #expect(try abs(#require(plan.additionalDelays[second])) < accuracy)
+    }
+
+    @Test
+    func duplicateSourceIdsUseTheLatestDescriptorOnce() throws {
+        let id = UUID()
+        let plan = SceneSynchronizationPlan.make(sources: [
+            .init(id: id, latency: 1.0, intrinsicDelay: 0.0),
+            .init(id: id, latency: 2.0, intrinsicDelay: 0.5),
+        ])
+
+        #expect(abs(plan.builtinDelay - 2.5) < accuracy)
+        #expect(plan.additionalDelays.count == 1)
+        #expect(try abs(#require(plan.additionalDelays[id])) < accuracy)
     }
 }

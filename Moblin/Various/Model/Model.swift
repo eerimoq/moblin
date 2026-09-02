@@ -2922,7 +2922,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getIgnoreFramesAfterAttachSeconds(scene: SettingsScene) -> Double {
-        Double(database.debug.cameraSwitchRemoveBlackish) + sceneSynchronizationPlan(scene: scene).builtinDelay
+        Double(database.debug.cameraSwitchRemoveBlackish) + sceneSynchronizationPlan(scene: scene)
+            .builtinDelay
     }
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {

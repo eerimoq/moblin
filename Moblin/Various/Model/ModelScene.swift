@@ -1674,8 +1674,14 @@ extension Model {
             }
             let targetLatencies = networkSourceTargetLatencies[id] ?? (source.latency, source.latency)
             let additionalDelay = plan.additionalDelays[id] ?? 0
-            media.setBufferedVideoTargetLatency(cameraId: id, latency: targetLatencies.video + additionalDelay)
-            media.setBufferedAudioTargetLatency(cameraId: id, latency: targetLatencies.audio + additionalDelay)
+            media.setBufferedVideoTargetLatency(
+                cameraId: id,
+                latency: targetLatencies.video + additionalDelay
+            )
+            media.setBufferedAudioTargetLatency(
+                cameraId: id,
+                latency: targetLatencies.audio + additionalDelay
+            )
         }
         sceneSynchronizationAdditionalDelays = plan.additionalDelays
     }
@@ -1729,7 +1735,9 @@ extension Model {
         return nil
     }
 
-    private func makeNetworkSourceDelay(id: UUID, latency: Double, intrinsicDelay: Double) -> NetworkSourceDelay {
+    private func makeNetworkSourceDelay(id: UUID, latency: Double,
+                                        intrinsicDelay: Double) -> NetworkSourceDelay
+    {
         .init(id: id, latency: max(0, latency), intrinsicDelay: max(0, intrinsicDelay))
     }
 
