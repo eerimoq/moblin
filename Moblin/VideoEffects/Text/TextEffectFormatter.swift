@@ -245,6 +245,8 @@ class TextEffectFormatter {
                 formatLatestSubscriber(variables: variables)
             case .latestFollower:
                 formatLatestFollower(variables: variables)
+            case .systemMonitor:
+                formatSystemMonitor(variables: variables)
             }
             partId += 1
         }
@@ -615,6 +617,10 @@ class TextEffectFormatter {
 
     private func formatLatestFollower(variables: Variables) {
         appendTextPart(value: variables.latestFollower)
+    }
+
+    private func formatSystemMonitor(variables: Variables) {
+        appendTextPart(value: variables.systemMonitor)
     }
 
     private func formatOptional(value: Int?) -> String {

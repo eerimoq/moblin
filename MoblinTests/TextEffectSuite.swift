@@ -302,6 +302,14 @@ struct TextEffectSuite {
     }
 
     @Test
+    func systemMonitor() {
+        var lines = format(format: "{systemMonitor}", variables: createVariables(systemMonitor: "-% - MB"))
+        #expect(lines == createLine(data: .text("-% - MB")))
+        lines = format(format: "{systemMonitor}", variables: createVariables(systemMonitor: "12% 300 MB"))
+        #expect(lines == createLine(data: .text("12% 300 MB")))
+    }
+
+    @Test
     func plainText() {
         var lines = format(format: "Speed {speed:km/h}\\nGravity {gForce}", variables: createVariables())
         #expect(lines.toPlainText() == "Speed 18 km/h Gravity -")
@@ -326,7 +334,8 @@ struct TextEffectSuite {
     private func createVariables(conditions: String? = nil,
                                  condition: WeatherCondition? = nil,
                                  heartRates: [String: Int?] = [:],
-                                 gForce: GForce? = nil) -> Variables
+                                 gForce: GForce? = nil,
+                                 systemMonitor: String = "") -> Variables
     {
         Variables(timestamp: .now,
                   bitrate: "",
@@ -373,7 +382,8 @@ struct TextEffectSuite {
                   browserTitle: "",
                   gForce: gForce,
                   latestSubscriber: "",
-                  latestFollower: "")
+                  latestFollower: "",
+                  systemMonitor: systemMonitor)
     }
 
     private func createLine(data: TextEffectPartData) -> [TextEffectLine] {

@@ -650,6 +650,7 @@ struct RemoteControlRemoteSceneDataVariables: Codable {
     let gForce: GForce?
     let latestSubscriber: String
     let latestFollower: String
+    let systemMonitor: String
 
     init(variables: Variables) {
         bitrate = variables.bitrate
@@ -697,6 +698,7 @@ struct RemoteControlRemoteSceneDataVariables: Codable {
         gForce = variables.gForce
         latestSubscriber = variables.latestSubscriber
         latestFollower = variables.latestFollower
+        systemMonitor = variables.systemMonitor
     }
 
     func toVariables() -> Variables {
@@ -745,7 +747,8 @@ struct RemoteControlRemoteSceneDataVariables: Codable {
                   browserTitle: browserTitle,
                   gForce: gForce,
                   latestSubscriber: latestSubscriber,
-                  latestFollower: latestFollower)
+                  latestFollower: latestFollower,
+                  systemMonitor: systemMonitor)
     }
 }
 

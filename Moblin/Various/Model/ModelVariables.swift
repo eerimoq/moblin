@@ -51,7 +51,8 @@ extension Model {
             browserTitle: getBrowserTitle(),
             gForce: gForceManager?.getLatest(),
             latestSubscriber: latestSubscriber,
-            latestFollower: latestFollower
+            latestFollower: latestFollower,
+            systemMonitor: getSystemMonitor()
         )
     }
 
@@ -65,6 +66,14 @@ extension Model {
                                             ratings: [],
                                             lapTimes: [])
         return formatter.format(variables: variables, now: now).toPlainText()
+    }
+
+    private func getSystemMonitor() -> String {
+        if database.show.systemMonitor {
+            systemMonitor.format()
+        } else {
+            "-% - MB"
+        }
     }
 
     private func getBrowserTitle() -> String {

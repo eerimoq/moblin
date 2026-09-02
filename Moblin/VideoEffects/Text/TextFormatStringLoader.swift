@@ -281,6 +281,7 @@ enum TextFormatPart: Equatable {
     case gForceMax(String?)
     case latestSubscriber
     case latestFollower
+    case systemMonitor
 }
 
 @MainActor
@@ -394,6 +395,8 @@ class TextFormatLoader {
                     loadItem(part: .latestSubscriber, offsetBy: 18)
                 } else if formatFromIndex.hasPrefix("{latestfollower}") {
                     loadItem(part: .latestFollower, offsetBy: 16)
+                } else if formatFromIndex.hasPrefix("{systemmonitor}") {
+                    loadItem(part: .systemMonitor, offsetBy: 15)
                 } else {
                     index = format.index(after: index)
                 }

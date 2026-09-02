@@ -48,4 +48,5 @@ struct Variables {
     let gForce: GForce?
     let latestSubscriber: String
     let latestFollower: String
+    let systemMonitor: String
 }

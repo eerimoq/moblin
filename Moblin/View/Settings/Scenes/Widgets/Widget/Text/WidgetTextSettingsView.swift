@@ -1210,6 +1210,11 @@ private struct DebugVariablesView: View {
                     description: String(localized: "Show debug overlay (if enabled)"),
                     text: $value
                 )
+                VariableView(
+                    title: "{systemMonitor}",
+                    description: String(localized: "Show system monitor (if enabled)"),
+                    text: $value
+                )
             }
             .navigationTitle("Debug")
         } label: {

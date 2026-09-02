@@ -210406,6 +210406,9 @@
         }
       }
     },
+    "Show system monitor (if enabled)" : {
+
+    },
     "Show temperature" : {
       "localizations" : {
         "de" : {

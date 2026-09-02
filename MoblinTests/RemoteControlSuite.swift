@@ -89,6 +89,7 @@ struct RemoteControlSuite {
           "splitDistance" : 5400.5,
           "state" : "Skåne",
           "stepCount" : 8000,
+          "systemMonitor" : "12% 300 MB",
           "temperature" : {
             "unit" : {
               "converter" : {
@@ -299,6 +300,7 @@ struct RemoteControlSuite {
                   browserTitle: "Title",
                   gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5),
                   latestSubscriber: "Subscriber",
-                  latestFollower: "Follower")
+                  latestFollower: "Follower",
+                  systemMonitor: "12% 300 MB")
     }
 }
