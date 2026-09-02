@@ -158,6 +158,42 @@ struct TwitchChatSuite {
     }
 
     @Test
+    func announcement() throws {
+        let message = try TwitchChatMessage(string: """
+        @badge-info=subscriber/24;\
+        badges=broadcaster/1,subscriber/0,sub-gifter/1;\
+        color=;\
+        display-name=eerimoq;\
+        emotes=;\
+        flags=;\
+        id=e60e8de0-eb07-49b1-aa77-96cb5f5fabb1;\
+        login=eerimoq;\
+        mod=0;\
+        msg-id=announcement;\
+        msg-param-color=PRIMARY;\
+        room-id=63482386;\
+        subscriber=1;\
+        system-msg=;\
+        tmi-sent-ts=1788339928132;\
+        user-id=63482386;\
+        user-type=;\
+        vip=0 \
+        :tmi.twitch.tv \
+        USERNOTICE \
+        #eerimoq \
+        :foobar
+        """)
+        #expect(message.command == .userNotice)
+        #expect(message.parameters == ["#eerimoq", "foobar"])
+        #expect(message.displayName == "eerimoq")
+        #expect(message.user == "eerimoq")
+        #expect(message.userId == "63482386")
+        #expect(message.messageId == "announcement")
+        #expect(message.id == "e60e8de0-eb07-49b1-aa77-96cb5f5fabb1")
+        #expect(message.badges == ["broadcaster/1", "subscriber/0", "sub-gifter/1"])
+    }
+
+    @Test
     func clearMessage() throws {
         let message = try TwitchChatMessage(string: """
         @login=eerimoq;\

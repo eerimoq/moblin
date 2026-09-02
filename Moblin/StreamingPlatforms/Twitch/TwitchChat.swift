@@ -188,6 +188,8 @@ struct TwitchChatMessage {
                     displayName = value
                 case "user-id":
                     userId = value
+                case "login":
+                    user = value
                 case "color":
                     color = value
                 case "emotes":
@@ -518,7 +520,10 @@ final class TwitchChat: @unchecked Sendable {
             subscriber = message.subscriber
             moderator = message.moderator
         case .userNotice:
-            announcement = message.messageId == "announcement"
+            guard message.messageId == "announcement" else {
+                return
+            }
+            announcement = true
         default:
             return
         }
