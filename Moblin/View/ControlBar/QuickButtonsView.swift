@@ -443,7 +443,7 @@ struct QuickButtonsInnerView: View {
         }
         model.setQuickButton(type: .photoShoot, isOn: state.button.isOn)
         model.updateQuickButtonStates()
-        model.reattachCamera()
+        model.togglePhotoShoot()
     }
 
     var body: some View {

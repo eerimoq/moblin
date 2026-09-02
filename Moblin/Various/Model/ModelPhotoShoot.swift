@@ -8,4 +8,10 @@ extension Model {
     func stopPhotoShoot() {
         photoShootTimer.stop()
     }
+
+    func togglePhotoShoot() {
+        if !database.alwaysAttachPhotoShoot {
+            reattachCamera()
+        }
+    }
 }

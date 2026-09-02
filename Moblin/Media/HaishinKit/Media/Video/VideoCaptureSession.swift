@@ -206,7 +206,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
         removeDevices(session)
         for device in params.devices.devices {
-            try attachDevice(device, session, params.photoShoot)
+            try attachDevice(device, session, params.attachPhotoShoot)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
@@ -447,7 +447,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
 
     private func attachDevice(_ device: CaptureDevice,
                               _ session: AVCaptureSession,
-                              _ photoShoot: Bool) throws
+                              _ attachPhotoShoot: Bool) throws
     {
         let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
@@ -476,7 +476,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
         var photoOutput: AVCapturePhotoOutput?
         var photoConnection: AVCaptureConnection?
-        if photoShoot {
+        if attachPhotoShoot {
             photoOutput = AVCapturePhotoOutput()
             if let port = input.ports.first(where: { $0.mediaType == .video }) {
                 photoConnection = AVCaptureConnection(inputPorts: [port], output: photoOutput!)

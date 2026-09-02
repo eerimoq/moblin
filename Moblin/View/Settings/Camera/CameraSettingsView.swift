@@ -212,6 +212,25 @@ private struct CameraPreviewSettingsView: View {
     }
 }
 
+private struct PhotoShootSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Section {
+            Toggle("Instant photo shoot", isOn: $database.alwaysAttachPhotoShoot)
+                .onChange(of: database.alwaysAttachPhotoShoot) { _ in
+                    model.reattachCamera()
+                }
+        } footer: {
+            Text("""
+            The Photo shoot quick button starts and stops the photo shoot instantly, without \
+            the scene switch transition. Uses slightly more system resources.
+            """)
+        }
+    }
+}
+
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -262,6 +281,7 @@ struct CameraSettingsView: View {
             }
             if database.showAllSettings {
                 CameraPreviewSettingsView(database: database)
+                PhotoShootSettingsView(database: database)
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: $color.space) {

@@ -968,7 +968,7 @@ final class Media: NSObject, @unchecked Sendable {
         isLandscapeStreamAndPortraitUi: Bool,
         forceSceneTransition: Bool,
         macScreenCapture: Bool,
-        photoShoot: Bool
+        attachPhotoShoot: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -983,7 +983,7 @@ final class Media: NSObject, @unchecked Sendable {
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                            forceSceneTransition: forceSceneTransition,
                                            macScreenCapture: macScreenCapture,
-                                           photoShoot: photoShoot)
+                                           attachPhotoShoot: attachPhotoShoot)
         processor?.attachCamera(params: params)
     }
 

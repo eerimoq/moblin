@@ -28,7 +28,7 @@ struct VideoUnitAttachParams: @unchecked Sendable {
     let isLandscapeStreamAndPortraitUi: Bool
     let forceSceneTransition: Bool
     let macScreenCapture: Bool
-    let photoShoot: Bool
+    let attachPhotoShoot: Bool
 
     func canQuickSwitchTo(other: VideoUnitAttachParams) -> Bool {
         if devices.devices.count != other.devices.devices.count {
@@ -61,7 +61,7 @@ struct VideoUnitAttachParams: @unchecked Sendable {
         if macScreenCapture != other.macScreenCapture {
             return false
         }
-        if photoShoot != other.photoShoot {
+        if attachPhotoShoot != other.attachPhotoShoot {
             return false
         }
         return true

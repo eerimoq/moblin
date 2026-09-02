@@ -116393,6 +116393,9 @@
     "Instant camera preview" : {
 
     },
+    "Instant photo shoot" : {
+
+    },
     "Instant replay" : {
       "localizations" : {
         "de" : {
@@ -238240,6 +238243,9 @@
       }
     },
     "The Camera preview quick button shows and hides the camera preview instantly, without the scene switch transition. Uses slightly more system resources." : {
+
+    },
+    "The Photo shoot quick button starts and stops the photo shoot instantly, without the scene switch transition. Uses slightly more system resources." : {
 
     },
     "The condition is true when both \"Username\" and \"Message starts with\" matches the received chat message." : {
