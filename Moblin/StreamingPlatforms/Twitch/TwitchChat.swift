@@ -25,37 +25,53 @@ extension StringProtocol where Self: RangeReplaceableCollection {
     }
 }
 
-private enum TwitchEmote {
-    static func emotes(from string: String) -> [ChatMessageEmote] {
-        let emoteDefinitions = string.split(separator: "/")
-        return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
+private func parseRange(_ string: Substring) -> ClosedRange<Int>? {
+    let rangeIndexStrings = string.split(separator: "-")
+    guard rangeIndexStrings.count == 2,
+          let rangeStartIndexString = rangeIndexStrings.first,
+          let rangeEndIndexString = rangeIndexStrings.last,
+          let rangeStartIndex = Int(rangeStartIndexString),
+          let rangeEndIndex = Int(rangeEndIndexString),
+          rangeStartIndex <= rangeEndIndex
+    else {
+        return nil
     }
+    return rangeStartIndex ... rangeEndIndex
+}
 
-    private static func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] {
-        let parts = definition.split(separator: ":")
-        guard parts.count == 2,
-              let emoteId = parts.first,
-              let emoteRangesString = parts.last,
-              let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0")
-        else {
-            return []
-        }
-        var emotes: [ChatMessageEmote] = []
-        for emoteRangeString in emoteRangesString.split(separator: ",") {
-            let rangeIndexStrings = emoteRangeString.split(separator: "-")
-            guard rangeIndexStrings.count == 2,
-                  let rangeStartIndexString = rangeIndexStrings.first,
-                  let rangeEndIndexString = rangeIndexStrings.last,
-                  let rangeStartIndex = Int(rangeStartIndexString),
-                  let rangeEndIndex = Int(rangeEndIndexString),
-                  rangeStartIndex <= rangeEndIndex
-            else {
-                continue
-            }
-            emotes.append(ChatMessageEmote(url: url, range: rangeStartIndex ... rangeEndIndex))
-        }
-        return emotes
+private func parseEmotes(from string: String) -> [ChatMessageEmote] {
+    let emoteDefinitions = string.split(separator: "/")
+    return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
+}
+
+private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] {
+    let parts = definition.split(separator: ":")
+    guard parts.count == 2,
+          let emoteId = parts.first,
+          let emoteRangesString = parts.last,
+          let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0")
+    else {
+        return []
     }
+    var emotes: [ChatMessageEmote] = []
+    for emoteRangeString in emoteRangesString.split(separator: ",") {
+        guard let range = parseRange(emoteRangeString) else {
+            continue
+        }
+        emotes.append(ChatMessageEmote(url: url, range: range))
+    }
+    return emotes
+}
+
+private func parseGif(from string: String) -> ChatMessageEmote? {
+    let parts = string.split(separator: "|", maxSplits: 2)
+    guard parts.count == 3,
+          let range = parseRange(parts[0]),
+          let url = URL(string: String(parts[2]))
+    else {
+        return nil
+    }
+    return ChatMessageEmote(url: url, range: range, isGif: true)
 }
 
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
@@ -141,7 +157,11 @@ func createTwitchSegments(text: String,
                 id: &id
             )
         }
-        segments.append(ChatPostSegment(id: id, url: emote.url))
+        if emote.isGif {
+            segments.append(ChatPostSegment(id: id, gifUrl: emote.url))
+        } else {
+            segments.append(ChatPostSegment(id: id, url: emote.url))
+        }
         id += 1
         segments.append(ChatPostSegment(id: id, text: ""))
         id += 1
@@ -193,7 +213,11 @@ struct TwitchChatMessage {
                 case "color":
                     color = value
                 case "emotes":
-                    emotes = TwitchEmote.emotes(from: value)
+                    emotes += parseEmotes(from: value)
+                case "gifs":
+                    if let gif = parseGif(from: value) {
+                        emotes.append(gif)
+                    }
                 case "badges":
                     badges = value.split(separator: ",").map { String($0) }
                 case "msg-id":

@@ -151,6 +151,11 @@ private struct LineView: View {
                     }
                     Text(" ")
                 }
+                if let url = segment.gifUrl {
+                    ChatGifView(url: url, animated: chat.animatedEmotes, height: 100)
+                        .opacity(imageOpacity())
+                    Text(" ")
+                }
             }
         }
         .padding(.leading, 5)

@@ -453,6 +453,10 @@ extension Model {
                             .frame(height: 45)
                             Text(" ")
                         }
+                        if let url = segment.gifUrl {
+                            ChatGifView(url: url, animated: false, height: 100)
+                            Text(" ")
+                        }
                     }
                 }
                 .foregroundStyle(.black)

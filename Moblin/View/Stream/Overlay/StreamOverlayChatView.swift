@@ -209,6 +209,12 @@ private struct LineView: View {
                     }
                     Text(" ")
                 }
+                if let url = segment.gifUrl {
+                    ChatGifView(url: url, animated: chat.animatedEmotes, height: CGFloat(chat.fontSize * 6))
+                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
+                        .opacity(imageOpacity())
+                    Text(" ")
+                }
             }
         }
         .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)

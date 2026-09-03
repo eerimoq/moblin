@@ -4,12 +4,14 @@ struct ChatMessageEmote: Identifiable {
     let id = UUID()
     let url: URL
     let range: ClosedRange<Int>
+    var isGif = false
 }
 
 struct ChatPostSegment: Identifiable, Codable {
     let id: Int
     var text: String?
     var url: URL?
+    var gifUrl: URL?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {

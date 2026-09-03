@@ -172,6 +172,11 @@ private struct LineView: View {
                     .frame(height: frameHeightEmotes())
                     Text(" ")
                 }
+                if let url = segment.gifUrl {
+                    ChatGifView(url: url, animated: false, height: CGFloat(settings.fontSize * 4))
+                        .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
+                    Text(" ")
+                }
             }
         }
         .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
