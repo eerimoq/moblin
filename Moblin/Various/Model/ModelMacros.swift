@@ -64,20 +64,20 @@ extension Model {
     }
 
     func isMacrosWeatherNeeded() -> Bool {
-        macrosChatMessageActions().contains(where: \.needsWeather)
+        macrosTextFormatActions().contains(where: \.needsWeather)
     }
 
     func isMacrosGeographyNeeded() -> Bool {
-        macrosChatMessageActions().contains(where: \.needsGeography)
+        macrosTextFormatActions().contains(where: \.needsGeography)
     }
 
     func isMacrosGForceNeeded() -> Bool {
-        macrosChatMessageActions().contains(where: \.needsGForce)
+        macrosTextFormatActions().contains(where: \.needsGForce)
     }
 
-    func macrosChatMessageTextChanged() {
-        for action in macrosChatMessageActions() {
-            let parts = loadTextFormat(format: action.chatMessage)
+    func macrosTextFormatChanged() {
+        for action in macrosTextFormatActions() {
+            let parts = loadTextFormat(format: macrosActionTextFormat(action: action))
             action.needsWeather = parts.isWeatherVariable()
             action.needsGeography = parts.isGeographyVariable()
             action.needsGForce = parts.isGForceVariable()
@@ -87,8 +87,19 @@ extension Model {
         startGForceManager()
     }
 
-    private func macrosChatMessageActions() -> [SettingsMacrosAction] {
-        database.macros.macros.flatMap { $0.actions.filter { $0.function == .sendChatMessage } }
+    private func macrosTextFormatActions() -> [SettingsMacrosAction] {
+        database.macros.macros.flatMap {
+            $0.actions.filter { $0.function == .sendChatMessage || $0.function == .ifCondition }
+        }
+    }
+
+    private func macrosActionTextFormat(action: SettingsMacrosAction) -> String {
+        switch action.function {
+        case .ifCondition:
+            "\(action.ifValue) \(action.ifOtherValue)"
+        default:
+            action.chatMessage
+        }
     }
 
     func removeDeadMacrosSettings() {
@@ -161,6 +172,8 @@ extension Model {
                          macro: macro)
         case .macro:
             executeMacro(action: action, macro: macro)
+        case .ifCondition:
+            executeIfCondition(currentMacro: currentMacro, action: action)
         case .djiDevices:
             executeDjiDevices(action: action)
         case .record:
@@ -237,6 +250,15 @@ extension Model {
             return true
         }
         macro.stack.append(subMacro.copy())
+        return true
+    }
+
+    private func executeIfCondition(currentMacro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
+        let value = formatPlainText(formatString: action.ifValue)
+        let otherValue = formatPlainText(formatString: action.ifOtherValue)
+        if !action.ifComparison.evaluate(value: value, otherValue: otherValue) {
+            currentMacro.nextActionIndex += action.ifRunCount
+        }
         return true
     }
 

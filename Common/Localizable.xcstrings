@@ -28713,6 +28713,9 @@
         }
       }
     },
+    "Actions to run" : {
+
+    },
     "Adaptive bitrate" : {
       "localizations" : {
         "de" : {
@@ -64998,6 +65001,9 @@
           }
         }
       }
+    },
+    "Contains" : {
+
     },
     "Continuous auto exposure not supported for this camera" : {
       "localizations" : {
@@ -113574,6 +113580,9 @@
         }
       }
     },
+    "If" : {
+
+    },
     "If enabled, selected LUT is applied when the Apple Log color space is used." : {
       "localizations" : {
         "de" : {
@@ -159385,6 +159394,9 @@
         }
       }
     },
+    "Other value" : {
+
+    },
     "Other widgets will not work with Beauty filters enabled" : {
       "localizations" : {
         "de" : {
@@ -188725,6 +188737,9 @@
           }
         }
       }
+    },
+    "Run given number of following actions if the condition is met." : {
+
     },
     "Run macro" : {
       "comment" : "Text for a button that runs a macro.",
@@ -238251,9 +238266,6 @@
     "The Camera preview quick button shows and hides the camera preview instantly, without the scene switch transition. Uses slightly more system resources." : {
 
     },
-    "The Photo shoot quick button starts and stops the photo shoot instantly, without the scene switch transition. Uses slightly more system resources." : {
-
-    },
     "The condition is true when both \"Username\" and \"Message starts with\" matches the received chat message." : {
       "localizations" : {
         "de" : {
@@ -240772,6 +240784,9 @@
           }
         }
       }
+    },
+    "The Photo shoot quick button starts and stops the photo shoot instantly, without the scene switch transition. Uses slightly more system resources." : {
+
     },
     "The replacement must be more than one word." : {
       "localizations" : {
@@ -259880,6 +259895,9 @@
           }
         }
       }
+    },
+    "Value" : {
+
     },
     "Variables" : {
       "localizations" : {

@@ -12,25 +12,29 @@ private func setSelected<T>(_ values: inout Set<T>, _ type: T, _ selected: Bool)
     }
 }
 
-private struct ChatMessageTextView: View {
+private struct TextFormatView: View {
     @EnvironmentObject var model: Model
-    let action: SettingsMacrosAction
+    let title: String
+    let suggestions: Bool
+    @Binding var text: String
     @State var value: String
 
     var body: some View {
         Form {
             TextWidgetTextView(value: $value)
             TextFormatWarningsView(model: model, location: model.database.location, value: $value)
-            Section {
-                TextWidgetSuggestionsView(widget: false, text: $value)
+            if suggestions {
+                Section {
+                    TextWidgetSuggestionsView(widget: false, text: $value)
+                }
             }
             TextFormatVariablesView(widget: false, value: $value)
         }
         .onChange(of: value) { _ in
-            action.chatMessage = value
-            model.macrosChatMessageTextChanged()
+            text = value
+            model.macrosTextFormatChanged()
         }
-        .navigationTitle("Message")
+        .navigationTitle(title)
     }
 }
 
@@ -109,7 +113,10 @@ private struct ActionView: View {
                         }
                     case .sendChatMessage:
                         NavigationLink {
-                            ChatMessageTextView(action: action, value: action.chatMessage)
+                            TextFormatView(title: String(localized: "Message"),
+                                           suggestions: true,
+                                           text: $action.chatMessage,
+                                           value: action.chatMessage)
                         } label: {
                             TextItemLocalizedView(name: "Message", value: action.chatMessage)
                         }
@@ -179,8 +186,42 @@ private struct ActionView: View {
                                 Text($0.toString())
                             }
                         }
+                    case .ifCondition:
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Value"),
+                                           suggestions: false,
+                                           text: $action.ifValue,
+                                           value: action.ifValue)
+                        } label: {
+                            TextItemLocalizedView(name: "Value", value: action.ifValue)
+                        }
+                        Picker("Comparison", selection: $action.ifComparison) {
+                            ForEach(SettingsMacrosActionIfComparison.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Other value"),
+                                           suggestions: false,
+                                           text: $action.ifOtherValue,
+                                           value: action.ifOtherValue)
+                        } label: {
+                            TextItemLocalizedView(name: "Other value", value: action.ifOtherValue)
+                        }
+                        TextEditNavigationView(title: String(localized: "Actions to run"),
+                                               value: String(action.ifRunCount))
+                        {
+                            guard let count = Int($0) else {
+                                return
+                            }
+                            action.ifRunCount = count.clamped(to: 0 ... 100)
+                        }
                     case nil:
                         EmptyView()
+                    }
+                } footer: {
+                    if action.function == .ifCondition {
+                        Text("Run given number of following actions if the condition is met.")
                     }
                 }
             }
@@ -248,6 +289,13 @@ private struct ActionView: View {
                 case .reaction:
                     Spacer()
                     GrayTextView(text: action.reaction.toString())
+                case .ifCondition:
+                    Spacer()
+                    GrayTextView(
+                        text: "\(action.ifValue) \(action.ifComparison.toString()) \(action.ifOtherValue)"
+                    )
+                    GrayTextView(text: "\(action.ifRunCount)")
+                        .layoutPriority(1)
                 case nil:
                     EmptyView()
                 }

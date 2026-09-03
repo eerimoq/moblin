@@ -93,6 +93,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case sendChatMessage = "Send chat message"
     case delay = "Delay"
     case macro = "Macro"
+    case ifCondition = "If"
 
     func toString() -> String {
         switch self {
@@ -126,7 +127,63 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "Delay")
         case .macro:
             String(localized: "Run macro")
+        case .ifCondition:
+            String(localized: "If")
         }
+    }
+}
+
+enum SettingsMacrosActionIfComparison: String, CaseIterable, Codable {
+    case equal = "="
+    case notEqual = "!="
+    case lessThan = "<"
+    case lessEqual = "<="
+    case greaterThan = ">"
+    case greaterEqual = ">="
+    case contains = "Contains"
+
+    func toString() -> String {
+        switch self {
+        case .contains:
+            String(localized: "Contains")
+        default:
+            rawValue
+        }
+    }
+
+    func evaluate(value: String, otherValue: String) -> Bool {
+        if self == .contains {
+            return value.localizedCaseInsensitiveContains(otherValue)
+        }
+        if let value = toNumber(value), let otherValue = toNumber(otherValue) {
+            return compare(value < otherValue ? .orderedAscending :
+                value > otherValue ? .orderedDescending : .orderedSame)
+        }
+        return compare(value.localizedCaseInsensitiveCompare(otherValue))
+    }
+
+    private func compare(_ order: ComparisonResult) -> Bool {
+        switch self {
+        case .equal:
+            order == .orderedSame
+        case .notEqual:
+            order != .orderedSame
+        case .lessThan:
+            order == .orderedAscending
+        case .lessEqual:
+            order != .orderedDescending
+        case .greaterThan:
+            order == .orderedDescending
+        case .greaterEqual:
+            order != .orderedAscending
+        case .contains:
+            false
+        }
+    }
+
+    private func toNumber(_ value: String) -> Double? {
+        let value = value.trimmingCharacters(in: .whitespaces)
+        return Double(value.prefix(while: { $0.isNumber || $0 == "." || $0 == "-" || $0 == "+" }))
     }
 }
 
@@ -147,6 +204,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var mute: Bool = true
     @Published var torch: Bool = true
     @Published var reaction: SettingsReaction = .fireworks
+    @Published var ifValue: String = ""
+    @Published var ifComparison: SettingsMacrosActionIfComparison = .equal
+    @Published var ifOtherValue: String = ""
+    @Published var ifRunCount: Int = 1
     var needsWeather: Bool = false
     var needsGeography: Bool = false
     var needsGForce: Bool = false
@@ -170,6 +231,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case mute
         case torch
         case reaction
+        case ifValue
+        case ifComparison
+        case ifOtherValue
+        case ifRunCount
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -190,6 +255,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.mute, mute)
         try container.encode(.torch, torch)
         try container.encode(.reaction, reaction)
+        try container.encode(.ifValue, ifValue)
+        try container.encode(.ifComparison, ifComparison)
+        try container.encode(.ifOtherValue, ifOtherValue)
+        try container.encode(.ifRunCount, ifRunCount)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -210,6 +279,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         mute = container.decode(.mute, Bool.self, true)
         torch = container.decode(.torch, Bool.self, true)
         reaction = container.decode(.reaction, SettingsReaction.self, .fireworks)
+        ifValue = container.decode(.ifValue, String.self, "")
+        ifComparison = container.decode(.ifComparison, SettingsMacrosActionIfComparison.self, .equal)
+        ifOtherValue = container.decode(.ifOtherValue, String.self, "")
+        ifRunCount = container.decode(.ifRunCount, Int.self, 1)
     }
 }
 

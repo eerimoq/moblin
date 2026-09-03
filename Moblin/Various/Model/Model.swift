@@ -1196,7 +1196,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         chatBotCustomCommandsTextChanged()
-        macrosChatMessageTextChanged()
+        macrosTextFormatChanged()
         loadStealthModeImage()
         loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
