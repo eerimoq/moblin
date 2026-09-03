@@ -71,7 +71,14 @@ private func parseGif(from string: String) -> ChatMessageEmote? {
     else {
         return nil
     }
-    return ChatMessageEmote(url: url, range: range, isGif: true)
+    return ChatMessageEmote(url: lowResolutionGiphyUrl(url), range: range, isGif: true)
+}
+
+private func lowResolutionGiphyUrl(_ url: URL) -> URL {
+    guard url.host?.hasSuffix("giphy.com") == true else {
+        return url
+    }
+    return url.deletingLastPathComponent().appendingPathComponent("100.gif")
 }
 
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {

@@ -4,7 +4,6 @@ import WrappingHStack
 
 private let borderWidth = 1.5
 let chatEmoteScale: Float = 1.5
-let chatEmoteGifScale: Float = 5.0
 
 private struct HighlightMessageView: View {
     let postState: ChatPostState
@@ -215,7 +214,7 @@ private struct LineView: View {
                     ChatGifView(
                         url: url,
                         animated: chat.animatedEmotes,
-                        height: CGFloat(chat.fontSize * chatEmoteGifScale)
+                        height: CGFloat(chat.fontSize * chatEmoteScale * chat.gifScale)
                     )
                     .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                     .opacity(imageOpacity())

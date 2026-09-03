@@ -31,6 +31,28 @@ struct ChatSettingsAppearanceView: View {
                         Text(String(Int(chat.fontSize)))
                             .frame(width: 25)
                     }
+                    HStack {
+                        Text("GIF scale")
+                        Slider(
+                            value: $chat.gifScale,
+                            in: 1 ... 10,
+                            step: 1,
+                            label: {
+                                EmptyView()
+                            },
+                            onEditingChanged: { begin in
+                                guard !begin else {
+                                    return
+                                }
+                                model.reloadChatMessages()
+                            }
+                        )
+                        .onChange(of: chat.gifScale) { _ in
+                            model.reloadChatMessages()
+                        }
+                        Text(String(Int(chat.gifScale)))
+                            .frame(width: 25)
+                    }
                     if database.showAllSettings {
                         Picker("Display style", selection: $chat.displayStyle) {
                             ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in

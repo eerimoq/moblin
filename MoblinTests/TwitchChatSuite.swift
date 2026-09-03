@@ -158,7 +158,7 @@ struct TwitchChatSuite {
         #expect(gif.isGif)
         #expect(gif.range == 0 ... 34)
         #expect(gif.url.absoluteString == """
-        https://media3.giphy.com/media/l0MYDEPLWRWbJoRuU/giphy.gif?\
+        https://media3.giphy.com/media/l0MYDEPLWRWbJoRuU/100.gif?\
         cid=095d7a5dpq5y4f8xwwlqk053r89k5ezmzgauu6wyjbrun0k0&ep=v1_gifs_trending&rid=giphy.gif&ct=g
         """)
     }

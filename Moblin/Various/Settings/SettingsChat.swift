@@ -644,6 +644,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
     @Published var background: Bool = false
     @Published var sharedChatIcons: Bool = true
+    @Published var gifScale: Float = 5.0
 
     enum CodingKeys: CodingKey {
         case fontSize
@@ -697,6 +698,7 @@ class SettingsChat: Codable, ObservableObject {
         case displayStyle
         case background
         case sharedChatIcons
+        case gifScale
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -751,6 +753,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.displayStyle, displayStyle)
         try container.encode(.background, background)
         try container.encode(.sharedChatIcons, sharedChatIcons)
+        try container.encode(.gifScale, gifScale)
     }
 
     init() {}
@@ -843,6 +846,7 @@ class SettingsChat: Codable, ObservableObject {
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
         background = container.decode(.background, Bool.self, false)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
+        gifScale = container.decode(.gifScale, Float.self, 5.0)
     }
 
     func getRotation() -> Double {

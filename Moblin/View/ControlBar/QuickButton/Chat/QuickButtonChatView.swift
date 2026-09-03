@@ -155,7 +155,7 @@ private struct LineView: View {
                     ChatGifView(
                         url: url,
                         animated: chat.animatedEmotes,
-                        height: CGFloat(chat.fontSize * chatEmoteGifScale)
+                        height: CGFloat(chat.fontSize * chatEmoteScale * chat.gifScale)
                     )
                     .opacity(imageOpacity())
                     Text(" ")
