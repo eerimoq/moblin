@@ -407,15 +407,19 @@ let videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
     }
 }
 
-class SettingsTesla: Codable {
+class SettingsTesla: Codable, ObservableObject {
     var vin: String = ""
     var privateKey: String = ""
     var enabled: Bool = true
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
         case vin
         case privateKey
         case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -423,6 +427,8 @@ class SettingsTesla: Codable {
         try container.encode(.vin, vin)
         try container.encode(.privateKey, privateKey)
         try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
     }
 
     init() {}
@@ -432,6 +438,8 @@ class SettingsTesla: Codable {
         vin = container.decode(.vin, String.self, "")
         privateKey = container.decode(.privateKey, String.self, "")
         enabled = container.decode(.enabled, Bool.self, true)
+        bluetoothPeripheralName = container.decode(.bluetoothPeripheralName, String?.self, nil)
+        bluetoothPeripheralId = container.decode(.bluetoothPeripheralId, UUID?.self, nil)
     }
 }
 

@@ -13,9 +13,14 @@ class Tesla: ObservableObject {
 extension Model {
     func reloadTeslaVehicle() {
         stopTeslaVehicle()
-        if database.tesla.enabled, database.tesla.vin != "", database.tesla.privateKey != "" {
-            tesla.vehicle = TeslaVehicle(vin: database.tesla.vin, privateKeyPem: database.tesla.privateKey)
+        if database.tesla.enabled, database.tesla.vin != "", database.tesla.privateKey != "",
+           let peripheralId = database.tesla.bluetoothPeripheralId
+        {
+            tesla.vehicle = TeslaVehicle(vin: database.tesla.vin,
+                                         privateKeyPem: database.tesla.privateKey,
+                                         peripheralId: peripheralId)
             tesla.vehicle?.delegate = self
+            tesla.vehicleState = .idle
             tesla.vehicle?.start()
         }
     }
@@ -149,10 +154,11 @@ extension Model: @preconcurrency TeslaVehicleDelegate {
         switch state {
         case .idle:
             reloadTeslaVehicle()
+        case .connecting:
+            tesla.vehicleVehicleSecurityConnected = false
+            tesla.vehicleInfotainmentConnected = false
         case .connected:
             makeToast(title: String(localized: "Connected to your Tesla"))
-        default:
-            break
         }
         tesla.vehicleState = state
     }

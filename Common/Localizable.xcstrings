@@ -1363,6 +1363,15 @@
         }
       }
     },
+    "Make sure the Moblin device is relatively near the vehicle." : {
+
+    },
+    "Select vehicle" : {
+
+    },
+    "Vehicle" : {
+
+    },
     "‼️ Low on disk. Stopping recording. ‼️" : {
       "localizations" : {
         "de" : {
