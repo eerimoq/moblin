@@ -4,7 +4,7 @@ struct HelpAndSupportSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ExternalUrlButtonView(url: "https://discord.gg/kh3KMng4JV") {
+                ExternalUrlButtonView(url: "https://discord.moblin.app") {
                     DiscordLogoAndNameView()
                 }
                 ExternalUrlButtonView(url: "https://github.com/eerimoq/moblin") {
