@@ -27,7 +27,7 @@ private struct HighlightMessageView: View {
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * chatEmoteScale)
     }
 
     var body: some View {
@@ -102,7 +102,7 @@ private struct LineView: View {
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * chatEmoteScale)
     }
 
     var body: some View {
@@ -173,8 +173,12 @@ private struct LineView: View {
                     Text(" ")
                 }
                 if let url = segment.gifUrl {
-                    ChatGifView(url: url, animated: false, height: CGFloat(settings.fontSize * 4))
-                        .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
+                    ChatGifView(
+                        url: url,
+                        animated: false,
+                        height: CGFloat(settings.fontSize * chatEmoteGifScale)
+                    )
+                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     Text(" ")
                 }
             }

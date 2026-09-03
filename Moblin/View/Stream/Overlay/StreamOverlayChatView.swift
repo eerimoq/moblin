@@ -3,6 +3,8 @@ import SwiftUI
 import WrappingHStack
 
 private let borderWidth = 1.5
+let chatEmoteScale: Float = 1.5
+let chatEmoteGifScale: Float = 5.0
 
 private struct HighlightMessageView: View {
     let postState: ChatPostState
@@ -26,7 +28,7 @@ private struct HighlightMessageView: View {
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        CGFloat(chat.fontSize * 1.7)
+        CGFloat(chat.fontSize * chatEmoteScale)
     }
 
     private func imageOpacity() -> Double {
@@ -118,7 +120,7 @@ private struct LineView: View {
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        CGFloat(chat.fontSize * 1.7)
+        CGFloat(chat.fontSize * chatEmoteScale)
     }
 
     private func imageOpacity() -> Double {
@@ -210,9 +212,13 @@ private struct LineView: View {
                     Text(" ")
                 }
                 if let url = segment.gifUrl {
-                    ChatGifView(url: url, animated: chat.animatedEmotes, height: CGFloat(chat.fontSize * 6))
-                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                        .opacity(imageOpacity())
+                    ChatGifView(
+                        url: url,
+                        animated: chat.animatedEmotes,
+                        height: CGFloat(chat.fontSize * chatEmoteGifScale)
+                    )
+                    .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
+                    .opacity(imageOpacity())
                     Text(" ")
                 }
             }

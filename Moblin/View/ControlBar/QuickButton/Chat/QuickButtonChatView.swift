@@ -33,7 +33,7 @@ private struct HighlightMessageView: View {
                     if let url = segment.url {
                         if chat.animatedEmotes {
                             AnimatedEmoteView(url: url)
-                                .frame(height: 25)
+                                .frame(height: CGFloat(chat.fontSize * chatEmoteScale))
                                 .opacity(imageOpacity())
                         } else {
                             CacheAsyncImage(url: url) { image in
@@ -43,7 +43,7 @@ private struct HighlightMessageView: View {
                             } placeholder: {
                                 EmptyView()
                             }
-                            .frame(height: 25)
+                            .frame(height: CGFloat(chat.fontSize * chatEmoteScale))
                             .opacity(imageOpacity())
                         }
                         Text(" ")
@@ -136,7 +136,7 @@ private struct LineView: View {
                 if let url = segment.url {
                     if chat.animatedEmotes {
                         AnimatedEmoteView(url: url)
-                            .frame(height: 25)
+                            .frame(height: CGFloat(chat.fontSize * chatEmoteScale))
                             .opacity(imageOpacity())
                     } else {
                         CacheAsyncImage(url: url) { image in
@@ -146,14 +146,18 @@ private struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .frame(height: 25)
+                        .frame(height: CGFloat(chat.fontSize * chatEmoteScale))
                         .opacity(imageOpacity())
                     }
                     Text(" ")
                 }
                 if let url = segment.gifUrl {
-                    ChatGifView(url: url, animated: chat.animatedEmotes, height: 100)
-                        .opacity(imageOpacity())
+                    ChatGifView(
+                        url: url,
+                        animated: chat.animatedEmotes,
+                        height: CGFloat(chat.fontSize * chatEmoteGifScale)
+                    )
+                    .opacity(imageOpacity())
                     Text(" ")
                 }
             }
