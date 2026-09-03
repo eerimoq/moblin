@@ -133,6 +133,15 @@ struct ChatHighlight {
         )
     }
 
+    static func makeGigantifiedEmote() -> ChatHighlight {
+        ChatHighlight(
+            kind: .other,
+            barColor: .purple,
+            image: "arrow.up.backward.and.arrow.down.forward.square",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Gigantified emote"))
+        )
+    }
+
     static func makeModerator() -> ChatHighlight {
         ChatHighlight(
             kind: .moderator,

@@ -272,9 +272,13 @@ struct TwitchChatMessage {
         self.command = command
         parts.removeFirst()
         parameters = parseParameters(from: parts)
-        if messageId == "gigantified-emote-message" {
+        if isGigantifiedEmote {
             gigantifyLastEmote()
         }
+    }
+
+    var isGigantifiedEmote: Bool {
+        messageId == "gigantified-emote-message"
     }
 
     private mutating func gigantifyLastEmote() {
@@ -559,11 +563,13 @@ final class TwitchChat: @unchecked Sendable {
         }
         var announcement = false
         var firstMessage = false
+        var gigantifiedEmote = false
         var subscriber = false
         var moderator = false
         switch message.command {
         case .privateMessage:
             firstMessage = message.firstMessage
+            gigantifiedEmote = message.isGigantifiedEmote
             subscriber = message.subscriber
             moderator = message.moderator
         case .userNotice:
@@ -592,6 +598,7 @@ final class TwitchChat: @unchecked Sendable {
         )
         let highlight = createHighlight(announcement: announcement,
                                         firstMessage: firstMessage,
+                                        gigantifiedEmote: gigantifiedEmote,
                                         replySender: message.replySender,
                                         replyText: message.replyText)
         delegate?.twitchChatAppendMessage(
@@ -631,6 +638,7 @@ final class TwitchChat: @unchecked Sendable {
 
     private func createHighlight(announcement: Bool,
                                  firstMessage: Bool,
+                                 gigantifiedEmote: Bool,
                                  replySender: String?,
                                  replyText: String?) -> ChatHighlight?
     {
@@ -638,6 +646,8 @@ final class TwitchChat: @unchecked Sendable {
             ChatHighlight.makeAnnouncement()
         } else if firstMessage {
             ChatHighlight.makeFirstMessage()
+        } else if gigantifiedEmote {
+            ChatHighlight.makeGigantifiedEmote()
         } else if let sender = replySender, let text = replyText {
             ChatHighlight.makeReply(
                 user: sender,

@@ -195,6 +195,7 @@ struct TwitchChatSuite {
         :Kappa Keepo Kappa
         """)
         #expect(message.command == .privateMessage)
+        #expect(message.isGigantifiedEmote)
         #expect(message.emotes.count == 3)
         #expect(message.emotes.map(\.range) == [0 ... 4, 12 ... 16, 6 ... 10])
         #expect(message.emotes.map(\.isGif) == [false, true, false])
