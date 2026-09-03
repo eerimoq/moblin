@@ -12,6 +12,64 @@ private func setSelected<T>(_ values: inout Set<T>, _ type: T, _ selected: Bool)
     }
 }
 
+struct MacroActionIfBar {
+    let level: Int
+    let isFirst: Bool
+    let isLast: Bool
+}
+
+func macroActionIfBars(actions: [SettingsMacrosAction]) -> [[MacroActionIfBar]] {
+    var blocks: [(end: Int, level: Int)] = []
+    var bars: [[MacroActionIfBar]] = []
+    for (index, action) in actions.enumerated() {
+        blocks.removeAll(where: { $0.end <= index })
+        var firstLevel: Int?
+        if action.function == .ifCondition, action.ifRunCount > 0 {
+            var level = 0
+            while blocks.contains(where: { $0.level == level }) {
+                level += 1
+            }
+            blocks.append((min(index + 1 + action.ifRunCount, actions.count), level))
+            firstLevel = level
+        }
+        bars.append(blocks.map { MacroActionIfBar(level: $0.level,
+                                                  isFirst: $0.level == firstLevel,
+                                                  isLast: $0.end == index + 1) })
+    }
+    return bars
+}
+
+private let macroActionIfColors: [Color] = [.blue, .purple, .orange, .teal]
+
+private struct ActionIfBarsView: View {
+    let bars: [MacroActionIfBar]
+
+    private func bar(level: Int) -> some View {
+        let bar = bars.first(where: { $0.level == level })
+        return VStack(spacing: 0) {
+            if bar?.isFirst == true {
+                Color.clear
+            }
+            Rectangle()
+                .fill(bar != nil ? macroActionIfColors[level % macroActionIfColors.count] : .clear)
+                .padding(.bottom, bar?.isLast == true ? 4 : 0)
+        }
+        .frame(width: 3)
+    }
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(0 ..< ((bars.map(\.level).max() ?? -1) + 1), id: \.self) {
+                bar(level: $0)
+            }
+            Spacer()
+        }
+        .padding(.leading, 3)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+    }
+}
+
 private struct TextFormatView: View {
     @EnvironmentObject var model: Model
     let title: String
@@ -42,7 +100,9 @@ private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var macros: SettingsMacros
+    @ObservedObject var macro: SettingsMacrosMacro
     @ObservedObject var action: SettingsMacrosAction
+    let ifBars: [MacroActionIfBar]
 
     private func submitZoomX(zoomX: String) {
         guard let zoomX = Float(zoomX) else {
@@ -208,13 +268,10 @@ private struct ActionView: View {
                         } label: {
                             TextItemLocalizedView(name: "Other value", value: action.ifOtherValue)
                         }
-                        TextEditNavigationView(title: String(localized: "Actions to run"),
-                                               value: String(action.ifRunCount))
-                        {
-                            guard let count = Int($0) else {
-                                return
+                        Picker("Actions to run", selection: $action.ifRunCount) {
+                            ForEach(1 ... 10, id: \.self) {
+                                Text(String($0))
                             }
-                            action.ifRunCount = count.clamped(to: 0 ... 100)
                         }
                     case nil:
                         EmptyView()
@@ -226,6 +283,12 @@ private struct ActionView: View {
                 }
             }
             .navigationTitle("Action")
+            .onChange(of: action.function) { _ in
+                macro.objectWillChange.send()
+            }
+            .onChange(of: action.ifRunCount) { _ in
+                macro.objectWillChange.send()
+            }
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -294,13 +357,12 @@ private struct ActionView: View {
                     GrayTextView(
                         text: "\(action.ifValue) \(action.ifComparison.toString()) \(action.ifOtherValue)"
                     )
-                    GrayTextView(text: "\(action.ifRunCount)")
-                        .layoutPriority(1)
                 case nil:
                     EmptyView()
                 }
             }
         }
+        .listRowBackground(ActionIfBarsView(bars: ifBars))
     }
 }
 
@@ -321,8 +383,14 @@ private struct MacroView: View {
                 }
                 Section {
                     List {
-                        ForEach(macro.actions) {
-                            ActionView(model: model, database: database, macros: macros, action: $0)
+                        let ifBars = macroActionIfBars(actions: macro.actions)
+                        ForEach(Array(macro.actions.enumerated()), id: \.element.id) { index, action in
+                            ActionView(model: model,
+                                       database: database,
+                                       macros: macros,
+                                       macro: macro,
+                                       action: action,
+                                       ifBars: ifBars[index])
                         }
                         .onMove { froms, to in
                             macro.actions.move(fromOffsets: froms, toOffset: to)
