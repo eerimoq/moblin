@@ -26,6 +26,9 @@ struct AboutSettingsView: View {
                     }
                 }
             }
+            ExternalUrlButtonView(url: "https://moblin.app") {
+                Text("Website")
+            }
             ExternalUrlButtonView(url: "https://eerimoq.github.io/moblin/privacy-policy/en.html") {
                 Text("Privacy policy")
             }
