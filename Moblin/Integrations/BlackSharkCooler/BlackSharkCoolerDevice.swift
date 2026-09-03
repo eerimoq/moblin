@@ -92,24 +92,20 @@ extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: nil)
+            connect(central)
         default:
             break
         }
     }
 
-    func centralManager(_ central: CBCentralManager,
-                        didDiscover peripheral: CBPeripheral,
-                        advertisementData: [String: Any],
-                        rssi _: NSNumber)
-    {
-        guard peripheral.identifier == deviceId else {
+    private func connect(_ central: CBCentralManager) {
+        guard let deviceId,
+              let peripheral = central.retrievePeripherals(withIdentifiers: [deviceId]).first
+        else {
+            logger.info("black-shark-cooler-device: Device not found")
             return
         }
-        central.stopScan()
         self.peripheral = peripheral
-        let advertisedName = advertisementData[CBAdvertisementDataLocalNameKey] as? String
-        model = BlackSharkLib.detectModel(advertisedName: advertisedName)
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
         setState(state: .connecting)
@@ -118,6 +114,7 @@ extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        model = BlackSharkLib.detectModel(advertisedName: peripheral.name)
         peripheral.discoverServices(nil)
     }
 

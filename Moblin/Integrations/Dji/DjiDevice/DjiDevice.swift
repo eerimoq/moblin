@@ -169,21 +169,19 @@ extension DjiDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: nil)
+            connect(central)
         default:
             break
         }
     }
 
-    func centralManager(_ central: CBCentralManager,
-                        didDiscover peripheral: CBPeripheral,
-                        advertisementData _: [String: Any],
-                        rssi _: NSNumber)
-    {
-        guard peripheral.identifier == deviceId else {
+    private func connect(_ central: CBCentralManager) {
+        guard let deviceId,
+              let peripheral = central.retrievePeripherals(withIdentifiers: [deviceId]).first
+        else {
+            logger.info("dji-device: Device not found")
             return
         }
-        central.stopScan()
         cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
