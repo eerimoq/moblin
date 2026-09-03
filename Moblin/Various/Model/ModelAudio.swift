@@ -64,6 +64,9 @@ extension Model {
     func reloadAudioSession() {
         teardownAudioSession()
         setupAudioSession()
+        guard !isChatPhone() else {
+            return
+        }
         media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
     }
 
@@ -79,6 +82,7 @@ extension Model {
 
     func setupAudioSession() {
         let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
+        let chatPhone = isChatPhone()
         processorControlQueue.async {
             let session = AVAudioSession.sharedInstance()
             do {
@@ -96,10 +100,14 @@ extension Model {
                     }
                     #endif
                 }
-                try session.setCategory(
-                    .playAndRecord,
-                    options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
-                )
+                if chatPhone {
+                    try session.setCategory(.playback, options: [.mixWithOthers])
+                } else {
+                    try session.setCategory(
+                        .playAndRecord,
+                        options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
+                    )
+                }
                 try session.setPreferredSampleRate(48000)
                 try session.setPrefersNoInterruptionsFromSystemAlerts(true)
                 try session.setActive(true)
@@ -576,6 +584,9 @@ extension Model {
     }
 
     private func selectMic(mic: SettingsMicsMic) {
+        guard !isChatPhone() else {
+            return
+        }
         self.mic.requested = mic
         trySwitchMic()
     }

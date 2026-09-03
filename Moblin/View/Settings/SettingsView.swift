@@ -2,6 +2,25 @@ import SwiftUI
 
 let settingsHalfWidth = 350.0
 
+private struct AppModeView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Section {
+            Picker("Mode", selection: $database.appMode) {
+                ForEach(SettingsAppMode.allCases, id: \.self) {
+                    Text($0.toString())
+                }
+            }
+            .disabled(model.isLive || model.isRecording)
+            .onChange(of: database.appMode) { _ in
+                model.appModeChanged()
+            }
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -241,6 +260,7 @@ struct SettingsView: View {
                     }
                 }
             }
+            AppModeView(database: database)
             Section {
                 Toggle("Show all settings", isOn: $database.showAllSettings)
             }

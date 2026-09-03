@@ -791,6 +791,20 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsAppMode: String, Codable, CaseIterable {
+    case streaming
+    case chatPhone
+
+    func toString() -> String {
+        switch self {
+        case .streaming:
+            String(localized: "Streaming")
+        case .chatPhone:
+            String(localized: "Chat phone")
+        }
+    }
+}
+
 class WebBrowserBookmarkSettings: Identifiable, Codable, ObservableObject {
     var id: UUID = .init()
     @Published var url: String = "https://google.com"
@@ -1196,6 +1210,7 @@ class Database: Codable, ObservableObject {
     @Published var graphicsHighQualityDownsampling: Bool = false
     @Published var ingestsSoftwareVideoDecoding: Bool = false
     @Published var torchLevel: Float = 1.0
+    @Published var appMode: SettingsAppMode = .streaming
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
@@ -1326,6 +1341,7 @@ class Database: Codable, ObservableObject {
         case graphicsHighQualityDownsampling
         case ingestsSoftwareVideoDecoding
         case torchLevel
+        case appMode
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1417,6 +1433,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.graphicsHighQualityDownsampling, graphicsHighQualityDownsampling)
         try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
         try container.encode(.torchLevel, torchLevel)
+        try container.encode(.appMode, appMode)
     }
 
     init() {}
@@ -1576,6 +1593,7 @@ class Database: Codable, ObservableObject {
                                                            debug.highQualityDownsamplingToBeRemoved)
         ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
         torchLevel = container.decode(.torchLevel, Float.self, 1.0)
+        appMode = container.decode(.appMode, SettingsAppMode.self, .streaming)
     }
 }
 

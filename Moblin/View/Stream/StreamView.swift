@@ -67,7 +67,9 @@ struct StreamView: View {
     let streamPreviewView: StreamPreviewView
 
     var body: some View {
-        if show.cameraPreview {
+        if show.chatPhone {
+            Color.black
+        } else if show.cameraPreview {
             cameraPreviewView
         } else {
             streamPreviewView

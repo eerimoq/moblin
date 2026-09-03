@@ -670,7 +670,7 @@ private struct StatusesView: View {
                       show: model.database.show,
                       systemMonitor: model.systemMonitor,
                       textPlacement: textPlacement)
-        if show.audioLevel, textPlacement == .hide {
+        if model.isShowingStatusAudioLevel(), textPlacement == .hide {
             CompactAudioBarView(level: model.audio.level)
         }
     }
@@ -682,7 +682,7 @@ private struct AudioView: View {
     @ObservedObject var show: SettingsShow
 
     var body: some View {
-        if show.audioLevel {
+        if model.isShowingStatusAudioLevel() {
             AudioLevelView(model: model, big: database.bigAudioLevelMeter)
                 .padding(20)
                 .contentShape(Rectangle())
@@ -820,7 +820,7 @@ struct RightOverlayBottomView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             Spacer()
-            if !model.showDrawOnStream {
+            if !model.showDrawOnStream, database.appMode == .streaming {
                 if streamOverlay.showingReplay {
                     StreamOverlayRightReplayView(model: model,
                                                  replay: model.replay,

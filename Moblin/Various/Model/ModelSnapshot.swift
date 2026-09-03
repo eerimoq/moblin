@@ -8,6 +8,9 @@ struct SnapshotJob {
 
 extension Model {
     func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
+        guard !isChatPhone() else {
+            return
+        }
         let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay : 0.0
         media.takeSnapshot(age: age) { uiImage, image, portraitImage in
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
@@ -75,6 +78,9 @@ extension Model {
     }
 
     func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
+        guard !isChatPhone() else {
+            return
+        }
         snapshotJobs.append(SnapshotJob(isChatBot: isChatBot, message: message, user: user))
         tryTakeNextSnapshot()
     }

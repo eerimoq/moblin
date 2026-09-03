@@ -11,10 +11,15 @@ extension Model {
         guard liveActivity == nil else {
             return
         }
-        liveActivity = try? Activity.request(
-            attributes: LiveActivityAttributes(),
-            content: .init(state: makeState(), staleDate: nil)
-        )
+        do {
+            liveActivity = try Activity.request(
+                attributes: LiveActivityAttributes(),
+                content: .init(state: makeState(), staleDate: nil)
+            )
+            logger.info("live-activity: Started")
+        } catch {
+            logger.info("live-activity: Start failed with error: \(error)")
+        }
     }
 
     func stopLiveActivity() {

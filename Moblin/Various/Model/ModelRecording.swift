@@ -7,6 +7,9 @@ class RecordingProvider: ObservableObject {
 
 extension Model {
     func startRecording() {
+        guard !isChatPhone() else {
+            return
+        }
         setIsRecording(value: true)
         if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {

@@ -209,7 +209,7 @@ private struct MainPageView: View {
                      width: width)
             HStack {
                 Spacer(minLength: 0)
-                StreamButton()
+                StreamButton(show: model.show)
                     .padding(.top, 5)
                 Spacer(minLength: 0)
             }

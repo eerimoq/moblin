@@ -240,7 +240,7 @@ extension Model {
     }
 
     func isShowingStatusZoom() -> Bool {
-        database.show.zoom && zoom.hasZoom
+        database.show.zoom && zoom.hasZoom && !isChatPhone()
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {

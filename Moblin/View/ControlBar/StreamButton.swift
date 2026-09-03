@@ -110,15 +110,20 @@ private struct SetupButtonView: View {
 
 struct StreamButton: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: Show
     @State private var presentingGoLiveNotificationConfirm = false
 
     var body: some View {
-        if model.isLive {
-            EndButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
-        } else if model.isStreamConfigured() {
-            GoLiveButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
-        } else {
-            SetupButtonView(createStreamWizard: model.createStreamWizard)
+        Group {
+            if model.isLive {
+                EndButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
+            } else if model.isStreamConfigured() {
+                GoLiveButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
+            } else {
+                SetupButtonView(createStreamWizard: model.createStreamWizard)
+            }
         }
+        .disabled(show.chatPhone)
+        .opacity(show.chatPhone ? 0.5 : 1)
     }
 }

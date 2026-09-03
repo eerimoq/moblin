@@ -68,6 +68,9 @@ func failedToConnectMessage(_ name: String) -> String {
 extension Model {
     func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
+        guard !isChatPhone() else {
+            return
+        }
         guard !streaming else {
             return
         }
@@ -374,6 +377,7 @@ extension Model {
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
+            attachDefaultAudio: !isChatPhone(),
             destinations: stream.multiStreaming.destinations,
             srtImplementation: stream.srt.implementation,
             limitAdaptiveBitrateByTransportBitrate: stream.rateControl != .cbr
@@ -852,7 +856,11 @@ extension Model {
     }
 
     func setStreamFps(fps: Int? = nil) {
-        media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.lowLightBoost)
+        if isChatPhone() {
+            media.setFps(fps: 1, preferAutoFps: false)
+        } else {
+            media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.lowLightBoost)
+        }
     }
 
     func setStreamBitrate(stream: SettingsStream) {
@@ -908,7 +916,7 @@ extension Model {
     }
 
     func isShowingStatusStream() -> Bool {
-        database.show.stream && isStreamConfigured()
+        database.show.stream && isStreamConfigured() && !isChatPhone()
     }
 
     func updateBitrateStatus() {

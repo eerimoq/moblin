@@ -257,6 +257,9 @@ extension Model {
     }
 
     func attachSingleLayout(scene: SettingsScene) {
+        guard !isChatPhone() else {
+            return
+        }
         streamOverlay.isFrontCameraSelected = false
         deactivateAllMediaPlayers()
         switch scene.videoSource.cameraPosition {

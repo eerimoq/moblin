@@ -1363,15 +1363,6 @@
         }
       }
     },
-    "Make sure the Moblin device is relatively near the vehicle." : {
-
-    },
-    "Select vehicle" : {
-
-    },
-    "Vehicle" : {
-
-    },
     "‼️ Low on disk. Stopping recording. ‼️" : {
       "localizations" : {
         "de" : {
@@ -58474,6 +58465,9 @@
           }
         }
       }
+    },
+    "Chat phone" : {
+
     },
     "Checkboxes" : {
       "localizations" : {
@@ -128868,6 +128862,9 @@
         }
       }
     },
+    "Make sure the Moblin device is relatively near the vehicle." : {
+
+    },
     "Make sure your DJI device is powered on and that no other apps are connected to it via Bluetooth. Make sure the Moblin device is relatively near the DJI device. If you still dont see your DJI device, turn your DJI device off and then on again." : {
       "localizations" : {
         "de" : {
@@ -195720,6 +195717,9 @@
         }
       }
     },
+    "Select vehicle" : {
+
+    },
     "Select video" : {
       "localizations" : {
         "de" : {
@@ -260351,6 +260351,9 @@
           }
         }
       }
+    },
+    "Vehicle" : {
+
     },
     "Version" : {
       "localizations" : {

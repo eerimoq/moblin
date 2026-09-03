@@ -176,6 +176,7 @@ class Bonding: ObservableObject {
 
 class Show: ObservableObject {
     @Published var cameraPreview = false
+    @Published var chatPhone = false
 }
 
 class Battery: ObservableObject {
@@ -477,6 +478,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var manualFocusMotionAttitude: CMAttitude?
     var streaming = false
     var inServiceBackground = false
+    var chatPhoneBackgroundAudioPlayer: AVAudioPlayer?
     #if !targetEnvironment(macCatalyst)
     nonisolated(unsafe) var liveActivity: Activity<LiveActivityAttributes>?
     #endif
@@ -1028,6 +1030,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chat.interactiveChat = getQuickButton(type: .interactiveChat)?.isOn ?? false
         interactiveBrowsers = getQuickButton(type: .interactiveBrowserWidgets)?.isOn ?? false
         _ = updateShowCameraPreview()
+        show.chatPhone = isChatPhone()
+        updateScreenAutoOff()
         setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()
         let webPCoder = SDImageWebPCoder.shared
@@ -1480,16 +1484,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         switch backgroundRunLevel() {
         case .full:
+            startLiveActivity()
             if !pictureInPictureEnabled() {
                 disableScreenPreview()
             }
-            startLiveActivity()
         case let .service(keepChatRunning, keepBatteryLevelRunning):
+            startLiveActivity()
             inServiceBackground = true
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
-            startLiveActivity()
+            if keepChatRunning {
+                startChatPhoneBackgroundAudio()
+            }
         case .off:
             storeSettings()
             replaysStorage.store()
@@ -1503,6 +1510,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         inServiceBackground = false
+        stopChatPhoneBackgroundAudio()
         switch backgroundRunLevel() {
         case .full:
             maybeEnableScreenPreview()
@@ -2269,7 +2277,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateScreenAutoOff() {
-        UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive)
+        UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive || isChatPhone())
     }
 
     func reloadConnections() {
@@ -3092,11 +3100,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusCamera() -> Bool {
-        database.show.cameras
+        database.show.cameras && !isChatPhone()
     }
 
     func isShowingStatusMic() -> Bool {
-        database.show.microphone
+        database.show.microphone && !isChatPhone()
+    }
+
+    func isShowingStatusAudioLevel() -> Bool {
+        database.show.audioLevel && !isChatPhone()
     }
 
     func isShowingStatusEvents() -> Bool {
@@ -3221,11 +3233,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusReplay() -> Bool {
-        stream.replay.enabled
+        stream.replay.enabled && !isChatPhone()
     }
 
     func isShowingStatusBrowserWidgets() -> Bool {
-        database.show.browserWidgets && isStatusBrowserWidgetsActive()
+        database.show.browserWidgets && isStatusBrowserWidgetsActive() && !isChatPhone()
     }
 
     func isShowingStatusCatPrinter() -> Bool {
@@ -3237,7 +3249,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusFixedHorizon() -> Bool {
-        if let scene = getSelectedScene() {
+        if isChatPhone() {
+            false
+        } else if let scene = getSelectedScene() {
             isFixedHorizonEnabled(scene: scene)
         } else {
             false

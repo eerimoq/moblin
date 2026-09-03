@@ -15,6 +15,7 @@ from ..utils.generate_device_settings import mic_id
 from ..utils.generate_device_settings import uuid
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
+from ..utils.utils import manual_validation
 from ..utils.utils import manual_volume_requirement
 
 LOGGER = logging.getLogger(__name__)
@@ -131,9 +132,38 @@ class TalkbackSrtClient(TalkbackTestCase):
         )
 
 
+class TalkbackChatPhone(TalkbackTestCase):
+    """Play talkback sound over RTMP server through the speaker in chat phone mode."""
+
+    def setup(self):
+        self.import_settings(
+            RTMP_TALKBACK_STREAM_ID,
+            appMode="chatPhone",
+            rtmpServer={
+                "enabled": True,
+                "port": RTMP_SERVER_PORT,
+                "streams": [
+                    {
+                        "id": RTMP_TALKBACK_STREAM_ID,
+                        "name": "Talkback",
+                        "streamKey": "talkback",
+                    }
+                ],
+            },
+        )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
+
+    def run(self):
+        manual_volume_requirement(LOGGER)
+        with FfmpegAudioTestStream(url=self.moblin.ingest_rtmp_url("talkback")):
+            time.sleep(10)
+        manual_validation(LOGGER, "Beeps were heard from the speaker")
+
+
 def tests(moblin: Moblin):
     return [
         TalkbackRtmpServer(moblin),
         TalkbackSrtlaServer(moblin),
         TalkbackSrtClient(moblin),
+        TalkbackChatPhone(moblin),
     ]

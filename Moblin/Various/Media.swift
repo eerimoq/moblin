@@ -134,6 +134,7 @@ final class Media: NSObject, @unchecked Sendable {
                       portrait: Bool,
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double,
+                      attachDefaultAudio: Bool,
                       destinations: [SettingsStreamMultiStreamingDestination],
                       srtImplementation: SettingsStreamSrtImplementation,
                       limitAdaptiveBitrateByTransportBitrate: Bool)
@@ -181,7 +182,9 @@ final class Media: NSObject, @unchecked Sendable {
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
+        if attachDefaultAudio {
+            attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
+        }
     }
 
     func getAudioLevel() -> Float {
