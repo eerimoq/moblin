@@ -5,6 +5,30 @@ private struct PickerEntry: Identifiable {
     var name: String
 }
 
+private struct QuickButtonGoProBleDeviceView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var device: SettingsGoProDevice
+
+    var body: some View {
+        Toggle(isOn: Binding(get: {
+            device.isStarted
+        }, set: { value in
+            if value {
+                model.startGoProDeviceLiveStream(device: device)
+            } else {
+                model.stopGoProDeviceLiveStream(device: device)
+            }
+        })) {
+            HStack {
+                Text(device.name)
+                Spacer()
+                GrayTextView(text: formatGoProDeviceState(device.state))
+            }
+        }
+        .disabled(!device.canStartLive(model.statusOther.isConnectedToIpv4WiFi()))
+    }
+}
+
 private struct QuickButtonGoProLaunchLiveStreamView: View {
     @ObservedObject var goProState: GoProState
     @ObservedObject var goPro: SettingsGoPro
@@ -167,6 +191,13 @@ struct QuickButtonGoProView: View {
     var body: some View {
         GeometryReader { metrics in
             Form {
+                if !goPro.devices.isEmpty {
+                    Section("Bluetooth devices") {
+                        ForEach(goPro.devices) { device in
+                            QuickButtonGoProBleDeviceView(device: device)
+                        }
+                    }
+                }
                 if #available(iOS 17, *) {
                     VStack {
                         ScrollView(.horizontal) {

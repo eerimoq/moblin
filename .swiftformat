@@ -1,5 +1,5 @@
 --maxwidth 110
 --swiftversion 5.9
---exclude Moblin/Integrations/Tesla/Protobuf
+--exclude Moblin/Integrations/Tesla/Protobuf,Moblin/Integrations/GoPro/Protobuf
 --disable docComments
 --ifdef no-indent

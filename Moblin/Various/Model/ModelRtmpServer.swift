@@ -45,6 +45,7 @@ extension Model {
                                         latency: latency,
                                         trackDrift: stream.trackDrift)
             self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
+            self.markGoProIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
         }
     }
 
@@ -73,6 +74,12 @@ extension Model {
                 continue
             }
             restartDjiLiveStreamIfNeededAfterDelay(device: device)
+        }
+        for device in database.goPro.devices {
+            guard device.rtmpUrlType == .server, device.serverRtmpStreamId == stream.id else {
+                continue
+            }
+            restartGoProLiveStreamIfNeededAfterDelay(device: device)
         }
     }
 

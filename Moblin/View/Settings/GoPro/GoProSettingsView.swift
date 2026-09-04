@@ -440,6 +440,19 @@ private struct GoProRtmpUrls: View {
     }
 }
 
+private struct GoProQrCodesSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
+            GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
+            GoProRtmpUrls(status: model.statusOther, goPro: model.database.goPro, goProState: model.goPro)
+        }
+        .navigationTitle("QR codes")
+    }
+}
+
 struct GoProSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -450,9 +463,19 @@ struct GoProSettingsView: View {
                     IntegrationImageView(imageName: "GoPro")
                 }
             }
-            GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
-            GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
-            GoProRtmpUrls(status: model.statusOther, goPro: model.database.goPro, goProState: model.goPro)
+            GoProBleDevicesSettingsSection(goPro: model.database.goPro)
+            Section {
+                NavigationLink {
+                    GoProQrCodesSettingsView()
+                } label: {
+                    Text("QR codes")
+                }
+            } footer: {
+                Text("""
+                Configure older devices, or devices that are not paired over Bluetooth, by showing \
+                them QR codes for launching a live stream, WiFi credentials and RTMP URL.
+                """)
+            }
         }
         .navigationTitle("GoPro")
     }
