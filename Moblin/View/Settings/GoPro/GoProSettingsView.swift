@@ -472,7 +472,7 @@ struct GoProSettingsView: View {
                 }
             } footer: {
                 Text("""
-                Configure older cameras, or cameras that are not paired over Bluetooth, by showing \
+                Configure older devices, or devices that are not paired over Bluetooth, by showing \
                 them QR codes for launching a live stream, WiFi credentials and RTMP URL.
                 """)
             }

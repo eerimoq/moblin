@@ -63,7 +63,7 @@ private struct GoProDeviceScannerSettingsView: View {
         .onDisappear {
             scanner.stopScanningForDevices()
         }
-        .navigationTitle("GoPro camera")
+        .navigationTitle("GoPro device")
     }
 }
 
@@ -71,7 +71,7 @@ private struct GoProDeviceSelectionSection: View {
     @ObservedObject var device: SettingsGoProDevice
 
     var body: some View {
-        Section("Camera") {
+        Section("Device") {
             NavigationLink {
                 GoProDeviceScannerSettingsView { discoveredDevice in
                     device.bluetoothPeripheralId = discoveredDevice.peripheral.identifier
@@ -85,7 +85,7 @@ private struct GoProDeviceSelectionSection: View {
             }
             .disabled(device.isStarted)
             if device.bluetoothPeripheralId == nil {
-                Text("⚠️ Select a GoPro. The first connection requires pairing mode on the camera.")
+                Text("⚠️ Select a GoPro device. The first connection requires pairing mode.")
             }
         }
     }
@@ -342,7 +342,7 @@ private struct GoProBleDeviceSettingsView: View {
             }
             GoProDeviceStartStopSection(device: device, status: model.statusOther)
         }
-        .navigationTitle("GoPro camera")
+        .navigationTitle("GoPro device")
     }
 }
 
@@ -379,10 +379,10 @@ struct GoProBleDevicesSettingsSection: View {
                 goPro.devices.append(device)
             }
         } header: {
-            Text("Bluetooth cameras")
+            Text("Devices")
         } footer: {
             Text(
-                "Pair and control compatible GoPro cameras over Bluetooth. HERO9 Black or newer is required."
+                "Pair and control compatible GoPro devices over Bluetooth. HERO9 Black or newer is required."
             )
         }
     }

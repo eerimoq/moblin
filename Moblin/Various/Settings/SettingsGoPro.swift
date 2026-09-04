@@ -89,7 +89,7 @@ enum SettingsGoProLens: String, CaseIterable, Codable {
     func toString() -> String {
         switch self {
         case .auto:
-            String(localized: "Camera default")
+            String(localized: "Default")
         case .wide:
             String(localized: "Wide")
         case .linear:
