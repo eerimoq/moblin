@@ -326,55 +326,40 @@ final class GoProDevice: NSObject {
         case (goProPairingFeatureId, goProPairingFinishResponseId):
             startWifiScan()
         case (goProNetworkFeatureId, goProStartScanResponseId):
-            guard let response = try? OpenGopro_ResponseStartScanning(serializedBytes: payload) else {
-                return
-            }
-            if response.result != .resultSuccess {
-                fail(state: .wifiSetupFailed)
-            }
+            processStartScanResponse(payload)
         case (goProNetworkFeatureId, goProScanningNotificationId):
-            guard let notification = try? OpenGopro_NotifStartScanning(serializedBytes: payload) else {
-                return
-            }
-            handleScanningState(notification)
+            processScanningNotification(payload)
         case (goProNetworkFeatureId, goProGetApEntriesResponseId):
-            guard let response = try? OpenGopro_ResponseGetApEntries(serializedBytes: payload) else {
-                return
-            }
-            handleApEntries(response)
+            processGetApEntriesResponse(payload)
         case (goProNetworkFeatureId, goProConnectResponseId),
              (goProNetworkFeatureId, goProConnectNewResponseId):
-            guard let response = try? OpenGopro_ResponseConnect(serializedBytes: payload) else {
-                return
-            }
-            handleConnectResponse(response)
+            processConnectResponse(payload)
         case (goProNetworkFeatureId, goProProvisioningNotificationId):
-            guard let notification = try? OpenGopro_NotifProvisioningState(serializedBytes: payload) else {
-                return
-            }
-            handleProvisioningState(notification.provisioningState)
+            processProvisioningNotification(payload)
         default:
             break
         }
     }
 
-    private func handleScanningState(_ notification: OpenGopro_NotifStartScanning) {
+    private func processStartScanResponse(_ payload: Data) {
+        guard let response = try? OpenGopro_ResponseStartScanning(serializedBytes: payload) else {
+            return
+        }
+        if response.result != .resultSuccess {
+            fail(state: .wifiSetupFailed)
+        }
+    }
+
+    private func processScanningNotification(_ payload: Data) {
+        guard let notification = try? OpenGopro_NotifStartScanning(serializedBytes: payload) else {
+            return
+        }
         guard state == .settingUpWifi else {
             return
         }
         switch notification.scanningState {
         case .scanningSuccess:
-            guard scanId == nil else {
-                return
-            }
-            guard notification.totalEntries > 0 else {
-                fail(state: .wifiSetupFailed)
-                return
-            }
-            scanId = notification.scanID
-            scanTotalEntries = notification.totalEntries
-            scanFetchedEntries = 0
-            requestNextApEntries()
+            startFetchingApEntries(notification)
         case .scanningAbortedBySystem, .scanningCancelledByUser:
             fail(state: .wifiSetupFailed)
         default:
@@ -382,7 +367,24 @@ final class GoProDevice: NSObject {
         }
     }
 
-    private func handleApEntries(_ response: OpenGopro_ResponseGetApEntries) {
+    private func startFetchingApEntries(_ notification: OpenGopro_NotifStartScanning) {
+        guard scanId == nil else {
+            return
+        }
+        guard notification.totalEntries > 0 else {
+            fail(state: .wifiSetupFailed)
+            return
+        }
+        scanId = notification.scanID
+        scanTotalEntries = notification.totalEntries
+        scanFetchedEntries = 0
+        requestNextApEntries()
+    }
+
+    private func processGetApEntriesResponse(_ payload: Data) {
+        guard let response = try? OpenGopro_ResponseGetApEntries(serializedBytes: payload) else {
+            return
+        }
         guard state == .settingUpWifi, scanId != nil else {
             return
         }
@@ -401,7 +403,10 @@ final class GoProDevice: NSObject {
         }
     }
 
-    private func handleConnectResponse(_ response: OpenGopro_ResponseConnect) {
+    private func processConnectResponse(_ payload: Data) {
+        guard let response = try? OpenGopro_ResponseConnect(serializedBytes: payload) else {
+            return
+        }
         guard response.result == .resultSuccess else {
             fail(state: .wifiSetupFailed)
             return
@@ -414,6 +419,13 @@ final class GoProDevice: NSObject {
             self?.fail(state: .wifiSetupFailed)
         }
         handleProvisioningState(response.provisioningState)
+    }
+
+    private func processProvisioningNotification(_ payload: Data) {
+        guard let notification = try? OpenGopro_NotifProvisioningState(serializedBytes: payload) else {
+            return
+        }
+        handleProvisioningState(notification.provisioningState)
     }
 
     private func handleProvisioningState(_ provisioningState: OpenGopro_EnumProvisioning) {
@@ -436,21 +448,24 @@ final class GoProDevice: NSObject {
     private func processCommandMessage(_ message: Data) {
         switch (message[0], message[1]) {
         case (goProLiveStreamCommandFeatureId, goProSetLiveStreamModeResponseId):
-            guard let response = try? OpenGopro_ResponseGeneric(serializedBytes: Data(message.dropFirst(2)))
-            else {
-                return
-            }
-            if response.result != .resultSuccess {
-                fail()
-            }
+            processSetLiveStreamModeResponse(Data(message.dropFirst(2)))
         case (goProShutterCommandId, _):
-            handleShutterResponse(status: message[1])
+            processShutterResponse(status: message[1])
         default:
             break
         }
     }
 
-    private func handleShutterResponse(status: UInt8) {
+    private func processSetLiveStreamModeResponse(_ payload: Data) {
+        guard let response = try? OpenGopro_ResponseGeneric(serializedBytes: payload) else {
+            return
+        }
+        if response.result != .resultSuccess {
+            fail()
+        }
+    }
+
+    private func processShutterResponse(status: UInt8) {
         if state == .configuring, waitingForShutterOffBeforeConfigure {
             waitingForShutterOffBeforeConfigure = false
             sendLiveStreamConfiguration()
@@ -463,23 +478,32 @@ final class GoProDevice: NSObject {
 
     private func processQueryMessage(_ message: Data) {
         switch (message[0], message[1]) {
-        case (goProLiveStreamQueryFeatureId, goProGetLiveStreamStatusResponseId),
-             (goProLiveStreamQueryFeatureId, goProLiveStreamStatusNotificationId):
-            guard let status =
-                try? OpenGopro_NotifyLiveStreamStatus(serializedBytes: Data(message.dropFirst(2)))
-            else {
-                return
-            }
-            if message[1] == goProGetLiveStreamStatusResponseId, supportedLenses == nil {
-                supportedLenses = status.liveStreamLensSupported ? status.liveStreamLensSupportedArray : []
-            }
-            handleLiveStreamStatus(status.liveStreamStatus)
-        case (goProGetStatusQueryId, goProResponseSuccessStatus)
-            where message.count >= 5 && message[2] == goProBatteryPercentageStatusId && message[3] >= 1:
-            batteryPercentage = Int(message[4])
+        case (goProLiveStreamQueryFeatureId, goProGetLiveStreamStatusResponseId):
+            processLiveStreamStatus(Data(message.dropFirst(2)), isResponse: true)
+        case (goProLiveStreamQueryFeatureId, goProLiveStreamStatusNotificationId):
+            processLiveStreamStatus(Data(message.dropFirst(2)), isResponse: false)
+        case (goProGetStatusQueryId, goProResponseSuccessStatus):
+            processStatusResponse(Data(message.dropFirst(2)))
         default:
             break
         }
+    }
+
+    private func processLiveStreamStatus(_ payload: Data, isResponse: Bool) {
+        guard let status = try? OpenGopro_NotifyLiveStreamStatus(serializedBytes: payload) else {
+            return
+        }
+        if isResponse, supportedLenses == nil {
+            supportedLenses = status.liveStreamLensSupported ? status.liveStreamLensSupportedArray : []
+        }
+        handleLiveStreamStatus(status.liveStreamStatus)
+    }
+
+    private func processStatusResponse(_ payload: Data) {
+        guard payload.count >= 3, payload[0] == goProBatteryPercentageStatusId, payload[1] >= 1 else {
+            return
+        }
+        batteryPercentage = Int(payload[2])
     }
 
     private func handleLiveStreamStatus(_ liveStreamStatus: OpenGopro_EnumLiveStreamStatus) {
@@ -487,18 +511,26 @@ final class GoProDevice: NSObject {
         case .liveStreamStateReady:
             startShutterWhenReady()
         case .liveStreamStateStreaming, .liveStreamStateReconnecting:
-            setState(state: .streaming)
-            operationTimeoutTimer.stop()
-            statusPollTimer.stop()
-            send(goProGetBatteryPercentageMessage(), to: goProQueryId)
+            handleStreaming()
         case .liveStreamStateIdle, .liveStreamStateCompleteStayOn:
-            if state == .stoppingStream {
-                reset()
-            }
+            handleNotStreaming()
         case .liveStreamStateFailedStayOn, .liveStreamStateUnavailable:
             fail()
         default:
             break
+        }
+    }
+
+    private func handleStreaming() {
+        setState(state: .streaming)
+        operationTimeoutTimer.stop()
+        statusPollTimer.stop()
+        send(goProGetBatteryPercentageMessage(), to: goProQueryId)
+    }
+
+    private func handleNotStreaming() {
+        if state == .stoppingStream {
+            reset()
         }
     }
 }
