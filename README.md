@@ -12,6 +12,8 @@ and [OBS Studio](https://obsproject.com) as well (and probably more).
     <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot-chat.png" width="17%" >
 </p>
 
+Website: https://moblin.app
+
 Discord: https://discord.moblin.app
 
 Github: https://github.com/eerimoq/moblin
