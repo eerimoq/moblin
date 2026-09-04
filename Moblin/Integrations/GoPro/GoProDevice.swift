@@ -15,6 +15,17 @@ enum GoProDeviceState: Equatable {
     case failed
 }
 
+private let startLiveStreamTimeout = 90.0
+private let stopLiveStreamTimeout = 8.0
+private let keepAliveInterval = 3.0
+private let pairingFallbackTimeout = 1.0
+private let wifiScanTimeout = 30.0
+private let wifiProvisioningDefaultTimeout: Int32 = 20
+private let wifiProvisioningTimeoutMargin = 5.0
+private let statusPollInterval = 1.0
+private let startShutterDelay = 2.0
+private let batteryPollKeepAlives = 10
+
 protocol GoProDeviceDelegate: AnyObject {
     func goProDeviceStreamingState(_ device: GoProDevice, state: GoProDeviceState)
 }
@@ -30,7 +41,7 @@ final class GoProDevice: NSObject {
     private var lens: SettingsGoProLens = .auto
     private var deviceId: UUID?
     private var centralManager: CBCentralManager?
-    private var cameraPeripheral: CBPeripheral?
+    private var devicePeripheral: CBPeripheral?
     private var characteristics: [CBUUID: CBCharacteristic] = [:]
     private var subscribedCharacteristics: Set<CBUUID> = []
     private var accumulators: [CBUUID: GoProBleMessageAccumulator] = [:]
@@ -74,7 +85,7 @@ final class GoProDevice: NSObject {
         self.deviceId = deviceId
         resetConnection()
         setState(state: .discovering)
-        operationTimeoutTimer.startSingleShot(timeout: 90) { [weak self] in
+        operationTimeoutTimer.startSingleShot(timeout: startLiveStreamTimeout) { [weak self] in
             self?.fail()
         }
         centralManager = CBCentralManager(delegate: self, queue: .main)
@@ -91,7 +102,7 @@ final class GoProDevice: NSObject {
         setState(state: .stoppingStream)
         if wasStreaming, characteristics[goProCommandId] != nil {
             send(goProSetShutterMessage(on: false), to: goProCommandId)
-            stopTimer.startSingleShot(timeout: 8) { [weak self] in
+            stopTimer.startSingleShot(timeout: stopLiveStreamTimeout) { [weak self] in
                 self?.reset()
             }
         } else {
@@ -115,11 +126,11 @@ final class GoProDevice: NSObject {
         startShutterTimer.stop()
         stopTimer.stop()
         keepAliveTimer.stop()
-        if let cameraPeripheral {
-            centralManager?.cancelPeripheralConnection(cameraPeripheral)
+        if let devicePeripheral {
+            centralManager?.cancelPeripheralConnection(devicePeripheral)
         }
         centralManager = nil
-        cameraPeripheral = nil
+        devicePeripheral = nil
         characteristics.removeAll()
         subscribedCharacteristics.removeAll()
         accumulators.removeAll()
@@ -160,12 +171,12 @@ final class GoProDevice: NSObject {
             return
         }
         didBeginSetup = true
-        keepAliveTimer.startPeriodic(interval: 3) { [weak self] in
+        keepAliveTimer.startPeriodic(interval: keepAliveInterval) { [weak self] in
             self?.sendKeepAlive()
         }
         setState(state: .pairing)
         send(goProPairingCompleteMessage(), to: goProNetworkManagementId)
-        pairingFallbackTimer.startSingleShot(timeout: 1) { [weak self] in
+        pairingFallbackTimer.startSingleShot(timeout: pairingFallbackTimeout) { [weak self] in
             self?.startWifiScan()
         }
     }
@@ -177,7 +188,7 @@ final class GoProDevice: NSObject {
         pairingFallbackTimer.stop()
         setState(state: .settingUpWifi)
         send(goProStartScanMessage(), to: goProNetworkManagementId)
-        wifiTimeoutTimer.startSingleShot(timeout: 30) { [weak self] in
+        wifiTimeoutTimer.startSingleShot(timeout: wifiScanTimeout) { [weak self] in
             self?.fail(state: .wifiSetupFailed)
         }
     }
@@ -194,7 +205,7 @@ final class GoProDevice: NSObject {
             goProGetApEntriesMessage(
                 scanId: scanId,
                 startIndex: scanFetchedEntries,
-                maximumEntries: min(scanTotalEntries - scanFetchedEntries, 100)
+                maximumEntries: min(scanTotalEntries - scanFetchedEntries, goProMaximumApEntriesPerRequest)
             ),
             to: goProNetworkManagementId
         )
@@ -247,9 +258,10 @@ final class GoProDevice: NSObject {
             ),
             to: goProCommandId
         )
-        statusPollTimer.startPeriodic(interval: 1, initial: 1) { [weak self] in
-            self?.send(goProGetLiveStreamStatusMessage(), to: goProQueryId)
-        }
+        statusPollTimer
+            .startPeriodic(interval: statusPollInterval, initial: statusPollInterval) { [weak self] in
+                self?.send(goProGetLiveStreamStatusMessage(), to: goProQueryId)
+            }
     }
 
     private func startShutterWhenReady() {
@@ -258,7 +270,7 @@ final class GoProDevice: NSObject {
         }
         didScheduleShutterStart = true
         setState(state: .startingStream)
-        startShutterTimer.startSingleShot(timeout: 2) { [weak self] in
+        startShutterTimer.startSingleShot(timeout: startShutterDelay) { [weak self] in
             self?.send(goProSetShutterMessage(on: true), to: goProCommandId)
         }
     }
@@ -269,7 +281,7 @@ final class GoProDevice: NSObject {
         }
         send(goProKeepAliveMessage(), to: goProSettingsId)
         keepAliveCount += 1
-        if state == .streaming, keepAliveCount.isMultiple(of: 10) {
+        if state == .streaming, keepAliveCount.isMultiple(of: batteryPollKeepAlives) {
             send(goProGetBatteryPercentageMessage(), to: goProQueryId)
         }
     }
@@ -285,11 +297,11 @@ final class GoProDevice: NSObject {
     }
 
     private func writeNextPacketIfNeeded() {
-        guard !writeInProgress, let next = pendingWrites.first, let cameraPeripheral else {
+        guard !writeInProgress, let next = pendingWrites.first, let devicePeripheral else {
             return
         }
         writeInProgress = true
-        cameraPeripheral.writeValue(next.packet, for: next.characteristic, type: .withResponse)
+        devicePeripheral.writeValue(next.packet, for: next.characteristic, type: .withResponse)
     }
 
     private func processMessage(_ message: Data, from characteristic: CBUUID) {
@@ -311,31 +323,32 @@ final class GoProDevice: NSObject {
     private func processNetworkMessage(_ message: Data) {
         let payload = Data(message.dropFirst(2))
         switch (message[0], message[1]) {
-        case (0x03, 0x81):
+        case (goProPairingFeatureId, goProPairingFinishResponseId):
             startWifiScan()
-        case (0x02, 0x82):
+        case (goProNetworkFeatureId, goProStartScanResponseId):
             guard let response = try? OpenGopro_ResponseStartScanning(serializedBytes: payload) else {
                 return
             }
             if response.result != .resultSuccess {
                 fail(state: .wifiSetupFailed)
             }
-        case (0x02, 0x0B):
+        case (goProNetworkFeatureId, goProScanningNotificationId):
             guard let notification = try? OpenGopro_NotifStartScanning(serializedBytes: payload) else {
                 return
             }
             handleScanningState(notification)
-        case (0x02, 0x83):
+        case (goProNetworkFeatureId, goProGetApEntriesResponseId):
             guard let response = try? OpenGopro_ResponseGetApEntries(serializedBytes: payload) else {
                 return
             }
             handleApEntries(response)
-        case (0x02, 0x84), (0x02, 0x85):
+        case (goProNetworkFeatureId, goProConnectResponseId),
+             (goProNetworkFeatureId, goProConnectNewResponseId):
             guard let response = try? OpenGopro_ResponseConnect(serializedBytes: payload) else {
                 return
             }
             handleConnectResponse(response)
-        case (0x02, 0x0C):
+        case (goProNetworkFeatureId, goProProvisioningNotificationId):
             guard let notification = try? OpenGopro_NotifProvisioningState(serializedBytes: payload) else {
                 return
             }
@@ -393,8 +406,11 @@ final class GoProDevice: NSObject {
             fail(state: .wifiSetupFailed)
             return
         }
-        let timeoutSeconds = response.hasTimeoutSeconds ? response.timeoutSeconds : 20
-        wifiTimeoutTimer.startSingleShot(timeout: Double(timeoutSeconds) + 5) { [weak self] in
+        let timeoutSeconds = response.hasTimeoutSeconds ? response
+            .timeoutSeconds : wifiProvisioningDefaultTimeout
+        wifiTimeoutTimer.startSingleShot(
+            timeout: Double(timeoutSeconds) + wifiProvisioningTimeoutMargin
+        ) { [weak self] in
             self?.fail(state: .wifiSetupFailed)
         }
         handleProvisioningState(response.provisioningState)
@@ -419,7 +435,7 @@ final class GoProDevice: NSObject {
 
     private func processCommandMessage(_ message: Data) {
         switch (message[0], message[1]) {
-        case (0xF1, 0xF9):
+        case (goProLiveStreamCommandFeatureId, goProSetLiveStreamModeResponseId):
             guard let response = try? OpenGopro_ResponseGeneric(serializedBytes: Data(message.dropFirst(2)))
             else {
                 return
@@ -427,7 +443,7 @@ final class GoProDevice: NSObject {
             if response.result != .resultSuccess {
                 fail()
             }
-        case (0x01, _):
+        case (goProShutterCommandId, _):
             handleShutterResponse(status: message[1])
         default:
             break
@@ -440,24 +456,26 @@ final class GoProDevice: NSObject {
             sendLiveStreamConfiguration()
         } else if state == .stoppingStream {
             reset()
-        } else if status != 0 {
+        } else if status != goProResponseSuccessStatus {
             fail()
         }
     }
 
     private func processQueryMessage(_ message: Data) {
         switch (message[0], message[1]) {
-        case (0xF5, 0xF4), (0xF5, 0xF5):
+        case (goProLiveStreamQueryFeatureId, goProGetLiveStreamStatusResponseId),
+             (goProLiveStreamQueryFeatureId, goProLiveStreamStatusNotificationId):
             guard let status =
                 try? OpenGopro_NotifyLiveStreamStatus(serializedBytes: Data(message.dropFirst(2)))
             else {
                 return
             }
-            if message[1] == 0xF4, supportedLenses == nil {
+            if message[1] == goProGetLiveStreamStatusResponseId, supportedLenses == nil {
                 supportedLenses = status.liveStreamLensSupported ? status.liveStreamLensSupportedArray : []
             }
             handleLiveStreamStatus(status.liveStreamStatus)
-        case (0x13, 0x00) where message.count >= 5 && message[2] == 0x46 && message[3] >= 1:
+        case (goProGetStatusQueryId, goProResponseSuccessStatus)
+            where message.count >= 5 && message[2] == goProBatteryPercentageStatusId && message[3] >= 1:
             batteryPercentage = Int(message[4])
         default:
             break
@@ -499,7 +517,7 @@ extension GoProDevice: CBCentralManagerDelegate {
             fail()
             return
         }
-        cameraPeripheral = peripheral
+        devicePeripheral = peripheral
         peripheral.delegate = self
         setState(state: .connecting)
         central.connect(peripheral)

@@ -13,15 +13,55 @@ let goProCameraManagementServiceId = CBUUID(string: "B5F90090-AA8D-11E3-9046-000
 let goProNetworkManagementId = CBUUID(string: "B5F90091-AA8D-11E3-9046-0002A5D5C51B")
 let goProNetworkManagementResponseId = CBUUID(string: "B5F90092-AA8D-11E3-9046-0002A5D5C51B")
 
-func goProBlePackets(payload: Data, maximumPacketSize: Int = 20) -> [Data] {
-    guard !payload.isEmpty, payload.count < 8191, maximumPacketSize >= 3 else {
+let goProPairingFeatureId: UInt8 = 0x03
+let goProPairingFinishActionId: UInt8 = 0x01
+let goProPairingFinishResponseId: UInt8 = 0x81
+let goProNetworkFeatureId: UInt8 = 0x02
+let goProStartScanActionId: UInt8 = 0x02
+let goProStartScanResponseId: UInt8 = 0x82
+let goProGetApEntriesActionId: UInt8 = 0x03
+let goProGetApEntriesResponseId: UInt8 = 0x83
+let goProConnectActionId: UInt8 = 0x04
+let goProConnectResponseId: UInt8 = 0x84
+let goProConnectNewActionId: UInt8 = 0x05
+let goProConnectNewResponseId: UInt8 = 0x85
+let goProScanningNotificationId: UInt8 = 0x0B
+let goProProvisioningNotificationId: UInt8 = 0x0C
+let goProShutterCommandId: UInt8 = 0x01
+let goProLiveStreamCommandFeatureId: UInt8 = 0xF1
+let goProSetLiveStreamModeActionId: UInt8 = 0x79
+let goProSetLiveStreamModeResponseId: UInt8 = 0xF9
+let goProLiveStreamQueryFeatureId: UInt8 = 0xF5
+let goProGetLiveStreamStatusActionId: UInt8 = 0x74
+let goProGetLiveStreamStatusResponseId: UInt8 = 0xF4
+let goProLiveStreamStatusNotificationId: UInt8 = 0xF5
+let goProGetStatusQueryId: UInt8 = 0x13
+let goProBatteryPercentageStatusId: UInt8 = 0x46
+let goProKeepAliveSettingId: UInt8 = 0x5B
+let goProResponseSuccessStatus: UInt8 = 0x00
+let goProMaximumApEntriesPerRequest: Int32 = 100
+
+private let goProKeepAliveValue: UInt8 = 0x42
+private let goProMaximumPacketSize = 20
+private let goProMaximumPayloadSize = 8191
+private let goProContinuationPacketHeader: UInt8 = 0x80
+private let goProGeneralPacketHeaderType: UInt8 = 0
+private let goProExtended13PacketHeaderType: UInt8 = 1
+private let goProExtended16PacketHeaderType: UInt8 = 2
+private let goProPacketHeaderTypeMask: UInt8 = 0x60
+private let goProPacketHeaderTypeShift: UInt8 = 5
+private let goProPacketHeaderLengthMask: UInt8 = 0x1F
+
+func goProBlePackets(payload: Data, maximumPacketSize: Int = goProMaximumPacketSize) -> [Data] {
+    guard !payload.isEmpty, payload.count < goProMaximumPayloadSize, maximumPacketSize >= 3 else {
         return []
     }
     let length = payload.count
     var packets: [Data] = []
     var offset = 0
     var first = Data([
-        0x20 | UInt8((length >> 8) & 0x1F),
+        (goProExtended13PacketHeaderType << goProPacketHeaderTypeShift)
+            | UInt8((length >> 8) & Int(goProPacketHeaderLengthMask)),
         UInt8(length & 0xFF),
     ])
     let firstCount = min(maximumPacketSize - first.count, length)
@@ -29,7 +69,7 @@ func goProBlePackets(payload: Data, maximumPacketSize: Int = 20) -> [Data] {
     packets.append(first)
     offset += firstCount
     while offset < length {
-        var continuation = Data([0x80])
+        var continuation = Data([goProContinuationPacketHeader])
         let count = min(maximumPacketSize - 1, length - offset)
         continuation.append(payload[offset ..< offset + count])
         packets.append(continuation)
@@ -42,11 +82,11 @@ func goProPairingCompleteMessage() -> Data {
     var request = OpenGopro_RequestPairingFinish()
     request.result = .success
     request.phoneName = "Moblin"
-    return Data([0x03, 0x01]) + request.encoded()
+    return Data([goProPairingFeatureId, goProPairingFinishActionId]) + request.encoded()
 }
 
 func goProStartScanMessage() -> Data {
-    Data([0x02, 0x02]) + OpenGopro_RequestStartScan().encoded()
+    Data([goProNetworkFeatureId, goProStartScanActionId]) + OpenGopro_RequestStartScan().encoded()
 }
 
 func goProGetApEntriesMessage(scanId: Int32, startIndex: Int32, maximumEntries: Int32) -> Data {
@@ -54,13 +94,13 @@ func goProGetApEntriesMessage(scanId: Int32, startIndex: Int32, maximumEntries: 
     request.startIndex = startIndex
     request.maxEntries = maximumEntries
     request.scanID = scanId
-    return Data([0x02, 0x03]) + request.encoded()
+    return Data([goProNetworkFeatureId, goProGetApEntriesActionId]) + request.encoded()
 }
 
 func goProConnectToProvisionedWifiMessage(ssid: String) -> Data {
     var request = OpenGopro_RequestConnect()
     request.ssid = ssid
-    return Data([0x02, 0x04]) + request.encoded()
+    return Data([goProNetworkFeatureId, goProConnectActionId]) + request.encoded()
 }
 
 func goProConnectToWifiMessage(ssid: String, password: String) -> Data {
@@ -68,7 +108,7 @@ func goProConnectToWifiMessage(ssid: String, password: String) -> Data {
     request.ssid = ssid
     request.password = password
     request.bypassEulaCheck = true
-    return Data([0x02, 0x05]) + request.encoded()
+    return Data([goProNetworkFeatureId, goProConnectNewActionId]) + request.encoded()
 }
 
 func goProRegisterLiveStreamStatusMessage() -> Data {
@@ -78,11 +118,12 @@ func goProRegisterLiveStreamStatusMessage() -> Data {
         .registerLiveStreamStatusError,
         .registerLiveStreamStatusBitrate,
     ]
-    return Data([0xF5, 0x74]) + request.encoded()
+    return Data([goProLiveStreamQueryFeatureId, goProGetLiveStreamStatusActionId]) + request.encoded()
 }
 
 func goProGetLiveStreamStatusMessage() -> Data {
-    Data([0xF5, 0x74]) + OpenGopro_RequestGetLiveStreamStatus().encoded()
+    Data([goProLiveStreamQueryFeatureId, goProGetLiveStreamStatusActionId])
+        + OpenGopro_RequestGetLiveStreamStatus().encoded()
 }
 
 func goProSetLiveStreamModeMessage(
@@ -101,19 +142,19 @@ func goProSetLiveStreamModeMessage(
     if let lens = lens.toProtobuf() {
         request.lens = lens
     }
-    return Data([0xF1, 0x79]) + request.encoded()
+    return Data([goProLiveStreamCommandFeatureId, goProSetLiveStreamModeActionId]) + request.encoded()
 }
 
 func goProSetShutterMessage(on: Bool) -> Data {
-    Data([0x01, 0x01, on ? 0x01 : 0x00])
+    Data([goProShutterCommandId, 1, on ? 1 : 0])
 }
 
 func goProKeepAliveMessage() -> Data {
-    Data([0x5B, 0x01, 0x42])
+    Data([goProKeepAliveSettingId, 1, goProKeepAliveValue])
 }
 
 func goProGetBatteryPercentageMessage() -> Data {
-    Data([0x13, 0x46])
+    Data([goProGetStatusQueryId, goProBatteryPercentageStatusId])
 }
 
 final class GoProBleMessageAccumulator {
@@ -124,7 +165,7 @@ final class GoProBleMessageAccumulator {
         guard let firstByte = packet.first else {
             return nil
         }
-        if firstByte & 0x80 != 0 {
+        if firstByte & goProContinuationPacketHeader != 0 {
             guard expectedLength != nil else {
                 reset()
                 return nil
@@ -132,19 +173,19 @@ final class GoProBleMessageAccumulator {
             payload.append(packet.dropFirst())
         } else {
             reset()
-            let headerType = (firstByte & 0x60) >> 5
+            let headerType = (firstByte & goProPacketHeaderTypeMask) >> goProPacketHeaderTypeShift
             let headerLength: Int
             switch headerType {
-            case 0:
-                expectedLength = Int(firstByte & 0x1F)
+            case goProGeneralPacketHeaderType:
+                expectedLength = Int(firstByte & goProPacketHeaderLengthMask)
                 headerLength = 1
-            case 1:
+            case goProExtended13PacketHeaderType:
                 guard packet.count >= 2 else {
                     return nil
                 }
-                expectedLength = (Int(firstByte & 0x1F) << 8) | Int(packet[1])
+                expectedLength = (Int(firstByte & goProPacketHeaderLengthMask) << 8) | Int(packet[1])
                 headerLength = 2
-            case 2:
+            case goProExtended16PacketHeaderType:
                 guard packet.count >= 3 else {
                     return nil
                 }
