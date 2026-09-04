@@ -12,13 +12,11 @@ final class GoProDeviceScanner: NSObject, ObservableObject {
     private var centralManager: CBCentralManager?
 
     func startScanningForDevices() {
-        logger.info("gopro-scanner: Starting scan")
         discoveredDevices = []
         centralManager = CBCentralManager(delegate: self, queue: .main)
     }
 
     func stopScanningForDevices() {
-        logger.info("gopro-scanner: Stopping scan; found \(discoveredDevices.count) camera(s)")
         centralManager?.stopScan()
         centralManager = nil
     }
@@ -26,19 +24,17 @@ final class GoProDeviceScanner: NSObject, ObservableObject {
 
 extension GoProDeviceScanner: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        logger.info("gopro-scanner: Bluetooth state \(central.state.rawValue)")
         guard central.state == .poweredOn else {
             return
         }
-        logger.info("gopro-scanner: Scanning for OpenGoPro service \(GoProBleUuid.controlService)")
-        central.scanForPeripherals(withServices: [GoProBleUuid.controlService])
+        central.scanForPeripherals(withServices: [goProControlServiceId])
     }
 
     func centralManager(
         _: CBCentralManager,
         didDiscover peripheral: CBPeripheral,
         advertisementData: [String: Any],
-        rssi: NSNumber
+        rssi _: NSNumber
     ) {
         guard !discoveredDevices.contains(where: { $0.peripheral.identifier == peripheral.identifier }) else {
             return
@@ -46,9 +42,6 @@ extension GoProDeviceScanner: CBCentralManagerDelegate {
         let name = advertisementData[CBAdvertisementDataLocalNameKey] as? String
             ?? peripheral.name
             ?? String(localized: "Unknown")
-        logger.info(
-            "gopro-scanner: Found \(name) with peripheral id \(peripheral.identifier), RSSI \(rssi) dBm"
-        )
         discoveredDevices.append(.init(peripheral: peripheral, name: name))
     }
 }
