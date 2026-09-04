@@ -482,6 +482,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     #if !targetEnvironment(macCatalyst)
     nonisolated(unsafe) var liveActivity: Activity<LiveActivityAttributes>?
     #endif
+    #if targetEnvironment(macCatalyst)
+    var macStatusItem: MacStatusItem?
+    #endif
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var currentRecording: Recording?
@@ -1070,6 +1073,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         startPeriodicTimers()
         setupThermalState()
+        setupMacStatusItem()
         updateQuickButtonStates()
         removeUnusedImages()
         removeUnusedAlertMedias()
@@ -1576,6 +1580,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopAll()
         }
         stopLiveActivity()
+        stopMacStatusItem()
         writeFileLogToFile()
         flushFileLogToFile()
     }

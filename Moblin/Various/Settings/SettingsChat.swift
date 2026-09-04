@@ -589,6 +589,7 @@ class SettingsVoice: Codable, @unchecked Sendable {
 }
 
 class SettingsChat: Codable, ObservableObject {
+    static let defaultGifScale: Float = 3.0
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
@@ -644,6 +645,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
     @Published var background: Bool = false
     @Published var sharedChatIcons: Bool = true
+    @Published var gifScale: Float = defaultGifScale
 
     enum CodingKeys: CodingKey {
         case fontSize
@@ -697,6 +699,7 @@ class SettingsChat: Codable, ObservableObject {
         case displayStyle
         case background
         case sharedChatIcons
+        case gifScale
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -751,6 +754,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.displayStyle, displayStyle)
         try container.encode(.background, background)
         try container.encode(.sharedChatIcons, sharedChatIcons)
+        try container.encode(.gifScale, gifScale)
     }
 
     init() {}
@@ -843,6 +847,7 @@ class SettingsChat: Codable, ObservableObject {
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
         background = container.decode(.background, Bool.self, false)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
+        gifScale = container.decode(.gifScale, Float.self, Self.defaultGifScale)
     }
 
     func getRotation() -> Double {

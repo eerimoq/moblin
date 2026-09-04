@@ -126,6 +126,111 @@ struct TwitchChatSuite {
     }
 
     @Test
+    func gifMessage() throws {
+        let message = try TwitchChatMessage(string: """
+        @badge-info=subscriber/24;\
+        badges=broadcaster/1,subscriber/0,sub-gifter/1;\
+        color=;\
+        display-name=eerimoq;\
+        emotes=;\
+        first-msg=0;\
+        flags=;\
+        gifs=0-34|l0MYDEPLWRWbJoRuU|https://media3.giphy.com/media/l0MYDEPLWRWbJoRuU/giphy.gif?\
+        cid=095d7a5dpq5y4f8xwwlqk053r89k5ezmzgauu6wyjbrun0k0&ep=v1_gifs_trending&rid=giphy.gif&ct=g;\
+        id=f44b10f3-dd19-4b1b-b8be-e99c4e5502e5;\
+        mod=0;\
+        returning-chatter=0;\
+        room-id=63482386;\
+        subscriber=1;\
+        tmi-sent-ts=1788449914571;\
+        turbo=0;\
+        user-id=63482386;\
+        user-type= \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :[George Costanza Hello GIF by HULU]
+        """)
+        #expect(message.command == .privateMessage)
+        #expect(message.parameters == ["#eerimoq", "[George Costanza Hello GIF by HULU]"])
+        #expect(message.emotes.count == 1)
+        let gif = try #require(message.emotes.first)
+        #expect(gif.isGif)
+        #expect(gif.range == 0 ... 34)
+        #expect(gif.url.absoluteString == """
+        https://media3.giphy.com/media/l0MYDEPLWRWbJoRuU/100.gif?\
+        cid=095d7a5dpq5y4f8xwwlqk053r89k5ezmzgauu6wyjbrun0k0&ep=v1_gifs_trending&rid=giphy.gif&ct=g
+        """)
+    }
+
+    @Test
+    func gifAndEmotesMessage() throws {
+        let message = try TwitchChatMessage(string: """
+        @gifs=6-10|abc|https://media.giphy.com/media/abc/giphy.gif;\
+        emotes=25:0-4 \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :Kappa [gif]
+        """)
+        #expect(message.emotes.count == 2)
+        #expect(message.emotes.map(\.isGif) == [true, false])
+        #expect(message.emotes.map(\.range) == [6 ... 10, 0 ... 4])
+    }
+
+    @Test
+    func gigantifiedEmoteMessage() throws {
+        let message = try TwitchChatMessage(string: """
+        @badge-info=;\
+        badges=;\
+        color=;\
+        display-name=eerimoq;\
+        emotes=25:0-4,12-16/1902:6-10;\
+        id=f44b10f3-dd19-4b1b-b8be-e99c4e5502e5;\
+        msg-id=gigantified-emote-message;\
+        user-id=63482386 \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :Kappa Keepo Kappa
+        """)
+        #expect(message.command == .privateMessage)
+        #expect(message.isGigantifiedEmote)
+        #expect(message.emotes.count == 3)
+        #expect(message.emotes.map(\.range) == [0 ... 4, 12 ... 16, 6 ... 10])
+        #expect(message.emotes.map(\.isGif) == [false, true, false])
+        #expect(message.emotes[1].url.absoluteString ==
+            "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0")
+    }
+
+    @Test
+    func gigantifiedEmoteMessageWithGif() throws {
+        let message = try TwitchChatMessage(string: """
+        @msg-id=gigantified-emote-message;\
+        gifs=6-10|abc|https://media.giphy.com/media/abc/giphy.gif;\
+        emotes=25:0-4 \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :Kappa [gif]
+        """)
+        #expect(message.emotes.map(\.range) == [6 ... 10, 0 ... 4])
+        #expect(message.emotes.map(\.isGif) == [true, true])
+    }
+
+    @Test
+    func malformedGifTag() throws {
+        let message = try TwitchChatMessage(string: """
+        @gifs=0-4|abc \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :[gif]
+        """)
+        #expect(message.emotes.isEmpty)
+    }
+
+    @Test
     func unescapedTagValueWithoutEscapes() throws {
         let message = try TwitchChatMessage(string: """
         @reply-parent-msg-body=hello;\

@@ -20,8 +20,16 @@ private func texts(_ segments: [ChatPostSegment]) -> [String?] {
     segments.map(\.text)
 }
 
+private func makeTwitchGif(_ name: String, _ range: ClosedRange<Int>) -> ChatMessageEmote {
+    ChatMessageEmote(url: URL(string: "https://giphy.example.com/\(name)")!, range: range, isGif: true)
+}
+
 private func emoteNames(_ segments: [ChatPostSegment]) -> [String?] {
     segments.map { $0.url?.lastPathComponent }
+}
+
+private func gifNames(_ segments: [ChatPostSegment]) -> [String?] {
+    segments.map { $0.gifUrl?.lastPathComponent }
 }
 
 struct ChatSegmentsSuite {
@@ -187,6 +195,26 @@ struct TwitchChatSegmentsSuite {
         let segments = createSegments("😀 Kappa", [makeTwitchEmote("Kappa", 2 ... 6)])
         #expect(texts(segments) == ["😀 ", nil, ""])
         #expect(emoteNames(segments) == [nil, "Kappa", nil])
+    }
+
+    @Test
+    func onlyGif() {
+        let segments = createSegments("[Hello GIF by HULU]", [makeTwitchGif("hello", 0 ... 18)])
+        #expect(texts(segments) == [nil, ""])
+        #expect(emoteNames(segments) == [nil, nil])
+        #expect(gifNames(segments) == ["hello", nil])
+        #expect(segments.compactMap(\.text).joined().isEmpty)
+    }
+
+    @Test
+    func gifAfterEmote() {
+        let segments = createSegments("Kappa [gif]", [
+            makeTwitchGif("hello", 6 ... 10),
+            makeTwitchEmote("Kappa", 0 ... 4),
+        ])
+        #expect(texts(segments) == [nil, "", nil, ""])
+        #expect(emoteNames(segments) == ["Kappa", nil, nil, nil])
+        #expect(gifNames(segments) == [nil, nil, "hello", nil])
     }
 
     @Test

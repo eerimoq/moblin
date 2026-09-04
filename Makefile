@@ -3,6 +3,7 @@ SWIFT_DIRS += "Moblin"
 SWIFT_DIRS += "Moblin Watch"
 SWIFT_DIRS += "Moblin Widget"
 SWIFT_DIRS += "Moblin Live Activity"
+SWIFT_DIRS += "Moblin Mac"
 SWIFT_DIRS += "Moblin Screen Recording"
 SWIFT_DIRS += "MoblinTests"
 

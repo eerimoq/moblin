@@ -34,6 +34,7 @@
 		03AC6B952D17786700832A7E /* TrueTime in Frameworks */ = {isa = PBXBuildFile; productRef = 03AC6B942D17786700832A7E /* TrueTime */; };
 		03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */ = {isa = PBXBuildFile; productRef = 03B279822D45EB9C007DEDB2 /* SwiftCube */; };
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
+		03BB0006000000000000BB00 /* MoblinMac.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 03BB0005000000000000BB00 /* MoblinMac.bundle */; platformFilter = maccatalyst; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -63,6 +64,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 03AA0002000000000000AA02;
 			remoteInfo = MoblinLiveActivity;
+		};
+		03BB0007000000000000BB00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03BB0001000000000000BB00;
+			remoteInfo = MoblinMac;
 		};
 		03E649472E634D2800728501 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -104,6 +112,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03BB0010000000000000BB00 /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				03BB0006000000000000BB00 /* MoblinMac.bundle in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03ECDF572B8E4E6000BD920E /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -125,6 +144,7 @@
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		03AA0006000000000000AA02 /* MoblinLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		03BB0005000000000000BB00 /* MoblinMac.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinMac.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		03E649432E634D2800728501 /* MoblinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -136,6 +156,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -150,6 +171,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -164,6 +186,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -255,6 +278,13 @@
 			);
 			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
 		};
+		03BB000A000000000000BB00 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MoblinMacStatusItem.swift,
+			);
+			target = 035E9E322A9A02D6009D4F5A /* Moblin */;
+		};
 		03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -272,6 +302,7 @@
 		037D9EFC2E38AC2300C0AF9A /* Moblin Widget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F022E38AC2300C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Widget"; sourceTree = "<group>"; };
 		037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F162E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9F172E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Screen Recording"; sourceTree = "<group>"; };
 		03AA000A000000000000AA02 /* Moblin Live Activity */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (03A0001F2E00000000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03AA000B000000000000AA02 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Live Activity"; sourceTree = "<group>"; };
+		03BB0009000000000000BB00 /* Moblin Mac */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (03BB000A000000000000BB00 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Mac"; sourceTree = "<group>"; };
 		03E649442E634D2800728501 /* MoblinTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MoblinTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -331,6 +362,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03BB0003000000000000BB00 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03E649402E634D2800728501 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -369,6 +407,7 @@
 				037D9EE42E38AC2000C0AF9A /* Moblin Watch */,
 				037D9EFC2E38AC2300C0AF9A /* Moblin Widget */,
 				03AA000A000000000000AA02 /* Moblin Live Activity */,
+				03BB0009000000000000BB00 /* Moblin Mac */,
 				037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */,
 				03E649442E634D2800728501 /* MoblinTests */,
 				035E9E342A9A02D6009D4F5A /* Products */,
@@ -385,6 +424,7 @@
 				0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */,
 				03E649432E634D2800728501 /* MoblinTests.xctest */,
 				03AA0006000000000000AA02 /* MoblinLiveActivity.appex */,
+				03BB0005000000000000BB00 /* MoblinMac.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -423,6 +463,7 @@
 				035E9E312A9A02D6009D4F5A /* Resources */,
 				03ECDF572B8E4E6000BD920E /* Embed Watch Content */,
 				0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */,
+				03BB0010000000000000BB00 /* Embed PlugIns */,
 			);
 			buildRules = (
 			);
@@ -430,11 +471,13 @@
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
 				03AA0009000000000000AA02 /* PBXTargetDependency */,
+				03BB0008000000000000BB00 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				030AC5AF2F4988A000496F6F /* Config */,
 				037D9C902E38AC1600C0AF9A /* Moblin */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
+				03BB0009000000000000BB00 /* Moblin Mac */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -506,6 +549,26 @@
 			productName = "Moblin Live Activity";
 			productReference = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		03BB0001000000000000BB00 /* MoblinMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03BB000D000000000000BB00 /* Build configuration list for PBXNativeTarget "MoblinMac" */;
+			buildPhases = (
+				03BB0002000000000000BB00 /* Sources */,
+				03BB0003000000000000BB00 /* Frameworks */,
+				03BB0004000000000000BB00 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				03BB0009000000000000BB00 /* Moblin Mac */,
+			);
+			name = MoblinMac;
+			productName = "Moblin Mac";
+			productReference = 03BB0005000000000000BB00 /* MoblinMac.bundle */;
+			productType = "com.apple.product-type.bundle";
 		};
 		03E649422E634D2800728501 /* MoblinTests */ = {
 			isa = PBXNativeTarget;
@@ -579,6 +642,9 @@
 					};
 					03AA0002000000000000AA02 = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					03BB0001000000000000BB00 = {
+						CreatedOnToolsVersion = 26.0;
 					};
 					03E649422E634D2800728501 = {
 						CreatedOnToolsVersion = 16.4;
@@ -655,6 +721,7 @@
 				03AA0002000000000000AA02 /* MoblinLiveActivity */,
 				0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */,
 				03E649422E634D2800728501 /* MoblinTests */,
+				03BB0001000000000000BB00 /* MoblinMac */,
 			);
 		};
 /* End PBXProject section */
@@ -682,6 +749,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		03AA0005000000000000AA02 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03BB0004000000000000BB00 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -733,6 +807,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03BB0002000000000000BB00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03E6493F2E634D2800728501 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -766,6 +847,12 @@
 			platformFilter = ios;
 			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
 			targetProxy = 03AA0008000000000000AA02 /* PBXContainerItemProxy */;
+		};
+		03BB0008000000000000BB00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = 03BB0001000000000000BB00 /* MoblinMac */;
+			targetProxy = 03BB0007000000000000BB00 /* PBXContainerItemProxy */;
 		};
 		03E649482E634D2800728501 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1252,6 +1339,51 @@
 			};
 			name = Release;
 		};
+		03BB000B000000000000BB00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinMac.xcconfig;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Mac";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = MoblinMacStatusItem;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_NAME = MoblinMac;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_VERSION = 6.0;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		03BB000C000000000000BB00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinMac.xcconfig;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Mac";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = MoblinMacStatusItem;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_NAME = MoblinMac;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 6.0;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		03E6494A2E634D2800728501 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
@@ -1414,6 +1546,15 @@
 			buildConfigurations = (
 				03AA000D000000000000AA02 /* Debug */,
 				03AA000E000000000000AA02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03BB000D000000000000BB00 /* Build configuration list for PBXNativeTarget "MoblinMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03BB000B000000000000BB00 /* Debug */,
+				03BB000C000000000000BB00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

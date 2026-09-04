@@ -848,6 +848,7 @@ extension Model {
     func setIsLive(value: Bool) {
         isLive = value
         updateLiveActivity()
+        updateMacStatusItem()
         updatePictureInPicture()
         if isWatchLocal() {
             sendIsLiveToWatch(isLive: isLive)

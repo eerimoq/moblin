@@ -4,12 +4,14 @@ struct ChatMessageEmote: Identifiable {
     let id = UUID()
     let url: URL
     let range: ClosedRange<Int>
+    var isGif = false
 }
 
 struct ChatPostSegment: Identifiable, Codable {
     let id: Int
     var text: String?
     var url: URL?
+    var gifUrl: URL?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
@@ -128,6 +130,15 @@ struct ChatHighlight {
             barColor: .blue,
             image: "diamond",
             titleSegments: makeChatPostTextSegments(text: String(localized: "Jewels"))
+        )
+    }
+
+    static func makeGigantifiedEmote() -> ChatHighlight {
+        ChatHighlight(
+            kind: .other,
+            barColor: .purple,
+            image: "arrow.up.backward.and.arrow.down.forward.square",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Gigantified emote"))
         )
     }
 

@@ -7,16 +7,14 @@ private struct AppModeView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        Section {
-            Picker("Mode", selection: $database.appMode) {
-                ForEach(SettingsAppMode.allCases, id: \.self) {
-                    Text($0.toString())
-                }
+        Picker("App mode", selection: $database.appMode) {
+            ForEach(SettingsAppMode.allCases, id: \.self) {
+                Text($0.toString())
             }
-            .disabled(model.isLive || model.isRecording)
-            .onChange(of: database.appMode) { _ in
-                model.appModeChanged()
-            }
+        }
+        .disabled(model.isLive || model.isRecording)
+        .onChange(of: database.appMode) { _ in
+            model.appModeChanged()
         }
     }
 }
@@ -260,8 +258,8 @@ struct SettingsView: View {
                     }
                 }
             }
-            AppModeView(database: database)
             Section {
+                AppModeView(database: database)
                 Toggle("Show all settings", isOn: $database.showAllSettings)
             }
             Section {
