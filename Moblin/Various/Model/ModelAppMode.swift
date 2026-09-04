@@ -23,19 +23,15 @@ extension Model {
     }
 
     func appModeChanged() {
-        applyAppMode()
-        reloadStream()
-        resetSelectedScene(changeScene: false)
-        updateOrientation()
-        setupAudio()
-    }
-
-    func applyAppMode() {
         show.chatPhone = isChatPhone()
         mic.current = noMic
         updateQuickButtonStates()
         updateScreenAutoOff()
         reloadAudioSession()
+        reloadStream()
+        resetSelectedScene(changeScene: false)
+        updateOrientation()
+        setupAudio()
     }
 
     func startChatPhoneBackgroundAudio() {
