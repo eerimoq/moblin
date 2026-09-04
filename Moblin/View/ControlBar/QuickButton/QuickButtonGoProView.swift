@@ -192,7 +192,7 @@ struct QuickButtonGoProView: View {
         GeometryReader { metrics in
             Form {
                 if !goPro.devices.isEmpty {
-                    Section("Bluetooth devices") {
+                    Section("Devices") {
                         ForEach(goPro.devices) { device in
                             QuickButtonGoProBleDeviceView(device: device)
                         }

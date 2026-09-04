@@ -470,11 +470,6 @@ struct GoProSettingsView: View {
                 } label: {
                     Text("QR codes")
                 }
-            } footer: {
-                Text("""
-                Configure older devices, or devices that are not paired over Bluetooth, by showing \
-                them QR codes for launching a live stream, WiFi credentials and RTMP URL.
-                """)
             }
         }
         .navigationTitle("GoPro")
