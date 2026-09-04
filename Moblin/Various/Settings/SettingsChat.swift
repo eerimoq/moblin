@@ -593,6 +593,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
+    @Published var sameUsernameColor: Bool = false
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     @Published var messageColorColor: Color = RgbColor(red: 255, green: 255, blue: 255).color()
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
@@ -650,6 +651,7 @@ class SettingsChat: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case fontSize
         case usernameColor
+        case sameUsernameColor
         case messageColor
         case backgroundColor
         case backgroundColorEnabled
@@ -706,6 +708,7 @@ class SettingsChat: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
         try container.encode(.usernameColor, usernameColor)
+        try container.encode(.sameUsernameColor, sameUsernameColor)
         try container.encode(.messageColor, messageColor)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.backgroundColorEnabled, backgroundColorEnabled)
@@ -764,6 +767,7 @@ class SettingsChat: Codable, ObservableObject {
         fontSize = container.decode(.fontSize, Float.self, 19.0)
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
+        sameUsernameColor = container.decode(.sameUsernameColor, Bool.self, false)
         messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         messageColorColor = messageColor.color()
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))

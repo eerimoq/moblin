@@ -107,6 +107,7 @@ struct ChatSettingsAppearanceView: View {
                                 chat.usernameColor = color
                                 model.reloadChatMessages()
                             }
+                        Toggle("Same color for all names", isOn: $chat.sameUsernameColor)
                         ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
                             .onChange(of: chat.messageColorColor) { _ in
                                 guard let color = chat.messageColorColor.toRgb() else {

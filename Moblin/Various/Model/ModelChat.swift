@@ -291,7 +291,7 @@ extension Model {
             displayName: displayName,
             user: user,
             userId: userId,
-            userColor: userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor,
+            userColor: makeUserColor(userColor: userColor),
             userBadges: userBadges,
             segments: segments,
             timestamp: timestamp,
@@ -350,6 +350,13 @@ extension Model {
                 effect.appendMessage(post: post)
             }
         }
+    }
+
+    private func makeUserColor(userColor: RgbColor?) -> RgbColor {
+        if database.chat.sameUsernameColor {
+            return database.chat.usernameColor
+        }
+        return userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor
     }
 
     func reloadChatMessages() {
