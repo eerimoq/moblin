@@ -32,7 +32,7 @@ struct ChatSettingsAppearanceView: View {
                             .frame(width: 25)
                     }
                     HStack {
-                        Text("GIF scale")
+                        Text("Big GIF scale")
                         Slider(
                             value: $chat.gifScale,
                             in: 1 ... 10,
