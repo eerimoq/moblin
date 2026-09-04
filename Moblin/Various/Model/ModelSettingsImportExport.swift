@@ -84,7 +84,7 @@ extension Model {
         macrosTextFormatChanged()
         resetSelectedScene()
         setupAudioAfterSettingsImport()
-        updateQuickButtonStates()
+        updateQuickButtonPairs()
         reloadDjiDevicesAfterSettingsImport()
         makeToast(title: String(localized: "Settings imported"))
     }

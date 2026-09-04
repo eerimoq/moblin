@@ -25,7 +25,7 @@ extension Model {
     func appModeChanged() {
         show.chatPhone = isChatPhone()
         mic.current = noMic
-        updateQuickButtonStates()
+        updateQuickButtonPairs()
         updateScreenAutoOff()
         reloadAudioSession()
         reloadStream()

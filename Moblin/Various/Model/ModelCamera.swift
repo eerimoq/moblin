@@ -521,7 +521,6 @@ extension Model {
             isOn = true
         }
         setQuickButton(type: .luts, isOn: isOn)
-        updateQuickButtonStates()
     }
 
     func updateShowCameraPreview() -> Bool {

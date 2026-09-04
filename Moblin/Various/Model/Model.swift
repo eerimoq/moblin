@@ -89,24 +89,14 @@ func formatWarning(_ message: String) -> String {
 
 let noMic = SettingsMicsMic()
 
-class ButtonState: ObservableObject {
-    @Published var isOn: Bool
-    var button: SettingsQuickButton
-
-    init(isOn: Bool, button: SettingsQuickButton) {
-        self.isOn = isOn
-        self.button = button
-    }
-}
-
 struct QuickButtonPair: Identifiable, Equatable {
     static func == (lhs: QuickButtonPair, rhs: QuickButtonPair) -> Bool {
         lhs.id == rhs.id
     }
 
     var id: UUID
-    var first: ButtonState
-    var second: ButtonState?
+    var first: SettingsQuickButton
+    var second: SettingsQuickButton?
 }
 
 struct LogEntry: Identifiable {
@@ -837,26 +827,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         panelHidden = false
         for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
-                if isShowingPanelQuickButton(type: pair.first.button.type) {
-                    setQuickButton(type: pair.first.button.type, isOn: false)
+                if isShowingPanelQuickButton(type: pair.first.type) {
+                    setQuickButton(type: pair.first.type, isOn: false)
                 }
-                if let state = pair.second {
-                    if isShowingPanelQuickButton(type: state.button.type) {
-                        setQuickButton(type: state.button.type, isOn: false)
-                    }
+                if let second = pair.second, isShowingPanelQuickButton(type: second.type) {
+                    setQuickButton(type: second.type, isOn: false)
                 }
             }
         }
         if let type {
             setQuickButton(type: type, isOn: showingPanel == panel)
         }
-        updateQuickButtonStates()
     }
 
     func setInteractiveBrowserWidgets(on: Bool) {
         interactiveBrowsers = on
         setQuickButton(type: .interactiveBrowserWidgets, isOn: on)
-        updateQuickButtonStates()
     }
 
     func setAllowVideoRangePixelFormat() {
@@ -951,29 +937,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         makeErrorToast(title: String(localized: "Invalid port \(port.trim())"))
     }
 
-    func updateQuickButtonStates() {
+    func updateQuickButtonPairs() {
         for page in 0 ..< controlBarPages {
-            let states = database.quickButtons.filter { button in
+            let buttons = database.quickButtons.filter { button in
                 button.enabled && button.page == page + 1
-            }.map { button in
-                if let state = getQuickButtonState(type: button.type) {
-                    state.button = button
-                    state.isOn = button.isOn
-                    return state
-                } else {
-                    return ButtonState(isOn: button.isOn, button: button)
-                }
             }
             var pairs: [QuickButtonPair] = []
-            for index in stride(from: 0, to: states.count, by: 2) {
-                if states.count - index > 1 {
+            for index in stride(from: 0, to: buttons.count, by: 2) {
+                if buttons.count - index > 1 {
                     pairs.append(QuickButtonPair(
                         id: UUID(),
-                        first: states[index + 1],
-                        second: states[index]
+                        first: buttons[index + 1],
+                        second: buttons[index]
                     ))
                 } else {
-                    pairs.append(QuickButtonPair(id: UUID(), first: states[index]))
+                    pairs.append(QuickButtonPair(id: UUID(), first: buttons[index]))
                 }
             }
             quickButtons.pairs[page] = pairs
@@ -985,21 +963,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return []
         }
         return quickButtons.pairs[page - 1]
-    }
-
-    func getQuickButtonState(type: SettingsQuickButtonType) -> ButtonState? {
-        for pagePairs in quickButtons.pairs {
-            for pair in pagePairs {
-                if pair.first.button.type == type {
-                    return pair.first
-                } else if let state = pair.second {
-                    if state.button.type == type {
-                        return state
-                    }
-                }
-            }
-        }
-        return nil
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
@@ -1073,7 +1036,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startPeriodicTimers()
         setupThermalState()
         setupMacStatusItem()
-        updateQuickButtonStates()
         removeUnusedImages()
         removeUnusedAlertMedias()
         removeUnusedVTubers()
@@ -1182,7 +1144,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
-        updateQuickButtonStates()
+        updateQuickButtonPairs()
         setQuickButton(type: .blurFaces, isOn: database.face.blurFaces)
         setQuickButton(type: .blurText, isOn: database.face.blurText)
         setQuickButton(type: .privacy, isOn: database.face.blurBackground)
@@ -1440,7 +1402,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isOn != getQuickButton(type: .image)?.isOn {
             setQuickButton(type: .image, isOn: isOn)
-            updateQuickButtonStates()
         }
     }
 
@@ -1451,7 +1412,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isOn != getQuickButton(type: .beauty)?.isOn {
             setQuickButton(type: .beauty, isOn: isOn)
-            updateQuickButtonStates()
         }
     }
 
@@ -2151,39 +2111,32 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setQuickButton(type: SettingsQuickButtonType, isOn: Bool) {
-        database.quickButtons.first(where: { $0.type == type })?.isOn = isOn
-        if let state = getQuickButtonState(type: type) {
-            state.isOn = isOn
-            if let filter = RemoteControlFilter(type: type) {
-                remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
-                    filter: state.isOn,
-                ]))
-            }
+        guard let button = getQuickButton(type: type) else {
+            return
+        }
+        button.isOn = isOn
+        if let filter = RemoteControlFilter(type: type) {
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
+                filter: button.isOn,
+            ]))
         }
     }
 
     func toggleQuickButton(type: SettingsQuickButtonType) {
-        database.quickButtons.first(where: { $0.type == type })?.isOn.toggle()
-        if let state = getQuickButtonState(type: type) {
-            state.isOn.toggle()
-            if let filter = RemoteControlFilter(type: type) {
-                remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
-                    filter: state.isOn,
-                ]))
-            }
+        guard let button = getQuickButton(type: type) else {
+            return
         }
+        setQuickButton(type: type, isOn: !button.isOn)
     }
 
     func setFilterQuickButton(type: SettingsQuickButtonType, on: Bool) {
         setQuickButton(type: type, isOn: on)
         sceneUpdated(updateRemoteScene: false)
-        updateQuickButtonStates()
     }
 
     func toggleFilterQuickButton(type: SettingsQuickButtonType) {
         toggleQuickButton(type: type)
         sceneUpdated(updateRemoteScene: false)
-        updateQuickButtonStates()
     }
 
     func setWhirlpoolQuickButton(on: Bool) {
@@ -2256,14 +2209,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.portrait = portrait
         updateIsPortrait()
         setQuickButton(type: .portrait, isOn: portrait)
-        updateQuickButtonStates()
         updateOrientationLock()
     }
 
     func setIsWorkout(type: WatchProtocolWorkoutType?) {
         workoutType = type
         setQuickButton(type: .workout, isOn: type != nil)
-        updateQuickButtonStates()
     }
 
     func setMuteOn(value: Bool) {
@@ -2274,7 +2225,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         updateMute()
         setQuickButton(type: .mute, isOn: value)
-        updateQuickButtonStates()
     }
 
     func setIsMuted(value: Bool) {
@@ -2476,7 +2426,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func toggleLockScreen() {
         lockScreen.toggle()
         setQuickButton(type: .lockScreen, isOn: lockScreen)
-        updateQuickButtonStates()
         if lockScreen {
             makeToast(
                 title: String(localized: "Screen locked"),
@@ -3329,13 +3278,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         setQuickButton(type: type, isOn: true)
-        updateQuickButtonStates()
         DispatchQueue.main.async {
             effect?.play(alert: .quickButton)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             self.setQuickButton(type: type, isOn: false)
-            self.updateQuickButtonStates()
         }
     }
 
@@ -3406,7 +3353,6 @@ extension Model {
 
     func drawOnStreamUpdateButtonState() {
         setQuickButton(type: .draw, isOn: showDrawOnStream || !drawOnStream.lines.isEmpty)
-        updateQuickButtonStates()
     }
 }
 

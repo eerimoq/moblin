@@ -39,7 +39,7 @@ private struct QuickButtonsView: View {
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
-                                state: second,
+                                button: second,
                                 size: buttonSize(),
                                 nameSize: buttonSize(),
                                 nameWidth: buttonSize()
@@ -51,7 +51,7 @@ private struct QuickButtonsView: View {
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
-                            state: pair.first,
+                            button: pair.first,
                             size: buttonSize(),
                             nameSize: buttonSize(),
                             nameWidth: buttonSize()
@@ -63,7 +63,7 @@ private struct QuickButtonsView: View {
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
-                            state: second,
+                            button: second,
                             size: buttonSize(),
                             nameSize: buttonSize(),
                             nameWidth: buttonSize()
@@ -74,7 +74,7 @@ private struct QuickButtonsView: View {
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,
-                        state: pair.first,
+                        button: pair.first,
                         size: buttonSize(),
                         nameSize: buttonSize(),
                         nameWidth: buttonSize()

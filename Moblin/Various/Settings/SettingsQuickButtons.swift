@@ -239,7 +239,7 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     var type: SettingsQuickButtonType
     var imageOn: String
     var imageOff: String
-    var isOn: Bool
+    @Published var isOn: Bool
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var color: Color = defaultQuickButtonColor.color()

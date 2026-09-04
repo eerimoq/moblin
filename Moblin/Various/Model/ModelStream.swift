@@ -281,7 +281,6 @@ extension Model {
     func setIsPreviewStreaming(value: Bool) {
         isPreviewStreaming = value
         setQuickButton(type: .previewStream, isOn: value)
-        updateQuickButtonStates()
         remoteControlStateChanged(state: .init(previewStream: value))
     }
 

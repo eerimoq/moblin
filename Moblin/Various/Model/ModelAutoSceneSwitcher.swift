@@ -108,6 +108,5 @@ extension Model {
             isOn = true
         }
         setQuickButton(type: .autoSceneSwitcher, isOn: isOn)
-        updateQuickButtonStates()
     }
 }

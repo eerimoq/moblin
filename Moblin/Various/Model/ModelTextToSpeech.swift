@@ -6,7 +6,6 @@ extension Model {
             chatTextToSpeech.play()
         }
         toggleQuickButton(type: .pauseTts)
-        updateQuickButtonStates()
     }
 
     func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {

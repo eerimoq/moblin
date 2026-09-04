@@ -618,7 +618,7 @@ extension Model {
         state.batteryCharging = isBatteryCharging()
         state.filters = [:]
         for filter in RemoteControlFilter.allCases {
-            state.filters?[filter] = getQuickButtonState(type: filter.toSettings())?.isOn ?? false
+            state.filters?[filter] = getQuickButton(type: filter.toSettings())?.isOn ?? false
         }
         state.gimbalTracking = database.gimbal.tracking
         state.gimbalPresets = getRemoteControlGimbalPresets()
@@ -820,7 +820,6 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         } else {
             stopRecording()
         }
-        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetLive(on: Bool) {
@@ -829,7 +828,6 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         } else {
             _ = stopStream()
         }
-        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetPreviewStream(on: Bool) {
@@ -859,14 +857,12 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetStealthMode(on: Bool) {
         setStealthMode(on: on)
-        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetTorch(on: Bool) {
         streamOverlay.isTorchOn = on
         updateTorch()
         toggleQuickButton(type: .torch)
-        updateQuickButtonStates()
     }
 
     func remoteControlStreamerReloadBrowserWidgets() {

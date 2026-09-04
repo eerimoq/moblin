@@ -322,14 +322,12 @@ extension Model {
     private func executeMute(action: SettingsMacrosAction) -> Bool {
         setMuted(value: action.mute)
         setQuickButton(type: .mute, isOn: action.mute)
-        updateQuickButtonStates()
         return true
     }
 
     private func executeTorch(action: SettingsMacrosAction) -> Bool {
         setTorch(on: action.torch)
         setQuickButton(type: .torch, isOn: action.torch)
-        updateQuickButtonStates()
         return true
     }
 

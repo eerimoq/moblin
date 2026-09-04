@@ -10,7 +10,6 @@ extension Model {
             Gimbal.shared?.setTracking(on: on)
         }
         setQuickButton(type: .gimbalTracking, isOn: on)
-        updateQuickButtonStates()
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(gimbalTracking: on))
     }
 

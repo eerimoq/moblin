@@ -834,7 +834,6 @@ private struct ButtonsView: View {
                     CloseButtonView {
                         model.showingRemoteControl = false
                         model.setQuickButton(type: .remote, isOn: model.showingRemoteControl)
-                        model.updateQuickButtonStates()
                     }
                 }
                 Spacer()

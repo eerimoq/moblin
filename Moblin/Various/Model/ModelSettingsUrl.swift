@@ -183,7 +183,7 @@ extension Model {
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         handleSettingsUrlsDefaultRemoteControl(settings: settings)
         makeToast(title: String(localized: "URL import successful"))
-        updateQuickButtonStates()
+        updateQuickButtonPairs()
     }
 
     private func findCollidingStreamNames(streams: [MoblinSettingsUrlStream]) -> Set<String> {

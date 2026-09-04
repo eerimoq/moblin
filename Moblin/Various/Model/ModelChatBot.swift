@@ -255,7 +255,6 @@ extension Model {
             )
             self.setMuted(value: true)
             self.setQuickButton(type: .mute, isOn: true)
-            self.updateQuickButtonStates()
         }
     }
 
@@ -273,7 +272,6 @@ extension Model {
             )
             self.setMuted(value: false)
             self.setQuickButton(type: .mute, isOn: false)
-            self.updateQuickButtonStates()
         }
     }
 

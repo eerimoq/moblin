@@ -14,12 +14,10 @@ extension Model {
         case .record:
             if !pressed {
                 toggleRecording()
-                updateQuickButtonStates()
             }
         case .stream:
             if !pressed {
                 toggleStream()
-                updateQuickButtonStates()
             }
         case .zoomIn:
             handleGameControllerButtonZoom(pressed: pressed, x: .infinity)
@@ -61,18 +59,15 @@ extension Model {
             if !pressed {
                 toggleTorch()
                 toggleQuickButton(type: .torch)
-                updateQuickButtonStates()
             }
         case .mute:
             if !pressed {
                 toggleMute()
                 toggleQuickButton(type: .mute)
-                updateQuickButtonStates()
             }
         case .blackScreen:
             if !pressed {
                 toggleStealthMode()
-                updateQuickButtonStates()
             }
         case .scene:
             if let sceneId = functionData.sceneId, !pressed {

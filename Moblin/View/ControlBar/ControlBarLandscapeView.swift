@@ -50,7 +50,7 @@ private struct QuickButtonsView: View {
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
-                                state: second,
+                                button: second,
                                 size: buttonSize(),
                                 nameSize: nameSize(),
                                 nameWidth: buttonSize()
@@ -62,7 +62,7 @@ private struct QuickButtonsView: View {
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
-                            state: pair.first,
+                            button: pair.first,
                             size: buttonSize(),
                             nameSize: nameSize(),
                             nameWidth: buttonSize()
@@ -74,7 +74,7 @@ private struct QuickButtonsView: View {
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
-                            state: second,
+                            button: second,
                             size: buttonSize(),
                             nameSize: nameSize(),
                             nameWidth: width - 10
@@ -85,7 +85,7 @@ private struct QuickButtonsView: View {
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,
-                        state: pair.first,
+                        button: pair.first,
                         size: buttonSize(),
                         nameSize: nameSize(),
                         nameWidth: width - 10
@@ -255,7 +255,7 @@ private struct PageIndicatorView: View {
                     .onTapGesture {
                         quickButtons.page = page
                         quickButtons.activePage = page
-                        model.updateQuickButtonStates()
+                        model.updateQuickButtonPairs()
                     }
             }
         }

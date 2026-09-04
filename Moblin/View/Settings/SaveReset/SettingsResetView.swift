@@ -18,7 +18,7 @@ struct SettingsResetView: View {
                     model.setCurrentStream()
                     model.reloadStream()
                     model.resetSelectedScene()
-                    model.updateQuickButtonStates()
+                    model.updateQuickButtonPairs()
                 }
             }
         }

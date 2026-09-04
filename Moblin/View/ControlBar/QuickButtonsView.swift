@@ -6,16 +6,16 @@ let controlBarPages = 5
 private struct QuickButtonImage: View {
     let model: Model
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let buttonSize: CGFloat
     var hideImage: Bool = false
     let onTapGesture: () -> Void
 
-    private func getImage(state: ButtonState) -> String {
-        if state.isOn {
-            state.button.imageOn
+    private func getImage() -> String {
+        if button.isOn {
+            button.imageOn
         } else {
-            state.button.imageOff
+            button.imageOff
         }
     }
 
@@ -28,7 +28,7 @@ private struct QuickButtonImage: View {
     }
 
     private func backgroundColor() -> Color {
-        state.button.backgroundColor.color()
+        button.backgroundColor.color()
     }
 
     private func iconSize() -> Font {
@@ -40,14 +40,14 @@ private struct QuickButtonImage: View {
     }
 
     var body: some View {
-        let image = Image(systemName: getImage(state: state))
+        let image = Image(systemName: getImage())
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
             .background(backgroundColor())
             .clipShape(Circle())
         ZStack {
-            if state.isOn {
+            if button.isOn {
                 image.overlay(
                     Circle()
                         .stroke(.white)
@@ -61,7 +61,7 @@ private struct QuickButtonImage: View {
             onTapGesture()
         }
         .onLongPressGesture {
-            model.showQuickButtonSettings(type: state.button.type)
+            model.showQuickButtonSettings(type: button.type)
         }
     }
 }
@@ -69,7 +69,7 @@ private struct QuickButtonImage: View {
 private struct InstantReplayView: View {
     let model: Model
     @ObservedObject var replay: ReplayProvider
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
 
     var body: some View {
@@ -78,7 +78,7 @@ private struct InstantReplayView: View {
                 .font(.system(size: 25))
                 .frame(width: size, height: size)
                 .foregroundStyle(.white)
-                .background(state.button.backgroundColor.color())
+                .background(button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
                     if model.stream.replay.enabled {
@@ -93,7 +93,7 @@ private struct InstantReplayView: View {
         } else {
             QuickButtonImage(model: model,
                              quickButtonsSettings: model.database.quickButtonsGeneral,
-                             state: state,
+                             button: button,
                              buttonSize: size)
             {
                 if model.stream.replay.enabled {
@@ -136,7 +136,7 @@ struct QuickButtonsInnerView: View {
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var orientation: Orientation
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
     let nameSize: CGFloat
     let nameWidth: CGFloat
@@ -145,21 +145,18 @@ struct QuickButtonsInnerView: View {
     @State private var presentingStartWorkoutTypePicker = false
     @State private var presentingStopWorkoutConfirm = false
 
-    private func torchAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func torchAction() {
+        button.isOn.toggle()
         model.toggleTorch()
-        model.updateQuickButtonStates()
     }
 
-    private func muteAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func muteAction() {
+        button.isOn.toggle()
         model.toggleMute()
-        model.updateQuickButtonStates()
     }
 
     private func stealthModeAction() {
         model.toggleStealthMode()
-        model.updateQuickButtonStates()
     }
 
     private func lockScreenAction() {
@@ -231,19 +228,17 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .stream, panel: .streamSwitcher)
     }
 
-    private func gridAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func gridAction() {
+        button.isOn.toggle()
         model.showingGrid.toggle()
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateQuickButtonStates()
     }
 
-    private func levelAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func levelAction() {
+        button.isOn.toggle()
         model.showingCameraLevel.toggle()
         model.reloadCameraLevel()
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateQuickButtonStates()
     }
 
     private func obsAction() {
@@ -253,7 +248,6 @@ struct QuickButtonsInnerView: View {
     private func remoteAction() {
         model.showingRemoteControl.toggle()
         model.setQuickButton(type: .remote, isOn: model.showingRemoteControl)
-        model.updateQuickButtonStates()
     }
 
     private func drawAction() {
@@ -261,35 +255,28 @@ struct QuickButtonsInnerView: View {
     }
 
     private func localOverlaysAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .localOverlays, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .localOverlays)
         model.toggleLocalOverlays()
     }
 
     private func browserAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .browser, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .browser)
         model.toggleBrowser()
     }
 
     private func navigationAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .navigation, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .navigation)
         model.toggleNavigation()
     }
 
     private func cameraPreviewAction() {
-        state.button.isOn.toggle()
-        if state.button.isOn {
+        button.isOn.toggle()
+        if button.isOn {
             model.makeToast(
                 title: String(localized: "Widgets will not be visible on screen when Camera preview is on"),
                 subTitle: String(localized: "They will be visible on stream and in recordings")
             )
         }
-        model.updateQuickButtonStates()
         model.toggleCameraPreview()
     }
 
@@ -310,12 +297,10 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .chat, panel: .chat)
     }
 
-    private func interactiveChatAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .interactiveChat, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
-        model.chat.interactiveChat = state.button.isOn
-        if !state.button.isOn {
+    private func interactiveChatAction() {
+        model.toggleQuickButton(type: .interactiveChat)
+        model.chat.interactiveChat = button.isOn
+        if !button.isOn {
             model.disableInteractiveChat()
         }
     }
@@ -361,11 +346,9 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .goPro, panel: .goPro)
     }
 
-    private func replayAction(state: ButtonState) {
+    private func replayAction() {
         model.streamOverlay.showingReplay.toggle()
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .replay, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .replay)
     }
 
     private func liveAction() {
@@ -409,16 +392,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBeautyQuickButton()
     }
 
-    private func videoPreviewAction(state: ButtonState) {
+    private func videoPreviewAction() {
         model.toggleVideoPreview()
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .videoPreview, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .videoPreview)
     }
 
     private func interactiveBrowserWidgetsAction() {
-        state.button.isOn.toggle()
-        model.setInteractiveBrowserWidgets(on: state.button.isOn)
+        model.setInteractiveBrowserWidgets(on: !button.isOn)
     }
 
     private func macrosAction() {
@@ -433,50 +413,48 @@ struct QuickButtonsInnerView: View {
         model.togglePreviewStream()
     }
 
-    private func photoShootAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.photoShootEnabled = state.button.isOn
+    private func photoShootAction() {
+        model.toggleQuickButton(type: .photoShoot)
+        model.photoShootEnabled = button.isOn
         if model.photoShootEnabled {
             model.startPhotoShoot()
         } else {
             model.stopPhotoShoot()
         }
-        model.setQuickButton(type: .photoShoot, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
         model.togglePhotoShoot()
     }
 
     private func isDisabled() -> Bool {
-        !model.isQuickButtonAllowed(type: state.button.type)
+        !model.isQuickButtonAllowed(type: button.type)
     }
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                let button = Group {
-                    switch state.button.type {
+                let buttonView = Group {
+                    switch button.type {
                     case .unknown:
                         QuickButtonPlaceholderImage(size: size)
                     case .torch:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            torchAction(state: state)
+                            torchAction()
                         }
                     case .mute:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            muteAction(state: state)
+                            muteAction()
                         }
                     case .bitrate:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             bitrateAction()
@@ -484,7 +462,7 @@ struct QuickButtonsInnerView: View {
                     case .mic:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             micAction()
@@ -492,7 +470,7 @@ struct QuickButtonsInnerView: View {
                     case .chat:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             chatAction()
@@ -500,15 +478,15 @@ struct QuickButtonsInnerView: View {
                     case .interactiveChat:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            interactiveChatAction(state: state)
+                            interactiveChatAction()
                         }
                     case .blackScreen:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             stealthModeAction()
@@ -516,7 +494,7 @@ struct QuickButtonsInnerView: View {
                     case .lockScreen:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             lockScreenAction()
@@ -524,7 +502,7 @@ struct QuickButtonsInnerView: View {
                     case .record:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             if model.database.startStopRecordingConfirmations {
@@ -534,14 +512,14 @@ struct QuickButtonsInnerView: View {
                             }
                         }
                         .confirmationDialog("", isPresented: $presentingRecordConfirm) {
-                            Button(state.isOn ? "Stop recording" : "Start recording") {
+                            Button(button.isOn ? "Stop recording" : "Start recording") {
                                 recordAction()
                             }
                         }
                     case .recordings:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             recordingsAction()
@@ -549,7 +527,7 @@ struct QuickButtonsInnerView: View {
                     case .image:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             imageAction()
@@ -557,7 +535,7 @@ struct QuickButtonsInnerView: View {
                     case .movie:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             movieAction()
@@ -565,7 +543,7 @@ struct QuickButtonsInnerView: View {
                     case .fourThree:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             fourThreeAction()
@@ -573,7 +551,7 @@ struct QuickButtonsInnerView: View {
                     case .crt:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             crtAction()
@@ -581,7 +559,7 @@ struct QuickButtonsInnerView: View {
                     case .grayScale:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             grayScaleAction()
@@ -589,7 +567,7 @@ struct QuickButtonsInnerView: View {
                     case .sepia:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             sepiaAction()
@@ -597,7 +575,7 @@ struct QuickButtonsInnerView: View {
                     case .triple:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             tripleAction()
@@ -605,7 +583,7 @@ struct QuickButtonsInnerView: View {
                     case .twin:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             twinAction()
@@ -614,7 +592,7 @@ struct QuickButtonsInnerView: View {
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 cameraManAction()
@@ -622,14 +600,14 @@ struct QuickButtonsInnerView: View {
                             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
                                 .font(.system(size: 10))
                                 .foregroundStyle(.white)
-                                .stroke(color: state.button.backgroundColor.color())
+                                .stroke(color: button.backgroundColor.color())
                                 .offset(CGSize(width: -5, height: 2))
                                 .frame(width: size, height: size)
                         }
                     case .pixellate:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pixellateAction()
@@ -637,7 +615,7 @@ struct QuickButtonsInnerView: View {
                     case .stream:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             streamAction()
@@ -645,23 +623,23 @@ struct QuickButtonsInnerView: View {
                     case .grid:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            gridAction(state: state)
+                            gridAction()
                         }
                     case .cameraLevel:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            levelAction(state: state)
+                            levelAction()
                         }
                     case .obs:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             obsAction()
@@ -669,7 +647,7 @@ struct QuickButtonsInnerView: View {
                     case .remote:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             remoteAction()
@@ -677,7 +655,7 @@ struct QuickButtonsInnerView: View {
                     case .draw:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             drawAction()
@@ -685,7 +663,7 @@ struct QuickButtonsInnerView: View {
                     case .localOverlays:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             localOverlaysAction()
@@ -693,7 +671,7 @@ struct QuickButtonsInnerView: View {
                     case .browser:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             browserAction()
@@ -701,7 +679,7 @@ struct QuickButtonsInnerView: View {
                     case .cameraPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             cameraPreviewAction()
@@ -709,7 +687,7 @@ struct QuickButtonsInnerView: View {
                     case .poll:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pollAction()
@@ -717,7 +695,7 @@ struct QuickButtonsInnerView: View {
                     case .snapshot:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             snapshotAction()
@@ -725,7 +703,7 @@ struct QuickButtonsInnerView: View {
                     case .widgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             widgetsAction()
@@ -733,16 +711,16 @@ struct QuickButtonsInnerView: View {
                     case .luts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             lutsAction()
                         }
                     case .workout:
-                        if state.isOn {
+                        if button.isOn {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 presentingStopWorkoutConfirm = true
@@ -755,7 +733,7 @@ struct QuickButtonsInnerView: View {
                         } else {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 presentingStartWorkoutTypePicker = true
@@ -775,7 +753,7 @@ struct QuickButtonsInnerView: View {
                     case .moderation:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             model.presentingModeration = true
@@ -783,7 +761,7 @@ struct QuickButtonsInnerView: View {
                     case .predefinedMessages:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             model.presentingPredefinedMessages = true
@@ -791,7 +769,7 @@ struct QuickButtonsInnerView: View {
                     case .skipCurrentTts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             skipCurrentTtsAction()
@@ -799,7 +777,7 @@ struct QuickButtonsInnerView: View {
                     case .streamMarker:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             streamMarkerAction()
@@ -807,7 +785,7 @@ struct QuickButtonsInnerView: View {
                     case .reloadBrowserWidgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             reloadBrowserWidgetsAction()
@@ -816,7 +794,7 @@ struct QuickButtonsInnerView: View {
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 djiDevicesAction()
@@ -826,7 +804,7 @@ struct QuickButtonsInnerView: View {
                     case .portrait:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             portraitAction()
@@ -835,7 +813,7 @@ struct QuickButtonsInnerView: View {
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 goProAction()
@@ -845,17 +823,17 @@ struct QuickButtonsInnerView: View {
                     case .replay:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            replayAction(state: state)
+                            replayAction()
                         }
                     case .instantReplay:
-                        InstantReplayView(model: model, replay: model.replay, state: state, size: size)
+                        InstantReplayView(model: model, replay: model.replay, button: button, size: size)
                     case .connectionPriorities:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             connectionPrioritiesAction()
@@ -863,7 +841,7 @@ struct QuickButtonsInnerView: View {
                     case .whirlpool:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             whirlpoolAction()
@@ -871,7 +849,7 @@ struct QuickButtonsInnerView: View {
                     case .pinch:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pinchAction()
@@ -879,7 +857,7 @@ struct QuickButtonsInnerView: View {
                     case .autoSceneSwitcher:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             autoSceneSwitcherAction()
@@ -887,7 +865,7 @@ struct QuickButtonsInnerView: View {
                     case .pauseTts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pauseTtsAction()
@@ -895,7 +873,7 @@ struct QuickButtonsInnerView: View {
                     case .live:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             liveAction()
@@ -903,7 +881,7 @@ struct QuickButtonsInnerView: View {
                     case .navigation:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             navigationAction()
@@ -911,7 +889,7 @@ struct QuickButtonsInnerView: View {
                     case .blurFaces:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             blurFacesAction()
@@ -919,7 +897,7 @@ struct QuickButtonsInnerView: View {
                     case .blurText:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             blurTextAction()
@@ -928,7 +906,7 @@ struct QuickButtonsInnerView: View {
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size,
                                              hideImage: true)
                             {
@@ -943,7 +921,7 @@ struct QuickButtonsInnerView: View {
                     case .privacy:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             privacyAction()
@@ -951,7 +929,7 @@ struct QuickButtonsInnerView: View {
                     case .glasses:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             glassesAction()
@@ -960,7 +938,7 @@ struct QuickButtonsInnerView: View {
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 sparkleAction()
@@ -975,7 +953,7 @@ struct QuickButtonsInnerView: View {
                     case .beauty:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             beautyAction()
@@ -983,15 +961,15 @@ struct QuickButtonsInnerView: View {
                     case .videoPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            videoPreviewAction(state: state)
+                            videoPreviewAction()
                         }
                     case .interactiveBrowserWidgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             interactiveBrowserWidgetsAction()
@@ -999,7 +977,7 @@ struct QuickButtonsInnerView: View {
                     case .macros:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             macrosAction()
@@ -1007,7 +985,7 @@ struct QuickButtonsInnerView: View {
                     case .gimbalTracking:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             gimbalTrackingAction()
@@ -1015,38 +993,38 @@ struct QuickButtonsInnerView: View {
                     case .previewStream:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             presentingPreviewStreamConfirm = true
                         }
                         .confirmationDialog("", isPresented: $presentingPreviewStreamConfirm) {
-                            Button(state.isOn ? "Stop preview stream" : "Start preview stream") {
+                            Button(button.isOn ? "Stop preview stream" : "Start preview stream") {
                                 previewStreamAction()
                             }
                         }
                     case .photoShoot:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            photoShootAction(state: state)
+                            photoShootAction()
                         }
                     }
                 }
-                if state.button.type == quickButtons.selectedButtonType {
-                    button.overlay(
+                if button.type == quickButtons.selectedButtonType {
+                    buttonView.overlay(
                         Circle()
                             .stroke(.yellow, lineWidth: 2)
                             .frame(width: size - 2, height: size - 2)
                     )
                 } else {
-                    button
+                    buttonView
                 }
             }
             if quickButtonsSettings.showName, !orientation.isPortrait {
-                Text(state.button.name)
+                Text(button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
