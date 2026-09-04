@@ -615,6 +615,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var currentWiFiSsid: String?
     var currentDjiDeviceSettings: SettingsDjiDevice?
     var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
+    var goProDeviceWrappers: [UUID: GoProDeviceWrapper] = [:]
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
@@ -1169,6 +1170,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterSettings()
         initMediaPlayers()
         autoStartDjiDevices()
+        autoStartGoProDevices()
         autoStartCatPrinters()
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()

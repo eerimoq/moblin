@@ -86,6 +86,7 @@ extension Model {
         setupAudioAfterSettingsImport()
         updateQuickButtonStates()
         reloadDjiDevicesAfterSettingsImport()
+        reloadGoProDevicesAfterSettingsImport()
         makeToast(title: String(localized: "Settings imported"))
     }
 
