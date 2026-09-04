@@ -610,6 +610,8 @@ class SettingsChat: Codable, ObservableObject {
     @Published var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
+    @Published var alertsHeight: Double = 0.3
+    @Published var splitAlerts: Bool = false
     @Published var maximumAge: Int = 30
     @Published var maximumAgeEnabled: Bool = false
     @Published var meInUsernameColor: Bool = true
@@ -664,6 +666,8 @@ class SettingsChat: Codable, ObservableObject {
         case timestampColorEnabled
         case height
         case width
+        case alertsHeight
+        case splitAlerts
         case maximumAge
         case maximumAgeEnabled
         case meInUsernameColor
@@ -721,6 +725,8 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.timestampColorEnabled, timestampColorEnabled)
         try container.encode(.height, height)
         try container.encode(.width, width)
+        try container.encode(.alertsHeight, alertsHeight)
+        try container.encode(.splitAlerts, splitAlerts)
         try container.encode(.maximumAge, maximumAge)
         try container.encode(.maximumAgeEnabled, maximumAgeEnabled)
         try container.encode(.meInUsernameColor, meInUsernameColor)
@@ -788,6 +794,8 @@ class SettingsChat: Codable, ObservableObject {
         timestampColorEnabled = container.decode(.timestampColorEnabled, Bool.self, false)
         height = container.decode(.height, Double.self, 0.7)
         width = container.decode(.width, Double.self, 1.0)
+        alertsHeight = container.decode(.alertsHeight, Double.self, 0.3)
+        splitAlerts = container.decode(.splitAlerts, Bool.self, false)
         maximumAge = container.decode(.maximumAge, Int.self, 30)
         maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
         meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)

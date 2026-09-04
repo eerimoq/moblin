@@ -26,7 +26,8 @@ private struct StealthButtonView: View {
 struct StealthModeView: View {
     let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
-    @ObservedObject var chat: ChatProvider
+    let chat: ChatProvider
+    let chatAlerts: ChatProvider
     @ObservedObject var stealthMode: StealthMode
     @ObservedObject var orientation: Orientation
 
@@ -38,11 +39,16 @@ struct StealthModeView: View {
     }
 
     private func tryUnpause() {
+        tryUnpause(chat: chat)
+        tryUnpause(chat: chatAlerts)
+    }
+
+    private func tryUnpause(chat: ChatProvider) {
         guard chat.interactiveChat else {
             return
         }
         if chat.paused {
-            model.endOfChatReachedWhenPaused()
+            model.endOfChatReachedWhenPaused(chat: chat)
             chat.triggerScrollToBottom.toggle()
         }
     }
@@ -102,10 +108,13 @@ struct StealthModeView: View {
             }
         }
         if quickButtons.stealthModeShowChat {
-            ChatOverlayView(chatSettings: model.database.chat,
+            ChatOverlayView(model: model,
+                            chatSettings: model.database.chat,
                             chat: model.chat,
+                            chatAlerts: model.chatAlerts,
                             orientation: orientation,
                             quickButtons: quickButtons,
+                            show: model.show,
                             fullSize: true)
         }
         if quickButtons.stealthModeShowStatus {

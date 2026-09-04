@@ -186,6 +186,10 @@ struct ChatHighlight {
             defaultColor
         }
     }
+
+    func isAlert() -> Bool {
+        kind != .reply
+    }
 }
 
 class ChatPostState: ObservableObject {

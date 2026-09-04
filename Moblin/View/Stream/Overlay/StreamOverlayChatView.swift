@@ -238,7 +238,7 @@ private struct PostView: View {
     let moreThanOneStreamingPlatform: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let size: CGSize
+    let width: CGFloat
 
     var body: some View {
         if post.user != nil {
@@ -269,17 +269,17 @@ private struct PostView: View {
         } else {
             Rectangle()
                 .fill(.red)
-                .frame(width: size.width, height: 1.5)
+                .frame(width: width, height: 1.5)
                 .padding(2)
         }
     }
 }
 
-struct StreamOverlayChatView: View {
+private struct MessagesView: View {
     let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
-    let fullSize: Bool
+    let width: CGFloat
 
     private func tryPause() {
         guard chat.interactiveChat else {
@@ -287,7 +287,7 @@ struct StreamOverlayChatView: View {
         }
         if !chat.paused {
             if !chat.posts.isEmpty {
-                model.pauseChat()
+                model.pauseChat(chat: chat)
             }
         }
     }
@@ -297,9 +297,126 @@ struct StreamOverlayChatView: View {
             return
         }
         if chat.paused {
-            model.endOfChatReachedWhenPaused()
+            model.endOfChatReachedWhenPaused(chat: chat)
         }
     }
+
+    var body: some View {
+        let rotation = chatSettings.getRotation()
+        let scaleX = chatSettings.getScaleX()
+        ScrollViewReader { proxy in
+            ScrollView(showsIndicators: false) {
+                LazyVStack(alignment: .leading, spacing: 1) {
+                    Color.clear
+                        .onAppear {
+                            // App hangs if not doing this async.
+                            DispatchQueue.main.async {
+                                tryUnpause()
+                            }
+                        }
+                        .onDisappear {
+                            tryPause()
+                        }
+                        .frame(height: 1)
+                        .id(startId)
+                    ForEach(chat.posts) { post in
+                        PostView(chatSettings: chatSettings,
+                                 moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                                 post: post,
+                                 state: post.state,
+                                 width: width)
+                            .rotationEffect(Angle(degrees: rotation))
+                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                    }
+                    Spacer(minLength: 0)
+                }
+            }
+            .foregroundStyle(.white)
+            .rotationEffect(Angle(degrees: rotation))
+            .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
+            .frame(width: width)
+            .allowsHitTesting(chat.interactiveChat)
+            .onChange(of: chat.interactiveChat) { _ in
+                proxy.scrollTo(startId, anchor: .bottom)
+            }
+            .onChange(of: chat.triggerScrollToBottom) { _ in
+                proxy.scrollTo(startId, anchor: .bottom)
+            }
+            .onAppear {
+                // Trigger after tryPause() of bottom of chat detector.
+                DispatchQueue.main.async {
+                    tryUnpause()
+                }
+            }
+        }
+    }
+}
+
+private struct ChatPausedView: View {
+    @ObservedObject var chat: ChatProvider
+    let alerts: Bool
+
+    private func message() -> String {
+        if alerts {
+            String(localized: "Chat paused: \(chat.pausedPostsCount) new alerts")
+        } else {
+            String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
+        }
+    }
+
+    var body: some View {
+        if chat.paused {
+            ChatInfo(message: message())
+                .padding(2)
+        }
+    }
+}
+
+private let separatorHeight = 2.0
+
+private struct SeparatorView: View {
+    @ObservedObject var chatSettings: SettingsChat
+    let width: CGFloat
+    let height: CGFloat
+    @Binding var draggedAlertsHeight: Double?
+    @State private var dragStartAlertsHeight: Double?
+
+    var body: some View {
+        Rectangle()
+            .fill(.yellow)
+            .frame(width: width, height: separatorHeight)
+            .overlay {
+                Color.clear
+                    .frame(height: 44)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                            .onChanged { value in
+                                let start = dragStartAlertsHeight ?? chatSettings.alertsHeight
+                                dragStartAlertsHeight = start
+                                draggedAlertsHeight = (start + value.translation.height / height)
+                                    .clamped(to: 0 ... 1)
+                            }
+                            .onEnded { _ in
+                                dragStartAlertsHeight = nil
+                                if let draggedAlertsHeight {
+                                    chatSettings.alertsHeight = draggedAlertsHeight
+                                }
+                                draggedAlertsHeight = nil
+                            }
+                    )
+            }
+    }
+}
+
+struct StreamOverlayChatView: View {
+    let model: Model
+    @ObservedObject var chatSettings: SettingsChat
+    let chat: ChatProvider
+    let chatAlerts: ChatProvider
+    let fullSize: Bool
+
+    @State private var draggedAlertsHeight: Double?
 
     private func heightFactor() -> CGFloat {
         if fullSize {
@@ -318,55 +435,44 @@ struct StreamOverlayChatView: View {
     }
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
         GeometryReader { metrics in
-            VStack {
-                Spacer()
-                ScrollViewReader { proxy in
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(alignment: .leading, spacing: 1) {
-                            Color.clear
-                                .onAppear {
-                                    // App hangs if not doing this async.
-                                    DispatchQueue.main.async {
-                                        tryUnpause()
-                                    }
-                                }
-                                .onDisappear {
-                                    tryPause()
-                                }
-                                .frame(height: 1)
-                                .id(startId)
-                            ForEach(chat.posts) { post in
-                                PostView(chatSettings: chatSettings,
-                                         moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                                         post: post,
-                                         state: post.state,
-                                         size: metrics.size)
-                                    .rotationEffect(Angle(degrees: rotation))
-                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                            }
-                            Spacer(minLength: 0)
-                        }
+            let width = metrics.size.width * widthFactor()
+            let height = metrics.size.height * heightFactor()
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
+                if chatSettings.splitAlerts {
+                    let splitHeight = height - separatorHeight
+                    let alertsHeight = splitHeight * (draggedAlertsHeight ?? chatSettings.alertsHeight)
+                    ZStack {
+                        MessagesView(model: model,
+                                     chatSettings: chatSettings,
+                                     chat: chatAlerts,
+                                     width: width)
+                        ChatPausedView(chat: chatAlerts, alerts: true)
                     }
-                    .foregroundStyle(.white)
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
-                    .frame(width: metrics.size.width * widthFactor(),
-                           height: metrics.size.height * heightFactor())
-                    .onChange(of: chat.interactiveChat) { _ in
-                        proxy.scrollTo(startId, anchor: .bottom)
+                    .frame(height: alertsHeight)
+                    SeparatorView(chatSettings: chatSettings,
+                                  width: width,
+                                  height: splitHeight,
+                                  draggedAlertsHeight: $draggedAlertsHeight)
+                        .zIndex(1)
+                    ZStack {
+                        MessagesView(model: model,
+                                     chatSettings: chatSettings,
+                                     chat: chat,
+                                     width: width)
+                        ChatPausedView(chat: chat, alerts: false)
                     }
-                    .onChange(of: chat.triggerScrollToBottom) { _ in
-                        proxy.scrollTo(startId, anchor: .bottom)
+                    .frame(height: splitHeight - alertsHeight)
+                } else {
+                    ZStack {
+                        MessagesView(model: model,
+                                     chatSettings: chatSettings,
+                                     chat: chat,
+                                     width: width)
+                        ChatPausedView(chat: chat, alerts: false)
                     }
-                    .onAppear {
-                        // Trigger after tryPause() of bottom of chat detector.
-                        DispatchQueue.main.async {
-                            tryUnpause()
-                        }
-                    }
+                    .frame(height: height)
                 }
             }
         }

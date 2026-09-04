@@ -26,84 +26,75 @@ struct ChatInfo: View {
     }
 }
 
-private struct ChatPausedView: View {
-    @ObservedObject var chat: ChatProvider
-
-    var body: some View {
-        if chat.paused {
-            ChatInfo(
-                message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages")
-            )
-            .padding(2)
-        }
-    }
-}
-
 struct ChatOverlayView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
-    @ObservedObject var chat: ChatProvider
+    let chat: ChatProvider
+    let chatAlerts: ChatProvider
     @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtons: SettingsQuickButtons
+    @ObservedObject var show: Show
     let fullSize: Bool
 
     var body: some View {
         if orientation.isPortrait {
             VStack {
-                ZStack {
-                    StreamOverlayChatView(
-                        model: model,
-                        chatSettings: chatSettings,
-                        chat: chat,
-                        fullSize: fullSize
-                    )
-                    ChatPausedView(chat: chat)
-                }
+                StreamOverlayChatView(
+                    model: model,
+                    chatSettings: chatSettings,
+                    chat: chat,
+                    chatAlerts: chatAlerts,
+                    fullSize: fullSize
+                )
                 if !fullSize {
-                    Rectangle()
-                        .foregroundStyle(.clear)
-                        .frame(height: 85)
+                    if !show.chatPhone {
+                        Rectangle()
+                            .foregroundStyle(.clear)
+                            .frame(height: 85)
+                            .allowsHitTesting(false)
+                    }
                 } else {
                     Divider()
                         .background(.gray)
+                        .allowsHitTesting(false)
                     Rectangle()
                         .foregroundStyle(.clear)
                         .frame(height: controlBarWidthDefault)
+                        .allowsHitTesting(false)
                 }
             }
-            .allowsHitTesting(chat.interactiveChat)
         } else {
             HStack(spacing: 0) {
                 VStack {
-                    ZStack {
-                        HStack(spacing: 0) {
-                            GeometryReader { metrics in
-                                StreamOverlayChatView(
-                                    model: model,
-                                    chatSettings: chatSettings,
-                                    chat: chat,
-                                    fullSize: fullSize
-                                )
-                                .frame(width: metrics.size.width * 0.95)
-                            }
+                    HStack(spacing: 0) {
+                        GeometryReader { metrics in
+                            StreamOverlayChatView(
+                                model: model,
+                                chatSettings: chatSettings,
+                                chat: chat,
+                                chatAlerts: chatAlerts,
+                                fullSize: fullSize
+                            )
+                            .frame(width: metrics.size.width * 0.95)
                         }
-                        ChatPausedView(chat: chat)
                     }
                     if !fullSize {
                         Rectangle()
                             .foregroundStyle(.clear)
                             .frame(height: chatSettings.bottomPoints)
+                            .allowsHitTesting(false)
                     }
                 }
                 if fullSize {
                     Divider()
                         .background(.gray)
+                        .allowsHitTesting(false)
                     Rectangle()
                         .foregroundStyle(.clear)
                         .frame(width: controlBarWidth(quickButtons: quickButtons))
+                        .allowsHitTesting(false)
                 }
             }
-            .allowsHitTesting(chat.interactiveChat)
         }
     }
 }
@@ -178,12 +169,16 @@ struct StreamOverlayView: View {
             }
             ZStack {
                 if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: chatSettings,
+                    ChatOverlayView(model: model,
+                                    chatSettings: chatSettings,
                                     chat: model.chat,
+                                    chatAlerts: model.chatAlerts,
                                     orientation: orientation,
                                     quickButtons: model.database.quickButtonsGeneral,
+                                    show: model.show,
                                     fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
+                        .allowsHitTesting(chatSettings.enabled)
                 }
                 HStack {
                     Spacer()

@@ -7,16 +7,17 @@ let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 
 extension Model {
-    func pauseChat() {
+    func pauseChat(chat: ChatProvider) {
         chat.pause(redLine: createRedLineChatPost())
     }
 
-    func endOfChatReachedWhenPaused() {
+    func endOfChatReachedWhenPaused(chat: ChatProvider) {
         chat.endReachedWhenPaused()
     }
 
     func disableInteractiveChat() {
         chat.endReachedWhenPaused()
+        chatAlerts.endReachedWhenPaused()
     }
 
     func pauseQuickButtonChat() {
@@ -55,10 +56,15 @@ extension Model {
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
-        if chat.paused {
+        guard database.chat.maximumAgeEnabled else {
             return
         }
-        guard database.chat.maximumAgeEnabled else {
+        removeOldChatMessages(now: now, chat: chat)
+        removeOldChatMessages(now: now, chat: chatAlerts)
+    }
+
+    private func removeOldChatMessages(now: ContinuousClock.Instant, chat: ChatProvider) {
+        if chat.paused {
             return
         }
         while let post = chat.posts.last {
@@ -72,6 +78,7 @@ extension Model {
 
     func updateChat() {
         chat.update()
+        chatAlerts.update()
         quickButtonChat.update()
         if externalDisplay.chatEnabled {
             externalDisplayChat.update()
@@ -114,6 +121,7 @@ extension Model {
     func updateChatMoreThanOneChatConfigured() {
         let moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        chatAlerts.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
@@ -323,7 +331,12 @@ extension Model {
             printChatMessage(post: post)
         }
         if filter?.showOnScreen != false {
-            chat.appendMessage(post: post)
+            let isAlert = highlight?.isAlert() == true
+            if isAlert, database.chat.splitAlerts {
+                chatAlerts.appendMessage(post: post)
+            } else {
+                chat.appendMessage(post: post)
+            }
             quickButtonChat.appendMessage(post: post)
             for browserEffect in browserEffects.values {
                 browserEffect.sendChatMessage(post: post)
@@ -334,7 +347,7 @@ extension Model {
             if externalDisplay.chatEnabled {
                 externalDisplayChat.appendMessage(post: post)
             }
-            if highlight != nil {
+            if isAlert {
                 if quickButtonChatState.chatAlertsPaused {
                     if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
                         pausedQuickButtonChatAlertsPosts.append(post)
@@ -361,6 +374,7 @@ extension Model {
 
     func reloadChatMessages() {
         chat.posts = newPostIds(posts: chat.posts)
+        chatAlerts.posts = newPostIds(posts: chatAlerts.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         chatWidgetChat.posts = newPostIds(posts: chatWidgetChat.posts)
@@ -540,6 +554,7 @@ extension Model {
 
     func deleteChatMessage(messageId: String) {
         chat.deleteMessage(messageId: messageId)
+        chatAlerts.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
         chatWidgetChat.deleteMessage(messageId: messageId)
@@ -548,6 +563,7 @@ extension Model {
 
     func deleteChatUser(userId: String) {
         chat.deleteUser(userId: userId)
+        chatAlerts.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
         chatWidgetChat.deleteUser(userId: userId)

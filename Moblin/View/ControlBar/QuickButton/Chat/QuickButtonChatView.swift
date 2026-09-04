@@ -426,9 +426,6 @@ private struct AlertsPostView: View {
         if highlight.kind == .newFollower, !showNewFollowerMessage {
             return false
         }
-        if highlight.kind == .reply {
-            return false
-        }
         return true
     }
 
