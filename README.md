@@ -168,6 +168,8 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Stealth mode. Show a custom image instead of the app.
 - Supports UVC (USB-C) cameras on iPad.
 - Basic support for Mac.
+  - Menu bar icon showing when live and when recording, with a menu to
+    start and stop the stream and the recording.
 - Video effects.
   - Grayscale.
   - Movie. Paint top and bottom of 16:9 video black to look like
