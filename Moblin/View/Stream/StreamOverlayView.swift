@@ -154,6 +154,14 @@ struct StreamOverlayView: View {
     @ObservedObject var orientation: Orientation
     let width: CGFloat
 
+    private func leadingPadding() -> CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {
+            15
+        } else {
+            0
+        }
+    }
+
     var body: some View {
         ZStack {
             if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
@@ -178,11 +186,11 @@ struct StreamOverlayView: View {
                                            show: model.database.show,
                                            streamOverlay: model.streamOverlay,
                                            zoom: model.zoom,
-                                           orientation: orientation,
                                            width: width)
                 }
                 HStack {
                     LeftOverlayView(model: model, database: model.database)
+                        .padding(.leading, leadingPadding())
                     Spacer()
                 }
                 HStack {
@@ -191,12 +199,12 @@ struct StreamOverlayView: View {
                 }
                 HStack {
                     StreamOverlayDebugView(debugOverlay: model.debugOverlay)
+                        .padding(.leading, leadingPadding())
                     Spacer()
                 }
                 .allowsHitTesting(false)
             }
-            .padding(.top)
-            .padding(.horizontal, 5)
+            .padding([.trailing, .top])
         }
     }
 }

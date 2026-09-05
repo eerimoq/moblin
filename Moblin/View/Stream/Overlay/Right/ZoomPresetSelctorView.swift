@@ -110,7 +110,6 @@ private struct ZoomPresetVView: View {
 struct StreamOverlayRightZoomPresetSelctorView: View {
     let model: Model
     @ObservedObject var zoom: Zoom
-    @ObservedObject var orientation: Orientation
     let width: CGFloat
 
     private func presets() -> Binding<[SettingsZoomPreset]> {
@@ -131,17 +130,10 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            if orientation.isPortrait {
-                ZoomPresetView(database: model.database,
-                               presets: presets(),
-                               selectedPresetId: selectedPresetId(),
-                               width: width)
-            } else {
-                ZoomPresetVView(database: model.database,
-                                presets: presets(),
-                                selectedPresetId: selectedPresetId(),
-                                width: width)
-            }
+            ZoomPresetView(database: model.database,
+                           presets: presets(),
+                           selectedPresetId: selectedPresetId(),
+                           width: width)
         }
     }
 }
