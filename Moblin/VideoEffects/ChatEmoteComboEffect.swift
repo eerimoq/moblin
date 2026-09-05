@@ -76,7 +76,7 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     func appendMessage(post: ChatPost) {
-        guard let emoteUrl = post.segments.first?.url else {
+        guard let emoteUrl = post.segments.first?.url?.url(animated: false) else {
             return
         }
         if emoteUrl == currentEmoteUrl {

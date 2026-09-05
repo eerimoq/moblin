@@ -201,7 +201,10 @@ extension Model {
             userColor: userColor,
             userBadges: post.userBadges,
             segments: post.segments
-                .map { WatchProtocolChatSegment(text: $0.text, url: ($0.url ?? $0.gifUrl)?.absoluteString) },
+                .map { WatchProtocolChatSegment(
+                    text: $0.text,
+                    url: ($0.url ?? $0.gifUrl)?.url(animated: false)?.absoluteString
+                ) },
             highlight: post.highlight?.toWatchProtocol()
         )
         nextWatchChatPostId += 1

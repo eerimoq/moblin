@@ -49,7 +49,7 @@ private struct HighlightMessageView: View {
                         Text(text)
                             .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
                     }
-                    if let url = segment.url {
+                    if let url = segment.url?.url(animated: chat.animatedEmotes) {
                         if chat.animatedEmotes {
                             AnimatedEmoteView(url: url)
                                 .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
@@ -190,7 +190,7 @@ private struct LineView: View {
                         .bold(chat.boldMessage)
                         .italic(post.isAction)
                 }
-                if let url = segment.url {
+                if let url = segment.url?.url(animated: chat.animatedEmotes) {
                     if chat.animatedEmotes {
                         AnimatedEmoteView(url: url)
                             .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
@@ -210,7 +210,7 @@ private struct LineView: View {
                     }
                     Text(" ")
                 }
-                if let url = segment.gifUrl {
+                if let url = segment.gifUrl?.url(animated: chat.animatedEmotes) {
                     ChatGifView(
                         url: url,
                         animated: chat.animatedEmotes,

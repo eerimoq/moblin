@@ -369,8 +369,8 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                 if let text = run.text {
                     segments += createSegments(message: text, id: &id)
                 }
-                if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
-                    segments.append(.init(id: id, url: URL(string: emojiUrl)))
+                if let emojiUrl = run.emoji?.image.thumbnails.first?.url, let url = URL(string: emojiUrl) {
+                    segments.append(.init(id: id, url: ChatPostUrl(moving: url, still: nil)))
                     id += 1
                 }
             }
@@ -380,8 +380,8 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
                 if let text = run.text {
                     segments += createSegments(message: text, id: &id)
                 }
-                if let emojiUrl = run.emoji?.image.thumbnails.first?.url {
-                    segments.append(.init(id: id, url: URL(string: emojiUrl)))
+                if let emojiUrl = run.emoji?.image.thumbnails.first?.url, let url = URL(string: emojiUrl) {
+                    segments.append(.init(id: id, url: ChatPostUrl(moving: url, still: nil)))
                     id += 1
                 }
             }

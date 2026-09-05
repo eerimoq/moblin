@@ -25,11 +25,11 @@ private func makeTwitchGif(_ name: String, _ range: ClosedRange<Int>) -> ChatMes
 }
 
 private func emoteNames(_ segments: [ChatPostSegment]) -> [String?] {
-    segments.map { $0.url?.lastPathComponent }
+    segments.map { $0.url?.still?.lastPathComponent }
 }
 
 private func gifNames(_ segments: [ChatPostSegment]) -> [String?] {
-    segments.map { $0.gifUrl?.lastPathComponent }
+    segments.map { $0.gifUrl?.moving?.lastPathComponent }
 }
 
 struct ChatSegmentsSuite {
@@ -270,14 +270,14 @@ struct KickChatSegmentsSuite {
         let segments = createSegments("hey [emote:37226:KEKW] there")
         #expect(texts(segments) == ["hey ", nil, "there "])
         #expect(emoteNames(segments) == [nil, "fullsize", nil])
-        #expect(segments[1].url?.absoluteString == "https://files.kick.com/emotes/37226/fullsize")
+        #expect(segments[1].url?.still?.absoluteString == "https://files.kick.com/emotes/37226/fullsize")
     }
 
     @Test
     func emoteAtStartAndEnd() {
         let segments = createSegments("[emote:1:A] hi [emote:2:B]")
         #expect(texts(segments) == [nil, "hi ", nil])
-        #expect(segments.compactMap { $0.url?.absoluteString } == [
+        #expect(segments.compactMap { $0.url?.still?.absoluteString } == [
             "https://files.kick.com/emotes/1/fullsize",
             "https://files.kick.com/emotes/2/fullsize",
         ])
@@ -404,5 +404,24 @@ struct CheermotesSuite {
     @Test
     func noCheermotesFetched() {
         #expect(Cheermotes().getUrlAndBits(word: "cheer100") == nil)
+    }
+}
+
+struct ChatPostUrlSuite {
+    private let moving = URL(string: "https://emotes.example.com/moving.gif")!
+    private let still = URL(string: "https://emotes.example.com/still.png")!
+
+    @Test
+    func prefersMovingWhenAnimated() {
+        let url = ChatPostUrl(moving: moving, still: still)
+        #expect(url.url(animated: true) == moving)
+        #expect(url.url(animated: false) == still)
+    }
+
+    @Test
+    func fallsBackToTheOtherOne() {
+        #expect(ChatPostUrl(moving: nil, still: still).url(animated: true) == still)
+        #expect(ChatPostUrl(moving: moving, still: nil).url(animated: false) == moving)
+        #expect(ChatPostUrl(moving: nil, still: nil).url(animated: true) == nil)
     }
 }

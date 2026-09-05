@@ -7,11 +7,24 @@ struct ChatMessageEmote: Identifiable {
     var isGif = false
 }
 
+struct ChatPostUrl: Codable {
+    let moving: URL?
+    let still: URL?
+
+    func url(animated: Bool) -> URL? {
+        if animated {
+            moving ?? still
+        } else {
+            still ?? moving
+        }
+    }
+}
+
 struct ChatPostSegment: Identifiable, Codable {
     let id: Int
     var text: String?
-    var url: URL?
-    var gifUrl: URL?
+    var url: ChatPostUrl?
+    var gifUrl: ChatPostUrl?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {

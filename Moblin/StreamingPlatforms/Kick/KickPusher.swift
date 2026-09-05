@@ -31,6 +31,7 @@ func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -
         let emoteId = match.output.1
         let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
         let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
+            .map { ChatPostUrl(moving: $0, still: nil) }
         segments += emotesManager.createSegments(text: String(textBeforeEmote), id: &id)
         segments.append(ChatPostSegment(id: id, url: url))
         id += 1

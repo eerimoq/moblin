@@ -45,7 +45,7 @@ private struct HighlightMessageView: View {
                         Text(text)
                             .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColorColor))
                     }
-                    if let url = segment.url {
+                    if let url = segment.url?.url(animated: false) {
                         CacheAsyncImage(url: url) { image in
                             image
                                 .resizable()
@@ -160,7 +160,7 @@ private struct LineView: View {
                         .bold(settings.boldMessage)
                         .italic(post.isAction)
                 }
-                if let url = segment.url {
+                if let url = (segment.url ?? segment.gifUrl)?.url(animated: false) {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -169,16 +169,7 @@ private struct LineView: View {
                         EmptyView()
                     }
                     .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
-                    .frame(height: frameHeightEmotes())
-                    Text(" ")
-                }
-                if let url = segment.gifUrl {
-                    ChatGifView(
-                        url: url,
-                        animated: false,
-                        height: CGFloat(settings.fontSize * chatEmoteScale * 3)
-                    )
-                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
+                    .frame(height: frameHeightEmotes() * (segment.gifUrl == nil ? 1 : 3))
                     Text(" ")
                 }
             }

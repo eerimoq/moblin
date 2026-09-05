@@ -459,7 +459,7 @@ extension Model {
                         if let text = segment.text {
                             Text(text)
                         }
-                        if let url = segment.url {
+                        if let url = (segment.url ?? segment.gifUrl)?.url(animated: false) {
                             CacheAsyncImage(url: url) { image in
                                 image
                                     .resizable()
@@ -470,10 +470,6 @@ extension Model {
                                     .scaledToFit()
                             }
                             .frame(height: 45)
-                            Text(" ")
-                        }
-                        if let url = segment.gifUrl {
-                            ChatGifView(url: url, animated: false, height: 100)
                             Text(" ")
                         }
                     }

@@ -93,7 +93,7 @@ private struct LineView: View {
                         .strikethrough(deleted)
                         .italic(post.isAction)
                 }
-                if let url = segment.url {
+                if let url = segment.url?.url(animated: chat.animatedEmotes) {
                     if chat.animatedEmotes {
                         AnimatedEmoteView(url: url)
                             .frame(height: fontSizeScaleFactor * 25)
