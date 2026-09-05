@@ -13,7 +13,9 @@ private func makeEmotes(_ names: [String]) -> Emotes {
 }
 
 private func makeTwitchEmote(_ name: String, _ range: ClosedRange<Int>) -> ChatMessageEmote {
-    ChatMessageEmote(url: URL(string: "https://twitch.example.com/\(name)")!, range: range)
+    ChatMessageEmote(url: URL(string: "https://twitch.example.com/\(name)")!,
+                     stillUrl: URL(string: "https://twitch.example.com/still/\(name)")!,
+                     range: range)
 }
 
 private func texts(_ segments: [ChatPostSegment]) -> [String?] {

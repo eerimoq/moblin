@@ -3,6 +3,7 @@ import SwiftUI
 struct ChatMessageEmote: Identifiable {
     let id = UUID()
     let url: URL
+    var stillUrl: URL?
     let range: ClosedRange<Int>
     var isGif = false
 }

@@ -49,7 +49,8 @@ private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] 
     guard parts.count == 2,
           let emoteId = parts.first,
           let emoteRangesString = parts.last,
-          let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0")
+          let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0"),
+          let stillUrl = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/static/dark/3.0")
     else {
         return []
     }
@@ -58,7 +59,7 @@ private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] 
         guard let range = parseRange(emoteRangeString) else {
             continue
         }
-        emotes.append(ChatMessageEmote(url: url, range: range))
+        emotes.append(ChatMessageEmote(url: url, stillUrl: stillUrl, range: range))
     }
     return emotes
 }
@@ -167,7 +168,10 @@ func createTwitchSegments(text: String,
         if emote.isGif {
             segments.append(ChatPostSegment(id: id, gifUrl: ChatPostUrl(moving: emote.url, still: nil)))
         } else {
-            segments.append(ChatPostSegment(id: id, url: ChatPostUrl(moving: emote.url, still: nil)))
+            segments.append(ChatPostSegment(
+                id: id,
+                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl)
+            ))
         }
         id += 1
         segments.append(ChatPostSegment(id: id, text: ""))
@@ -687,7 +691,7 @@ final class TwitchChat: @unchecked Sendable {
                 continue
             }
             id += 1
-            newSegments.append(.init(id: id, url: ChatPostUrl(moving: url, still: nil)))
+            newSegments.append(.init(id: id, url: ChatPostUrl(moving: nil, still: url)))
             id += 1
             newSegments.append(.init(id: id, text: "\(bits) "))
         }
