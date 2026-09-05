@@ -460,6 +460,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
+    var connectionStatusSoundPlayer: AudioPlayer?
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
