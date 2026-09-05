@@ -1154,6 +1154,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var enabled: Bool = false
     @Published var url: String = defaultStreamUrl
     @Published var twitchChannelName: String = ""
+    @Published var twitchChatEnabled: Bool = true
     var twitchChannelId: String = ""
     var twitchShowFollows: Bool?
     var twitchChatAlerts: SettingsTwitchAlerts = .init()
@@ -1165,6 +1166,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
+    @Published var kickChatEnabled: Bool = true
     @Published var kickChannelId: String?
     @Published var kickChatroomChannelId: String?
     @Published var kickSlug: String?
@@ -1179,14 +1181,17 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var youTubeWantsToBeLoggedIn: Bool = false
     var youTubeNotLoggedInCount: Int = 0
     @Published var youTubeVideoIds: String = ""
+    @Published var youTubeChatEnabled: Bool = true
     @Published var youTubeHandle: String = ""
     @Published var youTubeScheduleStreamTitle: String = ""
     @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
     @Published var youTubeScheduleStreamAutoStop: Bool = true
     @Published var soopChannelName: String = ""
+    @Published var soopChatEnabled: Bool = true
     var soopStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
     var openStreamingPlatformChannelId: String = ""
+    @Published var openStreamingPlatformChatEnabled: Bool = true
     @Published var obsWebSocketEnabled: Bool = false
     var obsWebSocketUrl: String = ""
     var obsWebSocketPassword: String = ""
@@ -1252,6 +1257,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case enabled
         case url
         case twitchChannelName
+        case twitchChatEnabled
         case twitchChannelId
         case twitchShowFollows
         case twitchChatAlerts
@@ -1263,6 +1269,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case twitchRewards
         case twitchSendMessagesTo
         case kickChannelName
+        case kickChatEnabled
         case kickChannelId
         case kickChatroomChannelId
         case kickSlug
@@ -1274,6 +1281,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickChatAlerts
         case kickToastAlerts
         case youTubeVideoId
+        case youTubeChatEnabled
         case youTubeWantsToBeLoggedIn
         case youTubeNotLoggedInCount
         case youTubeHandle
@@ -1281,9 +1289,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case youTubeScheduleStreamVisibility
         case youTubeScheduleStreamAutoStop
         case afreecaTvChannelName
+        case soopChatEnabled
         case afreecaTvStreamId
         case openStreamingPlatformUrl
         case openStreamingPlatformChannelId
+        case openStreamingPlatformChatEnabled
         case obsWebSocketEnabled
         case obsWebSocketUrl
         case obsWebSocketPassword
@@ -1345,6 +1355,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.enabled, enabled)
         try container.encode(.url, url)
         try container.encode(.twitchChannelName, twitchChannelName)
+        try container.encode(.twitchChatEnabled, twitchChatEnabled)
         try container.encode(.twitchChannelId, twitchChannelId)
         try container.encode(.twitchShowFollows, twitchShowFollows)
         try container.encode(.twitchAccessToken, twitchAccessToken)
@@ -1356,6 +1367,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.twitchChatAlerts, twitchChatAlerts)
         try container.encode(.twitchToastAlerts, twitchToastAlerts)
         try container.encode(.kickChannelName, kickChannelName)
+        try container.encode(.kickChatEnabled, kickChatEnabled)
         try container.encode(.kickChannelId, kickChannelId)
         try container.encode(.kickChatroomChannelId, kickChatroomChannelId)
         try container.encode(.kickSlug, kickSlug)
@@ -1370,6 +1382,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
         }
         try container.encode(.youTubeVideoId, youTubeVideoIds)
+        try container.encode(.youTubeChatEnabled, youTubeChatEnabled)
         try container.encode(.youTubeWantsToBeLoggedIn, youTubeWantsToBeLoggedIn)
         try container.encode(.youTubeNotLoggedInCount, youTubeNotLoggedInCount)
         try container.encode(.youTubeHandle, youTubeHandle)
@@ -1377,9 +1390,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
         try container.encode(.youTubeScheduleStreamAutoStop, youTubeScheduleStreamAutoStop)
         try container.encode(.afreecaTvChannelName, soopChannelName)
+        try container.encode(.soopChatEnabled, soopChatEnabled)
         try container.encode(.afreecaTvStreamId, soopStreamId)
         try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
         try container.encode(.openStreamingPlatformChannelId, openStreamingPlatformChannelId)
+        try container.encode(.openStreamingPlatformChatEnabled, openStreamingPlatformChatEnabled)
         try container.encode(.obsWebSocketEnabled, obsWebSocketEnabled)
         try container.encode(.obsWebSocketUrl, obsWebSocketUrl)
         try container.encode(.obsWebSocketPassword, obsWebSocketPassword)
@@ -1439,6 +1454,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         enabled = container.decode(.enabled, Bool.self, false)
         url = container.decode(.url, String.self, defaultStreamUrl)
         twitchChannelName = container.decode(.twitchChannelName, String.self, "")
+        twitchChatEnabled = container.decode(.twitchChatEnabled, Bool.self, true)
         twitchChannelId = container.decode(.twitchChannelId, String.self, "")
         twitchShowFollows = container.decode(.twitchShowFollows, Bool?.self, nil)
         twitchAccessToken = container.decode(.twitchAccessToken, String.self, "")
@@ -1455,6 +1471,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
         twitchShowFollows = nil
         kickChannelName = container.decode(.kickChannelName, String.self, "")
+        kickChatEnabled = container.decode(.kickChatEnabled, Bool.self, true)
         kickChannelId = container.decode(.kickChannelId, String?.self, nil)
         kickChatroomChannelId = container.decode(.kickChatroomChannelId, String?.self, nil)
         kickSlug = container.decode(.kickSlug, String?.self, nil)
@@ -1469,6 +1486,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
         }
         youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
+        youTubeChatEnabled = container.decode(.youTubeChatEnabled, Bool.self, true)
         youTubeWantsToBeLoggedIn = container.decode(.youTubeWantsToBeLoggedIn,
                                                     Bool.self,
                                                     youTubeAuthState != nil)
@@ -1480,9 +1498,15 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                            .public)
         youTubeScheduleStreamAutoStop = container.decode(.youTubeScheduleStreamAutoStop, Bool.self, true)
         soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
+        soopChatEnabled = container.decode(.soopChatEnabled, Bool.self, true)
         soopStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
         openStreamingPlatformChannelId = container.decode(.openStreamingPlatformChannelId, String.self, "")
+        openStreamingPlatformChatEnabled = container.decode(
+            .openStreamingPlatformChatEnabled,
+            Bool.self,
+            true
+        )
         obsWebSocketEnabled = container.decode(.obsWebSocketEnabled, Bool.self, false)
         obsWebSocketUrl = container.decode(.obsWebSocketUrl, String.self, "")
         obsWebSocketPassword = container.decode(.obsWebSocketPassword, String.self, "")
@@ -1563,6 +1587,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         let new = SettingsStream(name: name)
         new.url = url
         new.twitchChannelName = twitchChannelName
+        new.twitchChatEnabled = twitchChatEnabled
         new.twitchChannelId = twitchChannelId
         new.twitchShowFollows = twitchShowFollows
         new.twitchRewards = twitchRewards
@@ -1577,6 +1602,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             storeTwitchAccessTokenInKeychain(streamId: new.id, accessToken: twitchAccessToken)
         }
         new.kickChannelName = kickChannelName
+        new.kickChatEnabled = kickChatEnabled
         new.kickChannelId = kickChannelId
         new.kickChatroomChannelId = kickChatroomChannelId
         new.kickSlug = kickSlug
@@ -1591,11 +1617,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.youTubeWantsToBeLoggedIn = youTubeWantsToBeLoggedIn
         new.youTubeNotLoggedInCount = youTubeNotLoggedInCount
         new.youTubeVideoIds = youTubeVideoIds
+        new.youTubeChatEnabled = youTubeChatEnabled
         new.youTubeHandle = youTubeHandle
         new.soopChannelName = soopChannelName
+        new.soopChatEnabled = soopChatEnabled
         new.soopStreamId = soopStreamId
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
         new.openStreamingPlatformChannelId = openStreamingPlatformChannelId
+        new.openStreamingPlatformChatEnabled = openStreamingPlatformChatEnabled
         new.obsWebSocketEnabled = obsWebSocketEnabled
         new.obsWebSocketUrl = obsWebSocketUrl
         new.obsWebSocketPassword = obsWebSocketPassword

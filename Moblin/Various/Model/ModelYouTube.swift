@@ -14,6 +14,11 @@ extension Model {
         resetChat()
     }
 
+    func youTubeChatEnabledUpdated() {
+        reloadYouTubeLiveChat()
+        resetChat()
+    }
+
     func updateViewersYouTube() -> StreamingPlatformStatus {
         StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
     }
@@ -151,7 +156,7 @@ extension Model {
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        database.chat.enabled && !stream.youTubeVideoIds.isEmpty
+        database.chat.enabled && stream.youTubeChatEnabled && !stream.youTubeVideoIds.isEmpty
     }
 
     func isYouTubeLiveChatConnected() -> Bool {

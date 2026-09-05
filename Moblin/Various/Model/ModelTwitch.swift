@@ -20,7 +20,7 @@ extension Model {
     }
 
     func isTwitchChatConfigured() -> Bool {
-        database.chat.enabled && stream.twitchChannelName != ""
+        database.chat.enabled && stream.twitchChatEnabled && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
@@ -49,6 +49,14 @@ extension Model {
         reloadViewers()
         reloadTwitchEventSub()
         reloadTwitchChat()
+        resetChat()
+    }
+
+    func twitchChatEnabledUpdated() {
+        reloadTwitchChat()
+        if useRemoteControlForChatAndEvents {
+            remoteControlStreamerSendTwitchStart()
+        }
         resetChat()
     }
 

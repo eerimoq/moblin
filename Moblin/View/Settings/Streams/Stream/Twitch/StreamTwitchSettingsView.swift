@@ -161,7 +161,7 @@ func loadTwitchStreamInfo(model: Model,
 
 struct StreamTwitchSettingsView: View {
     @EnvironmentObject var model: Model
-    var stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
     @State var loggedIn: Bool
     @State private var title: String?
     @State private var category: String?
@@ -223,6 +223,16 @@ struct StreamTwitchSettingsView: View {
                     value: stream.twitchChannelId,
                     onSubmit: submitChannelId
                 )
+            }
+            Section {
+                Toggle("Enabled", isOn: $stream.twitchChatEnabled)
+                    .onChange(of: stream.twitchChatEnabled) { _ in
+                        if stream.enabled {
+                            model.twitchChatEnabledUpdated()
+                        }
+                    }
+            } header: {
+                Text("Chat")
             }
             if loggedIn {
                 Section {

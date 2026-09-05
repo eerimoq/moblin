@@ -1,3 +1,4 @@
+import Foundation
 @testable import Moblin
 import Testing
 
@@ -38,5 +39,42 @@ struct SettingsSuite {
                                        .init(id: 0, text: "hi"),
                                        .init(id: 0, text: "ho"),
                                    ]))
+    }
+
+    @Test
+    func streamChatEnabledDefaultsToTrueForOldSettings() throws {
+        let json = Data(#"{"name":"My stream","twitchChannelName":"foo"}"#.utf8)
+        let stream = try JSONDecoder().decode(SettingsStream.self, from: json)
+        #expect(stream.twitchChatEnabled)
+        #expect(stream.kickChatEnabled)
+        #expect(stream.youTubeChatEnabled)
+        #expect(stream.soopChatEnabled)
+        #expect(stream.openStreamingPlatformChatEnabled)
+    }
+
+    @Test
+    func streamChatEnabledSurvivesRoundTrip() throws {
+        let stream = SettingsStream(name: "My stream")
+        stream.twitchChatEnabled = false
+        stream.kickChatEnabled = false
+        stream.youTubeChatEnabled = false
+        stream.soopChatEnabled = false
+        stream.openStreamingPlatformChatEnabled = false
+        let data = try JSONEncoder().encode(stream)
+        let decoded = try JSONDecoder().decode(SettingsStream.self, from: data)
+        #expect(!decoded.twitchChatEnabled)
+        #expect(!decoded.kickChatEnabled)
+        #expect(!decoded.youTubeChatEnabled)
+        #expect(!decoded.soopChatEnabled)
+        #expect(!decoded.openStreamingPlatformChatEnabled)
+    }
+
+    @Test
+    func streamCloneCopiesChatEnabled() {
+        let stream = SettingsStream(name: "My stream")
+        stream.kickChatEnabled = false
+        let new = stream.clone()
+        #expect(!new.kickChatEnabled)
+        #expect(new.twitchChatEnabled)
     }
 }
