@@ -1,4 +1,160 @@
 import Collections
+import FuzzyMatchingSwift
+
+private let fuzzyMatchOptions = FuzzyMatchOptions(threshold: 0.34, distance: 1000)
+
+private func fuzzyMatches(text: String, pattern: String) -> Bool {
+    (text + " ").fuzzyMatchPattern(pattern, options: fuzzyMatchOptions) != nil
+}
+
+private func matchArgument<T: ChatBotArgument>(_ argument: String) -> T? {
+    if let argument = T(rawValue: argument) {
+        return argument
+    }
+    let matches = T.allCases.filter {
+        fuzzyMatches(text: $0.rawValue, pattern: argument) && fuzzyMatches(
+            text: argument,
+            pattern: $0.rawValue
+        )
+    }
+    guard matches.count == 1 else {
+        return nil
+    }
+    return matches.first
+}
+
+protocol ChatBotArgument: RawRepresentable<String>, CaseIterable {}
+
+enum ChatBotMainArgument: String, ChatBotArgument {
+    case help
+    case tts
+    case obs
+    case map
+    case location
+    case snapshot
+    case mute
+    case unmute
+    case alert
+    case fax
+    case filter
+    case zoom
+    case say
+    case tesla
+    case reaction
+    case scene
+    case stream
+    case widget
+    case ai
+    case twitch
+    case gimbal
+    case macro
+    case send
+    case music
+    case custom
+}
+
+enum ChatBotOnOffArgument: String, ChatBotArgument {
+    case on
+    case off
+}
+
+enum ChatBotObsArgument: String, ChatBotArgument {
+    case fix
+}
+
+enum ChatBotMapArgument: String, ChatBotArgument {
+    case zoom
+}
+
+enum ChatBotMapZoomArgument: String, ChatBotArgument {
+    case out
+}
+
+enum ChatBotLocationArgument: String, ChatBotArgument {
+    case data
+}
+
+enum ChatBotLocationDataArgument: String, ChatBotArgument {
+    case reset
+    case split
+}
+
+enum ChatBotAiArgument: String, ChatBotArgument {
+    case ask
+}
+
+enum ChatBotTwitchArgument: String, ChatBotArgument {
+    case raid
+}
+
+enum ChatBotGimbalArgument: String, ChatBotArgument {
+    case preset
+}
+
+enum ChatBotMacroArgument: String, ChatBotArgument {
+    case run
+    case cancel
+}
+
+enum ChatBotMusicArgument: String, ChatBotArgument {
+    case play
+    case pause
+    case add
+    case next
+    case previous
+    case status
+}
+
+enum ChatBotStreamArgument: String, ChatBotArgument {
+    case start
+    case stop
+    case title
+    case category
+}
+
+enum ChatBotWidgetArgument: String, ChatBotArgument {
+    case enable
+    case disable
+    case timer
+    case wheelOfLuck = "wheelofluck"
+}
+
+enum ChatBotWidgetTimerArgument: String, ChatBotArgument {
+    case add
+}
+
+enum ChatBotWidgetWheelOfLuckArgument: String, ChatBotArgument {
+    case spin
+    case options
+}
+
+enum ChatBotFilterArgument: String, ChatBotArgument {
+    case movie
+    case grayscale
+    case sepia
+    case triple
+    case twin
+    case pixellate
+    case fourThree = "4:3"
+    case whirlpool
+    case pinch
+}
+
+enum ChatBotTeslaArgument: String, ChatBotArgument {
+    case trunk
+    case media
+}
+
+enum ChatBotTeslaTrunkArgument: String, ChatBotArgument {
+    case open
+    case close
+}
+
+enum ChatBotTeslaMediaArgument: String, ChatBotArgument {
+    case next
+    case previous
+    case togglePlayback = "toggle-playback"
+}
 
 struct ChatBotMessage {
     let platform: Platform
@@ -62,6 +218,13 @@ class ChatBotCommand {
 
     func popFirstLowerCased() -> String? {
         popFirst()?.lowercased()
+    }
+
+    func popFirstArgument<T: ChatBotArgument>(_: T.Type) -> T? {
+        guard let word = popFirstLowerCased() else {
+            return nil
+        }
+        return matchArgument(word)
     }
 
     func popAll() -> [String] {

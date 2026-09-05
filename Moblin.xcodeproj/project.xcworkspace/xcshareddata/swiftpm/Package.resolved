@@ -1,5 +1,5 @@
 {
-  "originHash" : "d72ccb679b9bf13f273787251b7ae9687c7d12fa789914ce9187ed9a0ab1bbd4",
+  "originHash" : "fc6f91a3af4e60062b76a5a2f9468f1a0a0e3ded1aa9448683b80b2af3a79304",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -44,6 +44,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "17f2aa22dfdc28c0ac4f0adee7cc02e8162060bb"
+      }
+    },
+    {
+      "identity" : "fuzzymatchingswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/seanoshea/FuzzyMatchingSwift",
+      "state" : {
+        "revision" : "87b14bd5780a73214d45025f678d66160af45a2c",
+        "version" : "0.11.1"
       }
     },
     {

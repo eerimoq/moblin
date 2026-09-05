@@ -23,68 +23,103 @@ extension Model {
         guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
         }
-        switch command.rest().lowercased() {
-        case "help":
+        guard let mainCommand = command.popFirstArgument(ChatBotMainArgument.self) else {
+            return
+        }
+        switch mainCommand {
+        case .help:
             handleChatBotMessageHelp(platform: message.platform)
-        case "tts on":
-            handleChatBotMessageTtsOn(command: command)
-        case "tts off":
-            handleChatBotMessageTtsOff(command: command)
-        case "obs fix":
-            handleChatBotMessageObsFix(command: command)
-        case "map zoom out":
-            handleChatBotMessageMapZoomOut(command: command)
-        case "location data reset":
-            handleChatBotMessageLocationDataReset(command: command)
-        case "location data split":
-            handleChatBotMessageLocationDataSplit(command: command)
-        case "snapshot":
-            handleChatBotMessageSnapshot(command: command)
-        case "mute":
-            handleChatBotMessageMute(command: command)
-        case "unmute":
-            handleChatBotMessageUnmute(command: command)
-        default:
-            switch command.popFirstLowerCased() {
-            case "alert":
-                handleChatBotMessageAlert(command: command)
-            case "fax":
-                handleChatBotMessageFax(command: command)
-            case "filter":
-                handleChatBotMessageFilter(command: command)
-            case "zoom":
-                handleChatBotMessageZoom(command: command)
-            case "say":
-                handleChatBotMessageTtsSay(command: command)
-            case "tesla":
-                handleChatBotMessageTesla(command: command)
-            case "snapshot":
+        case .tts:
+            handleChatBotMessageTts(command: command)
+        case .obs:
+            handleChatBotMessageObs(command: command)
+        case .map:
+            handleChatBotMessageMap(command: command)
+        case .location:
+            handleChatBotMessageLocation(command: command)
+        case .snapshot:
+            if command.peekFirst() == nil {
+                handleChatBotMessageSnapshot(command: command)
+            } else {
                 handleChatBotMessageSnapshotWithMessage(command: command)
-            case "reaction":
-                handleChatBotMessageReaction(command: command)
-            case "scene":
-                handleChatBotMessageScene(command: command)
-            case "stream":
-                handleChatBotMessageStream(command: command)
-            case "widget":
-                handleChatBotMessageWidget(command: command)
-            case "ai":
-                handleChatBotMessageAi(command: command)
-            case "twitch":
-                handleChatBotMessageTwitch(command: command)
-            case "gimbal":
-                handleChatBotMessageGimbal(command: command)
-            case "macro":
-                handleChatBotMessageMacro(command: command)
-            case "send":
-                handleChatBotMessageSend(command: command)
-            case "music":
-                handleChatBotMessageMusic(command: command)
-            case "custom":
-                handleChatBotMessageCustom(command: command)
-            default:
-                break
             }
+        case .mute:
+            handleChatBotMessageMute(command: command)
+        case .unmute:
+            handleChatBotMessageUnmute(command: command)
+        case .alert:
+            handleChatBotMessageAlert(command: command)
+        case .fax:
+            handleChatBotMessageFax(command: command)
+        case .filter:
+            handleChatBotMessageFilter(command: command)
+        case .zoom:
+            handleChatBotMessageZoom(command: command)
+        case .say:
+            handleChatBotMessageTtsSay(command: command)
+        case .tesla:
+            handleChatBotMessageTesla(command: command)
+        case .reaction:
+            handleChatBotMessageReaction(command: command)
+        case .scene:
+            handleChatBotMessageScene(command: command)
+        case .stream:
+            handleChatBotMessageStream(command: command)
+        case .widget:
+            handleChatBotMessageWidget(command: command)
+        case .ai:
+            handleChatBotMessageAi(command: command)
+        case .twitch:
+            handleChatBotMessageTwitch(command: command)
+        case .gimbal:
+            handleChatBotMessageGimbal(command: command)
+        case .macro:
+            handleChatBotMessageMacro(command: command)
+        case .send:
+            handleChatBotMessageSend(command: command)
+        case .music:
+            handleChatBotMessageMusic(command: command)
+        case .custom:
+            handleChatBotMessageCustom(command: command)
+        }
+    }
+
+    private func handleChatBotMessageTts(command: ChatBotCommand) {
+        switch command.popFirstArgument(ChatBotOnOffArgument.self) {
+        case .on:
+            handleChatBotMessageTtsOn(command: command)
+        case .off:
+            handleChatBotMessageTtsOff(command: command)
+        case nil:
+            break
+        }
+    }
+
+    private func handleChatBotMessageObs(command: ChatBotCommand) {
+        if command.popFirstArgument(ChatBotObsArgument.self) == .fix {
+            handleChatBotMessageObsFix(command: command)
+        }
+    }
+
+    private func handleChatBotMessageMap(command: ChatBotCommand) {
+        if command.popFirstArgument(ChatBotMapArgument.self) == .zoom,
+           command.popFirstArgument(ChatBotMapZoomArgument.self) == .out
+        {
+            handleChatBotMessageMapZoomOut(command: command)
+        }
+    }
+
+    private func handleChatBotMessageLocation(command: ChatBotCommand) {
+        guard command.popFirstArgument(ChatBotLocationArgument.self) == .data else {
+            return
+        }
+        switch command.popFirstArgument(ChatBotLocationDataArgument.self) {
+        case .reset:
+            handleChatBotMessageLocationDataReset(command: command)
+        case .split:
+            handleChatBotMessageLocationDataSplit(command: command)
+        case nil:
+            break
         }
     }
 
@@ -276,10 +311,10 @@ extension Model {
             permissions: database.chat.botCommandPermissions.ai,
             command: command
         ) {
-            switch command.popFirstLowerCased() {
-            case "ask":
+            switch command.popFirstArgument(ChatBotAiArgument.self) {
+            case .ask:
                 self.handleChatBotMessageAiAsk(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -315,10 +350,10 @@ extension Model {
             permissions: database.chat.botCommandPermissions.twitch,
             command: command
         ) {
-            switch command.popFirstLowerCased() {
-            case "raid":
+            switch command.popFirstArgument(ChatBotTwitchArgument.self) {
+            case .raid:
                 self.handleChatBotMessageTwitchRaid(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -348,10 +383,10 @@ extension Model {
             permissions: database.chat.botCommandPermissions.gimbal,
             command: command
         ) {
-            switch command.popFirstLowerCased() {
-            case "preset":
+            switch command.popFirstArgument(ChatBotGimbalArgument.self) {
+            case .preset:
                 self.handleChatBotMessageGimbalPreset(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -374,7 +409,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.macro,
             command: command
         ) {
-            guard let subcommand = command.popFirstLowerCased(),
+            guard let subcommand = command.popFirstArgument(ChatBotMacroArgument.self),
                   let macroName = command.popFirstLowerCased(),
                   let macro = self.database.macros.macros.first(where: {
                       $0.name.lowercased() == macroName
@@ -383,12 +418,10 @@ extension Model {
                 return
             }
             switch subcommand {
-            case "run":
+            case .run:
                 self.handleChatBotMessageMacroRun(macro: macro)
-            case "cancel":
+            case .cancel:
                 self.handleChatBotMessageMacroCancel(macro: macro)
-            default:
-                break
             }
         }
     }
@@ -448,20 +481,20 @@ extension Model {
             permissions: database.chat.botCommandPermissions.music,
             command: command
         ) {
-            switch command.popFirstLowerCased() {
-            case "play":
+            switch command.popFirstArgument(ChatBotMusicArgument.self) {
+            case .play:
                 self.handleChatBotMessageMusicPlay()
-            case "pause":
+            case .pause:
                 self.handleChatBotMessageMusicPause()
-            case "add":
+            case .add:
                 self.handleChatBotMessageMusicAdd(command: command)
-            case "next":
+            case .next:
                 self.handleChatBotMessageMusicNext(command: command)
-            case "previous":
+            case .previous:
                 self.handleChatBotMessageMusicPrevious(command: command)
-            case "status":
+            case .status:
                 self.handleChatBotMessageMusicStatus(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -620,16 +653,16 @@ extension Model {
             permissions: database.chat.botCommandPermissions.stream,
             command: command
         ) {
-            switch command.popFirstLowerCased() {
-            case "start":
+            switch command.popFirstArgument(ChatBotStreamArgument.self) {
+            case .start:
                 self.handleChatBotMessageStreamStart()
-            case "stop":
+            case .stop:
                 self.handleChatBotMessageStreamStop()
-            case "title":
+            case .title:
                 self.handleChatBotMessageStreamTitle(command: command)
-            case "category":
+            case .category:
                 self.handleChatBotMessageStreamCategory(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -668,16 +701,16 @@ extension Model {
             guard let widget = self.findWidget(name: name) else {
                 return
             }
-            switch command.popFirstLowerCased() {
-            case "enable":
+            switch command.popFirstArgument(ChatBotWidgetArgument.self) {
+            case .enable:
                 self.handleChatBotMessageWidgetEnable(widget: widget)
-            case "disable":
+            case .disable:
                 self.handleChatBotMessageWidgetDisable(widget: widget)
-            case "timer":
+            case .timer:
                 self.handleChatBotMessageWidgetTimer(command: command, widget: widget)
-            case "wheelofluck":
+            case .wheelOfLuck:
                 self.handleChatBotMessageWidgetWheelOfLuck(command: command, widget: widget)
-            default:
+            case nil:
                 break
             }
         }
@@ -708,8 +741,8 @@ extension Model {
             return
         }
         let timer = widget.text.timers[index]
-        switch command.popFirstLowerCased() {
-        case "add":
+        switch command.popFirstArgument(ChatBotWidgetTimerArgument.self) {
+        case .add:
             guard let delta = command.popFirst(), let delta = Double(delta) else {
                 return
             }
@@ -717,7 +750,7 @@ extension Model {
             for effect in effects {
                 effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
             }
-        default:
+        case nil:
             break
         }
     }
@@ -726,14 +759,14 @@ extension Model {
         guard let effect = getWheelOfLuckEffect(id: widget.id) else {
             return
         }
-        switch command.popFirstLowerCased() {
-        case "spin":
+        switch command.popFirstArgument(ChatBotWidgetWheelOfLuckArgument.self) {
+        case .spin:
             effect.spin()
-        case "options":
+        case .options:
             let options = command.popAll()
             widget.wheelOfLuck.optionsFromText(text: options.joined(separator: "\n"))
             getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
-        default:
+        case nil:
             break
         }
     }
@@ -767,31 +800,31 @@ extension Model {
             permissions: database.chat.botCommandPermissions.filter,
             command: command
         ) {
-            guard let filter = command.popFirstLowerCased(), let state = command.popFirstLowerCased() else {
+            guard let filter = command.popFirstArgument(ChatBotFilterArgument.self),
+                  let state = command.popFirstArgument(ChatBotOnOffArgument.self)
+            else {
                 return
             }
-            let on = state == "on"
+            let on = state == .on
             switch filter {
-            case "movie":
+            case .movie:
                 self.setFilterQuickButton(type: .movie, on: on)
-            case "grayscale":
+            case .grayscale:
                 self.setFilterQuickButton(type: .grayScale, on: on)
-            case "sepia":
+            case .sepia:
                 self.setFilterQuickButton(type: .sepia, on: on)
-            case "triple":
+            case .triple:
                 self.setFilterQuickButton(type: .triple, on: on)
-            case "twin":
+            case .twin:
                 self.setFilterQuickButton(type: .twin, on: on)
-            case "pixellate":
+            case .pixellate:
                 self.setPixellateQuickButton(on: on)
-            case "4:3":
+            case .fourThree:
                 self.setFilterQuickButton(type: .fourThree, on: on)
-            case "whirlpool":
+            case .whirlpool:
                 self.setWhirlpoolQuickButton(on: on)
-            case "pinch":
+            case .pinch:
                 self.setPinchQuickButton(on: on)
-            default:
-                break
             }
         }
     }
@@ -822,37 +855,37 @@ extension Model {
             permissions: database.chat.botCommandPermissions.tesla,
             command: command
         ) {
-            switch command.popFirst() {
-            case "trunk":
+            switch command.popFirstArgument(ChatBotTeslaArgument.self) {
+            case .trunk:
                 self.handleChatBotMessageTeslaTrunk(command: command)
-            case "media":
+            case .media:
                 self.handleChatBotMessageTeslaMedia(command: command)
-            default:
+            case nil:
                 break
             }
         }
     }
 
     private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
-        switch command.popFirstLowerCased() {
-        case "open":
+        switch command.popFirstArgument(ChatBotTeslaTrunkArgument.self) {
+        case .open:
             tesla.vehicle?.openTrunk()
-        case "close":
+        case .close:
             tesla.vehicle?.closeTrunk()
-        default:
+        case nil:
             break
         }
     }
 
     private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
-        switch command.popFirstLowerCased() {
-        case "next":
+        switch command.popFirstArgument(ChatBotTeslaMediaArgument.self) {
+        case .next:
             tesla.vehicle?.mediaNextTrack()
-        case "previous":
+        case .previous:
             tesla.vehicle?.mediaPreviousTrack()
-        case "toggle-playback":
+        case .togglePlayback:
             tesla.vehicle?.mediaTogglePlayback()
-        default:
+        case nil:
             break
         }
     }

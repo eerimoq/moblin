@@ -40,6 +40,7 @@
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
+		03FA5E0130C0000000000003 /* FuzzyMatchingSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03FA5E0130C0000000000002 /* FuzzyMatchingSwift */; };
 		882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */ = {isa = PBXBuildFile; productRef = 882D0C152DF76F5B0035BFAF /* BlackSharkLib */; };
 /* End PBXBuildFile section */
 
@@ -329,6 +330,7 @@
 				0375F6EC2F53844C005BE7A8 /* DataChannel in Frameworks */,
 				035351962F1C27A500428DAC /* AppAuth in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
+				03FA5E0130C0000000000003 /* FuzzyMatchingSwift in Frameworks */,
 				0377239A2DE35191007D040D /* VRMKit in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				0375FD7B2F539AAC005BE7A8 /* Srt in Frameworks */,
@@ -505,6 +507,7 @@
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
+				03FA5E0130C0000000000002 /* FuzzyMatchingSwift */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -698,6 +701,7 @@
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
 				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
+				03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
 				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
@@ -1732,6 +1736,14 @@
 				kind = branch;
 			};
 		};
+		03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/seanoshea/FuzzyMatchingSwift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.11.1;
+			};
+		};
 		882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Spillmaker/BlackSharkLib.swift";
@@ -1865,6 +1877,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */;
 			productName = CrcSwift;
+		};
+		03FA5E0130C0000000000002 /* FuzzyMatchingSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */;
+			productName = FuzzyMatchingSwift;
 		};
 		882D0C152DF76F5B0035BFAF /* BlackSharkLib */ = {
 			isa = XCSwiftPackageProductDependency;
