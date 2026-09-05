@@ -437,6 +437,11 @@ extension Model {
         }
     }
 
+    func showChatLabelsForAWhile() {
+        chat.showLabelForAWhile()
+        chatActivityFeed.showLabelForAWhile()
+    }
+
     func printChatMessage(post: ChatPost) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             let message = HStack {

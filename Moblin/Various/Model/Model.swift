@@ -1000,6 +1000,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         interactiveBrowsers = getQuickButton(type: .interactiveBrowserWidgets)?.isOn ?? false
         _ = updateShowCameraPreview()
         show.chatPhone = isChatPhone()
+        showChatLabelsForAWhile()
         updateScreenAutoOff()
         setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()
@@ -1487,6 +1488,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             startPeriodicTimers()
         case .off:
             enterForegroundCount += 1
+            showChatLabelsForAWhile()
             if !makeBuyIconsToastIfNeeded() {
                 makeReplayShouldBeDisabledToastIfNeeded()
             }

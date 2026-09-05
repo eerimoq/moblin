@@ -11,9 +11,18 @@ class ChatProvider: ObservableObject {
     @Published var moreThanOneStreamingPlatform = false
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
+    @Published var showLabel = false
+    private let hideLabelTimer = SimpleTimer(queue: .main)
 
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages
+    }
+
+    func showLabelForAWhile() {
+        showLabel = true
+        hideLabelTimer.startSingleShot(timeout: 5) { [weak self] in
+            self?.showLabel = false
+        }
     }
 
     func appendMessage(post: ChatPost) {

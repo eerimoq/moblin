@@ -374,6 +374,27 @@ private struct ChatPausedView: View {
 
 private let separatorHeight = 2.0
 
+private struct ChatLabelView: View {
+    @ObservedObject var chat: ChatProvider
+    let message: String
+    let alignment: Alignment
+
+    var body: some View {
+        if chat.showLabel {
+            Text(message)
+                .bold()
+                .foregroundStyle(.white)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 10)
+                .background(backgroundColor)
+                .cornerRadius(10)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+                .allowsHitTesting(false)
+        }
+    }
+}
+
 private struct SeparatorView: View {
     @ObservedObject var chatSettings: SettingsChat
     let width: CGFloat
@@ -453,6 +474,13 @@ struct StreamOverlayChatView: View {
                                 ChatPausedView(chat: chatActivityFeed, alerts: true)
                             }
                         }
+                        .overlay {
+                            if alertsHeight > 60 {
+                                ChatLabelView(chat: chatActivityFeed,
+                                              message: String(localized: "Activity feed"),
+                                              alignment: .bottom)
+                            }
+                        }
                         .frame(height: alertsHeight)
                     SeparatorView(chatSettings: chatSettings,
                                   width: width,
@@ -465,6 +493,13 @@ struct StreamOverlayChatView: View {
                                  width: width)
                         .overlay {
                             ChatPausedView(chat: chat, alerts: false)
+                        }
+                        .overlay {
+                            if splitHeight - alertsHeight > 60 {
+                                ChatLabelView(chat: chat,
+                                              message: String(localized: "Chat"),
+                                              alignment: .top)
+                            }
                         }
                         .frame(height: splitHeight - alertsHeight)
                 } else {
