@@ -2694,7 +2694,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateCameraPreviewRotation() {
         if useLandscapeStreamAndPortraitUi(cameraDevice, isLandscapeStreamAndPortraitUi()) {
-            cameraPreviewView.setVideoOrientation(.portrait)
+            cameraPreviewView.setVideoOrientation(.landscapeRight)
         } else if stream.portrait {
             cameraPreviewView.setVideoOrientation(.portrait)
         } else {

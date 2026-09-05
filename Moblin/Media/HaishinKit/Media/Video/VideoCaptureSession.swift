@@ -56,7 +56,7 @@ private func setOrientation(
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
     } else if useLandscapeStreamAndPortraitUi(device, isLandscapeStreamAndPortraitUi) {
-        connection.videoOrientation = .portrait
+        connection.videoOrientation = .landscapeRight
     } else {
         connection.videoOrientation = orientation
     }

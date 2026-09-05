@@ -303,10 +303,5 @@ func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
 func useLandscapeStreamAndPortraitUi(_ device: AVCaptureDevice?,
                                      _ isLandscapeStreamAndPortraitUi: Bool) -> Bool
 {
-    #if !targetEnvironment(macCatalyst)
-    if #available(iOS 26, *), isLandscapeStreamAndPortraitUi, device?.dynamicAspectRatio == .ratio9x16 {
-        return true
-    }
-    #endif
-    return false
+    return isLandscapeStreamAndPortraitUi
 }
