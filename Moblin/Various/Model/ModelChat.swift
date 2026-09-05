@@ -334,9 +334,8 @@ extension Model {
             let isAlert = highlight?.isAlert() == true
             if isAlert, database.chat.splitAlerts {
                 chatAlerts.appendMessage(post: post)
-            } else {
-                chat.appendMessage(post: post)
             }
+            chat.appendMessage(post: post)
             quickButtonChat.appendMessage(post: post)
             for browserEffect in browserEffects.values {
                 browserEffect.sendChatMessage(post: post)
