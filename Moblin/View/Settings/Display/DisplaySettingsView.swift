@@ -79,6 +79,13 @@ struct DisplaySettingsView: View {
                         })) {
                             Text("Portrait")
                         }
+                        Toggle(isOn: Binding(get: {
+                            database.streamLandscapePhonePortrait
+                        }, set: { value in
+                            model.setStreamLandscapePhonePortrait(value)
+                        })) {
+                            Text("Transmitir em 16:9 com celular em pé")
+                        }
                         HStack {
                             Text("Video position")
                             Slider(value: $model.portraitVideoOffsetFromTop, in: 0 ... 1) {

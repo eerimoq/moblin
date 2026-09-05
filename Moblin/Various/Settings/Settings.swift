@@ -1158,6 +1158,7 @@ class Database: Codable, ObservableObject {
     var mediaPlayers: SettingsMediaPlayers = .init()
     @Published var showAllSettings: Bool = false
     @Published var portrait: Bool = false
+    @Published var streamLandscapePhonePortrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
@@ -1288,6 +1289,7 @@ class Database: Codable, ObservableObject {
         case mediaPlayers
         case showAllSettings
         case portrait
+        case streamLandscapePhonePortrait
         case djiDevices
         case alertsMediaGallery
         case catPrinters
@@ -1379,6 +1381,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.mediaPlayers, mediaPlayers)
         try container.encode(.showAllSettings, showAllSettings)
         try container.encode(.portrait, portrait)
+        try container.encode(.streamLandscapePhonePortrait, streamLandscapePhonePortrait)
         try container.encode(.djiDevices, djiDevices)
         try container.encode(.alertsMediaGallery, alertsMediaGallery)
         try container.encode(.catPrinters, catPrinters)
@@ -1485,6 +1488,7 @@ class Database: Codable, ObservableObject {
         mediaPlayers = container.decode(.mediaPlayers, SettingsMediaPlayers.self, .init())
         showAllSettings = container.decode(.showAllSettings, Bool.self, false)
         portrait = container.decode(.portrait, Bool.self, false)
+        streamLandscapePhonePortrait = container.decode(.streamLandscapePhonePortrait, Bool.self, false)
         djiDevices = container.decode(.djiDevices, SettingsDjiDevices.self, .init())
         alertsMediaGallery = container.decode(.alertsMediaGallery, SettingsAlertsMediaGallery.self, .init())
         catPrinters = container.decode(.catPrinters, SettingsCatPrinters.self, .init())
