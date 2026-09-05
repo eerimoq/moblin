@@ -89,11 +89,7 @@ extension Model {
     }
 
     private func handleChatBotMessageHelp(platform: Platform) {
-        sendChatBotReply(message: """
-                         Moblin chat bot help: \
-                         https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
-                         """,
-                         platform: platform)
+        sendChatBotReply(message: "Moblin chat bot help: https://moblin.app/chat-bot/", platform: platform)
     }
 
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
