@@ -34,7 +34,7 @@ struct ChatSettingsAppearanceView: View {
                     HStack {
                         Text("Big GIF scale")
                         Slider(
-                            value: $chat.gifScale,
+                            value: $chat.bigGifScale,
                             in: 1 ... 10,
                             step: 1,
                             label: {
@@ -47,10 +47,10 @@ struct ChatSettingsAppearanceView: View {
                                 model.reloadChatMessages()
                             }
                         )
-                        .onChange(of: chat.gifScale) { _ in
+                        .onChange(of: chat.bigGifScale) { _ in
                             model.reloadChatMessages()
                         }
-                        Text(String(Int(chat.gifScale)))
+                        Text(String(Int(chat.bigGifScale)))
                             .frame(width: 25)
                     }
                     if database.showAllSettings {
