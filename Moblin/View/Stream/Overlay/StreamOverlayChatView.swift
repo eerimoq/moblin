@@ -411,6 +411,7 @@ private struct SeparatorView: View {
 
 struct StreamOverlayChatView: View {
     let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var chatSettings: SettingsChat
     let chat: ChatProvider
     let chatActivityFeed: ChatProvider
@@ -419,7 +420,7 @@ struct StreamOverlayChatView: View {
     @State private var draggedAlertsHeight: Double?
 
     private func heightFactor() -> CGFloat {
-        if fullSize {
+        if fullSize || database.appMode == .chatPhone {
             1
         } else {
             chatSettings.height
@@ -427,7 +428,7 @@ struct StreamOverlayChatView: View {
     }
 
     private func widthFactor() -> CGFloat {
-        if fullSize {
+        if fullSize || database.appMode == .chatPhone {
             1
         } else {
             chatSettings.width

@@ -737,7 +737,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateIsPortrait() {
-        orientation.isPortrait = stream.portrait || database.portrait
+        orientation.isPortrait = stream.portrait || database.portrait || isChatPhone()
     }
 
     func isLandscapeStreamAndPortraitUi() -> Bool {
@@ -2088,7 +2088,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateOrientationLock() {
-        if stream.portrait || database.portrait {
+        if orientation.isPortrait {
             AppDelegate.orientationLock = .portrait
         } else {
             AppDelegate.orientationLock = .landscape

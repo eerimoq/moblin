@@ -259,7 +259,9 @@ struct SettingsView: View {
                 }
             }
             Section {
-                AppModeView(database: database)
+                if database.showAllSettings {
+                    AppModeView(database: database)
+                }
                 Toggle("Show all settings", isOn: $database.showAllSettings)
             }
             Section {

@@ -41,6 +41,7 @@ struct ChatOverlayView: View {
             VStack {
                 StreamOverlayChatView(
                     model: model,
+                    database: model.database,
                     chatSettings: chatSettings,
                     chat: chat,
                     chatActivityFeed: chatActivityFeed,
@@ -70,6 +71,7 @@ struct ChatOverlayView: View {
                         GeometryReader { metrics in
                             StreamOverlayChatView(
                                 model: model,
+                                database: model.database,
                                 chatSettings: chatSettings,
                                 chat: chat,
                                 chatActivityFeed: chatActivityFeed,
@@ -78,7 +80,7 @@ struct ChatOverlayView: View {
                             .frame(width: metrics.size.width * 0.95)
                         }
                     }
-                    if !fullSize {
+                    if !fullSize, !show.chatPhone {
                         Rectangle()
                             .foregroundStyle(.clear)
                             .frame(height: chatSettings.bottomPoints)

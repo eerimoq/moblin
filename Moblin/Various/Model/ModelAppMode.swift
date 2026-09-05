@@ -31,6 +31,7 @@ extension Model {
         reloadStream()
         resetSelectedScene(changeScene: false)
         updateOrientation()
+        updateOrientationLock()
         setupAudio()
     }
 
