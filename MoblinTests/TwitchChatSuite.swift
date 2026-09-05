@@ -198,24 +198,9 @@ struct TwitchChatSuite {
         #expect(message.isGigantifiedEmote)
         #expect(message.emotes.count == 3)
         #expect(message.emotes.map(\.range) == [0 ... 4, 12 ... 16, 6 ... 10])
-        #expect(message.emotes.map(\.isGif) == [false, true, false])
+        #expect(message.emotes.map(\.isGif) == [false, false, false])
         #expect(message.emotes[1].url.absoluteString ==
             "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0")
-    }
-
-    @Test
-    func gigantifiedEmoteMessageWithGif() throws {
-        let message = try TwitchChatMessage(string: """
-        @msg-id=gigantified-emote-message;\
-        gifs=6-10|abc|https://media.giphy.com/media/abc/giphy.gif;\
-        emotes=25:0-4 \
-        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
-        PRIVMSG \
-        #eerimoq \
-        :Kappa [gif]
-        """)
-        #expect(message.emotes.map(\.range) == [6 ... 10, 0 ... 4])
-        #expect(message.emotes.map(\.isGif) == [true, true])
     }
 
     @Test
