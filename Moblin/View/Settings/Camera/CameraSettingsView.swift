@@ -249,13 +249,13 @@ struct CameraSettingsView: View {
                 }
             }
             Section {
-                Toggle("Transmitir em 16:9 com celular em pé", isOn: Binding(get: {
+                Toggle("Stream in 16:9 with phone upright", isOn: Binding(get: {
                     database.streamLandscapePhonePortrait
                 }, set: { value in
                     model.setStreamLandscapePhonePortrait(value)
                 }))
             } footer: {
-                Text("Grava e transmite em 16:9 horizontal enquanto segura o celular na vertical.")
+                Text("Capture and stream in 16:9 landscape while holding the phone upright.")
             }
             Section {
                 if database.showAllSettings {

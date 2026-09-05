@@ -84,7 +84,7 @@ struct DisplaySettingsView: View {
                         }, set: { value in
                             model.setStreamLandscapePhonePortrait(value)
                         })) {
-                            Text("Transmitir em 16:9 com celular em pé")
+                            Text("Stream in 16:9 with phone upright")
                         }
                         HStack {
                             Text("Video position")
