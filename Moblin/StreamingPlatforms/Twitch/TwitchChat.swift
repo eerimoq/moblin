@@ -272,26 +272,10 @@ struct TwitchChatMessage {
         self.command = command
         parts.removeFirst()
         parameters = parseParameters(from: parts)
-        if isGigantifiedEmote {
-            gigantifyLastEmote()
-        }
     }
 
     var isGigantifiedEmote: Bool {
         messageId == "gigantified-emote-message"
-    }
-
-    private mutating func gigantifyLastEmote() {
-        var lastIndex: Int?
-        for (index, emote) in emotes.enumerated() where !emote.isGif {
-            if let last = lastIndex, emotes[last].range.lowerBound > emote.range.lowerBound {
-                continue
-            }
-            lastIndex = index
-        }
-        if let lastIndex {
-            emotes[lastIndex].isGif = true
-        }
     }
 }
 
