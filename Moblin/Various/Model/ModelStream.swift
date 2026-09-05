@@ -521,9 +521,25 @@ extension Model {
     }
 
     private func makeConnectFailureToast(subTitle: String) {
-        makeErrorToast(title: failedToConnectMessage(stream.name),
-                       subTitle: subTitle,
-                       vibrate: true)
+        guard database.show.connectionStatusSound else {
+            makeErrorToast(
+                title: failedToConnectMessage(stream.name),
+                subTitle: subTitle,
+                vibrate: true
+            )
+            return
+        }
+        let soundAction = connectionStatusSoundEnabled
+            ? String(localized: "Tap to disable the beep sound")
+            : String(localized: "Tap to enable the beep sound")
+        makeErrorToast(
+            title: failedToConnectMessage(stream.name),
+            subTitle: "\(subTitle)\n\(soundAction)",
+            vibrate: true,
+            onTapped: { [weak self] in
+                self?.connectionStatusSoundEnabled.toggle()
+            }
+        )
     }
 
     private func makeFffffToast(subTitle: String) {
@@ -565,7 +581,7 @@ extension Model {
             makeFffffToast(subTitle: subTitle)
         } else if streamState == .connecting {
             makeConnectFailureToast(subTitle: subTitle)
-            if database.show.connectionStatusSound {
+            if database.show.connectionStatusSound && connectionStatusSoundEnabled {
                 playConnectionStatusSound()
             }
         }

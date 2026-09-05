@@ -461,6 +461,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let ingests = Ingests()
     let bitrate = Bitrate()
     var connectionStatusSoundPlayer: AudioPlayer?
+    var connectionStatusSoundEnabled = true
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
@@ -886,13 +887,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func makeErrorToast(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
+    func makeErrorToast(title: String,
+                        font: Font? = nil,
+                        subTitle: String? = nil,
+                        vibrate: Bool = false,
+                        onTapped: (() -> Void)? = nil)
+    {
         toast.toast = AlertToast(
             type: .regular,
             title: title,
             subTitle: subTitle,
             style: .style(titleColor: .red, titleFont: font, subTitleFont: .body)
         )
+        toast.onTapped = onTapped
         showToast()
         logger.debug("toast: Error: \(title): \(subTitle ?? "-")")
         if vibrate {
