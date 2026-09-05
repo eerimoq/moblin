@@ -590,6 +590,7 @@ class SettingsVoice: Codable, @unchecked Sendable {
 
 class SettingsChat: Codable, ObservableObject {
     static let defaultBigGifScale: Float = 2.0
+    static let defaultActivityFeedHeight: Double = 0.2
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
@@ -610,7 +611,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
-    @Published var activityFeedHeight: Double = 0.3
+    @Published var activityFeedHeight: Double = defaultActivityFeedHeight
     @Published var activityFeed: Bool = true
     @Published var maximumAge: Int = 30
     @Published var maximumAgeEnabled: Bool = false
@@ -795,7 +796,11 @@ class SettingsChat: Codable, ObservableObject {
         height = container.decode(.height, Double.self, 0.7)
         width = container.decode(.width, Double.self, 1.0)
         activityFeed = container.decode(.activityFeed, Bool.self, true)
-        activityFeedHeight = container.decode(.activityFeedHeight, Double.self, 0.3)
+        activityFeedHeight = container.decode(
+            .activityFeedHeight,
+            Double.self,
+            Self.defaultActivityFeedHeight
+        )
         maximumAge = container.decode(.maximumAge, Int.self, 30)
         maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
         meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)
