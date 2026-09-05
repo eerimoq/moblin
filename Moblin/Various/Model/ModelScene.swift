@@ -1027,8 +1027,12 @@ extension Model {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
+        var rotation = scene.videoSourceRotation
+        if database.streamLandscapePhonePortrait {
+            rotation = (rotation + 90).truncatingRemainder(dividingBy: 360)
+        }
         media.setPendingAfterAttachEffects(effects: effects,
-                                           rotation: scene.videoSourceRotation,
+                                           rotation: rotation,
                                            mirror: scene.mirror)
         for effect in browserEffects.values where !effects.contains(effect) {
             effect.setSceneWidget(sceneWidget: nil, crops: [])

@@ -2223,6 +2223,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateIsPortrait()
         updateOrientationLock()
         updateOrientation()
+        sceneUpdated()
         attachCamera()
     }
 
