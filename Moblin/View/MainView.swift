@@ -673,7 +673,7 @@ struct MainView: View {
                         model: model,
                         quickButtons: quickButtons,
                         chat: model.chat,
-                        chatAlerts: model.chatAlerts,
+                        chatAlerts: model.chatActivityFeed,
                         stealthMode: model.stealthMode,
                         orientation: orientation
                     )

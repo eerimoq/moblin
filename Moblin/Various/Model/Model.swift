@@ -499,7 +499,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
     let chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
-    let chatAlerts = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
+    let chatActivityFeed = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     let quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     let externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     let chatWidgetChat = ChatProvider(maximumNumberOfMessages: 5)
@@ -996,7 +996,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
         chat.interactiveChat = getQuickButton(type: .interactiveChat)?.isOn ?? false
-        chatAlerts.interactiveChat = chat.interactiveChat
+        chatActivityFeed.interactiveChat = chat.interactiveChat
         interactiveBrowsers = getQuickButton(type: .interactiveBrowserWidgets)?.isOn ?? false
         _ = updateShowCameraPreview()
         show.chatPhone = isChatPhone()

@@ -111,7 +111,7 @@ struct StealthModeView: View {
             ChatOverlayView(model: model,
                             chatSettings: model.database.chat,
                             chat: model.chat,
-                            chatAlerts: model.chatAlerts,
+                            chatActivityFeed: model.chatActivityFeed,
                             orientation: orientation,
                             quickButtons: quickButtons,
                             show: model.show,

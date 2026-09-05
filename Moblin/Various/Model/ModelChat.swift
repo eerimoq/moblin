@@ -17,7 +17,7 @@ extension Model {
 
     func disableInteractiveChat() {
         chat.endReachedWhenPaused()
-        chatAlerts.endReachedWhenPaused()
+        chatActivityFeed.endReachedWhenPaused()
     }
 
     func pauseQuickButtonChat() {
@@ -60,7 +60,7 @@ extension Model {
             return
         }
         removeOldChatMessages(now: now, chat: chat)
-        removeOldChatMessages(now: now, chat: chatAlerts)
+        removeOldChatMessages(now: now, chat: chatActivityFeed)
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant, chat: ChatProvider) {
@@ -78,7 +78,7 @@ extension Model {
 
     func updateChat() {
         chat.update()
-        chatAlerts.update()
+        chatActivityFeed.update()
         quickButtonChat.update()
         if externalDisplay.chatEnabled {
             externalDisplayChat.update()
@@ -121,7 +121,7 @@ extension Model {
     func updateChatMoreThanOneChatConfigured() {
         let moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
-        chatAlerts.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        chatActivityFeed.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
@@ -333,7 +333,7 @@ extension Model {
         if filter?.showOnScreen != false {
             let isAlert = highlight?.isAlert() == true
             if isAlert {
-                chatAlerts.appendMessage(post: post)
+                chatActivityFeed.appendMessage(post: post)
             }
             chat.appendMessage(post: post)
             quickButtonChat.appendMessage(post: post)
@@ -373,7 +373,7 @@ extension Model {
 
     func reloadChatMessages() {
         chat.posts = newPostIds(posts: chat.posts)
-        chatAlerts.posts = newPostIds(posts: chatAlerts.posts)
+        chatActivityFeed.posts = newPostIds(posts: chatActivityFeed.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         chatWidgetChat.posts = newPostIds(posts: chatWidgetChat.posts)
@@ -553,7 +553,7 @@ extension Model {
 
     func deleteChatMessage(messageId: String) {
         chat.deleteMessage(messageId: messageId)
-        chatAlerts.deleteMessage(messageId: messageId)
+        chatActivityFeed.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
         chatWidgetChat.deleteMessage(messageId: messageId)
@@ -562,7 +562,7 @@ extension Model {
 
     func deleteChatUser(userId: String) {
         chat.deleteUser(userId: userId)
-        chatAlerts.deleteUser(userId: userId)
+        chatActivityFeed.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
         chatWidgetChat.deleteUser(userId: userId)

@@ -300,7 +300,7 @@ struct QuickButtonsInnerView: View {
     private func interactiveChatAction() {
         model.toggleQuickButton(type: .interactiveChat)
         model.chat.interactiveChat = button.isOn
-        model.chatAlerts.interactiveChat = button.isOn
+        model.chatActivityFeed.interactiveChat = button.isOn
         if !button.isOn {
             model.disableInteractiveChat()
         }

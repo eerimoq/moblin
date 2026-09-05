@@ -378,8 +378,8 @@ private struct SeparatorView: View {
     @ObservedObject var chatSettings: SettingsChat
     let width: CGFloat
     let height: CGFloat
-    @Binding var draggedAlertsHeight: Double?
-    @State private var dragStartAlertsHeight: Double?
+    @Binding var draggedActivityFeedHeight: Double?
+    @State private var dragStartActivityFeedHeight: Double?
 
     var body: some View {
         Rectangle()
@@ -392,17 +392,17 @@ private struct SeparatorView: View {
                     .gesture(
                         DragGesture(minimumDistance: 0, coordinateSpace: .global)
                             .onChanged { value in
-                                let start = dragStartAlertsHeight ?? chatSettings.alertsHeight
-                                dragStartAlertsHeight = start
-                                draggedAlertsHeight = (start + value.translation.height / height)
+                                let start = dragStartActivityFeedHeight ?? chatSettings.activityFeedHeight
+                                dragStartActivityFeedHeight = start
+                                draggedActivityFeedHeight = (start + value.translation.height / height)
                                     .clamped(to: 0 ... 1)
                             }
                             .onEnded { _ in
-                                dragStartAlertsHeight = nil
-                                if let draggedAlertsHeight {
-                                    chatSettings.alertsHeight = draggedAlertsHeight
+                                dragStartActivityFeedHeight = nil
+                                if let draggedActivityFeedHeight {
+                                    chatSettings.activityFeedHeight = draggedActivityFeedHeight
                                 }
-                                draggedAlertsHeight = nil
+                                draggedActivityFeedHeight = nil
                             }
                     )
             }
@@ -413,7 +413,7 @@ struct StreamOverlayChatView: View {
     let model: Model
     @ObservedObject var chatSettings: SettingsChat
     let chat: ChatProvider
-    let chatAlerts: ChatProvider
+    let chatActivityFeed: ChatProvider
     let fullSize: Bool
 
     @State private var draggedAlertsHeight: Double?
@@ -442,19 +442,19 @@ struct StreamOverlayChatView: View {
                 Spacer(minLength: 0)
                 if chatSettings.activityFeed {
                     let splitHeight = height - separatorHeight
-                    let alertsHeight = splitHeight * (draggedAlertsHeight ?? chatSettings.alertsHeight)
+                    let alertsHeight = splitHeight * (draggedAlertsHeight ?? chatSettings.activityFeedHeight)
                     MessagesView(model: model,
                                  chatSettings: chatSettings,
-                                 chat: chatAlerts,
+                                 chat: chatActivityFeed,
                                  width: width)
                         .overlay {
-                            ChatPausedView(chat: chatAlerts, alerts: true)
+                            ChatPausedView(chat: chatActivityFeed, alerts: true)
                         }
                         .frame(height: alertsHeight)
                     SeparatorView(chatSettings: chatSettings,
                                   width: width,
                                   height: splitHeight,
-                                  draggedAlertsHeight: $draggedAlertsHeight)
+                                  draggedActivityFeedHeight: $draggedAlertsHeight)
                         .zIndex(1)
                     MessagesView(model: model,
                                  chatSettings: chatSettings,

@@ -30,7 +30,7 @@ struct ChatOverlayView: View {
     let model: Model
     @ObservedObject var chatSettings: SettingsChat
     let chat: ChatProvider
-    let chatAlerts: ChatProvider
+    let chatActivityFeed: ChatProvider
     @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var show: Show
@@ -43,7 +43,7 @@ struct ChatOverlayView: View {
                     model: model,
                     chatSettings: chatSettings,
                     chat: chat,
-                    chatAlerts: chatAlerts,
+                    chatActivityFeed: chatActivityFeed,
                     fullSize: fullSize
                 )
                 if !fullSize {
@@ -72,7 +72,7 @@ struct ChatOverlayView: View {
                                 model: model,
                                 chatSettings: chatSettings,
                                 chat: chat,
-                                chatAlerts: chatAlerts,
+                                chatActivityFeed: chatActivityFeed,
                                 fullSize: fullSize
                             )
                             .frame(width: metrics.size.width * 0.95)
@@ -164,7 +164,7 @@ struct StreamOverlayView: View {
                     ChatOverlayView(model: model,
                                     chatSettings: chatSettings,
                                     chat: model.chat,
-                                    chatAlerts: model.chatAlerts,
+                                    chatActivityFeed: model.chatActivityFeed,
                                     orientation: orientation,
                                     quickButtons: model.database.quickButtonsGeneral,
                                     show: model.show,
