@@ -448,7 +448,9 @@ struct StreamOverlayChatView: View {
                                  chat: chatActivityFeed,
                                  width: width)
                         .overlay {
-                            ChatPausedView(chat: chatActivityFeed, alerts: true)
+                            if alertsHeight > 10 {
+                                ChatPausedView(chat: chatActivityFeed, alerts: true)
+                            }
                         }
                         .frame(height: alertsHeight)
                     SeparatorView(chatSettings: chatSettings,
