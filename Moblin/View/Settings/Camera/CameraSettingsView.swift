@@ -249,6 +249,15 @@ struct CameraSettingsView: View {
                 }
             }
             Section {
+                Toggle("Stream in 16:9 with phone upright", isOn: Binding(get: {
+                    database.streamLandscapePhonePortrait
+                }, set: { value in
+                    model.setStreamLandscapePhonePortrait(value)
+                }))
+            } footer: {
+                Text("Capture and stream in 16:9 landscape while holding the phone upright.")
+            }
+            Section {
                 if database.showAllSettings {
                     NavigationLink {
                         ZoomSettingsView(zoom: database.zoom)
