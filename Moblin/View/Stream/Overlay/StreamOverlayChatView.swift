@@ -443,36 +443,36 @@ struct StreamOverlayChatView: View {
                 if chatSettings.activityFeed {
                     let splitHeight = height - separatorHeight
                     let alertsHeight = splitHeight * (draggedAlertsHeight ?? chatSettings.alertsHeight)
-                    ZStack {
-                        MessagesView(model: model,
-                                     chatSettings: chatSettings,
-                                     chat: chatAlerts,
-                                     width: width)
-                        ChatPausedView(chat: chatAlerts, alerts: true)
-                    }
-                    .frame(height: alertsHeight)
+                    MessagesView(model: model,
+                                 chatSettings: chatSettings,
+                                 chat: chatAlerts,
+                                 width: width)
+                        .overlay {
+                            ChatPausedView(chat: chatAlerts, alerts: true)
+                        }
+                        .frame(height: alertsHeight)
                     SeparatorView(chatSettings: chatSettings,
                                   width: width,
                                   height: splitHeight,
                                   draggedAlertsHeight: $draggedAlertsHeight)
                         .zIndex(1)
-                    ZStack {
-                        MessagesView(model: model,
-                                     chatSettings: chatSettings,
-                                     chat: chat,
-                                     width: width)
-                        ChatPausedView(chat: chat, alerts: false)
-                    }
-                    .frame(height: splitHeight - alertsHeight)
+                    MessagesView(model: model,
+                                 chatSettings: chatSettings,
+                                 chat: chat,
+                                 width: width)
+                        .overlay {
+                            ChatPausedView(chat: chat, alerts: false)
+                        }
+                        .frame(height: splitHeight - alertsHeight)
                 } else {
-                    ZStack {
-                        MessagesView(model: model,
-                                     chatSettings: chatSettings,
-                                     chat: chat,
-                                     width: width)
-                        ChatPausedView(chat: chat, alerts: false)
-                    }
-                    .frame(height: height)
+                    MessagesView(model: model,
+                                 chatSettings: chatSettings,
+                                 chat: chat,
+                                 width: width)
+                        .overlay {
+                            ChatPausedView(chat: chat, alerts: false)
+                        }
+                        .frame(height: height)
                 }
             }
         }
