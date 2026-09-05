@@ -11,9 +11,6 @@ struct ChatSettingsLayoutView: View {
         NavigationLink {
             Form {
                 Section {
-                    Toggle("Separate alerts", isOn: $chat.splitAlerts)
-                }
-                Section {
                     HStack {
                         Text("Height")
                         Slider(

@@ -332,7 +332,7 @@ extension Model {
         }
         if filter?.showOnScreen != false {
             let isAlert = highlight?.isAlert() == true
-            if isAlert, database.chat.splitAlerts {
+            if isAlert {
                 chatAlerts.appendMessage(post: post)
             }
             chat.appendMessage(post: post)

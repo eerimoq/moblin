@@ -440,7 +440,7 @@ struct StreamOverlayChatView: View {
             let height = metrics.size.height * heightFactor()
             VStack(spacing: 0) {
                 Spacer(minLength: 0)
-                if chatSettings.splitAlerts {
+                if chatSettings.activityFeed {
                     let splitHeight = height - separatorHeight
                     let alertsHeight = splitHeight * (draggedAlertsHeight ?? chatSettings.alertsHeight)
                     ZStack {

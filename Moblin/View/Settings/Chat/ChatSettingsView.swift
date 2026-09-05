@@ -81,6 +81,7 @@ struct ChatSettingsView: View {
                     }
             }
             Section {
+                Toggle("Activity feed", isOn: $chat.activityFeed)
                 ChatSettingsAppearanceView(model: model, database: database, chat: chat)
                 ChatSettingsLayoutView(model: model, database: database, chat: chat)
                 ChatSettingsGeneralView(model: model, database: database, chat: chat)
