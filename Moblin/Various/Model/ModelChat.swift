@@ -60,7 +60,6 @@ extension Model {
             return
         }
         removeOldChatMessages(now: now, chat: chat)
-        removeOldChatMessages(now: now, chat: chatActivityFeed)
     }
 
     private func removeOldChatMessages(now: ContinuousClock.Instant, chat: ChatProvider) {
