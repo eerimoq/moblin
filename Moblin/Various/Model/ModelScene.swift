@@ -338,7 +338,10 @@ extension Model {
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
-        scene.fillFrame
+        if database.streamLandscapePhonePortrait {
+            return true
+        }
+        return scene.fillFrame
     }
 
     func widgetsInCurrentSceneOrRemoteScene(onlyEnabled: Bool) -> [WidgetInScene] {

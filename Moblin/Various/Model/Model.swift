@@ -741,7 +741,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isLandscapeStreamAndPortraitUi() -> Bool {
-        (!stream.portrait && database.portrait) || database.streamLandscapePhonePortrait
+        database.streamLandscapePhonePortrait
     }
 
     var enabledScenes: [SettingsScene] {
