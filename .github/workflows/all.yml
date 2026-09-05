@@ -18,22 +18,25 @@ jobs:
       - name: Create user config
         run: |
           cp User.template.xcconfig Config/User.xcconfig
+      - name: Install just
+        run: |
+          brew install just
       - name: Source code styling
         run: |
           brew install swiftformat oxfmt
-          make style-check
+          just style-check
       - name: Linting
         run: |
           brew install swiftlint oxlint
-          make lint
+          just lint
       - name: Spell checking
         run: |
           brew install codespell
-          make spell-check
+          just spell-check
       - name: Web remote control frontend
         run: |
-          make web-remote-control-frontend-prepare
-          make web-remote-control-frontend-build
+          just web-remote-control-frontend-prepare
+          just web-remote-control-frontend-build
           git diff --exit-code
       - name: Build
         run: |

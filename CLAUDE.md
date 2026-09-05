@@ -12,17 +12,17 @@ a home screen widget, a screen recording broadcast extension, and a SolidJS web 
 ## Commands
 
 ```sh
-make style           # swiftformat + oxfmt + isort + black (auto-fix)
-make style-check     # same, lint-only
-make lint            # swiftlint --strict + oxlint + pylint + ruff check + mypy + xcstringslint
-make lint-fix        # auto-fix Localizable.xcstrings issues
-make spell-check     # codespell
-make periphery       # dead code detection (needs full index; slow)
+just style           # swiftformat + oxfmt + isort + black (auto-fix)
+just style-check     # same, lint-only
+just lint            # swiftlint --strict + oxlint + pylint + ruff check + mypy + xcstringslint
+just lint-fix        # auto-fix Localizable.xcstrings issues
+just spell-check     # codespell
+just periphery       # dead code detection (needs full index; slow)
 
-make web-remote-control-frontend-prepare   # npm install
-make web-remote-control-frontend-build     # tsc --noEmit + vite build → Moblin/RemoteControl/Web/
+just web-remote-control-frontend-prepare   # npm install
+just web-remote-control-frontend-build     # tsc --noEmit + vite build → Moblin/RemoteControl/Web/
 
-make machine-translate                     # fill missing translations in Localizable.xcstrings
+just machine-translate                     # fill missing translations in Localizable.xcstrings
 ```
 
 CI (`.github/workflows/all.yml`) runs `style-check`, `lint`, `spell-check`, the web frontend build followed
@@ -46,13 +46,13 @@ xcodebuild test -scheme Moblin -destination 'platform=macOS,variant=Mac Catalyst
 start the app before running the test commands.
 
 ```sh
-make test
-make test TEST_ARGS="--device macpro Talkback"
-make test-stability                        # long-running soak test, 12 hours by default
+just test
+just test --device macpro Talkback
+just test-stability                        # long-running soak test, 12 hours by default
 ```
 
 The harness runs with `tests/` as the working directory, so its imports are `from utils.moblin import
-Moblin`, while `make lint` type checks `tests/` and `utils/` from the repo root. That only works while
+Moblin`, while `just lint` type checks `tests/` and `utils/` from the repo root. That only works while
 every module name is unique across both trees — `tests/suites/` and `tests/utils/` are packages
 (`__init__.py`) so that `tests/suites/stability.py` does not collide with the `tests/stability.py` entry
 point. Adding a `utils/x.py` that shadows a `tests/x.py` (or dropping an `__init__.py`) makes mypy abort
@@ -149,7 +149,7 @@ The Watch app talks to the phone over `WatchConnectivity` using the string-keyed
   `identifier_name`, `cyclomatic_complexity` and `function_body_length`, so long `switch`-heavy functions
   and `try!` are idiomatic here.
 - All user-facing strings go through `String(localized:)` and live in `Common/Localizable.xcstrings` —
-  never `.strings` files. `utils/xcstringslint.py` (part of `make lint`) checks that format specifiers
+  never `.strings` files. `utils/xcstringslint.py` (part of `just lint`) checks that format specifiers
   match across translations and that multi-specifier strings use positional `%1$@` forms.
 - `Moblin/Integrations/Tesla/Protobuf/` is generated and excluded from formatting and periphery.
 - `Moblin/RemoteControl/Web/` is build output — edit `WebRemoteControlFrontend/` instead.

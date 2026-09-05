@@ -530,6 +530,7 @@ Roughly the steps to setup Moblin's developement environment.
 1. Install tools.
 
    ```
+   brew install just
    brew install swiftlint
    brew install swiftformat
    brew install codespell
@@ -545,7 +546,7 @@ Roughly the steps to setup Moblin's developement environment.
 
    ```
    source .venv/bin/activate       # Once per shell is enough.
-   make style lint spell-check
+   just style lint spell-check
    ```
 
 3. Done!
@@ -556,12 +557,12 @@ It's built with SolidJS.
 
 1. Install dependencies.
 
-   `make web-remote-control-frontend-prepare`
+   `just web-remote-control-frontend-prepare`
 
 2. Modify files in `WebRemoteControlFrontend/`.
 
 3. Build to update files in `Moblin/RemoteControl/Web/*`.
 
-   `make web-remote-control-frontend-build`
+   `just web-remote-control-frontend-build`
 
 4. Done!
