@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct SceneItemView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
     let width: CGFloat
@@ -18,10 +17,7 @@ private struct SceneItemView: View {
         ZStack {
             Text(scene.name)
                 .minimumScaleFactor(pickerLabelMinimumScaleFactor)
-                .frame(
-                    width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
-                    height: height()
-                )
+                .frame(width: width, height: height())
             if let quickSwitchGroup = scene.quickSwitchGroup {
                 HStack {
                     Spacer()
@@ -44,6 +40,10 @@ struct StreamOverlayRightSceneSelectorView: View {
     @ObservedObject var sceneSelector: SceneSelector
     let width: CGFloat
 
+    private func itemWidth() -> Double {
+        min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1))
+    }
+
     var body: some View {
         SegmentedHPicker(items: model.enabledScenes, selectedItem: Binding(get: {
             if sceneSelector.sceneIndex < model.enabledScenes.count {
@@ -62,7 +62,7 @@ struct StreamOverlayRightSceneSelectorView: View {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
         }, content: {
-            SceneItemView(database: database, scene: $0, width: width)
+            SceneItemView(database: database, scene: $0, width: itemWidth())
         })
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
@@ -109,7 +109,7 @@ struct StreamOverlayRightSceneVSelectorView: View {
         }
         .background(pickerBackgroundColor)
         .foregroundStyle(.white)
-        .frame(width: sceneSegmentWidth)
+        .frame(width: width)
         .cornerRadius(7)
         .overlay(
             RoundedRectangle(cornerRadius: 7)

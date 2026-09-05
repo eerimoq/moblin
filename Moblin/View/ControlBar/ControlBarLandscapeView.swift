@@ -165,16 +165,25 @@ private struct PageView: View {
     let model: Model
     let quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
+    @ObservedObject var show: Show
     let page: Int
     let width: Double
 
     var body: some View {
         ScrollView(showsIndicators: false) {
-            QuickButtonsView(model: model,
-                             quickButtons: quickButtons,
-                             quickButtonsSettings: quickButtonsSettings,
-                             page: page,
-                             width: width)
+            VStack {
+                if page == 0, !show.chatPhone {
+                    StreamOverlayRightSceneVSelectorView(database: model.database,
+                                                         sceneSelector: model.sceneSelector,
+                                                         width: width - 14)
+                        .rotationEffect(.degrees(180))
+                }
+                QuickButtonsView(model: model,
+                                 quickButtons: quickButtons,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 page: page,
+                                 width: width)
+            }
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
         .rotationEffect(.degrees(180))
@@ -205,6 +214,7 @@ private struct MainPageView: View {
             PageView(model: model,
                      quickButtons: quickButtons,
                      quickButtonsSettings: quickButtonsSettings,
+                     show: model.show,
                      page: 0,
                      width: width)
             HStack {
@@ -293,6 +303,7 @@ private struct PagesView: View {
                                     PageView(model: model,
                                              quickButtons: quickButtons,
                                              quickButtonsSettings: quickButtonsSettings,
+                                             show: model.show,
                                              page: page,
                                              width: width)
                                         .id(page + 1)
