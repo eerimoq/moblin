@@ -176,7 +176,7 @@ private struct LineView: View {
                     ChatGifView(
                         url: url,
                         animated: false,
-                        height: CGFloat(settings.fontSize * chatEmoteScale * 5)
+                        height: CGFloat(settings.fontSize * chatEmoteScale * 3)
                     )
                     .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     Text(" ")
