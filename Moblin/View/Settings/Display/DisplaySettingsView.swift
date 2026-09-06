@@ -118,6 +118,19 @@ private struct BackgroundImageSettingsView: View {
                 model.checkPhotoLibraryAuthorization()
                 image = model.readControlBarBackgroundImage()
             }
+            if image != nil {
+                Section {
+                    HStack {
+                        Text("Opacity")
+                        Slider(value: $quickButtons.backgroundImageOpacity, in: 0 ... 1) {
+                            Text("")
+                        }
+                        .onChange(of: quickButtons.backgroundImageOpacity) { _ in
+                            model.updateControlBarBackgroundImageOpacity()
+                        }
+                    }
+                }
+            }
         }
         .navigationTitle("Background")
     }

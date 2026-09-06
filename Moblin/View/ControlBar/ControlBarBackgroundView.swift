@@ -10,6 +10,7 @@ struct ControlBarBackgroundView: View {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
+                        .opacity(controlBar.backgroundImageOpacity)
                 }
             }
             .clipped()

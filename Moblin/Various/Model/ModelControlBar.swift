@@ -24,6 +24,11 @@ extension Model {
 
     func loadControlBarBackgroundImage() {
         updateControlBarBackgroundImage(image: readControlBarBackgroundImage())
+        updateControlBarBackgroundImageOpacity()
+    }
+
+    func updateControlBarBackgroundImageOpacity() {
+        controlBar.backgroundImageOpacity = database.quickButtonsGeneral.backgroundImageOpacity
     }
 
     func updateControlBarBackgroundImage(image: UIImage?) {

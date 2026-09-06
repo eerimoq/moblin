@@ -311,6 +311,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
     var backgroundImageCropY: Double = 0.0
     var backgroundImageCropWidth: Double = 1.0
     var backgroundImageCropHeight: Double = 1.0
+    @Published var backgroundImageOpacity: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case twoColumns
@@ -323,6 +324,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
         case backgroundImageCropY
         case backgroundImageCropWidth
         case backgroundImageCropHeight
+        case backgroundImageOpacity
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -337,6 +339,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
         try container.encode(.backgroundImageCropY, backgroundImageCropY)
         try container.encode(.backgroundImageCropWidth, backgroundImageCropWidth)
         try container.encode(.backgroundImageCropHeight, backgroundImageCropHeight)
+        try container.encode(.backgroundImageOpacity, backgroundImageOpacity)
     }
 
     init() {}
@@ -353,5 +356,6 @@ class SettingsQuickButtons: Codable, ObservableObject {
         backgroundImageCropY = container.decode(.backgroundImageCropY, Double.self, 0.0)
         backgroundImageCropWidth = container.decode(.backgroundImageCropWidth, Double.self, 1.0)
         backgroundImageCropHeight = container.decode(.backgroundImageCropHeight, Double.self, 1.0)
+        backgroundImageOpacity = container.decode(.backgroundImageOpacity, Double.self, 1.0)
     }
 }

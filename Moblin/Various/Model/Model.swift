@@ -298,6 +298,7 @@ class StealthMode: ObservableObject {
 
 class ControlBar: ObservableObject {
     @Published var backgroundImage: UIImage?
+    @Published var backgroundImageOpacity: Double = 1.0
 }
 
 class QuickButtonChat: ObservableObject {
