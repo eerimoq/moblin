@@ -29,10 +29,13 @@ extension NWConnection.ContentContext {
 }
 
 extension NWConnection {
-    func sendWebSocket(data: Data?, opcode: NWProtocolWebSocket.Opcode) {
+    func sendWebSocket(data: Data?,
+                       opcode: NWProtocolWebSocket.Opcode,
+                       completion: NWConnection.SendCompletion = .idempotent)
+    {
         let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
         let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
-        send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
+        send(content: data, contentContext: context, isComplete: true, completion: completion)
     }
 }
 

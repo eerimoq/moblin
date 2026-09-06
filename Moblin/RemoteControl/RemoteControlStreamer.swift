@@ -4,6 +4,7 @@ import Network
 protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerConnected()
     func remoteControlStreamerDisconnected()
+    func remoteControlStreamerWrongPassword()
     func remoteControlStreamerGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     func remoteControlStreamerGetSettings() -> RemoteControlSettings
@@ -73,6 +74,7 @@ class RemoteControlStreamer {
     private var encryption: RemoteControlEncryption
     private let keepAliveTimer = SimpleTimer(queue: .main)
     private var gotPong = true
+    private var wrongPassword = false
 
     init(clientUrl: URL, password: String, delegate: any RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
@@ -87,6 +89,7 @@ class RemoteControlStreamer {
 
     func start() {
         logger.debug("remote-control-streamer: start")
+        wrongPassword = false
         startInternal()
     }
 
@@ -115,7 +118,9 @@ class RemoteControlStreamer {
             delegate?.remoteControlStreamerDisconnected()
         }
         connected = false
-        connectionErrorMessage = String(localized: "Disconnected")
+        if !wrongPassword {
+            connectionErrorMessage = String(localized: "Disconnected")
+        }
     }
 
     func isConnected() -> Bool {
@@ -231,12 +236,17 @@ class RemoteControlStreamer {
         switch result {
         case .ok:
             connected = true
+            wrongPassword = false
             delegate?.remoteControlStreamerConnected()
             return true
         case .wrongPassword:
-            connectionErrorMessage = "Wrong password"
+            connectionErrorMessage = String(localized: "Wrong password")
+            if !wrongPassword {
+                wrongPassword = true
+                delegate?.remoteControlStreamerWrongPassword()
+            }
         default:
-            connectionErrorMessage = "Failed to identify"
+            connectionErrorMessage = String(localized: "Failed to identify")
         }
         return false
     }

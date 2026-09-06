@@ -490,8 +490,7 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
             tryNextTwitchEventSubNotification()
         } else {
             logger.info("remote-control-assistant: Streamer sent wrong password")
-            send(message: .identified(result: .wrongPassword))
-            closeStreamer()
+            sendAndClose(message: .identified(result: .wrongPassword))
         }
     }
 
@@ -645,6 +644,16 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
             return
         }
         streamerWebSocket?.sendWebSocket(data: text.data(using: .utf8), opcode: .text)
+    }
+
+    private func sendAndClose(message: RemoteControlMessageToStreamer) {
+        guard let text = message.toJson(), let webSocket = streamerWebSocket else {
+            return
+        }
+        webSocket.sendWebSocket(data: text.utf8Data, opcode: .text, completion: .contentProcessed { _ in
+            webSocket.cancel()
+        })
+        streamerWebSocket = nil
     }
 }
 

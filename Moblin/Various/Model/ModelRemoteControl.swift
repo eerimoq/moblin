@@ -771,6 +771,11 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         updateRemoteControlStatus()
     }
 
+    func remoteControlStreamerWrongPassword() {
+        makeErrorToast(title: String(localized: "Remote control assistant rejected the password"))
+        updateRemoteControlStatus()
+    }
+
     func remoteControlStreamerGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
