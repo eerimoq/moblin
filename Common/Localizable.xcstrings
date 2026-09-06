@@ -65033,6 +65033,9 @@
         }
       }
     },
+    "Connection status sound" : {
+
+    },
     "Contains" : {
 
     },
@@ -235699,6 +235702,12 @@
           }
         }
       }
+    },
+    "Tap to disable the beep sound" : {
+
+    },
+    "Tap to enable the beep sound" : {
+
     },
     "Tap to focus not supported for this camera" : {
       "localizations" : {
