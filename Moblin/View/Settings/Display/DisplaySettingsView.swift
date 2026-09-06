@@ -22,7 +22,7 @@ private struct BackgroundImageCropView: View {
         }
     }
 
-    private func createPositionPath(size: CGSize) -> Path {
+    private func createPositionRectangle(size: CGSize) -> CGRect {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             positionAnchorPoint,
             quickButtons.backgroundImageCropX,
@@ -37,11 +37,12 @@ private struct BackgroundImageCropView: View {
         quickButtons.backgroundImageCropY = yTopLeft
         quickButtons.backgroundImageCropWidth = xBottomRight - xTopLeft
         quickButtons.backgroundImageCropHeight = yBottomRight - yTopLeft
-        let xPoints = CGFloat(quickButtons.backgroundImageCropX) * size.width
-        let yPoints = CGFloat(quickButtons.backgroundImageCropY) * size.height
-        let widthPoints = CGFloat(quickButtons.backgroundImageCropWidth) * size.width
-        let heightPoints = CGFloat(quickButtons.backgroundImageCropHeight) * size.height
-        return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
+        return CGRect(
+            x: CGFloat(quickButtons.backgroundImageCropX) * size.width,
+            y: CGFloat(quickButtons.backgroundImageCropY) * size.height,
+            width: CGFloat(quickButtons.backgroundImageCropWidth) * size.width,
+            height: CGFloat(quickButtons.backgroundImageCropHeight) * size.height
+        )
     }
 
     var body: some View {
@@ -51,18 +52,13 @@ private struct BackgroundImageCropView: View {
                 .aspectRatio(image.size.width / image.size.height, contentMode: .fit)
             GeometryReader { reader in
                 Canvas { context, size in
-                    context.stroke(
-                        createPositionPath(size: size),
-                        with: .color(.black),
-                        lineWidth: 1.5
-                    )
+                    drawPositioningRectangle(context, createPositionRectangle(size: size))
                 }
-                .padding(.vertical, 6)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
                             position = value.location
-                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                            let size = reader.size
                             updatePositionAnchorPoint(location: position, size: size)
                         }
                         .onEnded { _ in

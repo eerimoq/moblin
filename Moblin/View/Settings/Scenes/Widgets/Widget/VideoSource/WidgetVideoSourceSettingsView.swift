@@ -77,28 +77,20 @@ func calculatePositioningRectangle(_ positionAnchorPoint: AnchorPoint?,
     return (xTopLeft, yTopLeft, xBottomRight, yBottomRight)
 }
 
-func drawPositioningRectangle(
-    _ xPoints: CGFloat,
-    _ yPoints: CGFloat,
-    _ widthPoints: CGFloat,
-    _ heightPoints: CGFloat
-) -> Path {
-    var path = Path()
-    path.move(to: .init(x: xPoints, y: yPoints))
-    path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints))
-    path.addLine(to: .init(x: xPoints + widthPoints, y: yPoints + heightPoints))
-    path.addLine(to: .init(x: xPoints, y: yPoints + heightPoints))
-    path.addLine(to: .init(x: xPoints, y: yPoints))
-    path.addEllipse(in: .init(x: xPoints - 5, y: yPoints - 5, width: 10, height: 10))
-    path.addEllipse(in: .init(x: xPoints + widthPoints - 5, y: yPoints - 5, width: 10, height: 10))
-    path.addEllipse(in: .init(
-        x: xPoints + widthPoints - 5,
-        y: yPoints + heightPoints - 5,
-        width: 10,
-        height: 10
-    ))
-    path.addEllipse(in: .init(x: xPoints - 5, y: yPoints + heightPoints - 5, width: 10, height: 10))
-    return path
+func drawPositioningRectangle(_ context: GraphicsContext, _ rectangle: CGRect) {
+    let path = Path(rectangle)
+    context.fill(path, with: .color(.white.opacity(0.25)))
+    context.stroke(path, with: .color(.white), lineWidth: 1.5)
+    for corner in [
+        CGPoint(x: rectangle.minX, y: rectangle.minY),
+        CGPoint(x: rectangle.maxX, y: rectangle.minY),
+        CGPoint(x: rectangle.maxX, y: rectangle.maxY),
+        CGPoint(x: rectangle.minX, y: rectangle.maxY),
+    ] {
+        let handle = Path(ellipseIn: CGRect(x: corner.x - 6, y: corner.y - 6, width: 12, height: 12))
+        context.fill(handle, with: .color(.white))
+        context.stroke(handle, with: .color(.black), lineWidth: 1)
+    }
 }
 
 func calculatePositioningAnchorPoint(_ location: CGPoint,

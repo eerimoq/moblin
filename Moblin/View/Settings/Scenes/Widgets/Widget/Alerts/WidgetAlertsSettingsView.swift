@@ -219,7 +219,7 @@ private struct AlertPositionFaceView: View {
         }
     }
 
-    private func createFacePositionPathAndUpdateImage(size: CGSize) -> Path {
+    private func createFacePositionRectangleAndUpdateImage(size: CGSize) -> CGRect {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             facePositionAnchorPoint,
             alert.facePosition.x,
@@ -238,14 +238,13 @@ private struct AlertPositionFaceView: View {
         let yPoints = CGFloat(alert.facePosition.y) * size.height
         let widthPoints = CGFloat(alert.facePosition.width) * size.width
         let heightPoints = CGFloat(alert.facePosition.height) * size.height
-        let path = drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
         imageWidth = widthPoints
         imageHeight = heightPoints
         imageOffset = .init(
             width: xPoints + widthPoints / 2 - size.width / 2,
             height: yPoints + heightPoints / 2 - size.height / 2
         )
-        return path
+        return CGRect(x: xPoints, y: yPoints, width: widthPoints, height: heightPoints)
     }
 
     var body: some View {
@@ -263,18 +262,13 @@ private struct AlertPositionFaceView: View {
             }
             GeometryReader { reader in
                 Canvas { context, size in
-                    context.stroke(
-                        createFacePositionPathAndUpdateImage(size: size),
-                        with: .color(.black),
-                        lineWidth: 1.5
-                    )
+                    drawPositioningRectangle(context, createFacePositionRectangleAndUpdateImage(size: size))
                 }
-                .padding(.vertical, 6)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
                             facePosition = value.location
-                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                            let size = reader.size
                             updateFacePositionAnchorPoint(location: facePosition, size: size)
                         }
                         .onEnded { _ in
