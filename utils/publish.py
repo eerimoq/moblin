@@ -22,7 +22,7 @@ DESTINATIONS = {
 
 
 def run(description, command):
-    with yaspin(Spinners.dots, text=description, color="cyan", timer=True) as spinner:
+    with yaspin(Spinners.dots, text=description, color="cyan", timer=" ({})") as spinner:
         try:
             output = subprocess.run(command, capture_output=True, text=True, check=True).stdout
         except subprocess.CalledProcessError as e:
