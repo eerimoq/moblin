@@ -595,7 +595,8 @@ extension Model {
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
         guard #available(iOS 17, *),
               let reaction = command.popFirstArgument(ChatBotReactionArgument.self),
-              let reaction = SettingsReaction(value: reaction.rawValue) else {
+              let reaction = SettingsReaction(value: reaction.rawValue)
+        else {
             return
         }
         executeIfUserAllowedToUseChatBot(

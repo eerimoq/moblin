@@ -49,6 +49,7 @@ enum ChatHighlightKind: Codable {
     case newFollower
     case reply
     case moderator
+    case remoteControlAssistant
 }
 
 struct ChatHighlight {
@@ -165,6 +166,15 @@ struct ChatHighlight {
         )
     }
 
+    static func makeRemoteControlAssistant() -> ChatHighlight {
+        ChatHighlight(
+            kind: .remoteControlAssistant,
+            barColor: .green,
+            image: "person.wave.2",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Remote control assistant"))
+        )
+    }
+
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind = switch kind {
         case .redemption:
@@ -179,6 +189,8 @@ struct ChatHighlight {
             .reply
         case .moderator:
             .moderator
+        case .remoteControlAssistant:
+            .other
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
         return WatchProtocolChatHighlight(

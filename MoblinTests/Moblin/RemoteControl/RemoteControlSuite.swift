@@ -19,6 +19,11 @@ struct RemoteControlSuite {
     }
 
     @Test
+    func sendMessageRequest() throws {
+        #expect(try encode(.sendMessage(text: "Hello")) == #"{"sendMessage":{"text":"Hello"}}"#)
+    }
+
+    @Test
     func remoteSceneDataVariables() throws {
         let variables = RemoteControlRemoteSceneDataVariables(variables: createVariables())
         let encoder = JSONEncoder()

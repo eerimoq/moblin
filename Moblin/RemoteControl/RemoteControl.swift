@@ -73,6 +73,7 @@ enum RemoteControlRequest: Codable {
     case stopStats
     case startMacro(id: UUID)
     case stopMacro(id: UUID)
+    case sendMessage(text: String)
 }
 
 enum RemoteControlResponse: Codable {

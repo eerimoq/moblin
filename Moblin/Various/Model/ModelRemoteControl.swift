@@ -330,6 +330,10 @@ extension Model {
         remoteControlAssistant?.setFilter(filter: filter, on: on)
     }
 
+    func remoteControlAssistantSendMessage(text: String) {
+        remoteControlAssistant?.sendMessage(text: text)
+    }
+
     func remoteControlAssistantStartPreview(user: RemoteControlAssistantPreviewUser) {
         remoteControlAssistantPreviewUsers.insert(user)
         remoteControlAssistant?.startPreview()
@@ -926,6 +930,27 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
                               live: live)
             remoteControlStreamerLatestReceivedChatMessageId = message.id
         }
+    }
+
+    func remoteControlStreamerSendMessage(text: String) {
+        let user = String(localized: "Mom")
+        appendChatMessage(platform: nil,
+                          messageId: nil,
+                          displayName: user,
+                          user: user,
+                          userId: nil,
+                          userColor: RgbColor(red: 0x2F, green: 0xF5, blue: 0x2C),
+                          userBadges: [],
+                          segments: makeChatPostTextSegments(text: text),
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          isOwner: false,
+                          bits: nil,
+                          highlight: ChatHighlight.makeRemoteControlAssistant(),
+                          live: true)
     }
 
     func remoteControlStreamerStartPreview() {

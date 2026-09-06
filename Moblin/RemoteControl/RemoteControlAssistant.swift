@@ -273,6 +273,10 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .setFilter(filter: filter, on: on), onSuccess: {})
     }
 
+    func sendMessage(text: String) {
+        performRequestNoResponseData(data: .sendMessage(text: text), onSuccess: {})
+    }
+
     private func tryNextTwitchEventSubNotification() {
         guard !twitchEventSubNotiticationWaitForResponse else {
             return

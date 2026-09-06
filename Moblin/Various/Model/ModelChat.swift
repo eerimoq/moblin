@@ -254,7 +254,7 @@ extension Model {
     }
 
     func appendChatMessage(
-        platform: Platform,
+        platform: Platform?,
         messageId: String?,
         displayName: String?,
         user: String?,
@@ -274,7 +274,7 @@ extension Model {
         sourceChannelIcon: URL? = nil
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
-        if database.chat.botEnabled, live, filter?.chatBot != false,
+        if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
            segments.first?.text?.trim().starts(with: "!") == true
         {
             if chatBotMessages.count < 25 || isModerator {

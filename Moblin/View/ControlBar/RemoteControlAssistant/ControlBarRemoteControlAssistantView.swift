@@ -716,6 +716,41 @@ private struct FiltersView: View {
     }
 }
 
+private struct SendMessageView: View {
+    let model: Model
+    @State private var text = ""
+
+    private func send() {
+        let text = text.trim()
+        guard !text.isEmpty else {
+            return
+        }
+        model.remoteControlAssistantSendMessage(text: text)
+        self.text = ""
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextField("Message", text: $text)
+                        .onSubmit {
+                            send()
+                        }
+                    TextButtonView("Send") {
+                        send()
+                    }
+                } footer: {
+                    Text("Shown in the streamers activity feed.")
+                }
+            }
+            .navigationTitle("Send message")
+        } label: {
+            Text("Send message")
+        }
+    }
+}
+
 private struct DebugLoggingView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -760,6 +795,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 GimbalPresetView(model: model, remoteControl: remoteControl)
                 MacrosView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
+                SendMessageView(model: model)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
                 HCenter {
