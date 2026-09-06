@@ -73,7 +73,8 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         server = nil
         streamerWebSocket?.cancel()
         streamerWebSocket = nil
-        server = nil
+        connected = false
+        requests.removeAll()
         stopRetryStartTimer()
         twitchEventSub?.stop()
         twitchChat?.stop()
@@ -416,6 +417,7 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         streamerWebSocket?.cancel()
         streamerWebSocket = nil
         connected = false
+        requests.removeAll()
         delegate?.remoteControlAssistantDisconnected()
     }
 
@@ -517,7 +519,7 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         guard streamerIdentified else {
             throw "Streamer not identified"
         }
-        guard let request = requests[id] else {
+        guard let request = requests.removeValue(forKey: id) else {
             logger.debug("remote-control-assistant: Unexpected id in response")
             return
         }
