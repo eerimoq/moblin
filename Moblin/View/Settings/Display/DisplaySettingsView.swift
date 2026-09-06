@@ -84,12 +84,8 @@ private struct BackgroundImageSettingsView: View {
                 if let image {
                     BackgroundImageCropView(model: model, quickButtons: quickButtons, image: image)
                 }
-                Button {
+                TextButtonView("Select image") {
                     presentingPicker = true
-                } label: {
-                    HCenter {
-                        Text("Select image")
-                    }
                 }
                 .photosPicker(
                     isPresented: $presentingPicker,
@@ -115,6 +111,7 @@ private struct BackgroundImageSettingsView: View {
                         image = nil
                         model.deleteControlBarBackgroundImage()
                     }
+                    .tint(.red)
                 }
             }
             .onAppear {

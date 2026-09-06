@@ -44,6 +44,7 @@ private struct QuickButtonStealthModeView: View {
                     stealthMode.image = nil
                     model.deleteStealthModeImage()
                 }
+                .tint(.red)
             }
         } footer: {
             Text("Show selected image instead of a black screen.")
