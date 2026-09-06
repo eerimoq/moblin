@@ -5,14 +5,19 @@ let controlBarBackgroundImagePath = URL.documentsDirectory
     .appending(component: "controlBarBackgroundImage.img")
 
 extension Model {
-    func saveControlBarBackgroundImage(data: Data) {
-        try? data.write(to: controlBarBackgroundImagePath)
+    func saveControlBarBackgroundImage(data: Data) -> UIImage? {
+        guard let original = UIImage(data: data) else {
+            return nil
+        }
+        let image = downscaleControlBarBackgroundImage(image: original) ?? original
+        writeControlBarBackgroundImage(image: image)
         let quickButtons = database.quickButtonsGeneral
         quickButtons.backgroundImageCropX = 0
         quickButtons.backgroundImageCropY = 0
         quickButtons.backgroundImageCropWidth = 1
         quickButtons.backgroundImageCropHeight = 1
-        updateControlBarBackgroundImage(image: UIImage(data: data))
+        updateControlBarBackgroundImage(image: image)
+        return image
     }
 
     func readControlBarBackgroundImage() -> UIImage? {
@@ -20,6 +25,23 @@ extension Model {
             return nil
         }
         return UIImage(data: data)
+    }
+
+    private func writeControlBarBackgroundImage(image: UIImage) {
+        try? image.jpegData(compressionQuality: 0.9)?.write(to: controlBarBackgroundImagePath)
+    }
+
+    private func downscaleControlBarBackgroundImage(image: UIImage) -> UIImage? {
+        let scale = 2048 / max(image.size.width, image.size.height)
+        guard scale < 1 else {
+            return nil
+        }
+        let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
     }
 
     func loadControlBarBackgroundImage() {

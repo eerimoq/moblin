@@ -104,8 +104,7 @@ private struct BackgroundImageSettingsView: View {
                         switch result {
                         case let .success(data?):
                             DispatchQueue.main.async {
-                                model.saveControlBarBackgroundImage(data: data)
-                                image = UIImage(data: data)
+                                image = model.saveControlBarBackgroundImage(data: data)
                             }
                         default:
                             break
