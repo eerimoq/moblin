@@ -104,9 +104,18 @@ class RemoteControlStreamer {
     }
 
     func stopInternal() {
-        connected = false
+        webSocket.delegate = nil
         webSocket.stop()
+        handleDisconnected()
+    }
+
+    private func handleDisconnected() {
         stopKeepAlive()
+        if connected {
+            delegate?.remoteControlStreamerDisconnected()
+        }
+        connected = false
+        connectionErrorMessage = String(localized: "Disconnected")
     }
 
     func isConnected() -> Bool {
@@ -424,12 +433,7 @@ extension RemoteControlStreamer: WebSocketClientDelegate {
 
     func webSocketClientDisconnected(_: WebSocketClient) {
         logger.info("remote-control-streamer: Disconnected")
-        stopKeepAlive()
-        if connected {
-            delegate?.remoteControlStreamerDisconnected()
-        }
-        connected = false
-        connectionErrorMessage = String(localized: "Disconnected")
+        handleDisconnected()
     }
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
