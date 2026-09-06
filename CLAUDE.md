@@ -145,7 +145,7 @@ The Watch app talks to the phone over `WatchConnectivity` using the string-keyed
   into a named constant just because it is a literal — only name it when the same value is used in more
   than one place.
 - `swiftformat` at 110 columns, Swift 5.9 mode, `--disable docComments --ifdef no-indent`.
-- `swiftlint --strict`. Many rules are off (see `.swiftlint.yml`) — notably `force_cast`, `force_try`,
+- `swiftlint --strict`. Many rules are off (see `.config/swiftlint.yml`) — notably `force_cast`, `force_try`,
   `identifier_name`, `cyclomatic_complexity` and `function_body_length`, so long `switch`-heavy functions
   and `try!` are idiomatic here.
 - All user-facing strings go through `String(localized:)` and live in `Common/Localizable.xcstrings` —

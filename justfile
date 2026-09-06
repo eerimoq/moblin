@@ -6,6 +6,8 @@ web_dirs := 'WebRemoteControlFrontend tests/utils'
 
 python_dirs := 'tests utils'
 
+config_dir := '.config'
+
 code_dirs := swift_dirs + ' ' + web_dirs + ' ' + python_dirs
 
 npm_latest_args := '''python -c "import json, sys; print(' '.join(f'{d}@latest' for d in json.load(open('package.json'))[sys.argv[1]]))"'''
@@ -14,33 +16,33 @@ default:
     @just --list
 
 style:
-    swiftformat {{swift_dirs}}
-    oxfmt {{web_dirs}}
-    isort {{python_dirs}}
-    ruff format {{python_dirs}}
+    swiftformat --config {{config_dir}}/swiftformat {{swift_dirs}}
+    oxfmt --config {{config_dir}}/oxfmtrc.json --ignore-path .gitignore --ignore-path {{config_dir}}/prettierignore {{web_dirs}}
+    isort --settings-path {{config_dir}}/isort.cfg {{python_dirs}}
+    ruff format --config {{config_dir}}/ruff.toml {{python_dirs}}
 
 style-check:
-    swiftformat {{swift_dirs}} --lint
-    oxfmt {{web_dirs}} --check
-    isort {{python_dirs}} --check
-    ruff format {{python_dirs}} --check
+    swiftformat --config {{config_dir}}/swiftformat {{swift_dirs}} --lint
+    oxfmt --config {{config_dir}}/oxfmtrc.json --ignore-path .gitignore --ignore-path {{config_dir}}/prettierignore {{web_dirs}} --check
+    isort --settings-path {{config_dir}}/isort.cfg {{python_dirs}} --check
+    ruff format --config {{config_dir}}/ruff.toml {{python_dirs}} --check
 
 lint:
-    swiftlint lint --quiet {{swift_dirs}}
+    swiftlint lint --quiet --config {{config_dir}}/swiftlint.yml {{swift_dirs}}
     oxlint {{web_dirs}}
-    pylint {{python_dirs}}
-    ruff check {{python_dirs}}
-    mypy {{python_dirs}}
+    pylint --rcfile {{config_dir}}/pylintrc {{python_dirs}}
+    ruff check --config {{config_dir}}/ruff.toml {{python_dirs}}
+    mypy --config-file {{config_dir}}/mypy.ini {{python_dirs}}
     python utils/xcstringslint.py Common/Localizable.xcstrings
 
 lint-fix:
     python utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
-    periphery scan
+    periphery scan --config {{config_dir}}/periphery.yml
 
 spell-check:
-    codespell {{code_dirs}}
+    codespell --config {{config_dir}}/codespellrc {{code_dirs}}
 
 test *args:
     python -m tests.test {{args}}
