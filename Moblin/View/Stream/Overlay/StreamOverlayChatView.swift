@@ -475,7 +475,7 @@ struct StreamOverlayChatView: View {
                             }
                         }
                         .overlay {
-                            if alertsHeight > 60 {
+                            if alertsHeight > 40 {
                                 ChatLabelView(chat: chatActivityFeed,
                                               message: String(localized: "Activity feed"),
                                               alignment: .bottom)
@@ -495,7 +495,7 @@ struct StreamOverlayChatView: View {
                             ChatPausedView(chat: chat, alerts: false)
                         }
                         .overlay {
-                            if splitHeight - alertsHeight > 60 {
+                            if splitHeight - alertsHeight > 40 {
                                 ChatLabelView(chat: chat,
                                               message: String(localized: "Chat"),
                                               alignment: .top)
