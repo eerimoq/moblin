@@ -62,7 +62,7 @@ private struct BackgroundImageCropView: View {
                             let size = reader.size
                             updatePositionAnchorPoint(location: position, size: size)
                             let now = ContinuousClock.now
-                            if latestImageUpdateTime.duration(to: now) > .milliseconds(200) {
+                            if latestImageUpdateTime.duration(to: now) > .milliseconds(100) {
                                 latestImageUpdateTime = now
                                 model.updateControlBarBackgroundImage(image: image)
                             }
