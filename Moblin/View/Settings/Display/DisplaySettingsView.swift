@@ -8,6 +8,7 @@ private struct BackgroundImageCropView: View {
     @State private var position: CGPoint = .init(x: 100, y: 100)
     @State private var positionOffset: CGSize = .init(width: 0, height: 0)
     @State private var positionAnchorPoint: AnchorPoint?
+    @State private var latestImageUpdateTime: ContinuousClock.Instant = .now
 
     private func updatePositionAnchorPoint(location: CGPoint, size: CGSize) {
         if positionAnchorPoint == nil {
@@ -60,6 +61,11 @@ private struct BackgroundImageCropView: View {
                             position = value.location
                             let size = reader.size
                             updatePositionAnchorPoint(location: position, size: size)
+                            let now = ContinuousClock.now
+                            if latestImageUpdateTime.duration(to: now) > .milliseconds(200) {
+                                latestImageUpdateTime = now
+                                model.updateControlBarBackgroundImage(image: image)
+                            }
                         }
                         .onEnded { _ in
                             positionAnchorPoint = nil
