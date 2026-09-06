@@ -355,7 +355,9 @@ struct ControlBarLandscapeView: View {
         }
         .padding(.vertical, 0)
         .frame(width: controlBarWidth(quickButtons: quickButtons))
-        .background(.black)
+        .background {
+            ControlBarBackgroundView(controlBar: model.controlBar)
+        }
         .ignoresSafeArea(.all, edges: edgesToIgnore())
     }
 }

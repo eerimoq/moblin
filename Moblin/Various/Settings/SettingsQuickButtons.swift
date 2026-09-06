@@ -307,6 +307,10 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var enableScroll: Bool = true
     @Published var stealthModeShowChat: Bool = false
     @Published var stealthModeShowStatus: Bool = false
+    var backgroundImageCropX: Double = 0.0
+    var backgroundImageCropY: Double = 0.0
+    var backgroundImageCropWidth: Double = 1.0
+    var backgroundImageCropHeight: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case twoColumns
@@ -315,6 +319,10 @@ class SettingsQuickButtons: Codable, ObservableObject {
         case enableScroll
         case blackScreenShowChat
         case blackScreenShowStatus
+        case backgroundImageCropX
+        case backgroundImageCropY
+        case backgroundImageCropWidth
+        case backgroundImageCropHeight
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -325,6 +333,10 @@ class SettingsQuickButtons: Codable, ObservableObject {
         try container.encode(.enableScroll, enableScroll)
         try container.encode(.blackScreenShowChat, stealthModeShowChat)
         try container.encode(.blackScreenShowStatus, stealthModeShowStatus)
+        try container.encode(.backgroundImageCropX, backgroundImageCropX)
+        try container.encode(.backgroundImageCropY, backgroundImageCropY)
+        try container.encode(.backgroundImageCropWidth, backgroundImageCropWidth)
+        try container.encode(.backgroundImageCropHeight, backgroundImageCropHeight)
     }
 
     init() {}
@@ -337,5 +349,9 @@ class SettingsQuickButtons: Codable, ObservableObject {
         enableScroll = container.decode(.enableScroll, Bool.self, true)
         stealthModeShowChat = container.decode(.blackScreenShowChat, Bool.self, false)
         stealthModeShowStatus = container.decode(.blackScreenShowStatus, Bool.self, false)
+        backgroundImageCropX = container.decode(.backgroundImageCropX, Double.self, 0.0)
+        backgroundImageCropY = container.decode(.backgroundImageCropY, Double.self, 0.0)
+        backgroundImageCropWidth = container.decode(.backgroundImageCropWidth, Double.self, 1.0)
+        backgroundImageCropHeight = container.decode(.backgroundImageCropHeight, Double.self, 1.0)
     }
 }

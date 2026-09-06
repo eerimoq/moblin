@@ -296,6 +296,10 @@ class StealthMode: ObservableObject {
     @Published var image: UIImage?
 }
 
+class ControlBar: ObservableObject {
+    @Published var backgroundImage: UIImage?
+}
+
 class QuickButtonChat: ObservableObject {
     @Published var showAllChatMessages = true
     @Published var showFirstTimeChatterMessage = true
@@ -436,6 +440,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
+    let controlBar = ControlBar()
     var faceBackgroundImage: CIImage?
     let drawOnStream = DrawOnStream()
     let store = Store()
@@ -1173,6 +1178,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatBotCustomCommandsTextChanged()
         macrosTextFormatChanged()
         loadStealthModeImage()
+        loadControlBarBackgroundImage()
         loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()

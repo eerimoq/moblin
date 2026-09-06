@@ -248,6 +248,8 @@ struct ControlBarPortraitView: View {
                   quickButtonsSettings: model.database.quickButtonsGeneral,
                   height: controlBarWidth(quickButtons: quickButtons))
             .frame(height: controlBarWidth(quickButtons: quickButtons))
-            .background(.black)
+            .background {
+                ControlBarBackgroundView(controlBar: model.controlBar)
+            }
     }
 }

@@ -1,4 +1,134 @@
+import PhotosUI
 import SwiftUI
+
+private struct BackgroundImageCropView: View {
+    let model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
+    let image: UIImage
+    @State private var position: CGPoint = .init(x: 100, y: 100)
+    @State private var positionOffset: CGSize = .init(width: 0, height: 0)
+    @State private var positionAnchorPoint: AnchorPoint?
+
+    private func updatePositionAnchorPoint(location: CGPoint, size: CGSize) {
+        if positionAnchorPoint == nil {
+            (positionAnchorPoint, positionOffset) = calculatePositioningAnchorPoint(
+                location,
+                size,
+                quickButtons.backgroundImageCropX,
+                quickButtons.backgroundImageCropY,
+                quickButtons.backgroundImageCropWidth,
+                quickButtons.backgroundImageCropHeight
+            )
+        }
+    }
+
+    private func createPositionPath(size: CGSize) -> Path {
+        let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
+            positionAnchorPoint,
+            quickButtons.backgroundImageCropX,
+            quickButtons.backgroundImageCropY,
+            quickButtons.backgroundImageCropWidth,
+            quickButtons.backgroundImageCropHeight,
+            position,
+            size,
+            positionOffset
+        )
+        quickButtons.backgroundImageCropX = xTopLeft
+        quickButtons.backgroundImageCropY = yTopLeft
+        quickButtons.backgroundImageCropWidth = xBottomRight - xTopLeft
+        quickButtons.backgroundImageCropHeight = yBottomRight - yTopLeft
+        let xPoints = CGFloat(quickButtons.backgroundImageCropX) * size.width
+        let yPoints = CGFloat(quickButtons.backgroundImageCropY) * size.height
+        let widthPoints = CGFloat(quickButtons.backgroundImageCropWidth) * size.width
+        let heightPoints = CGFloat(quickButtons.backgroundImageCropHeight) * size.height
+        return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
+    }
+
+    var body: some View {
+        ZStack {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(image.size.width / image.size.height, contentMode: .fit)
+            GeometryReader { reader in
+                Canvas { context, size in
+                    context.stroke(
+                        createPositionPath(size: size),
+                        with: .color(.black),
+                        lineWidth: 1.5
+                    )
+                }
+                .padding(.vertical, 6)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            position = value.location
+                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                            updatePositionAnchorPoint(location: position, size: size)
+                        }
+                        .onEnded { _ in
+                            positionAnchorPoint = nil
+                            model.updateControlBarBackgroundImage(image: image)
+                        }
+                )
+            }
+        }
+    }
+}
+
+private struct BackgroundImageSettingsView: View {
+    let model: Model
+    @ObservedObject var quickButtons: SettingsQuickButtons
+    @State private var image: UIImage?
+    @State private var presentingPicker: Bool = false
+    @State private var selectedImageItem: PhotosPickerItem?
+
+    var body: some View {
+        Form {
+            Section {
+                if let image {
+                    BackgroundImageCropView(model: model, quickButtons: quickButtons, image: image)
+                }
+                Button {
+                    presentingPicker = true
+                } label: {
+                    HCenter {
+                        Text("Select image")
+                    }
+                }
+                .photosPicker(
+                    isPresented: $presentingPicker,
+                    selection: $selectedImageItem,
+                    matching: .images
+                )
+                .onChange(of: selectedImageItem) { imageItem in
+                    selectedImageItem = nil
+                    imageItem?.loadTransferable(type: Data.self) { result in
+                        switch result {
+                        case let .success(data?):
+                            DispatchQueue.main.async {
+                                model.saveControlBarBackgroundImage(data: data)
+                                image = UIImage(data: data)
+                            }
+                        default:
+                            break
+                        }
+                    }
+                }
+                if image != nil {
+                    TextButtonView("Delete image") {
+                        image = nil
+                        model.deleteControlBarBackgroundImage()
+                    }
+                }
+            }
+            .onAppear {
+                model.checkPhotoLibraryAuthorization()
+                image = model.readControlBarBackgroundImage()
+            }
+        }
+        .navigationTitle("Background")
+    }
+}
 
 private struct ExternalDisplayContentView: View {
     @EnvironmentObject var model: Model
@@ -28,15 +158,27 @@ struct DisplaySettingsView: View {
                 } label: {
                     Text("Quick buttons")
                 }
+                NavigationLink {
+                    StreamButtonsSettingsView(database: database)
+                } label: {
+                    Text("Stream button")
+                }
+                NavigationLink {
+                    BackgroundImageSettingsView(
+                        model: model,
+                        quickButtons: model.database.quickButtonsGeneral
+                    )
+                } label: {
+                    Text("Background")
+                }
+            } header: {
+                Text("Control bar")
+            }
+            Section {
                 Toggle("Big buttons", isOn: $database.bigButtons)
                 Toggle("Big audio level meter", isOn: $database.bigAudioLevelMeter)
                 Toggle("Vertical buttons", isOn: $database.verticalButtons)
                 if database.showAllSettings {
-                    NavigationLink {
-                        StreamButtonsSettingsView(database: database)
-                    } label: {
-                        Text("Stream button")
-                    }
                     NavigationLink {
                         LocalOverlaysSettingsView(show: database.show)
                     } label: {
@@ -51,6 +193,8 @@ struct DisplaySettingsView: View {
                     Toggle("Low bitrate warning", isOn: $database.lowBitrateWarning)
                     Toggle("Recording confirmations", isOn: $database.startStopRecordingConfirmations)
                 }
+            } header: {
+                Text("General")
             }
             Section {
                 Toggle("Vibrate", isOn: $database.vibrate)
