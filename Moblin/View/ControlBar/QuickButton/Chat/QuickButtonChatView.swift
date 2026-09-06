@@ -151,7 +151,7 @@ private struct LineView: View {
                     }
                     Text(" ")
                 }
-                if let url = segment.gifUrl?.url(animated: chat.animatedEmotes) {
+                if let url = segment.bigGifUrl?.url(animated: chat.animatedEmotes) {
                     ChatGifView(
                         url: url,
                         animated: chat.animatedEmotes,

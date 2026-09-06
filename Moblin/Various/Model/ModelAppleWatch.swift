@@ -203,7 +203,7 @@ extension Model {
             segments: post.segments
                 .map { WatchProtocolChatSegment(
                     text: $0.text,
-                    url: ($0.url ?? $0.gifUrl)?.url(animated: false)?.absoluteString
+                    url: ($0.url ?? $0.bigGifUrl)?.url(animated: false)?.absoluteString
                 ) },
             highlight: post.highlight?.toWatchProtocol()
         )

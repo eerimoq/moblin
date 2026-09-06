@@ -160,7 +160,7 @@ private struct LineView: View {
                         .bold(settings.boldMessage)
                         .italic(post.isAction)
                 }
-                if let url = (segment.url ?? segment.gifUrl)?.url(animated: false) {
+                if let url = (segment.url ?? segment.bigGifUrl)?.url(animated: false) {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -169,7 +169,7 @@ private struct LineView: View {
                         EmptyView()
                     }
                     .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
-                    .frame(height: frameHeightEmotes() * (segment.gifUrl == nil ? 1 : 3))
+                    .frame(height: frameHeightEmotes() * (segment.bigGifUrl == nil ? 1 : 3))
                     Text(" ")
                 }
             }

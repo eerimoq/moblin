@@ -464,7 +464,7 @@ extension Model {
                         if let text = segment.text {
                             Text(text)
                         }
-                        if let url = (segment.url ?? segment.gifUrl)?.url(animated: false) {
+                        if let url = (segment.url ?? segment.bigGifUrl)?.url(animated: false) {
                             CacheAsyncImage(url: url) { image in
                                 image
                                     .resizable()

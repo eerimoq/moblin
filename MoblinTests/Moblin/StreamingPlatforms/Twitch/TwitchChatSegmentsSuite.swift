@@ -13,7 +13,7 @@ private func makeTwitchGif(_ name: String, _ range: ClosedRange<Int>) -> ChatMes
 }
 
 private func gifNames(_ segments: [ChatPostSegment]) -> [String?] {
-    segments.map { $0.gifUrl?.moving?.lastPathComponent }
+    segments.map { $0.bigGifUrl?.moving?.lastPathComponent }
 }
 
 struct TwitchChatSegmentsSuite {

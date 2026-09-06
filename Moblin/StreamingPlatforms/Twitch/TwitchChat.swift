@@ -166,7 +166,7 @@ func createTwitchSegments(text: String,
             )
         }
         if emote.isGif {
-            segments.append(ChatPostSegment(id: id, gifUrl: ChatPostUrl(moving: emote.url, still: nil)))
+            segments.append(ChatPostSegment(id: id, bigGifUrl: ChatPostUrl(moving: emote.url, still: nil)))
         } else {
             segments.append(ChatPostSegment(
                 id: id,

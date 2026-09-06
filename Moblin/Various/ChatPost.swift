@@ -25,7 +25,7 @@ struct ChatPostSegment: Identifiable, Codable {
     let id: Int
     var text: String?
     var url: ChatPostUrl?
-    var gifUrl: ChatPostUrl?
+    var bigGifUrl: ChatPostUrl?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
