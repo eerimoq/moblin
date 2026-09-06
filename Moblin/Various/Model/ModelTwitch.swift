@@ -528,11 +528,42 @@ extension Model {
         color: Color,
         image: String? = nil,
         kind: ChatHighlightKind? = nil,
-        bits: String? = nil
+        bits: String? = nil,
+        sharedChat: TwitchEventSubSharedChat? = nil
     ) {
         guard let twitchChat else {
             return
         }
+        let segments = twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits)
+        let highlight = ChatHighlight(
+            kind: kind ?? .redemption,
+            barColor: color,
+            image: image ?? "medal",
+            titleSegments: [ChatPostSegment(id: 0, text: title)]
+        )
+        if let sharedChat {
+            twitchChat.getSourceChannelIcon(sourceRoomId: sharedChat.broadcasterUserId) { sourceChannelIcon in
+                self.appendTwitchChatAlertMessage(user: user,
+                                                  segments: segments,
+                                                  highlight: highlight,
+                                                  sourceChannelIcon: sourceChannelIcon)
+            }
+        } else {
+            appendTwitchChatAlertMessage(
+                user: user,
+                segments: segments,
+                highlight: highlight,
+                sourceChannelIcon: nil
+            )
+        }
+    }
+
+    private func appendTwitchChatAlertMessage(
+        user: String,
+        segments: [ChatPostSegment],
+        highlight: ChatHighlight,
+        sourceChannelIcon: URL?
+    ) {
         appendChatMessage(platform: .twitch,
                           messageId: nil,
                           displayName: user,
@@ -540,7 +571,7 @@ extension Model {
                           userId: nil,
                           userColor: nil,
                           userBadges: [],
-                          segments: twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits),
+                          segments: segments,
                           timestamp: statusOther.digitalClock,
                           timestampTime: .now,
                           isAction: false,
@@ -548,13 +579,20 @@ extension Model {
                           isModerator: false,
                           isOwner: false,
                           bits: nil,
-                          highlight: .init(
-                              kind: kind ?? .redemption,
-                              barColor: color,
-                              image: image ?? "medal",
-                              titleSegments: [ChatPostSegment(id: 0, text: title)]
-                          ),
-                          live: true)
+                          highlight: highlight,
+                          live: true,
+                          sourceChannelIcon: sourceChannelIcon)
+    }
+
+    private func isTwitchSharedChatEventEnabled(_ sharedChat: TwitchEventSubSharedChat?) -> Bool {
+        sharedChat == nil || stream.twitchChatAlerts.sharedChat || stream.twitchToastAlerts.sharedChat
+    }
+
+    private func isTwitchSharedChatAlertEnabled(
+        _ sharedChat: TwitchEventSubSharedChat?,
+        alerts: SettingsTwitchAlerts
+    ) -> Bool {
+        sharedChat == nil || alerts.sharedChat
     }
 }
 
@@ -579,7 +617,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
-        guard !event.is_gift else {
+        guard !event.is_gift, isTwitchSharedChatEventEnabled(event.sharedChat) else {
             return
         }
         let text = if event.isPrime() {
@@ -587,17 +625,22 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         } else {
             String(localized: "just subscribed tier \(event.tierAsNumber())!")
         }
-        if stream.twitchToastAlerts.subscriptions {
+        if stream.twitchToastAlerts.subscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
+        {
             makeToast(title: "\(event.user_name) \(text)")
         }
         playAlert(alert: .twitchSubscribe(event))
-        if stream.twitchChatAlerts.subscriptions {
+        if stream.twitchChatAlerts.subscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts)
+        {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New subscriber"),
                 color: .cyan,
-                image: "party.popper"
+                image: "party.popper",
+                sharedChat: event.sharedChat
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
@@ -605,20 +648,28 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
+        guard isTwitchSharedChatEventEnabled(event.sharedChat) else {
+            return
+        }
         let user = event.user_name ?? String(localized: "Anonymous")
         let text =
             String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
-        if stream.twitchToastAlerts.giftSubscriptions {
+        if stream.twitchToastAlerts.giftSubscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
+        {
             makeToast(title: "\(user) \(text)")
         }
         playAlert(alert: .twitchSubscrptionGift(event))
-        if stream.twitchChatAlerts.giftSubscriptions {
+        if stream.twitchChatAlerts.giftSubscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts)
+        {
             appendTwitchChatAlertMessage(
                 user: user,
                 text: text,
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
-                image: "gift"
+                image: "gift",
+                sharedChat: event.sharedChat
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
@@ -628,6 +679,9 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelSubscriptionMessage(
         event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
     ) {
+        guard isTwitchSharedChatEventEnabled(event.sharedChat) else {
+            return
+        }
         let text = if let streakMonths = event.streak_months {
             String(localized: """
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
@@ -639,17 +693,22 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             months! \(event.message.text)
             """)
         }
-        if stream.twitchToastAlerts.resubscriptions {
+        if stream.twitchToastAlerts.resubscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
+        {
             makeToast(title: "\(event.user_name) \(text)")
         }
         playAlert(alert: .twitchResubscribe(event))
-        if stream.twitchChatAlerts.resubscriptions {
+        if stream.twitchChatAlerts.resubscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts)
+        {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New resubscribe"),
                 color: .cyan,
-                image: "party.popper"
+                image: "party.popper",
+                sharedChat: event.sharedChat
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
@@ -659,22 +718,30 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelSubscriptionUpgrade(
         event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
     ) {
+        guard isTwitchSharedChatEventEnabled(event.sharedChat) else {
+            return
+        }
         let text = if let tier = event.tierAsNumber() {
             String(localized: "just converted their Prime subscription to tier \(tier)!")
         } else {
             String(localized: "just continued their gift subscription!")
         }
-        if stream.twitchToastAlerts.subscriptions {
+        if stream.twitchToastAlerts.subscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
+        {
             makeToast(title: "\(event.user_name) \(text)")
         }
         playAlert(alert: .twitchSubscriptionUpgrade(event))
-        if stream.twitchChatAlerts.subscriptions {
+        if stream.twitchChatAlerts.subscriptions,
+           isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts)
+        {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
                 text: text,
                 title: String(localized: "New subscriber"),
                 color: .cyan,
-                image: "party.popper"
+                image: "party.popper",
+                sharedChat: event.sharedChat
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
@@ -724,21 +791,29 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
-        if event.from_broadcaster_user_id == stream.twitchChannelId {
+        if event.sharedChat == nil, event.from_broadcaster_user_id == stream.twitchChannelId {
             twitchRaidCompleted()
         } else {
+            guard isTwitchSharedChatEventEnabled(event.sharedChat) else {
+                return
+            }
             let text = String(localized: "raided with a party of \(event.viewers)!")
-            if stream.twitchToastAlerts.raids {
+            if stream.twitchToastAlerts.raids,
+               isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
+            {
                 makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
             }
             playAlert(alert: .twitchRaid(event))
-            if stream.twitchChatAlerts.raids {
+            if stream.twitchChatAlerts.raids,
+               isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts)
+            {
                 appendTwitchChatAlertMessage(
                     user: event.from_broadcaster_user_name,
                     text: text,
                     title: String(localized: "Raid"),
                     color: .pink,
-                    image: "person.3"
+                    image: "person.3",
+                    sharedChat: event.sharedChat
                 )
             }
             printEventCatPrinters(

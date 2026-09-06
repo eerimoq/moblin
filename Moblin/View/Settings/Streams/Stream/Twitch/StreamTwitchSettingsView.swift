@@ -137,6 +137,11 @@ struct TwitchAlertsSettingsView: View {
                     }
                 }
             }
+            Section {
+                Toggle("Shared chat", isOn: $alerts.sharedChat)
+            } footer: {
+                Text("Also show events from other channels in a shared chat session.")
+            }
         }
         .navigationTitle(title)
     }

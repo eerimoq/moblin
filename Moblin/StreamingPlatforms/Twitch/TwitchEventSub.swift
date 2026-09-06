@@ -25,11 +25,17 @@ struct TwitchEventSubMessage: Decodable {
     var text: String
 }
 
+struct TwitchEventSubSharedChat: Decodable {
+    var broadcasterUserId: String
+    var broadcasterUserName: String
+}
+
 struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var user_name: String
     var tier: String
     var is_gift: Bool
     var is_prime: Bool?
+    var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -51,6 +57,7 @@ private struct NotificationChannelSubscribeMessage: Decodable {
 struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
     var user_name: String
     var tier: String?
+    var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int? {
         guard let tier else {
@@ -70,6 +77,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var user_name: String?
     var total: Int
     var tier: String
+    var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -90,6 +98,7 @@ struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
     var streak_months: Int?
     var tier: String
     var message: TwitchEventSubMessage
+    var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -133,9 +142,17 @@ private struct NotificationChannelChatNotificationWatchStreak: Decodable {
     var streak_count: Int
 }
 
+private struct NotificationChannelChatNotificationRaid: Decodable {
+    var user_id: String
+    var user_name: String
+    var viewer_count: Int
+}
+
 private struct NotificationChannelChatNotificationEvent: Decodable {
     var chatter_user_name: String
     var chatter_is_anonymous: Bool
+    var source_broadcaster_user_id: String?
+    var source_broadcaster_user_name: String?
     var message: TwitchEventSubMessage
     var notice_type: String
     var sub: NotificationChannelChatNotificationSub?
@@ -144,6 +161,20 @@ private struct NotificationChannelChatNotificationEvent: Decodable {
     var community_sub_gift: NotificationChannelChatNotificationCommunitySubGift?
     var prime_paid_upgrade: NotificationChannelChatNotificationPrimePaidUpgrade?
     var watch_streak: NotificationChannelChatNotificationWatchStreak?
+    var shared_chat_sub: NotificationChannelChatNotificationSub?
+    var shared_chat_resub: NotificationChannelChatNotificationResub?
+    var shared_chat_sub_gift: NotificationChannelChatNotificationSubGift?
+    var shared_chat_community_sub_gift: NotificationChannelChatNotificationCommunitySubGift?
+    var shared_chat_prime_paid_upgrade: NotificationChannelChatNotificationPrimePaidUpgrade?
+    var shared_chat_raid: NotificationChannelChatNotificationRaid?
+
+    func sharedChat() -> TwitchEventSubSharedChat? {
+        guard let source_broadcaster_user_id, let source_broadcaster_user_name else {
+            return nil
+        }
+        return TwitchEventSubSharedChat(broadcasterUserId: source_broadcaster_user_id,
+                                        broadcasterUserName: source_broadcaster_user_name)
+    }
 }
 
 private struct NotificationChannelChatNotificationPayload: Decodable {
@@ -209,6 +240,7 @@ struct TwitchEventSubChannelRaidEvent: Decodable {
     var from_broadcaster_user_id: String
     var from_broadcaster_user_name: String
     var viewers: Int
+    var sharedChat: TwitchEventSubSharedChat?
 }
 
 private struct NotificationChannelRaidPayload: Decodable {
@@ -666,16 +698,17 @@ final class TwitchEventSub: NSObject {
         )
         let event = message.payload.event
         switch event.notice_type {
-        case "sub":
-            guard let sub = event.sub else {
+        case "sub", "shared_chat_sub":
+            guard let sub = event.sub ?? event.shared_chat_sub else {
                 return
             }
             delegate.twitchEventSubChannelSubscribe(event: .init(user_name: event.chatter_user_name,
                                                                  tier: sub.sub_tier,
                                                                  is_gift: false,
-                                                                 is_prime: sub.is_prime))
-        case "resub":
-            guard let resub = event.resub else {
+                                                                 is_prime: sub.is_prime,
+                                                                 sharedChat: event.sharedChat()))
+        case "resub", "shared_chat_resub":
+            guard let resub = event.resub ?? event.shared_chat_resub else {
                 return
             }
             delegate.twitchEventSubChannelSubscriptionMessage(
@@ -683,30 +716,47 @@ final class TwitchEventSub: NSObject {
                              cumulative_months: resub.cumulative_months,
                              streak_months: resub.streak_months,
                              tier: resub.sub_tier,
-                             message: event.message)
+                             message: event.message,
+                             sharedChat: event.sharedChat())
             )
-        case "sub_gift":
-            guard let subGift = event.sub_gift, subGift.community_gift_id == nil else {
+        case "sub_gift", "shared_chat_sub_gift":
+            guard let subGift = event.sub_gift ?? event.shared_chat_sub_gift,
+                  subGift.community_gift_id == nil
+            else {
                 return
             }
             handleChatNotificationGift(event: event, total: 1, tier: subGift.sub_tier)
-        case "community_sub_gift":
-            guard let communitySubGift = event.community_sub_gift else {
+        case "community_sub_gift", "shared_chat_community_sub_gift":
+            guard let communitySubGift = event.community_sub_gift ?? event.shared_chat_community_sub_gift
+            else {
                 return
             }
             handleChatNotificationGift(event: event,
                                        total: communitySubGift.total,
                                        tier: communitySubGift.sub_tier)
-        case "prime_paid_upgrade":
-            guard let primePaidUpgrade = event.prime_paid_upgrade else {
+        case "prime_paid_upgrade", "shared_chat_prime_paid_upgrade":
+            guard let primePaidUpgrade = event.prime_paid_upgrade ?? event.shared_chat_prime_paid_upgrade
+            else {
                 return
             }
             delegate.twitchEventSubChannelSubscriptionUpgrade(
-                event: .init(user_name: event.chatter_user_name, tier: primePaidUpgrade.sub_tier)
+                event: .init(user_name: event.chatter_user_name,
+                             tier: primePaidUpgrade.sub_tier,
+                             sharedChat: event.sharedChat())
             )
-        case "gift_paid_upgrade":
+        case "gift_paid_upgrade", "shared_chat_gift_paid_upgrade":
             delegate.twitchEventSubChannelSubscriptionUpgrade(
-                event: .init(user_name: event.chatter_user_name, tier: nil)
+                event: .init(user_name: event.chatter_user_name, tier: nil, sharedChat: event.sharedChat())
+            )
+        case "shared_chat_raid":
+            guard let raid = event.shared_chat_raid else {
+                return
+            }
+            delegate.twitchEventSubChannelRaid(
+                event: .init(from_broadcaster_user_id: raid.user_id,
+                             from_broadcaster_user_name: raid.user_name,
+                             viewers: raid.viewer_count,
+                             sharedChat: event.sharedChat())
             )
         case "watch_streak":
             guard let watchStreak = event.watch_streak else {
@@ -730,7 +780,8 @@ final class TwitchEventSub: NSObject {
         delegate.twitchEventSubChannelSubscriptionGift(
             event: .init(user_name: event.chatter_is_anonymous ? nil : event.chatter_user_name,
                          total: total,
-                         tier: tier)
+                         tier: tier,
+                         sharedChat: event.sharedChat())
         )
     }
 

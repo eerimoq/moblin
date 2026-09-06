@@ -521,20 +521,30 @@ final class TwitchChat: @unchecked Sendable {
         }
     }
 
-    private func handleChatMessage(message: TwitchChatMessage) {
-        if let sourceRoomId = message.sourceRoomId, !accessToken.isEmpty {
-            if let sourceRoomIcon = sourceRoomIcons[sourceRoomId] {
-                processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
-            } else {
-                TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
-                    let sourceRoomIcon: URL? = if let user {
-                        URL(string: user.profile_image_url)
-                    } else {
-                        nil
-                    }
-                    self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
-                    self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
+    func getSourceChannelIcon(sourceRoomId: String, onComplete: @escaping (URL?) -> Void) {
+        guard !accessToken.isEmpty else {
+            onComplete(nil)
+            return
+        }
+        if let sourceRoomIcon = sourceRoomIcons[sourceRoomId] {
+            onComplete(sourceRoomIcon)
+        } else {
+            TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
+                let sourceRoomIcon: URL? = if let user {
+                    URL(string: user.profile_image_url)
+                } else {
+                    nil
                 }
+                self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
+                onComplete(sourceRoomIcon)
+            }
+        }
+    }
+
+    private func handleChatMessage(message: TwitchChatMessage) {
+        if let sourceRoomId = message.sourceRoomId {
+            getSourceChannelIcon(sourceRoomId: sourceRoomId) { sourceRoomIcon in
+                self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
             }
         } else {
             processChatMessage(message: message, sourceChannelIcon: nil)

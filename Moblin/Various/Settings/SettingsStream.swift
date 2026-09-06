@@ -1017,6 +1017,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     @Published var minimumCheerBits: Int = 0
     @Published var watchStreaks: Bool = true
     @Published var minimumWatchStreak: Int = 5
+    @Published var sharedChat: Bool = false
 
     init() {}
 
@@ -1031,6 +1032,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         case minimumCheerBits
         case watchStreaks
         case minimumWatchStreak
+        case sharedChat
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1045,6 +1047,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         try container.encode(.minimumCheerBits, minimumCheerBits)
         try container.encode(.watchStreaks, watchStreaks)
         try container.encode(.minimumWatchStreak, minimumWatchStreak)
+        try container.encode(.sharedChat, sharedChat)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1059,6 +1062,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         minimumCheerBits = container.decode(.minimumCheerBits, Int.self, 0)
         watchStreaks = container.decode(.watchStreaks, Bool.self, true)
         minimumWatchStreak = container.decode(.minimumWatchStreak, Int.self, 5)
+        sharedChat = container.decode(.sharedChat, Bool.self, false)
     }
 
     func clone() -> SettingsTwitchAlerts {
@@ -1073,6 +1077,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         new.minimumCheerBits = minimumCheerBits
         new.watchStreaks = watchStreaks
         new.minimumWatchStreak = minimumWatchStreak
+        new.sharedChat = sharedChat
         return new
     }
 

@@ -31400,6 +31400,9 @@
         }
       }
     },
+    "Also show events from other channels in a shared chat session." : {
+
+    },
     "Alternatively, use a website as assistant." : {
       "localizations" : {
         "de" : {
@@ -200565,6 +200568,9 @@
           }
         }
       }
+    },
+    "Shared chat" : {
+
     },
     "Shared chat icons" : {
       "localizations" : {
