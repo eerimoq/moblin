@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-private let faceBackgroundImagePath = URL.documentsDirectory.appending(component: "faceBackgroundImage.img")
+let faceBackgroundImagePath = URL.documentsDirectory.appending(component: "faceBackgroundImage.img")
 
 extension Model {
     nonisolated func saveFaceBackgroundImage(data: Data) {

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-private let controlBarBackgroundImagePath = URL.documentsDirectory
+let controlBarBackgroundImagePath = URL.documentsDirectory
     .appending(component: "controlBarBackgroundImage.img")
 
 extension Model {

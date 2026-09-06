@@ -2166,8 +2166,9 @@ private let exportDirectories = [
     replayTransitionsStorageDirectory,
 ]
 private let exportFiles = [
-    URL.documentsDirectory.appending(component: "stealthModeImage.img"),
-    URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
+    stealthModeImagePath,
+    faceBackgroundImagePath,
+    controlBarBackgroundImagePath,
 ]
 
 private let storage = SimpleStringStorage(key: "settings")
