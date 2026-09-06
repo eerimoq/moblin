@@ -217,6 +217,15 @@ struct DisplaySettingsView: View {
                         })) {
                             Text("Portrait")
                         }
+                        if database.portrait, !model.stream.portrait {
+                            Toggle(isOn: Binding(get: {
+                                database.portraitUiCropTo16x9
+                            }, set: { value in
+                                model.setPortraitUiCropTo16x9(value: value)
+                            })) {
+                                Text("Crop to 16:9")
+                            }
+                        }
                         HStack {
                             Text("Video position")
                             Slider(value: $model.portraitVideoOffsetFromTop, in: 0 ... 1) {
@@ -229,6 +238,13 @@ struct DisplaySettingsView: View {
                     } footer: {
                         VStack(alignment: .leading) {
                             Text("Useful when using an external camera and a portrait phone holder.")
+                            if database.portrait, !model.stream.portrait {
+                                Text("")
+                                Text("""
+                                Crop to 16:9 streams the middle of the image when \
+                                the phone is upright. Reduces field of view.
+                                """)
+                            }
                             Text("")
                             Text(
                                 "To stream in portrait, enable Settings → Streams → \(model.stream.name) → Portrait."

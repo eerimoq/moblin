@@ -749,6 +749,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         !stream.portrait && database.portrait
     }
 
+    func isPortraitUiCropTo16x9() -> Bool {
+        isLandscapeStreamAndPortraitUi() &&
+            database.portraitUiCropTo16x9 &&
+            !useLandscapeStreamAndPortraitUi(cameraDevice, true)
+    }
+
     var enabledScenes: [SettingsScene] {
         database.scenes.filter(\.enabled)
     }
@@ -1663,6 +1669,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateIsPortrait()
         if stream.portrait {
             media.setVideoOrientation(value: .portrait)
+        } else if isPortraitUiCropTo16x9() {
+            media.setVideoOrientation(value: .landscapeRight)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
@@ -2222,6 +2230,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateIsPortrait()
         setQuickButton(type: .portrait, isOn: portrait)
         updateOrientationLock()
+        updateOrientation()
+        sceneUpdated()
+        attachCamera()
+    }
+
+    func setPortraitUiCropTo16x9(value: Bool) {
+        database.portraitUiCropTo16x9 = value
+        updateOrientation()
+        sceneUpdated()
+        attachCamera()
     }
 
     func setIsWorkout(type: WatchProtocolWorkoutType?) {
@@ -2705,6 +2723,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             cameraPreviewView.setVideoOrientation(.portrait)
         } else if stream.portrait {
             cameraPreviewView.setVideoOrientation(.portrait)
+        } else if isPortraitUiCropTo16x9() {
+            cameraPreviewView.setVideoOrientation(.landscapeRight)
         } else {
             switch UIDevice.current.orientation {
             case .landscapeLeft:
