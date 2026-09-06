@@ -130,7 +130,7 @@ private struct LineView: View {
         let usernameColor = usernameColor()
         let messageColor = messageColor(usernameColor: usernameColor)
         WrappingHStack(
-            alignment: .leading,
+            alignment: post.isBigGif() ? .topLeading : .leading,
             horizontalSpacing: 0,
             verticalSpacing: 0,
             fitContentWidth: true

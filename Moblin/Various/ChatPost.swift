@@ -255,6 +255,10 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     let sourceChannelIcon: URL?
     let state: ChatPostState
 
+    func isBigGif() -> Bool {
+        segments.first?.bigGifUrl != nil
+    }
+
     func text() -> String {
         segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
     }
