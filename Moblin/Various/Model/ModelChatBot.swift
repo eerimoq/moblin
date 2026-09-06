@@ -593,16 +593,15 @@ extension Model {
 
     @MainActor
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
-        guard #available(iOS 17, *) else {
+        guard #available(iOS 17, *),
+              let reaction = command.popFirstArgument(ChatBotReactionArgument.self),
+              let reaction = SettingsReaction(value: reaction.rawValue) else {
             return
         }
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
-            guard let reaction = SettingsReaction(value: command.popFirstLowerCased()) else {
-                return
-            }
             self.triggerReaction(reaction: reaction)
         }
     }

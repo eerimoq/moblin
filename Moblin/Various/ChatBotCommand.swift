@@ -140,6 +140,17 @@ enum ChatBotFilterArgument: String, ChatBotArgument {
     case pinch
 }
 
+enum ChatBotReactionArgument: String, ChatBotArgument {
+    case fireworks
+    case balloons
+    case hearts
+    case confetti
+    case lasers
+    case rain
+    case glasses
+    case sparkle
+}
+
 enum ChatBotTeslaArgument: String, ChatBotArgument {
     case trunk
     case media

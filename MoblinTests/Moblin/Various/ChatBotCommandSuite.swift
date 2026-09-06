@@ -121,6 +121,18 @@ struct ChatBotCommandSuite {
         #expect(command.popFirstArgument(ChatBotFilterArgument.self) == expected)
     }
 
+    @Test(arguments: [
+        ("rain", .rain),
+        ("rai", .rain),
+        ("balloons", .balloons),
+        ("balons", .balloons),
+    ] as [(String, ChatBotReactionArgument?)])
+    func fuzzyMatchReaction(word: String, expected: ChatBotReactionArgument?) throws {
+        let message = createMessage(text: "!moblin \(word)")
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
+        #expect(command.popFirstArgument(ChatBotReactionArgument.self) == expected)
+    }
+
     private func createMessage(text: String) -> ChatBotMessage {
         ChatBotMessage(platform: .twitch,
                        user: "erik",
