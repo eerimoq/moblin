@@ -434,12 +434,12 @@ struct MainView: View {
         UITextField.appearance().clearButtonMode = .always
     }
 
-    private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
+    private func handleTapToFocus(size: CGSize, location: CGPoint) {
         guard model.database.tapToFocus else {
             return
         }
-        let x = (location.x / metrics.size.width).clamped(to: 0 ... 1)
-        let y = (location.y / metrics.size.height).clamped(to: 0 ... 1)
+        let x = (location.x / size.width).clamped(to: 0 ... 1)
+        let y = (location.y / size.height).clamped(to: 0 ... 1)
         model.setFocusPointOfInterest(focusPoint: CGPoint(x: x, y: y))
     }
 
@@ -463,47 +463,29 @@ struct MainView: View {
         .allowsHitTesting(model.interactiveBrowsers)
     }
 
-    private func streamAspectRatio() -> CGFloat {
-        model.stream.dimensions().aspectRatio()
-    }
-
-    private func portraitVideoOffset() -> Double {
-        if model.stream.portrait {
-            0
-        } else {
-            model.portraitVideoOffsetFromTop
+    private func streamViewWithWidgets() -> some View {
+        GeometryReader { metrics in
+            let layout = model.streamViewLayout(metrics: metrics)
+            ZStack {
+                streamView
+                    .onTapGesture(count: 1) {
+                        handleTapToFocus(size: layout.size, location: $0)
+                    }
+                    .onLongPressGesture {
+                        handleLeaveTapToFocus()
+                    }
+                StreamOverlayTapGridView(camera: model.camera, size: layout.size)
+                browserWidgets(streamSize: layout.size)
+            }
+            .frame(width: layout.size.width, height: layout.size.height)
+            .offset(layout.offset)
         }
     }
 
     private func portrait() -> some View {
         VStack(spacing: 0) {
             ZStack {
-                HStack {
-                    Spacer(minLength: 0)
-                    VStack {
-                        GeometryReader { metrics in
-                            ZStack {
-                                streamView
-                                    .onTapGesture(count: 1) {
-                                        handleTapToFocus(metrics: metrics, location: $0)
-                                    }
-                                    .onLongPressGesture {
-                                        handleLeaveTapToFocus()
-                                    }
-                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
-                                browserWidgets(streamSize: metrics.size)
-                            }
-                            .offset(CGSize(
-                                width: 0,
-                                height: portraitVideoOffset() * metrics.size.height * 2
-                            ))
-                        }
-                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
-                        Spacer(minLength: 0)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .ignoresSafeArea()
+                streamViewWithWidgets()
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
@@ -559,29 +541,7 @@ struct MainView: View {
     private func landscape() -> some View {
         HStack(spacing: 0) {
             ZStack {
-                HStack {
-                    Spacer(minLength: 0)
-                    VStack {
-                        Spacer(minLength: 0)
-                        GeometryReader { metrics in
-                            ZStack {
-                                streamView
-                                    .onTapGesture(count: 1) {
-                                        handleTapToFocus(metrics: metrics, location: $0)
-                                    }
-                                    .onLongPressGesture {
-                                        handleLeaveTapToFocus()
-                                    }
-                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
-                                browserWidgets(streamSize: metrics.size)
-                            }
-                        }
-                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
-                        Spacer(minLength: 0)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .ignoresSafeArea()
+                streamViewWithWidgets()
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,

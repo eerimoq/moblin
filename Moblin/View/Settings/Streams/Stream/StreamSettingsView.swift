@@ -306,6 +306,7 @@ struct StreamSettingsView: View {
                             model.reloadStream()
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
+                            model.updateOrientationLock()
                         }
                     }
                 }

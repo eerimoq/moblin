@@ -13,65 +13,58 @@ private var drawing = false
 private struct DrawOnStreamCanvasView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
+    @ObservedObject var orientation: Orientation
     @ObservedObject var drawOnStream: DrawOnStream
 
     var body: some View {
-        HStack {
-            Spacer(minLength: 0)
-            VStack {
-                if !stream.portrait {
-                    Spacer(minLength: 0)
+        GeometryReader { metrics in
+            let layout = model.streamViewLayout(metrics: metrics)
+            Canvas { context, size in
+                for line in drawOnStream.lines {
+                    let width = line.width
+                    if line.points.count > 1 {
+                        context.stroke(
+                            drawOnStreamCreatePath(points: line.points),
+                            with: .color(line.color),
+                            lineWidth: width
+                        )
+                    } else {
+                        let point = line.points[0]
+                        var path = Path()
+                        path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
+                        context.stroke(path, with: .color(line.color), lineWidth: width)
+                    }
                 }
-                Canvas { context, size in
-                    for line in drawOnStream.lines {
-                        let width = line.width
-                        if line.points.count > 1 {
-                            context.stroke(
-                                drawOnStreamCreatePath(points: line.points),
-                                with: .color(line.color),
-                                lineWidth: width
-                            )
+                model.drawOnStreamSize = size
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        let position = value.location
+                        if value.translation == .zero {
+                            if !drawing {
+                                drawOnStream.lines.append(DrawOnStreamLine(
+                                    points: [position],
+                                    width: drawOnStream.selectedWidth,
+                                    color: drawOnStream.selectedColor
+                                ))
+                            }
+                            drawing = true
                         } else {
-                            let point = line.points[0]
-                            var path = Path()
-                            path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
-                            context.stroke(path, with: .color(line.color), lineWidth: width)
+                            guard let lastIndex = drawOnStream.lines.indices.last else {
+                                return
+                            }
+                            drawOnStream.lines[lastIndex].points.append(position)
                         }
                     }
-                    model.drawOnStreamSize = size
-                }
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            let position = value.location
-                            if value.translation == .zero {
-                                if !drawing {
-                                    drawOnStream.lines.append(DrawOnStreamLine(
-                                        points: [position],
-                                        width: drawOnStream.selectedWidth,
-                                        color: drawOnStream.selectedColor
-                                    ))
-                                }
-                                drawing = true
-                            } else {
-                                guard let lastIndex = drawOnStream.lines.indices.last else {
-                                    return
-                                }
-                                drawOnStream.lines[lastIndex].points.append(position)
-                            }
-                        }
-                        .onEnded { _ in
-                            model.drawOnStreamLineComplete()
-                            drawing = false
-                        }
-                )
-                .aspectRatio(stream.dimensions().aspectRatio(), contentMode: .fit)
-                Spacer(minLength: 0)
-            }
-            Spacer(minLength: 0)
+                    .onEnded { _ in
+                        model.drawOnStreamLineComplete()
+                        drawing = false
+                    }
+            )
+            .frame(width: layout.size.width, height: layout.size.height)
+            .offset(layout.offset)
         }
-        .ignoresSafeArea()
-        .edgesIgnoringSafeArea(.all)
     }
 }
 
@@ -131,6 +124,7 @@ struct DrawOnStreamView: View {
         ZStack {
             DrawOnStreamCanvasView(model: model,
                                    stream: model.stream,
+                                   orientation: model.orientation,
                                    drawOnStream: model.drawOnStream)
             DrawOnStreamControlsView(model: model, drawOnStream: model.drawOnStream)
         }
