@@ -71,6 +71,7 @@ struct TwitchEventSubNotificationChannelWatchStreakEvent {
     var user_name: String
     var streak_count: Int
     var message: TwitchEventSubMessage
+    var sharedChat: TwitchEventSubSharedChat?
 }
 
 struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
@@ -765,7 +766,8 @@ final class TwitchEventSub: NSObject {
             delegate.twitchEventSubChannelWatchStreak(
                 event: .init(user_name: event.chatter_user_name,
                              streak_count: watchStreak.streak_count,
-                             message: event.message)
+                             message: event.message,
+                             sharedChat: event.sharedChat())
             )
         default:
             break
