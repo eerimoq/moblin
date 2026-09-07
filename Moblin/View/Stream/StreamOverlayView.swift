@@ -60,7 +60,7 @@ struct ChatOverlayView: View {
                         .allowsHitTesting(false)
                     Rectangle()
                         .foregroundStyle(.clear)
-                        .frame(height: controlBarWidthDefault(orientation: orientation))
+                        .frame(height: controlBarWidthDefault)
                         .allowsHitTesting(false)
                 }
             }
@@ -93,7 +93,7 @@ struct ChatOverlayView: View {
                         .allowsHitTesting(false)
                     Rectangle()
                         .foregroundStyle(.clear)
-                        .frame(width: controlBarWidth(quickButtons: quickButtons, orientation: orientation))
+                        .frame(width: controlBarWidth(quickButtons: quickButtons))
                         .allowsHitTesting(false)
                 }
             }

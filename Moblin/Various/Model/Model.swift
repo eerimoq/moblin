@@ -333,7 +333,6 @@ class Snapshot: ObservableObject {
 
 class Orientation: ObservableObject {
     @Published var isPortrait: Bool = false
-    @Published var isLandscapeLeft: Bool = false
 }
 
 class CameraLevel: ObservableObject {
@@ -744,7 +743,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateIsPortrait() {
         orientation.isPortrait = stream.portrait || database.portrait || isChatPhone()
-        orientation.isLandscapeLeft = !orientation.isPortrait && getInterfaceOrientation() != .landscapeLeft
     }
 
     func isLandscapeStreamAndPortraitUi() -> Bool {

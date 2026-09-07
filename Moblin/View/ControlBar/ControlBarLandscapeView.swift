@@ -9,27 +9,11 @@ private func edgesToIgnore() -> Edge.Set {
     }
 }
 
-@MainActor
-func controlBarWidthDefault(orientation: Orientation) -> Double {
-    if isPhone() {
-        if orientation.isPortrait {
-            90
-        } else if orientation.isLandscapeLeft {
-            105
-        } else {
-            147
-        }
-    } else {
-        100
-    }
-}
-
-@MainActor
-func controlBarWidth(quickButtons: SettingsQuickButtons, orientation: Orientation) -> Double {
+func controlBarWidth(quickButtons: SettingsQuickButtons) -> Double {
     if quickButtons.bigButtons, quickButtons.twoColumns {
         controlBarWidthBigQuickButtons
     } else {
-        controlBarWidthDefault(orientation: orientation)
+        controlBarWidthDefault
     }
 }
 
@@ -85,7 +69,6 @@ private struct QuickButtonsView: View {
                         )
                     }
                 } else {
-                    let offset = 16.0
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             quickButtons: quickButtons,
@@ -94,9 +77,9 @@ private struct QuickButtonsView: View {
                             button: second,
                             size: buttonSize(),
                             nameSize: nameSize(),
-                            nameWidth: width - offset
+                            nameWidth: width - 10
                         )
-                        .frame(width: width - offset)
+                        .frame(width: width - 10)
                     }
                     QuickButtonsInnerView(
                         quickButtons: quickButtons,
@@ -105,9 +88,9 @@ private struct QuickButtonsView: View {
                         button: pair.first,
                         size: buttonSize(),
                         nameSize: nameSize(),
-                        nameWidth: width - offset
+                        nameWidth: width - 10
                     )
-                    .frame(width: width - offset)
+                    .frame(width: width - 10)
                 }
             }
         }
@@ -115,29 +98,31 @@ private struct QuickButtonsView: View {
 }
 
 private struct StatusView: View {
+    let model: Model
     @ObservedObject var status: StatusOther
     @State var presentingThermalState: Bool = false
 
-    private func thermalStateButton() -> some View {
-        Button {
-            presentingThermalState.toggle()
-        } label: {
-            ThermalStateView(thermalState: status.thermalState)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func digitalClock() -> some View {
-        Text(status.digitalClock)
-            .foregroundStyle(.white)
-            .font(smallFont)
-    }
-
     var body: some View {
-        HStack {
-            digitalClock()
-            thermalStateButton()
+        HStack(spacing: 0) {
+            if isPhone() {
+                BatteryView(model: model, battery: model.battery)
+            }
+            Spacer(minLength: 0)
+            Button {
+                presentingThermalState.toggle()
+            } label: {
+                ThermalStateView(thermalState: status.thermalState)
+            }
+            .buttonStyle(.plain)
+            Spacer(minLength: 0)
+            if isPhone() {
+                Text(status.digitalClock)
+                    .foregroundStyle(.white)
+                    .font(smallFont)
+            }
         }
+        .padding([.leading, .bottom], 0)
+        .padding(.trailing, 5)
         .sheet(isPresented: $presentingThermalState) {
             ThermalStateSheetView(presenting: $presentingThermalState)
         }
@@ -148,38 +133,30 @@ private struct IconAndSettingsView: View {
     let model: Model
     @ObservedObject var store: Store
 
-    private func iconButton() -> some View {
-        Button {
-            model.toggleShowingPanel(type: nil, panel: .store)
-        } label: {
-            Image("\(store.iconImage)NoBackground")
-                .interpolation(.high)
-                .resizable()
-                .scaledToFit()
-                .frame(width: controlBarButtonSize, height: controlBarButtonSize)
-        }
-        .buttonStyle(.borderless)
-    }
-
-    private func settingsButton() -> some View {
-        Button {
-            model.toggleShowingPanel(type: nil, panel: .settings)
-        } label: {
-            Image(systemName: "gearshape")
-                .frame(width: controlBarButtonSize, height: controlBarButtonSize)
-                .overlay(
-                    Circle()
-                        .stroke(.secondary)
-                )
-                .foregroundStyle(.white)
-        }
-        .buttonStyle(.borderless)
-    }
-
     var body: some View {
         HCenter {
-            iconButton()
-            settingsButton()
+            Button {
+                model.toggleShowingPanel(type: nil, panel: .store)
+            } label: {
+                Image("\(store.iconImage)NoBackground")
+                    .interpolation(.high)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
+            }
+            .buttonStyle(.borderless)
+            Button {
+                model.toggleShowingPanel(type: nil, panel: .settings)
+            } label: {
+                Image(systemName: "gearshape")
+                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
+                    .overlay(
+                        Circle()
+                            .stroke(.secondary)
+                    )
+                    .foregroundStyle(.white)
+            }
+            .buttonStyle(.borderless)
         }
     }
 }
@@ -205,14 +182,6 @@ private struct PageView: View {
     }
 }
 
-private func buttonsWidth(quickButtonsSettings: SettingsQuickButtons) -> Double {
-    if quickButtonsSettings.bigButtons {
-        2 * controlBarQuickButtonSingleQuickButtonSize + 8
-    } else {
-        2 * controlBarButtonSize + 8
-    }
-}
-
 private struct MainPageView: View {
     let model: Model
     let quickButtons: QuickButtons
@@ -220,11 +189,19 @@ private struct MainPageView: View {
     let store: Store
     let width: Double
 
+    private func buttonsWidth() -> Double {
+        if quickButtonsSettings.bigButtons, quickButtonsSettings.twoColumns {
+            width - 20
+        } else {
+            width - 10
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             IconAndSettingsView(model: model, store: store)
                 .padding(.vertical, 2)
-                .frame(width: buttonsWidth(quickButtonsSettings: quickButtonsSettings))
+                .frame(width: buttonsWidth())
             PageView(model: model,
                      quickButtons: quickButtons,
                      quickButtonsSettings: quickButtonsSettings,
@@ -236,7 +213,7 @@ private struct MainPageView: View {
                     .padding(.top, 5)
                 Spacer(minLength: 0)
             }
-            .frame(width: buttonsWidth(quickButtonsSettings: quickButtonsSettings))
+            .frame(width: buttonsWidth())
         }
     }
 }
@@ -292,7 +269,11 @@ private struct PagesView: View {
     let width: Double
 
     private func offsetX() -> Double {
-        5 + buttonsWidth(quickButtonsSettings: quickButtonsSettings) / 2 - width / 2
+        if quickButtonsSettings.bigButtons, quickButtonsSettings.twoColumns {
+            -6
+        } else {
+            -1
+        }
     }
 
     var body: some View {
@@ -336,7 +317,6 @@ private struct PagesView: View {
                 if isMac() {
                     PageIndicatorView(model: model, size: 9, quickButtons: quickButtons)
                         .padding(.top, 1)
-                        .offset(x: offsetX())
                 }
             }
         } else {
@@ -357,23 +337,24 @@ private struct PagesView: View {
 struct ControlBarLandscapeView: View {
     let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
-    @ObservedObject var orientation: Orientation
 
     var body: some View {
-        let width = controlBarWidth(quickButtons: quickButtons, orientation: orientation)
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                StatusView(status: model.statusOther)
-                    .padding(.leading, 3)
-                Spacer()
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                if !isPhone() {
+                    Spacer(minLength: 0)
+                }
+                StatusView(model: model, status: model.statusOther)
+                    .frame(width: controlBarWidthDefault)
+                Spacer(minLength: 0)
             }
             PagesView(model: model,
                       quickButtons: model.quickButtons,
                       quickButtonsSettings: quickButtons,
-                      width: width)
+                      width: controlBarWidth(quickButtons: quickButtons))
         }
         .padding(.vertical, 0)
-        .frame(width: width)
+        .frame(width: controlBarWidth(quickButtons: quickButtons))
         .background {
             ControlBarBackgroundView(controlBar: model.controlBar)
         }

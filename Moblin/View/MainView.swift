@@ -596,7 +596,7 @@ struct MainView: View {
                 }
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
-            ControlBarLandscapeView(model: model, quickButtons: quickButtons, orientation: orientation)
+            ControlBarLandscapeView(model: model, quickButtons: quickButtons)
         }
     }
 
@@ -608,8 +608,10 @@ struct MainView: View {
                 } else {
                     []
                 }
-            } else {
+            } else if quickButtons.bigButtons, quickButtons.twoColumns {
                 [.top, .trailing]
+            } else {
+                [.top]
             }
         } else {
             []

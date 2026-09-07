@@ -15,19 +15,15 @@ extension UIImage {
 }
 
 @MainActor
-func getInterfaceOrientation() -> UIInterfaceOrientation? {
-    UIApplication.shared.connectedScenes
-        .first(where: { $0 is UIWindowScene })
-        .flatMap { $0 as? UIWindowScene }?.interfaceOrientation
-}
-
-@MainActor
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
     if orientation != .unknown {
         return orientation
     }
-    switch getInterfaceOrientation() {
+    let interfaceOrientation = UIApplication.shared.connectedScenes
+        .first(where: { $0 is UIWindowScene })
+        .flatMap { $0 as? UIWindowScene }?.interfaceOrientation
+    switch interfaceOrientation {
     case .landscapeLeft:
         return .landscapeRight
     case .landscapeRight:

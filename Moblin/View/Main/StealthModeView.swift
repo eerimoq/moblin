@@ -125,7 +125,7 @@ struct StealthModeView: View {
                 if !orientation.isPortrait {
                     Rectangle()
                         .foregroundStyle(.clear)
-                        .frame(width: controlBarWidth(quickButtons: quickButtons, orientation: orientation))
+                        .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
         }
@@ -140,7 +140,7 @@ struct StealthModeView: View {
                         returnButton()
                     }
                     .padding(.horizontal, 30)
-                    .frame(height: controlBarWidthDefault(orientation: orientation))
+                    .frame(height: controlBarWidthDefault)
                 }
             } else {
                 HStack {
@@ -153,7 +153,7 @@ struct StealthModeView: View {
                     }
                     .padding(.top, 30)
                     .padding(.bottom, 5)
-                    .frame(width: controlBarWidth(quickButtons: quickButtons, orientation: orientation))
+                    .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
         }

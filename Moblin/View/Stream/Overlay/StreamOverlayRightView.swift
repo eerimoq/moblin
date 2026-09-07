@@ -573,77 +573,6 @@ private struct AutoSceneSwitcherStatusView: View {
     }
 }
 
-private struct BatteryStatusView: View {
-    let model: Model
-    @ObservedObject var battery: Battery
-    @ObservedObject var orientation: Orientation
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func icon() -> String {
-        if model.isBatteryCharging() {
-            return "battery.100.bolt"
-        }
-        switch battery.level {
-        case 0.875...:
-            return "battery.100"
-        case 0.625...:
-            return "battery.75"
-        case 0.375...:
-            return "battery.50"
-        case 0.125...:
-            return "battery.25"
-        default:
-            return "battery.0"
-        }
-    }
-
-    private func text() -> String {
-        if textPlacement == .hide {
-            "\(Int(battery.level * 100))"
-        } else {
-            "\(Int(battery.level * 100))%"
-        }
-    }
-
-    private func color() -> Color {
-        if battery.level <= 0.2, !model.isBatteryCharging() {
-            .red
-        } else {
-            .white
-        }
-    }
-
-    var body: some View {
-        if isPhone(), !orientation.isPortrait, battery.level >= 0 {
-            if textPlacement == .hide {
-                HStack(spacing: 1) {
-                    Image(systemName: icon())
-                        .frame(width: 17, height: 17)
-                        .font(smallFont)
-                        .padding(.horizontal, 2)
-                        .foregroundStyle(color())
-                    Text(text())
-                        .font(smallFont)
-                        .foregroundStyle(color())
-                        .padding(.trailing, 2)
-                }
-                .background(backgroundColor)
-                .cornerRadius(5)
-                .padding(20)
-                .contentShape(Rectangle())
-                .padding(-20)
-            } else {
-                StreamOverlayIconAndTextView(
-                    icon: icon(),
-                    text: text(),
-                    textPlacement: textPlacement,
-                    color: color()
-                )
-            }
-        }
-    }
-}
-
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
@@ -741,14 +670,8 @@ private struct StatusesView: View {
                       show: model.database.show,
                       systemMonitor: model.systemMonitor,
                       textPlacement: textPlacement)
-        if textPlacement == .hide {
-            BatteryStatusView(model: model,
-                              battery: model.battery,
-                              orientation: model.orientation,
-                              textPlacement: textPlacement)
-            if model.isShowingStatusAudioLevel() {
-                CompactAudioBarView(level: model.audio.level)
-            }
+        if model.isShowingStatusAudioLevel(), textPlacement == .hide {
+            CompactAudioBarView(level: model.audio.level)
         }
     }
 }
@@ -777,10 +700,6 @@ struct RightOverlayTopView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 if database.verboseStatuses {
                     AudioView(model: model, database: database, show: database.show)
-                    BatteryStatusView(model: model,
-                                      battery: model.battery,
-                                      orientation: model.orientation,
-                                      textPlacement: .beforeIcon)
                     StatusesView(
                         show: database.show,
                         status: model.statusTopRight,
@@ -806,7 +725,6 @@ private struct RightOverlayBottomVerticalView: View {
     @ObservedObject var show: SettingsShow
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var zoom: Zoom
-    @ObservedObject var orientation: Orientation
     let width: CGFloat
 
     var body: some View {
@@ -845,7 +763,6 @@ private struct RightOverlayBottomVerticalView: View {
             StreamOverlayRightSceneVSelectorView(database: database,
                                                  sceneSelector: model.sceneSelector,
                                                  width: width)
-                .padding(.bottom, orientation.isPortrait ? 5 : 0)
         }
     }
 }
@@ -856,7 +773,6 @@ private struct RightOverlayBottomHorizontalView: View {
     @ObservedObject var show: SettingsShow
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var zoom: Zoom
-    @ObservedObject var orientation: Orientation
     let width: CGFloat
 
     var body: some View {
@@ -890,7 +806,6 @@ private struct RightOverlayBottomHorizontalView: View {
         StreamOverlayRightSceneSelectorView(database: database,
                                             sceneSelector: model.sceneSelector,
                                             width: width)
-            .padding(.bottom, orientation.isPortrait ? 5 : 0)
     }
 }
 
@@ -932,7 +847,6 @@ struct RightOverlayBottomView: View {
                                                        show: show,
                                                        streamOverlay: streamOverlay,
                                                        zoom: zoom,
-                                                       orientation: model.orientation,
                                                        width: width)
                     } else {
                         RightOverlayBottomHorizontalView(model: model,
@@ -940,7 +854,6 @@ struct RightOverlayBottomView: View {
                                                          show: show,
                                                          streamOverlay: streamOverlay,
                                                          zoom: zoom,
-                                                         orientation: model.orientation,
                                                          width: width)
                     }
                 }
