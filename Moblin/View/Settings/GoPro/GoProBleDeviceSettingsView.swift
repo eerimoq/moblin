@@ -1,4 +1,3 @@
-import NetworkExtension
 import SwiftUI
 
 func formatGoProDeviceState(_ state: GoProDeviceState?) -> String {
@@ -97,16 +96,16 @@ private struct GoProDeviceWifiSection: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(
-                title: String(localized: "SSID"),
-                value: device.wifiSsid,
-                onSubmit: {
+            NavigationLink {
+                WiFiSsidEditView(value: device.wifiSsid) {
                     device.wifiSsid = $0
                     if device.wifiPassword.isEmpty {
                         device.wifiPassword = model.database.getSavedWiFiNetwork(ssid: $0)?.password ?? ""
                     }
                 }
-            )
+            } label: {
+                TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
+            }
             .disabled(device.isStarted)
             TextEditNavigationView(
                 title: String(localized: "Password"),
@@ -135,19 +134,6 @@ private struct GoProDeviceWifiSection: View {
             Text("WiFi")
         } footer: {
             Text("Moblin sends these credentials securely to the paired GoPro over Bluetooth.")
-        }
-        .onAppear {
-            NEHotspotNetwork.fetchCurrent { network in
-                guard let ssid = network?.ssid else {
-                    return
-                }
-                DispatchQueue.main.async {
-                    if device.wifiSsid.isEmpty {
-                        device.wifiSsid = ssid
-                        device.wifiPassword = model.database.getSavedWiFiNetwork(ssid: ssid)?.password ?? ""
-                    }
-                }
-            }
         }
     }
 }

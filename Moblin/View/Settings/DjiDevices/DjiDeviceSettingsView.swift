@@ -1,4 +1,3 @@
-import NetworkExtension
 import SwiftUI
 
 func rtmpServerStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
@@ -115,19 +114,15 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
         Form {
             Section {
                 NavigationLink {
-                    TextEditView(
-                        title: String(localized: "SSID"),
-                        value: device.wifiSsid,
-                        onSubmit: {
-                            device.wifiSsid = $0
-                            if device.wifiPassword.isEmpty,
-                               let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid)
-                            {
-                                device.wifiPassword = network.password
-                            }
-                            updateSavedNetworks()
+                    WiFiSsidEditView(value: device.wifiSsid) {
+                        device.wifiSsid = $0
+                        if device.wifiPassword.isEmpty,
+                           let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid)
+                        {
+                            device.wifiPassword = network.password
                         }
-                    )
+                        updateSavedNetworks()
+                    }
                 } label: {
                     TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
                 }
@@ -145,19 +140,6 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
                 }
             } header: {
                 Text("Network")
-            }
-            .onAppear {
-                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                    guard let ssid = network?.ssid else {
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        if device.wifiSsid.isEmpty {
-                            device.wifiSsid = ssid
-                            device.wifiPassword = database.getSavedWiFiNetwork(ssid: ssid)?.password ?? ""
-                        }
-                    }
-                })
             }
             if !database.savedWifiNetworks.isEmpty {
                 Section {

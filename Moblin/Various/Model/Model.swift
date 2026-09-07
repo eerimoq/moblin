@@ -8,7 +8,6 @@ import CoreMotion
 import GameController
 import HealthKit
 import MediaPlayer
-import NetworkExtension
 import PhotosUI
 import SDWebImageSwiftUI
 import SDWebImageWebPCoder
@@ -1846,12 +1845,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCurrentSsid() {
-        NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-            let ssid = network?.ssid
+        fetchCurrentWiFiSsid { ssid in
             DispatchQueue.main.async {
                 self.currentWiFiSsid = ssid
             }
-        })
+        }
     }
 
     private func removeUnusedImages() {

@@ -30802,6 +30802,9 @@
         }
       }
     },
+    "Allow Moblin to access your location in iOS Settings to see the current WiFi network." : {
+
+    },
     "Allow video range pixel format" : {
       "localizations" : {
         "de" : {
@@ -70820,6 +70823,9 @@
           }
         }
       }
+    },
+    "Current network" : {
+
     },
     "Current recordings directory" : {
       "localizations" : {
@@ -243730,6 +243736,9 @@
           }
         }
       }
+    },
+    "The WiFi network this device is currently connected to." : {
+
     },
     "The zoom (in X) to set when switching to given camera, if enabled." : {
       "localizations" : {
