@@ -1,14 +1,49 @@
 import AVFoundation
 import SwiftUI
 
+class SharedUiViewContainerView: UIView {
+    private let sharedView: UIView
+
+    init(sharedView: UIView) {
+        self.sharedView = sharedView
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func attachSharedView() {
+        guard window != nil, sharedView.superview !== self else {
+            return
+        }
+        sharedView.frame = bounds
+        addSubview(sharedView)
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        attachSharedView()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        attachSharedView()
+        sharedView.frame = bounds
+    }
+}
+
 struct StreamPreviewView: UIViewRepresentable {
     let model: Model
 
-    func makeUIView(context _: Context) -> PreviewView {
-        model.streamPreviewView
+    func makeUIView(context _: Context) -> SharedUiViewContainerView {
+        SharedUiViewContainerView(sharedView: model.streamPreviewView)
     }
 
-    func updateUIView(_: PreviewView, context _: Context) {}
+    func updateUIView(_ uiView: SharedUiViewContainerView, context _: Context) {
+        uiView.attachSharedView()
+    }
 }
 
 class CameraPreviewUiView: UIView {
@@ -54,11 +89,13 @@ class CameraPreviewUiView: UIView {
 struct CameraPreviewView: UIViewRepresentable {
     let model: Model
 
-    func makeUIView(context _: Context) -> CameraPreviewUiView {
-        model.cameraPreviewView
+    func makeUIView(context _: Context) -> SharedUiViewContainerView {
+        SharedUiViewContainerView(sharedView: model.cameraPreviewView)
     }
 
-    func updateUIView(_: CameraPreviewUiView, context _: Context) {}
+    func updateUIView(_ uiView: SharedUiViewContainerView, context _: Context) {
+        uiView.attachSharedView()
+    }
 }
 
 struct StreamView: View {

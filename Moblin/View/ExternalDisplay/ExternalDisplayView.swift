@@ -211,11 +211,13 @@ private struct ChatView: View {
 private struct ExternalDisplayStreamPreviewView: UIViewRepresentable {
     @EnvironmentObject var model: Model
 
-    func makeUIView(context _: Context) -> PreviewView {
-        model.externalDisplayStreamPreviewView
+    func makeUIView(context _: Context) -> SharedUiViewContainerView {
+        SharedUiViewContainerView(sharedView: model.externalDisplayStreamPreviewView)
     }
 
-    func updateUIView(_: PreviewView, context _: Context) {}
+    func updateUIView(_ uiView: SharedUiViewContainerView, context _: Context) {
+        uiView.attachSharedView()
+    }
 }
 
 struct ExternalDisplayView: View {

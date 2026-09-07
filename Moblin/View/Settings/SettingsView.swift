@@ -260,7 +260,7 @@ struct SettingsView: View {
                 }
             }
             Section {
-                if database.showAllSettings {
+                if database.showAllSettings, !isMac() {
                     AppModeView(database: database)
                 }
                 Toggle("Show all settings", isOn: $database.showAllSettings)

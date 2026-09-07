@@ -4,11 +4,13 @@ import SwiftUI
 struct VideoPreviewItemView: UIViewRepresentable {
     let previewView: PreviewView
 
-    func makeUIView(context _: Context) -> PreviewView {
-        previewView
+    func makeUIView(context _: Context) -> SharedUiViewContainerView {
+        SharedUiViewContainerView(sharedView: previewView)
     }
 
-    func updateUIView(_: PreviewView, context _: Context) {}
+    func updateUIView(_ uiView: SharedUiViewContainerView, context _: Context) {
+        uiView.attachSharedView()
+    }
 }
 
 private struct VideoPreviewItem: View {
