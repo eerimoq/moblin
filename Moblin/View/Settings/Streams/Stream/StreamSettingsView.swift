@@ -295,7 +295,7 @@ struct StreamSettingsView: View {
                         IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                     }
                 }
-                if isPhone() || isPad() {
+                if !isMac() {
                     Toggle(isOn: $stream.portrait) {
                         Text("Portrait")
                     }
