@@ -23,6 +23,7 @@ struct WidgetMapSettingsView: View {
             NavigationLink {
                 LocationSettingsView(database: model.database,
                                      location: model.database.location,
+                                     locationManager: model.locationManager,
                                      stream: $model.stream)
             } label: {
                 Label("Location", systemImage: "location")

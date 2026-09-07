@@ -19,7 +19,8 @@ private class BackgroundActivity {
     }
 }
 
-class Location: NSObject {
+class Location: NSObject, ObservableObject {
+    @Published var isDenied = false
     private var manager = CLLocationManager()
     private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
@@ -85,8 +86,14 @@ class Location: NSObject {
 }
 
 extension Location: CLLocationManagerDelegate {
-    func locationManagerDidChangeAuthorization(_: CLLocationManager) {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         logger.debug("location: Auth did change \(manager.authorizationStatus)")
+        switch manager.authorizationStatus {
+        case .denied, .restricted:
+            isDenied = true
+        default:
+            isDenied = false
+        }
     }
 
     func locationManager(_: CLLocationManager, didFailWithError error: any Error) {

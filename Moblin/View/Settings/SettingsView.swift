@@ -77,6 +77,7 @@ struct SettingsView: View {
                     LocationSettingsView(
                         database: database,
                         location: database.location,
+                        locationManager: model.locationManager,
                         stream: $model.stream
                     )
                 } label: {
