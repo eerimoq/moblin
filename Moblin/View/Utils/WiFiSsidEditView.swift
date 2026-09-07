@@ -88,7 +88,7 @@ struct WiFiSsidEditView: View {
             } else if currentNetwork.locationDenied {
                 Section {
                     Text(
-                        "Allow Moblin to access your location in iOS Settings to see the current WiFi network."
+                        "⚠️ Allow Moblin to access your location in iOS Settings to see the current WiFi network."
                     )
                 }
             }

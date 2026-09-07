@@ -43,7 +43,7 @@ struct LocationSettingsView: View {
             }
             if location.enabled, locationManager.isDenied {
                 Section {
-                    Text("Allow Moblin to access your location in iOS Settings to use location.")
+                    Text("⚠️ Allow Moblin to access your location in iOS Settings to use location.")
                 }
             }
             if database.showAllSettings {
