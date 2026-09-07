@@ -175,10 +175,10 @@ private struct PageView: View {
                              quickButtonsSettings: quickButtonsSettings,
                              page: page,
                              width: width)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
         .rotationEffect(.degrees(180))
-        .padding(.horizontal, 0)
     }
 }
 

@@ -762,10 +762,13 @@ struct MainView: View {
                     }
                 if #available(iOS 18.0, *) {
                     all
-                        .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
-                            if event.phase == .ended {
-                                // model.takeSnapshot()
-                            }
+                        .background {
+                            Color.black
+                                .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
+                                    if event.phase == .ended {
+                                        // model.takeSnapshot()
+                                    }
+                                }
                         }
                 } else {
                     all

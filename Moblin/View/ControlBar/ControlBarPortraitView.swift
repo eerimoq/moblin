@@ -100,6 +100,7 @@ private struct PageView: View {
                              quickButtonsSettings: quickButtonsSettings,
                              page: page,
                              height: height)
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
         .rotationEffect(.degrees(180))
@@ -151,7 +152,7 @@ private struct MainPageView: View {
     @State var presentingThermalState: Bool = false
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             PageView(model: model,
                      quickButtons: quickButtons,
                      quickButtonsSettings: quickButtonsSettings,
