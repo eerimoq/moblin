@@ -614,8 +614,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var useRemoteControlForChatAndEvents = false
     var currentWiFiSsid: String?
     var currentDjiDeviceSettings: SettingsDjiDevice?
-    var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
-    var goProDeviceWrappers: [UUID: GoProDeviceWrapper] = [:]
+    var djiDevices: [UUID: DjiDevice] = [:]
+    var goProDevices: [UUID: GoProDevice] = [:]
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]

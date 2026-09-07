@@ -1,42 +1,30 @@
 import Foundation
 
-final class GoProDeviceWrapper {
-    let device: GoProDevice
-    let autoRestartStreamTimer = SimpleTimer(queue: .main)
-
-    init(device: GoProDevice) {
-        self.device = device
-    }
-}
-
 extension Model {
     func startGoProDeviceLiveStream(device: SettingsGoProDevice) {
-        if !goProDeviceWrappers.keys.contains(device.id) {
+        if !goProDevices.keys.contains(device.id) {
             let goProDevice = GoProDevice()
             goProDevice.delegate = self
-            goProDeviceWrappers[device.id] = GoProDeviceWrapper(device: goProDevice)
+            goProDevices[device.id] = goProDevice
         }
-        guard let wrapper = goProDeviceWrappers[device.id] else {
+        guard let goProDevice = goProDevices[device.id] else {
             return
         }
         device.isStarted = true
-        startGoProDeviceLiveStreamInternal(wrapper: wrapper, device: device)
+        startGoProDeviceLiveStreamInternal(goProDevice: goProDevice, device: device)
     }
 
     func stopGoProDeviceLiveStream(device: SettingsGoProDevice) {
         device.isStarted = false
-        guard let wrapper = goProDeviceWrappers[device.id] else {
-            return
-        }
-        wrapper.autoRestartStreamTimer.stop()
-        wrapper.device.stopLiveStream()
+        device.autoRestartStreamTimer.stop()
+        goProDevices[device.id]?.stopLiveStream()
     }
 
     func removeGoProDevices(offsets: IndexSet) {
         for offset in offsets {
             let device = database.goPro.devices[offset]
             stopGoProDeviceLiveStream(device: device)
-            goProDeviceWrappers.removeValue(forKey: device.id)
+            goProDevices.removeValue(forKey: device.id)
         }
         database.goPro.devices.remove(atOffsets: offsets)
     }
@@ -48,21 +36,20 @@ extension Model {
     }
 
     func reloadGoProDevicesAfterSettingsImport() {
-        for (deviceId, wrapper) in goProDeviceWrappers
+        for (deviceId, goProDevice) in goProDevices
             where !database.goPro.devices.contains(where: { $0.id == deviceId })
         {
-            wrapper.device.stopLiveStream()
-            wrapper.autoRestartStreamTimer.stop()
-            goProDeviceWrappers.removeValue(forKey: deviceId)
+            goProDevice.stopLiveStream()
+            goProDevices.removeValue(forKey: deviceId)
         }
         autoStartGoProDevices()
     }
 
     func restartGoProLiveStreamIfNeededAfterDelay(device: SettingsGoProDevice) {
-        guard let wrapper = goProDeviceWrappers[device.id] else {
-            return
-        }
-        wrapper.autoRestartStreamTimer.startSingleShot(timeout: 5) { [weak self] in
+        device.autoRestartStreamTimer.startSingleShot(timeout: 5) { [weak self, weak device] in
+            guard let device else {
+                return
+            }
             self?.restartGoProLiveStreamIfNeeded(device: device)
         }
     }
@@ -72,7 +59,7 @@ extension Model {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId == rtmpServerStreamId else {
                 continue
             }
-            goProDeviceWrappers[device.id]?.autoRestartStreamTimer.stop()
+            device.autoRestartStreamTimer.stop()
         }
     }
 
@@ -93,7 +80,7 @@ extension Model {
     }
 
     private func startGoProDeviceLiveStreamInternal(
-        wrapper: GoProDeviceWrapper,
+        goProDevice: GoProDevice,
         device: SettingsGoProDevice
     ) {
         let rtmpUrl: String? = switch device.rtmpUrlType {
@@ -109,7 +96,7 @@ extension Model {
             restartGoProLiveStreamIfNeededAfterDelay(device: device)
             return
         }
-        wrapper.device.startLiveStream(
+        goProDevice.startLiveStream(
             wifiSsid: device.wifiSsid,
             wifiPassword: device.wifiPassword,
             rtmpUrl: rtmpUrl,
@@ -118,7 +105,10 @@ extension Model {
             lens: device.lens,
             deviceId: deviceId
         )
-        wrapper.autoRestartStreamTimer.startSingleShot(timeout: 95) { [weak self] in
+        device.autoRestartStreamTimer.startSingleShot(timeout: 95) { [weak self, weak device] in
+            guard let device else {
+                return
+            }
             self?
                 .makeErrorToast(
                     title: String(localized: "Failed to start live stream from GoPro \(device.name)")
@@ -129,23 +119,21 @@ extension Model {
 
     private func restartGoProLiveStreamIfNeeded(device: SettingsGoProDevice) {
         guard device.rtmpUrlType == .server, device.autoRestartStream, device.isStarted,
-              let wrapper = goProDeviceWrappers[device.id]
+              let goProDevice = goProDevices[device.id]
         else {
             return
         }
-        startGoProDeviceLiveStreamInternal(wrapper: wrapper, device: device)
+        startGoProDeviceLiveStreamInternal(goProDevice: goProDevice, device: device)
     }
 
     private func getGoProDeviceSettings(_ goProDevice: GoProDevice) -> SettingsGoProDevice? {
-        database.goPro.devices.first(where: { goProDeviceWrappers[$0.id]?.device === goProDevice })
+        database.goPro.devices.first(where: { goProDevices[$0.id] === goProDevice })
     }
 }
 
 extension Model: @preconcurrency GoProDeviceDelegate {
     func goProDeviceStreamingState(_ goProDevice: GoProDevice, state: GoProDeviceState) {
-        guard let device = getGoProDeviceSettings(goProDevice),
-              let wrapper = goProDeviceWrappers[device.id]
-        else {
+        guard let device = getGoProDeviceSettings(goProDevice) else {
             return
         }
         device.state = state
@@ -154,7 +142,7 @@ extension Model: @preconcurrency GoProDeviceDelegate {
             makeToast(title: String(localized: "Connecting to GoPro \(device.name)"))
         case .streaming:
             if device.rtmpUrlType == .custom {
-                wrapper.autoRestartStreamTimer.stop()
+                device.autoRestartStreamTimer.stop()
                 makeToast(title: String(localized: "GoPro \(device.name) streaming to custom URL"))
             }
         case .wifiSetupFailed:

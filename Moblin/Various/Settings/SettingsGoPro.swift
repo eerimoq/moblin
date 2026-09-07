@@ -127,6 +127,7 @@ class SettingsGoProDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var autoRestartStream: Bool = false
     @Published var isStarted: Bool = false
     @Published var state: GoProDeviceState?
+    let autoRestartStreamTimer = SimpleTimer(queue: .main)
 
     init() {}
 
