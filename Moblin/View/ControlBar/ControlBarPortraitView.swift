@@ -180,7 +180,7 @@ private struct MainPageView: View {
                     .padding(.horizontal, 5)
             }
             .padding(.leading, 0)
-            .frame(width: controlBarWidthDefault)
+            .frame(width: controlBarWidthDefault(orientation: model.orientation))
             .sheet(isPresented: $presentingThermalState) {
                 ThermalStateSheetView(presenting: $presentingThermalState)
             }
@@ -239,6 +239,15 @@ private struct PagesView: View {
     }
 }
 
+@MainActor
+private func controlBarHeight(quickButtons: SettingsQuickButtons, orientation: Orientation) -> Double {
+    if quickButtons.bigButtons, quickButtons.twoColumns {
+        controlBarWidthBigQuickButtons
+    } else {
+        controlBarWidthDefault(orientation: orientation)
+    }
+}
+
 struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
@@ -247,8 +256,8 @@ struct ControlBarPortraitView: View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
                   quickButtonsSettings: model.database.quickButtonsGeneral,
-                  height: controlBarWidth(quickButtons: quickButtons))
-            .frame(height: controlBarWidth(quickButtons: quickButtons))
+                  height: controlBarHeight(quickButtons: quickButtons, orientation: model.orientation))
+            .frame(height: controlBarHeight(quickButtons: quickButtons, orientation: model.orientation))
             .background {
                 ControlBarBackgroundView(controlBar: model.controlBar)
             }
