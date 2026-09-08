@@ -594,8 +594,8 @@ extension Model {
         text: String,
         title: String,
         color: Color,
-        image: String?,
-        kind: ChatHighlightKind?,
+        image: String,
+        kind: ChatHighlightKind,
         sharedChat: TwitchEventSubSharedChat?,
         bits: String? = nil
     ) {
@@ -604,9 +604,9 @@ extension Model {
         }
         let segments = twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits)
         let highlight = ChatHighlight(
-            kind: kind ?? .redemption,
+            kind: kind,
             barColor: color,
-            image: image ?? "medal",
+            image: image,
             titleSegments: [ChatPostSegment(id: 0, text: title)]
         )
         if let sharedChat {
@@ -674,7 +674,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 text: text,
                 title: String(localized: "New follower"),
                 color: .pink,
-                image: nil,
+                image: "medal",
                 kind: .newFollower,
                 sharedChat: nil
             )
@@ -707,7 +707,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
-                kind: nil,
+                kind: .other,
                 sharedChat: event.sharedChat
             )
         }
@@ -735,7 +735,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
                 image: "gift",
-                kind: nil,
+                kind: .other,
                 sharedChat: event.sharedChat
             )
         }
@@ -773,7 +773,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New resubscribe"),
                 color: .cyan,
                 image: "party.popper",
-                kind: nil,
+                kind: .other,
                 sharedChat: event.sharedChat
             )
         }
@@ -805,7 +805,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
-                kind: nil,
+                kind: .other,
                 sharedChat: event.sharedChat
             )
         }
@@ -834,7 +834,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Watch streak"),
                 color: .orange,
                 image: "flame",
-                kind: nil,
+                kind: .other,
                 sharedChat: event.sharedChat
             )
         }
@@ -857,7 +857,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Reward redemption"),
                 color: .blue,
                 image: "medal.star",
-                kind: nil,
+                kind: .redemption,
                 sharedChat: nil
             )
         }
@@ -885,7 +885,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                     title: String(localized: "Raid"),
                     color: .pink,
                     image: "person.3",
-                    kind: nil,
+                    kind: .other,
                     sharedChat: event.sharedChat
                 )
             }
@@ -912,7 +912,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Cheer"),
                 color: .green,
                 image: "suit.diamond",
-                kind: nil,
+                kind: .other,
                 sharedChat: nil,
                 bits: ""
             )
@@ -934,7 +934,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Hype train started"),
             color: .purple,
             image: "train.side.front.car",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }
@@ -965,7 +965,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Hype train ended"),
             color: .purple,
             image: "train.side.rear.car",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }
@@ -993,7 +993,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Poll started"),
             color: .indigo,
             image: "chart.bar",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }
@@ -1025,7 +1025,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Poll ended"),
             color: .indigo,
             image: "chart.bar",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }
@@ -1046,7 +1046,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Prediction started"),
             color: .mint,
             image: "questionmark.diamond",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }
@@ -1080,7 +1080,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             title: String(localized: "Prediction ended"),
             color: .mint,
             image: "trophy",
-            kind: nil,
+            kind: .other,
             sharedChat: nil
         )
     }

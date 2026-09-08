@@ -43,8 +43,8 @@ func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] 
 }
 
 enum ChatHighlightKind: Codable {
-    case redemption
     case other
+    case redemption
     case firstMessage
     case newFollower
     case reply
@@ -231,10 +231,6 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
         lhs.id == rhs.id
     }
 
-    func isRedemption() -> Bool {
-        highlight?.kind == .redemption || highlight?.kind == .newFollower
-    }
-
     var id: Int
     let messageId: String?
     let displayName: String?
@@ -254,6 +250,19 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     let platform: Platform?
     let sourceChannelIcon: URL?
     let state: ChatPostState
+
+    func isRedemption() -> Bool {
+        switch highlight?.kind {
+        case .other:
+            true
+        case .redemption:
+            true
+        case .newFollower:
+            true
+        default:
+            false
+        }
+    }
 
     func isBigGif() -> Bool {
         segments.first?.bigGifUrl != nil
