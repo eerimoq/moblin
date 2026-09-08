@@ -152,11 +152,6 @@ private struct MenuView: View {
                 QuickButtonSceneWidgetsView(sceneSelector: model.sceneSelector)
                     .navigationBarTitleDisplayMode(.inline)
             }
-        case .recordings:
-            NavigationStack {
-                RecordingsSettingsView(model: model)
-                    .navigationBarTitleDisplayMode(.inline)
-            }
         case .store:
             NavigationStack {
                 StoreSettingsView(model: model, store: model.store)

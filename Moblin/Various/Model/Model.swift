@@ -34,7 +34,6 @@ enum ShowingPanel {
     case luts
     case obs
     case sceneWidgets
-    case recordings
     case store
     case chat
     case djiDevices
@@ -860,7 +859,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .chat,
             .mic,
             .bitrate,
-            .recordings,
             .stream,
             .obs,
             .djiDevices,

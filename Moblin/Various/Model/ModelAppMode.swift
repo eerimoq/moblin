@@ -11,7 +11,7 @@ extension Model {
             return true
         }
         switch type {
-        case .mute, .mic, .bitrate, .record, .recordings, .image, .movie, .grayScale, .sepia, .triple, .twin,
+        case .mute, .mic, .bitrate, .record, .image, .movie, .grayScale, .sepia, .triple, .twin,
              .pixellate, .stream, .grid, .cameraLevel, .draw, .cameraPreview, .fourThree, .crt, .poll,
              .snapshot, .widgets, .luts, .replay, .connectionPriorities, .instantReplay, .pinch, .whirlpool,
              .autoSceneSwitcher, .blurFaces, .blurText, .privacy, .moblinInMouth, .glasses, .sparkle, .beauty,

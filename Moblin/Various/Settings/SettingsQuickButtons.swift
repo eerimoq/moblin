@@ -10,7 +10,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case chat = "Chat"
     case blackScreen = "Black screen"
     case record = "Record"
-    case recordings = "Recrodings"
     case image = "Image"
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -168,8 +167,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             String(localized: "Camera")
         case .cameraPreview:
             String(localized: "Camera preview")
-        case .recordings:
-            String(localized: "Recordings")
         case .stream:
             String(localized: "Switch stream")
         case .grid:

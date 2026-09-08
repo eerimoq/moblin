@@ -314,10 +314,6 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .bitrate, panel: .bitrate)
     }
 
-    private func recordingsAction() {
-        model.toggleShowingPanel(type: .recordings, panel: .recordings)
-    }
-
     private func skipCurrentTtsAction() {
         model.chatTextToSpeech.skipCurrentMessage()
     }
@@ -516,14 +512,6 @@ struct QuickButtonsInnerView: View {
                             Button(button.isOn ? "Stop recording" : "Start recording") {
                                 recordAction()
                             }
-                        }
-                    case .recordings:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         button: button,
-                                         buttonSize: size)
-                        {
-                            recordingsAction()
                         }
                     case .image:
                         QuickButtonImage(model: model,

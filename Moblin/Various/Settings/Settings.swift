@@ -1937,11 +1937,6 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "camera.rotate",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .recordings,
-                                 imageOn: "photo.on.rectangle.angled.fill",
-                                 imageOff: "photo.on.rectangle.angled",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .stream,
                                  imageOn: "arrow.left.arrow.right",
                                  page: page)
