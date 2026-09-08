@@ -138,6 +138,54 @@ class Raid: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
+enum TwitchPollState {
+    case idle
+    case ongoing
+    case completed
+}
+
+struct TwitchPollChoice: Identifiable {
+    let id: String
+    let title: String
+    let votes: Int
+}
+
+class TwitchPoll: ObservableObject {
+    @Published var state: TwitchPollState = .idle
+    @Published var title = ""
+    @Published var choices: [TwitchPollChoice] = []
+    @Published var totalVotes = 0
+    @Published var message = ""
+    var endsAt: Date?
+    var timer = SimpleTimer(queue: .main)
+}
+
+enum TwitchPredictionState {
+    case idle
+    case ongoing
+    case locked
+    case completed
+}
+
+struct TwitchPredictionOutcome: Identifiable {
+    let id: String
+    let title: String
+    let color: String
+    let users: Int
+    let channelPoints: Int
+    let winner: Bool
+}
+
+class TwitchPrediction: ObservableObject {
+    @Published var state: TwitchPredictionState = .idle
+    @Published var title = ""
+    @Published var outcomes: [TwitchPredictionOutcome] = []
+    @Published var totalChannelPoints = 0
+    @Published var message = ""
+    var locksAt: Date?
+    var timer = SimpleTimer(queue: .main)
+}
+
 class Ingests: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
@@ -462,6 +510,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var media: Media!
     let hypeTrain = HypeTrain()
     let raid = Raid()
+    let twitchPoll = TwitchPoll()
+    let twitchPrediction = TwitchPrediction()
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
@@ -1763,6 +1813,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sendPeriodicRemoteControlStreamerStats(now: now)
         speechToTextProcess()
         updateTwitchRaid()
+        updateTwitchPollCountdown()
+        updateTwitchPredictionCountdown()
     }
 
     private func handle3sTimer() {

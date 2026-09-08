@@ -318,6 +318,53 @@ private struct NotificationChannelHypeTrainEndMessage: Decodable {
     var payload: NotificationChannelHypeTrainEndPayload
 }
 
+struct TwitchEventSubChannelPollChoice: Decodable {
+    var id: String
+    var title: String
+    var votes: Int?
+}
+
+struct TwitchEventSubChannelPollEvent: Decodable {
+    var id: String
+    var title: String
+    var choices: [TwitchEventSubChannelPollChoice]
+    var ends_at: String?
+    var status: String?
+}
+
+private struct NotificationChannelPollPayload: Decodable {
+    var event: TwitchEventSubChannelPollEvent
+}
+
+private struct NotificationChannelPollMessage: Decodable {
+    var payload: NotificationChannelPollPayload
+}
+
+struct TwitchEventSubChannelPredictionOutcome: Decodable {
+    var id: String
+    var title: String
+    var color: String
+    var users: Int?
+    var channel_points: Int?
+}
+
+struct TwitchEventSubChannelPredictionEvent: Decodable {
+    var id: String
+    var title: String
+    var outcomes: [TwitchEventSubChannelPredictionOutcome]
+    var locks_at: String?
+    var winning_outcome_id: String?
+    var status: String?
+}
+
+private struct NotificationChannelPredictionPayload: Decodable {
+    var event: TwitchEventSubChannelPredictionEvent
+}
+
+private struct NotificationChannelPredictionMessage: Decodable {
+    var payload: NotificationChannelPredictionPayload
+}
+
 struct TwitchEventSubChannelAdBreakBeginEvent: Decodable {
     var duration_seconds: Int
     var is_automatic: Bool
@@ -371,6 +418,13 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent)
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent)
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent)
+    func twitchEventSubChannelPollBegin(event: TwitchEventSubChannelPollEvent)
+    func twitchEventSubChannelPollProgress(event: TwitchEventSubChannelPollEvent)
+    func twitchEventSubChannelPollEnd(event: TwitchEventSubChannelPollEvent)
+    func twitchEventSubChannelPredictionBegin(event: TwitchEventSubChannelPredictionEvent)
+    func twitchEventSubChannelPredictionProgress(event: TwitchEventSubChannelPredictionEvent)
+    func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent)
+    func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent)
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
@@ -390,6 +444,13 @@ private let subTypeChannelHypeTrainProgress = "channel.hype_train.progress"
 private let subTypeChannelHypeTrainEnd = "channel.hype_train.end"
 private let subTypeChannelAdBreakBegin = "channel.ad_break.begin"
 private let subTypeChannelModerate = "channel.moderate"
+private let subTypeChannelPollBegin = "channel.poll.begin"
+private let subTypeChannelPollProgress = "channel.poll.progress"
+private let subTypeChannelPollEnd = "channel.poll.end"
+private let subTypeChannelPredictionBegin = "channel.prediction.begin"
+private let subTypeChannelPredictionProgress = "channel.prediction.progress"
+private let subTypeChannelPredictionLock = "channel.prediction.lock"
+private let subTypeChannelPredictionEnd = "channel.prediction.end"
 
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
@@ -579,6 +640,48 @@ final class TwitchEventSub: NSObject {
             guard ok else {
                 return
             }
+            self.subscribeToChannelPollBegin()
+        }
+    }
+
+    private func subscribeToChannelPollBegin() {
+        subscribeBroadcasterUserId(type: subTypeChannelPollBegin) {
+            self.subscribeToChannelPollProgress()
+        }
+    }
+
+    private func subscribeToChannelPollProgress() {
+        subscribeBroadcasterUserId(type: subTypeChannelPollProgress) {
+            self.subscribeToChannelPollEnd()
+        }
+    }
+
+    private func subscribeToChannelPollEnd() {
+        subscribeBroadcasterUserId(type: subTypeChannelPollEnd) {
+            self.subscribeToChannelPredictionBegin()
+        }
+    }
+
+    private func subscribeToChannelPredictionBegin() {
+        subscribeBroadcasterUserId(type: subTypeChannelPredictionBegin) {
+            self.subscribeToChannelPredictionProgress()
+        }
+    }
+
+    private func subscribeToChannelPredictionProgress() {
+        subscribeBroadcasterUserId(type: subTypeChannelPredictionProgress) {
+            self.subscribeToChannelPredictionLock()
+        }
+    }
+
+    private func subscribeToChannelPredictionLock() {
+        subscribeBroadcasterUserId(type: subTypeChannelPredictionLock) {
+            self.subscribeToChannelPredictionEnd()
+        }
+    }
+
+    private func subscribeToChannelPredictionEnd() {
+        subscribeBroadcasterUserId(type: subTypeChannelPredictionEnd) {
             self.connected = true
         }
     }
@@ -646,6 +749,20 @@ final class TwitchEventSub: NSObject {
                 try handleChannelAdBreakBegin(messageData: messageData)
             case subTypeChannelModerate:
                 try handleChannelModerate(messageData: messageData)
+            case subTypeChannelPollBegin:
+                try handleChannelPollBegin(messageData: messageData)
+            case subTypeChannelPollProgress:
+                try handleChannelPollProgress(messageData: messageData)
+            case subTypeChannelPollEnd:
+                try handleChannelPollEnd(messageData: messageData)
+            case subTypeChannelPredictionBegin:
+                try handleChannelPredictionBegin(messageData: messageData)
+            case subTypeChannelPredictionProgress:
+                try handleChannelPredictionProgress(messageData: messageData)
+            case subTypeChannelPredictionLock:
+                try handleChannelPredictionLock(messageData: messageData)
+            case subTypeChannelPredictionEnd:
+                try handleChannelPredictionEnd(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {
                     logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -841,6 +958,41 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelAdBreakBegin(event: message.payload.event)
+    }
+
+    private func handleChannelPollBegin(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPollMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPollBegin(event: message.payload.event)
+    }
+
+    private func handleChannelPollProgress(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPollMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPollProgress(event: message.payload.event)
+    }
+
+    private func handleChannelPollEnd(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPollMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPollEnd(event: message.payload.event)
+    }
+
+    private func handleChannelPredictionBegin(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPredictionMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPredictionBegin(event: message.payload.event)
+    }
+
+    private func handleChannelPredictionProgress(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPredictionMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPredictionProgress(event: message.payload.event)
+    }
+
+    private func handleChannelPredictionLock(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPredictionMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPredictionLock(event: message.payload.event)
+    }
+
+    private func handleChannelPredictionEnd(messageData: Data) throws {
+        let message = try JSONDecoder().decode(NotificationChannelPredictionMessage.self, from: messageData)
+        delegate.twitchEventSubChannelPredictionEnd(event: message.payload.event)
     }
 
     private func handleChannelModerate(messageData: Data) throws {

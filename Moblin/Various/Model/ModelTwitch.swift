@@ -499,6 +499,74 @@ extension Model {
         }
     }
 
+    private func parseTwitchTimestamp(_ value: String?) -> Date? {
+        guard var value else {
+            return nil
+        }
+        if let index = value.firstIndex(of: ".") {
+            value = String(value[..<index]) + "Z"
+        }
+        return try? Date.ISO8601FormatStyle().parse(value)
+    }
+
+    private func formatTwitchCountdown(_ date: Date) -> String {
+        uptimeFormatter.string(from: max(0, date.timeIntervalSinceNow).rounded(.up)) ?? ""
+    }
+
+    private func updateTwitchPoll(event: TwitchEventSubChannelPollEvent, state: TwitchPollState) {
+        twitchPoll.state = state
+        twitchPoll.title = event.title
+        twitchPoll.choices = event.choices.map {
+            TwitchPollChoice(id: $0.id, title: $0.title, votes: $0.votes ?? 0)
+        }
+        twitchPoll.totalVotes = twitchPoll.choices.reduce(0) { $0 + $1.votes }
+        twitchPoll.endsAt = parseTwitchTimestamp(event.ends_at)
+    }
+
+    func updateTwitchPollCountdown() {
+        guard twitchPoll.state == .ongoing, let endsAt = twitchPoll.endsAt else {
+            return
+        }
+        let countdown = formatTwitchCountdown(endsAt)
+        twitchPoll.message = String(localized: "Ends in \(countdown)")
+    }
+
+    func removeTwitchPoll() {
+        twitchPoll.state = .idle
+        twitchPoll.timer.stop()
+    }
+
+    private func updateTwitchPrediction(
+        event: TwitchEventSubChannelPredictionEvent,
+        state: TwitchPredictionState
+    ) {
+        twitchPrediction.state = state
+        twitchPrediction.title = event.title
+        twitchPrediction.outcomes = event.outcomes.map {
+            TwitchPredictionOutcome(id: $0.id,
+                                    title: $0.title,
+                                    color: $0.color,
+                                    users: $0.users ?? 0,
+                                    channelPoints: $0.channel_points ?? 0,
+                                    winner: $0.id == event.winning_outcome_id)
+        }
+        twitchPrediction.totalChannelPoints = twitchPrediction.outcomes.reduce(0) { $0 + $1.channelPoints }
+        twitchPrediction.locksAt = parseTwitchTimestamp(event.locks_at)
+    }
+
+    func updateTwitchPredictionCountdown() {
+        guard twitchPrediction.state == .ongoing, let locksAt = twitchPrediction.locksAt else {
+            return
+        }
+        let countdown = formatTwitchCountdown(locksAt)
+        twitchPrediction.message = String(localized: "Locks in \(countdown)")
+    }
+
+    func removeTwitchPrediction() {
+        twitchPrediction.state = .idle
+        twitchPrediction.timer.stop()
+    }
+
     private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
         let percentage = Int(100 * Float(progress) / Float(goal))
         hypeTrain.status = "LVL \(level), \(percentage)%"
@@ -877,6 +945,60 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         let duration = formatShortDuration(seconds: event.duration_seconds)
         let kind = event.is_automatic ? String(localized: "automatic") : String(localized: "manual")
         makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
+    }
+
+    func twitchEventSubChannelPollBegin(event: TwitchEventSubChannelPollEvent) {
+        updateTwitchPoll(event: event, state: .ongoing)
+        updateTwitchPollCountdown()
+        twitchPoll.timer.startSingleShot(timeout: 1900) { [weak self] in
+            self?.removeTwitchPoll()
+        }
+    }
+
+    func twitchEventSubChannelPollProgress(event: TwitchEventSubChannelPollEvent) {
+        twitchEventSubChannelPollBegin(event: event)
+    }
+
+    func twitchEventSubChannelPollEnd(event: TwitchEventSubChannelPollEvent) {
+        updateTwitchPoll(event: event, state: .completed)
+        if event.status == "archived" {
+            twitchPoll.message = String(localized: "Poll cancelled")
+        } else {
+            twitchPoll.message = String(localized: "Poll ended")
+        }
+        twitchPoll.timer.startSingleShot(timeout: 60) { [weak self] in
+            self?.removeTwitchPoll()
+        }
+    }
+
+    func twitchEventSubChannelPredictionBegin(event: TwitchEventSubChannelPredictionEvent) {
+        updateTwitchPrediction(event: event, state: .ongoing)
+        updateTwitchPredictionCountdown()
+        twitchPrediction.timer.startSingleShot(timeout: 1900) { [weak self] in
+            self?.removeTwitchPrediction()
+        }
+    }
+
+    func twitchEventSubChannelPredictionProgress(event: TwitchEventSubChannelPredictionEvent) {
+        twitchEventSubChannelPredictionBegin(event: event)
+    }
+
+    func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent) {
+        updateTwitchPrediction(event: event, state: .locked)
+        twitchPrediction.message = String(localized: "Locked, waiting for outcome")
+        twitchPrediction.timer.stop()
+    }
+
+    func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent) {
+        updateTwitchPrediction(event: event, state: .completed)
+        if let winner = twitchPrediction.outcomes.first(where: { $0.winner }) {
+            twitchPrediction.message = String(localized: "Outcome: \(winner.title)")
+        } else {
+            twitchPrediction.message = String(localized: "Prediction cancelled")
+        }
+        twitchPrediction.timer.startSingleShot(timeout: 60) { [weak self] in
+            self?.removeTwitchPrediction()
+        }
     }
 
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent) {

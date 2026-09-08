@@ -386,6 +386,150 @@ private struct RaidView: View {
     }
 }
 
+private struct OptionBarView: View {
+    let title: String
+    let detail: String
+    let fraction: Double
+    let color: Color
+    let bold: Bool
+
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack {
+                Text(title)
+                    .lineLimit(1)
+                Spacer()
+                Text(detail)
+            }
+            .font(.footnote)
+            .bold(bold)
+            ProgressView(value: fraction)
+                .tint(color)
+                .scaleEffect(x: 1, y: 2, anchor: .center)
+        }
+    }
+}
+
+private struct BannerView<Content: View>: View {
+    let image: String
+    let title: String
+    let message: String
+    let onClose: () -> Void
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Image(systemName: image)
+                Text(title)
+                    .bold()
+                    .lineLimit(1)
+                Spacer()
+                Button {
+                    onClose()
+                } label: {
+                    Text("Close")
+                }
+                .buttonStyle(.bordered)
+            }
+            content
+            Text(message)
+                .font(.footnote)
+        }
+        .foregroundStyle(.white)
+        .padding(10)
+        .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
+    }
+}
+
+private struct TwitchPollView: View {
+    let model: Model
+    @ObservedObject var poll: TwitchPoll
+
+    private func fraction(votes: Int) -> Double {
+        guard poll.totalVotes > 0 else {
+            return 0
+        }
+        return Double(votes) / Double(poll.totalVotes)
+    }
+
+    var body: some View {
+        if poll.state != .idle {
+            BannerView(image: "chart.bar", title: poll.title, message: poll.message) {
+                model.removeTwitchPoll()
+            } content: {
+                ForEach(poll.choices) { choice in
+                    let fraction = fraction(votes: choice.votes)
+                    let percentage = Int(100 * fraction)
+                    OptionBarView(title: choice.title,
+                                  detail: String(localized: "\(percentage)% (\(choice.votes) votes)"),
+                                  fraction: fraction,
+                                  color: .white,
+                                  bold: false)
+                }
+            }
+        }
+    }
+}
+
+private struct TwitchPredictionView: View {
+    let model: Model
+    @ObservedObject var prediction: TwitchPrediction
+
+    private func fraction(channelPoints: Int) -> Double {
+        guard prediction.totalChannelPoints > 0 else {
+            return 0
+        }
+        return Double(channelPoints) / Double(prediction.totalChannelPoints)
+    }
+
+    private func color(outcome: TwitchPredictionOutcome) -> Color {
+        if outcome.color == "pink" {
+            RgbColor(red: 0xF5, green: 0x00, blue: 0x9B).color()
+        } else {
+            RgbColor(red: 0x38, green: 0x7A, blue: 0xFF).color()
+        }
+    }
+
+    var body: some View {
+        if prediction.state != .idle {
+            BannerView(image: "sparkles", title: prediction.title, message: prediction.message) {
+                model.removeTwitchPrediction()
+            } content: {
+                ForEach(prediction.outcomes) { outcome in
+                    let fraction = fraction(channelPoints: outcome.channelPoints)
+                    let percentage = Int(100 * fraction)
+                    OptionBarView(
+                        title: outcome.title,
+                        detail: String(
+                            localized: "\(percentage)% (\(outcome.channelPoints) points, \(outcome.users) users)"
+                        ),
+                        fraction: fraction,
+                        color: color(outcome: outcome),
+                        bold: outcome.winner
+                    )
+                }
+            }
+        }
+    }
+}
+
+private struct TwitchPollAndPredictionView: View {
+    let model: Model
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .foregroundStyle(.clear)
+                .background(.clear)
+                .frame(height: 1)
+            TwitchPollView(model: model, poll: model.twitchPoll)
+            TwitchPredictionView(model: model, prediction: model.twitchPrediction)
+            Spacer()
+        }
+    }
+}
+
 private struct ChatView: View {
     let model: Model
     @ObservedObject var chat: ChatProvider
@@ -403,6 +547,7 @@ private struct ChatView: View {
             }
             HypeTrainView(model: model, hypeTrain: model.hypeTrain)
             RaidView(model: model, raid: model.raid)
+            TwitchPollAndPredictionView(model: model)
         }
     }
 }

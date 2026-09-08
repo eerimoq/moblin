@@ -694,6 +694,20 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
 
     func twitchEventSubChannelModerate(event _: TwitchEventSubChannelModerateEvent) {}
 
+    func twitchEventSubChannelPollBegin(event _: TwitchEventSubChannelPollEvent) {}
+
+    func twitchEventSubChannelPollProgress(event _: TwitchEventSubChannelPollEvent) {}
+
+    func twitchEventSubChannelPollEnd(event _: TwitchEventSubChannelPollEvent) {}
+
+    func twitchEventSubChannelPredictionBegin(event _: TwitchEventSubChannelPredictionEvent) {}
+
+    func twitchEventSubChannelPredictionProgress(event _: TwitchEventSubChannelPredictionEvent) {}
+
+    func twitchEventSubChannelPredictionLock(event _: TwitchEventSubChannelPredictionEvent) {}
+
+    func twitchEventSubChannelPredictionEnd(event _: TwitchEventSubChannelPredictionEvent) {}
+
     func twitchEventSubUnauthorized() {
         logger.info("remote-control-assistant: twitch-event-sub: Twitch not authorized")
         twitchEventSub?.stop()

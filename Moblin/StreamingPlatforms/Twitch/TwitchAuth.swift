@@ -22,6 +22,8 @@ private let scopes = [
     "channel:read:stream_key",
     "channel:read:hype_train",
     "channel:read:ads",
+    "channel:manage:polls",
+    "channel:manage:predictions",
     "channel:manage:broadcast",
     "channel:manage:moderators",
     "channel:manage:vips",
