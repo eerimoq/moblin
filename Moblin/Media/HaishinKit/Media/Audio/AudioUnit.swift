@@ -89,7 +89,7 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
-private class FastAudioMeasurement {
+private class AudioMeasurement {
     private var currentPeak: Float = 0.0
     private var finalPeak: Float = 0.0
 
@@ -107,7 +107,7 @@ private class FastAudioMeasurement {
         }
     }
 
-    func finalize() { // before displaying. can still use input afterwards
+    func finalize() {
         finalPeak = currentPeak
         currentPeak = 0
     }
@@ -143,7 +143,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var talkbackPlayer: TalkbackPlayer?
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
-    private var meas = FastAudioMeasurement()
+    private var meas = AudioMeasurement()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
