@@ -111,7 +111,9 @@ private class AudioMeasurement {
             return nil
         }
         self.windowStart = windowStart + windowInterval
-        currentPeak = 0
+        defer {
+            currentPeak = 0
+        }
         return peak()
     }
     
