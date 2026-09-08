@@ -320,6 +320,10 @@ extension HTTPURLResponse {
         statusCode == 401
     }
 
+    var isForbidden: Bool {
+        statusCode == 403
+    }
+
     var isTooManyRequests: Bool {
         statusCode == 429
     }

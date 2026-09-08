@@ -239,7 +239,7 @@ class TwitchApi {
     }
 
     func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
-        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data) {
+        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, forbiddenIsAuthError: true) {
             onComplete($0.isSuccessful())
         }
     }
@@ -630,10 +630,14 @@ class TwitchApi {
         doRequest(createRequest(url: makeHelixUrl(subPath: subPath), method: "GET"), onComplete)
     }
 
-    private func doPost(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
+    private func doPost(subPath: String,
+                        body: Data,
+                        forbiddenIsAuthError: Bool = false,
+                        onComplete: @escaping (OperationResult) -> Void)
+    {
         var request = createRequest(url: makeHelixUrl(subPath: subPath), method: "POST", json: true)
         request.httpBody = body
-        doRequest(request, onComplete)
+        doRequest(request, forbiddenIsAuthError: forbiddenIsAuthError, onComplete)
     }
 
     private func doPatch(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
@@ -650,13 +654,17 @@ class TwitchApi {
         URL(string: "https://api.twitch.tv/helix/\(subPath)")!
     }
 
-    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
+    private func doRequest(_ request: URLRequest,
+                           forbiddenIsAuthError: Bool = false,
+                           _ onComplete: @escaping (OperationResult) -> Void)
+    {
         httpRequest(request: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
                 if let data, let data = String(bytes: data, encoding: .utf8) {
                     logger.info("twitch-api: Error response body: \(data)")
                 }
-                if response?.http?.isUnauthorized == true {
+                let isForbidden = forbiddenIsAuthError && response?.http?.isForbidden == true
+                if response?.http?.isUnauthorized == true || isForbidden {
                     self.delegate?.twitchApiUnauthorized()
                     onComplete(.authError)
                 } else {
