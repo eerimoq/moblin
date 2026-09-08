@@ -97,7 +97,9 @@ private class AudioMeasurement {
 
     func input(sampleBuffer: CMSampleBuffer) -> Float? {
         let now = sampleBuffer.presentationTimeStamp.seconds
-        windowStart = windowStart.isNaN ? now : windowStart
+        if windowStart.isNaN {
+            windowStart = now
+        }
         guard now >= windowStart else {
             return nil
         }
