@@ -594,10 +594,10 @@ extension Model {
         text: String,
         title: String,
         color: Color,
-        image: String? = nil,
-        kind: ChatHighlightKind? = nil,
-        bits: String? = nil,
-        sharedChat: TwitchEventSubSharedChat? = nil
+        image: String?,
+        kind: ChatHighlightKind?,
+        sharedChat: TwitchEventSubSharedChat?,
+        bits: String? = nil
     ) {
         guard let twitchChat else {
             return
@@ -674,7 +674,9 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 text: text,
                 title: String(localized: "New follower"),
                 color: .pink,
-                kind: .newFollower
+                image: nil,
+                kind: .newFollower,
+                sharedChat: nil
             )
         }
         printEventCatPrinters(event: .twitchFollow, username: event.user_name, message: text)
@@ -705,6 +707,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
+                kind: nil,
                 sharedChat: event.sharedChat
             )
         }
@@ -732,6 +735,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
                 image: "gift",
+                kind: nil,
                 sharedChat: event.sharedChat
             )
         }
@@ -769,6 +773,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New resubscribe"),
                 color: .cyan,
                 image: "party.popper",
+                kind: nil,
                 sharedChat: event.sharedChat
             )
         }
@@ -800,6 +805,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
+                kind: nil,
                 sharedChat: event.sharedChat
             )
         }
@@ -828,6 +834,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Watch streak"),
                 color: .orange,
                 image: "flame",
+                kind: nil,
                 sharedChat: event.sharedChat
             )
         }
@@ -849,7 +856,9 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 text: text,
                 title: String(localized: "Reward redemption"),
                 color: .blue,
-                image: "medal.star"
+                image: "medal.star",
+                kind: nil,
+                sharedChat: nil
             )
         }
         printEventCatPrinters(event: .twitchReward, username: event.user_name, message: text)
@@ -876,6 +885,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                     title: String(localized: "Raid"),
                     color: .pink,
                     image: "person.3",
+                    kind: nil,
                     sharedChat: event.sharedChat
                 )
             }
@@ -902,6 +912,8 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 title: String(localized: "Cheer"),
                 color: .green,
                 image: "suit.diamond",
+                kind: nil,
+                sharedChat: nil,
                 bits: ""
             )
         }
@@ -916,6 +928,15 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         hypeTrain.progress?.goal = Float(event.goal)
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         startHypeTrainTimer(timeout: 600)
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: String(localized: "started a hype train!"),
+            title: String(localized: "Hype train started"),
+            color: .purple,
+            image: "train.side.front.car",
+            kind: nil,
+            sharedChat: nil
+        )
     }
 
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
@@ -938,6 +959,15 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         hypeTrain.progress?.goal = 1
         updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
         startHypeTrainTimer(timeout: 60)
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: String(localized: "ended the hype train at level \(event.level)!"),
+            title: String(localized: "Hype train ended"),
+            color: .purple,
+            image: "train.side.rear.car",
+            kind: nil,
+            sharedChat: nil
+        )
     }
 
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent) {
@@ -947,7 +977,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
     }
 
-    func twitchEventSubChannelPollBegin(event: TwitchEventSubChannelPollEvent) {
+    private func updateOngoingTwitchPoll(event: TwitchEventSubChannelPollEvent) {
         updateTwitchPoll(event: event, state: .ongoing)
         updateTwitchPollCountdown()
         twitchPoll.timer.startSingleShot(timeout: 1900) { [weak self] in
@@ -955,23 +985,52 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         }
     }
 
+    func twitchEventSubChannelPollBegin(event: TwitchEventSubChannelPollEvent) {
+        updateOngoingTwitchPoll(event: event)
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: String(localized: "started a poll: \(event.title)"),
+            title: String(localized: "Poll started"),
+            color: .indigo,
+            image: "chart.bar",
+            kind: nil,
+            sharedChat: nil
+        )
+    }
+
     func twitchEventSubChannelPollProgress(event: TwitchEventSubChannelPollEvent) {
-        twitchEventSubChannelPollBegin(event: event)
+        updateOngoingTwitchPoll(event: event)
     }
 
     func twitchEventSubChannelPollEnd(event: TwitchEventSubChannelPollEvent) {
         updateTwitchPoll(event: event, state: .completed)
+        let text: String
         if event.status == "archived" {
             twitchPoll.message = String(localized: "Poll cancelled")
+            text = String(localized: "cancelled the poll: \(event.title)")
         } else {
             twitchPoll.message = String(localized: "Poll ended")
+            if let winner = twitchPoll.choices.max(by: { $0.votes < $1.votes }) {
+                text = String(localized: "ended the poll: \(event.title) Winner: \(winner.title)")
+            } else {
+                text = String(localized: "ended the poll: \(event.title)")
+            }
         }
         twitchPoll.timer.startSingleShot(timeout: 60) { [weak self] in
             self?.removeTwitchPoll()
         }
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: text,
+            title: String(localized: "Poll ended"),
+            color: .indigo,
+            image: "chart.bar",
+            kind: nil,
+            sharedChat: nil
+        )
     }
 
-    func twitchEventSubChannelPredictionBegin(event: TwitchEventSubChannelPredictionEvent) {
+    private func updateOngoingTwitchPrediction(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .ongoing)
         updateTwitchPredictionCountdown()
         twitchPrediction.timer.startSingleShot(timeout: 1900) { [weak self] in
@@ -979,8 +1038,21 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         }
     }
 
+    func twitchEventSubChannelPredictionBegin(event: TwitchEventSubChannelPredictionEvent) {
+        updateOngoingTwitchPrediction(event: event)
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: String(localized: "started a prediction: \(event.title)"),
+            title: String(localized: "Prediction started"),
+            color: .mint,
+            image: "questionmark.diamond",
+            kind: nil,
+            sharedChat: nil
+        )
+    }
+
     func twitchEventSubChannelPredictionProgress(event: TwitchEventSubChannelPredictionEvent) {
-        twitchEventSubChannelPredictionBegin(event: event)
+        updateOngoingTwitchPrediction(event: event)
     }
 
     func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent) {
@@ -991,14 +1063,26 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
 
     func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .completed)
+        let text: String
         if let winner = twitchPrediction.outcomes.first(where: { $0.winner }) {
             twitchPrediction.message = String(localized: "Outcome: \(winner.title)")
+            text = String(localized: "ended the prediction: \(event.title) Outcome: \(winner.title)")
         } else {
             twitchPrediction.message = String(localized: "Prediction cancelled")
+            text = String(localized: "cancelled the prediction: \(event.title)")
         }
         twitchPrediction.timer.startSingleShot(timeout: 60) { [weak self] in
             self?.removeTwitchPrediction()
         }
+        appendTwitchChatAlertMessage(
+            user: stream.twitchChannelName,
+            text: text,
+            title: String(localized: "Prediction ended"),
+            color: .mint,
+            image: "trophy",
+            kind: nil,
+            sharedChat: nil
+        )
     }
 
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent) {
