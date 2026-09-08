@@ -91,14 +91,13 @@ func makeChannelMap(
 
 private class AudioMeasurement {
     private var currentPeak: Float = 0.0
-    private var windowStart: Double?
+    private var windowStart: Double = .nan
     private let windowDuration = 0.05
     private let windowInterval = 0.2
 
     func input(sampleBuffer: CMSampleBuffer) -> Float? {
         let now = sampleBuffer.presentationTimeStamp.seconds
-        let windowStart = windowStart ?? now
-        self.windowStart = windowStart
+        windowStart = windowStart.isNaN ? now : windowStart
         guard now >= windowStart else {
             return nil
         }
@@ -110,7 +109,7 @@ private class AudioMeasurement {
         guard now >= windowStart + windowDuration else {
             return nil
         }
-        self.windowStart = windowStart + windowInterval
+        windowStart = windowStart + windowInterval
         defer {
             currentPeak = 0
         }
@@ -119,7 +118,7 @@ private class AudioMeasurement {
 
     func reset() {
         currentPeak = 0.0
-        windowStart = nil
+        windowStart = .nan
     }
 
     private func input(samples: UnsafeMutablePointer<Float>, count: Int) {
