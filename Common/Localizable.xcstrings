@@ -65081,6 +65081,9 @@
         }
       }
     },
+    "Connection status sound" : {
+
+    },
     "Contains" : {
 
     },
@@ -85224,6 +85227,9 @@
           }
         }
       }
+    },
+    "Enable to play a short sound when the stream fails to connect." : {
+
     },
     "Enable to vibrate the device when the following toasts appear:" : {
       "localizations" : {

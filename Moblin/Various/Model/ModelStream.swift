@@ -542,6 +542,18 @@ extension Model {
         updateStreamUptime(now: .now)
     }
 
+    private func playConnectionStatusSound() {
+        if connectionStatusSoundPlayer == nil,
+           let soundUrl = Bundle.main.url(
+               forResource: "Alerts.bundle/Notification",
+               withExtension: "mp3"
+           )
+        {
+            connectionStatusSoundPlayer = try? AudioPlayer(contentsOf: soundUrl)
+        }
+        connectionStatusSoundPlayer?.play()
+    }
+
     private func onDisconnected(reason: String) {
         guard streaming else {
             return
@@ -551,8 +563,14 @@ extension Model {
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
             makeFffffToast(subTitle: subTitle)
+            if database.show.connectionStatusSound {
+                playConnectionStatusSound()
+            }
         } else if streamState == .connecting {
             makeConnectFailureToast(subTitle: subTitle)
+            if database.show.connectionStatusSound {
+                playConnectionStatusSound()
+            }
         }
         streamState = .disconnected
         stopNetStream()
