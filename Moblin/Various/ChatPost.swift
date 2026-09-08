@@ -307,3 +307,19 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
         return displayName
     }
 }
+
+extension ChatHighlight {
+    init(remoteControl highlight: RemoteControlChatHighlight) {
+        kind = highlight.kind
+        barColor = highlight.barColor.color()
+        image = highlight.image
+        titleSegments = highlight.titleSegments
+    }
+
+    func toRemoteControl() -> RemoteControlChatHighlight {
+        RemoteControlChatHighlight(kind: kind,
+                                   barColor: barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0),
+                                   image: image,
+                                   titleSegments: titleSegments)
+    }
+}

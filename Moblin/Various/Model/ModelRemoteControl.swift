@@ -931,7 +931,7 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
                               isModerator: message.isModerator,
                               isOwner: message.isOwner,
                               bits: message.bits,
-                              highlight: nil,
+                              highlight: message.highlight.map { ChatHighlight(remoteControl: $0) },
                               live: live)
             remoteControlStreamerLatestReceivedChatMessageId = message.id
         }

@@ -20,6 +20,7 @@ from websockets.sync.client import ClientConnection
 from websockets.sync.client import connect
 
 from .arduino import Arduino
+from .chat_message import text_segments
 from .config import REMOTE_CONTROL_PASSWORD
 from .config import RIST_SERVER_PORT
 from .config import RTMP_SERVER_PORT
@@ -246,15 +247,18 @@ class Moblin:
     def set_muted(self, on: bool):
         self._request({"setMute": {"on": on}})
 
-    def send_chat_message(self, text: str, is_moderator: bool = True):
-        self._request(
-            {
-                "chatMessages": {
-                    "history": False,
-                    "messages": [self._create_chat_message(text, is_moderator)],
-                }
-            }
-        )
+    def send_chat_message(
+        self,
+        text: str,
+        is_moderator: bool = True,
+        display_name: str = "Tester",
+        segments: list[dict] | None = None,
+        highlight: dict | None = None,
+    ):
+        message = self._create_chat_message(text, is_moderator, display_name, segments)
+        if highlight is not None:
+            message["highlight"] = highlight
+        self._request({"chatMessages": {"history": False, "messages": [message]}})
 
     def send_twitch_event_sub_notification(self, message: dict):
         self._request({"twitchEventSubNotification": {"message": json.dumps(message)}})
@@ -486,15 +490,21 @@ class Moblin:
     def get_ingests_status(self) -> "IngestsStatus":
         return parse_ingests_status(self.get_status_top_right()["rtmpServer"]["message"])
 
-    def _create_chat_message(self, text: str, is_moderator: bool):
+    def _create_chat_message(
+        self,
+        text: str,
+        is_moderator: bool,
+        display_name: str,
+        segments: list[dict] | None,
+    ):
         self._chat_message_id = max(self._chat_message_id + 1, int(time.time() * 1000))
         return {
             "id": self._chat_message_id,
             "platform": {"twitch": {}},
-            "displayName": "Tester",
-            "user": "tester",
+            "displayName": display_name,
+            "user": display_name.lower(),
             "userBadges": [],
-            "segments": [{"id": index, "text": f"{word} "} for index, word in enumerate(text.split())],
+            "segments": text_segments(text) if segments is None else segments,
             "timestamp": time.strftime("%H:%M"),
             "isAction": False,
             "isModerator": is_moderator,

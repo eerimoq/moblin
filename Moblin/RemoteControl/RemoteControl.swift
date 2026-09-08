@@ -134,6 +134,13 @@ struct RemoteControlStats: Codable {
     var gForce: GForce?
 }
 
+struct RemoteControlChatHighlight: Codable {
+    let kind: ChatHighlightKind
+    let barColor: RgbColor
+    let image: String
+    let titleSegments: [ChatPostSegment]?
+}
+
 struct RemoteControlChatMessage: Codable {
     let id: Int
     let platform: Platform
@@ -150,6 +157,7 @@ struct RemoteControlChatMessage: Codable {
     let isSubscriber: Bool
     let isOwner: Bool
     let bits: String?
+    var highlight: RemoteControlChatHighlight?
 }
 
 enum RemoteControlReaction: Codable, CaseIterable {

@@ -735,7 +735,7 @@ extension RemoteControlAssistant: TwitchChatDelegate {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight _: ChatHighlight?,
+        highlight: ChatHighlight?,
         sourceChannelIcon _: URL?
     ) {
         let timestamp = digitalClockFormatter.string(from: Date())
@@ -753,7 +753,8 @@ extension RemoteControlAssistant: TwitchChatDelegate {
                                                isModerator: isModerator,
                                                isSubscriber: isSubscriber,
                                                isOwner: false,
-                                               bits: bits)
+                                               bits: bits,
+                                               highlight: highlight?.toRemoteControl())
         chatMessageHistory.append(message)
         if chatMessageHistory.count > 100 {
             chatMessageHistory.removeFirst()

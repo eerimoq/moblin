@@ -1,6 +1,7 @@
 import logging
 import time
 
+from ..utils import chat_message
 from ..utils import twitch_event_sub as events
 from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from ..utils.generate_device_settings import alerts_widget_settings
@@ -51,6 +52,11 @@ class TwitchEventsTestCase(TestCase):
     def send(self, *messages: dict):
         for message in messages:
             self.moblin.send_twitch_event_sub_notification(message)
+            time.sleep(2)
+
+    def send_chat(self, *messages: dict):
+        for message in messages:
+            self.moblin.send_chat_message(**message)
             time.sleep(2)
 
 
@@ -243,6 +249,59 @@ class TwitchEventsOutgoingRaid(TwitchEventsTestCase):
         )
 
 
+class TwitchEventsFirstMessage(TwitchEventsTestCase):
+    """Send first time chatter messages, one per second."""
+
+    def run(self):
+        manual_validation(LOGGER, "A first message chat highlight is shown for the first two messages.")
+        highlight = chat_message.first_message_highlight()
+        self.send_chat(
+            {"display_name": "Alice", "text": "Hello everyone!", "highlight": highlight},
+            {"display_name": "Bob", "text": "First time here", "highlight": highlight},
+            {"display_name": "Alice", "text": "Back again"},
+        )
+
+
+class TwitchEventsGigantifiedEmote(TwitchEventsTestCase):
+    """Send gigantified emote messages, one per second."""
+
+    def run(self):
+        manual_validation(LOGGER, "A gigantified emote chat highlight is shown for each message.")
+        highlight = chat_message.gigantified_emote_highlight()
+        kappa = {
+            "id": 1,
+            "url": {
+                "moving": "https://static-cdn.jtvnw.net/emoticons/v2/25/default/dark/3.0",
+                "still": "https://static-cdn.jtvnw.net/emoticons/v2/25/static/dark/3.0",
+            },
+        }
+        self.send_chat(
+            {"display_name": "Carol", "text": "", "segments": [kappa], "highlight": highlight},
+            {
+                "display_name": "Dave",
+                "text": "",
+                "segments": [{"id": 0, "text": "Look at this "}, kappa],
+                "highlight": highlight,
+            },
+        )
+
+
+class TwitchEventsBigGif(TwitchEventsTestCase):
+    """Send big GIF messages, one per second."""
+
+    def run(self):
+        manual_validation(LOGGER, "A big GIF is shown in chat for each message.")
+        self.send_chat(
+            {
+                "display_name": "Eve",
+                "text": "",
+                "segments": chat_message.big_gif_segments(
+                    "https://media.giphy.com/media/l0MYDEPLWRWbJoRuU/100.gif"
+                ),
+            },
+        )
+
+
 class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
     """Send raid started and raid cancelled events, one per second."""
 
@@ -270,4 +329,7 @@ def tests(moblin: Moblin):
         TwitchEventsAdBreak(moblin),
         TwitchEventsOutgoingRaid(moblin),
         TwitchEventsOutgoingRaidCancelled(moblin),
+        TwitchEventsFirstMessage(moblin),
+        TwitchEventsGigantifiedEmote(moblin),
+        TwitchEventsBigGif(moblin),
     ]
