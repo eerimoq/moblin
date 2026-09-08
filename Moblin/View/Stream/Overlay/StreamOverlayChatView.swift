@@ -1,254 +1,66 @@
 import Collections
 import SwiftUI
-import WrappingHStack
 
-private let borderWidth = 1.5
-let chatEmoteScale: Float = 1.5
+private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
+    ChatLineStyle(
+        fontSize: CGFloat(chat.fontSize),
+        borderColor: chat.shadowColorEnabled ? chat.shadowColor.uiColor() : nil,
+        borderWidth: 1.5,
+        backgroundColor: chat.backgroundColorEnabled ? chat.backgroundColor.uiColor()
+            .withAlphaComponent(0.6) : nil,
+        timestampColor: chat.timestampColorEnabled ? chat.timestampColor.uiColor() : nil,
+        messageColor: chat.messageColor.uiColor(),
+        meInUsernameColor: chat.meInUsernameColor,
+        boldUsername: chat.boldUsername,
+        boldMessage: chat.boldMessage,
+        badges: chat.badges,
+        sharedChatIcons: chat.sharedChatIcons,
+        animatedEmotes: chat.animatedEmotes,
+        bigGifScale: chat.bigGifScale,
+        highlightSymbolColor: .white,
+        highlightDefaultColor: chat.messageColorColor,
+        nicknames: chat.nicknames,
+        displayStyle: chat.displayStyle
+    )
+}
 
 private struct HighlightMessageView: View {
-    let postState: ChatPostState
-    let chat: SettingsChat
+    let deleted: Bool
+    let style: ChatLineStyle
     let highlight: ChatHighlight
-
-    private func backgroundColor() -> Color {
-        if chat.backgroundColorEnabled {
-            chat.backgroundColorColor.opacity(0.6)
-        } else {
-            .clear
-        }
-    }
-
-    private func shadowColor() -> Color {
-        if chat.shadowColorEnabled {
-            chat.shadowColorColor
-        } else {
-            .clear
-        }
-    }
-
-    private func frameHeightEmotes() -> CGFloat {
-        CGFloat(chat.fontSize * chatEmoteScale)
-    }
-
-    private func imageOpacity() -> Double {
-        postState.deleted ? 0.25 : 1
-    }
 
     var body: some View {
         if let titleSegments = highlight.titleSegments {
-            WrappingHStack(
-                alignment: .leading,
-                horizontalSpacing: 0,
-                verticalSpacing: 0,
-                fitContentWidth: true
-            ) {
-                Image(systemName: highlight.image)
-                Text(" ")
-                ForEach(titleSegments, id: \.id) { segment in
-                    if let text = segment.text {
-                        Text(text)
-                            .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
-                    }
-                    if let url = segment.url?.url(animated: chat.animatedEmotes) {
-                        if chat.animatedEmotes {
-                            AnimatedEmoteView(url: url)
-                                .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                                .frame(height: frameHeightEmotes())
-                                .opacity(imageOpacity())
-                        } else {
-                            CacheAsyncImage(url: url) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            } placeholder: {
-                                EmptyView()
-                            }
-                            .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                            .frame(height: frameHeightEmotes())
-                            .opacity(imageOpacity())
-                        }
-                    }
-                }
-            }
-            .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-            .padding(.leading, 5)
-            .font(.system(size: CGFloat(chat.fontSize)))
-            .background(backgroundColor())
-            .foregroundStyle(.white)
-            .cornerRadius(5)
+            ChatLineView(content: style.makeHighlightContent(highlight: highlight,
+                                                             titleSegments: titleSegments,
+                                                             deleted: deleted))
         }
     }
 }
 
 private struct HighlightImageView: View {
-    let chat: SettingsChat
+    let style: ChatLineStyle
     let highlight: ChatHighlight
 
-    private func shadowColor() -> Color {
-        if chat.shadowColorEnabled {
-            chat.shadowColorColor
-        } else {
-            .clear
-        }
+    private func content() -> ChatLineContent {
+        var style = style
+        style.backgroundColor = nil
+        return style.makeHighlightImageContent(highlight: highlight)
     }
 
     var body: some View {
-        Image(systemName: highlight.image)
-            .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-            .font(.system(size: CGFloat(chat.fontSize)))
-            .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
-            .padding(.leading, 5)
+        ChatLineView(content: content())
     }
 }
 
 private struct LineView: View {
     let deleted: Bool
     let post: ChatPost
-    let chat: SettingsChat
+    let style: ChatLineStyle
     let platform: Bool
 
-    private func usernameColor() -> Color {
-        post.userColor.color()
-    }
-
-    private func messageColor(usernameColor: Color) -> Color {
-        if post.isAction, chat.meInUsernameColor {
-            usernameColor
-        } else {
-            chat.messageColorColor
-        }
-    }
-
-    private func backgroundColor() -> Color {
-        if chat.backgroundColorEnabled {
-            chat.backgroundColorColor.opacity(0.6)
-        } else {
-            .clear
-        }
-    }
-
-    private func shadowColor() -> Color {
-        if chat.shadowColorEnabled {
-            chat.shadowColorColor
-        } else {
-            .clear
-        }
-    }
-
-    private func frameHeightBadges() -> CGFloat {
-        CGFloat(chat.fontSize * 1.4)
-    }
-
-    private func frameHeightEmotes() -> CGFloat {
-        CGFloat(chat.fontSize * chatEmoteScale)
-    }
-
-    private func imageOpacity() -> Double {
-        deleted ? 0.25 : 1
-    }
-
     var body: some View {
-        let usernameColor = usernameColor()
-        let messageColor = messageColor(usernameColor: usernameColor)
-        WrappingHStack(
-            alignment: post.isBigGif() ? .topLeading : .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            if chat.timestampColorEnabled {
-                Text("\(post.timestamp) ")
-                    .foregroundStyle(chat.timestampColorColor)
-            }
-            if platform, let image = post.platform?.imageName() {
-                Image(image)
-                    .resizable()
-                    .scaledToFit()
-                    .padding(2)
-                    .frame(height: frameHeightBadges())
-                    .opacity(imageOpacity())
-            }
-            if chat.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
-                CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().scaledToFit()
-                } placeholder: {
-                    EmptyView()
-                }
-                .padding(2)
-                .frame(height: frameHeightBadges())
-                .opacity(imageOpacity())
-            }
-            if chat.badges {
-                ForEach(post.userBadges, id: \.self) { url in
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        EmptyView()
-                    }
-                    .padding(2)
-                    .frame(height: frameHeightBadges())
-                    .opacity(imageOpacity())
-                }
-            }
-            Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundStyle(deleted ? .gray : usernameColor)
-                .strikethrough(deleted)
-                .lineLimit(1)
-                .padding(.trailing, 0)
-                .bold(chat.boldUsername)
-            if post.isRedemption() {
-                Text(" ")
-            } else {
-                Text(": ")
-            }
-            ForEach(post.segments) { segment in
-                if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(deleted ? .gray : messageColor)
-                        .strikethrough(deleted)
-                        .bold(chat.boldMessage)
-                        .italic(post.isAction)
-                }
-                if let url = segment.url?.url(animated: chat.animatedEmotes) {
-                    if chat.animatedEmotes {
-                        AnimatedEmoteView(url: url)
-                            .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                            .frame(height: frameHeightEmotes())
-                            .opacity(imageOpacity())
-                    } else {
-                        CacheAsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        } placeholder: {
-                            EmptyView()
-                        }
-                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                        .frame(height: frameHeightEmotes())
-                        .opacity(imageOpacity())
-                    }
-                    Text(" ")
-                }
-                if let url = segment.bigGifUrl?.url(animated: chat.animatedEmotes) {
-                    ChatGifView(
-                        url: url,
-                        animated: chat.animatedEmotes,
-                        height: CGFloat(chat.fontSize * chatEmoteScale * chat.bigGifScale)
-                    )
-                    .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
-                    .opacity(imageOpacity())
-                    Text(" ")
-                }
-            }
-        }
-        .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-        .padding(.leading, 5)
-        .font(.system(size: CGFloat(chat.fontSize)))
-        .background(backgroundColor())
-        .foregroundStyle(.white)
-        .cornerRadius(5)
+        ChatLineView(content: style.makeContent(post: post, platform: platform, deleted: deleted))
     }
 }
 
@@ -256,6 +68,7 @@ private let startId = UUID()
 
 private struct PostView: View {
     let chatSettings: SettingsChat
+    let style: ChatLineStyle
     let moreThanOneStreamingPlatform: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
@@ -270,24 +83,24 @@ private struct PostView: View {
                             .frame(width: 3)
                             .foregroundStyle(highlight.barColor)
                         if chatSettings.compactEvents {
-                            HighlightImageView(chat: chatSettings, highlight: highlight)
+                            HighlightImageView(style: style, highlight: highlight)
                         }
                         VStack(alignment: .leading, spacing: 1) {
                             if !chatSettings.compactEvents {
-                                HighlightMessageView(postState: post.state,
-                                                     chat: chatSettings,
+                                HighlightMessageView(deleted: state.deleted,
+                                                     style: style,
                                                      highlight: highlight)
                             }
                             LineView(deleted: state.deleted,
                                      post: post,
-                                     chat: chatSettings,
+                                     style: style,
                                      platform: moreThanOneStreamingPlatform)
                         }
                     }
                 } else {
                     LineView(deleted: state.deleted,
                              post: post,
-                             chat: chatSettings,
+                             style: style,
                              platform: moreThanOneStreamingPlatform)
                         .padding(.leading, 3)
                 }
@@ -330,6 +143,7 @@ private struct MessagesView: View {
     var body: some View {
         let rotation = chatSettings.getRotation()
         let scaleX = chatSettings.getScaleX()
+        let style = makeChatLineStyle(chat: chatSettings)
         ScrollViewReader { proxy in
             ScrollView(showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -347,6 +161,7 @@ private struct MessagesView: View {
                         .id(startId)
                     ForEach(chat.posts) { post in
                         PostView(chatSettings: chatSettings,
+                                 style: style,
                                  moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
                                  post: post,
                                  state: post.state,
@@ -357,7 +172,6 @@ private struct MessagesView: View {
                     Spacer(minLength: 0)
                 }
             }
-            .foregroundStyle(.white)
             .rotationEffect(Angle(degrees: rotation))
             .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
             .frame(width: width)

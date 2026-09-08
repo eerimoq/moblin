@@ -820,6 +820,15 @@ extension RgbColor {
         )
     }
 
+    func uiColor() -> UIColor {
+        UIColor(
+            red: colorScale(red),
+            green: colorScale(green),
+            blue: colorScale(blue),
+            alpha: opacity ?? 1.0
+        )
+    }
+
     func hue() -> Double {
         let color = UIColor(red: colorScale(red), green: colorScale(green), blue: colorScale(blue), alpha: 1)
         var hue: CGFloat = 0

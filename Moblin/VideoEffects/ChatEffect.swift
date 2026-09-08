@@ -2,247 +2,206 @@ import Collections
 import Combine
 import MetalPetal
 import SwiftUI
-import WrappingHStack
 
-private let borderWidth = 1.5
-
-private struct HighlightMessageView: View {
-    @ObservedObject var settings: SettingsWidgetChat
-    let highlight: ChatHighlight
-
-    private func backgroundColor() -> Color {
-        if settings.backgroundColorEnabled {
-            settings.backgroundColorColor.opacity(0.6)
-        } else {
-            .clear
-        }
-    }
-
-    private func shadowColor() -> Color {
-        if settings.shadowColorEnabled {
-            settings.shadowColorColor
-        } else {
-            .clear
-        }
-    }
-
-    private func frameHeightEmotes() -> CGFloat {
-        CGFloat(settings.fontSize * chatEmoteScale)
-    }
-
-    var body: some View {
-        if let titleSegments = highlight.titleSegments {
-            WrappingHStack(
-                alignment: .leading,
-                horizontalSpacing: 0,
-                verticalSpacing: 0,
-                fitContentWidth: true
-            ) {
-                Image(systemName: highlight.image)
-                Text(" ")
-                ForEach(titleSegments, id: \.id) { segment in
-                    if let text = segment.text {
-                        Text(text)
-                            .foregroundStyle(highlight.messageColor(defaultColor: settings.messageColorColor))
-                    }
-                    if let url = segment.url?.url(animated: false) {
-                        CacheAsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        } placeholder: {
-                            EmptyView()
-                        }
-                        .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
-                        .frame(height: frameHeightEmotes())
-                    }
-                }
-            }
-            .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-            .padding(.leading, 5)
-            .font(.system(size: CGFloat(settings.fontSize)))
-            .background(backgroundColor())
-            .foregroundStyle(.white)
-            .cornerRadius(5)
-        }
-    }
+private func makeChatLineStyle(settings: SettingsWidgetChat) -> ChatLineStyle {
+    ChatLineStyle(
+        fontSize: CGFloat(settings.fontSize),
+        borderColor: settings.shadowColorEnabled ? settings.shadowColor.uiColor() : nil,
+        borderWidth: 1.5,
+        backgroundColor: settings.backgroundColorEnabled ? settings.backgroundColor.uiColor()
+            .withAlphaComponent(0.6) : nil,
+        messageColor: settings.messageColor.uiColor(),
+        boldUsername: settings.boldUsername,
+        boldMessage: settings.boldMessage,
+        badges: settings.badges,
+        sharedChatIcons: settings.sharedChatIcons,
+        bigGifScale: 3,
+        highlightSymbolColor: .white,
+        highlightDefaultColor: settings.messageColorColor,
+        nicknames: settings.nicknames,
+        displayStyle: settings.displayStyle
+    )
 }
 
-private struct LineView: View {
-    let post: ChatPost
-    @ObservedObject var settings: SettingsWidgetChat
-    let platform: Bool
+@MainActor
+private class ChatRenderer {
+    private let settings: SettingsWidgetChat
+    private let chat: ChatProvider
+    private let onImage: (CGImage?) -> Void
+    private let containerView = UIView()
+    private var lineViews: [ChatLineUiView] = []
+    private var barLayers: [CALayer] = []
+    private var cancellables: [AnyCancellable] = []
+    private var stateCancellables: [AnyCancellable] = []
+    private var renderPending = false
 
-    private func usernameColor() -> Color {
-        post.userColor.color()
+    private var width: CGFloat {
+        20 * CGFloat(settings.fontSize)
     }
 
-    private func messageColor(usernameColor _: Color) -> Color {
-        settings.messageColorColor
+    init(settings: SettingsWidgetChat, chat: ChatProvider, onImage: @escaping (CGImage?) -> Void) {
+        self.settings = settings
+        self.chat = chat
+        self.onImage = onImage
+        containerView.backgroundColor = .clear
+        chat.$posts
+            .sink { [weak self] _ in
+                self?.scheduleRender()
+            }
+            .store(in: &cancellables)
+        chat.$moreThanOneStreamingPlatform
+            .sink { [weak self] _ in
+                self?.scheduleRender()
+            }
+            .store(in: &cancellables)
+        settings.objectWillChange
+            .sink { [weak self] _ in
+                self?.scheduleRender()
+            }
+            .store(in: &cancellables)
+        EmotesPlayer.shared.$sizesVersion
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.scheduleRender()
+            }
+            .store(in: &cancellables)
+        scheduleRender()
     }
 
-    private func backgroundColor() -> Color {
-        if settings.backgroundColorEnabled {
-            settings.backgroundColorColor.opacity(0.6)
-        } else {
-            .clear
+    func stop() {
+        cancellables = []
+        stateCancellables = []
+        for lineView in lineViews {
+            lineView.unregister()
         }
     }
 
-    private func shadowColor() -> Color {
-        if settings.shadowColorEnabled {
-            settings.shadowColorColor
-        } else {
-            .clear
+    private func scheduleRender() {
+        guard !renderPending else {
+            return
+        }
+        renderPending = true
+        DispatchQueue.main.async { [weak self] in
+            self?.renderPending = false
+            self?.render()
         }
     }
 
-    private func frameHeightBadges() -> CGFloat {
-        CGFloat(settings.fontSize * 1.4)
+    private func lineView(index: Int) -> ChatLineUiView {
+        while lineViews.count <= index {
+            let lineView = ChatLineUiView()
+            lineView.onImageLoaded = { [weak self] in
+                self?.scheduleRender()
+            }
+            containerView.addSubview(lineView)
+            lineViews.append(lineView)
+        }
+        return lineViews[index]
     }
 
-    private func frameHeightEmotes() -> CGFloat {
-        CGFloat(settings.fontSize * chatEmoteScale)
+    private func barLayer(index: Int) -> CALayer {
+        while barLayers.count <= index {
+            let barLayer = CALayer()
+            barLayer.actions = ["bounds": NSNull(), "position": NSNull(), "backgroundColor": NSNull()]
+            containerView.layer.addSublayer(barLayer)
+            barLayers.append(barLayer)
+        }
+        return barLayers[index]
     }
 
-    var body: some View {
-        let usernameColor = usernameColor()
-        let messageColor = messageColor(usernameColor: usernameColor)
-        WrappingHStack(
-            alignment: post.isBigGif() ? .topLeading : .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            if platform, let image = post.platform?.imageName() {
-                Image(image)
-                    .resizable()
-                    .scaledToFit()
-                    .padding(2)
-                    .frame(height: frameHeightBadges())
-            }
-            if settings.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
-                CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().scaledToFit()
-                } placeholder: {
-                    EmptyView()
-                }
-                .padding(2)
-                .frame(height: frameHeightBadges())
-            }
-            if settings.badges {
-                ForEach(post.userBadges, id: \.self) { url in
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        EmptyView()
-                    }
-                    .padding(2)
-                    .frame(height: frameHeightBadges())
-                }
-            }
-            Text(post.displayName(nicknames: settings.nicknames, displayStyle: settings.displayStyle))
-                .foregroundStyle(usernameColor)
-                .lineLimit(1)
-                .padding(.trailing, 0)
-                .bold(settings.boldUsername)
-            if post.isRedemption() {
-                Text(" ")
-            } else {
-                Text(": ")
-            }
-            ForEach(post.segments) { segment in
-                if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(messageColor)
-                        .bold(settings.boldMessage)
-                        .italic(post.isAction)
-                }
-                if let url = (segment.url ?? segment.bigGifUrl)?.url(animated: false) {
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } placeholder: {
-                        EmptyView()
-                    }
-                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
-                    .frame(height: frameHeightEmotes() * (segment.bigGifUrl == nil ? 1 : 3))
-                    Text(" ")
-                }
+    private func place(lineView: ChatLineUiView,
+                       content: ChatLineContent,
+                       x: CGFloat,
+                       y: CGFloat) -> CGSize
+    {
+        lineView.setContent(content)
+        let size = lineView.size(availableWidth: width - x)
+        lineView.frame = CGRect(x: x, y: y, width: size.width, height: size.height)
+        return size
+    }
+
+    private func render() {
+        let posts = chat.posts.prefix(settings.maximumNumberOfMessages).reversed()
+            .filter { !$0.state.deleted }
+        stateCancellables = posts.map { post in
+            post.state.objectWillChange.sink { [weak self] _ in
+                self?.scheduleRender()
             }
         }
-        .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding(.leading, 5)
-        .font(.system(size: CGFloat(settings.fontSize)))
-        .background(backgroundColor())
-        .foregroundStyle(.white)
-        .cornerRadius(5)
-    }
-}
-
-private struct PostView: View {
-    let settings: SettingsWidgetChat
-    let post: ChatPost
-    @ObservedObject var state: ChatPostState
-    let moreThanOneStreamingPlatform: Bool
-
-    var body: some View {
-        if !state.deleted {
+        let style = makeChatLineStyle(settings: settings)
+        var lineIndex = 0
+        var barIndex = 0
+        var y: CGFloat = 0
+        for (index, post) in posts.enumerated() {
+            if index > 0 {
+                y += 1
+            }
+            let startY = y
+            var x: CGFloat = 3
+            var highlightImageLineView: ChatLineUiView?
+            var highlightImageSize = CGSize.zero
             if let highlight = post.highlight {
-                HStack(spacing: 0) {
-                    Rectangle()
-                        .frame(width: 3)
-                        .foregroundStyle(highlight.barColor)
-                    VStack(alignment: .leading, spacing: 1) {
-                        HighlightMessageView(settings: settings, highlight: highlight)
-                        LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
-                    }
-                }
-            } else {
-                LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
-                    .padding(.leading, 3)
+                var highlightStyle = style
+                highlightStyle.backgroundColor = nil
+                let lineView = lineView(index: lineIndex)
+                lineView.setContent(highlightStyle.makeHighlightImageContent(highlight: highlight))
+                highlightImageSize = lineView.size(availableWidth: width - x)
+                highlightImageLineView = lineView
+                lineIndex += 1
+                x += highlightImageSize.width
+            }
+            let content = style.makeContent(post: post,
+                                            platform: chat.moreThanOneStreamingPlatform,
+                                            deleted: false)
+            let size = place(lineView: lineView(index: lineIndex), content: content, x: x, y: y)
+            lineIndex += 1
+            highlightImageLineView?.frame = CGRect(x: 3,
+                                                   y: y + (size.height - highlightImageSize.height) / 2,
+                                                   width: highlightImageSize.width,
+                                                   height: highlightImageSize.height)
+            y += size.height
+            if let highlight = post.highlight {
+                let barLayer = barLayer(index: barIndex)
+                barLayer.backgroundColor = UIColor(highlight.barColor).cgColor
+                barLayer.frame = CGRect(x: 0, y: startY, width: 3, height: y - startY)
+                barIndex += 1
             }
         }
-    }
-}
-
-private struct ChatView: View {
-    @ObservedObject var settings: SettingsWidgetChat
-    @ObservedObject var chat: ChatProvider
-
-    private func width() -> Double {
-        20 * Double(settings.fontSize)
-    }
-
-    var body: some View {
-        VStack(spacing: 1) {
-            Spacer()
-            ForEach(chat.posts.prefix(settings.maximumNumberOfMessages).reversed()) { post in
-                HStack {
-                    PostView(settings: settings,
-                             post: post,
-                             state: post.state,
-                             moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform)
-                    Spacer()
-                }
-            }
+        while lineViews.count > lineIndex {
+            let lineView = lineViews.removeLast()
+            lineView.unregister()
+            lineView.removeFromSuperview()
         }
-        .frame(width: width())
-        .foregroundStyle(.white)
+        while barLayers.count > barIndex {
+            barLayers.removeLast().removeFromSuperlayer()
+        }
+        guard y > 0 else {
+            onImage(nil)
+            return
+        }
+        containerView.frame = CGRect(x: 0, y: 0, width: width, height: y)
+        containerView.layoutIfNeeded()
+        for lineView in lineViews {
+            lineView.layer.displayIfNeeded()
+        }
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let image = UIGraphicsImageRenderer(size: containerView.bounds.size, format: format)
+            .image { context in
+                containerView.layer.render(in: context.cgContext)
+            }
+        onImage(image.cgImage)
     }
 }
 
 final class ChatEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var chatImage: EffectImageCgImage?
-    private var renderer: ImageRenderer<ChatView>?
+    private var renderer: ChatRenderer?
     private var settings = SettingsWidgetChat()
     private var height: Double = 1
     private let chat: ChatProvider
-    private var cancellable: AnyCancellable?
     private var started: Bool = false
 
     init(chat: ChatProvider) {
@@ -285,19 +244,15 @@ final class ChatEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func startInternal() {
-        renderer = ImageRenderer(content: ChatView(settings: settings, chat: chat))
-        cancellable = renderer?.objectWillChange.sink { [weak self] in
-            guard let self else {
-                return
-            }
-            setChatImage(image: renderer?.cgImage)
+        renderer = ChatRenderer(settings: settings, chat: chat) { [weak self] image in
+            self?.setChatImage(image: image)
         }
-        setChatImage(image: renderer?.cgImage)
     }
 
+    @MainActor
     private func stopInternal() {
+        renderer?.stop()
         renderer = nil
-        cancellable = nil
     }
 
     private func setChatImage(image: CGImage?) {
