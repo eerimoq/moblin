@@ -94,7 +94,7 @@ private class AudioMeasurement {
     private var windowStart: Double?
     private let windowDuration = 0.05
     private let windowInterval = 0.2
-    
+
     func input(sampleBuffer: CMSampleBuffer) -> Float? {
         let now = sampleBuffer.presentationTimeStamp.seconds
         let windowStart = windowStart ?? now
@@ -116,7 +116,7 @@ private class AudioMeasurement {
         }
         return peak()
     }
-    
+
     func reset() {
         currentPeak = 0.0
         windowStart = nil
