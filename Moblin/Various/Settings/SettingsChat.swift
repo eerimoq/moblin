@@ -650,7 +650,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var background: Bool = false
     @Published var sharedChatIcons: Bool = true
     @Published var bigGifScale: Float = defaultBigGifScale
-    @Published var compactEvents: Bool = false
+    @Published var compactEvents: Bool = true
 
     enum CodingKeys: CodingKey {
         case fontSize
@@ -868,7 +868,7 @@ class SettingsChat: Codable, ObservableObject {
         background = container.decode(.background, Bool.self, false)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
         bigGifScale = container.decode(.bigGifScale, Float.self, Self.defaultBigGifScale)
-        compactEvents = container.decode(.compactEvents, Bool.self, false)
+        compactEvents = container.decode(.compactEvents, Bool.self, true)
     }
 
     func getRotation() -> Double {
