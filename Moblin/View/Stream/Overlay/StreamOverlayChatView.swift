@@ -421,38 +421,102 @@ private struct ChatLabelView: View {
     }
 }
 
+private struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
 private struct SeparatorView: View {
     @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var activityFeed: ChatProvider
     let width: CGFloat
     let height: CGFloat
+    let activityFeedHeight: CGFloat
     @Binding var draggedActivityFeedHeight: Double?
     @State private var dragStartActivityFeedHeight: Double?
+    @State private var hasNewPosts = false
+    @State private var hideNewPostsTimer = SimpleTimer(queue: .main)
+
+    private func handleNewPost() {
+        guard activityFeedHeight == 0 else {
+            return
+        }
+        hasNewPosts = true
+        hideNewPostsTimer.startSingleShot(timeout: 60) {
+            hasNewPosts = false
+        }
+    }
+
+    private func clearNewPosts() {
+        hideNewPostsTimer.stop()
+        hasNewPosts = false
+    }
 
     var body: some View {
-        Rectangle()
-            .fill(.yellow)
-            .frame(width: width, height: separatorHeight)
-            .overlay {
-                Color.clear
-                    .frame(height: 44)
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                            .onChanged { value in
-                                let start = dragStartActivityFeedHeight ?? chatSettings.activityFeedHeight
-                                dragStartActivityFeedHeight = start
-                                draggedActivityFeedHeight = (start + value.translation.height / height)
-                                    .clamped(to: 0 ... 1)
-                            }
-                            .onEnded { _ in
-                                dragStartActivityFeedHeight = nil
-                                if let draggedActivityFeedHeight {
-                                    chatSettings.activityFeedHeight = draggedActivityFeedHeight
-                                }
-                                draggedActivityFeedHeight = nil
-                            }
-                    )
+        ZStack(alignment: .leading) {
+            if activityFeed.showLabel || activityFeedHeight > 0 {
+                Rectangle()
+                    .fill(.white)
+                    .frame(width: width, height: separatorHeight)
             }
+            HStack(spacing: 4) {
+                Triangle()
+                    .fill(.white)
+                    .frame(width: 12, height: 10)
+                if hasNewPosts {
+                    Text("New")
+                        .font(.caption2)
+                        .bold()
+                        .foregroundStyle(.black)
+                        .padding(.vertical, 2)
+                        .padding(.horizontal, 6)
+                        .background(.white)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+        .frame(width: width, height: separatorHeight, alignment: .leading)
+        .onChange(of: activityFeed.posts.first?.id) { _ in
+            handleNewPost()
+        }
+        .onChange(of: activityFeed.pausedPostsCount) { _ in
+            if activityFeed.pausedPostsCount > 0 {
+                handleNewPost()
+            }
+        }
+        .onChange(of: activityFeedHeight) { _ in
+            clearNewPosts()
+        }
+        .onDisappear {
+            clearNewPosts()
+        }
+        .overlay {
+            Color.clear
+                .frame(height: 44)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                        .onChanged { value in
+                            let start = dragStartActivityFeedHeight ?? chatSettings.activityFeedHeight
+                            dragStartActivityFeedHeight = start
+                            draggedActivityFeedHeight = (start + value.translation.height / height)
+                                .clamped(to: 0 ... 1)
+                        }
+                        .onEnded { _ in
+                            dragStartActivityFeedHeight = nil
+                            if let draggedActivityFeedHeight {
+                                chatSettings.activityFeedHeight = draggedActivityFeedHeight
+                            }
+                            draggedActivityFeedHeight = nil
+                        }
+                )
+        }
     }
 }
 
@@ -509,8 +573,10 @@ struct StreamOverlayChatView: View {
                         }
                         .frame(height: alertsHeight)
                     SeparatorView(chatSettings: chatSettings,
+                                  activityFeed: chatActivityFeed,
                                   width: width,
                                   height: splitHeight,
+                                  activityFeedHeight: alertsHeight,
                                   draggedActivityFeedHeight: $draggedAlertsHeight)
                         .zIndex(1)
                     MessagesView(model: model,
