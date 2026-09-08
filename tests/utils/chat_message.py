@@ -22,7 +22,7 @@ def first_message_highlight() -> dict:
 
 def gigantified_emote_highlight() -> dict:
     return highlight(
-        "other",
+        "gigantifiedEmote",
         (175, 82, 222),
         "arrow.up.backward.and.arrow.down.forward.square",
         "Gigantified emote",

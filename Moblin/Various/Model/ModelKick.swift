@@ -326,9 +326,8 @@ extension Model {
         text: String,
         title: String,
         color: Color,
-        image: String? = nil,
-        kind: ChatHighlightKind? = nil,
-        bits _: String? = nil
+        image: String,
+        kind: ChatHighlightKind
     ) {
         var id = 0
         appendChatMessage(platform: .kick,
@@ -347,9 +346,9 @@ extension Model {
                           isOwner: false,
                           bits: nil,
                           highlight: .init(
-                              kind: kind ?? .redemption,
+                              kind: kind,
                               barColor: color,
-                              image: image ?? "medal",
+                              image: image,
                               titleSegments: [ChatPostSegment(id: 0, text: title)]
                           ),
                           live: true)
@@ -410,7 +409,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "New subscriber"),
                 color: .cyan,
-                image: "party.popper"
+                image: "party.popper",
+                kind: .other
             )
         }
         playAlert(alert: .kickSubscription(event: event))
@@ -434,7 +434,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
-                image: "gift"
+                image: "gift",
+                kind: .other
             )
         }
         playAlert(alert: .kickGiftedSubscriptions(event: event))
@@ -455,7 +456,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Reward Redeemed"),
                 color: .green,
-                image: "medal.star"
+                image: "medal.star",
+                kind: .other
             )
         }
         playAlert(alert: .kickReward(event: event))
@@ -474,7 +476,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Host"),
                 color: .orange,
-                image: "person.3"
+                image: "person.3",
+                kind: .other
             )
         }
         playAlert(alert: .kickHost(event: event))
@@ -498,7 +501,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                     text: text,
                     title: title,
                     color: .red,
-                    image: "nosign"
+                    image: "nosign",
+                    kind: .other
                 )
             }
         }
@@ -518,7 +522,8 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: message,
                 title: String(localized: "Kicks"),
                 color: .green,
-                image: "suit.diamond"
+                image: "suit.diamond",
+                kind: .other
             )
         }
         playAlert(alert: .kickKicks(event: event))

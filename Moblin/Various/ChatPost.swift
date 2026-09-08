@@ -50,6 +50,7 @@ enum ChatHighlightKind: Codable {
     case reply
     case moderator
     case remoteControlAssistant
+    case gigantifiedEmote
 }
 
 struct ChatHighlight {
@@ -150,7 +151,7 @@ struct ChatHighlight {
 
     static func makeGigantifiedEmote() -> ChatHighlight {
         ChatHighlight(
-            kind: .other,
+            kind: .gigantifiedEmote,
             barColor: .purple,
             image: "arrow.up.backward.and.arrow.down.forward.square",
             titleSegments: makeChatPostTextSegments(text: String(localized: "Gigantified emote"))
@@ -190,6 +191,8 @@ struct ChatHighlight {
         case .moderator:
             .moderator
         case .remoteControlAssistant:
+            .other
+        case .gigantifiedEmote:
             .other
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
