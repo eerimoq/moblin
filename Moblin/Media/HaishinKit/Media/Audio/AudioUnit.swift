@@ -95,31 +95,7 @@ private class AudioMeasurement {
     private var windowStart: Double?
     private let windowDuration = 0.05
     private let windowInterval = 0.2
-
-    func input(samples: UnsafeMutablePointer<Float>, count: Int, time _: Double) {
-        for index in 0 ..< count {
-            let sample = abs(samples[index])
-            currentPeak = max(currentPeak, sample)
-        }
-    }
-
-    func input(samples: UnsafeMutablePointer<Int16>, count: Int, time _: Double) {
-        for index in 0 ..< count {
-            let sample = abs(Float(samples[index]) / Float(Int16.max))
-            currentPeak = max(currentPeak, sample)
-        }
-    }
-
-    func reset() {
-        currentPeak = 0.0
-        finalPeak = 0.0
-        windowStart = nil
-    }
-
-    func peak() -> Float {
-        20 * log10(finalPeak)
-    }
-
+    
     func input(sampleBuffer: CMSampleBuffer) -> Float? {
         let now = sampleBuffer.presentationTimeStamp.seconds
         let windowStart = windowStart ?? now
@@ -140,6 +116,30 @@ private class AudioMeasurement {
         return peak()
     }
     
+    func reset() {
+        currentPeak = 0.0
+        finalPeak = 0.0
+        windowStart = nil
+    }
+
+    private func input(samples: UnsafeMutablePointer<Float>, count: Int, time _: Double) {
+        for index in 0 ..< count {
+            let sample = abs(samples[index])
+            currentPeak = max(currentPeak, sample)
+        }
+    }
+
+    private func input(samples: UnsafeMutablePointer<Int16>, count: Int, time _: Double) {
+        for index in 0 ..< count {
+            let sample = abs(Float(samples[index]) / Float(Int16.max))
+            currentPeak = max(currentPeak, sample)
+        }
+    }
+
+    private func peak() -> Float {
+        20 * log10(finalPeak)
+    }
+
     private func finalize() {
         finalPeak = currentPeak
         currentPeak = 0
