@@ -83,10 +83,10 @@ struct ChatSettingsAppearanceView: View {
                             .onChange(of: chat.sharedChatIcons) { _ in
                                 model.reloadChatMessages()
                             }
-                    }
-                } footer: {
-                    if database.showAllSettings {
-                        Text("Animated emotes are fairly CPU intensive. Disable for less power usage.")
+                        Toggle("Compact events", isOn: $chat.compactEvents)
+                            .onChange(of: chat.compactEvents) { _ in
+                                model.reloadChatMessages()
+                            }
                     }
                 }
                 Section {

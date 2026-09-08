@@ -80,6 +80,27 @@ private struct HighlightMessageView: View {
     }
 }
 
+private struct HighlightImageView: View {
+    let chat: SettingsChat
+    let highlight: ChatHighlight
+
+    private func shadowColor() -> Color {
+        if chat.shadowColorEnabled {
+            chat.shadowColorColor
+        } else {
+            .clear
+        }
+    }
+
+    var body: some View {
+        Image(systemName: highlight.image)
+            .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
+            .font(.system(size: CGFloat(chat.fontSize)))
+            .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
+            .padding(.leading, 5)
+    }
+}
+
 private struct LineView: View {
     let deleted: Bool
     let post: ChatPost
@@ -248,10 +269,15 @@ private struct PostView: View {
                         Rectangle()
                             .frame(width: 3)
                             .foregroundStyle(highlight.barColor)
+                        if chatSettings.compactEvents {
+                            HighlightImageView(chat: chatSettings, highlight: highlight)
+                        }
                         VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(postState: post.state,
-                                                 chat: chatSettings,
-                                                 highlight: highlight)
+                            if !chatSettings.compactEvents {
+                                HighlightMessageView(postState: post.state,
+                                                     chat: chatSettings,
+                                                     highlight: highlight)
+                            }
                             LineView(deleted: state.deleted,
                                      post: post,
                                      chat: chatSettings,

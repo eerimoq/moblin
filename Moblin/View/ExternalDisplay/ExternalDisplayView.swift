@@ -28,6 +28,18 @@ private struct HighlightMessageView: View {
     }
 }
 
+private struct HighlightImageView: View {
+    let chat: SettingsChat
+    let highlight: ChatHighlight
+
+    var body: some View {
+        Image(systemName: highlight.image)
+            .foregroundStyle(highlight.messageColor())
+            .padding(.leading, 5)
+            .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
+    }
+}
+
 private struct LineView: View {
     let deleted: Bool
     let post: ChatPost
@@ -135,8 +147,13 @@ private struct PostView: View {
                         Rectangle()
                             .frame(width: 3)
                             .foregroundStyle(highlight.barColor)
+                        if chatSettings.compactEvents {
+                            HighlightImageView(chat: chatSettings, highlight: highlight)
+                        }
                         VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(chat: chatSettings, highlight: highlight)
+                            if !chatSettings.compactEvents {
+                                HighlightMessageView(chat: chatSettings, highlight: highlight)
+                            }
                             LineView(deleted: state.deleted,
                                      post: post,
                                      chat: chatSettings,
