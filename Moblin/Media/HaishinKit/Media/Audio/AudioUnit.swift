@@ -103,9 +103,9 @@ private class AudioMeasurement {
             return nil
         }
         _ = sampleBuffer.foreachAudioSample(float32: { samples, count in
-            input(samples: samples, count: count, time: now)
+            input(samples: samples, count: count)
         }, int16: { samples, count in
-            input(samples: samples, count: count, time: now)
+            input(samples: samples, count: count)
         })
         guard now >= windowStart + windowDuration else {
             return nil
@@ -122,14 +122,14 @@ private class AudioMeasurement {
         windowStart = nil
     }
 
-    private func input(samples: UnsafeMutablePointer<Float>, count: Int, time _: Double) {
+    private func input(samples: UnsafeMutablePointer<Float>, count: Int) {
         for index in 0 ..< count {
             let sample = abs(samples[index])
             currentPeak = max(currentPeak, sample)
         }
     }
 
-    private func input(samples: UnsafeMutablePointer<Int16>, count: Int, time _: Double) {
+    private func input(samples: UnsafeMutablePointer<Int16>, count: Int) {
         for index in 0 ..< count {
             let sample = abs(Float(samples[index]) / Float(Int16.max))
             currentPeak = max(currentPeak, sample)
