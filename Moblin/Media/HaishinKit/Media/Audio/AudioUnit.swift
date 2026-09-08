@@ -91,7 +91,6 @@ func makeChannelMap(
 
 private class AudioMeasurement {
     private var currentPeak: Float = 0.0
-    private var finalPeak: Float = 0.0
     private var windowStart: Double?
     private let windowDuration = 0.05
     private let windowInterval = 0.2
@@ -112,14 +111,12 @@ private class AudioMeasurement {
             return nil
         }
         self.windowStart = windowStart + windowInterval
-        finalPeak = currentPeak
         currentPeak = 0
         return peak()
     }
     
     func reset() {
         currentPeak = 0.0
-        finalPeak = 0.0
         windowStart = nil
     }
 
@@ -138,7 +135,7 @@ private class AudioMeasurement {
     }
 
     private func peak() -> Float {
-        20 * log10(finalPeak)
+        20 * log10(currentPeak)
     }
 }
 
