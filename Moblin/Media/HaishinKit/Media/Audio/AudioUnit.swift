@@ -112,7 +112,8 @@ private class AudioMeasurement {
             return nil
         }
         self.windowStart = windowStart + windowInterval
-        finalize()
+        finalPeak = currentPeak
+        currentPeak = 0
         return peak()
     }
     
@@ -138,11 +139,6 @@ private class AudioMeasurement {
 
     private func peak() -> Float {
         20 * log10(finalPeak)
-    }
-
-    private func finalize() {
-        finalPeak = currentPeak
-        currentPeak = 0
     }
 }
 
