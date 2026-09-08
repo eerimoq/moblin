@@ -1005,16 +1005,15 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelPollEnd(event: TwitchEventSubChannelPollEvent) {
         updateTwitchPoll(event: event, state: .completed)
         let text: String
-        if event.status == "archived" {
-            twitchPoll.message = String(localized: "Poll cancelled")
-            text = String(localized: "cancelled the poll: \(event.title)")
-        } else {
+        if event.status != "archived" {
             twitchPoll.message = String(localized: "Poll ended")
             if let winner = twitchPoll.choices.max(by: { $0.votes < $1.votes }) {
                 text = String(localized: "ended the poll: \(event.title) Winner: \(winner.title)")
             } else {
                 text = String(localized: "ended the poll: \(event.title)")
             }
+        } else {
+            return
         }
         twitchPoll.timer.startSingleShot(timeout: 60) { [weak self] in
             self?.removeTwitchPoll()
