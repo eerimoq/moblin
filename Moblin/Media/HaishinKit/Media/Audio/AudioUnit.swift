@@ -129,7 +129,6 @@ private class AudioMeasurement {
         let now = sampleBuffer.presentationTimeStamp.seconds
         let windowStart = windowStart ?? now
         self.windowStart = windowStart
-
         guard now >= windowStart else {
             return nil
         }
@@ -165,7 +164,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var talkbackPlayer: TalkbackPlayer?
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
-    private var meas = AudioMeasurement()
+    private var measurement = AudioMeasurement()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -199,7 +198,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if let device = params.device {
             try attachDevice(device)
         }
-        meas.reset()
+        measurement.reset()
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate) {
@@ -368,7 +367,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
 
         latestSampleBufferAppendTime = presentationTimeStamp
-        if let audioLevel = meas.input(sampleBuffer: sampleBuffer) {
+        if let audioLevel = measurement.input(sampleBuffer: sampleBuffer) {
             let numberOfAudioChannels = Int(
                 sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
             )
