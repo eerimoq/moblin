@@ -256,6 +256,9 @@ class Moblin:
             }
         )
 
+    def send_twitch_event_sub_notification(self, message: dict):
+        self._request({"twitchEventSubNotification": {"message": json.dumps(message)}})
+
     def set_gimbal_tracking(self, on: bool):
         self._request({"setGimbalTracking": {"on": on}})
 

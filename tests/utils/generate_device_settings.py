@@ -229,6 +229,25 @@ def text_widget_settings(name: str, widget_id: str, text):
     }
 
 
+def alerts_widget_settings(name: str, widget_id: str, image_id: str, sound_id: str):
+    alert = {"imageId": image_id, "soundId": sound_id}
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": WidgetType.ALERTS,
+        "enabled": True,
+        "alerts": {
+            "twitch": {
+                "follows": alert,
+                "subscriptions": alert,
+                "raids": alert,
+                "cheers": alert,
+                "cheerBits": [{"bits": 1, "alert": alert}],
+            }
+        },
+    }
+
+
 def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
     return {
         "id": widget_id,
