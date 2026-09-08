@@ -240,7 +240,7 @@ private struct PagesView: View {
 }
 
 struct ControlBarPortraitView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
 
     var body: some View {

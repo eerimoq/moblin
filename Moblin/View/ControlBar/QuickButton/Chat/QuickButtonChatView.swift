@@ -1129,6 +1129,7 @@ private struct ActionButtonsView: View {
 
 struct QuickButtonChatView: View {
     let model: Model
+    @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
@@ -1158,6 +1159,7 @@ struct QuickButtonChatView: View {
             }
             ActionButtonsView(model: model, selectedPost: $selectedPost)
         }
+        .padding(.bottom, orientation.isPortrait ? 5 : 0)
         .background(.black)
         .navigationTitle("Chat")
     }

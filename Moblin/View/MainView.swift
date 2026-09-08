@@ -164,7 +164,9 @@ private struct MenuView: View {
             }
         case .chat:
             NavigationStack {
-                QuickButtonChatView(model: model, quickButtonChat: model.quickButtonChatState)
+                QuickButtonChatView(model: model,
+                                    orientation: model.orientation,
+                                    quickButtonChat: model.quickButtonChatState)
                     .navigationBarTitleDisplayMode(.inline)
             }
         case .djiDevices:
@@ -491,6 +493,7 @@ struct MainView: View {
                                       chatSettings: model.database.chat,
                                       orientation: orientation,
                                       width: metrics.size.width)
+                        .padding(.bottom, orientation.isPortrait ? 5 : 0)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showDrawOnStream, model.stream.portrait {
@@ -534,7 +537,7 @@ struct MainView: View {
                         model.commitZoomX(amount: Float(amount))
                     }
             )
-            ControlBarPortraitView(quickButtons: quickButtons)
+            ControlBarPortraitView(model: model, quickButtons: quickButtons)
         }
     }
 
