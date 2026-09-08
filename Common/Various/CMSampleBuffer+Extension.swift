@@ -88,33 +88,8 @@ extension CMSampleBuffer {
         }
     }
 
-    func audioLevel() -> Float {
-        var sumOfSquares: Float = 0.0
-        var samplesCount = 0
-        let sampleBuffer = foreachAudioSample { samples, count in
-            samplesCount = min(count, 256)
-            for index in 0 ..< samplesCount {
-                sumOfSquares += samples[index] * samples[index]
-            }
-        } int16: { samples, count in
-            samplesCount = min(count, 256)
-            for index in 0 ..< samplesCount {
-                let normalized = Float(samples[index]) / Float(Int16.max)
-                sumOfSquares += normalized * normalized
-            }
-        }
-        guard sampleBuffer != nil, samplesCount > 0 else {
-            return .infinity
-        }
-        let rms = sqrt(sumOfSquares / Float(samplesCount))
-        guard rms > 0 else {
-            return defaultAudioLevel
-        }
-        return 20.0 * log10(rms)
-    }
-
-    private func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
-                                    int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
+    func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
+                            int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
     {
         guard let dataBuffer else {
             return nil

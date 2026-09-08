@@ -89,6 +89,49 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
+private class AudioMeasurement {
+    private var currentPeak: Float = 0.0
+    private var windowStart: Double = .nan
+    private let windowDuration = 0.05
+    private let windowInterval = 0.2
+
+    func input(sampleBuffer: CMSampleBuffer) -> Float? {
+        let now = sampleBuffer.presentationTimeStamp.seconds
+        if windowStart.isNaN {
+            windowStart = now
+        }
+        guard now >= windowStart else {
+            return nil
+        }
+        _ = sampleBuffer.foreachAudioSample(float32: { samples, count in
+            for index in 0 ..< count {
+                currentPeak = max(currentPeak, abs(samples[index]))
+            }
+        }, int16: { samples, count in
+            for index in 0 ..< count {
+                currentPeak = max(currentPeak, abs(Float(samples[index]) / Float(Int16.max)))
+            }
+        })
+        guard now >= windowStart + windowDuration else {
+            return nil
+        }
+        windowStart = windowStart + windowInterval
+        defer {
+            currentPeak = 0
+        }
+        return peak()
+    }
+
+    func reset() {
+        currentPeak = 0.0
+        windowStart = .nan
+    }
+
+    private func peak() -> Float {
+        20 * log10(currentPeak)
+    }
+}
+
 final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: AudioEncoder?
@@ -103,11 +146,11 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     let session = AVCaptureSession()
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
-    private var latestAudioStatusTime = 0.0
     private var talkbackCameraId: UUID?
     private var talkbackPlayer: TalkbackPlayer?
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
+    private var measurement = AudioMeasurement()
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -142,6 +185,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if let device = params.device {
             try attachDevice(device)
         }
+        measurement.reset()
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate) {
@@ -317,14 +361,15 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             numberOfDiscardedSampleBuffers = 0
         }
         latestSampleBufferAppendTime = presentationTimeStamp
-        if shouldUpdateAudioLevel(sampleBuffer) {
+        if let audioLevel = measurement.input(sampleBuffer: sampleBuffer) {
             let numberOfAudioChannels = Int(
                 sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
             )
-            let audioLevel: Float = muted ? .nan : sampleBuffer.audioLevel()
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: audioLevel,
-                             numberOfAudioChannels: numberOfAudioChannels)
+            updateAudioLevel(
+                sampleBuffer: sampleBuffer,
+                audioLevel: muted ? .nan : audioLevel,
+                numberOfAudioChannels: numberOfAudioChannels
+            )
         }
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
@@ -352,16 +397,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
         bufferedBuiltinAudio.appendSampleBuffer(sampleBuffer)
         return bufferedBuiltinAudio
-    }
-
-    private func shouldUpdateAudioLevel(_ sampleBuffer: CMSampleBuffer) -> Bool {
-        let now = sampleBuffer.presentationTimeStamp.seconds
-        if now - latestAudioStatusTime > 0.2 {
-            latestAudioStatusTime = now
-            return true
-        } else {
-            return false
-        }
     }
 
     private func updateAudioLevel(
