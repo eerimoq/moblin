@@ -110,11 +110,6 @@ private class AudioMeasurement {
         }
     }
 
-    func finalize() {
-        finalPeak = currentPeak
-        currentPeak = 0
-    }
-
     func reset() {
         currentPeak = 0.0
         finalPeak = 0.0
@@ -143,6 +138,11 @@ private class AudioMeasurement {
         self.windowStart = windowStart + windowInterval
         finalize()
         return peak()
+    }
+    
+    private func finalize() {
+        finalPeak = currentPeak
+        currentPeak = 0
     }
 }
 
@@ -365,7 +365,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             )
             numberOfDiscardedSampleBuffers = 0
         }
-
         latestSampleBufferAppendTime = presentationTimeStamp
         if let audioLevel = measurement.input(sampleBuffer: sampleBuffer) {
             let numberOfAudioChannels = Int(
@@ -377,7 +376,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 numberOfAudioChannels: numberOfAudioChannels
             )
         }
-
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
         }
