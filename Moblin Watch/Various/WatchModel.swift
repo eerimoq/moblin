@@ -365,9 +365,8 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func stopWorkout() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
         control.workoutActive = false
+        workoutSession?.stopActivity(with: .now)
     }
 
     private func startWorkoutAuthorized(type: WatchProtocolWorkoutType) {
@@ -595,11 +594,22 @@ extension WatchModel: WCSessionDelegate {
 
 extension WatchModel: HKWorkoutSessionDelegate {
     func workoutSession(
-        _: HKWorkoutSession,
-        didChangeTo _: HKWorkoutSessionState,
+        _ session: HKWorkoutSession,
+        didChangeTo toState: HKWorkoutSessionState,
         from _: HKWorkoutSessionState,
-        date _: Date
-    ) {}
+        date: Date
+    ) {
+        guard toState == .stopped, session === workoutSession, let builder = workoutBuilder else {
+            return
+        }
+        workoutSession = nil
+        workoutBuilder = nil
+        builder.endCollection(withEnd: date) { _, _ in
+            builder.finishWorkout { _, _ in
+                session.end()
+            }
+        }
+    }
 
     func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
 }
