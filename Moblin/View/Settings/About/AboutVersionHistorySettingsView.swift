@@ -8,6 +8,32 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "35.0.0", date: "2026-09-09", changes: [
+        "• Show wrong password message in remote control streamer.",
+        "• Make changing control bar background image crop less laggy.",
+        "• Simplify DjiDevice and GoPro code.",
+        "• Fix Twitch events filtering, especially shared chat.",
+        "• Simplify SSID selection.",
+        "• Show message if location permission is not allowed.",
+        "• Make scroll work in whole control bar.",
+        "• Align video to control bar when wide.",
+        "• Do not allow portrait streaming on Mac for now.",
+        "• Initial support for showing Twitch polls and predictions. 💡 Chat",
+        "• Remove recordings quick button.",
+        "• Various internal changes to events that may break something.",
+        "• Auto logout from Twitch if re-login is required.",
+        "• Compact events setting. 💡 3l3ktr0l4mpe",
+        "  • Compact by default.",
+        "• Activity feed separator redesign. 💡 Chat",
+        "• Vibe coded full rewrite of chat rendering for better performance.",
+        "  • No idea if it works =)",
+        "• Peak audio level. 🧑‍🏭 xcopy94",
+        "• Hide quick buttons in chat phone mode. 💡 Crozbo and chat",
+        "• Moderation actions in main chat in chat phone mode.",
+        "• Show suggestions on Twitch raid page.",
+        "• HTTP proxy optionally accessible from other devices.",
+        "• Initial support for Twitch poll and prediction management.",
+    ]),
     Version(version: "34.2138.0", date: "2026-09-06", changes: [
         "• !moblin custom <name> to define custom chat bot commands. Define format string with variables, much like for the text widget. 💡 Crozbo",
         "• Make animated chat emotes use less CPU.",
