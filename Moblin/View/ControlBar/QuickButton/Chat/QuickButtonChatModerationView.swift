@@ -543,8 +543,6 @@ private struct ActiveTwitchPollView: View {
                 HStack {
                     Text(choice.title)
                     Spacer()
-                    Text("\(choice.votes ?? 0) votes")
-                        .foregroundStyle(.secondary)
                 }
             }
         }
@@ -667,12 +665,7 @@ private struct TwitchPredictionOutcomeView: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text(outcome.title)
-                Text("\(outcome.channel_points ?? 0) points, \(outcome.users ?? 0) users")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
+            Text(outcome.title)
             Spacer()
             ExecutorView(executor: executor) {
                 BorderlessButtonView(text: "Resolve") {
