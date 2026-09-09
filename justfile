@@ -65,15 +65,8 @@ publish *args:
 machine-translate:
     python utils/translate.py Common/Localizable.xcstrings
 
-pack-exported-localizations:
-    #!/usr/bin/env bash
-    set -eu
-    cd "Moblin Localizations"
-    for f in * ; do
-        python ../utils/xliff.py "$f/Localized Contents/"*.xliff
-        zip -qr "$f.zip" "$f"
-        rm -rf "$f"
-    done
+export-localizations:
+    python utils/export_localizations.py
 
 web-remote-control-frontend-prepare:
     cd WebRemoteControlFrontend && \
