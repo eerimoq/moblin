@@ -303,12 +303,72 @@ private struct UserModerationItemView: View {
     }
 }
 
+private struct ActionRowView: View {
+    let text: LocalizedStringKey
+    let image: String
+    let action: (@escaping (OperationResult) -> Void) -> Void
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack {
+            IconAndTextLocalizedView(image: image, text: text)
+            Spacer()
+            ExecutorView(executor: executor) {
+                BorderlessButtonView(text: "Send") {
+                    executor.startProgress()
+                    action(executor.completed)
+                }
+            }
+        }
+    }
+}
+
 private struct PollOption: Identifiable {
     let id: UUID = .init()
     var text: String = ""
 }
 
-private struct CreatePollView: View {
+private func canCreatePoll(title: String, options: [PollOption]) -> Bool {
+    !title.trim().isEmpty && options.filter { !$0.text.trim().isEmpty }.count >= 2
+}
+
+private func pollOptionTitles(options: [PollOption]) -> [String] {
+    options.map { $0.text.trim() }.filter { !$0.isEmpty }
+}
+
+private struct PollOptionsSectionView: View {
+    let header: LocalizedStringKey
+    let placeholder: LocalizedStringKey
+    let kind: String
+    @Binding var options: [PollOption]
+    let maxCount: Int
+
+    var body: some View {
+        Section {
+            ForEach($options) { $option in
+                TextField(placeholder, text: $option.text)
+                    .deleteDisabled(options.count <= 2)
+                    .contextMenuDeleteButton(disabled: options.count <= 2) {
+                        options.removeAll { $0.id == option.id }
+                    }
+            }
+            .onDelete { offsets in
+                options.remove(atOffsets: offsets)
+            }
+            if options.count < maxCount {
+                AddButtonView {
+                    options.append(PollOption())
+                }
+            }
+        } header: {
+            Text(header)
+        } footer: {
+            SwipeLeftToDeleteHelpView(kind: kind)
+        }
+    }
+}
+
+private struct CreateKickPollView: View {
     let model: Model
     @State private var title: String = ""
     @State private var options = [PollOption(), PollOption()]
@@ -316,38 +376,16 @@ private struct CreatePollView: View {
     @State private var resultDisplayDuration: Int = 15
     @StateObject private var executor = Executor()
 
-    private func canExecute() -> Bool {
-        let trimmedTitle = title.trim()
-        let filledOptions = options.filter { !$0.text.trim().isEmpty }
-        return !trimmedTitle.isEmpty && filledOptions.count >= 2
-    }
-
     var body: some View {
         NavigationLinkView(text: "Create poll", image: "chart.bar") {
             Section("Title") {
                 TextField("Title", text: $title)
             }
-            Section {
-                ForEach($options) { $option in
-                    TextField("Option", text: $option.text)
-                        .deleteDisabled(options.count <= 2)
-                        .contextMenuDeleteButton(disabled: options.count <= 2) {
-                            options.removeAll { $0.id == option.id }
-                        }
-                }
-                .onDelete { offsets in
-                    options.remove(atOffsets: offsets)
-                }
-                if options.count < 6 {
-                    AddButtonView {
-                        options.append(PollOption())
-                    }
-                }
-            } header: {
-                Text("Options")
-            } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "an option"))
-            }
+            PollOptionsSectionView(header: "Options",
+                                   placeholder: "Option",
+                                   kind: String(localized: "an option"),
+                                   options: $options,
+                                   maxCount: 6)
             Section {
                 Picker("Duration", selection: $duration) {
                     ForEach([30, 120, 180, 240, 300], id: \.self) {
@@ -369,13 +407,13 @@ private struct CreatePollView: View {
                             executor.startProgress()
                             model.createKickPoll(
                                 title: title.trim(),
-                                options: options.map { $0.text.trim() }.filter { !$0.isEmpty },
+                                options: pollOptionTitles(options: options),
                                 duration: duration,
                                 resultDisplayDuration: resultDisplayDuration,
                                 onComplete: executor.completed
                             )
                         }
-                        .disabled(!canExecute())
+                        .disabled(!canCreatePoll(title: title, options: options))
                     }
                 }
             }
@@ -383,25 +421,7 @@ private struct CreatePollView: View {
     }
 }
 
-private struct DeletePollView: View {
-    let model: Model
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        HStack {
-            IconAndTextLocalizedView(image: "chart.bar", text: "Delete poll")
-            Spacer()
-            ExecutorView(executor: executor) {
-                BorderlessButtonView(text: "Send") {
-                    executor.startProgress()
-                    model.deleteKickPoll(onComplete: executor.completed)
-                }
-            }
-        }
-    }
-}
-
-private struct CreatePredictionView: View {
+private struct CreateKickPredictionView: View {
     let model: Model
     @State private var title = ""
     @State private var outcome1 = ""
@@ -443,6 +463,316 @@ private struct CreatePredictionView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private struct CreateTwitchPollView: View {
+    let model: Model
+    let onCreated: () -> Void
+    @State private var title = ""
+    @State private var options = [PollOption(), PollOption()]
+    @State private var duration = 60
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        Section("Title") {
+            TextField("Title", text: $title)
+        }
+        PollOptionsSectionView(header: "Choices",
+                               placeholder: "Choice",
+                               kind: String(localized: "a choice"),
+                               options: $options,
+                               maxCount: 5)
+        Section {
+            Picker("Duration", selection: $duration) {
+                ForEach([30, 60, 120, 180, 300, 600], id: \.self) {
+                    Text(formatShortDuration(seconds: $0))
+                }
+            }
+        }
+        Section {
+            HCenter {
+                ExecutorView(executor: executor) {
+                    CreateButtonView {
+                        executor.startProgress()
+                        model.createTwitchPoll(title: title.trim(),
+                                               choices: pollOptionTitles(options: options),
+                                               duration: duration)
+                        {
+                            executor.completed(result: $0)
+                            if $0.isSuccessful() {
+                                onCreated()
+                            }
+                        }
+                    }
+                    .disabled(!canCreatePoll(title: title, options: options))
+                }
+            }
+        }
+    }
+}
+
+private struct ActiveTwitchPollView: View {
+    let model: Model
+    let poll: TwitchApiPollData
+    let onEnded: () -> Void
+
+    private func end(status: TwitchApiPollStatus, onComplete: @escaping (OperationResult) -> Void) {
+        model.endTwitchPoll(id: poll.id, status: status) {
+            onComplete($0)
+            if $0.isSuccessful() {
+                onEnded()
+            }
+        }
+    }
+
+    var body: some View {
+        Section("Title") {
+            Text(poll.title)
+        }
+        Section("Choices") {
+            ForEach(poll.choices) { choice in
+                HStack {
+                    Text(choice.title)
+                    Spacer()
+                    Text("\(choice.votes ?? 0) votes")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        Section {
+            ActionRowView(text: "End poll", image: "stop") {
+                end(status: .terminated, onComplete: $0)
+            }
+            ActionRowView(text: "Archive poll", image: "archivebox") {
+                end(status: .archived, onComplete: $0)
+            }
+        } footer: {
+            Text("Ending the poll shows the final results. Archiving it hides them.")
+        }
+    }
+}
+
+private struct TwitchPollFormView: View {
+    let model: Model
+    @State private var loaded = false
+    @State private var poll: TwitchApiPollData?
+    @StateObject private var executor = Executor()
+
+    private func load() {
+        executor.startProgress()
+        model.getTwitchPolls {
+            switch $0 {
+            case let .success(polls):
+                poll = polls.first(where: { $0.isActive() })
+                executor.completedNoTimer(result: .success(Data()))
+            case .authError:
+                executor.completedNoTimer(result: .authError)
+            case .error:
+                executor.completedNoTimer(result: .error)
+            }
+        }
+    }
+
+    private func loadOnce() {
+        guard !loaded else {
+            return
+        }
+        loaded = true
+        load()
+    }
+
+    var body: some View {
+        ExecutorView(executor: executor, centerNonContent: true) {
+            if let poll {
+                ActiveTwitchPollView(model: model, poll: poll, onEnded: load)
+            } else {
+                CreateTwitchPollView(model: model, onCreated: load)
+            }
+        }
+        .onAppear {
+            loadOnce()
+        }
+    }
+}
+
+private struct TwitchPollView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLinkView(text: "Poll", image: "chart.bar") {
+            TwitchPollFormView(model: model)
+        }
+    }
+}
+
+private struct CreateTwitchPredictionView: View {
+    let model: Model
+    let onCreated: () -> Void
+    @State private var title = ""
+    @State private var outcomes = [PollOption(), PollOption()]
+    @State private var predictionWindow = 300
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        Section("Title") {
+            TextField("Title", text: $title)
+        }
+        PollOptionsSectionView(header: "Outcomes",
+                               placeholder: "Outcome",
+                               kind: String(localized: "an outcome"),
+                               options: $outcomes,
+                               maxCount: 10)
+        Section {
+            Picker("Duration", selection: $predictionWindow) {
+                ForEach([60, 300, 600, 1800], id: \.self) {
+                    Text(formatShortDuration(seconds: $0))
+                }
+            }
+        }
+        Section {
+            HCenter {
+                ExecutorView(executor: executor) {
+                    CreateButtonView {
+                        executor.startProgress()
+                        model.createTwitchPrediction(title: title.trim(),
+                                                     outcomes: pollOptionTitles(options: outcomes),
+                                                     predictionWindow: predictionWindow)
+                        {
+                            executor.completed(result: $0)
+                            if $0.isSuccessful() {
+                                onCreated()
+                            }
+                        }
+                    }
+                    .disabled(!canCreatePoll(title: title, options: outcomes))
+                }
+            }
+        }
+    }
+}
+
+private struct TwitchPredictionOutcomeView: View {
+    let outcome: TwitchApiPredictionOutcome
+    let action: (@escaping (OperationResult) -> Void) -> Void
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(outcome.title)
+                Text("\(outcome.channel_points ?? 0) points, \(outcome.users ?? 0) users")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            ExecutorView(executor: executor) {
+                BorderlessButtonView(text: "Resolve") {
+                    executor.startProgress()
+                    action(executor.completed)
+                }
+            }
+        }
+    }
+}
+
+private struct ActiveTwitchPredictionView: View {
+    let model: Model
+    let prediction: TwitchApiPredictionData
+    let onEnded: () -> Void
+
+    private func end(status: TwitchApiPredictionStatus,
+                     winningOutcomeId: String? = nil,
+                     onComplete: @escaping (OperationResult) -> Void)
+    {
+        model.endTwitchPrediction(id: prediction.id, status: status, winningOutcomeId: winningOutcomeId) {
+            onComplete($0)
+            if $0.isSuccessful() {
+                onEnded()
+            }
+        }
+    }
+
+    var body: some View {
+        Section("Title") {
+            Text(prediction.title)
+        }
+        Section {
+            ForEach(prediction.outcomes) { outcome in
+                TwitchPredictionOutcomeView(outcome: outcome) {
+                    end(status: .resolved, winningOutcomeId: outcome.id, onComplete: $0)
+                }
+            }
+        } header: {
+            Text("Outcomes")
+        } footer: {
+            Text("Resolve the prediction by selecting the winning outcome.")
+        }
+        Section {
+            if prediction.isActive() {
+                ActionRowView(text: "Lock prediction", image: "lock") {
+                    end(status: .locked, onComplete: $0)
+                }
+            }
+            ActionRowView(text: "Cancel prediction", image: "xmark") {
+                end(status: .canceled, onComplete: $0)
+            }
+        } footer: {
+            Text("Cancelling the prediction refunds all channel points.")
+        }
+    }
+}
+
+private struct TwitchPredictionFormView: View {
+    let model: Model
+    @State private var loaded = false
+    @State private var prediction: TwitchApiPredictionData?
+    @StateObject private var executor = Executor()
+
+    private func load() {
+        executor.startProgress()
+        model.getTwitchPredictions {
+            switch $0 {
+            case let .success(predictions):
+                prediction = predictions.first(where: { $0.isActive() || $0.isLocked() })
+                executor.completedNoTimer(result: .success(Data()))
+            case .authError:
+                executor.completedNoTimer(result: .authError)
+            case .error:
+                executor.completedNoTimer(result: .error)
+            }
+        }
+    }
+
+    private func loadOnce() {
+        guard !loaded else {
+            return
+        }
+        loaded = true
+        load()
+    }
+
+    var body: some View {
+        ExecutorView(executor: executor, centerNonContent: true) {
+            if let prediction {
+                ActiveTwitchPredictionView(model: model, prediction: prediction, onEnded: load)
+            } else {
+                CreateTwitchPredictionView(model: model, onCreated: load)
+            }
+        }
+        .onAppear {
+            loadOnce()
+        }
+    }
+}
+
+private struct TwitchPredictionView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLinkView(text: "Prediction", image: "sparkles") {
+            TwitchPredictionFormView(model: model)
         }
     }
 }
@@ -1030,6 +1360,8 @@ private struct TwitchView: View {
                     StartTwitchRaidView(model: model)
                     RunCommercialView(model: model)
                     SendAnnouncementView(model: model)
+                    TwitchPollView(model: model)
+                    TwitchPredictionView(model: model)
                 }
                 Section {
                     SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
@@ -1078,9 +1410,11 @@ private struct KickView: View {
             Form {
                 Section {
                     KickHostChannelView(model: model)
-                    CreatePollView(model: model)
-                    DeletePollView(model: model)
-                    CreatePredictionView(model: model)
+                    CreateKickPollView(model: model)
+                    ActionRowView(text: "Delete poll", image: "chart.bar") {
+                        model.deleteKickPoll(onComplete: $0)
+                    }
+                    CreateKickPredictionView(model: model)
                 }
                 Section {
                     SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)

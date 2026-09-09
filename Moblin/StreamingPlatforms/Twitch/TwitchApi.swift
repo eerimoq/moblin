@@ -157,6 +157,67 @@ struct TwitchApiChatBadges: Decodable {
     let data: [TwitchApiChatBadgesData]
 }
 
+enum TwitchApiPollStatus: String {
+    case terminated = "TERMINATED"
+    case archived = "ARCHIVED"
+}
+
+struct TwitchApiPollChoice: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let votes: Int?
+}
+
+struct TwitchApiPollData: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let choices: [TwitchApiPollChoice]
+    let status: String
+    let ends_at: String?
+
+    func isActive() -> Bool {
+        status == "ACTIVE"
+    }
+}
+
+struct TwitchApiPolls: Decodable {
+    let data: [TwitchApiPollData]
+}
+
+enum TwitchApiPredictionStatus: String {
+    case resolved = "RESOLVED"
+    case canceled = "CANCELED"
+    case locked = "LOCKED"
+}
+
+struct TwitchApiPredictionOutcome: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let color: String
+    let users: Int?
+    let channel_points: Int?
+}
+
+struct TwitchApiPredictionData: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let outcomes: [TwitchApiPredictionOutcome]
+    let status: String
+    let locked_at: String?
+
+    func isActive() -> Bool {
+        status == "ACTIVE"
+    }
+
+    func isLocked() -> Bool {
+        status == "LOCKED"
+    }
+}
+
+struct TwitchApiPredictions: Decodable {
+    let data: [TwitchApiPredictionData]
+}
+
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
 }
@@ -681,6 +742,106 @@ class TwitchApi {
                 onComplete(nil)
             }
         }
+    }
+
+    func getPolls(
+        broadcasterId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiPollData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("polls", [("broadcaster_id", broadcasterId)])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiPolls.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func createPoll(broadcasterId: String,
+                    title: String,
+                    choices: [String],
+                    duration: Int,
+                    onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "title": title,
+            "choices": choices.map { ["title": $0] },
+            "duration": duration,
+        ]
+        doPost(subPath: "polls", body: serialize(body), onComplete: onComplete)
+    }
+
+    func endPoll(broadcasterId: String,
+                 id: String,
+                 status: TwitchApiPollStatus,
+                 onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "id": id,
+            "status": status.rawValue,
+        ]
+        doPatch(subPath: "polls", body: serialize(body), onComplete: onComplete)
+    }
+
+    func getPredictions(
+        broadcasterId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiPredictionData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("predictions", [("broadcaster_id", broadcasterId)])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiPredictions.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func createPrediction(broadcasterId: String,
+                          title: String,
+                          outcomes: [String],
+                          predictionWindow: Int,
+                          onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "title": title,
+            "outcomes": outcomes.map { ["title": $0] },
+            "prediction_window": predictionWindow,
+        ]
+        doPost(subPath: "predictions", body: serialize(body), onComplete: onComplete)
+    }
+
+    func endPrediction(broadcasterId: String,
+                       id: String,
+                       status: TwitchApiPredictionStatus,
+                       winningOutcomeId: String?,
+                       onComplete: @escaping (OperationResult) -> Void)
+    {
+        var body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "id": id,
+            "status": status.rawValue,
+        ]
+        if let winningOutcomeId {
+            body["winning_outcome_id"] = winningOutcomeId
+        }
+        doPatch(subPath: "predictions", body: serialize(body), onComplete: onComplete)
     }
 
     private func doGet(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {

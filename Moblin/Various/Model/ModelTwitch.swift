@@ -450,6 +450,62 @@ extension Model {
             }
     }
 
+    func getTwitchPolls(onComplete: @escaping (NetworkResponse<[TwitchApiPollData]>) -> Void) {
+        createTwitchApi(stream: stream).getPolls(broadcasterId: stream.twitchChannelId,
+                                                 onComplete: onComplete)
+    }
+
+    func createTwitchPoll(title: String,
+                          choices: [String],
+                          duration: Int,
+                          onComplete: @escaping (OperationResult) -> Void)
+    {
+        createTwitchApi(stream: stream).createPoll(broadcasterId: stream.twitchChannelId,
+                                                   title: title,
+                                                   choices: choices,
+                                                   duration: duration,
+                                                   onComplete: onComplete)
+    }
+
+    func endTwitchPoll(id: String,
+                       status: TwitchApiPollStatus,
+                       onComplete: @escaping (OperationResult) -> Void)
+    {
+        createTwitchApi(stream: stream).endPoll(broadcasterId: stream.twitchChannelId,
+                                                id: id,
+                                                status: status,
+                                                onComplete: onComplete)
+    }
+
+    func getTwitchPredictions(onComplete: @escaping (NetworkResponse<[TwitchApiPredictionData]>) -> Void) {
+        createTwitchApi(stream: stream).getPredictions(broadcasterId: stream.twitchChannelId,
+                                                       onComplete: onComplete)
+    }
+
+    func createTwitchPrediction(title: String,
+                                outcomes: [String],
+                                predictionWindow: Int,
+                                onComplete: @escaping (OperationResult) -> Void)
+    {
+        createTwitchApi(stream: stream).createPrediction(broadcasterId: stream.twitchChannelId,
+                                                         title: title,
+                                                         outcomes: outcomes,
+                                                         predictionWindow: predictionWindow,
+                                                         onComplete: onComplete)
+    }
+
+    func endTwitchPrediction(id: String,
+                             status: TwitchApiPredictionStatus,
+                             winningOutcomeId: String? = nil,
+                             onComplete: @escaping (OperationResult) -> Void)
+    {
+        createTwitchApi(stream: stream).endPrediction(broadcasterId: stream.twitchChannelId,
+                                                      id: id,
+                                                      status: status,
+                                                      winningOutcomeId: winningOutcomeId,
+                                                      onComplete: onComplete)
+    }
+
     func startRaidTwitchChannel(
         channelId: String,
         onComplete: @escaping (OperationResult) -> Void
