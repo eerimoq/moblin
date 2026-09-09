@@ -88,6 +88,7 @@ private struct ChatStatusView: View {
             HStack(spacing: 2) {
                 if status.chatPlatformStatuses.isEmpty {
                     Text(status.statusChatText)
+                        .foregroundStyle(.white)
                 } else {
                     ForEach(status.chatPlatformStatuses, id: \.platform) {
                         ViewersLogoView(platform: $0.platform)
