@@ -47,6 +47,13 @@ private struct ExecutorView<Content: View>: View {
     var centerNonContent: Bool = false
     @ViewBuilder let content: () -> Content
 
+    private func handleState() {
+        if executor.state == .authError {
+            model.showModerationAuth = true
+            model.twitchLogin(stream: model.stream)
+        }
+    }
+
     var body: some View {
         Group {
             switch executor.state {
@@ -70,11 +77,11 @@ private struct ExecutorView<Content: View>: View {
                     .hCenter(centerNonContent)
             }
         }
+        .onAppear {
+            handleState()
+        }
         .onChange(of: executor.state) { _ in
-            if executor.state == .authError {
-                model.showModerationAuth = true
-                model.twitchLogin(stream: model.stream)
-            }
+            handleState()
         }
     }
 }
@@ -962,43 +969,23 @@ private struct TwitchRaidSuggestionsView: View {
 private struct TwitchRaidHistoryView: View {
     let model: Model
     let title: LocalizedStringKey
-    let channels: [SettingsStreamTwitchRaidChannel]
-    @State private var suggestions: [TwitchRaidSuggestion] = []
-
-    private func load() {
-        model.getTwitchStreams(stream: model.stream, userIds: channels.map(\.channelId)) { streams in
-            guard let streams else {
-                return
-            }
-            suggestions = makeTwitchRaidSuggestions(streams: streams, channels: channels)
-            fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
-                suggestions = $0
-            }
-        }
-    }
+    let suggestions: [TwitchRaidSuggestion]
 
     var body: some View {
-        Group {
-            if !suggestions.isEmpty {
-                Section {
-                    TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
-                } header: {
-                    Text(title)
-                }
-            }
-        }
-        .onAppear {
-            load()
+        Section {
+            TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
+        } header: {
+            Text(title)
         }
     }
 }
 
 @MainActor
 private func fetchTwitchRaidSuggestionImages(model: Model,
-                                             suggestions: [TwitchRaidSuggestion],
-                                             onComplete: @escaping ([TwitchRaidSuggestion]) -> Void)
+                                             userIds: [String],
+                                             onComplete: @escaping ([String: String]) -> Void)
 {
-    model.getTwitchUsers(stream: model.stream, userIds: suggestions.map(\.id)) { users in
+    model.getTwitchUsers(stream: model.stream, userIds: Array(Set(userIds))) { users in
         guard let users else {
             return
         }
@@ -1006,36 +993,24 @@ private func fetchTwitchRaidSuggestionImages(model: Model,
         for user in users {
             images[user.id] = user.profile_image_url
         }
-        onComplete(suggestions.map {
-            var suggestion = $0
-            suggestion.image = images[$0.id]
-            return suggestion
-        })
+        onComplete(images)
+    }
+}
+
+private func setTwitchRaidSuggestionImages(_ suggestions: [TwitchRaidSuggestion],
+                                           images: [String: String]) -> [TwitchRaidSuggestion]
+{
+    suggestions.map {
+        var suggestion = $0
+        suggestion.image = images[$0.id]
+        return suggestion
     }
 }
 
 private struct TwitchRaidFollowedChannelsView: View {
     let model: Model
-    @State private var suggestions: [TwitchRaidSuggestion] = []
-    @StateObject private var executor = Executor()
-
-    private func load() {
-        executor.startProgress()
-        model.getTwitchFollowedStreams(stream: model.stream) {
-            switch $0 {
-            case let .success(streams):
-                suggestions = makeTwitchRaidSuggestions(streams: streams)
-                executor.completedNoTimer(result: .success(Data()))
-                fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
-                    suggestions = $0
-                }
-            case .authError:
-                executor.completedNoTimer(result: .authError)
-            case .error:
-                executor.completedNoTimer(result: .error)
-            }
-        }
-    }
+    let suggestions: [TwitchRaidSuggestion]
+    @ObservedObject var executor: Executor
 
     var body: some View {
         Section {
@@ -1045,25 +1020,67 @@ private struct TwitchRaidFollowedChannelsView: View {
         } header: {
             Text("Followed channels")
         }
-        .onAppear {
-            load()
-        }
     }
 }
 
 private struct StartTwitchRaidView: View {
     let model: Model
+    @State private var raidsSent: [TwitchRaidSuggestion] = []
+    @State private var raidsReceived: [TwitchRaidSuggestion] = []
+    @State private var followedChannels: [TwitchRaidSuggestion] = []
+    @StateObject private var followedChannelsExecutor = Executor()
+
+    private func loadRaidHistory() {
+        let sentChannels = model.stream.twitchRaidsSent
+        let receivedChannels = model.stream.twitchRaidsReceived
+        let userIds = Set(sentChannels.map(\.channelId)).union(receivedChannels.map(\.channelId))
+        model.getTwitchStreams(stream: model.stream, userIds: Array(userIds)) { streams in
+            guard let streams else {
+                return
+            }
+            raidsSent = makeTwitchRaidSuggestions(streams: streams, channels: sentChannels)
+            raidsReceived = makeTwitchRaidSuggestions(streams: streams, channels: receivedChannels)
+            fetchTwitchRaidSuggestionImages(model: model,
+                                            userIds: raidsSent.map(\.id) + raidsReceived.map(\.id))
+            { images in
+                raidsSent = setTwitchRaidSuggestionImages(raidsSent, images: images)
+                raidsReceived = setTwitchRaidSuggestionImages(raidsReceived, images: images)
+            }
+        }
+    }
+
+    private func loadFollowedChannels() {
+        followedChannelsExecutor.startProgress()
+        model.getTwitchFollowedStreams(stream: model.stream) {
+            switch $0 {
+            case let .success(streams):
+                followedChannels = makeTwitchRaidSuggestions(streams: streams)
+                followedChannelsExecutor.completedNoTimer(result: .success(Data()))
+                fetchTwitchRaidSuggestionImages(model: model,
+                                                userIds: followedChannels.map(\.id))
+                { images in
+                    followedChannels = setTwitchRaidSuggestionImages(followedChannels, images: images)
+                }
+            case .authError:
+                followedChannelsExecutor.completedNoTimer(result: .authError)
+            case .error:
+                followedChannelsExecutor.completedNoTimer(result: .error)
+            }
+        }
+    }
 
     var body: some View {
         NavigationLinkView(text: "Raid channel", image: "play.tv") {
             TwitchRaidChannelSearchView(model: model)
-            TwitchRaidHistoryView(model: model,
-                                  title: "Raided before",
-                                  channels: model.stream.twitchRaidsSent)
-            TwitchRaidHistoryView(model: model,
-                                  title: "Raided you",
-                                  channels: model.stream.twitchRaidsReceived)
-            TwitchRaidFollowedChannelsView(model: model)
+            TwitchRaidHistoryView(model: model, title: "Raided before", suggestions: raidsSent)
+            TwitchRaidHistoryView(model: model, title: "Raided you", suggestions: raidsReceived)
+            TwitchRaidFollowedChannelsView(model: model,
+                                           suggestions: followedChannels,
+                                           executor: followedChannelsExecutor)
+        }
+        .onAppear {
+            loadRaidHistory()
+            loadFollowedChannels()
         }
     }
 }

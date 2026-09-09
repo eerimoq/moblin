@@ -525,11 +525,11 @@ extension Model {
         raid.message = String(localized: "Raiding \(channelName)")
         raid.progress.progress = 0
         raid.progress.goal = 90
-        raid.channelId = ""
-        raid.channelName = channelName
         searchTwitchChannel(stream: stream, channelName: channelLogin) {
             self.raid.channelImage = $0?.thumbnail_url ?? ""
-            self.raid.channelId = $0?.id ?? ""
+            if let channelId = $0?.id {
+                self.appendTwitchRaidSent(channelId: channelId, channelName: channelName)
+            }
         }
     }
 
@@ -541,7 +541,6 @@ extension Model {
     func twitchRaidCompleted() {
         raid.state = .completed
         raid.message = String(localized: "Raid completed!")
-        appendTwitchRaidSent(channelId: raid.channelId, channelName: raid.channelName)
         raid.timer.startSingleShot(timeout: 60) {
             self.removeRaid()
         }
@@ -559,29 +558,19 @@ extension Model {
     func removeRaid() {
         raid.state = .idle
         raid.channelImage = ""
-        raid.channelId = ""
-        raid.channelName = ""
         raid.timer.stop()
     }
 
     private func appendTwitchRaidSent(channelId: String, channelName: String) {
-        guard !channelId.isEmpty else {
-            return
-        }
         stream.twitchRaidsSent = appendTwitchRaidChannel(stream.twitchRaidsSent,
                                                          channelId: channelId,
                                                          channelName: channelName)
-        storeSettings()
     }
 
     private func appendTwitchRaidReceived(channelId: String, channelName: String) {
-        guard !channelId.isEmpty, channelId != stream.twitchChannelId else {
-            return
-        }
         stream.twitchRaidsReceived = appendTwitchRaidChannel(stream.twitchRaidsReceived,
                                                              channelId: channelId,
                                                              channelName: channelName)
-        storeSettings()
     }
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {

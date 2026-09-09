@@ -132,8 +132,6 @@ enum RaidState {
 class Raid: ObservableObject {
     @Published var state: RaidState = .idle
     @Published var channelImage: String = ""
-    var channelId: String = ""
-    var channelName: String = ""
     @Published var message: String = ""
     @Published var progress = ProgressBar()
     var timer = SimpleTimer(queue: .main)
