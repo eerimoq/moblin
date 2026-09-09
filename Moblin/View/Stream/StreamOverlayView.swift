@@ -189,6 +189,7 @@ struct StreamOverlayView: View {
                                            streamOverlay: model.streamOverlay,
                                            zoom: model.zoom,
                                            width: width)
+                        .padding(.trailing)
                 }
                 HStack {
                     LeftOverlayView(model: model, database: model.database)
@@ -198,6 +199,7 @@ struct StreamOverlayView: View {
                 HStack {
                     Spacer()
                     RightOverlayTopView(model: model, database: model.database)
+                        .padding(.trailing)
                 }
                 HStack {
                     StreamOverlayDebugView(debugOverlay: model.debugOverlay)
@@ -206,7 +208,7 @@ struct StreamOverlayView: View {
                 }
                 .allowsHitTesting(false)
             }
-            .padding([.trailing, .top])
+            .padding(.top)
         }
     }
 }
