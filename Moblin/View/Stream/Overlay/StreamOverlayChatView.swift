@@ -345,8 +345,10 @@ struct StreamOverlayChatView: View {
     @State private var draggedAlertsHeight: Double?
 
     private func heightFactor() -> CGFloat {
-        if fullSize || database.appMode == .chatPhone {
+        if fullSize {
             1
+        } else if database.appMode == .chatPhone {
+            0.96
         } else {
             chatSettings.height
         }
