@@ -421,10 +421,6 @@ struct QuickButtonsInnerView: View {
         model.togglePhotoShoot()
     }
 
-    private func isDisabled() -> Bool {
-        !model.isQuickButtonAllowed(type: button.type)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -1024,7 +1020,5 @@ struct QuickButtonsInnerView: View {
             }
         }
         .rotationEffect(.degrees(180))
-        .disabled(isDisabled())
-        .opacity(isDisabled() ? 0.5 : 1)
     }
 }

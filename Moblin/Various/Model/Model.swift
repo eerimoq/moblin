@@ -995,7 +995,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func updateQuickButtonPairs() {
         for page in 0 ..< controlBarPages {
             let buttons = database.quickButtons.filter { button in
-                button.enabled && button.page == page + 1
+                button.enabled && button.page == page + 1 && isQuickButtonAllowed(type: button.type)
             }
             var pairs: [QuickButtonPair] = []
             for index in stride(from: 0, to: buttons.count, by: 2) {
