@@ -1211,6 +1211,7 @@ class Database: Codable, ObservableObject {
     @Published var ingestsSoftwareVideoDecoding: Bool = false
     @Published var torchLevel: Float = 1.0
     @Published var appMode: SettingsAppMode = .streaming
+    var httpProxy: SettingsHttpProxy = .init()
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
@@ -1342,6 +1343,7 @@ class Database: Codable, ObservableObject {
         case ingestsSoftwareVideoDecoding
         case torchLevel
         case appMode
+        case httpProxy
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1434,6 +1436,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
         try container.encode(.torchLevel, torchLevel)
         try container.encode(.appMode, appMode)
+        try container.encode(.httpProxy, httpProxy)
     }
 
     init() {}
@@ -1594,6 +1597,9 @@ class Database: Codable, ObservableObject {
         ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
         torchLevel = container.decode(.torchLevel, Float.self, 1.0)
         appMode = container.decode(.appMode, SettingsAppMode.self, .streaming)
+        let httpProxyDefault = SettingsHttpProxy()
+        httpProxyDefault.enabled = debug.httpProxyToBeRemoved
+        httpProxy = container.decode(.httpProxy, SettingsHttpProxy.self, httpProxyDefault)
     }
 }
 

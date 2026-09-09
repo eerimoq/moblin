@@ -113,10 +113,11 @@ struct DebugSettingsView: View {
                     }
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
-                Toggle("Web browser bonding", isOn: $debug.httpProxy)
-                    .onChange(of: debug.httpProxy) { _ in
-                        model.httpProxyServerChanged()
-                    }
+                NavigationLink {
+                    HttpProxySettingsView(status: model.statusOther, httpProxy: model.database.httpProxy)
+                } label: {
+                    Text("HTTP proxy")
+                }
                 Toggle("SRT(LA) packet padding", isOn: $debug.packetPadding)
             } header: {
                 Text("Experimental")

@@ -51,7 +51,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var enhancedMoblinSrt: Bool = false
     @Published var videoBitrateChange: Bool = false
     var highQualityDownsamplingToBeRemoved: Bool = false
-    @Published var httpProxy: Bool = false
+    var httpProxyToBeRemoved: Bool = false
     @Published var packetPadding: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -134,7 +134,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
         try container.encode(.highQualityDownsampling, highQualityDownsamplingToBeRemoved)
-        try container.encode(.httpProxy3, httpProxy)
+        try container.encode(.httpProxy3, httpProxyToBeRemoved)
         try container.encode(.packetPadding, packetPadding)
     }
 
@@ -187,7 +187,7 @@ class SettingsDebug: Codable, ObservableObject {
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
         highQualityDownsamplingToBeRemoved = container.decode(.highQualityDownsampling, Bool.self, false)
-        httpProxy = container.decode(.httpProxy3, Bool.self, false)
+        httpProxyToBeRemoved = container.decode(.httpProxy3, Bool.self, false)
         packetPadding = container.decode(.packetPadding, Bool.self, false)
     }
 }

@@ -1,3 +1,4 @@
+import dnssd
 import Foundation
 import Network
 
@@ -43,17 +44,21 @@ class HttpConnectRequestParser: HttpParser {
 private class Connection: @unchecked Sendable {
     private let client: NWConnection
     private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
+    private let onStopped: @Sendable (Connection) -> Void
     private var destination: NWConnection?
     private var parser = HttpConnectRequestParser()
     private var tunneling = false
     private var body: Data?
+    private var stopping = false
     private let stopSoonTimer = SimpleTimer(queue: queue)
 
     init(_ connection: NWConnection,
-         _ networkInterfaceTypeSelector: NetworkInterfaceTypeSelector)
+         _ networkInterfaceTypeSelector: NetworkInterfaceTypeSelector,
+         _ onStopped: @escaping @Sendable (Connection) -> Void)
     {
         client = connection
         self.networkInterfaceTypeSelector = networkInterfaceTypeSelector
+        self.onStopped = onStopped
     }
 
     func start() {
@@ -61,11 +66,26 @@ private class Connection: @unchecked Sendable {
         receiveFromClient()
     }
 
+    func cancel() {
+        stopping = true
+        stopSoonTimer.stop()
+        client.cancel()
+        destination?.stateUpdateHandler = nil
+        destination?.cancel()
+        destination = nil
+    }
+
     private func stop() {
+        guard !stopping else {
+            return
+        }
+        stopping = true
         stopSoonTimer.startSingleShot(timeout: 10) { [weak self] in
-            self?.client.cancel()
-            self?.destination?.cancel()
-            self?.destination = nil
+            guard let self else {
+                return
+            }
+            cancel()
+            onStopped(self)
         }
     }
 
@@ -82,6 +102,7 @@ private class Connection: @unchecked Sendable {
                     self.handleDataConnecting(data: data)
                 }
             } else if isComplete {
+                self.closeWrite(self.destination)
                 self.stop()
             } else {
                 self.receiveFromClient()
@@ -131,16 +152,38 @@ private class Connection: @unchecked Sendable {
                 }
                 self.receiveFromClient()
                 self.receiveFromDestination()
-            case .failed:
-                self.sendResponseAndStop("\(version) 502 Bad Gateway\r\n\r\n")
-                if let interfaceType {
-                    self.networkInterfaceTypeSelector.markBad(interfaceType: interfaceType)
-                }
+            case let .waiting(error), let .failed(error):
+                self.handleDestinationNotConnected(connection, version, error, interfaceType)
             default:
                 break
             }
         }
         connection.start(queue: queue)
+    }
+
+    private func handleDestinationNotConnected(_ connection: NWConnection,
+                                               _ version: String,
+                                               _ error: NWError,
+                                               _ interfaceType: NWInterface.InterfaceType?)
+    {
+        connection.stateUpdateHandler = nil
+        connection.cancel()
+        destination = nil
+        sendResponseAndStop("\(version) 502 Bad Gateway\r\n\r\n")
+        if let interfaceType, !isDestinationError(error) {
+            networkInterfaceTypeSelector.markBad(interfaceType: interfaceType)
+        }
+    }
+
+    private func isDestinationError(_ error: NWError) -> Bool {
+        switch error {
+        case let .posix(code):
+            code == .ECONNREFUSED || code == .ECONNRESET
+        case let .dns(code):
+            code == kDNSServiceErr_NoSuchRecord || code == kDNSServiceErr_NoSuchName
+        default:
+            false
+        }
     }
 
     private func receiveFromDestination() {
@@ -153,11 +196,21 @@ private class Connection: @unchecked Sendable {
                 self.client.send(content: data, completion: .idempotent)
             }
             if isComplete {
+                self.closeWrite(self.client)
                 self.stop()
             } else {
                 self.receiveFromDestination()
             }
         }
+    }
+
+    private func closeWrite(_ connection: NWConnection?) {
+        connection?.send(
+            content: nil,
+            contentContext: .finalMessage,
+            isComplete: true,
+            completion: .idempotent
+        )
     }
 
     private func sendResponse(_ response: String) {
@@ -166,6 +219,7 @@ private class Connection: @unchecked Sendable {
 
     private func sendResponseAndStop(_ response: String) {
         client.send(content: response.utf8Data, completion: .contentProcessed { _ in
+            self.closeWrite(self.client)
             self.stop()
         })
     }
@@ -179,6 +233,9 @@ class HttpProxyServer: @unchecked Sendable {
     private var listener: NWListener?
     private let retryTimer = SimpleTimer(queue: queue)
     private var started = false
+    private var port: NWEndpoint.Port = .any
+    private var localNetwork = false
+    private var connections: [Connection] = []
     private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     weak var delegate: HttpProxyServerDelegate?
 
@@ -186,10 +243,10 @@ class HttpProxyServer: @unchecked Sendable {
         networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: queue)
     }
 
-    func start() {
+    func start(port: UInt16, localNetwork: Bool) {
         logger.info("http-proxy: Start")
         queue.async {
-            self.startInternal()
+            self.startInternal(port: .init(integerLiteral: port), localNetwork: localNetwork)
         }
     }
 
@@ -200,7 +257,9 @@ class HttpProxyServer: @unchecked Sendable {
         }
     }
 
-    private func startInternal() {
+    private func startInternal(port: NWEndpoint.Port, localNetwork: Bool) {
+        self.port = port
+        self.localNetwork = localNetwork
         started = true
         setupListener()
     }
@@ -210,12 +269,20 @@ class HttpProxyServer: @unchecked Sendable {
         retryTimer.stop()
         listener?.cancel()
         listener = nil
+        for connection in connections {
+            connection.cancel()
+        }
+        connections.removeAll()
     }
 
     private func setupListener() {
         let parameters = NWParameters.tcp
-        parameters.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host("127.0.0.1"), port: .any)
-        listener = try? NWListener(using: parameters)
+        if localNetwork {
+            listener = try? NWListener(using: parameters, on: port)
+        } else {
+            parameters.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host("127.0.0.1"), port: port)
+            listener = try? NWListener(using: parameters)
+        }
         listener?.stateUpdateHandler = handleStateUpdate
         listener?.newConnectionHandler = handleNewConnection
         listener?.start(queue: queue)
@@ -224,10 +291,10 @@ class HttpProxyServer: @unchecked Sendable {
     private func handleStateUpdate(_ newState: NWListener.State) {
         switch newState {
         case .ready:
-            if let port = listener?.port {
-                delegate?.httpProxyServerPortReady(port: port)
-            }
-        case .failed:
+            logger.info("http-proxy: Listening on port \(port)")
+            delegate?.httpProxyServerPortReady(port: port)
+        case let .failed(error):
+            logger.info("http-proxy: Listener failed with \(error)")
             retryTimer.startSingleShot(timeout: 1) { [weak self] in
                 guard let self, started else {
                     return
@@ -239,7 +306,15 @@ class HttpProxyServer: @unchecked Sendable {
         }
     }
 
-    private func handleNewConnection(_ connection: NWConnection) {
-        Connection(connection, networkInterfaceTypeSelector).start()
+    private func handleNewConnection(_ clientConnection: NWConnection) {
+        let connection = Connection(clientConnection, networkInterfaceTypeSelector) { [weak self] in
+            self?.removeConnection($0)
+        }
+        connections.append(connection)
+        connection.start()
+    }
+
+    private func removeConnection(_ connection: Connection) {
+        connections.removeAll(where: { $0 === connection })
     }
 }

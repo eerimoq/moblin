@@ -7,6 +7,7 @@ enum DefaultTcpPorts {
     static let moblinkStreamer: UInt16 = 7777
     static let mobcamStream: UInt16 = 7790
     static let whipServer: UInt16 = 8310
+    static let httpProxy: UInt16 = 8450
 }
 
 enum DefaultUdpPorts {

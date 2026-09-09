@@ -90,6 +90,7 @@ extension Model {
         loadFaceBackgroundImage()
         reloadDjiDevicesAfterSettingsImport()
         reloadGoProDevicesAfterSettingsImport()
+        reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
 

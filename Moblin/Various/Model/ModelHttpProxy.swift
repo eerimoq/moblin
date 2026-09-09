@@ -7,7 +7,8 @@ extension Model {
 
     func reloadHttpProxyServer() {
         stopHttpProxyServer()
-        if database.debug.httpProxy {
+        let httpProxy = database.httpProxy
+        if httpProxy.enabled || httpProxy.localNetwork {
             startHttpProxyServer()
         } else {
             proxyServerPortUpdated()
@@ -15,7 +16,7 @@ extension Model {
     }
 
     func getHttpProxyServerEndpoint() -> NWEndpoint? {
-        if database.debug.httpProxy, let httpProxyPort {
+        if database.httpProxy.enabled, let httpProxyPort {
             .hostPort(host: .init("127.0.0.1"), port: httpProxyPort)
         } else {
             nil
@@ -28,9 +29,10 @@ extension Model {
     }
 
     private func startHttpProxyServer() {
+        let httpProxy = database.httpProxy
         httpProxyServer = HttpProxyServer()
         httpProxyServer?.delegate = self
-        httpProxyServer?.start()
+        httpProxyServer?.start(port: httpProxy.port, localNetwork: httpProxy.localNetwork)
     }
 
     func stopHttpProxyServer() {
