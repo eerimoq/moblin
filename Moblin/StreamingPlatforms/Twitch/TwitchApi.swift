@@ -57,6 +57,10 @@ struct TwitchApiCreateStreamMarker: Decodable {
 }
 
 struct TwitchApiStreamData: Decodable {
+    let user_id: String
+    let user_name: String
+    let game_name: String
+    let title: String
     let viewer_count: Int
 }
 
@@ -461,6 +465,59 @@ class TwitchApi {
                 onComplete(.authError)
             case .error:
                 onComplete(.error)
+            }
+        }
+    }
+
+    func getFollowedStreams(
+        userId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiStreamData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("streams/followed", [("user_id", userId), ("first", "100")])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func getStreams(userIds: [String], onComplete: @escaping ([TwitchApiStreamData]?) -> Void) {
+        guard !userIds.isEmpty else {
+            onComplete([])
+            return
+        }
+        let parameters = userIds.prefix(100).map { ("user_id", $0) } + [("type", "live")]
+        doGet(subPath: makeUrl("streams", parameters)) {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
+    func getUsersByIds(ids: [String], onComplete: @escaping ([TwitchApiUser]?) -> Void) {
+        guard !ids.isEmpty else {
+            onComplete([])
+            return
+        }
+        doGet(subPath: makeUrl("users", ids.prefix(100).map { ("id", $0) })) {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
             }
         }
     }

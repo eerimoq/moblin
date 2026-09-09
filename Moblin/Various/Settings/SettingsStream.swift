@@ -940,6 +940,38 @@ class SettingsStreamTwitchReward: Codable, Identifiable {
     var alert: SettingsWidgetAlertsAlert = .init()
 }
 
+let maximumNumberOfTwitchRaidChannels = 10
+
+class SettingsStreamTwitchRaidChannel: Codable, Identifiable {
+    var id: String {
+        channelId
+    }
+
+    var channelId: String = ""
+    var channelName: String = ""
+    var timestamp: Date = .init()
+
+    init(channelId: String, channelName: String) {
+        self.channelId = channelId
+        self.channelName = channelName
+    }
+
+    func clone() -> SettingsStreamTwitchRaidChannel {
+        let new = SettingsStreamTwitchRaidChannel(channelId: channelId, channelName: channelName)
+        new.timestamp = timestamp
+        return new
+    }
+}
+
+func appendTwitchRaidChannel(_ channels: [SettingsStreamTwitchRaidChannel],
+                             channelId: String,
+                             channelName: String) -> [SettingsStreamTwitchRaidChannel]
+{
+    var channels = channels.filter { $0.channelId != channelId }
+    channels.insert(.init(channelId: channelId, channelName: channelName), at: 0)
+    return Array(channels.prefix(maximumNumberOfTwitchRaidChannels))
+}
+
 class SettingsStreamMultiStreamingDestination: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My destination")
     var id: UUID = .init()
@@ -1168,6 +1200,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchWantsToBeLoggedIn: Bool = false
     var twitchNotLoggedInCount: Int = 0
     var twitchRewards: [SettingsStreamTwitchReward] = []
+    var twitchRaidsSent: [SettingsStreamTwitchRaidChannel] = []
+    var twitchRaidsReceived: [SettingsStreamTwitchRaidChannel] = []
     @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
     @Published var kickChannelId: String?
@@ -1266,6 +1300,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case twitchWantsToBeLoggedIn
         case twitchNotLoggedInCount
         case twitchRewards
+        case twitchRaidsSent
+        case twitchRaidsReceived
         case twitchSendMessagesTo
         case kickChannelName
         case kickChannelId
@@ -1357,6 +1393,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.twitchWantsToBeLoggedIn, twitchWantsToBeLoggedIn)
         try container.encode(.twitchNotLoggedInCount, twitchNotLoggedInCount)
         try container.encode(.twitchRewards, twitchRewards)
+        try container.encode(.twitchRaidsSent, twitchRaidsSent)
+        try container.encode(.twitchRaidsReceived, twitchRaidsReceived)
         try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.twitchChatAlerts, twitchChatAlerts)
         try container.encode(.twitchToastAlerts, twitchToastAlerts)
@@ -1451,6 +1489,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         twitchWantsToBeLoggedIn = container.decode(.twitchWantsToBeLoggedIn, Bool.self, twitchLoggedIn)
         twitchNotLoggedInCount = container.decode(.twitchNotLoggedInCount, Int.self, 0)
         twitchRewards = container.decode(.twitchRewards, [SettingsStreamTwitchReward].self, [])
+        twitchRaidsSent = container.decode(.twitchRaidsSent, [SettingsStreamTwitchRaidChannel].self, [])
+        twitchRaidsReceived = container.decode(.twitchRaidsReceived,
+                                               [SettingsStreamTwitchRaidChannel].self,
+                                               [])
         twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         twitchChatAlerts = container.decode(.twitchChatAlerts, SettingsTwitchAlerts.self, .init())
         twitchToastAlerts = container.decode(.twitchToastAlerts, SettingsTwitchAlerts.self, .init())
@@ -1571,6 +1613,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.twitchChannelId = twitchChannelId
         new.twitchShowFollows = twitchShowFollows
         new.twitchRewards = twitchRewards
+        new.twitchRaidsSent = twitchRaidsSent.map { $0.clone() }
+        new.twitchRaidsReceived = twitchRaidsReceived.map { $0.clone() }
         new.twitchSendMessagesTo = twitchSendMessagesTo
         new.twitchChatAlerts = twitchChatAlerts.clone()
         new.twitchToastAlerts = twitchToastAlerts.clone()

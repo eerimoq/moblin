@@ -5,6 +5,7 @@ private let authorizeUrl = "https://id.twitch.tv/oauth2/authorize"
 let twitchMoblinAppClientId = "qv6bnocuwapqigeqjoamfhif0cv2xn"
 private let scopes = [
     "user:read:chat",
+    "user:read:follows",
     "user:write:chat",
     "moderator:read:followers",
     "moderator:read:blocked_terms",

@@ -519,64 +519,221 @@ private struct RaidChannelView: View {
     }
 }
 
-private struct StartTwitchRaidView: View {
+private struct TwitchRaidChannelSearchView: View {
     let model: Model
     @State private var searchText: String = ""
     @State private var channels: [TwitchApiChannel] = []
     @StateObject private var executor = Executor()
 
     var body: some View {
-        NavigationLinkView(text: "Raid channel", image: "play.tv") {
-            Section {
-                TextField("Search", text: $searchText)
-                    .autocapitalization(.none)
-                    .autocorrectionDisabled(true)
-                    .onChange(of: searchText) { _ in
-                        guard !searchText.isEmpty else {
-                            channels = []
-                            return
-                        }
-                        executor.startProgress()
-                        model.searchTwitchChannels(stream: model.stream, filter: searchText) {
-                            switch $0 {
-                            case let .success(channels):
-                                self.channels = channels.sorted(by: {
-                                    let searchText = searchText.lowercased()
-                                    let first = $0.display_name.lowercased()
-                                    let second = $1.display_name.lowercased()
-                                    if first.hasPrefix(searchText) {
-                                        return true
-                                    } else if second.hasPrefix(searchText) {
-                                        return false
-                                    } else {
-                                        return true
-                                    }
-                                })
-                                executor.completedNoTimer(result: .success(Data()))
-                            case .authError:
-                                executor.completedNoTimer(result: .authError)
-                            case .error:
-                                executor.completedNoTimer(result: .error)
-                            }
-                        }
+        Section {
+            TextField("Search", text: $searchText)
+                .autocapitalization(.none)
+                .autocorrectionDisabled(true)
+                .onChange(of: searchText) { _ in
+                    guard !searchText.isEmpty else {
+                        channels = []
+                        return
                     }
-            }
-            Section {
-                ExecutorView(executor: executor, centerNonContent: true) {
-                    ForEach(channels) { channel in
-                        RaidChannelView(buttonText: "Raid",
-                                        channel: channel.display_name,
-                                        category: channel.game_name,
-                                        title: channel.title,
-                                        image: channel.thumbnail_url,
-                                        isLive: true,
-                                        viewerCount: nil)
-                        {
-                            model.startRaidTwitchChannel(channelId: channel.id, onComplete: $0)
+                    executor.startProgress()
+                    model.searchTwitchChannels(stream: model.stream, filter: searchText) {
+                        switch $0 {
+                        case let .success(channels):
+                            self.channels = channels.sorted(by: {
+                                let searchText = searchText.lowercased()
+                                let first = $0.display_name.lowercased()
+                                let second = $1.display_name.lowercased()
+                                if first.hasPrefix(searchText) {
+                                    return true
+                                } else if second.hasPrefix(searchText) {
+                                    return false
+                                } else {
+                                    return true
+                                }
+                            })
+                            executor.completedNoTimer(result: .success(Data()))
+                        case .authError:
+                            executor.completedNoTimer(result: .authError)
+                        case .error:
+                            executor.completedNoTimer(result: .error)
                         }
                     }
                 }
+        }
+        Section {
+            ExecutorView(executor: executor, centerNonContent: true) {
+                ForEach(channels) { channel in
+                    RaidChannelView(buttonText: "Raid",
+                                    channel: channel.display_name,
+                                    category: channel.game_name,
+                                    title: channel.title,
+                                    image: channel.thumbnail_url,
+                                    isLive: true,
+                                    viewerCount: nil)
+                    {
+                        model.startRaidTwitchChannel(channelId: channel.id, onComplete: $0)
+                    }
+                }
             }
+        }
+    }
+}
+
+private struct TwitchRaidSuggestion: Identifiable {
+    let id: String
+    let name: String
+    let category: String
+    let title: String
+    let viewerCount: Int
+    var image: String?
+}
+
+private func makeTwitchRaidSuggestions(streams: [TwitchApiStreamData]) -> [TwitchRaidSuggestion] {
+    streams.map {
+        TwitchRaidSuggestion(id: $0.user_id,
+                             name: $0.user_name,
+                             category: $0.game_name,
+                             title: $0.title,
+                             viewerCount: $0.viewer_count)
+    }
+}
+
+private func makeTwitchRaidSuggestions(streams: [TwitchApiStreamData],
+                                       channels: [SettingsStreamTwitchRaidChannel])
+    -> [TwitchRaidSuggestion]
+{
+    var suggestions: [String: TwitchRaidSuggestion] = [:]
+    for suggestion in makeTwitchRaidSuggestions(streams: streams) {
+        suggestions[suggestion.id] = suggestion
+    }
+    return channels.compactMap { suggestions[$0.channelId] }
+}
+
+private struct TwitchRaidSuggestionsView: View {
+    let model: Model
+    let suggestions: [TwitchRaidSuggestion]
+
+    var body: some View {
+        ForEach(suggestions) { suggestion in
+            RaidChannelView(buttonText: "Raid",
+                            channel: suggestion.name,
+                            category: suggestion.category,
+                            title: suggestion.title,
+                            image: suggestion.image,
+                            isLive: true,
+                            viewerCount: suggestion.viewerCount)
+            {
+                model.startRaidTwitchChannel(channelId: suggestion.id, onComplete: $0)
+            }
+        }
+    }
+}
+
+private struct TwitchRaidHistoryView: View {
+    let model: Model
+    let title: LocalizedStringKey
+    let channels: [SettingsStreamTwitchRaidChannel]
+    @State private var suggestions: [TwitchRaidSuggestion] = []
+
+    private func load() {
+        model.getTwitchStreams(stream: model.stream, userIds: channels.map(\.channelId)) { streams in
+            guard let streams else {
+                return
+            }
+            suggestions = makeTwitchRaidSuggestions(streams: streams, channels: channels)
+            fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
+                suggestions = $0
+            }
+        }
+    }
+
+    var body: some View {
+        Group {
+            if !suggestions.isEmpty {
+                Section {
+                    TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
+                } header: {
+                    Text(title)
+                }
+            }
+        }
+        .onAppear {
+            load()
+        }
+    }
+}
+
+@MainActor
+private func fetchTwitchRaidSuggestionImages(model: Model,
+                                             suggestions: [TwitchRaidSuggestion],
+                                             onComplete: @escaping ([TwitchRaidSuggestion]) -> Void)
+{
+    model.getTwitchUsers(stream: model.stream, userIds: suggestions.map(\.id)) { users in
+        guard let users else {
+            return
+        }
+        var images: [String: String] = [:]
+        for user in users {
+            images[user.id] = user.profile_image_url
+        }
+        onComplete(suggestions.map {
+            var suggestion = $0
+            suggestion.image = images[$0.id]
+            return suggestion
+        })
+    }
+}
+
+private struct TwitchRaidFollowedChannelsView: View {
+    let model: Model
+    @State private var suggestions: [TwitchRaidSuggestion] = []
+    @StateObject private var executor = Executor()
+
+    private func load() {
+        executor.startProgress()
+        model.getTwitchFollowedStreams(stream: model.stream) {
+            switch $0 {
+            case let .success(streams):
+                suggestions = makeTwitchRaidSuggestions(streams: streams)
+                executor.completedNoTimer(result: .success(Data()))
+                fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
+                    suggestions = $0
+                }
+            case .authError:
+                executor.completedNoTimer(result: .authError)
+            case .error:
+                executor.completedNoTimer(result: .error)
+            }
+        }
+    }
+
+    var body: some View {
+        Section {
+            ExecutorView(executor: executor, centerNonContent: true) {
+                TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
+            }
+        } header: {
+            Text("Followed channels")
+        }
+        .onAppear {
+            load()
+        }
+    }
+}
+
+private struct StartTwitchRaidView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLinkView(text: "Raid channel", image: "play.tv") {
+            TwitchRaidChannelSearchView(model: model)
+            TwitchRaidHistoryView(model: model,
+                                  title: "Raided before",
+                                  channels: model.stream.twitchRaidsSent)
+            TwitchRaidHistoryView(model: model,
+                                  title: "Raided you",
+                                  channels: model.stream.twitchRaidsReceived)
+            TwitchRaidFollowedChannelsView(model: model)
         }
     }
 }
