@@ -428,18 +428,23 @@ struct ChatLineView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> ChatLineUiView {
         let view = ChatLineUiView()
-        if onTap != nil {
-            view.isUserInteractionEnabled = true
-            view.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator,
-                                                             action: #selector(Coordinator.handleTap)))
-        }
+        updateTap(view, context: context)
         view.setContent(content)
         return view
     }
 
     func updateUIView(_ view: ChatLineUiView, context: Context) {
-        context.coordinator.onTap = onTap
+        updateTap(view, context: context)
         view.setContent(content)
+    }
+
+    private func updateTap(_ view: ChatLineUiView, context: Context) {
+        context.coordinator.onTap = onTap
+        view.isUserInteractionEnabled = onTap != nil
+        if onTap != nil, view.gestureRecognizers?.isEmpty ?? true {
+            view.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator,
+                                                             action: #selector(Coordinator.handleTap)))
+        }
     }
 
     static func dismantleUIView(_ view: ChatLineUiView, coordinator _: Coordinator) {

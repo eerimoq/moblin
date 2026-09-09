@@ -1,7 +1,7 @@
 import Collections
 import SwiftUI
 
-private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
+private func makeChatLineStyle(chat: SettingsChat, interactive: Bool) -> ChatLineStyle {
     ChatLineStyle(
         fontSize: CGFloat(chat.fontSize),
         borderColor: chat.shadowColorEnabled ? chat.shadowColor.uiColor() : nil,
@@ -17,6 +17,7 @@ private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
         sharedChatIcons: chat.sharedChatIcons,
         animatedEmotes: chat.animatedEmotes,
         bigGifScale: chat.bigGifScale,
+        linkify: interactive,
         highlightSymbolColor: .white,
         highlightDefaultColor: chat.messageColorColor,
         nicknames: chat.nicknames,
@@ -28,12 +29,22 @@ private struct HighlightMessageView: View {
     let deleted: Bool
     let style: ChatLineStyle
     let highlight: ChatHighlight
+    let interactive: Bool
+    @Binding var linkUrl: URL?
+
+    private func onTap() -> ((URL?) -> Void)? {
+        guard interactive else {
+            return nil
+        }
+        return { linkUrl = $0 }
+    }
 
     var body: some View {
         if let titleSegments = highlight.titleSegments {
             ChatLineView(content: style.makeHighlightContent(highlight: highlight,
                                                              titleSegments: titleSegments,
-                                                             deleted: deleted))
+                                                             deleted: deleted),
+                         onTap: onTap())
         }
     }
 }
@@ -58,9 +69,26 @@ private struct LineView: View {
     let post: ChatPost
     let style: ChatLineStyle
     let platform: Bool
+    let interactive: Bool
+    @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
+
+    private func onTap() -> ((URL?) -> Void)? {
+        guard interactive else {
+            return nil
+        }
+        return { url in
+            if let url {
+                linkUrl = url
+            } else {
+                selectedPost = post
+            }
+        }
+    }
 
     var body: some View {
-        ChatLineView(content: style.makeContent(post: post, platform: platform, deleted: deleted))
+        ChatLineView(content: style.makeContent(post: post, platform: platform, deleted: deleted),
+                     onTap: onTap())
     }
 }
 
@@ -73,6 +101,9 @@ private struct PostView: View {
     let post: ChatPost
     @ObservedObject var state: ChatPostState
     let width: CGFloat
+    let interactive: Bool
+    @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     var body: some View {
         if post.user != nil {
@@ -89,19 +120,27 @@ private struct PostView: View {
                             if !chatSettings.compactEvents {
                                 HighlightMessageView(deleted: state.deleted,
                                                      style: style,
-                                                     highlight: highlight)
+                                                     highlight: highlight,
+                                                     interactive: interactive,
+                                                     linkUrl: $linkUrl)
                             }
                             LineView(deleted: state.deleted,
                                      post: post,
                                      style: style,
-                                     platform: moreThanOneStreamingPlatform)
+                                     platform: moreThanOneStreamingPlatform,
+                                     interactive: interactive,
+                                     selectedPost: $selectedPost,
+                                     linkUrl: $linkUrl)
                         }
                     }
                 } else {
                     LineView(deleted: state.deleted,
                              post: post,
                              style: style,
-                             platform: moreThanOneStreamingPlatform)
+                             platform: moreThanOneStreamingPlatform,
+                             interactive: interactive,
+                             selectedPost: $selectedPost,
+                             linkUrl: $linkUrl)
                         .padding(.leading, 3)
                 }
             }
@@ -119,6 +158,9 @@ private struct MessagesView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let width: CGFloat
+    let interactive: Bool
+    @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     private func tryPause() {
         guard chat.interactiveChat else {
@@ -143,7 +185,7 @@ private struct MessagesView: View {
     var body: some View {
         let rotation = chatSettings.getRotation()
         let scaleX = chatSettings.getScaleX()
-        let style = makeChatLineStyle(chat: chatSettings)
+        let style = makeChatLineStyle(chat: chatSettings, interactive: interactive)
         ScrollViewReader { proxy in
             ScrollView(showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 1) {
@@ -165,7 +207,10 @@ private struct MessagesView: View {
                                  moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
                                  post: post,
                                  state: post.state,
-                                 width: width)
+                                 width: width,
+                                 interactive: interactive,
+                                 selectedPost: $selectedPost,
+                                 linkUrl: $linkUrl)
                             .rotationEffect(Angle(degrees: rotation))
                             .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                     }
@@ -343,6 +388,12 @@ struct StreamOverlayChatView: View {
     let fullSize: Bool
 
     @State private var draggedAlertsHeight: Double?
+    @State private var selectedPost: ChatPost?
+    @State private var linkUrl: URL?
+
+    private func isInteractive() -> Bool {
+        database.appMode == .chatPhone
+    }
 
     private func heightFactor() -> CGFloat {
         if fullSize {
@@ -374,7 +425,10 @@ struct StreamOverlayChatView: View {
                     MessagesView(model: model,
                                  chatSettings: chatSettings,
                                  chat: chatActivityFeed,
-                                 width: width)
+                                 width: width,
+                                 interactive: isInteractive(),
+                                 selectedPost: $selectedPost,
+                                 linkUrl: $linkUrl)
                         .overlay {
                             if alertsHeight > 10 {
                                 ChatPausedView(chat: chatActivityFeed, alerts: true)
@@ -398,7 +452,10 @@ struct StreamOverlayChatView: View {
                     MessagesView(model: model,
                                  chatSettings: chatSettings,
                                  chat: chat,
-                                 width: width)
+                                 width: width,
+                                 interactive: isInteractive(),
+                                 selectedPost: $selectedPost,
+                                 linkUrl: $linkUrl)
                         .overlay {
                             ChatPausedView(chat: chat, alerts: false)
                         }
@@ -414,13 +471,25 @@ struct StreamOverlayChatView: View {
                     MessagesView(model: model,
                                  chatSettings: chatSettings,
                                  chat: chat,
-                                 width: width)
+                                 width: width,
+                                 interactive: isInteractive(),
+                                 selectedPost: $selectedPost,
+                                 linkUrl: $linkUrl)
                         .overlay {
                             ChatPausedView(chat: chat, alerts: false)
                         }
                         .frame(height: height)
                 }
             }
+            .overlay {
+                if isInteractive() {
+                    ChatActionButtonsView(model: model,
+                                          style: makeChatLineStyle(chat: chatSettings, interactive: true),
+                                          selectedPost: $selectedPost,
+                                          linkUrl: $linkUrl)
+                }
+            }
         }
+        .quickButtonChatLinkConfirmation(url: $linkUrl)
     }
 }
