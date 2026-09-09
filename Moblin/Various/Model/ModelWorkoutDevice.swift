@@ -37,6 +37,10 @@ extension Model {
         workoutDevices[device.id]?.getState() ?? .disconnected
     }
 
+    func isWorkoutDeviceCyclingSpeedCadence(device: SettingsWorkoutDevice) -> Bool {
+        workoutDevices[device.id]?.isCyclingSpeedCadenceDiscovered() ?? false
+    }
+
     func autoStartWorkoutDevices() {
         for device in database.workoutDevices.devices where device.enabled {
             enableWorkoutDevice(device: device)

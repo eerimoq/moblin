@@ -60,6 +60,10 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
         state
     }
 
+    func isCyclingSpeedCadenceDiscovered() -> Bool {
+        cyclingSpeedCadence.isAnyCharacteristicDiscovered()
+    }
+
     private func startInternal(deviceId: UUID?) {
         self.deviceId = deviceId
         reset()

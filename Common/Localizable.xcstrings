@@ -275438,7 +275438,7 @@
         }
       }
     },
-    "Used to calculate speed from cycling speed and cadence (CSC) sensors." : {
+    "Used to calculate speed from wheel revolutions." : {
 
     },
     "Useful when using an external camera and a portrait phone holder." : {

@@ -97,17 +97,19 @@ struct WorkoutDeviceSettingsView: View {
                         }
                         .disabled(!canEnable())
                 }
-                Section {
-                    TextEditNavigationView(
-                        title: String(localized: "Wheel circumference"),
-                        value: String(device.wheelCircumferenceMillimeters),
-                        onChange: isValidWheelCircumference,
-                        onSubmit: submitWheelCircumference,
-                        keyboardType: .numbersAndPunctuation,
-                        valueFormat: { "\($0) mm" }
-                    )
-                } footer: {
-                    Text("Used to calculate speed from cycling speed and cadence (CSC) sensors.")
+                if model.isWorkoutDeviceCyclingSpeedCadence(device: device) {
+                    Section {
+                        TextEditNavigationView(
+                            title: String(localized: "Wheel circumference"),
+                            value: String(device.wheelCircumferenceMillimeters),
+                            onChange: isValidWheelCircumference,
+                            onSubmit: submitWheelCircumference,
+                            keyboardType: .numbersAndPunctuation,
+                            valueFormat: { "\($0) mm" }
+                        )
+                    } footer: {
+                        Text("Used to calculate speed from wheel revolutions.")
+                    }
                 }
                 if device.enabled {
                     Section {
