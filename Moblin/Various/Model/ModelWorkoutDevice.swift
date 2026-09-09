@@ -75,6 +75,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
                 return
             }
             self.heartRates[device.name.lowercased()] = heartRate
+            self.addWorkoutHeartRate(heartRate)
         }
     }
 
@@ -82,6 +83,8 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         DispatchQueue.main.async {
             self.cyclingPower = power
             self.cyclingCadence = cadence
+            self.addWorkoutCyclingPower(power)
+            self.addWorkoutCyclingCadence(cadence)
         }
     }
 

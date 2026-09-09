@@ -9,6 +9,8 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "34.2138.0", date: "2026-09-06", changes: [
+        "• Store workout device data in workouts started on the iPhone.",
+        "  • Heart rate, cycling power and cycling cadence end up in the Health app.",
         "• !moblin custom <name> to define custom chat bot commands. Define format string with variables, much like for the text widget. 💡 Crozbo",
         "• Make animated chat emotes use less CPU.",
         "• Make chat message border use less CPU.",
