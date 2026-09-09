@@ -11,6 +11,8 @@ extension Model {
             return true
         }
         switch type {
+        case .torch:
+            return false
         case .gimbalTracking:
             return false
         case .workout:
