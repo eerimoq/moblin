@@ -642,6 +642,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
+    @Published var wheelCircumferenceMillimeters: Int = defaultWheelCircumferenceMillimeters
 
     enum CodingKeys: CodingKey {
         case id
@@ -649,6 +650,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         case enabled
         case bluetoothPeripheralName
         case bluetoothPeripheralId
+        case wheelCircumferenceMillimeters
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -658,6 +660,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.enabled, enabled)
         try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
         try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.wheelCircumferenceMillimeters, wheelCircumferenceMillimeters)
     }
 
     init() {}
@@ -669,6 +672,9 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        wheelCircumferenceMillimeters = container.decode(.wheelCircumferenceMillimeters,
+                                                         Int.self,
+                                                         defaultWheelCircumferenceMillimeters)
     }
 }
 

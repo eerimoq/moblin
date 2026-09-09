@@ -11,7 +11,9 @@ extension Model {
             workoutDevice.delegate = self
             workoutDevices[device.id] = workoutDevice
         }
-        workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+        let wheelCircumference = device.wheelCircumferenceMillimeters
+        workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId,
+                                         wheelCircumferenceMillimeters: wheelCircumference)
     }
 
     func disableWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -20,6 +22,10 @@ extension Model {
 
     private func getWorkoutDeviceSettings(device: WorkoutDevice) -> SettingsWorkoutDevice? {
         database.workoutDevices.devices.first(where: { workoutDevices[$0.id] === device })
+    }
+
+    func setWorkoutDeviceWheelCircumference(device: SettingsWorkoutDevice) {
+        workoutDevices[device.id]?.setWheelCircumference(millimeters: device.wheelCircumferenceMillimeters)
     }
 
     func setCurrentWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -78,10 +84,25 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
             self.cyclingPower = power
-            self.cyclingCadence = cadence
+            if let cadence {
+                self.cyclingCadence = cadence
+            }
+        }
+    }
+
+    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice,
+                                          metrics: WorkoutDeviceCyclingSpeedCadenceMetrics)
+    {
+        DispatchQueue.main.async {
+            if let cadence = metrics.cadence {
+                self.cyclingCadence = cadence
+            }
+            if let speed = metrics.speed {
+                self.cyclingSpeed = speed
+            }
         }
     }
 

@@ -576,6 +576,7 @@ extension Model {
             stepCount: workoutStepCount,
             cyclingPower: cyclingPower,
             cyclingCadence: cyclingCadence,
+            cyclingSpeed: cyclingSpeed,
             gForce: gForceManager?.getLatest()
         ))
     }

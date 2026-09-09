@@ -218475,6 +218475,9 @@
         }
       }
     },
+    "Show cycling speed" : {
+
+    },
     "Show date as %@" : {
       "localizations" : {
         "de" : {
@@ -275435,6 +275438,9 @@
         }
       }
     },
+    "Used to calculate speed from cycling speed and cadence (CSC) sensors." : {
+
+    },
     "Useful when using an external camera and a portrait phone holder." : {
       "localizations" : {
         "de" : {
@@ -283700,6 +283706,9 @@
           }
         }
       }
+    },
+    "Wheel circumference" : {
+
     },
     "Wheel of luck" : {
       "localizations" : {
