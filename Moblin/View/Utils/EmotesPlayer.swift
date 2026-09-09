@@ -48,6 +48,8 @@ private class AnimatedEmote {
     private let totalDuration: Double
     private var currentIndex = -1
     private var views: [WeakEmoteUiView] = []
+    private var contentContext: CGContext?
+    private var renderedFrames = 0
     private(set) var framesBytes = 0
     private(set) var lastUsedTime = CACurrentMediaTime()
 
@@ -125,6 +127,8 @@ private class AnimatedEmote {
         }
         frames = Array(repeating: nil, count: frames.count)
         framesBytes = 0
+        renderedFrames = 0
+        contentContext = nil
         currentIndex = -1
     }
 
@@ -149,63 +153,65 @@ private class AnimatedEmote {
         frames[index] = frame
         if let frame {
             framesBytes += frame.bytesPerRow * frame.height
+            renderedFrames += 1
+            if renderedFrames == frames.count {
+                contentContext = nil
+            }
         }
         return frame
     }
 
     private func render(sourceFrame: CGImage?) -> CGImage? {
-        guard let sourceFrame, let context = makeBitmapContext(width: width, height: height) else {
+        guard let sourceFrame else {
             return nil
         }
-        if let border {
-            guard let content = renderContent(sourceFrame: sourceFrame),
-                  let outline = tint(image: content, color: border.color)
-            else {
+        guard let border else {
+            guard let context = makeBitmapContext(width: width, height: height) else {
                 return nil
             }
-            let straight = CGFloat(border.width)
-            let diagonal = (straight * 0.7).rounded()
-            for (dx, dy) in [
-                (straight, 0),
-                (-straight, 0),
-                (0, straight),
-                (0, -straight),
-                (diagonal, diagonal),
-                (diagonal, -diagonal),
-                (-diagonal, diagonal),
-                (-diagonal, -diagonal),
-            ] {
-                context.draw(outline, in: contentRect.offsetBy(dx: dx, dy: dy))
-            }
-            context.draw(content, in: contentRect)
-        } else {
             context.interpolationQuality = .high
             context.draw(sourceFrame, in: contentRect)
+            return context.makeImage()
         }
+        guard let content = renderContent(sourceFrame: sourceFrame),
+              let context = makeBitmapContext(width: width, height: height)
+        else {
+            return nil
+        }
+        let straight = CGFloat(border.width)
+        let diagonal = (straight * 0.7).rounded()
+        for (dx, dy) in [
+            (straight, 0),
+            (-straight, 0),
+            (0, straight),
+            (0, -straight),
+            (diagonal, diagonal),
+            (diagonal, -diagonal),
+            (-diagonal, diagonal),
+            (-diagonal, -diagonal),
+        ] {
+            context.draw(content, in: contentRect.offsetBy(dx: dx, dy: dy))
+        }
+        context.setBlendMode(.sourceIn)
+        context.setFillColor(border.color.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.setBlendMode(.normal)
+        context.draw(content, in: contentRect)
         return context.makeImage()
     }
 
     private func renderContent(sourceFrame: CGImage) -> CGImage? {
-        let width = Int(contentRect.width)
-        let height = Int(contentRect.height)
-        guard let context = makeBitmapContext(width: width, height: height) else {
+        let rect = CGRect(x: 0, y: 0, width: contentRect.width, height: contentRect.height)
+        if contentContext == nil {
+            contentContext = makeBitmapContext(width: Int(rect.width), height: Int(rect.height))
+            contentContext?.interpolationQuality = .high
+        }
+        guard let contentContext else {
             return nil
         }
-        context.interpolationQuality = .high
-        context.draw(sourceFrame, in: CGRect(x: 0, y: 0, width: width, height: height))
-        return context.makeImage()
-    }
-
-    private func tint(image: CGImage, color: UIColor) -> CGImage? {
-        guard let context = makeBitmapContext(width: image.width, height: image.height) else {
-            return nil
-        }
-        let rect = CGRect(x: 0, y: 0, width: image.width, height: image.height)
-        context.draw(image, in: rect)
-        context.setBlendMode(.sourceIn)
-        context.setFillColor(color.cgColor)
-        context.fill(rect)
-        return context.makeImage()
+        contentContext.clear(rect)
+        contentContext.draw(sourceFrame, in: rect)
+        return contentContext.makeImage()
     }
 }
 
@@ -352,7 +358,7 @@ class EmotesPlayer: NSObject, ObservableObject {
         let isAnimating = emotes.values.contains(where: { $0.isAnimated() && $0.isUsed() })
         if isAnimating, displayLink == nil {
             let displayLink = CADisplayLink(target: self, selector: #selector(tick))
-            displayLink.preferredFrameRateRange = CAFrameRateRange(minimum: 10, maximum: 30, preferred: 30)
+            displayLink.preferredFrameRateRange = CAFrameRateRange(minimum: 10, maximum: 15, preferred: 15)
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         } else if !isAnimating, displayLink != nil {
