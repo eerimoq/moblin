@@ -58,7 +58,7 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     args = parser.parse_args()
     check_dependencies()
     logging.getLogger("urllib3.connectionpool").setLevel(logging.INFO)
-    logging.getLogger("websockets.client").setLevel(logging.INFO)
+    logging.getLogger("websockets").setLevel(logging.WARNING)
     config = Config()
     if args.arduino_serial_port:
         arduino = Arduino(args.arduino_serial_port)
