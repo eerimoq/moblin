@@ -80,6 +80,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
 
     func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
         DispatchQueue.main.async {
+            self.latestWorkoutDeviceCyclingUpdate = .now
             self.cyclingPower = power
             self.cyclingCadence = cadence
         }

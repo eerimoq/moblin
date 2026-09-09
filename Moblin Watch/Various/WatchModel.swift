@@ -17,6 +17,7 @@ private let healthKitTypes: Set<HKSampleType> = [
     .quantityType(forIdentifier: .activeEnergyBurned)!,
     .quantityType(forIdentifier: .runningPower)!,
     .quantityType(forIdentifier: .cyclingPower)!,
+    .quantityType(forIdentifier: .cyclingCadence)!,
 ]
 
 struct WatchChatPostSegment: Identifiable {
@@ -374,19 +375,23 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
         let addStepCount: Bool
+        let addCyclingMetrics: Bool
         switch type {
         case .walking:
             activityType = .walking
             preview.workoutType = "Walking"
             addStepCount = true
+            addCyclingMetrics = false
         case .running:
             activityType = .running
             preview.workoutType = "Running"
             addStepCount = true
+            addCyclingMetrics = false
         case .cycling:
             activityType = .cycling
             preview.workoutType = "Cycling"
             addStepCount = false
+            addCyclingMetrics = true
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -405,6 +410,16 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         if addStepCount {
             dataSource.enableCollection(
                 for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
+                predicate: nil
+            )
+        }
+        if addCyclingMetrics {
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingPower)!,
+                predicate: nil
+            )
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!,
                 predicate: nil
             )
         }

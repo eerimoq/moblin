@@ -671,6 +671,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
+    var latestWorkoutDeviceCyclingUpdate: ContinuousClock.Instant?
     var latestSubscriber = ""
     var latestFollower = ""
     private let periodicTimer20ms = SimpleTimer(queue: .main)
@@ -3364,6 +3365,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if let power = stats.power {
             workoutPower = power
+        }
+        guard !isWorkoutDeviceProvidingCycling() else {
+            return
+        }
+        if let cyclingPower = stats.cyclingPower {
+            self.cyclingPower = cyclingPower
+        }
+        if let cyclingCadence = stats.cyclingCadence {
+            self.cyclingCadence = cyclingCadence
         }
     }
 }
