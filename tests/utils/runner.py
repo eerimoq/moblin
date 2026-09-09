@@ -7,6 +7,7 @@ from collections.abc import Callable
 import systest
 
 from .arduino import Arduino
+from .config import WEB_REMOTE_CONTROL_PORT
 from .config import Config
 from .dependencies import check_dependencies
 from .moblin import Moblin
@@ -74,6 +75,7 @@ def run(name: str, parser: argparse.ArgumentParser, make_tests: MakeTests):
     with moblin:
         moblin.end()
         moblin.stop_recording()
+        moblin.wait_for_tcp_ports(WEB_REMOTE_CONTROL_PORT, ip_address=moblin.ip_address)
         moblin.delete_all_recordings()
         sequencer.run(*make_tests(moblin, args))
     sequencer.report_and_exit(json=False, dot=False)
