@@ -259,11 +259,12 @@ class StatusTopLeft: ObservableObject {
 }
 
 class SystemMonitor: ObservableObject {
+    @Published var appCpu = 0
     @Published var cpu = 0
     @Published var ram = 0
 
     func format() -> String {
-        "\(cpu)% \(ram) MB"
+        "\(appCpu)%/\(cpu)% \(ram) MB"
     }
 
     func formatShort() -> String {
@@ -1799,7 +1800,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBitrateStatus()
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
-            resourceUsage.update()
+            resourceUsage.update(now: monotonicNow)
+            systemMonitor.appCpu = resourceUsage.getAppCpuUsage()
             systemMonitor.cpu = resourceUsage.getCpuUsage()
             systemMonitor.ram = resourceUsage.getMemoryUsage()
         }

@@ -134,13 +134,21 @@ extension CGSize {
 }
 
 class ResourceUsage {
+    private var previousTime: ContinuousClock.Instant?
+    private var previousUsage: rusage?
     private var previousCpuTicks: [[UInt32]]?
+    private var appCpuUsage: Float = 0
     private var cpuUsage: Float = 0
     private var memoryUsage: UInt64 = 0
 
-    func update() {
+    func update(now: ContinuousClock.Instant) {
+        updateAppCpuUsage(now: now)
         updateCpuUsage()
         updateMemoryUsage()
+    }
+
+    func getAppCpuUsage() -> Int {
+        Int(appCpuUsage)
     }
 
     func getCpuUsage() -> Int {
@@ -149,6 +157,21 @@ class ResourceUsage {
 
     func getMemoryUsage() -> Int {
         Int(memoryUsage)
+    }
+
+    private func updateAppCpuUsage(now: ContinuousClock.Instant) {
+        var usage = rusage()
+        guard getrusage(RUSAGE_SELF, &usage) == 0 else {
+            return
+        }
+        if let previousTime, let previousUsage {
+            let systemTime = usage.ru_stime.milliseconds - previousUsage.ru_stime.milliseconds
+            let userTime = usage.ru_utime.milliseconds - previousUsage.ru_utime.milliseconds
+            let time = Float(systemTime + userTime)
+            appCpuUsage = 100 * time / Float(previousTime.duration(to: now).milliseconds)
+        }
+        previousTime = now
+        previousUsage = usage
     }
 
     private func updateCpuUsage() {

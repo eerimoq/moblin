@@ -1,7 +1,7 @@
 import SDWebImage
 import SwiftUI
 
-private let maxFramesBytes = 32 * 1024 * 1024
+private let maxFramesBytes = 64 * 1024 * 1024
 private let unusedEmoteTimeout = 60.0
 
 enum ChatImageSource: Hashable {
@@ -227,14 +227,6 @@ class EmotesPlayer: NSObject, ObservableObject {
     private var failedUrls: [URL: Double] = [:]
     private var displayLink: CADisplayLink?
 
-    override init() {
-        super.init()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleMemoryWarning),
-                                               name: UIApplication.didReceiveMemoryWarningNotification,
-                                               object: nil)
-    }
-
     func size(source: ChatImageSource) -> CGSize? {
         if let size = sizes[source] {
             return size
@@ -380,10 +372,6 @@ class EmotesPlayer: NSObject, ObservableObject {
         if framesBytes > maxFramesBytes {
             evict(time: time)
         }
-    }
-
-    @objc private func handleMemoryWarning() {
-        evict(time: CACurrentMediaTime())
     }
 
     private func evict(time: Double) {
