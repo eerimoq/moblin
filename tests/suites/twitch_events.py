@@ -54,14 +54,14 @@ class TwitchEventsTestCase(TestCase):
     def send(self, *messages: dict):
         for message in messages:
             if self.moblin.is_interactive():
-                manual_confirmation(f"Get ready to validate an event.")
+                manual_confirmation("Get ready to validate an event.")
             self.moblin.send_twitch_event_sub_notification(message)
             time.sleep(2)
 
     def send_chat(self, *messages: dict):
         for message in messages:
             if self.moblin.is_interactive():
-                manual_confirmation(f"Get ready to validate a chat message.")
+                manual_confirmation("Get ready to validate a chat message.")
             self.moblin.send_chat_message(**message)
             time.sleep(2)
 
