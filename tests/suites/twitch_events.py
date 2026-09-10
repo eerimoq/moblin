@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 ALERTS_WIDGET_ID = uuid()
 ALERT_IMAGE_ID = uuid()
 ALERT_SOUND_ID = uuid()
+RAIDED_CHANNEL_NAME = "Oscar"
 
 
 class TwitchEventsTestCase(TestCase):
@@ -247,10 +248,27 @@ class TwitchEventsOutgoingRaid(TwitchEventsTestCase):
     """Send raid started and raid completed events, one per second."""
 
     def run(self):
-        manual_validation(LOGGER, "The raid status shows raiding Partner and then raid completed.")
+        manual_validation(
+            LOGGER,
+            f"The raid status shows raiding {RAIDED_CHANNEL_NAME} and then raid completed.",
+        )
         self.send(
-            events.moderate_raid(events.SHARED_CHAT_BROADCASTER_USER_NAME, 42),
-            events.outgoing_raid(events.SHARED_CHAT_BROADCASTER_USER_NAME, 42),
+            events.moderate_raid(RAIDED_CHANNEL_NAME, 42),
+            events.outgoing_raid(RAIDED_CHANNEL_NAME, 42),
+        )
+
+
+class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
+    """Send raid started and raid cancelled events, one per second."""
+
+    def run(self):
+        manual_validation(
+            LOGGER,
+            f"The raid status shows raiding {RAIDED_CHANNEL_NAME} and then raid cancelled.",
+        )
+        self.send(
+            events.moderate_raid(RAIDED_CHANNEL_NAME, 42),
+            events.moderate_unraid(RAIDED_CHANNEL_NAME),
         )
 
 
@@ -304,17 +322,6 @@ class TwitchEventsBigGif(TwitchEventsTestCase):
                     "https://media.giphy.com/media/l0MYDEPLWRWbJoRuU/100.gif"
                 ),
             },
-        )
-
-
-class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
-    """Send raid started and raid cancelled events, one per second."""
-
-    def run(self):
-        manual_validation(LOGGER, "The raid status shows raiding Partner and then raid cancelled.")
-        self.send(
-            events.moderate_raid(events.SHARED_CHAT_BROADCASTER_USER_NAME, 42),
-            events.moderate_unraid(events.SHARED_CHAT_BROADCASTER_USER_NAME),
         )
 
 
