@@ -71,17 +71,28 @@ class Workout: NSObject, @unchecked Sendable {
     }
 
     func stop() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
+        workoutSession?.stopActivity(with: .now)
     }
 }
 
 @available(iOS 26.0, *)
 extension Workout: HKWorkoutSessionDelegate {
-    func workoutSession(_: HKWorkoutSession,
-                        didChangeTo _: HKWorkoutSessionState,
+    func workoutSession(_ session: HKWorkoutSession,
+                        didChangeTo toState: HKWorkoutSessionState,
                         from _: HKWorkoutSessionState,
-                        date _: Date) {}
+                        date: Date)
+    {
+        guard toState == .stopped, session === workoutSession, let builder = workoutBuilder else {
+            return
+        }
+        workoutSession = nil
+        workoutBuilder = nil
+        builder.endCollection(withEnd: date) { _, _ in
+            builder.finishWorkout { _, _ in
+                session.end()
+            }
+        }
+    }
 
     func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
 }
