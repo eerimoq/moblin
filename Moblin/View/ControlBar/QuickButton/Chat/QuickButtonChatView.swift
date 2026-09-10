@@ -278,7 +278,16 @@ private struct RaidView: View {
                 if raid.state != .idle {
                     HStack {
                         ChannelImageView(image: raid.channelImage)
-                        Text(raid.message)
+                        VStack(alignment: .leading) {
+                            Text(raid.message)
+                            if let url = URL(string: "https://twitch.tv/\(raid.channelLogin)") {
+                                Link(destination: url) {
+                                    Text(String("twitch.tv/\(raid.channelLogin)"))
+                                        .font(.footnote)
+                                        .underline()
+                                }
+                            }
+                        }
                         Spacer()
                         Button {
                             close()

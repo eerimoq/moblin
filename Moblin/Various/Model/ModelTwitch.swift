@@ -523,6 +523,7 @@ extension Model {
 
     func twitchRaidStarted(channelLogin: String, channelName: String) {
         raid.state = .ongoing
+        raid.channelLogin = channelLogin
         raid.message = String(localized: "Raiding \(channelName)")
         raid.progress.progress = 0
         raid.progress.goal = 90
@@ -559,6 +560,7 @@ extension Model {
     func removeRaid() {
         raid.state = .idle
         raid.channelImage = ""
+        raid.channelLogin = ""
         raid.timer.stop()
     }
 
