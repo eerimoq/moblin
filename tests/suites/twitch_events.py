@@ -9,6 +9,7 @@ from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
+from ..utils.utils import manual_confirmation
 from ..utils.utils import manual_validation
 
 LOGGER = logging.getLogger(__name__)
@@ -51,11 +52,15 @@ class TwitchEventsTestCase(TestCase):
 
     def send(self, *messages: dict):
         for message in messages:
+            if self.moblin.is_interactive():
+                manual_confirmation(f"Get ready to validate an event.")
             self.moblin.send_twitch_event_sub_notification(message)
             time.sleep(2)
 
     def send_chat(self, *messages: dict):
         for message in messages:
+            if self.moblin.is_interactive():
+                manual_confirmation(f"Get ready to validate a chat message.")
             self.moblin.send_chat_message(**message)
             time.sleep(2)
 
