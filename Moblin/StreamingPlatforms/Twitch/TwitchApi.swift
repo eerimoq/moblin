@@ -550,12 +550,15 @@ class TwitchApi {
         }
     }
 
-    func getStreams(userIds: [String], onComplete: @escaping ([TwitchApiStreamData]?) -> Void) {
+    func getStreams(userIds: [String], live: Bool, onComplete: @escaping ([TwitchApiStreamData]?) -> Void) {
         guard !userIds.isEmpty else {
             onComplete([])
             return
         }
-        let parameters = userIds.prefix(100).map { ("user_id", $0) } + [("type", "live")]
+        var parameters = userIds.prefix(100).map { ("user_id", $0) }
+        if live {
+            parameters.append(("type", "live"))
+        }
         doGet(subPath: makeUrl("streams", parameters)) {
             switch $0 {
             case let .success(data):

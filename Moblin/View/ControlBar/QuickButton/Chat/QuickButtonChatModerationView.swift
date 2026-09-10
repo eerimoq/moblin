@@ -1027,7 +1027,7 @@ private struct StartTwitchRaidView: View {
         let sentChannels = model.stream.twitchRaidsSent
         let receivedChannels = model.stream.twitchRaidsReceived
         let userIds = Set(sentChannels.map(\.channelId)).union(receivedChannels.map(\.channelId))
-        model.getTwitchStreams(stream: model.stream, userIds: Array(userIds)) { streams in
+        model.getTwitchStreams(stream: model.stream, userIds: Array(userIds), live: true) { streams in
             guard let streams else {
                 return
             }

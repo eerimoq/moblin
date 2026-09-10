@@ -145,9 +145,10 @@ extension Model {
     func getTwitchStreams(
         stream: SettingsStream,
         userIds: [String],
+        live: Bool,
         onComplete: @escaping ([TwitchApiStreamData]?) -> Void
     ) {
-        createTwitchApi(stream: stream).getStreams(userIds: userIds, onComplete: onComplete)
+        createTwitchApi(stream: stream).getStreams(userIds: userIds, live: live, onComplete: onComplete)
     }
 
     func getTwitchUsers(
