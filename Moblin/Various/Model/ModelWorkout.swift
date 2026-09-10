@@ -17,7 +17,7 @@ private func types() -> Set<HKSampleType> {
 }
 
 @available(iOS 26.0, *)
-class Workout: NSObject, @unchecked Sendable {
+private class Workout: NSObject, @unchecked Sendable {
     static let shared = Workout()
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
@@ -82,14 +82,19 @@ extension Workout: HKWorkoutSessionDelegate {
                         from _: HKWorkoutSessionState,
                         date: Date)
     {
-        guard toState == .stopped, session === workoutSession, let builder = workoutBuilder else {
+        guard toState == .stopped else {
             return
         }
-        workoutSession = nil
-        workoutBuilder = nil
-        builder.endCollection(withEnd: date) { _, _ in
-            builder.finishWorkout { _, _ in
-                session.end()
+        DispatchQueue.main.async {
+            guard session === self.workoutSession, let builder = self.workoutBuilder else {
+                return
+            }
+            self.workoutSession = nil
+            self.workoutBuilder = nil
+            builder.endCollection(withEnd: date) { _, _ in
+                builder.finishWorkout { _, _ in
+                    session.end()
+                }
             }
         }
     }
