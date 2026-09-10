@@ -39,6 +39,7 @@ class CameraPosition(StrEnum):
 class WidgetType(StrEnum):
     ALERTS = "Alerts"
     BROWSER = "Browser"
+    CHAT = "Chat"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
     TEXT = "Text"
@@ -245,6 +246,16 @@ def alerts_widget_settings(name: str, widget_id: str, image_id: str, sound_id: s
                 "cheerBits": [{"bits": 1, "alert": alert}],
             }
         },
+    }
+
+
+def chat_widget_settings(name: str, widget_id: str, font_size: float):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": WidgetType.CHAT,
+        "enabled": True,
+        "chat": {"fontSize": font_size},
     }
 
 
