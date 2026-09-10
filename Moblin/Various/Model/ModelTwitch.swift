@@ -171,6 +171,12 @@ extension Model {
         }
     }
 
+    func getTwitchTokenExpiresIn(stream: SettingsStream, onComplete: @escaping (Duration?) -> Void) {
+        createTwitchApi(stream: stream).validateToken { data in
+            onComplete(data.map { .seconds($0.expires_in) })
+        }
+    }
+
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
         createTwitchApi(stream: stream).modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                                                  categoryId: nil,

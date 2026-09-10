@@ -218,6 +218,10 @@ struct TwitchApiPredictions: Decodable {
     let data: [TwitchApiPredictionData]
 }
 
+struct TwitchApiValidateTokenData: Decodable {
+    let expires_in: Int
+}
+
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
 }
@@ -260,6 +264,17 @@ class TwitchApi {
             "message": message.truncate(length: 500),
         ]
         doPost(subPath: "chat/messages", body: serialize(body), onComplete: onComplete)
+    }
+
+    func validateToken(onComplete: @escaping (TwitchApiValidateTokenData?) -> Void) {
+        doRequest(createRequest(url: URL(string: "https://id.twitch.tv/oauth2/validate")!, method: "GET")) {
+            switch $0 {
+            case let .success(data):
+                onComplete(try? JSONDecoder().decode(TwitchApiValidateTokenData.self, from: data))
+            default:
+                onComplete(nil)
+            }
+        }
     }
 
     func getUsers(onComplete: @escaping (TwitchApiUsers?) -> Void) {
