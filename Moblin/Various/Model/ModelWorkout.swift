@@ -24,9 +24,12 @@ private class Workout: NSObject, @unchecked Sendable {
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
 
+    func isActive() -> Bool {
+        workoutSession != nil
+    }
+
     func start(model: Model, type: WatchProtocolWorkoutType) {
         self.model = model
-        stop()
         #if !targetEnvironment(macCatalyst)
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
@@ -73,6 +76,16 @@ private class Workout: NSObject, @unchecked Sendable {
     func stop() {
         workoutSession?.stopActivity(with: .now)
     }
+
+    @MainActor
+    private func finished(session: HKWorkoutSession) {
+        guard session === workoutSession else {
+            return
+        }
+        workoutSession = nil
+        workoutBuilder = nil
+        model?.setIsWorkout(type: nil)
+    }
 }
 
 @available(iOS 26.0, *)
@@ -89,17 +102,26 @@ extension Workout: HKWorkoutSessionDelegate {
             guard session === self.workoutSession, let builder = self.workoutBuilder else {
                 return
             }
-            self.workoutSession = nil
-            self.workoutBuilder = nil
             builder.endCollection(withEnd: date) { _, _ in
                 builder.finishWorkout { _, _ in
                     session.end()
+                    DispatchQueue.main.async {
+                        self.finished(session: session)
+                    }
                 }
             }
         }
     }
 
-    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
+    func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
+        DispatchQueue.main.async {
+            guard session === self.workoutSession else {
+                return
+            }
+            session.end()
+            self.finished(session: session)
+        }
+    }
 }
 
 @available(iOS 26.0, *)
@@ -131,6 +153,13 @@ extension Model {
             return
         }
         authorizeHealthKit {
+            guard !Workout.shared.isActive() else {
+                self.makeErrorToast(
+                    title: String(localized: "Cannot start workout"),
+                    subTitle: String(localized: "The previous workout is still stopping. Try again.")
+                )
+                return
+            }
             self.setIsWorkout(type: type)
             Workout.shared.start(model: self, type: type)
         }
@@ -140,8 +169,10 @@ extension Model {
         guard #available(iOS 26, *) else {
             return
         }
-        setIsWorkout(type: nil)
         Workout.shared.stop()
+        if !Workout.shared.isActive() {
+            setIsWorkout(type: nil)
+        }
     }
 
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {

@@ -355,18 +355,23 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startWorkout(type: WatchProtocolWorkoutType) {
-        stopWorkout()
+        guard workoutSession == nil else {
+            return
+        }
         authorizeHealthKit {
             DispatchQueue.main.async {
                 self.startWorkoutAuthorized(type: type)
-                self.control.workoutActive = true
+                self.control.workoutActive = self.workoutSession != nil
             }
         }
     }
 
     func stopWorkout() {
-        control.workoutActive = false
-        workoutSession?.stopActivity(with: .now)
+        guard let workoutSession else {
+            control.workoutActive = false
+            return
+        }
+        workoutSession.stopActivity(with: .now)
     }
 
     private func startWorkoutAuthorized(type: WatchProtocolWorkoutType) {
@@ -520,6 +525,16 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         let message = WatchMessageFromWatch.pack(type: .createStreamMarker, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
+
+    @MainActor
+    private func finishedWorkout(session: HKWorkoutSession) {
+        guard session === workoutSession else {
+            return
+        }
+        workoutSession = nil
+        workoutBuilder = nil
+        control.workoutActive = false
+    }
 }
 
 extension WatchModel: WCSessionDelegate {
@@ -606,17 +621,26 @@ extension WatchModel: HKWorkoutSessionDelegate {
             guard session === self.workoutSession, let builder = self.workoutBuilder else {
                 return
             }
-            self.workoutSession = nil
-            self.workoutBuilder = nil
             builder.endCollection(withEnd: date) { _, _ in
                 builder.finishWorkout { _, _ in
                     session.end()
+                    DispatchQueue.main.async {
+                        self.finishedWorkout(session: session)
+                    }
                 }
             }
         }
     }
 
-    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
+    func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
+        DispatchQueue.main.async {
+            guard session === self.workoutSession else {
+                return
+            }
+            session.end()
+            self.finishedWorkout(session: session)
+        }
+    }
 }
 
 extension WatchModel: HKLiveWorkoutBuilderDelegate {
