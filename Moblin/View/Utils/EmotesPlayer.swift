@@ -1,7 +1,7 @@
 import SDWebImage
 import SwiftUI
 
-private let maxFramesBytes = 64 * 1024 * 1024
+private let maxFramesBytes = 256 * 1024 * 1024
 private let unusedEmoteTimeout = 60.0
 
 enum ChatImageSource: Hashable {
