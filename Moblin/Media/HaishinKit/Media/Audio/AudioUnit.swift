@@ -128,7 +128,10 @@ private class AudioMeasurement {
     }
 
     private func peak() -> Float {
-        20 * log10(currentPeak)
+        guard currentPeak > 0 else {
+            return defaultAudioLevel
+        }
+        return 20 * log10(currentPeak)
     }
 }
 
