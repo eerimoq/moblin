@@ -12,6 +12,7 @@ struct ChatLineTextStyle: Equatable {
 
 struct ChatLineImage: Equatable {
     let source: ChatImageSource
+    var animated = true
     var height: CGFloat?
     var horizontalPadding: CGFloat = 0
     var verticalPadding: CGFloat = 0
@@ -347,6 +348,7 @@ class ChatLineUiView: UIView {
             imageView.alpha = image.opacity
             imageView.setEmote(
                 source: image.source,
+                animated: image.animated,
                 borderColor: content.borderColor,
                 borderWidth: borderWidth
             )

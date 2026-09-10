@@ -17,6 +17,7 @@ private struct EmoteBorder: Hashable {
 
 private struct EmoteKey: Hashable {
     let source: ChatImageSource
+    let animated: Bool
     let height: Int
     let border: EmoteBorder?
 }
@@ -64,7 +65,9 @@ private class AnimatedEmote {
         )
         contentRect = CGRect(x: borderWidth, y: borderWidth, width: contentWidth, height: contentHeight)
         width = contentWidth + 2 * borderWidth
-        if let animatedImage = image as? SDAnimatedImage, animatedImage.animatedImageFrameCount > 1 {
+        if key.animated, let animatedImage = image as? SDAnimatedImage,
+           animatedImage.animatedImageFrameCount > 1
+        {
             self.animatedImage = animatedImage
             sourceImage = nil
             let frameCount = Int(animatedImage.animatedImageFrameCount)
@@ -389,6 +392,7 @@ class EmotesPlayer: NSObject, ObservableObject {
 class EmoteUiView: UIView {
     var onLoaded: (() -> Void)?
     private var source: ChatImageSource?
+    private var animated = true
     private var borderColor: UIColor?
     private var borderWidth: CGFloat = 0
     private var key: EmoteKey?
@@ -409,8 +413,13 @@ class EmoteUiView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setEmote(source: ChatImageSource, borderColor: UIColor? = nil, borderWidth: CGFloat = 0) {
+    func setEmote(source: ChatImageSource,
+                  animated: Bool = true,
+                  borderColor: UIColor? = nil,
+                  borderWidth: CGFloat = 0)
+    {
         self.source = source
+        self.animated = animated
         self.borderColor = borderColor
         self.borderWidth = borderWidth
         updateKey()
@@ -452,7 +461,7 @@ class EmoteUiView: UIView {
         if let borderColor, borderWidth > 0 {
             border = EmoteBorder(color: borderColor, width: Int((borderWidth * scale).rounded()))
         }
-        let key = EmoteKey(source: source, height: height, border: border)
+        let key = EmoteKey(source: source, animated: animated, height: height, border: border)
         guard key != self.key else {
             return
         }
