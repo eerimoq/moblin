@@ -82,10 +82,48 @@ private class Workout: NSObject {
         workoutSession?.stopActivity(with: .now)
     }
 
-    private func finished(session: HKWorkoutSession) {
+    private func handleStateChange(session: HKWorkoutSession,
+                                   toState: HKWorkoutSessionState,
+                                   fromState: HKWorkoutSessionState,
+                                   date: Date)
+    {
         guard session === workoutSession else {
             return
         }
+        logger.info("workout: State change \(fromState) -> \(toState)")
+        switch toState {
+        case .stopped:
+            guard let workoutBuilder else {
+                return
+            }
+            workoutBuilder.endCollection(withEnd: date) { _, error in
+                if let error {
+                    logger.info("workout: End collection error \(error)")
+                }
+                workoutBuilder.finishWorkout { _, error in
+                    if let error {
+                        logger.info("workout: Finish error \(error)")
+                    }
+                    session.end()
+                }
+            }
+        case .ended:
+            finished(session: session)
+        default:
+            break
+        }
+    }
+
+    private func handleError(session: HKWorkoutSession, error: any Error) {
+        guard session === workoutSession else {
+            return
+        }
+        logger.info("workout: Error \(error)")
+        session.end()
+        finished(session: session)
+    }
+
+    private func finished(session _: HKWorkoutSession) {
         logger.info("workout: Finished")
         workoutSession = nil
         workoutBuilder = nil
@@ -100,40 +138,14 @@ extension Workout: HKWorkoutSessionDelegate {
                                     from fromState: HKWorkoutSessionState,
                                     date: Date)
     {
-        logger.info("workout: State change \(fromState) -> \(toState)")
         DispatchQueue.main.async {
-            switch toState {
-            case .stopped:
-                guard session === self.workoutSession, let builder = self.workoutBuilder else {
-                    return
-                }
-                builder.endCollection(withEnd: date) { _, error in
-                    if let error {
-                        logger.info("workout: End collection error \(error)")
-                    }
-                    builder.finishWorkout { _, error in
-                        if let error {
-                            logger.info("workout: Finish error \(error)")
-                        }
-                        session.end()
-                    }
-                }
-            case .ended:
-                self.finished(session: session)
-            default:
-                break
-            }
+            self.handleStateChange(session: session, toState: toState, fromState: fromState, date: date)
         }
     }
 
     nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError error: any Error) {
-        logger.info("workout: Error \(error)")
         DispatchQueue.main.async {
-            guard session === self.workoutSession else {
-                return
-            }
-            session.end()
-            self.finished(session: session)
+            self.handleError(session: session, error: error)
         }
     }
 }

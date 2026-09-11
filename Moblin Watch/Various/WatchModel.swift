@@ -527,10 +527,41 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @MainActor
-    private func finishedWorkout(session: HKWorkoutSession) {
+    private func handleWorkoutStateChange(session: HKWorkoutSession,
+                                          toState: HKWorkoutSessionState,
+                                          date: Date)
+    {
         guard session === workoutSession else {
             return
         }
+        switch toState {
+        case .stopped:
+            guard let workoutBuilder else {
+                return
+            }
+            workoutBuilder.endCollection(withEnd: date) { _, _ in
+                workoutBuilder.finishWorkout { _, _ in
+                    session.end()
+                }
+            }
+        case .ended:
+            finishedWorkout(session: session)
+        default:
+            break
+        }
+    }
+
+    @MainActor
+    private func handleWorkoutError(session: HKWorkoutSession) {
+        guard session === workoutSession else {
+            return
+        }
+        session.end()
+        finishedWorkout(session: session)
+    }
+
+    @MainActor
+    private func finishedWorkout(session _: HKWorkoutSession) {
         workoutSession = nil
         workoutBuilder = nil
         control.workoutActive = false
@@ -615,31 +646,13 @@ extension WatchModel: HKWorkoutSessionDelegate {
         date: Date
     ) {
         DispatchQueue.main.async {
-            switch toState {
-            case .stopped:
-                guard session === self.workoutSession, let builder = self.workoutBuilder else {
-                    return
-                }
-                builder.endCollection(withEnd: date) { _, _ in
-                    builder.finishWorkout { _, _ in
-                        session.end()
-                    }
-                }
-            case .ended:
-                self.finishedWorkout(session: session)
-            default:
-                break
-            }
+            self.handleWorkoutStateChange(session: session, toState: toState, date: date)
         }
     }
 
     func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
         DispatchQueue.main.async {
-            guard session === self.workoutSession else {
-                return
-            }
-            session.end()
-            self.finishedWorkout(session: session)
+            self.handleWorkoutError(session: session)
         }
     }
 }
