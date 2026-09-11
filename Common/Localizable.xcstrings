@@ -1811,8 +1811,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin benutzerdefinierter <Name>"
+            "state" : "translated",
+            "value" : "!moblin custom <name>"
           }
         },
         "eo" : {
@@ -6441,7 +6441,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ fragte: %2$@ Antwort: %3$@"
           }
         },
@@ -8983,8 +8983,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@, Entschuldigung, ich konnte Ihre Frage nicht beantworten (%2$@). 😢"
+            "state" : "translated",
+            "value" : "%1$@, sorry, ich konnte deine Frage nicht beantworten (%2$@). 😢"
           }
         },
         "en" : {
@@ -10169,7 +10169,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$lld%% (%2$lld Punkte, %3$lld Benutzer)"
           }
         },
@@ -10319,7 +10319,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$lld%% (%2$lld Stimmen)"
           }
         },
@@ -12403,8 +12403,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Erlauben Sie Moblin, in den iOS-Einstellungen auf Ihren Standort zuzugreifen, um das aktuelle WLAN-Netzwerk anzuzeigen."
+            "state" : "translated",
+            "value" : "⚠️ Erlaube Moblin, in den iOS-Einstellungen auf deinen Standort zuzugreifen, um das aktuelle WLAN-Netzwerk anzuzeigen."
           }
         },
         "eo" : {
@@ -12547,8 +12547,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Erlauben Sie Moblin, in den iOS-Einstellungen auf Ihren Standort zuzugreifen, um den Standort zu verwenden."
+            "state" : "translated",
+            "value" : "⚠️ Erlaube Moblin, in den iOS-Einstellungen auf deinen Standort zuzugreifen, um den Standort zu verwenden."
           }
         },
         "eo" : {
@@ -13881,8 +13881,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Geben Sie die URL ein, zu der die GoPro streamen soll."
+            "state" : "translated",
+            "value" : "⚠️ Gib die URL ein, zu der die GoPro streamen soll."
           }
         },
         "eo" : {
@@ -14025,8 +14025,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Geben Sie das WLAN-Netzwerk ein, das die GoPro zum Streamen verwenden soll."
+            "state" : "translated",
+            "value" : "⚠️ Gib das WLAN-Netzwerk ein, das die GoPro zum Streamen verwenden soll."
           }
         },
         "eo" : {
@@ -14465,7 +14465,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ MetalPetal funktioniert nicht, wenn Moblin im Hintergrund läuft."
           }
         },
@@ -14909,8 +14909,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ Wählen Sie ein GoPro-Gerät aus. Die erste Verbindung erfordert den Pairing-Modus."
+            "state" : "translated",
+            "value" : "⚠️ Wähle ein GoPro Gerät aus. Die erste Verbindung erfordert den Kopplungsmodus."
           }
         },
         "eo" : {
@@ -18904,8 +18904,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "1. Installieren Sie das OBS Mobcam Plugin wie [hier] beschrieben (https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin)."
+            "state" : "translated",
+            "value" : "1. Installiere das OBS Mobcam Plugin wie [hier] beschrieben (https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin)."
           }
         },
         "eo" : {
@@ -19048,8 +19048,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "2. Verbinden Sie Moblin mit einem USB-Kabel mit dem Computer."
+            "state" : "translated",
+            "value" : "2. Verbinde Moblin mit einem USB-Kabel mit dem Computer."
           }
         },
         "eo" : {
@@ -19340,8 +19340,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "3. Fügen Sie eine Mobcam-Quelle in OBS hinzu."
+            "state" : "translated",
+            "value" : "3. Füge eine Mobcam Quelle in OBS hinzu."
           }
         },
         "eo" : {
@@ -19632,8 +19632,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "4. Klicken Sie in Moblin auf Live gehen, um den Stream zu OBS zu starten."
+            "state" : "translated",
+            "value" : "4. Klicke in Moblin auf Live gehen, um den Stream zu OBS zu starten."
           }
         },
         "eo" : {
@@ -25262,8 +25262,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A positive delay makes the audio later, a negative delay earlier."
+            "state" : "translated",
+            "value" : "Eine positive Verzögerung verschiebt den Ton nach hinten, eine negative Verzögerung nach vorne."
           }
         },
         "eo" : {
@@ -30440,7 +30440,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Auszuführende Aktionen"
           }
         },
@@ -30584,7 +30584,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktivitätsfeed"
           }
         },
@@ -32798,8 +32798,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Erlauben Sie anderen Geräten im lokalen Netzwerk, HTTP-Anfragen über diesen Proxy auszuführen. Jeder im lokalen Netzwerk kann es verwenden. Aktivieren Sie es daher nur in Netzwerken, denen Sie vertrauen."
+            "state" : "translated",
+            "value" : "Erlaube anderen Geräten im lokalen Netzwerk, HTTP-Anfragen über diesen Proxy auszuführen. Da jeder im lokalen Netzwerk diesen Proxy nutzen kann, solltest du ihn nur in Netzwerken aktivieren, denen du vertraust."
           }
         },
         "eo" : {
@@ -33538,8 +33538,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Zeigen Sie auch Ereignisse von anderen Kanälen in einer gemeinsamen Chat-Sitzung an."
+            "state" : "translated",
+            "value" : "Zeige auch Ereignisse von anderen Kanälen in einer gemeinsamen Chat Sitzung an."
           }
         },
         "eo" : {
@@ -36648,8 +36648,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "App-Modus"
+            "state" : "translated",
+            "value" : "App Modus"
           }
         },
         "eo" : {
@@ -38122,8 +38122,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sind Sie sicher, dass Sie den Text des aktuellen Befehls ersetzen möchten?"
+            "state" : "translated",
+            "value" : "Möchtest du den Text des aktuellen Befehls wirklich ersetzen?"
           }
         },
         "eo" : {
@@ -40478,7 +40478,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Automatisch live gehen"
           }
         },
@@ -42548,8 +42548,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kompensieren Sie automatisch Taktunterschiede zwischen diesem Gerät und dem Herausgeber, um die Audio- und Videopuffer auf ihrer Ziellatenz zu halten."
+            "state" : "translated",
+            "value" : "Taktunterschiede zwischen diesem Gerät und dem Publisher automatisch ausgleichen, um die Audio- und Videopuffer auf ihrer Soll-Latenz zu halten."
           }
         },
         "eo" : {
@@ -42690,8 +42690,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wird automatisch live geschaltet, wenn die App in den Vordergrund tritt."
+            "state" : "translated",
+            "value" : "Automatisch live gehen, sobald die App in den Vordergrund wechselt."
           }
         },
         "eo" : {
@@ -49054,8 +49054,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Große GIF-Skala"
+            "state" : "translated",
+            "value" : "Große GIF Skala"
           }
         },
         "eo" : {
@@ -57176,7 +57176,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "hat die Vorhersage abgebrochen: %@"
           }
         },
@@ -59394,8 +59394,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ändern Sie den Port, indem Sie die URL bearbeiten."
+            "state" : "translated",
+            "value" : "Ändere den Port, indem du die URL bearbeitest."
           }
         },
         "eo" : {
@@ -61758,8 +61758,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Chat-Telefon"
+            "state" : "translated",
+            "value" : "Chat Telefon"
           }
         },
         "eo" : {
@@ -65920,7 +65920,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kompakte Events"
           }
         },
@@ -66210,7 +66210,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Computer über USB-Kabel"
           }
         },
@@ -67246,8 +67246,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Konfigurieren Sie eine der URLs als HTTP-Proxy im anderen Gerät."
+            "state" : "translated",
+            "value" : "Konfiguriere eine der URLs als HTTP-Proxy im anderen Gerät."
           }
         },
         "eo" : {
@@ -67832,8 +67832,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Connect this device to a computer with a USB cable and run the Moblin Mobcam host tool on the computer to receive the stream. The computer connects to the port above over the cable."
+            "state" : "translated",
+            "value" : "Schließe dieses Gerät über ein USB-Kabel an einen Computer an und starte das Moblin Mobcam Host Tool auf dem Computer, um den Stream zu empfangen. Der Computer wird über das Kabel mit dem oben genannten Port verbunden."
           }
         },
         "eo" : {
@@ -68716,8 +68716,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Connecting to GoPro %@"
+            "state" : "translated",
+            "value" : "Verbindung mit GoPro %@ herstellen"
           }
         },
         "eo" : {
@@ -69154,7 +69154,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Enthält"
           }
         },
@@ -69890,7 +69890,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Steuerleiste"
           }
         },
@@ -75218,7 +75218,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Aktuelles Netzwerk"
           }
         },
@@ -76100,7 +76100,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benutzerdefinierte Befehle"
           }
         },
@@ -76538,8 +76538,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Custom Mobcam"
+            "state" : "translated",
+            "value" : "Benutzerdefinierte Mobcam"
           }
         },
         "eo" : {
@@ -79048,7 +79048,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Verzögerungen"
           }
         },
@@ -80970,8 +80970,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Devices"
+            "state" : "translated",
+            "value" : "Geräte"
           }
         },
         "eo" : {
@@ -86726,8 +86726,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Drift tracking"
+            "state" : "translated",
+            "value" : "Drift Verfolgung"
           }
         },
         "eo" : {
@@ -91464,8 +91464,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ended the hype train at level %lld!"
+            "state" : "translated",
+            "value" : "hat den Hype-Train bei Level %lld beendet!"
           }
         },
         "eo" : {
@@ -91608,8 +91608,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ended the poll: %@"
+            "state" : "translated",
+            "value" : "hat die Umfrage beendet: %@"
           }
         },
         "eo" : {
@@ -91752,8 +91752,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ended the poll: %1$@ Winner: %2$@"
+            "state" : "translated",
+            "value" : "hat die Umfrage beendet: %1$@ Gewonnen hat: %2$@"
           }
         },
         "en" : {
@@ -91902,8 +91902,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ended the prediction: %1$@ Outcome: %2$@"
+            "state" : "translated",
+            "value" : "hat die Vorhersage beendet: %1$@ Ergebnis: %2$@"
           }
         },
         "en" : {
@@ -92056,8 +92056,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ends in %@"
+            "state" : "translated",
+            "value" : "Endet in %@"
           }
         },
         "eo" : {
@@ -98414,8 +98414,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Failed to identify"
+            "state" : "translated",
+            "value" : "Identifizierung fehlgeschlagen"
           }
         },
         "eo" : {
@@ -99298,8 +99298,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Failed to start live stream from GoPro %@"
+            "state" : "translated",
+            "value" : "Der Live-Stream von der GoPro %@ konnte nicht gestartet werden"
           }
         },
         "eo" : {
@@ -110992,8 +110992,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Gigantisches Emote"
+            "state" : "translated",
+            "value" : "Gigantifiziertes Emote"
           }
         },
         "eo" : {
@@ -114268,8 +114268,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "GoPro %@ failed to start streaming"
+            "state" : "translated",
+            "value" : "GoPro %@ konnte den Stream nicht starten"
           }
         },
         "eo" : {
@@ -114412,8 +114412,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "GoPro %@ Streaming an benutzerdefinierte URL"
+            "state" : "translated",
+            "value" : "GoPro %@ streamt an eine benutzerdefinierte URL"
           }
         },
         "eo" : {
@@ -114556,8 +114556,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "GoPro-Gerät"
+            "state" : "translated",
+            "value" : "GoPro Gerät"
           }
         },
         "eo" : {
@@ -114848,7 +114848,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Keine KI-Antwort erhalten: %@"
           }
         },
@@ -119732,7 +119732,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "HTTP proxy"
           }
         },
@@ -120024,8 +120024,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hype train ended"
+            "state" : "translated",
+            "value" : "Hype Train beendet"
           }
         },
         "eo" : {
@@ -120168,8 +120168,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hype-Zug gestartet"
+            "state" : "translated",
+            "value" : "Hype Train gestartet"
           }
         },
         "eo" : {
@@ -120310,7 +120310,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Icon"
           }
         },
@@ -120898,8 +120898,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Leerlauf"
+            "state" : "translated",
+            "value" : "Ruhezustand"
           }
         },
         "eo" : {
@@ -121040,8 +121040,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "If"
+            "state" : "translated",
+            "value" : "Wenn"
           }
         },
         "eo" : {
@@ -123998,8 +123998,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Instant camera preview"
+            "state" : "translated",
+            "value" : "Sofortige Kameravorschau"
           }
         },
         "eo" : {
@@ -124140,8 +124140,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Instant photo shoot"
+            "state" : "translated",
+            "value" : "Sofortige Fotoerstellung"
           }
         },
         "eo" : {
@@ -126496,8 +126496,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "just continued their gift subscription!"
+            "state" : "translated",
+            "value" : "hat sein Geschenk-Abonnement verlängert!"
           }
         },
         "eo" : {
@@ -126638,8 +126638,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "just converted their Prime subscription to tier %lld!"
+            "state" : "translated",
+            "value" : "hat sein Prime-Abonnement auf Stufe %lld umgestellt!"
           }
         },
         "eo" : {
@@ -127230,8 +127230,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "just resubscribed tier %1$lld for %2$lld months, %3$lld in a row! %4$@"
+            "state" : "translated",
+            "value" : "hat das Abonnement der Stufe %1$lld für %2$lld Monate verlängert – %3$lld Mal in Folge! %4$@"
           }
         },
         "eo" : {
@@ -127674,8 +127674,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habe gerade ein Prime-Abonnement abgeschlossen!"
+            "state" : "translated",
+            "value" : "hat ein Prime-Abonnement abgeschlossen!"
           }
         },
         "eo" : {
@@ -127964,8 +127964,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habe gerade %lld Streams hintereinander gesehen!"
+            "state" : "translated",
+            "value" : "hat %lld Streams hintereinander gesehen!"
           }
         },
         "eo" : {
@@ -128106,8 +128106,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Habe gerade %1$lld Streams hintereinander gesehen! %2$@"
+            "state" : "translated",
+            "value" : "hat %1$lld Streams hintereinander geschaut! %2$@"
           }
         },
         "eo" : {
@@ -131808,7 +131808,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Linse"
           }
         },
@@ -132398,7 +132398,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Linear"
           }
         },
@@ -133282,7 +133282,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Lokales Netzwerk"
           }
         },
@@ -134320,8 +134320,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Locked, waiting for outcome"
+            "state" : "translated",
+            "value" : "Gesperrt, warte auf das Ergebnis"
           }
         },
         "eo" : {
@@ -134464,8 +134464,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Locks in %@"
+            "state" : "translated",
+            "value" : "Gesperrt in %@"
           }
         },
         "eo" : {
@@ -138294,8 +138294,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Make sure the Moblin device is relatively near the vehicle."
+            "state" : "translated",
+            "value" : "Stelle sicher, dass sich das Moblin-Gerät in relativer Nähe zum Fahrzeug befindet."
           }
         },
         "eo" : {
@@ -138732,8 +138732,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Malformed Mobcam URL"
+            "state" : "translated",
+            "value" : "Fehlerhafte Mobcam URL"
           }
         },
         "eo" : {
@@ -141982,8 +141982,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Maximum bitrate"
+            "state" : "translated",
+            "value" : "Maximale Bitrate"
           }
         },
         "eo" : {
@@ -144200,8 +144200,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Messages"
+            "state" : "translated",
+            "value" : "Nachrichten"
           }
         },
         "eo" : {
@@ -146426,8 +146426,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minimum watch streak"
+            "state" : "translated",
+            "value" : "Minimalste Zuschauerserie"
           }
         },
         "eo" : {
@@ -147456,7 +147456,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mobcam"
           }
         },
@@ -147598,8 +147598,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mobcam host must be localhost"
+            "state" : "translated",
+            "value" : "Mobcam Host muss localhost sein."
           }
         },
         "eo" : {
@@ -147740,8 +147740,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mobcam port number missing"
+            "state" : "translated",
+            "value" : "Mobcam Portnummer fehlt"
           }
         },
         "eo" : {
@@ -148626,8 +148626,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin sends these credentials securely to the paired GoPro over Bluetooth."
+            "state" : "translated",
+            "value" : "Moblin übermittelt diese Anmeldedaten gesichert über Bluetooth an die gekoppelte GoPro."
           }
         },
         "eo" : {
@@ -149362,8 +149362,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin's web browser and browser widgets use the proxy."
+            "state" : "translated",
+            "value" : "Webbrowser und die Browser-Widgets von Moblin nutzen den Proxy."
           }
         },
         "eo" : {
@@ -150692,7 +150692,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mom"
           }
         },
@@ -155132,7 +155132,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Meine GoPro"
           }
         },
@@ -159578,7 +159578,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Neu"
           }
         },
@@ -162538,8 +162538,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Im Streamer sind keine Makros konfiguriert"
+            "state" : "translated",
+            "value" : "Beim Streamer sind keine Makros konfiguriert"
           }
         },
         "eo" : {
@@ -165494,7 +165494,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nicht bei %@ angemeldet"
           }
         },
@@ -170808,8 +170808,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other value"
+            "state" : "translated",
+            "value" : "Anderer Wert"
           }
         },
         "eo" : {
@@ -171544,8 +171544,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Outcome: %@"
+            "state" : "translated",
+            "value" : "Ergebnis: %@"
           }
         },
         "eo" : {
@@ -173613,8 +173613,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pair and control compatible GoPro devices over Bluetooth. HERO9 Black or newer is required."
+            "state" : "translated",
+            "value" : "Koppel und steuere kompatible GoPro Geräte über Bluetooth. Dazu ist eine HERO9 Black oder ein neueres Modell erforderlich."
           }
         },
         "eo" : {
@@ -178937,8 +178937,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Poll ended"
+            "state" : "translated",
+            "value" : "Umfrage beendet"
           }
         },
         "eo" : {
@@ -179081,8 +179081,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Poll started"
+            "state" : "translated",
+            "value" : "Umfrage gestartet"
           }
         },
         "eo" : {
@@ -180565,8 +180565,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prediction cancelled"
+            "state" : "translated",
+            "value" : "Vorhersage abgebrochen"
           }
         },
         "eo" : {
@@ -180709,8 +180709,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prediction ended"
+            "state" : "translated",
+            "value" : "Vorhersage beendet"
           }
         },
         "eo" : {
@@ -180853,8 +180853,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prediction started"
+            "state" : "translated",
+            "value" : "Vorhersage gestartet"
           }
         },
         "eo" : {
@@ -185597,8 +185597,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Put the GoPro in pairing mode, keep it nearby, and make sure GoPro Quik is disconnected."
+            "state" : "translated",
+            "value" : "Versetze die GoPro in den Kopplungsmodus, halte sie in Ihrer Nähe und stelle sicher, dass die Verbindung zu GoPro Quik unterbrochen ist."
           }
         },
         "eo" : {
@@ -185889,8 +185889,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "QR codes"
+            "state" : "translated",
+            "value" : "QR Codes"
           }
         },
         "eo" : {
@@ -192115,8 +192115,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Remote control assistant rejected the password"
+            "state" : "translated",
+            "value" : "Der Fernsteuerungsassistent hat das Passwort abgelehnt"
           }
         },
         "eo" : {
@@ -201751,8 +201751,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Führen Sie eine bestimmte Anzahl folgender Aktionen aus, wenn die Bedingung erfüllt ist."
+            "state" : "translated",
+            "value" : "Führe die angegebene Anzahl der folgenden Aktionen aus, wenn die Bedingung erfüllt ist."
           }
         },
         "eo" : {
@@ -202045,8 +202045,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Same color for all names"
+            "state" : "translated",
+            "value" : "Für alle Namen dieselbe Farbe"
           }
         },
         "eo" : {
@@ -208861,8 +208861,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wählen Sie „Server“, um in Moblin zu streamen, oder „Benutzerdefiniert“, um direkt zu einem anderen RTMP-Ziel zu streamen."
+            "state" : "translated",
+            "value" : "Wähle Server aus, um an Moblin zu streamen, oder Benutzerdefiniert, um direkt an ein anderes RTMP Ziel zu streamen."
           }
         },
         "eo" : {
@@ -209151,8 +209151,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Select vehicle"
+            "state" : "translated",
+            "value" : "Fahrzeug auswählen"
           }
         },
         "eo" : {
@@ -210033,8 +210033,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Send chat message"
+            "state" : "translated",
+            "value" : "Chat Nachricht senden"
           }
         },
         "eo" : {
@@ -211067,8 +211067,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Senden Sie den Text des Befehls mit dem Vornamen an den Chat."
+            "state" : "translated",
+            "value" : "Sende den Text des Befehls mit dem angegebenen Namen an den Chat."
           }
         },
         "eo" : {
@@ -211209,8 +211209,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Senden Sie den Text an den Chat, wenn ein Benutzer !moblin benutzerdefinierten <Name> sendet."
+            "state" : "translated",
+            "value" : "Sende den Text an den Chat, wenn ein Benutzer „!moblin custom <Name>“ eingibt."
           }
         },
         "eo" : {
@@ -214323,8 +214323,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Shared chat"
+            "state" : "translated",
+            "value" : "Geteilter Chat"
           }
         },
         "eo" : {
@@ -217289,8 +217289,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show bonding percentage split"
+            "state" : "translated",
+            "value" : "Prozentuale Aufteilung vom Bonding anzeigen"
           }
         },
         "eo" : {
@@ -224705,8 +224705,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show system monitor (if enabled)"
+            "state" : "translated",
+            "value" : "Systemmonitor anzeigen (sofern aktiviert)"
           }
         },
         "eo" : {
@@ -226187,8 +226187,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Shown in the streamers activity feed."
+            "state" : "translated",
+            "value" : "Wird im Aktivitätsfeed der Streamer angezeigt."
           }
         },
         "eo" : {
@@ -236545,8 +236545,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "started a hype train!"
+            "state" : "translated",
+            "value" : "hat einen Hype Train gestartet!"
           }
         },
         "eo" : {
@@ -236689,7 +236689,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "hat eine Umfrage gestartet: %@"
           }
         },
@@ -236833,7 +236833,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "hat eine Vorhersage gestartet: %@"
           }
         },
@@ -241413,8 +241413,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Stream-Einstellungen"
+            "state" : "translated",
+            "value" : "Stream Einstellungen"
           }
         },
         "eo" : {
@@ -245853,7 +245853,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SuperView"
           }
         },
@@ -253547,8 +253547,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "The Camera preview quick button shows and hides the camera preview instantly, without the scene switch transition. Uses slightly more system resources."
+            "state" : "translated",
+            "value" : "Die Schnelltaste Kamera-Vorschau blendet die Kamera-Vorschau sofort ein und aus, ohne dass ein Übergang beim Szenenwechsel stattfindet. Dies beansprucht etwas mehr Systemressourcen."
           }
         },
         "eo" : {
@@ -254579,8 +254579,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "The HTTP proxy executes HTTP requests over the network interface that is most likely to have internet connectivity."
+            "state" : "translated",
+            "value" : "Der HTTP-Proxy führt HTTP-Anfragen über die Netzwerkschnittstelle aus, bei der die Wahrscheinlichkeit einer Internetverbindung am größten ist."
           }
         },
         "eo" : {
@@ -255609,8 +255609,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "The name must not be empty."
+            "state" : "translated",
+            "value" : "Der Name darf nicht leer sein."
           }
         },
         "eo" : {
@@ -256491,7 +256491,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Die Fotoaufnahme-Schnelltaste startet und stoppt die Fotoaufnahme sofort, ohne dass ein Szenenwechsel erforderlich ist. Verbraucht etwas mehr Systemressourcen."
           }
         },
@@ -259303,8 +259303,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "The WiFi network this device is currently connected to."
+            "state" : "translated",
+            "value" : "Das WLAN Netzwerk, mit dem dieses Gerät derzeit verbunden ist."
           }
         },
         "eo" : {
@@ -259893,8 +259893,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This device"
+            "state" : "translated",
+            "value" : "Dieses Gerät"
           }
         },
         "eo" : {
@@ -263741,8 +263741,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "HELLIGKEIT DER FACKEL"
+            "state" : "translated",
+            "value" : "HELLIGKEIT DER TASCHENLAMPE"
           }
         },
         "eo" : {
@@ -273813,8 +273813,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use Moblin as a low latency camera in OBS Studio over USB."
+            "state" : "translated",
+            "value" : "Verwende Moblin über USB als Kamera mit geringer Latenz in OBS Studio."
           }
         },
         "eo" : {
@@ -274697,8 +274697,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Use to synchronize audio and video."
+            "state" : "translated",
+            "value" : "Zur Synchronisation von Ton und Bild verwenden."
           }
         },
         "eo" : {
@@ -276171,8 +276171,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Value"
+            "state" : "translated",
+            "value" : "Wert"
           }
         },
         "eo" : {
@@ -276757,8 +276757,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vehicle"
+            "state" : "translated",
+            "value" : "Fahrzeug"
           }
         },
         "eo" : {
@@ -281789,8 +281789,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Watch streak"
+            "state" : "translated",
+            "value" : "Zuschauerserie"
           }
         },
         "eo" : {
@@ -281931,8 +281931,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Watch streaks"
+            "state" : "translated",
+            "value" : "Zuschauerserien"
           }
         },
         "eo" : {
@@ -282963,7 +282963,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Website"
           }
         },
@@ -286961,8 +286961,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "WiFi setup failed for GoPro %@"
+            "state" : "translated",
+            "value" : "WLAN Einrichtung für die GoPro %@ ist fehlgeschlagen"
           }
         },
         "eo" : {
@@ -287549,8 +287549,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wrong password"
+            "state" : "translated",
+            "value" : "Falsches Passwort"
           }
         },
         "eo" : {
