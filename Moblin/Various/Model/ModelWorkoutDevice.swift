@@ -56,6 +56,13 @@ extension Model {
             getWorkoutDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
         })
     }
+
+    private func isCyclingSpeedCadenceReportingCadence() -> Bool {
+        guard let latestCyclingSpeedCadenceCadenceTime else {
+            return false
+        }
+        return latestCyclingSpeedCadenceCadenceTime.duration(to: .now) < .seconds(5)
+    }
 }
 
 extension Model: @preconcurrency WorkoutDeviceDelegate {
@@ -82,10 +89,10 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
         DispatchQueue.main.async {
             self.cyclingPower = power
-            if let cadence {
+            if !self.isCyclingSpeedCadenceReportingCadence() {
                 self.cyclingCadence = cadence
             }
         }
@@ -95,6 +102,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         DispatchQueue.main.async {
             if let cadence {
                 self.cyclingCadence = cadence
+                self.latestCyclingSpeedCadenceCadenceTime = .now
             }
             if let speed {
                 self.cyclingSpeed = speed

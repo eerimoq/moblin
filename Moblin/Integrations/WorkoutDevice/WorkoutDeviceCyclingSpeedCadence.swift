@@ -64,10 +64,6 @@ class WorkoutDeviceCyclingSpeedCadence {
         wheelCircumferenceMeters = Double(millimeters) / 1000
     }
 
-    func isReportingCadence() -> Bool {
-        reportsCadence
-    }
-
     func handleMeasurement(value: Data) throws -> (Double?, Int?) {
         let measurement = try CyclingSpeedCadenceMeasurement(value: value)
         let now = ContinuousClock.now

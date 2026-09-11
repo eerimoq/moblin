@@ -75,7 +75,6 @@ struct WorkoutDeviceCyclingSpeedCadenceSuite {
                                                                                     eventTime: 1024 + 1024))
         #expect(cadence == 60)
         #expect(speed == nil)
-        #expect(device.isReportingCadence())
     }
 
     @Test
@@ -87,7 +86,6 @@ struct WorkoutDeviceCyclingSpeedCadenceSuite {
                                                                                     eventTime: 1024 + 1024))
         #expect(cadence == nil)
         #expect(try isEqual(#require(speed), 10, epsilon: 0.001))
-        #expect(!device.isReportingCadence())
     }
 
     @Test
