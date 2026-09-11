@@ -2,7 +2,7 @@ import logging
 import time
 
 from ..utils import chat_message
-from ..utils import twitch_event_sub as events
+from ..utils import twitch_event_sub as event_sub
 from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from ..utils.generate_device_settings import alerts_widget_settings
 from ..utils.generate_device_settings import scene_widget_settings
@@ -28,8 +28,8 @@ class TwitchEventsTestCase(TestCase):
                     {
                         "name": "Twitch",
                         "enabled": True,
-                        "twitchChannelName": events.BROADCASTER_USER_LOGIN,
-                        "twitchChannelId": events.BROADCASTER_USER_ID,
+                        "twitchChannelName": event_sub.BROADCASTER_USER_LOGIN,
+                        "twitchChannelId": event_sub.BROADCASTER_USER_ID,
                         "twitchLoggedIn": True,
                         "twitchChatAlerts": alerts,
                         "twitchToastAlerts": alerts,
@@ -56,151 +56,149 @@ class TwitchEventsTestCase(TestCase):
             if self.moblin.is_interactive():
                 manual_confirmation("Get ready to validate an event.")
             self.moblin.send_twitch_event_sub_notification(message)
-            time.sleep(2)
+            if not self.moblin.is_interactive():
+                time.sleep(2)
 
     def send_chat(self, *messages: dict):
         for message in messages:
             if self.moblin.is_interactive():
                 manual_confirmation("Get ready to validate a chat message.")
             self.moblin.send_chat_message(**message)
-            time.sleep(2)
+            if not self.moblin.is_interactive():
+                time.sleep(2)
 
 
 class TwitchEventsFollows(TwitchEventsTestCase):
-    """Send follow events, one per second."""
+    """Send follow events."""
 
     def run(self):
         manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each follow.")
         self.send(
-            events.follow("Alice"),
-            events.follow("Bob"),
+            event_sub.follow("Alice"),
+            event_sub.follow("Bob"),
         )
 
 
-class TwitchEventsSubscriptions(TwitchEventsTestCase):
-    """Send subscription, gift, resubscription, upgrade and watch streak events, one per second."""
+class TwitchEventsChat(TwitchEventsTestCase):
+    """Send subscription, gift, resubscription, upgrade and watch streak events."""
 
     def run(self):
         manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each event.")
         self.send(
-            events.subscribe("Bob"),
-            events.subscribe("Carol", tier="2000", is_prime=True),
-            events.subscription_gift("Dave", 5),
-            events.subscription_gift(None, 1, tier="3000"),
-            events.subscription_message("Eve", 12, 3, "1000", "One year already!"),
-            events.subscription_message("Frank", 2, None, "2000", ""),
-            events.chat_sub("Grace"),
-            events.chat_sub("Heidi", tier="1000", is_prime=True),
-            events.chat_resub("Ivan", 24, 24, "3000", "Two years strong"),
-            events.chat_sub_gift("Judy", "Mallory"),
-            events.chat_community_sub_gift("Niaj", 10),
-            events.chat_community_sub_gift(None, 3, tier="2000"),
-            events.chat_prime_paid_upgrade("Olivia", tier="1000"),
-            events.chat_gift_paid_upgrade("Peggy", "Rupert"),
-            events.chat_watch_streak("Sybil", 10, "Never missing a stream"),
-            events.chat_watch_streak("Trent", 5),
-        )
-
-
-class TwitchEventsCheers(TwitchEventsTestCase):
-    """Send cheer events, one per second."""
-
-    def run(self):
-        manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each cheer.")
-        self.send(
-            events.cheer("Victor", 100, "Cheer100 keep it up!"),
-            events.cheer(None, 5000),
-            events.cheer("Walter", 1, "Cheer1"),
-        )
-
-
-class TwitchEventsRewards(TwitchEventsTestCase):
-    """Send channel points redemption events, one per second."""
-
-    def run(self):
-        manual_validation(LOGGER, "A toast and a chat highlight is shown for each redemption.")
-        self.send(
-            events.channel_points_custom_reward_redemption_add("Wendy", "Hydrate", 500, "Drink water"),
-            events.channel_points_custom_reward_redemption_add("Xavier", "Do a push-up", 1000),
-        )
-
-
-class TwitchEventsIncomingRaids(TwitchEventsTestCase):
-    """Send incoming raid events, one per second."""
-
-    def run(self):
-        manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each raid.")
-        self.send(
-            events.incoming_raid("Yvonne", 42),
-            events.incoming_raid("Zach", 1),
+            event_sub.chat_sub("Grace"),
+            event_sub.chat_sub("Heidi", tier="1000", is_prime=True),
+            event_sub.chat_resub("Ivan", 24, 24, "3000", "Two years strong"),
+            event_sub.chat_sub_gift("Judy", "Mallory"),
+            event_sub.chat_community_sub_gift("Niaj", 10),
+            event_sub.chat_community_sub_gift(None, 3, tier="2000"),
+            event_sub.chat_prime_paid_upgrade("Olivia", tier="1000"),
+            event_sub.chat_gift_paid_upgrade("Peggy", "Rupert"),
+            event_sub.chat_watch_streak("Sybil", 10, "Never missing a stream"),
+            event_sub.chat_watch_streak("Trent", 5),
         )
 
 
 class TwitchEventsSharedChat(TwitchEventsTestCase):
-    """Send shared chat subscription, gift, upgrade, raid and watch streak events, one per second."""
+    """Send shared chat subscription, gift, upgrade, raid and watch streak events."""
 
     def run(self):
         manual_validation(LOGGER, "Each chat highlight shows that it comes from the Partner channel.")
         self.send(
-            events.chat_sub("Alice", shared=True),
-            events.chat_sub("Bob", tier="2000", is_prime=True, shared=True),
-            events.chat_resub("Carol", 7, 3, "1000", "Hello from the other side", shared=True),
-            events.chat_sub_gift("Dave", "Eve", shared=True),
-            events.chat_community_sub_gift("Frank", 5, shared=True),
-            events.chat_prime_paid_upgrade("Grace", shared=True),
-            events.chat_gift_paid_upgrade("Heidi", "Ivan", shared=True),
-            events.chat_shared_raid("Judy", 123),
-            events.chat_watch_streak("Mallory", 8, "Shared streak", shared=True),
+            event_sub.chat_sub("Alice", shared=True),
+            event_sub.chat_sub("Bob", tier="2000", is_prime=True, shared=True),
+            event_sub.chat_resub("Carol", 7, 3, "1000", "Hello from the other side", shared=True),
+            event_sub.chat_sub_gift("Dave", "Eve", shared=True),
+            event_sub.chat_community_sub_gift("Frank", 5, shared=True),
+            event_sub.chat_community_sub_gift(None, 3, tier="2000", shared=True),
+            event_sub.chat_prime_paid_upgrade("Grace", shared=True),
+            event_sub.chat_gift_paid_upgrade("Heidi", "Ivan", shared=True),
+            event_sub.chat_watch_streak("Mallory", 8, "Shared streak", shared=True),
+            event_sub.chat_watch_streak("Foo", 8, shared=True),
+            event_sub.chat_shared_raid("Judy", 123),
+        )
+
+
+class TwitchEventsCheers(TwitchEventsTestCase):
+    """Send cheer events."""
+
+    def run(self):
+        manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each cheer.")
+        self.send(
+            event_sub.cheer("Victor", 100, "Cheer100 keep it up!"),
+            event_sub.cheer(None, 5000),
+            event_sub.cheer("Walter", 1, "Cheer1"),
+        )
+
+
+class TwitchEventsRewards(TwitchEventsTestCase):
+    """Send channel points redemption events."""
+
+    def run(self):
+        manual_validation(LOGGER, "A toast and a chat highlight is shown for each redemption.")
+        self.send(
+            event_sub.channel_points_custom_reward_redemption_add("Wendy", "Hydrate", 500, "Drink water"),
+            event_sub.channel_points_custom_reward_redemption_add("Xavier", "Do a push-up", 1000),
+        )
+
+
+class TwitchEventsIncomingRaids(TwitchEventsTestCase):
+    """Send incoming raid events."""
+
+    def run(self):
+        manual_validation(LOGGER, "An alert, a toast and a chat highlight is shown for each raid.")
+        self.send(
+            event_sub.incoming_raid("Yvonne", 42),
+            event_sub.incoming_raid("Zach", 1),
         )
 
 
 class TwitchEventsHypeTrain(TwitchEventsTestCase):
-    """Send hype train begin, progress and end events, one per second."""
+    """Send hype train begin, progress and end events."""
 
     def run(self):
         manual_validation(LOGGER, "The hype train status shows level and progress until it ends.")
         self.send(
-            events.hype_train_begin(1, 100, 500),
-            events.hype_train_progress(1, 300, 500),
-            events.hype_train_progress(2, 100, 800),
-            events.hype_train_progress(2, 700, 800),
-            events.hype_train_progress(3, 50, 1200),
-            events.hype_train_end(3),
+            event_sub.hype_train_begin(1, 100, 500),
+            event_sub.hype_train_progress(1, 300, 500),
+            event_sub.hype_train_progress(2, 100, 800),
+            event_sub.hype_train_progress(2, 700, 800),
+            event_sub.hype_train_progress(3, 50, 1200),
+            event_sub.hype_train_end(3),
         )
 
 
 class TwitchEventsPoll(TwitchEventsTestCase):
-    """Send poll begin, progress and end events, one per second."""
+    """Send poll begin, progress and end events."""
 
     def run(self):
         manual_validation(LOGGER, "The poll shows the votes as they come in and then the winner.")
         poll_id = uuid()
         title = "Which game next?"
         self.send(
-            events.poll_begin(poll_id, title, ["Minecraft", "Fortnite", "Chess"]),
-            events.poll_progress(poll_id, title, [("Minecraft", 3), ("Fortnite", 1), ("Chess", 0)]),
-            events.poll_progress(poll_id, title, [("Minecraft", 5), ("Fortnite", 8), ("Chess", 2)]),
-            events.poll_progress(poll_id, title, [("Minecraft", 9), ("Fortnite", 12), ("Chess", 4)]),
-            events.poll_end(poll_id, title, [("Minecraft", 10), ("Fortnite", 15), ("Chess", 5)]),
+            event_sub.poll_begin(poll_id, title, ["Minecraft", "Fortnite", "Chess"]),
+            event_sub.poll_progress(poll_id, title, [("Minecraft", 3), ("Fortnite", 1), ("Chess", 0)]),
+            event_sub.poll_progress(poll_id, title, [("Minecraft", 5), ("Fortnite", 8), ("Chess", 2)]),
+            event_sub.poll_progress(poll_id, title, [("Minecraft", 9), ("Fortnite", 12), ("Chess", 4)]),
+            event_sub.poll_end(poll_id, title, [("Minecraft", 10), ("Fortnite", 15), ("Chess", 5)]),
         )
 
 
 class TwitchEventsPollCancelled(TwitchEventsTestCase):
-    """Send poll begin, progress and cancelled end events, one per second."""
+    """Send poll begin, progress and cancelled end events."""
 
     def run(self):
         manual_validation(LOGGER, "The poll is shown as cancelled.")
         poll_id = uuid()
         title = "Pizza or tacos?"
         self.send(
-            events.poll_begin(poll_id, title, ["Pizza", "Tacos"]),
-            events.poll_progress(poll_id, title, [("Pizza", 2), ("Tacos", 2)]),
-            events.poll_end(poll_id, title, [("Pizza", 2), ("Tacos", 2)], status="archived"),
+            event_sub.poll_begin(poll_id, title, ["Pizza", "Tacos"]),
+            event_sub.poll_progress(poll_id, title, [("Pizza", 2), ("Tacos", 2)]),
+            event_sub.poll_end(poll_id, title, [("Pizza", 2), ("Tacos", 2)], status="archived"),
         )
 
 
 class TwitchEventsPrediction(TwitchEventsTestCase):
-    """Send prediction begin, progress, lock and end events, one per second."""
+    """Send prediction begin, progress, lock and end events."""
 
     def run(self):
         manual_validation(
@@ -210,16 +208,16 @@ class TwitchEventsPrediction(TwitchEventsTestCase):
         title = "Will I win this round?"
         outcomes = [("Yes", 12, 3400), ("No", 30, 9100)]
         self.send(
-            events.prediction_begin(prediction_id, title, ["Yes", "No"]),
-            events.prediction_progress(prediction_id, title, [("Yes", 3, 500), ("No", 7, 1200)]),
-            events.prediction_progress(prediction_id, title, [("Yes", 8, 2100), ("No", 20, 6000)]),
-            events.prediction_lock(prediction_id, title, outcomes),
-            events.prediction_end(prediction_id, title, outcomes, winning_outcome_index=0),
+            event_sub.prediction_begin(prediction_id, title, ["Yes", "No"]),
+            event_sub.prediction_progress(prediction_id, title, [("Yes", 3, 500), ("No", 7, 1200)]),
+            event_sub.prediction_progress(prediction_id, title, [("Yes", 8, 2100), ("No", 20, 6000)]),
+            event_sub.prediction_lock(prediction_id, title, outcomes),
+            event_sub.prediction_end(prediction_id, title, outcomes, winning_outcome_index=0),
         )
 
 
 class TwitchEventsPredictionCancelled(TwitchEventsTestCase):
-    """Send prediction begin, progress and cancelled end events, one per second."""
+    """Send prediction begin, progress and cancelled end events."""
 
     def run(self):
         manual_validation(LOGGER, "The prediction is shown as cancelled.")
@@ -227,25 +225,25 @@ class TwitchEventsPredictionCancelled(TwitchEventsTestCase):
         title = "Sub 10 minutes?"
         outcomes = [("Yes", 5, 800), ("No", 4, 600), ("Exactly 10", 1, 100)]
         self.send(
-            events.prediction_begin(prediction_id, title, ["Yes", "No", "Exactly 10"]),
-            events.prediction_progress(prediction_id, title, outcomes),
-            events.prediction_end(prediction_id, title, outcomes, winning_outcome_index=None),
+            event_sub.prediction_begin(prediction_id, title, ["Yes", "No", "Exactly 10"]),
+            event_sub.prediction_progress(prediction_id, title, outcomes),
+            event_sub.prediction_end(prediction_id, title, outcomes, winning_outcome_index=None),
         )
 
 
 class TwitchEventsAdBreak(TwitchEventsTestCase):
-    """Send manual and automatic ad break begin events, one per second."""
+    """Send manual and automatic ad break begin events."""
 
     def run(self):
         manual_validation(LOGGER, "A toast is shown for each commercial and the ads status counts down.")
         self.send(
-            events.ad_break_begin(90, is_automatic=False),
-            events.ad_break_begin(30, is_automatic=True),
+            event_sub.ad_break_begin(90, is_automatic=False),
+            event_sub.ad_break_begin(30, is_automatic=True),
         )
 
 
 class TwitchEventsOutgoingRaid(TwitchEventsTestCase):
-    """Send raid started and raid completed events, one per second."""
+    """Send raid started and raid completed events."""
 
     def run(self):
         manual_validation(
@@ -253,13 +251,13 @@ class TwitchEventsOutgoingRaid(TwitchEventsTestCase):
             f"The raid status shows raiding {RAIDED_CHANNEL_NAME} and then raid completed.",
         )
         self.send(
-            events.moderate_raid(RAIDED_CHANNEL_NAME, 42),
-            events.outgoing_raid(RAIDED_CHANNEL_NAME, 42),
+            event_sub.moderate_raid(RAIDED_CHANNEL_NAME, 42),
+            event_sub.outgoing_raid(RAIDED_CHANNEL_NAME, 42),
         )
 
 
 class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
-    """Send raid started and raid cancelled events, one per second."""
+    """Send raid started and raid cancelled events."""
 
     def run(self):
         manual_validation(
@@ -267,13 +265,13 @@ class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
             f"The raid status shows raiding {RAIDED_CHANNEL_NAME} and then raid cancelled.",
         )
         self.send(
-            events.moderate_raid(RAIDED_CHANNEL_NAME, 42),
-            events.moderate_unraid(RAIDED_CHANNEL_NAME),
+            event_sub.moderate_raid(RAIDED_CHANNEL_NAME, 42),
+            event_sub.moderate_unraid(RAIDED_CHANNEL_NAME),
         )
 
 
 class TwitchEventsFirstMessage(TwitchEventsTestCase):
-    """Send first time chatter messages, one per second."""
+    """Send first time chatter messages."""
 
     def run(self):
         manual_validation(LOGGER, "A first message chat highlight is shown for the first two messages.")
@@ -286,7 +284,7 @@ class TwitchEventsFirstMessage(TwitchEventsTestCase):
 
 
 class TwitchEventsGigantifiedEmote(TwitchEventsTestCase):
-    """Send gigantified emote messages, one per second."""
+    """Send gigantified emote messages."""
 
     def run(self):
         manual_validation(LOGGER, "A gigantified emote chat highlight is shown for each message.")
@@ -310,7 +308,7 @@ class TwitchEventsGigantifiedEmote(TwitchEventsTestCase):
 
 
 class TwitchEventsBigGif(TwitchEventsTestCase):
-    """Send big GIF messages, one per second."""
+    """Send big GIF messages."""
 
     def run(self):
         manual_validation(LOGGER, "A big GIF is shown in chat for each message.")
@@ -328,11 +326,11 @@ class TwitchEventsBigGif(TwitchEventsTestCase):
 def tests(moblin: Moblin):
     return [
         TwitchEventsFollows(moblin),
-        TwitchEventsSubscriptions(moblin),
+        TwitchEventsChat(moblin),
+        TwitchEventsSharedChat(moblin),
         TwitchEventsCheers(moblin),
         TwitchEventsRewards(moblin),
         TwitchEventsIncomingRaids(moblin),
-        TwitchEventsSharedChat(moblin),
         TwitchEventsHypeTrain(moblin),
         TwitchEventsPoll(moblin),
         TwitchEventsPollCancelled(moblin),
