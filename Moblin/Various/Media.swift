@@ -4,7 +4,7 @@ import SwiftUI
 import VideoToolbox
 
 private func isMuted(level: Float) -> Bool {
-    level.isNaN
+    level == -Float.infinity
 }
 
 private func becameMuted(old: Float, new: Float) -> Bool {
@@ -69,7 +69,7 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtTransportBitrate: Int64 = 0
-    private var currentAudioLevel: Float = defaultAudioLevel
+    private var currentAudioLevel: Float = -Float.infinity
     private var numberOfAudioChannels: Int = 0
     private var audioSampleRate: Double = 0
     private var srtUrl: String = ""

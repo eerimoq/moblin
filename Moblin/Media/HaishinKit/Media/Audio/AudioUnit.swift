@@ -140,10 +140,7 @@ private class AudioMeasurement {
     }
 
     private func peak() -> Float {
-        guard currentPeak > 0 else {
-            return defaultAudioLevel
-        }
-        return 20 * log10(currentPeak)
+        20 * log10(currentPeak)
     }
 }
 
@@ -382,7 +379,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             )
             updateAudioLevel(
                 sampleBuffer: sampleBuffer,
-                audioLevel: muted ? .nan : audioLevel,
+                audioLevel: muted ? -Float.infinity : audioLevel,
                 numberOfAudioChannels: numberOfAudioChannels
             )
         }

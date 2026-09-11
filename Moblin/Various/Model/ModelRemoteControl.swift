@@ -474,9 +474,9 @@ extension Model {
             audioLevel: .unknown,
             numberOfAudioChannels: audio.numberOfChannels
         )
-        if audio.level.level.isNaN {
+        if audio.level.level == -Float.infinity {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audio.level.level.isInfinite {
+        } else if audio.level.level == .infinity {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)

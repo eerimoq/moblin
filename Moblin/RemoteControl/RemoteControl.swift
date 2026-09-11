@@ -815,7 +815,7 @@ enum RemoteControlStatusTopRightAudioLevel: Codable {
     func toFloat() -> Float {
         switch self {
         case .muted:
-            .nan
+            -Float.infinity
         case .unknown:
             .infinity
         case let .value(value):
