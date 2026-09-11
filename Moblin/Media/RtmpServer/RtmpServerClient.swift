@@ -352,7 +352,7 @@ class RtmpServerClient: @unchecked Sendable {
     private func processReceivedData(data: Data) {
         // logger.info("rtmp-server: client: Got data \(data)")
         totalBytesReceived += UInt64(data.count)
-        server?.bitrateStats.add(bytesTransferred: data.count)
+        server?.bitrateStats.mutate { $0.add(bytesTransferred: data.count) }
         latestReceiveTime = .now
         inputBuffer.append(data)
         isProcessing = true
