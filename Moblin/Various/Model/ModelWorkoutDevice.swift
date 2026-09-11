@@ -11,9 +11,8 @@ extension Model {
             workoutDevice.delegate = self
             workoutDevices[device.id] = workoutDevice
         }
-        let wheelCircumference = device.wheelCircumferenceMillimeters
         workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId,
-                                         wheelCircumferenceMillimeters: wheelCircumference)
+                                         wheelCircumference: device.wheelCircumference)
     }
 
     func disableWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -25,7 +24,7 @@ extension Model {
     }
 
     func setWorkoutDeviceWheelCircumference(device: SettingsWorkoutDevice) {
-        workoutDevices[device.id]?.setWheelCircumference(millimeters: device.wheelCircumferenceMillimeters)
+        workoutDevices[device.id]?.setWheelCircumference(millimeters: device.wheelCircumference)
     }
 
     func setCurrentWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -35,10 +34,6 @@ extension Model {
 
     func getWorkoutDeviceState(device: SettingsWorkoutDevice) -> WorkoutDeviceState {
         workoutDevices[device.id]?.getState() ?? .disconnected
-    }
-
-    func isWorkoutDeviceCyclingSpeedCadence(device: SettingsWorkoutDevice) -> Bool {
-        workoutDevices[device.id]?.isCyclingSpeedCadenceDiscovered() ?? false
     }
 
     func autoStartWorkoutDevices() {

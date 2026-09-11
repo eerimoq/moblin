@@ -46,7 +46,7 @@ struct WorkoutDeviceSettingsView: View {
         guard let millimeters = Int(value) else {
             return
         }
-        device.wheelCircumferenceMillimeters = millimeters
+        device.wheelCircumference = millimeters
         model.setWorkoutDeviceWheelCircumference(device: device)
     }
 
@@ -97,19 +97,17 @@ struct WorkoutDeviceSettingsView: View {
                         }
                         .disabled(!canEnable())
                 }
-                if model.isWorkoutDeviceCyclingSpeedCadence(device: device) {
-                    Section {
-                        TextEditNavigationView(
-                            title: String(localized: "Wheel circumference"),
-                            value: String(device.wheelCircumferenceMillimeters),
-                            onChange: isValidWheelCircumference,
-                            onSubmit: submitWheelCircumference,
-                            keyboardType: .numbersAndPunctuation,
-                            valueFormat: { "\($0) mm" }
-                        )
-                    } footer: {
-                        Text("Used to calculate speed from wheel revolutions.")
-                    }
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Wheel circumference"),
+                        value: String(device.wheelCircumference),
+                        onChange: isValidWheelCircumference,
+                        onSubmit: submitWheelCircumference,
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) mm" }
+                    )
+                } footer: {
+                    Text("Used to calculate speed from wheel revolutions.")
                 }
                 if device.enabled {
                     Section {

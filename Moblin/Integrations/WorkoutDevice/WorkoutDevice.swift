@@ -37,9 +37,9 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
     private var deviceId: UUID?
     weak var delegate: (any WorkoutDeviceDelegate)?
 
-    func start(deviceId: UUID?, wheelCircumferenceMillimeters: Int) {
+    func start(deviceId: UUID?, wheelCircumference: Int) {
         dispatchQueue.async {
-            self.cyclingSpeedCadence.setWheelCircumference(millimeters: wheelCircumferenceMillimeters)
+            self.cyclingSpeedCadence.setWheelCircumference(millimeters: wheelCircumference)
             self.startInternal(deviceId: deviceId)
         }
     }
@@ -58,10 +58,6 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
 
     func getState() -> WorkoutDeviceState {
         state
-    }
-
-    func isCyclingSpeedCadenceDiscovered() -> Bool {
-        cyclingSpeedCadence.isAnyCharacteristicDiscovered()
     }
 
     private func startInternal(deviceId: UUID?) {
