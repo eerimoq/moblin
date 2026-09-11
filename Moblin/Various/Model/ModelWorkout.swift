@@ -17,7 +17,8 @@ private func types() -> Set<HKSampleType> {
 }
 
 @available(iOS 26.0, *)
-private class Workout: NSObject, @unchecked Sendable {
+@MainActor
+private class Workout: NSObject {
     static let shared = Workout()
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
@@ -28,11 +29,13 @@ private class Workout: NSObject, @unchecked Sendable {
         workoutSession != nil
     }
 
-    func start(model: Model, type: WatchProtocolWorkoutType) {
+    func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
-        #if !targetEnvironment(macCatalyst)
+        #if targetEnvironment(macCatalyst)
+        return false
+        #else
         let configuration = HKWorkoutConfiguration()
-        var activityType: HKWorkoutActivityType
+        let activityType: HKWorkoutActivityType
         let addStepCount: Bool
         switch type {
         case .walking:
@@ -49,11 +52,12 @@ private class Workout: NSObject, @unchecked Sendable {
         configuration.locationType = .outdoor
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
-            return
+            return false
         }
         workoutBuilder = workoutSession.associatedWorkoutBuilder()
         guard let workoutBuilder else {
-            return
+            self.workoutSession = nil
+            return false
         }
         let dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
@@ -70,6 +74,7 @@ private class Workout: NSObject, @unchecked Sendable {
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
+        return true
         #endif
     }
 
@@ -77,11 +82,11 @@ private class Workout: NSObject, @unchecked Sendable {
         workoutSession?.stopActivity(with: .now)
     }
 
-    @MainActor
     private func finished(session: HKWorkoutSession) {
         guard session === workoutSession else {
             return
         }
+        logger.info("workout: Finished")
         workoutSession = nil
         workoutBuilder = nil
         model?.setIsWorkout(type: nil)
@@ -90,30 +95,39 @@ private class Workout: NSObject, @unchecked Sendable {
 
 @available(iOS 26.0, *)
 extension Workout: HKWorkoutSessionDelegate {
-    func workoutSession(_ session: HKWorkoutSession,
-                        didChangeTo toState: HKWorkoutSessionState,
-                        from _: HKWorkoutSessionState,
-                        date: Date)
+    nonisolated func workoutSession(_ session: HKWorkoutSession,
+                                    didChangeTo toState: HKWorkoutSessionState,
+                                    from fromState: HKWorkoutSessionState,
+                                    date: Date)
     {
-        guard toState == .stopped else {
-            return
-        }
+        logger.info("workout: State change \(fromState) -> \(toState)")
         DispatchQueue.main.async {
-            guard session === self.workoutSession, let builder = self.workoutBuilder else {
-                return
-            }
-            builder.endCollection(withEnd: date) { _, _ in
-                builder.finishWorkout { _, _ in
-                    session.end()
-                    DispatchQueue.main.async {
-                        self.finished(session: session)
+            switch toState {
+            case .stopped:
+                guard session === self.workoutSession, let builder = self.workoutBuilder else {
+                    return
+                }
+                builder.endCollection(withEnd: date) { _, error in
+                    if let error {
+                        logger.info("workout: End collection error \(error)")
+                    }
+                    builder.finishWorkout { _, error in
+                        if let error {
+                            logger.info("workout: Finish error \(error)")
+                        }
+                        session.end()
                     }
                 }
+            case .ended:
+                self.finished(session: session)
+            default:
+                break
             }
         }
     }
 
-    func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
+    nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError error: any Error) {
+        logger.info("workout: Error \(error)")
         DispatchQueue.main.async {
             guard session === self.workoutSession else {
                 return
@@ -126,8 +140,8 @@ extension Workout: HKWorkoutSessionDelegate {
 
 @available(iOS 26.0, *)
 extension Workout: HKLiveWorkoutBuilderDelegate {
-    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
-                        didCollectDataOf collectedTypes: Set<HKSampleType>)
+    nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
+                                    didCollectDataOf collectedTypes: Set<HKSampleType>)
     {
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
@@ -142,7 +156,7 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
         }
     }
 
-    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
+    nonisolated func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }
 
 extension Model {
@@ -160,8 +174,11 @@ extension Model {
                 )
                 return
             }
-            self.setIsWorkout(type: type)
-            Workout.shared.start(model: self, type: type)
+            if Workout.shared.start(model: self, type: type) {
+                self.setIsWorkout(type: type)
+            } else {
+                self.makeErrorToast(title: String(localized: "Cannot start workout"))
+            }
         }
     }
 

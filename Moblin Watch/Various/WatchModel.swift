@@ -614,20 +614,21 @@ extension WatchModel: HKWorkoutSessionDelegate {
         from _: HKWorkoutSessionState,
         date: Date
     ) {
-        guard toState == .stopped else {
-            return
-        }
         DispatchQueue.main.async {
-            guard session === self.workoutSession, let builder = self.workoutBuilder else {
-                return
-            }
-            builder.endCollection(withEnd: date) { _, _ in
-                builder.finishWorkout { _, _ in
-                    session.end()
-                    DispatchQueue.main.async {
-                        self.finishedWorkout(session: session)
+            switch toState {
+            case .stopped:
+                guard session === self.workoutSession, let builder = self.workoutBuilder else {
+                    return
+                }
+                builder.endCollection(withEnd: date) { _, _ in
+                    builder.finishWorkout { _, _ in
+                        session.end()
                     }
                 }
+            case .ended:
+                self.finishedWorkout(session: session)
+            default:
+                break
             }
         }
     }
