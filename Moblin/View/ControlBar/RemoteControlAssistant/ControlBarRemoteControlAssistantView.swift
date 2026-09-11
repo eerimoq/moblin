@@ -100,7 +100,7 @@ private struct RemoteControlAudioLevelView: View {
     var level: Float
     var channels: Int?
     private let barsPerDb: Float = 0.3
-    private let clippingThresholdDb: Float = -1.0
+    private let clippingThresholdDb: Float = -0.2
     private let redThresholdDb: Float = -8.5
     private let yellowThresholdDb: Float = -20
     private let zeroThresholdDb: Float = -60
