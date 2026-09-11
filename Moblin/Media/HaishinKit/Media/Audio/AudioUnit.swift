@@ -89,6 +89,22 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
+func calcAudioLevelPeakFloat32(samples: UnsafeMutablePointer<Float32>, count: Int) -> Float32 {
+    var peak: Float32 = 0.0
+    for index in 0 ..< count {
+        peak = max(peak, abs(samples[index]))
+    }
+    return peak
+}
+
+func calcAudioLevelPeakInt16(samples: UnsafeMutablePointer<Int16>, count: Int) -> Float {
+    var peak: UInt16 = 0
+    for index in 0 ..< count {
+        peak = max(peak, samples[index].magnitude)
+    }
+    return Float(peak) / (Float(Int16.max) + 1)
+}
+
 private class AudioMeasurement {
     private var currentPeak: Float = 0.0
     private var windowStart: Double = .nan
@@ -103,16 +119,10 @@ private class AudioMeasurement {
         guard now >= windowStart else {
             return nil
         }
-        _ = sampleBuffer.foreachAudioSample(float32: { samples, count in
-            for index in 0 ..< count {
-                currentPeak = max(currentPeak, abs(samples[index]))
-            }
-        }, int16: { samples, count in
-            var peak: Int16 = 0
-            for index in 0 ..< count {
-                peak = max(peak, abs(samples[index]))
-            }
-            currentPeak = max(currentPeak, Float(peak) / Float(Int16.max))
+        _ = sampleBuffer.foreachAudioSample(float32: {
+            currentPeak = max(currentPeak, calcAudioLevelPeakFloat32(samples: $0, count: $1))
+        }, int16: {
+            currentPeak = max(currentPeak, calcAudioLevelPeakInt16(samples: $0, count: $1))
         })
         guard now >= windowStart + windowDuration else {
             return nil
