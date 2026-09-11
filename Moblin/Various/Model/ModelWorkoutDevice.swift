@@ -90,14 +90,14 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
             self.cyclingPower = power
-            if !self.isCyclingSpeedCadenceReportingCadence() {
-                self.cyclingCadence = cadence
-            }
             self.addWorkoutCyclingPower(power)
-            self.addWorkoutCyclingCadence(cadence)
+            if let cadence, !self.isCyclingSpeedCadenceReportingCadence() {
+                self.cyclingCadence = cadence
+                self.addWorkoutCyclingCadence(cadence)
+            }
         }
     }
 
@@ -106,6 +106,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
             if let cadence {
                 self.cyclingCadence = cadence
                 self.latestCyclingSpeedCadenceCadenceTime = .now
+                self.addWorkoutCyclingCadence(cadence)
             }
             if let speed {
                 self.cyclingSpeed = speed
