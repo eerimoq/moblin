@@ -147,7 +147,7 @@ private struct RemoteControlAudioLevelView: View {
             Image(systemName: "waveform")
                 .frame(width: 20)
             HStack(spacing: 1) {
-                if level.isNaN {
+                if level == -Float.infinity {
                     if channels == nil {
                         Text("Muted")
                     } else {

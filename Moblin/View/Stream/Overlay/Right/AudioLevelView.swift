@@ -6,6 +6,7 @@ private let bigBarScale: CGFloat = 2.5
 
 private struct AudioBarView: View {
     @ObservedObject var level: AudioLevel
+    let muted: Bool
     var big: Bool = false
 
     private func clippingBar(scale: CGFloat) -> CGFloat? {
@@ -42,7 +43,7 @@ private struct AudioBarView: View {
 
     var body: some View {
         let scale = big ? bigBarScale : 1.0
-        if level.isMuted() {
+        if muted {
             Text("Muted")
                 .foregroundStyle(.white)
         } else if level.isUnknown() {
@@ -100,13 +101,13 @@ private struct SampleRateView: View {
 }
 
 struct AudioLevelView: View {
-    let model: Model
+    @ObservedObject var model: Model
     var big: Bool = false
 
     var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                AudioBarView(level: model.audio.level, big: big)
+                AudioBarView(level: model.audio.level, muted: model.isMuteOn, big: big)
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }
@@ -128,9 +129,10 @@ struct AudioLevelView: View {
 
 struct CompactAudioBarView: View {
     @ObservedObject var level: AudioLevel
+    let muted: Bool
 
     var body: some View {
-        if level.level.isNaN {
+        if muted {
             CompactAudioLevelIconView(
                 name: "microphone.slash",
                 foregroundColor: .white,

@@ -626,7 +626,7 @@ final class Model: NSObject, ObservableObject {
     var enabledChatEffects: [ChatEffect] = []
     var enabledChatEmoteComboEffects: [ChatEmoteComboEffect] = []
     var speechToTextAlertMatchOffset = 0
-    var isMuteOn = false
+    @Published var isMuteOn = false
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
     nonisolated let imageStorage = ImageStorage()
