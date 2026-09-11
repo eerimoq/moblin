@@ -1663,8 +1663,14 @@ struct SettingsSensitivity: Codable, Equatable {
     var eyes: Double = 1
 }
 
+enum SettingsWidgetVTuberType: String, Codable {
+    case vrm = "VRM"
+    case live2D = "Live2D"
+}
+
 class SettingsWidgetVTuber: Codable, ObservableObject {
     var id: UUID = .init()
+    @Published var type: SettingsWidgetVTuberType = .vrm
     @Published var videoSource: SettingsVideoSource = .init()
     @Published var cameraPositionY: Double = 1.37
     @Published var cameraFieldOfView: Double = 18
@@ -1675,6 +1681,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case id
+        case type
         case cameraPosition
         case backCameraId
         case frontCameraId
@@ -1701,6 +1708,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
+        try container.encode(.type, type)
         try container.encode(.cameraPosition, videoSource.cameraPosition)
         try container.encode(.backCameraId, videoSource.backCameraId)
         try container.encode(.frontCameraId, videoSource.frontCameraId)
@@ -1725,6 +1733,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
+        type = container.decode(.type, SettingsWidgetVTuberType.self, .vrm)
         videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
         videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
         videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
@@ -3854,7 +3863,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "A slideshow widget shows a slideshow of widgets.")
         case .vTuber:
             String(
-                localized: "A VTuber widget shows a VTuber model that imitates your facial movements."
+                localized: "A VTuber widget shows a VRM or Live2D model that imitates your facial movements."
             )
         case .pngTuber:
             String(

@@ -1,5 +1,5 @@
 {
-  "originHash" : "fc6f91a3af4e60062b76a5a2f9468f1a0a0e3ded1aa9448683b80b2af3a79304",
+  "originHash" : "57f8a2424c79da548cbb9298fdb239bd727e5c166369f054b34dafd2ece1aaa9",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "a7caeda164dc5108bf4649472b28a5af65dc6f33",
         "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "ayagamiswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/AyagamiSwift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a1424faf9fec767ba13644d179ff9ebe0bab2de9"
       }
     },
     {
