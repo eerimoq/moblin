@@ -108,9 +108,9 @@ private class AudioMeasurement {
                 currentPeak = max(currentPeak, abs(samples[index]))
             }
         }, int16: { samples, count in
-            var peak: Int32 = 0
+            var peak: Int16 = 0
             for index in 0 ..< count {
-                peak = max(peak, abs(Int32(samples[index])))
+                peak = max(peak, abs(samples[index]))
             }
             currentPeak = max(currentPeak, Float(peak) / Float(Int16.max))
         })
