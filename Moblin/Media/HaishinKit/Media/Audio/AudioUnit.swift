@@ -108,9 +108,11 @@ private class AudioMeasurement {
                 currentPeak = max(currentPeak, abs(samples[index]))
             }
         }, int16: { samples, count in
+            var peak: Int32 = 0
             for index in 0 ..< count {
-                currentPeak = max(currentPeak, abs(Float(samples[index]) / Float(Int16.max)))
+                peak = max(peak, abs(Int32(samples[index])))
             }
+            currentPeak = max(currentPeak, Float(peak) / Float(Int16.max))
         })
         guard now >= windowStart + windowDuration else {
             return nil
