@@ -14,8 +14,7 @@ protocol WorkoutDeviceDelegate: AnyObject {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState)
     func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int)
     func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int?)
-    func workoutDeviceCyclingSpeedCadence(_ device: WorkoutDevice,
-                                          metrics: WorkoutDeviceCyclingSpeedCadenceMetrics)
+    func workoutDeviceCyclingSpeedCadence(_ device: WorkoutDevice, speed: Double?, cadence: Int?)
     func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics)
 }
 
@@ -32,14 +31,18 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
     private var peripheral: CBPeripheral?
     private let heartRate = WorkoutDeviceHeartRate()
     private let cyclingPower = WorkoutDeviceCyclingPower()
-    private let cyclingSpeedCadence = WorkoutDeviceCyclingSpeedCadence()
+    private let cyclingSpeedCadence: WorkoutDeviceCyclingSpeedCadence
     private let running = WorkoutDeviceRunning()
     private var deviceId: UUID?
     weak var delegate: (any WorkoutDeviceDelegate)?
 
-    func start(deviceId: UUID?, wheelCircumference: Int) {
+    init(wheelCircumference: Int) {
+        cyclingSpeedCadence = WorkoutDeviceCyclingSpeedCadence(wheelCircumference: wheelCircumference)
+        super.init()
+    }
+
+    func start(deviceId: UUID?) {
         dispatchQueue.async {
-            self.cyclingSpeedCadence.setWheelCircumference(millimeters: wheelCircumference)
             self.startInternal(deviceId: deviceId)
         }
     }
@@ -155,15 +158,15 @@ extension WorkoutDevice: CBCentralManagerDelegate {
 
     private func handleCyclingPowerMeasurement(value: Data) throws {
         let (power, cadence) = try cyclingPower.handleMeasurement(value: value)
-        let ownedByCyclingSpeedCadence = cyclingSpeedCadence.isReportingCrankRevolutions()
+        let ownedByCyclingSpeedCadence = cyclingSpeedCadence.isReportingCadence()
         delegate?.workoutDeviceCyclingPower(self,
                                             power: power,
                                             cadence: ownedByCyclingSpeedCadence ? nil : cadence)
     }
 
     private func handleCyclingSpeedCadenceMeasurement(value: Data) throws {
-        let metrics = try cyclingSpeedCadence.handleMeasurement(value: value)
-        delegate?.workoutDeviceCyclingSpeedCadence(self, metrics: metrics)
+        let (speed, cadence) = try cyclingSpeedCadence.handleMeasurement(value: value)
+        delegate?.workoutDeviceCyclingSpeedCadence(self, speed: speed, cadence: cadence)
     }
 
     private func handleCyclingPowerVector(value: Data) throws {

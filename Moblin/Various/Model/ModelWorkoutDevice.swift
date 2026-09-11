@@ -7,12 +7,11 @@ extension Model {
 
     func enableWorkoutDevice(device: SettingsWorkoutDevice) {
         if !workoutDevices.keys.contains(device.id) {
-            let workoutDevice = WorkoutDevice()
+            let workoutDevice = WorkoutDevice(wheelCircumference: device.wheelCircumference)
             workoutDevice.delegate = self
             workoutDevices[device.id] = workoutDevice
         }
-        workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId,
-                                         wheelCircumference: device.wheelCircumference)
+        workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
     }
 
     func disableWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -92,14 +91,12 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice,
-                                          metrics: WorkoutDeviceCyclingSpeedCadenceMetrics)
-    {
+    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
         DispatchQueue.main.async {
-            if let cadence = metrics.cadence {
+            if let cadence {
                 self.cyclingCadence = cadence
             }
-            if let speed = metrics.speed {
+            if let speed {
                 self.cyclingSpeed = speed
             }
         }

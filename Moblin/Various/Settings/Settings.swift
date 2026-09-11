@@ -635,6 +635,8 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
     }
 }
 
+let defaultWheelCircumference = 2105
+
 class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")
     var id: UUID = .init()

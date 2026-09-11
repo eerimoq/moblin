@@ -4,15 +4,8 @@ import Foundation
 let workoutDeviceCyclingSpeedCadenceServiceId = CBUUID(string: "1816")
 let workoutDeviceCyclingSpeedCadenceMeasurementCharacteristicId = CBUUID(string: "2A5B")
 
-let defaultWheelCircumference = 2105
-
 private let measurementWheelRevolutionDataFlagIndex = 0
 private let measurementCrankRevolutionDataFlagIndex = 1
-
-struct WorkoutDeviceCyclingSpeedCadenceMetrics {
-    var speed: Double?
-    var cadence: Int?
-}
 
 private struct CyclingSpeedCadenceMeasurement {
     var cumulativeWheelRevolutions: UInt32?
@@ -41,9 +34,13 @@ class WorkoutDeviceCyclingSpeedCadence {
     private let crankCadence = WorkoutDeviceCrankCadence()
     private let averageSpeed = WorkoutDeviceAverageCalculator()
     private var latestAverageSpeedUpdateTime = ContinuousClock.now
-    private var reportsCrankRevolutions = false
+    private var reportsCadence = false
     private var reportsWheelRevolutions = false
-    private var wheelCircumferenceMeters = Double(defaultWheelCircumference) / 1000
+    private var wheelCircumferenceMeters: Double
+
+    init(wheelCircumference: Int) {
+        wheelCircumferenceMeters = Double(wheelCircumference) / 1000
+    }
 
     func reset() {
         measurementCharacteristic = nil
@@ -51,7 +48,7 @@ class WorkoutDeviceCyclingSpeedCadence {
         previousWheelRevolutionsTime = nil
         crankCadence.reset()
         averageSpeed.reset()
-        reportsCrankRevolutions = false
+        reportsCadence = false
         reportsWheelRevolutions = false
     }
 
@@ -67,24 +64,22 @@ class WorkoutDeviceCyclingSpeedCadence {
         wheelCircumferenceMeters = Double(millimeters) / 1000
     }
 
-    func isReportingCrankRevolutions() -> Bool {
-        reportsCrankRevolutions
+    func isReportingCadence() -> Bool {
+        reportsCadence
     }
 
-    func handleMeasurement(value: Data) throws -> WorkoutDeviceCyclingSpeedCadenceMetrics {
+    func handleMeasurement(value: Data) throws -> (Double?, Int?) {
         let measurement = try CyclingSpeedCadenceMeasurement(value: value)
         let now = ContinuousClock.now
         if measurement.cumulativeCrankRevolutions != nil {
-            reportsCrankRevolutions = true
+            reportsCadence = true
         }
         let cadence = crankCadence.update(revolutions: measurement.cumulativeCrankRevolutions,
                                           time: measurement.lastCrankEventTime,
                                           now: now)
         updateSpeed(measurement: measurement, now: now)
-        return WorkoutDeviceCyclingSpeedCadenceMetrics(
-            speed: reportsWheelRevolutions ? averageSpeed.averageIgnoreZeros() : nil,
-            cadence: reportsCrankRevolutions ? cadence : nil
-        )
+        return (reportsWheelRevolutions ? averageSpeed.averageIgnoreZeros() : nil,
+                reportsCadence ? cadence : nil)
     }
 
     private func updateSpeed(measurement: CyclingSpeedCadenceMeasurement, now: ContinuousClock.Instant) {
