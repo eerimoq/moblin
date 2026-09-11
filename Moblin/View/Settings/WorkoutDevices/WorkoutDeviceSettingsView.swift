@@ -29,6 +29,27 @@ struct WorkoutDeviceSettingsView: View {
         device.bluetoothPeripheralId != nil
     }
 
+    private func isValidWheelCircumference(value: String) -> String? {
+        guard let millimeters = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard millimeters >= 500 else {
+            return String(localized: "Too small")
+        }
+        guard millimeters <= 3000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitWheelCircumference(value: String) {
+        guard let millimeters = Int(value) else {
+            return
+        }
+        device.wheelCircumference = millimeters
+        model.setWorkoutDeviceWheelCircumference(device: device)
+    }
+
     private func onDeviceChange(value: String) {
         guard let deviceId = UUID(uuidString: value) else {
             return
@@ -75,6 +96,18 @@ struct WorkoutDeviceSettingsView: View {
                             }
                         }
                         .disabled(!canEnable())
+                }
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Wheel circumference"),
+                        value: String(device.wheelCircumference),
+                        onChange: isValidWheelCircumference,
+                        onSubmit: submitWheelCircumference,
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) mm" }
+                    )
+                } footer: {
+                    Text("Used to calculate speed from wheel revolutions.")
                 }
                 if device.enabled {
                     Section {

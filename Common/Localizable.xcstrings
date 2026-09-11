@@ -218481,6 +218481,9 @@
         }
       }
     },
+    "Show cycling speed" : {
+
+    },
     "Show date as %@" : {
       "localizations" : {
         "de" : {
@@ -275445,6 +275448,9 @@
         }
       }
     },
+    "Used to calculate speed from wheel revolutions." : {
+
+    },
     "Useful when using an external camera and a portrait phone holder." : {
       "localizations" : {
         "de" : {
@@ -283710,6 +283716,9 @@
           }
         }
       }
+    },
+    "Wheel circumference" : {
+
     },
     "Wheel of luck" : {
       "localizations" : {
