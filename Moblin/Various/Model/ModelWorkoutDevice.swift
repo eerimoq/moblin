@@ -57,11 +57,23 @@ extension Model {
         })
     }
 
+    func isWorkoutDeviceReportingCyclingPower() -> Bool {
+        isRecent(time: latestWorkoutDeviceCyclingPowerTime)
+    }
+
+    func isWorkoutDeviceReportingCyclingCadence() -> Bool {
+        isRecent(time: latestWorkoutDeviceCyclingCadenceTime)
+    }
+
     private func isCyclingSpeedCadenceReportingCadence() -> Bool {
-        guard let latestCyclingSpeedCadenceCadenceTime else {
+        isRecent(time: latestCyclingSpeedCadenceCadenceTime)
+    }
+
+    private func isRecent(time: ContinuousClock.Instant?) -> Bool {
+        guard let time else {
             return false
         }
-        return latestCyclingSpeedCadenceCadenceTime.duration(to: .now) < .seconds(5)
+        return time.duration(to: .now) < .seconds(5)
     }
 }
 
@@ -91,10 +103,11 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
 
     func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
         DispatchQueue.main.async {
-            self.latestWorkoutDeviceCyclingUpdate = .now
+            self.latestWorkoutDeviceCyclingPowerTime = .now
             self.cyclingPower = power
             if !self.isCyclingSpeedCadenceReportingCadence() {
                 self.cyclingCadence = cadence
+                self.latestWorkoutDeviceCyclingCadenceTime = .now
             }
         }
     }
@@ -104,6 +117,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
             if let cadence {
                 self.cyclingCadence = cadence
                 self.latestCyclingSpeedCadenceCadenceTime = .now
+                self.latestWorkoutDeviceCyclingCadenceTime = .now
             }
             if let speed {
                 self.cyclingSpeed = speed

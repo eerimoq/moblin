@@ -209,13 +209,6 @@ extension Model {
         }
     }
 
-    func isWorkoutDeviceProvidingCycling() -> Bool {
-        guard let latestWorkoutDeviceCyclingUpdate else {
-            return false
-        }
-        return latestWorkoutDeviceCyclingUpdate.duration(to: .now) < .seconds(5)
-    }
-
     func stopWorkout() {
         guard #available(iOS 26, *) else {
             return
