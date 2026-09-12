@@ -97,10 +97,11 @@ private struct RelayStreamerUrlView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var model: Model
     @ObservedObject var moblink: Moblink
-    @Binding var streamerUrl: String
+    @State var streamerUrl: String
 
     private func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
+            streamerUrl = model.database.moblink.relay.url
             return
         }
         model.database.moblink.relay.url = value
@@ -164,7 +165,7 @@ private struct RelayView: View {
             .disabled(model.isLive)
             if relay.manual {
                 NavigationLink {
-                    RelayStreamerUrlView(moblink: model.moblink, streamerUrl: $relay.url)
+                    RelayStreamerUrlView(moblink: model.moblink, streamerUrl: relay.url)
                 } label: {
                     TextItemLocalizedView(name: "Streamer URL", value: relay.url)
                 }
