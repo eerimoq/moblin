@@ -476,7 +476,7 @@ extension Model {
         )
         if audio.level.level == -Float.infinity {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audio.level.level == .infinity {
+        } else if audio.level.level == .infinity || audio.level.level.isNaN {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
