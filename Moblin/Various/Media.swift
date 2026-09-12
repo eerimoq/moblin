@@ -1233,7 +1233,7 @@ extension Media: SrtlaDelegate {
                 }
             } else {
                 self.srtStreamNew?.open(streamId: extractSrtStreamId(url: self.srtUrl),
-                                        latency: UInt16(self.latency),
+                                        latency: UInt16(clamping: self.latency),
                                         experimental: self.experimental)
             }
         }

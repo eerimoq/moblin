@@ -278,6 +278,12 @@ extension Comparable {
     }
 }
 
+extension FloatingPoint {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        isNaN ? limits.lowerBound : min(max(self, limits.lowerBound), limits.upperBound)
+    }
+}
+
 func bitrateToMbps(bitrate: UInt32) -> Float {
     Float(bitrate) / 1_000_000
 }

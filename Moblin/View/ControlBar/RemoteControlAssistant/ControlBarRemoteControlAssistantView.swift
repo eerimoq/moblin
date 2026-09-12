@@ -426,7 +426,7 @@ private struct ZoomView: View {
     @ObservedObject var remoteControl: RemoteControl
 
     private func submitZoom(value: String) {
-        guard let x = Float(value) else {
+        guard let x = Float(value), x.isFinite else {
             if let zoom = model.remoteControlAssistantStreamerState.zoom {
                 remoteControl.zoom = String(zoom)
             }
