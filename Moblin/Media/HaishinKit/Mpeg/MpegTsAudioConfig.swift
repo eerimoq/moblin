@@ -137,6 +137,9 @@ struct MpegTsAudioConfig: Equatable {
     let frameLengthFlag = false
 
     init?(data: [UInt8]) {
+        guard data.count >= 2 else {
+            return nil
+        }
         guard
             let type = AudioObjectType(rawValue: data[0] >> 3),
             let frequency = SamplingFrequency(rawValue: (data[0] & 0b0000_0111) << 1 | (data[1] >> 7)),

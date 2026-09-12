@@ -672,6 +672,9 @@ extension Model {
     }
 
     private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
+        guard goal > 0 else {
+            return
+        }
         let percentage = Int(100 * Float(progress) / Float(goal))
         hypeTrain.status = "LVL \(level), \(percentage)%"
     }
