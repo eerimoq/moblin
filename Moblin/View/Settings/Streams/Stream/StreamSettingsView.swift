@@ -105,6 +105,16 @@ struct GrayTextView: View {
     }
 }
 
+struct TokenExpiresInView: View {
+    let expiresIn: Duration?
+
+    var body: some View {
+        if let expiresIn {
+            Text("Expires in \(expiresIn.format()).")
+        }
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream

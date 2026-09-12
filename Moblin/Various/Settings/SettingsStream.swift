@@ -956,6 +956,26 @@ class SettingsStreamTwitchRaidChannel: Codable, Identifiable {
         self.channelName = channelName
     }
 
+    enum CodingKeys: CodingKey {
+        case channelId
+        case channelName
+        case timestamp
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.channelId, channelId)
+        try container.encode(.channelName, channelName)
+        try container.encode(.timestamp, timestamp)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        channelId = container.decode(.channelId, String.self, "")
+        channelName = container.decode(.channelName, String.self, "")
+        timestamp = container.decode(.timestamp, Date.self, .init())
+    }
+
     func clone() -> SettingsStreamTwitchRaidChannel {
         let new = SettingsStreamTwitchRaidChannel(channelId: channelId, channelName: channelName)
         new.timestamp = timestamp
@@ -1200,8 +1220,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchWantsToBeLoggedIn: Bool = false
     var twitchNotLoggedInCount: Int = 0
     var twitchRewards: [SettingsStreamTwitchReward] = []
-    var twitchRaidsSent: [SettingsStreamTwitchRaidChannel] = []
-    var twitchRaidsReceived: [SettingsStreamTwitchRaidChannel] = []
+    @Published var twitchRaidsSent: [SettingsStreamTwitchRaidChannel] = []
+    @Published var twitchRaidsReceived: [SettingsStreamTwitchRaidChannel] = []
     @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
     @Published var kickChannelId: String?

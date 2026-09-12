@@ -835,11 +835,17 @@ extension Model {
     private func resetVTuberVideoEffects(widgets: [SettingsWidget]) {
         vTuberEffects.removeAll()
         for widget in widgets where widget.type == .vTuber {
-            vTuberEffects[widget.id] = VTuberEffect(
-                vrm: vTuberStorage.makePath(id: widget.vTuber.id),
-                cameraFieldOfView: widget.vTuber.cameraFieldOfView,
-                cameraPositionY: widget.vTuber.cameraPositionY
-            )
+            let path = vTuberStorage.makePath(id: widget.vTuber.id)
+            switch widget.vTuber.type {
+            case .vrm:
+                vTuberEffects[widget.id] = VTuberVrmEffect(
+                    vrm: path,
+                    cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                    cameraPositionY: widget.vTuber.cameraPositionY
+                )
+            case .live2D:
+                vTuberEffects[widget.id] = VTuberLive2DEffect(directory: path)
+            }
         }
     }
 

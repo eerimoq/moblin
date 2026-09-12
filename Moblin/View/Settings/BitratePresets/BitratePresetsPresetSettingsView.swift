@@ -5,12 +5,10 @@ struct BitratePresetsPresetSettingsView: View {
     @ObservedObject var preset: SettingsBitratePreset
 
     func submit(bitrate: String) {
-        guard var bitrate = Float(bitrate) else {
+        guard let bitrate = Float(bitrate) else {
             return
         }
-        bitrate = max(bitrate, 0.05)
-        bitrate = min(bitrate, 50)
-        preset.bitrate = bitrateFromMbps(bitrate: bitrate)
+        preset.bitrate = bitrateFromMbps(bitrate: bitrate.clamped(to: 0.05 ... 50))
     }
 
     var body: some View {

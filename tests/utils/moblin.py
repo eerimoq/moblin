@@ -225,11 +225,13 @@ class Moblin:
             settings_file = Path(settings_dir) / "settings.zip"
             create_settings_file(settings, settings_file, files)
             try:
-                self._request(
+                response = self._request(
                     {"importSettings": {"data": b64encode(settings_file.read_bytes()).decode("utf-8")}}
                 )
             except Exception:
-                pass
+                response = None
+            if response is not None and "ok" not in response["result"]:
+                raise Exception(f"Import settings failed: {response['result']}")
             time.sleep(2)
 
     def set_scene(self, name: SceneName):

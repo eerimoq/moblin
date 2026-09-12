@@ -277,14 +277,14 @@ private struct MaskEditorView: View {
     }
 
     private func commitX() {
-        guard let x = Double(xText) else {
+        guard let x = Double(xText), x.isFinite else {
             return
         }
         setX(x)
     }
 
     private func commitY() {
-        guard let y = Double(yText) else {
+        guard let y = Double(yText), y.isFinite else {
             return
         }
         setY(value: y)

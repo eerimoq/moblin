@@ -132,8 +132,7 @@ enum RaidState {
 class Raid: ObservableObject {
     @Published var state: RaidState = .idle
     @Published var channelImage: String = ""
-    var channelId: String = ""
-    var channelName: String = ""
+    @Published var channelLogin: String = ""
     @Published var message: String = ""
     @Published var progress = ProgressBar()
     var timer = SimpleTimer(queue: .main)
@@ -261,11 +260,12 @@ class StatusTopLeft: ObservableObject {
 }
 
 class SystemMonitor: ObservableObject {
+    @Published var appCpu = 0
     @Published var cpu = 0
     @Published var ram = 0
 
     func format() -> String {
-        "\(cpu)% \(ram) MB"
+        "\(appCpu)%/\(cpu)% \(ram) MB"
     }
 
     func formatShort() -> String {
@@ -671,6 +671,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
+    var latestCyclingSpeedCadenceCadenceTime: ContinuousClock.Instant?
+    var cyclingSpeed = 0.0
     var latestSubscriber = ""
     var latestFollower = ""
     private let periodicTimer20ms = SimpleTimer(queue: .main)
@@ -1801,7 +1803,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBitrateStatus()
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
-            resourceUsage.update()
+            resourceUsage.update(now: monotonicNow)
+            systemMonitor.appCpu = resourceUsage.getAppCpuUsage()
             systemMonitor.cpu = resourceUsage.getCpuUsage()
             systemMonitor.ram = resourceUsage.getMemoryUsage()
         }

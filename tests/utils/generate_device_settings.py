@@ -39,11 +39,17 @@ class CameraPosition(StrEnum):
 class WidgetType(StrEnum):
     ALERTS = "Alerts"
     BROWSER = "Browser"
+    CHAT = "Chat"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
     TEXT = "Text"
     VIDEO_SOURCE = "Video source"
     V_TUBER = "VTuber"
+
+
+class VTuberType(StrEnum):
+    LIVE_2D = "Live2D"
+    VRM = "VRM"
 
 
 class Alignment(StrEnum):
@@ -191,6 +197,14 @@ def download_model(name: str) -> Path:
     return path
 
 
+def download_zipped_model(name: str) -> Path:
+    directory = CACHE_DIR / Path(name).stem
+    if not directory.exists():
+        with zipfile.ZipFile(download_model(name)) as archive:
+            archive.extractall(directory)
+    return directory
+
+
 def scene_widget_settings(
     widget_id: str,
     x: float,
@@ -248,6 +262,16 @@ def alerts_widget_settings(name: str, widget_id: str, image_id: str, sound_id: s
     }
 
 
+def chat_widget_settings(name: str, widget_id: str, font_size: float):
+    return {
+        "id": widget_id,
+        "name": name,
+        "type": WidgetType.CHAT,
+        "enabled": True,
+        "chat": {"fontSize": font_size},
+    }
+
+
 def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
     return {
         "id": widget_id,
@@ -283,4 +307,11 @@ def create_settings_file(settings, output_file: Path, files: dict[str, Path] | N
     with zipfile.ZipFile(output_file, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("settings.json", json.dumps(settings, indent=4))
         for name, path in (files or {}).items():
-            archive.write(path, name)
+            if path.is_dir():
+                archive.mkdir(name)
+                for directory in sorted(d for d in path.rglob("*") if d.is_dir()):
+                    archive.mkdir(f"{name}/{directory.relative_to(path)}")
+                for file in sorted(f for f in path.rglob("*") if f.is_file()):
+                    archive.write(file, f"{name}/{file.relative_to(path)}")
+            else:
+                archive.write(path, name)

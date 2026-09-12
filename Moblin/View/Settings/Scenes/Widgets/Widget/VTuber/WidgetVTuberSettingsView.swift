@@ -1,4 +1,5 @@
 import SwiftUI
+import ZipArchive
 
 private struct PickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -15,6 +16,21 @@ private struct PickerView: UIViewControllerRepresentable {
     func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
 }
 
+private func unzipLive2DModel(from url: URL, to directory: URL) throws {
+    try ZipArchiveReader.withFile(url.path) { reader in
+        for entry in try reader.readDirectory() where !entry.isDirectory {
+            let components = entry.filename.components.map(\.string)
+            if components.contains("__MACOSX") || components.contains("..") {
+                continue
+            }
+            let file = directory.appending(path: components.joined(separator: "/"))
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(),
+                                                    withIntermediateDirectories: true)
+            try Data(reader.readFile(entry)).write(to: file)
+        }
+    }
+}
+
 struct WidgetVTuberPickerView: View {
     let model: Model
     @ObservedObject var vTuber: SettingsWidgetVTuber
@@ -22,9 +38,35 @@ struct WidgetVTuberPickerView: View {
     @State var showPicker = false
 
     private func onUrl(url: URL) {
-        vTuber.modelName = url.lastPathComponent
-        model.vTuberStorage.add(id: vTuber.id, url: url)
-        onSelected?()
+        if url.pathExtension.lowercased() == "zip" {
+            onLive2DUrl(url: url)
+        } else {
+            vTuber.type = .vrm
+            vTuber.modelName = url.lastPathComponent
+            model.vTuberStorage.add(id: vTuber.id, url: url)
+            onSelected?()
+        }
+    }
+
+    private func onLive2DUrl(url: URL) {
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        DispatchQueue.global().async {
+            do {
+                try unzipLive2DModel(from: url, to: directory)
+            } catch {
+                DispatchQueue.main.async {
+                    model.makeErrorToast(title: String(localized: "Failed to unzip model"),
+                                         subTitle: error.localizedDescription)
+                }
+                return
+            }
+            DispatchQueue.main.async {
+                vTuber.type = .live2D
+                vTuber.modelName = url.lastPathComponent
+                model.vTuberStorage.add(id: vTuber.id, url: directory)
+                onSelected?()
+            }
+        }
     }
 
     var body: some View {
@@ -41,7 +83,7 @@ struct WidgetVTuberPickerView: View {
         } header: {
             Text("Model")
         } footer: {
-            Text("Most VRM 0.0 files are supported.")
+            Text("Most VRM 0.0 files and zipped Live2D Cubism models are supported.")
         }
     }
 }
@@ -89,58 +131,62 @@ struct WidgetVTuberSettingsView: View {
         WidgetVTuberPickerView(model: model, vTuber: vTuber) {
             model.resetSelectedScene(changeScene: false)
         }
-        Section {
-            HStack {
-                Text("Vertical position")
-                Slider(
-                    value: $vTuber.cameraPositionY,
-                    in: 1 ... 2,
-                    step: 0.01
-                )
-                .onChange(of: vTuber.cameraPositionY) { _ in
-                    setEffectSettings()
-                }
-            }
-            HStack {
-                Text("Field of view")
-                Slider(
-                    value: $vTuber.cameraFieldOfView,
-                    in: 10 ... 30,
-                    step: 1.0
-                )
-                .onChange(of: vTuber.cameraFieldOfView) { _ in
-                    setEffectSettings()
-                }
-            }
+        if vTuber.type == .vrm {
             Section {
-                Toggle(isOn: $vTuber.mirror) {
-                    Text("Mirror")
+                HStack {
+                    Text("Vertical position")
+                    Slider(
+                        value: $vTuber.cameraPositionY,
+                        in: 1 ... 2,
+                        step: 0.01
+                    )
+                    .onChange(of: vTuber.cameraPositionY) { _ in
+                        setEffectSettings()
+                    }
                 }
-                .onChange(of: vTuber.mirror) { _ in
-                    setEffectSettings()
+                HStack {
+                    Text("Field of view")
+                    Slider(
+                        value: $vTuber.cameraFieldOfView,
+                        in: 10 ... 30,
+                        step: 1.0
+                    )
+                    .onChange(of: vTuber.cameraFieldOfView) { _ in
+                        setEffectSettings()
+                    }
                 }
+            } header: {
+                Text("Camera")
             }
-        } header: {
-            Text("Camera")
+        }
+        Section {
+            Toggle(isOn: $vTuber.mirror) {
+                Text("Mirror")
+            }
+            .onChange(of: vTuber.mirror) { _ in
+                setEffectSettings()
+            }
         }
         WidgetSensitivityView(sensitivity: $vTuber.sensitivity)
             .onChange(of: vTuber.sensitivity) { _ in
                 setEffectSettings()
             }
-        Section {
-            HStack {
-                Text("Arms")
-                Slider(
-                    value: $vTuber.armsAngle,
-                    in: 20 ... 90,
-                    step: 1.0
-                )
-                .onChange(of: vTuber.armsAngle) { _ in
-                    setEffectSettings()
+        if vTuber.type == .vrm {
+            Section {
+                HStack {
+                    Text("Arms")
+                    Slider(
+                        value: $vTuber.armsAngle,
+                        in: 20 ... 90,
+                        step: 1.0
+                    )
+                    .onChange(of: vTuber.armsAngle) { _ in
+                        setEffectSettings()
+                    }
                 }
+            } header: {
+                Text("Angles")
             }
-        } header: {
-            Text("Angles")
         }
     }
 }

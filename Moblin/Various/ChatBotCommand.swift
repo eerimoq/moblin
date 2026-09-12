@@ -238,6 +238,20 @@ class ChatBotCommand {
         return matchArgument(word)
     }
 
+    func popFirstInt(in range: ClosedRange<Int>) -> Int? {
+        guard let value = popFirst(), let value = Int(value), range.contains(value) else {
+            return nil
+        }
+        return value
+    }
+
+    func popFirstDouble(in range: ClosedRange<Double>) -> Double? {
+        guard let value = popFirst(), let value = Double(value), range.contains(value) else {
+            return nil
+        }
+        return value
+    }
+
     func popAll() -> [String] {
         var parts: [String] = []
         while let part = popFirst() {

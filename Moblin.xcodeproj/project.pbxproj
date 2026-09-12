@@ -29,6 +29,7 @@
 		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
+		03A7A6A130D00000000000A1 /* Ayagami in Frameworks */ = {isa = PBXBuildFile; productRef = 03A7A6A130D00000000000A2 /* Ayagami */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03AA0007000000000000AA02 /* MoblinLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03AC6B952D17786700832A7E /* TrueTime in Frameworks */ = {isa = PBXBuildFile; productRef = 03AC6B942D17786700832A7E /* TrueTime */; };
@@ -337,6 +338,7 @@
 				0360FD162F228EEB00FF8847 /* MetalPetal in Frameworks */,
 				882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */,
 				0375F6EF2F539602005BE7A8 /* Srt in Frameworks */,
+				03A7A6A130D00000000000A1 /* Ayagami in Frameworks */,
 				035351942F1C271700428DAC /* AppAuthCore in Frameworks */,
 				0375F6E62F5354BE005BE7A8 /* Rist in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
@@ -508,6 +510,7 @@
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
 				03FA5E0130C0000000000002 /* FuzzyMatchingSwift */,
+				03A7A6A130D00000000000A2 /* Ayagami */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -714,6 +717,7 @@
 				0375FD792F539AAC005BE7A8 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 				03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */,
 				035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */,
+				03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1674,6 +1678,14 @@
 				kind = branch;
 			};
 		};
+		03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/AyagamiSwift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-collections.git";
@@ -1834,6 +1846,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
+		};
+		03A7A6A130D00000000000A2 /* Ayagami */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */;
+			productName = Ayagami;
 		};
 		03A974272AC137A000610E21 /* Collections */ = {
 			isa = XCSwiftPackageProductDependency;

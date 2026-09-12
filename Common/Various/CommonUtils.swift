@@ -278,6 +278,12 @@ extension Comparable {
     }
 }
 
+extension FloatingPoint {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        isNaN ? limits.lowerBound : min(max(self, limits.lowerBound), limits.upperBound)
+    }
+}
+
 func bitrateToMbps(bitrate: UInt32) -> Float {
     Float(bitrate) / 1_000_000
 }
@@ -886,5 +892,15 @@ extension KeyedEncodingContainer {
 extension KeyedDecodingContainer {
     func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T {
         (try? decode(type, forKey: key)) ?? defaultValue
+    }
+
+    func decode<T: Decodable>(
+        _ key: KeyedDecodingContainer<K>.Key,
+        _ type: T.Type,
+        _ defaultValue: T,
+        _ isValid: (T) -> Bool
+    ) -> T {
+        let value = decode(key, type, defaultValue)
+        return isValid(value) ? value : defaultValue
     }
 }

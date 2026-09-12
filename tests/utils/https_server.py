@@ -3,11 +3,11 @@ import ssl
 import subprocess
 import threading
 from functools import partial
-from http.server import SimpleHTTPRequestHandler
-from http.server import ThreadingHTTPServer
 from ipaddress import ip_address
 from pathlib import Path
 
+from .http_server import RequestHandler
+from .http_server import ThreadingServer as HttpThreadingServer
 from .utils import FILES_DIR
 
 LOGGER = logging.getLogger(__name__)
@@ -46,16 +46,7 @@ def create_self_signed_certificate(host: str) -> tuple[Path, Path]:
     return key_file, certificate_file
 
 
-class RequestHandler(SimpleHTTPRequestHandler):
-    protocol_version = "HTTP/1.1"
-
-    def log_message(self, *args):
-        LOGGER.debug("%s - %s", self.address_string(), args[0] % args[1:])
-
-
-class ThreadingServer(ThreadingHTTPServer):
-    request_queue_size = 128
-
+class ThreadingServer(HttpThreadingServer):
     def __init__(self, server_address, handler_class, certificate_file: Path, key_file: Path):
         self._client_ip_addresses: list[str] = []
         super().__init__(server_address, handler_class)

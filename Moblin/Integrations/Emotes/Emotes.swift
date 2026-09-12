@@ -9,9 +9,11 @@ enum EmotesPlatform {
 
 class Emote {
     let url: URL
+    let stillUrl: URL?
 
-    init(url: URL) {
+    init(url: URL, stillUrl: URL? = nil) {
         self.url = url
+        self.stillUrl = stillUrl
     }
 }
 
@@ -105,7 +107,7 @@ class Emotes: @unchecked Sendable {
             segments.append(ChatPostSegment(
                 id: id,
                 text: "",
-                url: ChatPostUrl(moving: emote.url, still: emote.url)
+                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl ?? emote.url)
             ))
             id += 1
             segments.append(ChatPostSegment(id: id, text: ""))

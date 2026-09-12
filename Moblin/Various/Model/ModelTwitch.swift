@@ -145,9 +145,10 @@ extension Model {
     func getTwitchStreams(
         stream: SettingsStream,
         userIds: [String],
+        live: Bool,
         onComplete: @escaping ([TwitchApiStreamData]?) -> Void
     ) {
-        createTwitchApi(stream: stream).getStreams(userIds: userIds, onComplete: onComplete)
+        createTwitchApi(stream: stream).getStreams(userIds: userIds, live: live, onComplete: onComplete)
     }
 
     func getTwitchUsers(
@@ -167,6 +168,12 @@ extension Model {
                 return
             }
             onComplete(info)
+        }
+    }
+
+    func getTwitchTokenExpiresIn(stream: SettingsStream, onComplete: @escaping (Duration?) -> Void) {
+        createTwitchApi(stream: stream).validateToken { data in
+            onComplete(data.map { .seconds($0.expires_in) })
         }
     }
 
@@ -522,14 +529,15 @@ extension Model {
 
     func twitchRaidStarted(channelLogin: String, channelName: String) {
         raid.state = .ongoing
+        raid.channelLogin = channelLogin
         raid.message = String(localized: "Raiding \(channelName)")
         raid.progress.progress = 0
         raid.progress.goal = 90
-        raid.channelId = ""
-        raid.channelName = channelName
         searchTwitchChannel(stream: stream, channelName: channelLogin) {
             self.raid.channelImage = $0?.thumbnail_url ?? ""
-            self.raid.channelId = $0?.id ?? ""
+            if let channelId = $0?.id {
+                self.appendTwitchRaidSent(channelId: channelId, channelName: channelName)
+            }
         }
     }
 
@@ -541,7 +549,6 @@ extension Model {
     func twitchRaidCompleted() {
         raid.state = .completed
         raid.message = String(localized: "Raid completed!")
-        appendTwitchRaidSent(channelId: raid.channelId, channelName: raid.channelName)
         raid.timer.startSingleShot(timeout: 60) {
             self.removeRaid()
         }
@@ -559,29 +566,20 @@ extension Model {
     func removeRaid() {
         raid.state = .idle
         raid.channelImage = ""
-        raid.channelId = ""
-        raid.channelName = ""
+        raid.channelLogin = ""
         raid.timer.stop()
     }
 
     private func appendTwitchRaidSent(channelId: String, channelName: String) {
-        guard !channelId.isEmpty else {
-            return
-        }
         stream.twitchRaidsSent = appendTwitchRaidChannel(stream.twitchRaidsSent,
                                                          channelId: channelId,
                                                          channelName: channelName)
-        storeSettings()
     }
 
     private func appendTwitchRaidReceived(channelId: String, channelName: String) {
-        guard !channelId.isEmpty, channelId != stream.twitchChannelId else {
-            return
-        }
         stream.twitchRaidsReceived = appendTwitchRaidChannel(stream.twitchRaidsReceived,
                                                              channelId: channelId,
                                                              channelName: channelName)
-        storeSettings()
     }
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
@@ -674,6 +672,9 @@ extension Model {
     }
 
     private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
+        guard goal > 0 else {
+            return
+        }
         let percentage = Int(100 * Float(progress) / Float(goal))
         hypeTrain.status = "LVL \(level), \(percentage)%"
     }

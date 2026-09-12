@@ -1,6 +1,6 @@
 import SwiftUI
 
-private enum ExecutorState {
+enum ExecutorState {
     case idle
     case inProgress
     case success
@@ -8,7 +8,7 @@ private enum ExecutorState {
     case error
 }
 
-private class Executor: ObservableObject, @unchecked Sendable {
+class Executor: ObservableObject, @unchecked Sendable {
     @Published var state: ExecutorState = .idle
 
     func startProgress() {
@@ -41,11 +41,18 @@ private class Executor: ObservableObject, @unchecked Sendable {
     }
 }
 
-private struct ExecutorView<Content: View>: View {
+struct ExecutorView<Content: View>: View {
     @EnvironmentObject var model: Model
     @ObservedObject var executor: Executor
     var centerNonContent: Bool = false
     @ViewBuilder let content: () -> Content
+
+    private func handleState() {
+        if executor.state == .authError {
+            model.showModerationAuth = true
+            model.twitchLogin(stream: model.stream)
+        }
+    }
 
     var body: some View {
         Group {
@@ -70,16 +77,16 @@ private struct ExecutorView<Content: View>: View {
                     .hCenter(centerNonContent)
             }
         }
+        .onAppear {
+            handleState()
+        }
         .onChange(of: executor.state) { _ in
-            if executor.state == .authError {
-                model.showModerationAuth = true
-                model.twitchLogin(stream: model.stream)
-            }
+            handleState()
         }
     }
 }
 
-private struct ToggleActionView: View {
+struct ToggleActionView: View {
     let text: LocalizedStringKey
     let image: String
     let action: (Bool, @escaping (OperationResult) -> Void) -> Void
@@ -105,7 +112,7 @@ private struct ToggleActionView: View {
     }
 }
 
-private struct DurationActionView: View {
+struct DurationActionView: View {
     let text: LocalizedStringKey
     let image: String
     let durations: [Int]
@@ -136,7 +143,7 @@ private struct DurationActionView: View {
     }
 }
 
-private enum ModActionType: CaseIterable {
+enum ModActionType: CaseIterable {
     case ban
     case timeout
     case unban
@@ -184,7 +191,7 @@ private enum ModActionType: CaseIterable {
     }
 }
 
-private struct UserModerationItemView: View {
+struct UserModerationItemView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
@@ -303,7 +310,7 @@ private struct UserModerationItemView: View {
     }
 }
 
-private struct ActionRowView: View {
+struct ActionRowView: View {
     let text: LocalizedStringKey
     let image: String
     let action: (@escaping (OperationResult) -> Void) -> Void
@@ -323,20 +330,20 @@ private struct ActionRowView: View {
     }
 }
 
-private struct PollOption: Identifiable {
+struct PollOption: Identifiable {
     let id: UUID = .init()
     var text: String = ""
 }
 
-private func canCreatePoll(title: String, options: [PollOption]) -> Bool {
+func canCreatePoll(title: String, options: [PollOption]) -> Bool {
     !title.trim().isEmpty && options.filter { !$0.text.trim().isEmpty }.count >= 2
 }
 
-private func pollOptionTitles(options: [PollOption]) -> [String] {
+func pollOptionTitles(options: [PollOption]) -> [String] {
     options.map { $0.text.trim() }.filter { !$0.isEmpty }
 }
 
-private struct PollOptionsSectionView: View {
+struct PollOptionsSectionView: View {
     let header: LocalizedStringKey
     let placeholder: LocalizedStringKey
     let kind: String
@@ -368,415 +375,6 @@ private struct PollOptionsSectionView: View {
     }
 }
 
-private struct CreateKickPollView: View {
-    let model: Model
-    @State private var title: String = ""
-    @State private var options = [PollOption(), PollOption()]
-    @State private var duration: Int = 30
-    @State private var resultDisplayDuration: Int = 15
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        NavigationLinkView(text: "Create poll", image: "chart.bar") {
-            Section("Title") {
-                TextField("Title", text: $title)
-            }
-            PollOptionsSectionView(header: "Options",
-                                   placeholder: "Option",
-                                   kind: String(localized: "an option"),
-                                   options: $options,
-                                   maxCount: 6)
-            Section {
-                Picker("Duration", selection: $duration) {
-                    ForEach([30, 120, 180, 240, 300], id: \.self) {
-                        Text(formatShortDuration(seconds: $0))
-                    }
-                }
-            }
-            Section {
-                Picker("Result display duration", selection: $resultDisplayDuration) {
-                    ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
-                        Text(formatShortDuration(seconds: $0))
-                    }
-                }
-            }
-            Section {
-                HCenter {
-                    ExecutorView(executor: executor) {
-                        CreateButtonView {
-                            executor.startProgress()
-                            model.createKickPoll(
-                                title: title.trim(),
-                                options: pollOptionTitles(options: options),
-                                duration: duration,
-                                resultDisplayDuration: resultDisplayDuration,
-                                onComplete: executor.completed
-                            )
-                        }
-                        .disabled(!canCreatePoll(title: title, options: options))
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct CreateKickPredictionView: View {
-    let model: Model
-    @State private var title = ""
-    @State private var outcome1 = ""
-    @State private var outcome2 = ""
-    @State private var duration = 300
-    @StateObject private var executor = Executor()
-
-    private func canExecute() -> Bool {
-        !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
-    }
-
-    var body: some View {
-        NavigationLinkView(text: "Create prediction", image: "sparkles") {
-            Section("Title") {
-                TextField("Title", text: $title)
-            }
-            Section("Outcomes") {
-                TextField("Outcome", text: $outcome1)
-                TextField("Outcome", text: $outcome2)
-            }
-            Section {
-                Picker("Duration", selection: $duration) {
-                    ForEach([60, 300, 600, 1800], id: \.self) {
-                        Text(formatShortDuration(seconds: $0))
-                    }
-                }
-            }
-            Section {
-                HCenter {
-                    ExecutorView(executor: executor) {
-                        CreateButtonView {
-                            executor.startProgress()
-                            model.createKickPrediction(title: title.trim(),
-                                                       outcomes: [outcome1.trim(), outcome2.trim()],
-                                                       duration: duration,
-                                                       onComplete: executor.completed)
-                        }
-                        .disabled(!canExecute())
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct CreateTwitchPollView: View {
-    let model: Model
-    let onCreated: () -> Void
-    @State private var title = ""
-    @State private var options = [PollOption(), PollOption()]
-    @State private var duration = 60
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        Section("Title") {
-            TextField("Title", text: $title)
-        }
-        PollOptionsSectionView(header: "Choices",
-                               placeholder: "Choice",
-                               kind: String(localized: "a choice"),
-                               options: $options,
-                               maxCount: 5)
-        Section {
-            Picker("Duration", selection: $duration) {
-                ForEach([30, 60, 120, 180, 300, 600], id: \.self) {
-                    Text(formatShortDuration(seconds: $0))
-                }
-            }
-        }
-        Section {
-            HCenter {
-                ExecutorView(executor: executor) {
-                    CreateButtonView {
-                        executor.startProgress()
-                        model.createTwitchPoll(title: title.trim(),
-                                               choices: pollOptionTitles(options: options),
-                                               duration: duration)
-                        {
-                            executor.completed(result: $0)
-                            if $0.isSuccessful() {
-                                onCreated()
-                            }
-                        }
-                    }
-                    .disabled(!canCreatePoll(title: title, options: options))
-                }
-            }
-        }
-    }
-}
-
-private struct ActiveTwitchPollView: View {
-    let model: Model
-    let poll: TwitchApiPollData
-    let onEnded: () -> Void
-
-    private func end(status: TwitchApiPollStatus, onComplete: @escaping (OperationResult) -> Void) {
-        model.endTwitchPoll(id: poll.id, status: status) {
-            onComplete($0)
-            if $0.isSuccessful() {
-                onEnded()
-            }
-        }
-    }
-
-    var body: some View {
-        Section("Title") {
-            Text(poll.title)
-        }
-        Section("Choices") {
-            ForEach(poll.choices) { choice in
-                HStack {
-                    Text(choice.title)
-                    Spacer()
-                    Text("\(choice.votes ?? 0) votes")
-                        .foregroundStyle(.secondary)
-                }
-            }
-        }
-        Section {
-            ActionRowView(text: "End poll", image: "stop") {
-                end(status: .terminated, onComplete: $0)
-            }
-            ActionRowView(text: "Archive poll", image: "archivebox") {
-                end(status: .archived, onComplete: $0)
-            }
-        } footer: {
-            Text("Ending the poll shows the final results. Archiving it hides them.")
-        }
-    }
-}
-
-private struct TwitchPollFormView: View {
-    let model: Model
-    @State private var loaded = false
-    @State private var poll: TwitchApiPollData?
-    @StateObject private var executor = Executor()
-
-    private func load() {
-        executor.startProgress()
-        model.getTwitchPolls {
-            switch $0 {
-            case let .success(polls):
-                poll = polls.first(where: { $0.isActive() })
-                executor.completedNoTimer(result: .success(Data()))
-            case .authError:
-                executor.completedNoTimer(result: .authError)
-            case .error:
-                executor.completedNoTimer(result: .error)
-            }
-        }
-    }
-
-    private func loadOnce() {
-        guard !loaded else {
-            return
-        }
-        loaded = true
-        load()
-    }
-
-    var body: some View {
-        ExecutorView(executor: executor, centerNonContent: true) {
-            if let poll {
-                ActiveTwitchPollView(model: model, poll: poll, onEnded: load)
-            } else {
-                CreateTwitchPollView(model: model, onCreated: load)
-            }
-        }
-        .onAppear {
-            loadOnce()
-        }
-    }
-}
-
-private struct TwitchPollView: View {
-    let model: Model
-
-    var body: some View {
-        NavigationLinkView(text: "Poll", image: "chart.bar") {
-            TwitchPollFormView(model: model)
-        }
-    }
-}
-
-private struct CreateTwitchPredictionView: View {
-    let model: Model
-    let onCreated: () -> Void
-    @State private var title = ""
-    @State private var outcomes = [PollOption(), PollOption()]
-    @State private var predictionWindow = 300
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        Section("Title") {
-            TextField("Title", text: $title)
-        }
-        PollOptionsSectionView(header: "Outcomes",
-                               placeholder: "Outcome",
-                               kind: String(localized: "an outcome"),
-                               options: $outcomes,
-                               maxCount: 10)
-        Section {
-            Picker("Duration", selection: $predictionWindow) {
-                ForEach([60, 300, 600, 1800], id: \.self) {
-                    Text(formatShortDuration(seconds: $0))
-                }
-            }
-        }
-        Section {
-            HCenter {
-                ExecutorView(executor: executor) {
-                    CreateButtonView {
-                        executor.startProgress()
-                        model.createTwitchPrediction(title: title.trim(),
-                                                     outcomes: pollOptionTitles(options: outcomes),
-                                                     predictionWindow: predictionWindow)
-                        {
-                            executor.completed(result: $0)
-                            if $0.isSuccessful() {
-                                onCreated()
-                            }
-                        }
-                    }
-                    .disabled(!canCreatePoll(title: title, options: outcomes))
-                }
-            }
-        }
-    }
-}
-
-private struct TwitchPredictionOutcomeView: View {
-    let outcome: TwitchApiPredictionOutcome
-    let action: (@escaping (OperationResult) -> Void) -> Void
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(outcome.title)
-                Text("\(outcome.channel_points ?? 0) points, \(outcome.users ?? 0) users")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            ExecutorView(executor: executor) {
-                BorderlessButtonView(text: "Resolve") {
-                    executor.startProgress()
-                    action(executor.completed)
-                }
-            }
-        }
-    }
-}
-
-private struct ActiveTwitchPredictionView: View {
-    let model: Model
-    let prediction: TwitchApiPredictionData
-    let onEnded: () -> Void
-
-    private func end(status: TwitchApiPredictionStatus,
-                     winningOutcomeId: String? = nil,
-                     onComplete: @escaping (OperationResult) -> Void)
-    {
-        model.endTwitchPrediction(id: prediction.id, status: status, winningOutcomeId: winningOutcomeId) {
-            onComplete($0)
-            if $0.isSuccessful() {
-                onEnded()
-            }
-        }
-    }
-
-    var body: some View {
-        Section("Title") {
-            Text(prediction.title)
-        }
-        Section {
-            ForEach(prediction.outcomes) { outcome in
-                TwitchPredictionOutcomeView(outcome: outcome) {
-                    end(status: .resolved, winningOutcomeId: outcome.id, onComplete: $0)
-                }
-            }
-        } header: {
-            Text("Outcomes")
-        } footer: {
-            Text("Resolve the prediction by selecting the winning outcome.")
-        }
-        Section {
-            if prediction.isActive() {
-                ActionRowView(text: "Lock prediction", image: "lock") {
-                    end(status: .locked, onComplete: $0)
-                }
-            }
-            ActionRowView(text: "Cancel prediction", image: "xmark") {
-                end(status: .canceled, onComplete: $0)
-            }
-        } footer: {
-            Text("Cancelling the prediction refunds all channel points.")
-        }
-    }
-}
-
-private struct TwitchPredictionFormView: View {
-    let model: Model
-    @State private var loaded = false
-    @State private var prediction: TwitchApiPredictionData?
-    @StateObject private var executor = Executor()
-
-    private func load() {
-        executor.startProgress()
-        model.getTwitchPredictions {
-            switch $0 {
-            case let .success(predictions):
-                prediction = predictions.first(where: { $0.isActive() || $0.isLocked() })
-                executor.completedNoTimer(result: .success(Data()))
-            case .authError:
-                executor.completedNoTimer(result: .authError)
-            case .error:
-                executor.completedNoTimer(result: .error)
-            }
-        }
-    }
-
-    private func loadOnce() {
-        guard !loaded else {
-            return
-        }
-        loaded = true
-        load()
-    }
-
-    var body: some View {
-        ExecutorView(executor: executor, centerNonContent: true) {
-            if let prediction {
-                ActiveTwitchPredictionView(model: model, prediction: prediction, onEnded: load)
-            } else {
-                CreateTwitchPredictionView(model: model, onCreated: load)
-            }
-        }
-        .onAppear {
-            loadOnce()
-        }
-    }
-}
-
-private struct TwitchPredictionView: View {
-    let model: Model
-
-    var body: some View {
-        NavigationLinkView(text: "Prediction", image: "sparkles") {
-            TwitchPredictionFormView(model: model)
-        }
-    }
-}
-
 struct ChannelImageView: View {
     let image: String?
 
@@ -803,7 +401,7 @@ struct ChannelImageView: View {
     }
 }
 
-private struct RaidChannelView: View {
+struct RaidChannelView: View {
     let buttonText: LocalizedStringKey
     let channel: String
     let category: String
@@ -849,435 +447,7 @@ private struct RaidChannelView: View {
     }
 }
 
-private struct TwitchRaidChannelSearchView: View {
-    let model: Model
-    @State private var searchText: String = ""
-    @State private var channels: [TwitchApiChannel] = []
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        Section {
-            TextField("Search", text: $searchText)
-                .autocapitalization(.none)
-                .autocorrectionDisabled(true)
-                .onChange(of: searchText) { _ in
-                    guard !searchText.isEmpty else {
-                        channels = []
-                        return
-                    }
-                    executor.startProgress()
-                    model.searchTwitchChannels(stream: model.stream, filter: searchText) {
-                        switch $0 {
-                        case let .success(channels):
-                            self.channels = channels.sorted(by: {
-                                let searchText = searchText.lowercased()
-                                let first = $0.display_name.lowercased()
-                                let second = $1.display_name.lowercased()
-                                if first.hasPrefix(searchText) {
-                                    return true
-                                } else if second.hasPrefix(searchText) {
-                                    return false
-                                } else {
-                                    return true
-                                }
-                            })
-                            executor.completedNoTimer(result: .success(Data()))
-                        case .authError:
-                            executor.completedNoTimer(result: .authError)
-                        case .error:
-                            executor.completedNoTimer(result: .error)
-                        }
-                    }
-                }
-        }
-        Section {
-            ExecutorView(executor: executor, centerNonContent: true) {
-                ForEach(channels) { channel in
-                    RaidChannelView(buttonText: "Raid",
-                                    channel: channel.display_name,
-                                    category: channel.game_name,
-                                    title: channel.title,
-                                    image: channel.thumbnail_url,
-                                    isLive: true,
-                                    viewerCount: nil)
-                    {
-                        model.startRaidTwitchChannel(channelId: channel.id, onComplete: $0)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct TwitchRaidSuggestion: Identifiable {
-    let id: String
-    let name: String
-    let category: String
-    let title: String
-    let viewerCount: Int
-    var image: String?
-}
-
-private func makeTwitchRaidSuggestions(streams: [TwitchApiStreamData]) -> [TwitchRaidSuggestion] {
-    streams.map {
-        TwitchRaidSuggestion(id: $0.user_id,
-                             name: $0.user_name,
-                             category: $0.game_name,
-                             title: $0.title,
-                             viewerCount: $0.viewer_count)
-    }
-}
-
-private func makeTwitchRaidSuggestions(streams: [TwitchApiStreamData],
-                                       channels: [SettingsStreamTwitchRaidChannel])
-    -> [TwitchRaidSuggestion]
-{
-    var suggestions: [String: TwitchRaidSuggestion] = [:]
-    for suggestion in makeTwitchRaidSuggestions(streams: streams) {
-        suggestions[suggestion.id] = suggestion
-    }
-    return channels.compactMap { suggestions[$0.channelId] }
-}
-
-private struct TwitchRaidSuggestionsView: View {
-    let model: Model
-    let suggestions: [TwitchRaidSuggestion]
-
-    var body: some View {
-        ForEach(suggestions) { suggestion in
-            RaidChannelView(buttonText: "Raid",
-                            channel: suggestion.name,
-                            category: suggestion.category,
-                            title: suggestion.title,
-                            image: suggestion.image,
-                            isLive: true,
-                            viewerCount: suggestion.viewerCount)
-            {
-                model.startRaidTwitchChannel(channelId: suggestion.id, onComplete: $0)
-            }
-        }
-    }
-}
-
-private struct TwitchRaidHistoryView: View {
-    let model: Model
-    let title: LocalizedStringKey
-    let channels: [SettingsStreamTwitchRaidChannel]
-    @State private var suggestions: [TwitchRaidSuggestion] = []
-
-    private func load() {
-        model.getTwitchStreams(stream: model.stream, userIds: channels.map(\.channelId)) { streams in
-            guard let streams else {
-                return
-            }
-            suggestions = makeTwitchRaidSuggestions(streams: streams, channels: channels)
-            fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
-                suggestions = $0
-            }
-        }
-    }
-
-    var body: some View {
-        Group {
-            if !suggestions.isEmpty {
-                Section {
-                    TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
-                } header: {
-                    Text(title)
-                }
-            }
-        }
-        .onAppear {
-            load()
-        }
-    }
-}
-
-@MainActor
-private func fetchTwitchRaidSuggestionImages(model: Model,
-                                             suggestions: [TwitchRaidSuggestion],
-                                             onComplete: @escaping ([TwitchRaidSuggestion]) -> Void)
-{
-    model.getTwitchUsers(stream: model.stream, userIds: suggestions.map(\.id)) { users in
-        guard let users else {
-            return
-        }
-        var images: [String: String] = [:]
-        for user in users {
-            images[user.id] = user.profile_image_url
-        }
-        onComplete(suggestions.map {
-            var suggestion = $0
-            suggestion.image = images[$0.id]
-            return suggestion
-        })
-    }
-}
-
-private struct TwitchRaidFollowedChannelsView: View {
-    let model: Model
-    @State private var suggestions: [TwitchRaidSuggestion] = []
-    @StateObject private var executor = Executor()
-
-    private func load() {
-        executor.startProgress()
-        model.getTwitchFollowedStreams(stream: model.stream) {
-            switch $0 {
-            case let .success(streams):
-                suggestions = makeTwitchRaidSuggestions(streams: streams)
-                executor.completedNoTimer(result: .success(Data()))
-                fetchTwitchRaidSuggestionImages(model: model, suggestions: suggestions) {
-                    suggestions = $0
-                }
-            case .authError:
-                executor.completedNoTimer(result: .authError)
-            case .error:
-                executor.completedNoTimer(result: .error)
-            }
-        }
-    }
-
-    var body: some View {
-        Section {
-            ExecutorView(executor: executor, centerNonContent: true) {
-                TwitchRaidSuggestionsView(model: model, suggestions: suggestions)
-            }
-        } header: {
-            Text("Followed channels")
-        }
-        .onAppear {
-            load()
-        }
-    }
-}
-
-private struct StartTwitchRaidView: View {
-    let model: Model
-
-    var body: some View {
-        NavigationLinkView(text: "Raid channel", image: "play.tv") {
-            TwitchRaidChannelSearchView(model: model)
-            TwitchRaidHistoryView(model: model,
-                                  title: "Raided before",
-                                  channels: model.stream.twitchRaidsSent)
-            TwitchRaidHistoryView(model: model,
-                                  title: "Raided you",
-                                  channels: model.stream.twitchRaidsReceived)
-            TwitchRaidFollowedChannelsView(model: model)
-        }
-    }
-}
-
-private struct KickHostChannelSearchView: View {
-    let model: Model
-    @State private var searchText: String = ""
-    @State private var channels: [KickLiveSearchChannel] = []
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        Section {
-            TextField("Search", text: $searchText)
-                .autocapitalization(.none)
-                .autocorrectionDisabled()
-                .onChange(of: searchText) { _ in
-                    guard !searchText.isEmpty else {
-                        channels = []
-                        return
-                    }
-                    executor.startProgress()
-                    model.searchKickChannels(query: searchText) { results in
-                        if let results {
-                            channels = results.sorted(by: {
-                                let searchText = searchText.lowercased()
-                                let first = $0.username.lowercased()
-                                let second = $1.username.lowercased()
-                                if first.hasPrefix(searchText) {
-                                    return true
-                                } else if second.hasPrefix(searchText) {
-                                    return false
-                                } else {
-                                    return true
-                                }
-                            })
-                            executor.completedNoTimer(result: .success(Data()))
-                        } else {
-                            executor.completedNoTimer(result: .error)
-                        }
-                    }
-                }
-        }
-        Section {
-            ExecutorView(executor: executor, centerNonContent: true) {
-                ForEach(channels) { channel in
-                    RaidChannelView(buttonText: "Raid",
-                                    channel: channel.username,
-                                    category: channel.category ?? "",
-                                    title: "",
-                                    image: channel.profile_pic,
-                                    isLive: channel.is_live,
-                                    viewerCount: channel.viewers_count)
-                    {
-                        model.hostKickChannel(channel: channel.username, onComplete: $0)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct KickHostChannelView: View {
-    let model: Model
-    @State private var channels: [KickFollowedChannel] = []
-    @State private var cursor: Int?
-    @State private var isLoading = false
-
-    private func loadMoreChannels() {
-        guard !isLoading else {
-            return
-        }
-        isLoading = true
-        model.createKickApi(stream: model.stream).getFollowedChannels(cursor: cursor) { response in
-            isLoading = false
-            if let response {
-                channels.append(contentsOf: response.channels)
-                cursor = response.nextCursor
-            }
-        }
-    }
-
-    var body: some View {
-        NavigationLinkView(text: "Raid channel", image: "play.tv") {
-            KickHostChannelSearchView(model: model)
-            Section {
-                ForEach(channels.filter(\.is_live)) { channel in
-                    RaidChannelView(buttonText: "Raid",
-                                    channel: channel.user_username,
-                                    category: channel.category_name ?? "",
-                                    title: channel.session_title ?? "",
-                                    image: channel.profile_picture,
-                                    isLive: true,
-                                    viewerCount: channel.viewer_count)
-                    {
-                        model.hostKickChannel(channel: channel.user_username, onComplete: $0)
-                    }
-                }
-                if isLoading {
-                    HCenter {
-                        ProgressView()
-                    }
-                } else if cursor != nil {
-                    HCenter {
-                        BorderlessButtonView(text: "Load more") {
-                            loadMoreChannels()
-                        }
-                    }
-                }
-            } header: {
-                Text("Followed channels")
-            }
-            .onAppear {
-                channels = []
-                loadMoreChannels()
-            }
-        }
-    }
-}
-
-private struct RunCommercialView: View {
-    let model: Model
-    @State private var duration = 30
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        NavigationLinkView(text: "Run commercial", image: "cup.and.saucer") {
-            Section {
-                Picker("Duration", selection: $duration) {
-                    ForEach([30, 60, 90, 120, 180], id: \.self) {
-                        Text(formatShortDuration(seconds: $0))
-                    }
-                }
-            } header: {
-                Text("Duration")
-            }
-            Section {
-                HCenter {
-                    ExecutorView(executor: executor) {
-                        TextButtonView("Run commercial") {
-                            executor.startProgress()
-                            model.startAds(seconds: duration, onComplete: executor.completed)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-private enum AnnouncementColor: String, CaseIterable {
-    case primary
-    case blue
-    case green
-    case orange
-    case purple
-
-    func toString() -> String {
-        switch self {
-        case .primary:
-            String(localized: "Primary")
-        case .blue:
-            "🔵"
-        case .green:
-            "🟢"
-        case .orange:
-            "🟠"
-        case .purple:
-            "🟣"
-        }
-    }
-}
-
-private struct SendAnnouncementView: View {
-    let model: Model
-    @State private var message = ""
-    @State private var color: AnnouncementColor = .primary
-    @StateObject private var executor = Executor()
-
-    private func canSend() -> Bool {
-        !message.trim().isEmpty
-    }
-
-    var body: some View {
-        NavigationLinkView(text: "Send announcement", image: "megaphone") {
-            Section {
-                TextField("Message", text: $message)
-            } header: {
-                Text("Message")
-            }
-            Section {
-                Picker("Color", selection: $color) {
-                    ForEach(AnnouncementColor.allCases, id: \.self) {
-                        Text($0.toString())
-                    }
-                }
-            }
-            Section {
-                HCenter {
-                    ExecutorView(executor: executor) {
-                        TextButtonView("Send") {
-                            executor.startProgress()
-                            model.sendTwitchAnnouncement(message: message.trim(),
-                                                         color: color.rawValue,
-                                                         onComplete: executor.completed)
-                        }
-                        .disabled(!canSend())
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct SlowModeView: View {
+struct SlowModeView: View {
     let durations: [Int]
     let action: (Int?, @escaping (OperationResult) -> Void) -> Void
 
@@ -1286,7 +456,7 @@ private struct SlowModeView: View {
     }
 }
 
-private struct FollowersOnlyView: View {
+struct FollowersOnlyView: View {
     let durations: [Int]
     let action: (Int?, @escaping (OperationResult) -> Void) -> Void
 
@@ -1295,7 +465,7 @@ private struct FollowersOnlyView: View {
     }
 }
 
-private struct SubscribersOnlyView: View {
+struct SubscribersOnlyView: View {
     let action: (Bool, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
@@ -1303,7 +473,7 @@ private struct SubscribersOnlyView: View {
     }
 }
 
-private struct EmotesOnlyView: View {
+struct EmotesOnlyView: View {
     @Environment(\.colorScheme) private var colorScheme
     let action: (Bool, @escaping (OperationResult) -> Void) -> Void
 
@@ -1314,15 +484,7 @@ private struct EmotesOnlyView: View {
     }
 }
 
-private struct ShowViewCountView: View {
-    let action: (Bool, @escaping (OperationResult) -> Void) -> Void
-
-    var body: some View {
-        ToggleActionView(text: "Show view count on channel", image: "eye", action: action)
-    }
-}
-
-private struct NavigationLinkView<Content: View>: View {
+struct NavigationLinkView<Content: View>: View {
     let text: LocalizedStringKey
     let image: String
     @ViewBuilder let content: () -> Content
@@ -1339,106 +501,6 @@ private struct NavigationLinkView<Content: View>: View {
     }
 }
 
-private struct TwitchView: View {
-    let model: Model
-    @Binding var platform: Platform?
-
-    private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
-        model.setTwitchSlowMode(enabled: duration != nil, duration: duration, onComplete: onComplete)
-    }
-
-    private func followersOnlyAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
-        model.setTwitchFollowersMode(enabled: duration != nil,
-                                     duration: (duration ?? 0) / 60,
-                                     onComplete: onComplete)
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                Section {
-                    StartTwitchRaidView(model: model)
-                    RunCommercialView(model: model)
-                    SendAnnouncementView(model: model)
-                    TwitchPollView(model: model)
-                    TwitchPredictionView(model: model)
-                }
-                Section {
-                    SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
-                    FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
-                    SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
-                    EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
-                }
-                Section {
-                    ForEach(ModActionType.allCases, id: \.self) {
-                        UserModerationItemView(model: model, action: $0, platform: .twitch)
-                    }
-                }
-            }
-            .navigationTitle("Twitch")
-            .onAppear {
-                platform = .twitch
-            }
-        } label: {
-            TwitchLogoAndNameView()
-        }
-    }
-}
-
-private struct KickView: View {
-    let model: Model
-    @Binding var platform: Platform?
-
-    private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
-        if let duration {
-            model.enableKickSlowMode(messageInterval: duration, onComplete: onComplete)
-        } else {
-            model.disableKickSlowMode(onComplete: onComplete)
-        }
-    }
-
-    private func followersOnlyAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
-        if let duration {
-            model.enableKickFollowersMode(followingMinDuration: duration / 60, onComplete: onComplete)
-        } else {
-            model.disableKickFollowersMode(onComplete: onComplete)
-        }
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                Section {
-                    KickHostChannelView(model: model)
-                    CreateKickPollView(model: model)
-                    ActionRowView(text: "Delete poll", image: "chart.bar") {
-                        model.deleteKickPoll(onComplete: $0)
-                    }
-                    CreateKickPredictionView(model: model)
-                }
-                Section {
-                    SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
-                    FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
-                    SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
-                    EmotesOnlyView(action: model.setKickEmoteOnlyMode)
-                    ShowViewCountView(action: model.setKickShowViewCount)
-                }
-                Section {
-                    ForEach(ModActionType.allCases, id: \.self) {
-                        UserModerationItemView(model: model, action: $0, platform: .kick)
-                    }
-                }
-            }
-            .navigationTitle("Kick")
-            .onAppear {
-                platform = .kick
-            }
-        } label: {
-            KickLogoAndNameView()
-        }
-    }
-}
-
 struct QuickButtonChatModerationView: View {
     @ObservedObject var model: Model
     @Binding var presentingModeration: Bool
@@ -1448,8 +510,8 @@ struct QuickButtonChatModerationView: View {
         NavigationStack {
             Form {
                 Section {
-                    TwitchView(model: model, platform: $platform)
-                    KickView(model: model, platform: $platform)
+                    QuickButtonChatModerationTwitchView(model: model, platform: $platform)
+                    QuickButtonChatModerationKickView(model: model, platform: $platform)
                 }
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(model: model, stream: model.stream)
