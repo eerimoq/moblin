@@ -101,11 +101,11 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
             self.latestWorkoutDeviceCyclingPowerTime = .now
             self.cyclingPower = power
-            if !self.isCyclingSpeedCadenceReportingCadence() {
+            if let cadence, !self.isCyclingSpeedCadenceReportingCadence() {
                 self.cyclingCadence = cadence
                 self.latestWorkoutDeviceCyclingCadenceTime = .now
             }
