@@ -474,9 +474,9 @@ extension Model {
             audioLevel: .unknown,
             numberOfAudioChannels: audio.numberOfChannels
         )
-        if audio.level.level.isNaN {
+        if audio.level.level == -Float.infinity {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audio.level.level.isInfinite {
+        } else if audio.level.level == .infinity || audio.level.level.isNaN {
             topRight.audioInfo!.audioLevel = .unknown
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
@@ -1212,6 +1212,7 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
         if let muted = state.muted {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
+            remoteControl.general?.isMuted = muted
         }
         if let stealthMode = state.stealthMode {
             remoteControlAssistantStreamerState.stealthMode = stealthMode

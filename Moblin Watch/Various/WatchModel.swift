@@ -133,8 +133,8 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         if latestRecordingLengthTime < deadline, preview.recordingLength != noValue {
             preview.recordingLength = noValue
         }
-        if latestAudioLevelTime < deadline, preview.audioLevel != defaultAudioLevel {
-            preview.audioLevel = defaultAudioLevel
+        if latestAudioLevelTime < deadline, preview.audioLevel != -Float.infinity {
+            preview.audioLevel = -Float.infinity
         }
         if latestThermalStateTime < deadline, preview.thermalState != ProcessInfo.ThermalState.nominal {
             preview.thermalState = ProcessInfo.ThermalState.nominal

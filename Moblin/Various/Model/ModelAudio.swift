@@ -2,10 +2,10 @@ import AVFAudio
 import SwiftUI
 
 class AudioLevel: ObservableObject {
-    @Published var level: Float = defaultAudioLevel
+    @Published var level: Float = -Float.infinity
 
     func isMuted() -> Bool {
-        level.isNaN
+        level == -Float.infinity
     }
 
     func isUnknown() -> Bool {
@@ -274,10 +274,8 @@ extension Model {
             return
         }
         if abs(audio.level.level - newAudioLevel) > 7
-            || newAudioLevel.isNaN
-            || newAudioLevel == .infinity
-            || audio.level.level.isNaN
-            || audio.level.level == .infinity
+            || newAudioLevel.isInfinite
+            || audio.level.level.isInfinite
         {
             audio.level.level = newAudioLevel
             if isWatchLocal() {
