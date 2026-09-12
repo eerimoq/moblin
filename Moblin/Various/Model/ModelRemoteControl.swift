@@ -1195,6 +1195,7 @@ extension Model: RemoteControlAssistantDelegate {
         if let muted = state.muted {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
+            remoteControl.general?.isMuted = muted
         }
         if let stealthMode = state.stealthMode {
             remoteControlAssistantStreamerState.stealthMode = stealthMode
