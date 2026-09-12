@@ -300,7 +300,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         RemoteControlAudioLevelView(
                             level: audioInfo.audioLevel.toFloat(),
                             channels: audioInfo.numberOfAudioChannels,
-                            isMuted: remoteControl.general?.isMuted
+                            isMuted: remoteControl.general?.isMuted ?? remoteControl.muted
                         )
                     } else {
                         // Backwards compatibility. Remove later.
