@@ -45,6 +45,11 @@ struct WorkoutDeviceCyclingPowerSuite {
         _ = try device.handleMeasurement(value: powerAndCrankMeasurement(power: 200,
                                                                          revolutions: 10,
                                                                          eventTime: 1024))
+        let (_, cadenceBeforeReset) = try device
+            .handleMeasurement(value: powerAndCrankMeasurement(power: 200,
+                                                               revolutions: 13,
+                                                               eventTime: 1024 + 2048))
+        #expect(cadenceBeforeReset == 90)
         device.reset()
         let (_, cadence) = try device.handleMeasurement(value: powerMeasurement(power: 200))
         #expect(cadence == nil)

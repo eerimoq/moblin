@@ -25,6 +25,7 @@ private class Workout: NSObject {
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
     private var latestSampleTimes: [HKQuantityTypeIdentifier: ContinuousClock.Instant] = [:]
+    private var workoutType: WatchProtocolWorkoutType?
 
     func isActive() -> Bool {
         workoutSession != nil
@@ -32,6 +33,7 @@ private class Workout: NSObject {
 
     func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
+        workoutType = type
         #if targetEnvironment(macCatalyst)
         return false
         #else
@@ -129,6 +131,7 @@ private class Workout: NSObject {
         logger.info("workout: Finished")
         workoutSession = nil
         workoutBuilder = nil
+        workoutType = nil
         model?.setIsWorkout(type: nil)
     }
 
@@ -139,10 +142,16 @@ private class Workout: NSObject {
     }
 
     func add(cyclingPower: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
         add(identifier: .cyclingPower, unit: .watt(), value: Double(cyclingPower))
     }
 
     func add(cyclingCadence: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
         add(identifier: .cyclingCadence,
             unit: .count().unitDivided(by: .minute()),
             value: Double(cyclingCadence))

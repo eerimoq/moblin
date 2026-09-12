@@ -148,12 +148,10 @@ class WorkoutDeviceCyclingPower {
     private var measurementCharacteristic: CBCharacteristic?
     private let averagePower = WorkoutDeviceAverageCalculator()
     private let crankCadence = WorkoutDeviceCrankCadence()
-    private var reportsCadence = false
 
     func reset() {
         measurementCharacteristic = nil
         crankCadence.reset()
-        reportsCadence = false
     }
 
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {
@@ -167,13 +165,10 @@ class WorkoutDeviceCyclingPower {
     func handleMeasurement(value: Data) throws -> (Int, Int?) {
         let measurement = try PowerMeasurement(value: value)
         averagePower.update(value: Double(measurement.instantaneousPower))
-        if measurement.cumulativeCrankRevolutions != nil {
-            reportsCadence = true
-        }
         let cadence = crankCadence.update(revolutions: measurement.cumulativeCrankRevolutions,
                                           time: measurement.lastCrankEventTime,
                                           now: .now)
-        return (Int(averagePower.average()), reportsCadence ? cadence : nil)
+        return (Int(averagePower.average()), cadence)
     }
 
     func handlePowerVector(value: Data) throws {
