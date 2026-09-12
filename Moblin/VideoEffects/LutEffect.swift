@@ -54,7 +54,7 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     let width = image.size.width * image.scale
     let height = image.size.height * image.scale
     let dimension = Int(cbrt(Double(width * height)))
-    guard Int(width) % dimension == 0, Int(height) % dimension == 0 else {
+    guard dimension > 0, Int(width) % dimension == 0, Int(height) % dimension == 0 else {
         throw String(localized: "LUT image is not a cube")
     }
     guard dimension * dimension * dimension == Int(width * height) else {

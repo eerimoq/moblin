@@ -61,10 +61,8 @@ private class AnimatedEmote {
         height = key.height
         let borderWidth = key.border?.width ?? 0
         let contentHeight = max(height - 2 * borderWidth, 1)
-        let contentWidth = max(
-            Int((CGFloat(contentHeight) * image.size.width / image.size.height).rounded()),
-            1
-        )
+        let aspectRatio = image.size.height > 0 ? image.size.width / image.size.height : 1
+        let contentWidth = max(Int((CGFloat(contentHeight) * aspectRatio).rounded()), 1)
         contentRect = CGRect(x: borderWidth, y: borderWidth, width: contentWidth, height: contentHeight)
         width = contentWidth + 2 * borderWidth
         if key.animated, let animatedImage = image as? SDAnimatedImage,

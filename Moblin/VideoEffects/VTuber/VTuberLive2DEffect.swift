@@ -37,6 +37,10 @@ final class VTuberLive2DEffect: VTuberEffect, @unchecked Sendable {
         guard let renderer = Live2DRenderer(model: model) else {
             return nil
         }
+        guard model.canvas.dimensions.x > 0, model.canvas.dimensions.y > 0 else {
+            logger.info("v-tuber: Bad Live2D canvas dimensions \(model.canvas.dimensions)")
+            return nil
+        }
         let height = 800
         let width = 2 *
             Int(Double(height) * Double(model.canvas.dimensions.x / model.canvas.dimensions.y) / 2)
