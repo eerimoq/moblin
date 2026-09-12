@@ -532,6 +532,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var macStatusItem: MacStatusItem?
     #endif
     var streamStartTime: ContinuousClock.Instant?
+    var moblinWebsiteWentLiveSent = false
     var isRecorderRecording = false
     var currentRecording: Recording?
     let recording = RecordingProvider()

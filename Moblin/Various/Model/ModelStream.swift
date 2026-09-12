@@ -94,6 +94,7 @@ extension Model {
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
+        moblinWebsiteWentLiveSent = false
         updateScreenAutoOff()
         startNetStream()
         startFetchingYouTubeChatVideoId()
@@ -540,6 +541,10 @@ extension Model {
         streamStartTime = .now
         streamState = .connected
         updateStreamUptime(now: .now)
+        if !moblinWebsiteWentLiveSent {
+            moblinWebsiteWentLiveSent = true
+            sendWentLiveToMoblinWebsite()
+        }
     }
 
     private func onDisconnected(reason: String) {

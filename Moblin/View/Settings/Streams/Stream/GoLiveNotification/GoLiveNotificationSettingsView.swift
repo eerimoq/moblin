@@ -58,6 +58,14 @@ struct GoLiveNotificationSettingsView: View {
             } label: {
                 DiscordLogoAndNameView()
             }
+            Section {
+                Toggle("Moblin website", isOn: $stream.goLiveNotificationMoblinWebsite)
+            } footer: {
+                Text("""
+                List the Twitch, YouTube and Kick channels you are logged in to under "Who's streaming \
+                with Moblin" on [Moblin website](https://moblin.app) when you go live.
+                """)
+            }
         }
         .navigationTitle("Go live notification")
     }
