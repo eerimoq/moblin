@@ -94,7 +94,6 @@ extension Model {
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
-        moblinWebsiteWentLiveSent = false
         updateScreenAutoOff()
         startNetStream()
         startFetchingYouTubeChatVideoId()
@@ -147,6 +146,10 @@ extension Model {
     }
 
     func isGoLiveNotificationConfigured() -> Bool {
+        isGoLiveNotificationDiscordConfigured() || stream.goLiveNotificationMoblinWebsite
+    }
+
+    private func isGoLiveNotificationDiscordConfigured() -> Bool {
         guard !stream.goLiveNotificationDiscordMessage.isEmpty else {
             return false
         }
@@ -157,14 +160,17 @@ extension Model {
     }
 
     func sendGoLiveNotification() {
-        media.takeSnapshot(age: 0.0) { image, _, _ in
-            guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
-                return
-            }
-            if let url = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl) {
+        if isGoLiveNotificationDiscordConfigured(),
+           let url = URL(string: stream.goLiveNotificationDiscordWebhookUrl)
+        {
+            media.takeSnapshot(age: 0.0) { image, _, _ in
+                guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
+                    return
+                }
                 self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
             }
         }
+        sendWentLiveToMoblinWebsite()
     }
 
     private func tryUploadGoLiveNotificationToDiscord(_ image: Data, _ url: URL) {
@@ -541,10 +547,6 @@ extension Model {
         streamStartTime = .now
         streamState = .connected
         updateStreamUptime(now: .now)
-        if !moblinWebsiteWentLiveSent {
-            moblinWebsiteWentLiveSent = true
-            sendWentLiveToMoblinWebsite()
-        }
     }
 
     private func onDisconnected(reason: String) {
