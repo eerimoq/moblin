@@ -1,8 +1,7 @@
 import SDWebImage
 import SwiftUI
 
-private let maxFramesBytes = 32 * 1024 * 1024
-private let unusedEmoteTimeout = 60.0
+private let maxFramesBytes = 256 * 1024 * 1024
 
 enum ChatImageSource: Hashable {
     case url(URL)
@@ -17,6 +16,7 @@ private struct EmoteBorder: Hashable {
 
 private struct EmoteKey: Hashable {
     let source: ChatImageSource
+    let animated: Bool
     let height: Int
     let border: EmoteBorder?
 }
@@ -37,32 +37,37 @@ private func makeBitmapContext(width: Int, height: Int) -> CGContext? {
 
 @MainActor
 private class AnimatedEmote {
+    private unowned let player: EmotesPlayer
     private let animatedImage: SDAnimatedImage?
     private let sourceImage: CGImage?
     private let width: Int
     private let height: Int
     private let border: EmoteBorder?
     private let contentRect: CGRect
+    private let startTime = ContinuousClock.now
     private var frames: [CGImage?]
     private var startTimes: [Double]
     private let totalDuration: Double
     private var currentIndex = -1
     private var views: [WeakEmoteUiView] = []
+    private var contentContext: CGContext?
+    private var renderedFrames = 0
     private(set) var framesBytes = 0
-    private(set) var lastUsedTime = CACurrentMediaTime()
+    private(set) var lastUsedTime = ContinuousClock.now
 
-    init(image: UIImage, key: EmoteKey) {
+    init(player: EmotesPlayer, image: UIImage, key: EmoteKey) {
+        self.player = player
         border = key.border
         height = key.height
         let borderWidth = key.border?.width ?? 0
         let contentHeight = max(height - 2 * borderWidth, 1)
-        let contentWidth = max(
-            Int((CGFloat(contentHeight) * image.size.width / image.size.height).rounded()),
-            1
-        )
+        let aspectRatio = image.size.height > 0 ? image.size.width / image.size.height : 1
+        let contentWidth = max(Int((CGFloat(contentHeight) * aspectRatio).rounded()), 1)
         contentRect = CGRect(x: borderWidth, y: borderWidth, width: contentWidth, height: contentHeight)
         width = contentWidth + 2 * borderWidth
-        if let animatedImage = image as? SDAnimatedImage, animatedImage.animatedImageFrameCount > 1 {
+        if key.animated, let animatedImage = image as? SDAnimatedImage,
+           animatedImage.animatedImageFrameCount > 1
+        {
             self.animatedImage = animatedImage
             sourceImage = nil
             let frameCount = Int(animatedImage.animatedImageFrameCount)
@@ -92,11 +97,11 @@ private class AnimatedEmote {
         return !views.isEmpty
     }
 
-    func add(view: EmoteUiView, time: Double) {
+    func add(view: EmoteUiView, now: ContinuousClock.Instant) {
         views.append(WeakEmoteUiView(view: view))
-        lastUsedTime = time
+        lastUsedTime = now
         if currentIndex == -1 {
-            update(time: time)
+            update(now: now)
         } else {
             view.setFrame(image: frames[currentIndex])
         }
@@ -104,11 +109,11 @@ private class AnimatedEmote {
 
     func remove(view: EmoteUiView) {
         views.removeAll(where: { $0.view == nil || $0.view === view })
-        lastUsedTime = CACurrentMediaTime()
+        lastUsedTime = .now
     }
 
-    func update(time: Double) {
-        let index = frameIndex(time: time)
+    func update(now: ContinuousClock.Instant) {
+        let index = frameIndex(now: now)
         guard index != currentIndex else {
             return
         }
@@ -119,20 +124,11 @@ private class AnimatedEmote {
         }
     }
 
-    func clearFrames() {
-        guard isAnimated() else {
-            return
-        }
-        frames = Array(repeating: nil, count: frames.count)
-        framesBytes = 0
-        currentIndex = -1
-    }
-
-    private func frameIndex(time: Double) -> Int {
+    private func frameIndex(now: ContinuousClock.Instant) -> Int {
         guard totalDuration > 0 else {
             return 0
         }
-        let offset = time.truncatingRemainder(dividingBy: totalDuration)
+        let offset = startTime.duration(to: now).seconds.truncatingRemainder(dividingBy: totalDuration)
         var index = startTimes.count - 1
         while index > 0, startTimes[index] > offset {
             index -= 1
@@ -148,64 +144,68 @@ private class AnimatedEmote {
         let frame = render(sourceFrame: sourceFrame)
         frames[index] = frame
         if let frame {
-            framesBytes += frame.bytesPerRow * frame.height
+            let bytes = frame.bytesPerRow * frame.height
+            framesBytes += bytes
+            player.addFramesBytes(bytes)
+            renderedFrames += 1
+            if renderedFrames == frames.count {
+                contentContext = nil
+            }
         }
         return frame
     }
 
     private func render(sourceFrame: CGImage?) -> CGImage? {
-        guard let sourceFrame, let context = makeBitmapContext(width: width, height: height) else {
+        guard let sourceFrame else {
             return nil
         }
-        if let border {
-            guard let content = renderContent(sourceFrame: sourceFrame),
-                  let outline = tint(image: content, color: border.color)
-            else {
+        guard let border else {
+            guard let context = makeBitmapContext(width: width, height: height) else {
                 return nil
             }
-            let straight = CGFloat(border.width)
-            let diagonal = (straight * 0.7).rounded()
-            for (dx, dy) in [
-                (straight, 0),
-                (-straight, 0),
-                (0, straight),
-                (0, -straight),
-                (diagonal, diagonal),
-                (diagonal, -diagonal),
-                (-diagonal, diagonal),
-                (-diagonal, -diagonal),
-            ] {
-                context.draw(outline, in: contentRect.offsetBy(dx: dx, dy: dy))
-            }
-            context.draw(content, in: contentRect)
-        } else {
             context.interpolationQuality = .high
             context.draw(sourceFrame, in: contentRect)
+            return context.makeImage()
         }
+        guard let content = renderContent(sourceFrame: sourceFrame),
+              let context = makeBitmapContext(width: width, height: height)
+        else {
+            return nil
+        }
+        let straight = CGFloat(border.width)
+        let diagonal = (straight * 0.7).rounded()
+        for (dx, dy) in [
+            (straight, 0),
+            (-straight, 0),
+            (0, straight),
+            (0, -straight),
+            (diagonal, diagonal),
+            (diagonal, -diagonal),
+            (-diagonal, diagonal),
+            (-diagonal, -diagonal),
+        ] {
+            context.draw(content, in: contentRect.offsetBy(dx: dx, dy: dy))
+        }
+        context.setBlendMode(.sourceIn)
+        context.setFillColor(border.color.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.setBlendMode(.normal)
+        context.draw(content, in: contentRect)
         return context.makeImage()
     }
 
     private func renderContent(sourceFrame: CGImage) -> CGImage? {
-        let width = Int(contentRect.width)
-        let height = Int(contentRect.height)
-        guard let context = makeBitmapContext(width: width, height: height) else {
+        let rect = CGRect(x: 0, y: 0, width: contentRect.width, height: contentRect.height)
+        if contentContext == nil {
+            contentContext = makeBitmapContext(width: Int(rect.width), height: Int(rect.height))
+            contentContext?.interpolationQuality = .high
+        }
+        guard let contentContext else {
             return nil
         }
-        context.interpolationQuality = .high
-        context.draw(sourceFrame, in: CGRect(x: 0, y: 0, width: width, height: height))
-        return context.makeImage()
-    }
-
-    private func tint(image: CGImage, color: UIColor) -> CGImage? {
-        guard let context = makeBitmapContext(width: image.width, height: image.height) else {
-            return nil
-        }
-        let rect = CGRect(x: 0, y: 0, width: image.width, height: image.height)
-        context.draw(image, in: rect)
-        context.setBlendMode(.sourceIn)
-        context.setFillColor(color.cgColor)
-        context.fill(rect)
-        return context.makeImage()
+        contentContext.clear(rect)
+        contentContext.draw(sourceFrame, in: rect)
+        return contentContext.makeImage()
     }
 }
 
@@ -214,20 +214,15 @@ class EmotesPlayer: NSObject, ObservableObject {
     static let shared = EmotesPlayer()
     @Published private(set) var sizesVersion = 0
     private var emotes: [EmoteKey: AnimatedEmote] = [:]
+    private var animatingEmotes: [EmoteKey: AnimatedEmote] = [:]
+    private var framesBytes = 0
+    private var latestEvictTime = ContinuousClock.now
     private var pendingViews: [EmoteKey: [WeakEmoteUiView]] = [:]
     private var sizes: [ChatImageSource: CGSize] = [:]
     private var localImages: [ChatImageSource: UIImage] = [:]
     private var loadingHandlers: [URL: [(UIImage) -> Void]] = [:]
-    private var failedUrls: [URL: Double] = [:]
+    private var failedUrls: [URL: ContinuousClock.Instant] = [:]
     private var displayLink: CADisplayLink?
-
-    override init() {
-        super.init()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleMemoryWarning),
-                                               name: UIApplication.didReceiveMemoryWarningNotification,
-                                               object: nil)
-    }
 
     func size(source: ChatImageSource) -> CGSize? {
         if let size = sizes[source] {
@@ -249,8 +244,8 @@ class EmotesPlayer: NSObject, ObservableObject {
 
     fileprivate func register(view: EmoteUiView, key: EmoteKey) {
         if let emote = emotes[key] {
-            emote.add(view: view, time: CACurrentMediaTime())
-            updateDisplayLink()
+            emote.add(view: view, now: .now)
+            startAnimating(key: key, emote: emote)
         } else {
             pendingViews[key, default: []].append(WeakEmoteUiView(view: view))
             load(source: key.source) { [weak self] image in
@@ -261,21 +256,41 @@ class EmotesPlayer: NSObject, ObservableObject {
                 guard !views.isEmpty else {
                     return
                 }
-                let emote = emotes[key] ?? AnimatedEmote(image: image, key: key)
+                let emote = emotes[key] ?? AnimatedEmote(player: self, image: image, key: key)
                 emotes[key] = emote
-                let time = CACurrentMediaTime()
+                let now = ContinuousClock.now
                 for view in views.compactMap(\.view) {
-                    emote.add(view: view, time: time)
+                    emote.add(view: view, now: now)
                 }
-                updateDisplayLink()
-                evictIfNeeded(time: time)
+                startAnimating(key: key, emote: emote)
+                evictIfNeeded(now: now)
             }
         }
     }
 
     fileprivate func unregister(view: EmoteUiView, key: EmoteKey) {
-        emotes[key]?.remove(view: view)
+        if let emote = emotes[key] {
+            emote.remove(view: view)
+            if !emote.isUsed() {
+                animatingEmotes.removeValue(forKey: key)
+            }
+        }
         pendingViews[key]?.removeAll(where: { $0.view == nil || $0.view === view })
+        updateDisplayLink()
+    }
+
+    fileprivate func addFramesBytes(_ bytes: Int) {
+        framesBytes += bytes
+    }
+
+    private func removeFramesBytes(_ bytes: Int) {
+        framesBytes -= bytes
+    }
+
+    private func startAnimating(key: EmoteKey, emote: AnimatedEmote) {
+        if emote.isAnimated() {
+            animatingEmotes[key] = emote
+        }
         updateDisplayLink()
     }
 
@@ -322,7 +337,7 @@ class EmotesPlayer: NSObject, ObservableObject {
             loadingHandlers[url]?.append(onLoaded)
             return
         }
-        if let failedTime = failedUrls[url], CACurrentMediaTime() - failedTime < 60 {
+        if let failedTime = failedUrls[url], failedTime.duration(to: .now) < .seconds(60) {
             return
         }
         loadingHandlers[url] = [onLoaded]
@@ -337,7 +352,7 @@ class EmotesPlayer: NSObject, ObservableObject {
             MainActor.assumeIsolated {
                 let handlers = self.loadingHandlers.removeValue(forKey: url) ?? []
                 guard let image, image.size.width > 0, image.size.height > 0 else {
-                    self.failedUrls[url] = CACurrentMediaTime()
+                    self.failedUrls[url] = .now
                     return
                 }
                 self.failedUrls.removeValue(forKey: url)
@@ -349,10 +364,10 @@ class EmotesPlayer: NSObject, ObservableObject {
     }
 
     private func updateDisplayLink() {
-        let isAnimating = emotes.values.contains(where: { $0.isAnimated() && $0.isUsed() })
+        let isAnimating = !animatingEmotes.isEmpty
         if isAnimating, displayLink == nil {
             let displayLink = CADisplayLink(target: self, selector: #selector(tick))
-            displayLink.preferredFrameRateRange = CAFrameRateRange(minimum: 10, maximum: 30, preferred: 30)
+            displayLink.preferredFrameRateRange = CAFrameRateRange(minimum: 10, maximum: 15, preferred: 15)
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         } else if !isAnimating, displayLink != nil {
@@ -361,33 +376,40 @@ class EmotesPlayer: NSObject, ObservableObject {
         }
     }
 
-    @objc private func tick(displayLink: CADisplayLink) {
-        let time = displayLink.timestamp
-        for emote in emotes.values where emote.isAnimated() && emote.isUsed() {
-            emote.update(time: time)
-        }
-        evictIfNeeded(time: time)
-    }
-
-    private func evictIfNeeded(time: Double) {
-        let framesBytes = emotes.values.reduce(0) { $0 + $1.framesBytes }
-        if framesBytes > maxFramesBytes {
-            evict(time: time)
-        }
-    }
-
-    @objc private func handleMemoryWarning() {
-        evict(time: CACurrentMediaTime())
-    }
-
-    private func evict(time: Double) {
-        localImages.removeAll()
-        for (key, emote) in emotes where !emote.isUsed() {
-            if time - emote.lastUsedTime > unusedEmoteTimeout {
-                emotes.removeValue(forKey: key)
+    @objc private func tick() {
+        let now = ContinuousClock.now
+        var unusedKeys: [EmoteKey] = []
+        for (key, emote) in animatingEmotes {
+            if emote.isUsed() {
+                emote.update(now: now)
             } else {
-                emote.clearFrames()
+                unusedKeys.append(key)
             }
+        }
+        for key in unusedKeys {
+            animatingEmotes.removeValue(forKey: key)
+        }
+        if !unusedKeys.isEmpty {
+            updateDisplayLink()
+        }
+        evictIfNeeded(now: now)
+    }
+
+    private func evictIfNeeded(now: ContinuousClock.Instant) {
+        guard framesBytes > maxFramesBytes, latestEvictTime.duration(to: now) > .seconds(1) else {
+            return
+        }
+        latestEvictTime = now
+        localImages.removeAll()
+        let oldest = emotes
+            .filter { !$0.value.isUsed() }
+            .sorted { $0.value.lastUsedTime < $1.value.lastUsedTime }
+            .prefix(50)
+        logger.debug("emotes-player: Evicting \(oldest.count) emotes")
+        for (key, emote) in oldest {
+            emotes.removeValue(forKey: key)
+            animatingEmotes.removeValue(forKey: key)
+            removeFramesBytes(emote.framesBytes)
         }
     }
 }
@@ -395,6 +417,7 @@ class EmotesPlayer: NSObject, ObservableObject {
 class EmoteUiView: UIView {
     var onLoaded: (() -> Void)?
     private var source: ChatImageSource?
+    private var animated = true
     private var borderColor: UIColor?
     private var borderWidth: CGFloat = 0
     private var key: EmoteKey?
@@ -415,8 +438,13 @@ class EmoteUiView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setEmote(source: ChatImageSource, borderColor: UIColor? = nil, borderWidth: CGFloat = 0) {
+    func setEmote(source: ChatImageSource,
+                  animated: Bool = true,
+                  borderColor: UIColor? = nil,
+                  borderWidth: CGFloat = 0)
+    {
         self.source = source
+        self.animated = animated
         self.borderColor = borderColor
         self.borderWidth = borderWidth
         updateKey()
@@ -458,7 +486,7 @@ class EmoteUiView: UIView {
         if let borderColor, borderWidth > 0 {
             border = EmoteBorder(color: borderColor, width: Int((borderWidth * scale).rounded()))
         }
-        let key = EmoteKey(source: source, height: height, border: border)
+        let key = EmoteKey(source: source, animated: animated, height: height, border: border)
         guard key != self.key else {
             return
         }

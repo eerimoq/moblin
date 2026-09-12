@@ -24,8 +24,10 @@ from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import GraphicsImplementation
 from ..utils.generate_device_settings import SceneName
 from ..utils.generate_device_settings import VideoStabilizationMode
+from ..utils.generate_device_settings import VTuberType
 from ..utils.generate_device_settings import WidgetType
 from ..utils.generate_device_settings import download_model
+from ..utils.generate_device_settings import download_zipped_model
 from ..utils.generate_device_settings import mic_id
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import text_widget_settings
@@ -57,8 +59,10 @@ PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
+V_TUBER_LIVE_2D_MODEL_ID = uuid()
 NOISE_TALKBACK_STREAM_ID = uuid()
 V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
+V_TUBER_LIVE_2D_MODEL_NAME = "zundamon_ja.zip"
 PNG_TUBER_MODEL_NAME = "moblin.save"
 GRAPHICS_IMPLEMENTATION_NAMES = {
     GraphicsImplementation.CORE_IMAGE: "CoreImage",
@@ -434,8 +438,8 @@ class ScenePngTuberWidget(WidgetTestCase):
 
 
 class SceneVTuberWidget(WidgetTestCase):
-    """A VTuber widget on top of a scene without video source. Validate that the model is
-    rendered.
+    """A VTuber widget with a VRM model on top of a scene without video source. Validate
+    that the model is rendered.
 
     """
 
@@ -462,6 +466,36 @@ class SceneVTuberWidget(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
+class SceneVTuberLive2DWidget(WidgetTestCase):
+    """A VTuber widget with a Live2D model on top of a scene without video source.
+    Validate that the model is rendered.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": V_TUBER_WIDGET_ID,
+                    "type": WidgetType.V_TUBER,
+                    "vTuber": {
+                        "id": V_TUBER_LIVE_2D_MODEL_ID,
+                        "type": VTuberType.LIVE_2D,
+                        "cameraPosition": CameraPosition.FRONT,
+                        "modelName": V_TUBER_LIVE_2D_MODEL_NAME,
+                    },
+                }
+            ],
+            files={f"VTuber/{V_TUBER_LIVE_2D_MODEL_ID}": download_zipped_model(V_TUBER_LIVE_2D_MODEL_NAME)},
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        self.assert_widget_rendered(recording_file, TUBER_CROP)
+        self.assert_black_background(recording_file)
+
+
 def tests(moblin: Moblin):
     test_cases = [
         SceneSwitchMultipleTimes(moblin),
@@ -476,5 +510,6 @@ def tests(moblin: Moblin):
             SceneMapWidget(moblin, graphics_implementation),
             ScenePngTuberWidget(moblin, graphics_implementation),
             SceneVTuberWidget(moblin, graphics_implementation),
+            SceneVTuberLive2DWidget(moblin, graphics_implementation),
         ]
     return test_cases

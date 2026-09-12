@@ -170,6 +170,7 @@ struct StreamTwitchSettingsView: View {
     @State var loggedIn: Bool
     @State private var title: String?
     @State private var category: String?
+    @State private var tokenExpiresIn: Duration?
 
     private func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -188,12 +189,23 @@ struct StreamTwitchSettingsView: View {
     private func onLoggedIn() {
         loggedIn = true
         loadStreamInfo()
+        loadTokenExpiresIn()
     }
 
     private func loadStreamInfo() {
         loadTwitchStreamInfo(model: model, stream: stream, loggedIn: loggedIn) {
             title = $0
             category = $1
+        }
+    }
+
+    private func loadTokenExpiresIn() {
+        tokenExpiresIn = nil
+        guard loggedIn else {
+            return
+        }
+        model.getTwitchTokenExpiresIn(stream: stream) {
+            tokenExpiresIn = $0
         }
     }
 
@@ -209,8 +221,11 @@ struct StreamTwitchSettingsView: View {
                     TextButtonView("Logout") {
                         model.twitchLogout(stream: stream)
                         loggedIn = false
+                        tokenExpiresIn = nil
                     }
                 }
+            } footer: {
+                TokenExpiresInView(expiresIn: tokenExpiresIn)
             }
             Section {
                 TextEditNavigationView(
@@ -261,6 +276,7 @@ struct StreamTwitchSettingsView: View {
         .navigationTitle("Twitch")
         .onAppear {
             loadStreamInfo()
+            loadTokenExpiresIn()
         }
     }
 }

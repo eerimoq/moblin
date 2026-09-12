@@ -258,9 +258,9 @@ private struct ObsAudioSyncView: View {
     @ObservedObject var obsQuickButton: QuickButtonObs
 
     private func submitAudioDelay(value: String) -> String {
-        let offsetDouble = Double(value) ?? 0
-        var offset = Int(offsetDouble)
-        offset = offset.clamped(to: obsMinimumAudioDelay ... obsMaximumAudioDelay)
+        let offsetDouble = (Double(value) ?? 0)
+            .clamped(to: Double(obsMinimumAudioDelay) ... Double(obsMaximumAudioDelay))
+        let offset = Int(offsetDouble)
         model.setObsAudioDelay(offset: offset)
         return String(offset)
     }

@@ -37,6 +37,7 @@ struct ChatLineStyle {
 
     func emoteItem(url: URL, scale: Float = 1, deleted: Bool) -> ChatLineItem {
         .image(ChatLineImage(source: .url(url),
+                             animated: animatedEmotes,
                              height: fontSize * CGFloat(chatEmoteScale * scale),
                              verticalPadding: borderColor != nil ? borderWidth : 0,
                              opacity: deleted ? 0.25 : 1))

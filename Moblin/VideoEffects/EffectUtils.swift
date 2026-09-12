@@ -8,7 +8,12 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
     (percentage * total) / 100
 }
 
-final class EffectImageCgImage: @unchecked Sendable {
+protocol EffectImage {
+    func getCiImage() -> CIImage
+    func getMetalPetalImage() -> MTIImage
+}
+
+final class EffectImageCgImage: EffectImage, @unchecked Sendable {
     private let source: CGImage
     private var ciImage: CIImage?
     private var metalPetalImage: MTIImage?
@@ -34,7 +39,7 @@ final class EffectImageCgImage: @unchecked Sendable {
     }
 }
 
-final class EffectImageCiImage: @unchecked Sendable {
+final class EffectImageCiImage: EffectImage, @unchecked Sendable {
     private let source: CIImage
     private let isOpaque: Bool
     private var metalPetalImage: MTIImage?
@@ -53,6 +58,32 @@ final class EffectImageCiImage: @unchecked Sendable {
             return metalPetalImage
         }
         metalPetalImage = MTIImage(ciImage: source, isOpaque: isOpaque)
+        return metalPetalImage!
+    }
+}
+
+final class EffectImagePixelBuffer: EffectImage, @unchecked Sendable {
+    private let source: CVPixelBuffer
+    private var ciImage: CIImage?
+    private var metalPetalImage: MTIImage?
+
+    init(pixelBuffer: CVPixelBuffer) {
+        source = pixelBuffer
+    }
+
+    func getCiImage() -> CIImage {
+        if let ciImage {
+            return ciImage
+        }
+        ciImage = CIImage(cvPixelBuffer: source)
+        return ciImage!
+    }
+
+    func getMetalPetalImage() -> MTIImage {
+        if let metalPetalImage {
+            return metalPetalImage
+        }
+        metalPetalImage = MTIImage(cvPixelBuffer: source, alphaType: .premultiplied)
         return metalPetalImage!
     }
 }

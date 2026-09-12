@@ -532,19 +532,11 @@ extension Model {
     }
 
     private func handleChatBotMessageMusicNext(command: ChatBotCommand) {
-        if let count = command.popFirst(), let count = Int(count) {
-            nextMusic(count: count)
-        } else {
-            nextMusic(count: 1)
-        }
+        nextMusic(count: command.popFirstInt(in: 1 ... 100) ?? 1)
     }
 
     private func handleChatBotMessageMusicPrevious(command: ChatBotCommand) {
-        if let count = command.popFirst(), let count = Int(count) {
-            previousMusic(count: count)
-        } else {
-            previousMusic(count: 1)
-        }
+        previousMusic(count: command.popFirstInt(in: 1 ... 100) ?? 1)
     }
 
     private func handleChatBotMessageMusicStatus(command: ChatBotCommand) {
@@ -733,20 +725,19 @@ extension Model {
         guard !effects.isEmpty else {
             return
         }
-        guard let number = command.popFirst(), var index = Int(number) else {
+        guard !widget.text.timers.isEmpty,
+              let number = command.popFirstInt(in: 1 ... widget.text.timers.count)
+        else {
             return
         }
-        index -= 1
-        guard index < widget.text.timers.count else {
-            return
-        }
+        let index = number - 1
         let timer = widget.text.timers[index]
         switch command.popFirstArgument(ChatBotWidgetTimerArgument.self) {
         case .add:
-            guard let delta = command.popFirst(), let delta = Double(delta) else {
+            guard let delta = command.popFirstDouble(in: -3600 ... 3600) else {
                 return
             }
-            timer.add(delta: delta.clamped(to: -3600 ... 3600))
+            timer.add(delta: delta)
             for effect in effects {
                 effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
             }
@@ -836,7 +827,7 @@ extension Model {
             permissions: permissions,
             command: command
         ) {
-            guard let x = Float(command.rest()) else {
+            guard let x = Float(command.rest()), x.isFinite else {
                 guard permissions.sendChatMessages else {
                     return
                 }

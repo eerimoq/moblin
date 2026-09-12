@@ -100,10 +100,6 @@ private struct RemoteControlAudioLevelView: View {
     var level: Float
     var channels: Int?
     private let barsPerDb: Float = 0.3
-    private let clippingThresholdDb: Float = -1.0
-    private let redThresholdDb: Float = -8.5
-    private let yellowThresholdDb: Float = -20
-    private let zeroThresholdDb: Float = -60
 
     // Approx 60 * 0.3 = 20
     private let maxBars = "||||||||||||||||||||"
@@ -430,7 +426,7 @@ private struct ZoomView: View {
     @ObservedObject var remoteControl: RemoteControl
 
     private func submitZoom(value: String) {
-        guard let x = Float(value) else {
+        guard let x = Float(value), x.isFinite else {
             if let zoom = model.remoteControlAssistantStreamerState.zoom {
                 remoteControl.zoom = String(zoom)
             }

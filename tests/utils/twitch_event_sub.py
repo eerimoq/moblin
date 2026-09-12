@@ -72,48 +72,6 @@ def follow(user_name: str) -> dict:
     )
 
 
-def subscribe(user_name: str, tier: str = "1000", is_prime: bool = False) -> dict:
-    return notification(
-        "channel.subscribe",
-        {**_user(user_name), **_broadcaster(), "tier": tier, "is_gift": False, "is_prime": is_prime},
-    )
-
-
-def subscription_gift(user_name: str | None, total: int, tier: str = "1000") -> dict:
-    return notification(
-        "channel.subscription.gift",
-        {
-            **_user(user_name),
-            **_broadcaster(),
-            "total": total,
-            "tier": tier,
-            "cumulative_total": None if user_name is None else total,
-            "is_anonymous": user_name is None,
-        },
-    )
-
-
-def subscription_message(
-    user_name: str,
-    cumulative_months: int,
-    streak_months: int | None,
-    tier: str,
-    message: str,
-) -> dict:
-    return notification(
-        "channel.subscription.message",
-        {
-            **_user(user_name),
-            **_broadcaster(),
-            "tier": tier,
-            "message": {"text": message, "emotes": []},
-            "cumulative_months": cumulative_months,
-            "streak_months": streak_months,
-            "duration_months": 1,
-        },
-    )
-
-
 def chat_notification(
     notice_type: str,
     chatter_user_name: str,

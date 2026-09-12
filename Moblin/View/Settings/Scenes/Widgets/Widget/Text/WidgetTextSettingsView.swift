@@ -1112,6 +1112,11 @@ private struct WorkoutVariablesView: View {
                         description: String(localized: "Show cycling cadence"),
                         text: $value
                     )
+                    VariableView(
+                        title: "{cyclingSpeed}",
+                        description: String(localized: "Show cycling speed"),
+                        text: $value
+                    )
                 }
             }
             .navigationTitle("Workout")

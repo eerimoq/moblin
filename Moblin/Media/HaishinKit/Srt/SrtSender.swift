@@ -572,11 +572,12 @@ class SrtSender: @unchecked Sendable {
     private func handleNakPacket(reader: ByteReader) throws {
         while let sequenceNumber = try? reader.readUInt32() {
             if isSrtSnRange(sn: sequenceNumber) {
+                let firstSequenceNumber = sequenceNumber & 0x7FFF_FFFF
                 let upToNakSequenceNumber = try reader.readUInt32()
-                for sequenceNumber in stride(from: sequenceNumber & 0x7FFF_FFFF,
-                                             through: upToNakSequenceNumber,
-                                             by: 1)
-                {
+                guard upToNakSequenceNumber &- firstSequenceNumber < srtMaximumFlowWindowSizeInPackets else {
+                    continue
+                }
+                for sequenceNumber in firstSequenceNumber ... upToNakSequenceNumber {
                     guard numberOfPacketsToRetransmit() < 1000 else {
                         return
                     }

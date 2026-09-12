@@ -23,13 +23,18 @@ private func makeChatLineStyle(settings: SettingsWidgetChat) -> ChatLineStyle {
     )
 }
 
+private struct ChatLineKey: Hashable {
+    let postId: Int
+    let highlight: Bool
+}
+
 @MainActor
 private class ChatRenderer {
     private let settings: SettingsWidgetChat
     private let chat: ChatProvider
     private let onImage: (CGImage?) -> Void
     private let containerView = UIView()
-    private var lineViews: [ChatLineUiView] = []
+    private var lineViews: [ChatLineKey: ChatLineUiView] = [:]
     private var barLayers: [CALayer] = []
     private var cancellables: [AnyCancellable] = []
     private var stateCancellables: [AnyCancellable] = []
@@ -71,7 +76,7 @@ private class ChatRenderer {
     func stop() {
         cancellables = []
         stateCancellables = []
-        for lineView in lineViews {
+        for lineView in lineViews.values {
             lineView.unregister()
         }
     }
@@ -87,16 +92,17 @@ private class ChatRenderer {
         }
     }
 
-    private func lineView(index: Int) -> ChatLineUiView {
-        while lineViews.count <= index {
-            let lineView = ChatLineUiView()
-            lineView.onImageLoaded = { [weak self] in
-                self?.scheduleRender()
-            }
-            containerView.addSubview(lineView)
-            lineViews.append(lineView)
+    private func lineView(key: ChatLineKey) -> ChatLineUiView {
+        if let lineView = lineViews[key] {
+            return lineView
         }
-        return lineViews[index]
+        let lineView = ChatLineUiView()
+        lineView.onImageLoaded = { [weak self] in
+            self?.scheduleRender()
+        }
+        containerView.addSubview(lineView)
+        lineViews[key] = lineView
+        return lineView
     }
 
     private func barLayer(index: Int) -> CALayer {
@@ -129,7 +135,7 @@ private class ChatRenderer {
             }
         }
         let style = makeChatLineStyle(settings: settings)
-        var lineIndex = 0
+        var keys: Set<ChatLineKey> = []
         var barIndex = 0
         var y: CGFloat = 0
         for (index, post) in posts.enumerated() {
@@ -143,18 +149,20 @@ private class ChatRenderer {
             if let highlight = post.highlight {
                 var highlightStyle = style
                 highlightStyle.backgroundColor = nil
-                let lineView = lineView(index: lineIndex)
+                let key = ChatLineKey(postId: post.id, highlight: true)
+                keys.insert(key)
+                let lineView = lineView(key: key)
                 lineView.setContent(highlightStyle.makeHighlightImageContent(highlight: highlight))
                 highlightImageSize = lineView.size(availableWidth: width - x)
                 highlightImageLineView = lineView
-                lineIndex += 1
                 x += highlightImageSize.width
             }
             let content = style.makeContent(post: post,
                                             platform: chat.moreThanOneStreamingPlatform,
                                             deleted: false)
-            let size = place(lineView: lineView(index: lineIndex), content: content, x: x, y: y)
-            lineIndex += 1
+            let key = ChatLineKey(postId: post.id, highlight: false)
+            keys.insert(key)
+            let size = place(lineView: lineView(key: key), content: content, x: x, y: y)
             highlightImageLineView?.frame = CGRect(x: 3,
                                                    y: y + (size.height - highlightImageSize.height) / 2,
                                                    width: highlightImageSize.width,
@@ -167,10 +175,10 @@ private class ChatRenderer {
                 barIndex += 1
             }
         }
-        while lineViews.count > lineIndex {
-            let lineView = lineViews.removeLast()
+        for (key, lineView) in lineViews where !keys.contains(key) {
             lineView.unregister()
             lineView.removeFromSuperview()
+            lineViews.removeValue(forKey: key)
         }
         while barLayers.count > barIndex {
             barLayers.removeLast().removeFromSuperlayer()
@@ -181,7 +189,7 @@ private class ChatRenderer {
         }
         containerView.frame = CGRect(x: 0, y: 0, width: width, height: y)
         containerView.layoutIfNeeded()
-        for lineView in lineViews {
+        for lineView in lineViews.values {
             lineView.layer.displayIfNeeded()
         }
         let format = UIGraphicsImageRendererFormat()

@@ -7,7 +7,7 @@ extension Model {
 
     func enableWorkoutDevice(device: SettingsWorkoutDevice) {
         if !workoutDevices.keys.contains(device.id) {
-            let workoutDevice = WorkoutDevice()
+            let workoutDevice = WorkoutDevice(wheelCircumference: device.wheelCircumference)
             workoutDevice.delegate = self
             workoutDevices[device.id] = workoutDevice
         }
@@ -20,6 +20,10 @@ extension Model {
 
     private func getWorkoutDeviceSettings(device: WorkoutDevice) -> SettingsWorkoutDevice? {
         database.workoutDevices.devices.first(where: { workoutDevices[$0.id] === device })
+    }
+
+    func setWorkoutDeviceWheelCircumference(device: SettingsWorkoutDevice) {
+        workoutDevices[device.id]?.setWheelCircumference(millimeters: device.wheelCircumference)
     }
 
     func setCurrentWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -52,6 +56,13 @@ extension Model {
             getWorkoutDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
         })
     }
+
+    private func isCyclingSpeedCadenceReportingCadence() -> Bool {
+        guard let latestCyclingSpeedCadenceCadenceTime else {
+            return false
+        }
+        return latestCyclingSpeedCadenceCadenceTime.duration(to: .now) < .seconds(5)
+    }
 }
 
 extension Model: @preconcurrency WorkoutDeviceDelegate {
@@ -82,7 +93,21 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         DispatchQueue.main.async {
             self.latestWorkoutDeviceCyclingUpdate = .now
             self.cyclingPower = power
-            self.cyclingCadence = cadence
+            if !self.isCyclingSpeedCadenceReportingCadence() {
+                self.cyclingCadence = cadence
+            }
+        }
+    }
+
+    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
+        DispatchQueue.main.async {
+            if let cadence {
+                self.cyclingCadence = cadence
+                self.latestCyclingSpeedCadenceCadenceTime = .now
+            }
+            if let speed {
+                self.cyclingSpeed = speed
+            }
         }
     }
 

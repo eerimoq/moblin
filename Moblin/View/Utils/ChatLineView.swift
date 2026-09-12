@@ -12,6 +12,7 @@ struct ChatLineTextStyle: Equatable {
 
 struct ChatLineImage: Equatable {
     let source: ChatImageSource
+    var animated = true
     var height: CGFloat?
     var horizontalPadding: CGFloat = 0
     var verticalPadding: CGFloat = 0
@@ -304,15 +305,25 @@ class ChatLineUiView: UIView {
         return layout
     }
 
+    private func availableWidthForBounds() -> CGFloat {
+        if let layout = layouts.first(where: { $0.size == bounds.size }) {
+            return layout.availableWidth
+        }
+        return measuredWidth ?? bounds.width
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         guard let content else {
             return
         }
-        guard let layout = layout(availableWidth: measuredWidth ?? bounds.width) else {
+        guard let layout = layout(availableWidth: availableWidthForBounds()) else {
             return
         }
-        if currentLayout?.sizesVersion != layout.sizesVersion || currentLayout?.size != layout.size {
+        if currentLayout?.sizesVersion != layout.sizesVersion
+            || currentLayout?.size != layout.size
+            || currentLayout?.availableWidth != layout.availableWidth
+        {
             setNeedsDisplay()
         }
         currentLayout = layout
@@ -337,6 +348,7 @@ class ChatLineUiView: UIView {
             imageView.alpha = image.opacity
             imageView.setEmote(
                 source: image.source,
+                animated: image.animated,
                 borderColor: content.borderColor,
                 borderWidth: borderWidth
             )

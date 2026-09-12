@@ -105,7 +105,7 @@ private struct ActionView: View {
     let ifBars: [MacroActionIfBar]
 
     private func submitZoomX(zoomX: String) {
-        guard let zoomX = Float(zoomX) else {
+        guard let zoomX = Float(zoomX), zoomX.isFinite else {
             return
         }
         action.zoomX = max(zoomX, minZoomX)

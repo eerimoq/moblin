@@ -48,6 +48,7 @@ struct RemoteControlSuite {
           "countryFlag" : "🇸🇪",
           "cyclingCadence" : "90",
           "cyclingPower" : "250 W",
+          "cyclingSpeed" : 10,
           "date" : 745043166,
           "debugOverlayLines" : [
             "First line",
@@ -151,6 +152,7 @@ struct RemoteControlSuite {
           "countryFlag" : "🇸🇪",
           "cyclingCadence" : 90,
           "cyclingPower" : 250,
+          "cyclingSpeed" : 10,
           "date" : 745043166,
           "distance" : 1700.75,
           "feelsLikeTemperature" : 17,
@@ -219,6 +221,7 @@ struct RemoteControlSuite {
         #expect(decoded.stepCount == 8000)
         #expect(decoded.cyclingPower == 250)
         #expect(decoded.cyclingCadence == 90)
+        #expect(decoded.cyclingSpeed == 10)
         #expect(decoded.gForce?.now == 1.5)
         #expect(decoded.gForce?.recentMax == 2.5)
         #expect(decoded.gForce?.max == 3.5)
@@ -256,6 +259,7 @@ struct RemoteControlSuite {
                            stepCount: 8000,
                            cyclingPower: 250,
                            cyclingCadence: 90,
+                           cyclingSpeed: 10,
                            gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5))
     }
 
@@ -301,6 +305,7 @@ struct RemoteControlSuite {
                   teslaMedia: "Song",
                   cyclingPower: "250 W",
                   cyclingCadence: "90",
+                  cyclingSpeed: 10,
                   runningMetrics: ["Foot pod": .init(speed: 3.5, cadence: 180, distance: 4200)],
                   browserTitle: "Title",
                   gForce: GForce(now: 1.5, recentMax: 2.5, max: 3.5),

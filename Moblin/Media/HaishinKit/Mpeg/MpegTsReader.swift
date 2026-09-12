@@ -173,7 +173,11 @@ class MpegTsReader: @unchecked Sendable {
     {
         let ptsDelta = (presentationTimeStamp - latestPresentationTimeStamp).seconds
         let timePerBuffer = Double(samplesPerBuffer) / sampleFrequency
-        return max(Int((ptsDelta / timePerBuffer - 1).rounded()), 0)
+        let numberOfGapBuffers = (ptsDelta / timePerBuffer - 1).rounded()
+        guard numberOfGapBuffers.isFinite else {
+            return 0
+        }
+        return max(Int(numberOfGapBuffers), 0)
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {

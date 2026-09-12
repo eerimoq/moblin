@@ -18,19 +18,25 @@ private func types() -> Set<HKSampleType> {
 }
 
 @available(iOS 26.0, *)
-class Workout: NSObject, @unchecked Sendable {
+@MainActor
+private class Workout: NSObject {
     static let shared = Workout()
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
 
-    func start(model: Model, type: WatchProtocolWorkoutType) {
+    func isActive() -> Bool {
+        workoutSession != nil
+    }
+
+    func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
-        stop()
-        #if !targetEnvironment(macCatalyst)
+        #if targetEnvironment(macCatalyst)
+        return false
+        #else
         let configuration = HKWorkoutConfiguration()
-        var activityType: HKWorkoutActivityType
+        let activityType: HKWorkoutActivityType
         let addStepCount: Bool
         let addCyclingMetrics: Bool
         switch type {
@@ -51,11 +57,12 @@ class Workout: NSObject, @unchecked Sendable {
         configuration.locationType = .outdoor
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
-            return
+            return false
         }
         workoutBuilder = workoutSession.associatedWorkoutBuilder()
         guard let workoutBuilder else {
-            return
+            self.workoutSession = nil
+            return false
         }
         let dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
@@ -82,29 +89,86 @@ class Workout: NSObject, @unchecked Sendable {
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
+        return true
         #endif
     }
 
     func stop() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
+        workoutSession?.stopActivity(with: .now)
+    }
+
+    private func handleStateChange(session: HKWorkoutSession,
+                                   toState: HKWorkoutSessionState,
+                                   fromState: HKWorkoutSessionState,
+                                   date: Date)
+    {
+        guard session === workoutSession else {
+            return
+        }
+        logger.info("workout: State change \(fromState) -> \(toState)")
+        switch toState {
+        case .stopped:
+            guard let workoutBuilder else {
+                return
+            }
+            workoutBuilder.endCollection(withEnd: date) { _, error in
+                if let error {
+                    logger.info("workout: End collection error \(error)")
+                }
+                workoutBuilder.finishWorkout { _, error in
+                    if let error {
+                        logger.info("workout: Finish error \(error)")
+                    }
+                    session.end()
+                }
+            }
+        case .ended:
+            finished(session: session)
+        default:
+            break
+        }
+    }
+
+    private func handleError(session: HKWorkoutSession, error: any Error) {
+        guard session === workoutSession else {
+            return
+        }
+        logger.info("workout: Error \(error)")
+        session.end()
+        finished(session: session)
+    }
+
+    private func finished(session _: HKWorkoutSession) {
+        logger.info("workout: Finished")
+        workoutSession = nil
+        workoutBuilder = nil
+        model?.setIsWorkout(type: nil)
     }
 }
 
 @available(iOS 26.0, *)
 extension Workout: HKWorkoutSessionDelegate {
-    func workoutSession(_: HKWorkoutSession,
-                        didChangeTo _: HKWorkoutSessionState,
-                        from _: HKWorkoutSessionState,
-                        date _: Date) {}
+    nonisolated func workoutSession(_ session: HKWorkoutSession,
+                                    didChangeTo toState: HKWorkoutSessionState,
+                                    from fromState: HKWorkoutSessionState,
+                                    date: Date)
+    {
+        DispatchQueue.main.async {
+            self.handleStateChange(session: session, toState: toState, fromState: fromState, date: date)
+        }
+    }
 
-    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
+    nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError error: any Error) {
+        DispatchQueue.main.async {
+            self.handleError(session: session, error: error)
+        }
+    }
 }
 
 @available(iOS 26.0, *)
 extension Workout: HKLiveWorkoutBuilderDelegate {
-    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
-                        didCollectDataOf collectedTypes: Set<HKSampleType>)
+    nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
+                                    didCollectDataOf collectedTypes: Set<HKSampleType>)
     {
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
@@ -119,7 +183,7 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
         }
     }
 
-    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
+    nonisolated func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }
 
 extension Model {
@@ -130,8 +194,18 @@ extension Model {
             return
         }
         authorizeHealthKit {
-            self.setIsWorkout(type: type)
-            Workout.shared.start(model: self, type: type)
+            guard !Workout.shared.isActive() else {
+                self.makeErrorToast(
+                    title: String(localized: "Cannot start workout"),
+                    subTitle: String(localized: "The previous workout is still stopping. Try again.")
+                )
+                return
+            }
+            if Workout.shared.start(model: self, type: type) {
+                self.setIsWorkout(type: type)
+            } else {
+                self.makeErrorToast(title: String(localized: "Cannot start workout"))
+            }
         }
     }
 
@@ -146,8 +220,10 @@ extension Model {
         guard #available(iOS 26, *) else {
             return
         }
-        setIsWorkout(type: nil)
         Workout.shared.stop()
+        if !Workout.shared.isActive() {
+            setIsWorkout(type: nil)
+        }
     }
 
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {

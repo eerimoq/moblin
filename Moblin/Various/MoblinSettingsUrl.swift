@@ -139,6 +139,9 @@ class MoblinSettingsUrl: Codable {
                     if latency < 0 {
                         throw "Negative SRT latency"
                     }
+                    if latency > 65535 {
+                        throw "Too big SRT latency"
+                    }
                 }
             }
             if let obs = stream.obs {

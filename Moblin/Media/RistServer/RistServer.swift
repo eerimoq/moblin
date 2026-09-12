@@ -23,7 +23,8 @@ class RistServer: @unchecked Sendable {
     let delegate: any RistServerDelegate
     private let streams: [SettingsRistServerStream]
     private let softwareDecoding: Bool
-    private var bitrateStats = BitrateStats()
+    private let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
+    private var numberOfClients: Atomic<Int> = .init(0)
 
     init?(port: UInt16,
           streams: [SettingsRistServerStream],
@@ -49,15 +50,16 @@ class RistServer: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        ristServerQueue.sync {
-            bitrateStats.update()
+        nonisolated(unsafe)
+        var result: BitrateStatsInstant?
+        bitrateStats.mutate {
+            result = $0.update()
         }
+        return result!
     }
 
     func getNumberOfClients() -> Int {
-        ristServerQueue.sync {
-            clientsByVirtualDestinationPort.count
-        }
+        numberOfClients.value
     }
 
     private func startInternal() {
@@ -75,6 +77,7 @@ class RistServer: @unchecked Sendable {
             delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
         }
         clientsByVirtualDestinationPort.removeAll()
+        clientsChanged()
     }
 
     private func peerConnected(_ virtualDestinationPort: UInt16) {
@@ -89,14 +92,21 @@ class RistServer: @unchecked Sendable {
                                       softwareDecoding: softwareDecoding)
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
+        clientsChanged()
         delegate.ristServerOnConnected(port: virtualDestinationPort)
     }
 
     private func peerDisconnected(_ virtualDestinationPort: UInt16) {
         logger.info("rist-server: Disconnected virtual destination port \(virtualDestinationPort)")
         if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
+            clientsChanged()
             delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
         }
+    }
+
+    private func clientsChanged() {
+        let count = clientsByVirtualDestinationPort.count
+        numberOfClients.mutate { $0 = count }
     }
 
     private func peerReceivedData(_ virtualDestinationPort: UInt16, packets: [Data]) {
@@ -104,7 +114,7 @@ class RistServer: @unchecked Sendable {
             return
         }
         for packet in packets {
-            bitrateStats.add(bytesTransferred: packet.count)
+            bitrateStats.mutate { $0.add(bytesTransferred: packet.count) }
             client.handlePacketFromClient(packet: packet)
         }
     }
