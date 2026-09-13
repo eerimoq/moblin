@@ -165,10 +165,11 @@ extension Model {
         }
         var statuses: [String] = []
         var ok = true
-        for (name, batteryPercentage, thermalState) in streamer.getStatuses() {
+        for (name, batteryPercentage, thermalState, temperatureCelsius) in streamer.getStatuses() {
             let (status, deviceOk) = formatDeviceStatus(name: name,
                                                         batteryPercentage: batteryPercentage,
-                                                        thermalState: thermalState)
+                                                        thermalState: thermalState,
+                                                        temperatureCelsius: temperatureCelsius)
             if !deviceOk {
                 ok = false
             }

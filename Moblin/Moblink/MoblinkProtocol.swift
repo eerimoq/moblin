@@ -16,7 +16,7 @@ enum MoblinkRequest: Codable {
 
 enum MoblinkResponse: Codable {
     case startTunnel(port: UInt16)
-    case status(batteryPercentage: Int?, thermalState: MoblinkThermalState?)
+    case status(batteryPercentage: Int?, thermalState: MoblinkThermalState?, temperatureCelsius: Int?)
 }
 
 struct MoblinkAuthentication: Codable {

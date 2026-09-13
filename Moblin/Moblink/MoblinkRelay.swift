@@ -240,7 +240,8 @@ private class Relay: NSObject, @unchecked Sendable {
                                 result: .ok,
                                 data: .status(
                                     batteryPercentage: batteryPercentage,
-                                    thermalState: thermalState
+                                    thermalState: thermalState,
+                                    temperatureCelsius: nil
                                 )))
     }
 
