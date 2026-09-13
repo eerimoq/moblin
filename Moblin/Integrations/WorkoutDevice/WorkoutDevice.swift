@@ -13,7 +13,7 @@ nonisolated(unsafe) let workoutDeviceScanner = BluetoothScanner(serviceIds: [
 protocol WorkoutDeviceDelegate: AnyObject {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState)
     func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int)
-    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int)
+    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int?)
     func workoutDeviceCyclingSpeedCadence(_ device: WorkoutDevice, speed: Double?, cadence: Int?)
     func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics)
 }

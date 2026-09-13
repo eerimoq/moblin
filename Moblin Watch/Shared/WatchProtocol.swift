@@ -141,8 +141,26 @@ struct WatchProtocolWorkoutStats: Codable {
     var distance: Int?
     var stepCount: Int?
     var power: Int?
+    var cyclingPower: Int?
+    var cyclingCadence: Int?
 
     init(statistics: HKStatistics) {
+        if #available(iOS 17.0, *) {
+            if statistics.quantityType == HKQuantityType.quantityType(forIdentifier: .cyclingPower) {
+                if let cyclingPower = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
+                    self.cyclingPower = Int(cyclingPower)
+                }
+                return
+            }
+            if statistics.quantityType == HKQuantityType.quantityType(forIdentifier: .cyclingCadence) {
+                if let cyclingCadence = statistics.mostRecentQuantity()?
+                    .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
+                {
+                    self.cyclingCadence = Int(cyclingCadence)
+                }
+                return
+            }
+        }
         switch statistics.quantityType {
         case HKQuantityType.quantityType(forIdentifier: .heartRate):
             if let heartRate = statistics.mostRecentQuantity()?

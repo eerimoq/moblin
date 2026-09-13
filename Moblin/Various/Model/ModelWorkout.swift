@@ -12,6 +12,7 @@ private func types() -> Set<HKSampleType> {
     ]
     if #available(iOS 17.0, *) {
         types.insert(.quantityType(forIdentifier: .cyclingPower)!)
+        types.insert(.quantityType(forIdentifier: .cyclingCadence)!)
     }
     return types
 }
@@ -37,16 +38,20 @@ private class Workout: NSObject {
         let configuration = HKWorkoutConfiguration()
         let activityType: HKWorkoutActivityType
         let addStepCount: Bool
+        let addCyclingMetrics: Bool
         switch type {
         case .walking:
             activityType = .walking
             addStepCount = true
+            addCyclingMetrics = false
         case .running:
             activityType = .running
             addStepCount = true
+            addCyclingMetrics = false
         case .cycling:
             activityType = .cycling
             addStepCount = false
+            addCyclingMetrics = true
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -66,6 +71,16 @@ private class Workout: NSObject {
         if addStepCount {
             dataSource.enableCollection(
                 for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
+                predicate: nil
+            )
+        }
+        if addCyclingMetrics {
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingPower)!,
+                predicate: nil
+            )
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!,
                 predicate: nil
             )
         }
