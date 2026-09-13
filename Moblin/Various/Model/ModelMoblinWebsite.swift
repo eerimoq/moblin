@@ -2,7 +2,7 @@ import Foundation
 
 private struct MoblinWebsiteChannel: Encodable {
     let platform: String
-    let channel: String
+    let name: String
 }
 
 private struct MoblinWebsiteWentLive: Encodable {
@@ -17,15 +17,15 @@ extension Model {
         var channels: [MoblinWebsiteChannel] = []
         let twitchChannelName = stream.twitchChannelName.trim()
         if stream.twitchLoggedIn, !twitchChannelName.isEmpty {
-            channels.append(.init(platform: "twitch", channel: twitchChannelName))
+            channels.append(.init(platform: "twitch", name: twitchChannelName))
         }
         let youTubeHandle = String(stream.youTubeHandle.trim().trimmingPrefix("@"))
         if stream.isYouTubeAuthorized(), !youTubeHandle.isEmpty {
-            channels.append(.init(platform: "youtube", channel: youTubeHandle))
+            channels.append(.init(platform: "youtube", name: youTubeHandle))
         }
         let kickChannelName = stream.kickChannelName.trim()
         if stream.kickLoggedIn, !kickChannelName.isEmpty {
-            channels.append(.init(platform: "kick", channel: kickChannelName))
+            channels.append(.init(platform: "kick", name: kickChannelName))
         }
         guard !channels.isEmpty,
               let body = try? JSONEncoder().encode(MoblinWebsiteWentLive(channels: channels))
