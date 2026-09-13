@@ -60,12 +60,10 @@ struct GoLiveNotificationSettingsView: View {
             }
             if !isMac() {
                 Section {
-                    Toggle("Moblin website", isOn: $stream.goLiveNotificationMoblinWebsite)
-                } footer: {
-                    Text("""
-                    List the Twitch, YouTube and Kick channels you are logged in to under "Who's streaming \
-                    with Moblin" on [Moblin website](https://moblin.app) when you go live.
-                    """)
+                    Toggle(
+                        "[Moblin website](https://moblin.app/#streamers)",
+                        isOn: $stream.goLiveNotificationMoblinWebsite
+                    )
                 }
             }
         }

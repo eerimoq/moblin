@@ -27,6 +27,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var name = ""
     @Published var backgroundStreaming = false
     @Published var autoGoLive = false
+    @Published var goLiveNotificationMoblinWebsite = false
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
