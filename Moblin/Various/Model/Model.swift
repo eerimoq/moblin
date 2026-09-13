@@ -1315,7 +1315,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func formatDeviceStatus(name: String,
                             batteryPercentage: Int?,
-                            thermalState: MoblinkThermalState?) -> (String, Bool)
+                            thermalState: MoblinkThermalState?,
+                            temperatureCelsius: Int? = nil) -> (String, Bool)
     {
         var ok = true
         var status = name
@@ -1333,6 +1334,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             } else {
                 status += "🔋\(batteryPercentage)%"
             }
+        }
+        if let temperatureCelsius {
+            status += "🌡️\(temperatureCelsius)°C"
         }
         return (status, ok)
     }
