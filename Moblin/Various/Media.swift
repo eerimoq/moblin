@@ -1360,11 +1360,17 @@ extension Media: WhipStreamDelegate {
     }
 
     func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
-        processor?.startEncoding(delegate)
+        nonisolated(unsafe) let delegate = delegate
+        processorPipelineQueue.async {
+            self.processor?.startEncoding(delegate)
+        }
     }
 
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
-        processor?.stopEncoding(delegate)
+        nonisolated(unsafe) let delegate = delegate
+        processorPipelineQueue.async {
+            self.processor?.stopEncoding(delegate)
+        }
     }
 }
 
@@ -1379,14 +1385,14 @@ extension Media: MobcamStreamDelegate {
 
     func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         nonisolated(unsafe) let delegate = delegate
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor?.startEncoding(delegate)
         }
     }
 
     func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         nonisolated(unsafe) let delegate = delegate
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor?.stopEncoding(delegate)
         }
     }

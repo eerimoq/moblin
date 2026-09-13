@@ -225,7 +225,7 @@ class RistStream: @unchecked Sendable {
             logger.info("rist: Failed to start")
             return
         }
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
         }
@@ -239,7 +239,7 @@ class RistStream: @unchecked Sendable {
         state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
         }
