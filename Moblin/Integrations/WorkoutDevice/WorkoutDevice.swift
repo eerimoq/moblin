@@ -13,7 +13,7 @@ nonisolated(unsafe) let workoutDeviceScanner = BluetoothScanner(serviceIds: [
 protocol WorkoutDeviceDelegate: AnyObject {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState)
     func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int)
-    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int)
+    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int?)
     func workoutDeviceCyclingSpeedCadence(_ device: WorkoutDevice, speed: Double?, cadence: Int?)
     func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics)
 }
@@ -76,15 +76,20 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
     private func reset() {
         centralManager = nil
         peripheral = nil
+        resetParsers()
+        setState(state: .disconnected)
+    }
+
+    private func resetParsers() {
         heartRate.reset()
         cyclingPower.reset()
         cyclingSpeedCadence.reset()
         running.reset()
-        setState(state: .disconnected)
     }
 
     private func reconnect() {
         peripheral = nil
+        resetParsers()
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: dispatchQueue)
     }

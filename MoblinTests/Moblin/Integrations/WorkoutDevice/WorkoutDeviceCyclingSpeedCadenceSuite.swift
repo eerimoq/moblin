@@ -35,7 +35,7 @@ struct WorkoutDeviceCyclingSpeedCadenceSuite {
         let device = WorkoutDeviceCyclingSpeedCadence(wheelCircumference: 2105)
         let (speed, cadence) = try device.handleMeasurement(value: crankMeasurement(revolutions: 10,
                                                                                     eventTime: 1024))
-        #expect(cadence == 0)
+        #expect(cadence == nil)
         #expect(speed == nil)
     }
 

@@ -24,6 +24,8 @@ private class Workout: NSObject {
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
+    private var latestSampleTimes: [HKQuantityTypeIdentifier: ContinuousClock.Instant] = [:]
+    private var workoutType: WatchProtocolWorkoutType?
 
     func isActive() -> Bool {
         workoutSession != nil
@@ -31,6 +33,7 @@ private class Workout: NSObject {
 
     func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
+        workoutType = type
         #if targetEnvironment(macCatalyst)
         return false
         #else
@@ -50,6 +53,7 @@ private class Workout: NSObject {
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
+        latestSampleTimes.removeAll()
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
             return false
@@ -127,7 +131,50 @@ private class Workout: NSObject {
         logger.info("workout: Finished")
         workoutSession = nil
         workoutBuilder = nil
+        workoutType = nil
         model?.setIsWorkout(type: nil)
+    }
+
+    func add(heartRate: Int) {
+        add(identifier: .heartRate,
+            unit: .count().unitDivided(by: .minute()),
+            value: Double(heartRate))
+    }
+
+    func add(cyclingPower: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
+        add(identifier: .cyclingPower, unit: .watt(), value: Double(cyclingPower))
+    }
+
+    func add(cyclingCadence: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
+        add(identifier: .cyclingCadence,
+            unit: .count().unitDivided(by: .minute()),
+            value: Double(cyclingCadence))
+    }
+
+    private func add(identifier: HKQuantityTypeIdentifier, unit: HKUnit, value: Double) {
+        guard let workoutBuilder, workoutSession?.state == .running else {
+            return
+        }
+        guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else {
+            return
+        }
+        let now = ContinuousClock.now
+        if let latest = latestSampleTimes[identifier], latest.duration(to: now) < .seconds(1) {
+            return
+        }
+        latestSampleTimes[identifier] = now
+        let date = Date.now
+        let sample = HKQuantitySample(type: quantityType,
+                                      quantity: HKQuantity(unit: unit, doubleValue: value),
+                                      start: date,
+                                      end: date)
+        workoutBuilder.add([sample]) { _, _ in }
     }
 }
 
@@ -204,10 +251,36 @@ extension Model {
         }
     }
 
+    func addWorkoutHeartRate(_ heartRate: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(heartRate: heartRate)
+    }
+
+    func addWorkoutCyclingPower(_ power: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(cyclingPower: power)
+    }
+
+    func addWorkoutCyclingCadence(_ cadence: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(cyclingCadence: cadence)
+    }
+
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {
-        let typesToShare: Set = [
+        var typesToShare: Set<HKSampleType> = [
             HKQuantityType.workoutType(),
+            HKQuantityType.quantityType(forIdentifier: .heartRate)!,
         ]
+        if #available(iOS 17.0, *) {
+            typesToShare.insert(HKQuantityType.quantityType(forIdentifier: .cyclingPower)!)
+            typesToShare.insert(HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!)
+        }
         healthStore.requestAuthorization(toShare: typesToShare, read: types()) { _, _ in
             DispatchQueue.main.async {
                 completion()
