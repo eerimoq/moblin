@@ -140,31 +140,9 @@ class VideoEncoder: @unchecked Sendable {
         }
         currentBitrate = settings.bitrate
         let bitrate = currentBitrate
-        switch settings.rateControl {
-        case .abr:
-            let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
-            if let status = session?.setProperty(option), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(option)")
-            }
-            let optionLimit = VTSessionProperty(
-                key: .dataRateLimits,
-                value: createDataRateLimits(bitRate: bitrate)
-            )
-            if let status = session?.setProperty(optionLimit), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
-            }
-        case .cbr:
-            let option = VTSessionProperty(key: .constantBitRate, value: NSNumber(value: bitrate))
-            if let status = session?.setProperty(option), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(option)")
-            }
-        case .vbr:
-            if #available(iOS 26, *) {
-                let option = VTSessionProperty(key: .variableBitRate, value: NSNumber(value: bitrate))
-                if let status = session?.setProperty(option), status != noErr {
-                    logger.info("video-encoder: Failed to set option \(status) \(option)")
-                }
-            }
+        let properties = settings.bitrateProperties(bitrate: bitrate)
+        if let status = session?.setProperties(properties), status != noErr {
+            logger.info("video-encoder: Failed to set bitrate options \(status) \(properties)")
         }
     }
 
