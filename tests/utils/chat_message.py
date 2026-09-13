@@ -27,3 +27,7 @@ def gigantified_emote_highlight() -> dict:
         "arrow.up.backward.and.arrow.down.forward.square",
         "Gigantified emote",
     )
+
+
+def announcement_highlight() -> dict:
+    return highlight("other", (52, 199, 89), "horn.blast", "Announcement")
