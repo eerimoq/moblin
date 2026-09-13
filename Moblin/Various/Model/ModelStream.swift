@@ -170,7 +170,7 @@ extension Model {
                 self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
             }
         }
-        sendWentLiveToMoblinWebsite()
+        sendLiveToMoblinWebsite()
     }
 
     private func tryUploadGoLiveNotificationToDiscord(_ image: Data, _ url: URL) {
