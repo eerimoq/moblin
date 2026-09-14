@@ -184,14 +184,6 @@ extension Model {
         }
         stream.replay.enterForegroundCountAtLatestUsage = enterForegroundCount
     }
-
-    func handleRecorderInitSegment(data: Data) {
-        replayBuffer.setInitSegment(data: data)
-    }
-
-    func handleRecorderDataSegment(segment: RecorderDataSegment) {
-        replayBuffer.appendDataSegment(segment: segment)
-    }
 }
 
 extension Model: ReplayDelegate {

@@ -46,8 +46,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnFps(fps: Int)
     func mediaMoblinkStreamerDestinationAddress(address: String, port: UInt16)
     func mediaMoblinkStreamerRestartTunnel(relayId: UUID)
-    func mediaSetZoomX(x: Float)
-    func mediaSetExposureBias(bias: Float)
+    @MainActor func mediaSetZoomX(x: Float)
+    @MainActor func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(auto: Bool)
     func mediaError(error: any Error)
 }
