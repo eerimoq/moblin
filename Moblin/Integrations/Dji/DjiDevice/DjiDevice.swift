@@ -1,4 +1,4 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
 // The actual values do not matter.
@@ -24,8 +24,8 @@ private let configureType: UInt32 = 0x8E0240
 private let startStreamingType: UInt32 = 0x780840
 private let statusType: UInt32 = 0x020D00
 
-private let fff4Id = CBUUID(string: "FFF4")
-private let fff5Id = CBUUID(string: "FFF5")
+private nonisolated(unsafe) let fff4Id = CBUUID(string: "FFF4")
+private nonisolated(unsafe) let fff5Id = CBUUID(string: "FFF5")
 
 private let pairPinCode = "mbln"
 

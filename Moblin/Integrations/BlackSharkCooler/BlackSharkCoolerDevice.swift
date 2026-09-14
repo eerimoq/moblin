@@ -5,7 +5,7 @@
 //  Created by Krister Berntsen on 09/06/2025.
 //
 import BlackSharkLib
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
 private let blackSharkCoolerDeviceDispatchQueue =
@@ -23,7 +23,8 @@ enum BlackSharkCoolerDeviceState {
     case connected
 }
 
-private let blackSharkCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
+private nonisolated(unsafe) let blackSharkCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID()
+    .uuidString)
 
 nonisolated(unsafe) let blackSharkCoolerScanner = BluetoothScanner(serviceIds: [])
 

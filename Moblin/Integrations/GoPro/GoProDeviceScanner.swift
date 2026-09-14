@@ -1,4 +1,4 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
 struct GoProDiscoveredDevice {
