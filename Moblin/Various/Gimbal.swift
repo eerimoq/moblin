@@ -32,7 +32,7 @@ class Gimbal {
     }
 
     func setTracking(on: Bool) {
-        Task { @MainActor in
+        Task {
             try? await DockAccessoryManager.shared.setSystemTrackingEnabled(on)
             tracking = on
         }
