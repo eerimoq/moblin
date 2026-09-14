@@ -68,9 +68,7 @@ extension Model {
             return
         }
         obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName, offsetInMs: offset, onSuccess: {
-            DispatchQueue.main.async {
-                self.updateObsAudioDelay()
-            }
+            self.updateObsAudioDelay()
         }, onError: { _ in
         })
     }
@@ -80,9 +78,7 @@ extension Model {
             return
         }
         obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName, onSuccess: { offset in
-            DispatchQueue.main.async {
-                self.obsQuickButton.audioDelay = offset
-            }
+            self.obsQuickButton.audioDelay = offset
         }, onError: { _ in
         })
     }
@@ -390,37 +386,29 @@ extension Model {
 
     func obsStartStream() {
         obsWebSocket?.startStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
+                                subTitle: message)
         })
     }
 
     func obsStopStream() {
         obsWebSocket?.stopStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
+                                subTitle: message)
         })
     }
 
     func obsStartRecording() {
         obsWebSocket?.startRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
+                                subTitle: message)
         })
     }
 
     func obsStopRecording() {
         obsWebSocket?.stopRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
+                                subTitle: message)
         })
     }
 
@@ -434,12 +422,10 @@ extension Model {
                                           self.obsQuickButton.fixOngoing = false
                                       }, onError: { message in
                                           self.obsQuickButton.fixOngoing = false
-                                          DispatchQueue.main.async {
-                                              self.makeErrorToast(
-                                                  title: String(localized: "Failed to fix OBS input"),
-                                                  subTitle: message
-                                              )
-                                          }
+                                          self.makeErrorToast(
+                                              title: String(localized: "Failed to fix OBS input"),
+                                              subTitle: message
+                                          )
                                       })
     }
 
