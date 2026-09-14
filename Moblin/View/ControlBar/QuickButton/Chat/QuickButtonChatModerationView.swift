@@ -8,7 +8,8 @@ enum ExecutorState {
     case error
 }
 
-class Executor: ObservableObject, @unchecked Sendable {
+@MainActor
+class Executor: ObservableObject {
     @Published var state: ExecutorState = .idle
 
     func startProgress() {
