@@ -61,6 +61,7 @@ private struct SoopView: View {
 private struct GoLiveNotificationView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
+    @State private var sending = false
 
     var body: some View {
         Section {
@@ -73,13 +74,20 @@ private struct GoLiveNotificationView: View {
                 DiscordLogoAndNameView()
             }
             Button {
-                model.sendGoLiveNotification()
+                sending = true
+                model.sendGoLiveNotification {
+                    sending = false
+                }
             } label: {
                 HCenter {
-                    Text("Send")
+                    if sending {
+                        ProgressView()
+                    } else {
+                        Text("Send")
+                    }
                 }
             }
-            .disabled(!model.isGoLiveNotificationConfigured())
+            .disabled(sending || !model.isGoLiveNotificationConfigured())
         } header: {
             Text("Go live notification")
         }

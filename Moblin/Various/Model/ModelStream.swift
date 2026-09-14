@@ -160,31 +160,46 @@ extension Model {
         return true
     }
 
-    func sendGoLiveNotification() {
+    func sendGoLiveNotification(onCompleted: (@MainActor () -> Void)? = nil) {
         let sendToDiscord = isGoLiveNotificationDiscordConfigured()
         let sendToMoblinWebsite = stream.goLiveNotificationMoblinWebsite
         let sendSnapshotToMoblinWebsite = stream.goLiveNotificationMoblinWebsiteSnapshot
+        var pending = 1
+        let completeOne: @MainActor () -> Void = {
+            pending -= 1
+            if pending == 0 {
+                onCompleted?()
+            }
+        }
         if sendToDiscord || (sendToMoblinWebsite && sendSnapshotToMoblinWebsite) {
             media.takeSnapshot(age: 0.0) { image, _, _ in
                 if sendToDiscord,
                    let discordUrl = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl),
                    let imageJpeg = image.jpegData(compressionQuality: 0.9)
                 {
-                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, discordUrl)
+                    pending += 1
+                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, discordUrl, onCompleted: completeOne)
                 }
-                self.sendLiveToMoblinWebsite(snapshot: sendSnapshotToMoblinWebsite ? image : nil)
+                self.sendLiveToMoblinWebsite(snapshot: sendSnapshotToMoblinWebsite ? image : nil,
+                                             onCompleted: completeOne)
             }
         } else {
-            sendLiveToMoblinWebsite(snapshot: nil)
+            sendLiveToMoblinWebsite(snapshot: nil, onCompleted: completeOne)
         }
     }
 
-    private func tryUploadGoLiveNotificationToDiscord(_ image: Data, _ url: URL) {
+    private func tryUploadGoLiveNotificationToDiscord(_ image: Data,
+                                                      _ url: URL,
+                                                      onCompleted: @escaping @MainActor () -> Void)
+    {
         uploadImage(url: url,
                     paramName: "snapshot",
                     fileName: "snapshot.jpg",
                     image: image,
                     message: stream.goLiveNotificationDiscordMessage)
+        { _ in
+            onCompleted()
+        }
     }
 
     func startNetStream() {

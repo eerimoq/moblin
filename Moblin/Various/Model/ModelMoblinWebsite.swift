@@ -159,13 +159,17 @@ private func encodeImage(_ image: UIImage) -> String? {
 }
 
 extension Model {
-    func sendLiveToMoblinWebsite(snapshot: UIImage?) {
+    func sendLiveToMoblinWebsite(snapshot: UIImage?, onCompleted: (@MainActor () -> Void)? = nil) {
         guard !isMac(), stream.goLiveNotificationMoblinWebsite else {
+            onCompleted?()
             return
         }
         let stream = stream
         let image = snapshot.flatMap(encodeImage)
         Task {
+            defer {
+                onCompleted?()
+            }
             var channels: [MoblinWebsiteChannel] = []
             if stream.twitchLoggedIn, let name = await fetchTwitchChannelName(stream: stream), !name.isEmpty {
                 channels.append(.init(platform: "twitch", name: name))
