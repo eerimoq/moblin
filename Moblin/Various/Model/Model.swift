@@ -412,7 +412,7 @@ class CameraLevel: ObservableObject {
 private let enterForegroundCountStorage = SimpleIntStorage(key: "enterForegroundCount")
 
 @MainActor
-final class Model: NSObject, ObservableObject, @unchecked Sendable {
+final class Model: NSObject, ObservableObject {
     var enterForegroundCount: Int {
         get {
             enterForegroundCountStorage.get()
