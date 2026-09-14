@@ -216,10 +216,12 @@ private func fetchKickProfilePictureWithUsername(_ username: String) async -> UI
     return UIImage(data: data)
 }
 
+@MainActor
 protocol KickApiDelegate: AnyObject {
     func kickApiUnauthorized()
 }
 
+@MainActor
 class KickApi {
     private let channelId: String
     private let slug: String

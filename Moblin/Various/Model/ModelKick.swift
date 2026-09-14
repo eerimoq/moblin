@@ -531,7 +531,7 @@ extension Model: @preconcurrency KickPusherDelegate {
     }
 }
 
-extension Model: @preconcurrency KickApiDelegate {
+extension Model: KickApiDelegate {
     func kickApiUnauthorized() {
         guard stream.kickLoggedIn else {
             return
