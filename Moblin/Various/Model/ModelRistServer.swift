@@ -43,28 +43,28 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency RistServerDelegate {
-    func ristServerOnConnected(port: UInt16) {
+extension Model: RistServerDelegate {
+    nonisolated func ristServerOnConnected(port: UInt16) {
         DispatchQueue.main.async {
             self.ristServerOnConnectedInternal(virtualDestinationPort: port)
         }
     }
 
-    func ristServerOnDisconnected(port: UInt16, reason: String) {
+    nonisolated func ristServerOnDisconnected(port: UInt16, reason: String) {
         DispatchQueue.main.async {
             self.ristServerOnDisconnectedInternal(virtualDestinationPort: port, reason: reason)
         }
     }
 
-    func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func ristServerSetTargetLatencies(
+    nonisolated func ristServerSetTargetLatencies(
         cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
