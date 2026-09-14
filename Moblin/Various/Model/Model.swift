@@ -1110,9 +1110,7 @@ final class Model: NSObject, ObservableObject {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
             await updateProductFromAppStore()
-            DispatchQueue.main.async {
-                self.updateIconImageFromDatabase()
-            }
+            updateIconImageFromDatabase()
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(systemVolumeDidChange),
