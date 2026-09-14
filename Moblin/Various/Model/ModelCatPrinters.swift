@@ -67,7 +67,7 @@ extension Model {
     }
 
     func printEventCatPrinters(event: CatPrinterEvent, username: String, message: String) {
-        Task { @MainActor in
+        Task {
             var image: CIImage?
             for catPrinter in catPrinters.values {
                 guard let settings = getCatPrinterSettings(catPrinter: catPrinter) else {

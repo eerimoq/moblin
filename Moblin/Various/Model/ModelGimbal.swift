@@ -42,7 +42,7 @@ extension Model {
         guard #available(iOS 18.0, *) else {
             return
         }
-        Task { @MainActor in
+        Task {
             do {
                 guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
                     return
@@ -97,7 +97,7 @@ extension Model {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.setZoomX(x: preset.zoomX, rate: 5)
         }
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             defer {
                 self?.moveToGimbalPresetQueueRunning = false
                 self?.processGimbalPresetQueue()
