@@ -1,9 +1,18 @@
 import Foundation
 
 enum CyclingSource: Int {
+    typealias Latest = (source: CyclingSource, time: ContinuousClock.Instant)
+
     case watch
     case cyclingPower
     case cyclingSpeedCadence
+
+    func canReplace(latest: Latest?) -> Bool {
+        guard let latest else {
+            return true
+        }
+        return rawValue >= latest.source.rawValue || latest.time.duration(to: .now) > .seconds(5)
+    }
 }
 
 extension Model {
@@ -64,7 +73,7 @@ extension Model {
     }
 
     func setCyclingPower(_ power: Int, source: CyclingSource) {
-        guard isBetterCyclingSource(latest: latestCyclingPower, source: source) else {
+        guard source.canReplace(latest: latestCyclingPower) else {
             return
         }
         cyclingPower = power
@@ -72,20 +81,11 @@ extension Model {
     }
 
     func setCyclingCadence(_ cadence: Int, source: CyclingSource) {
-        guard isBetterCyclingSource(latest: latestCyclingCadence, source: source) else {
+        guard source.canReplace(latest: latestCyclingCadence) else {
             return
         }
         cyclingCadence = cadence
         latestCyclingCadence = (source, .now)
-    }
-
-    private func isBetterCyclingSource(latest: (source: CyclingSource, time: ContinuousClock.Instant)?,
-                                       source: CyclingSource) -> Bool
-    {
-        guard let latest else {
-            return true
-        }
-        return source.rawValue >= latest.source.rawValue || latest.time.duration(to: .now) > .seconds(5)
     }
 }
 
