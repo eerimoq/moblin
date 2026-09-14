@@ -1,5 +1,6 @@
 import Translation
 
+@MainActor
 protocol TranslatorDelegate: AnyObject {
     func translatorTranslated(languageIdentifier: String, text: String)
 }
