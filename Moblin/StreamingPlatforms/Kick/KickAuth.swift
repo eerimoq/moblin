@@ -35,6 +35,8 @@ struct KickWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
+        configuration.allowsInlineMediaPlayback = true
+        configuration.mediaTypesRequiringUserActionForPlayback = .all
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         return webView
@@ -53,6 +55,11 @@ struct KickWebView: UIViewRepresentable {
         Coordinator(onAccessToken)
     }
 
+    static func dismantleUIView(_ webView: WKWebView, coordinator: Coordinator) {
+        coordinator.stop()
+        webView.stopLoading()
+    }
+
     class Coordinator: NSObject, WKNavigationDelegate {
         let onAccessToken: (String) -> Void
         private var loginButtonClicked = false
@@ -60,6 +67,10 @@ struct KickWebView: UIViewRepresentable {
 
         init(_ onAccessToken: @escaping (String) -> Void) {
             self.onAccessToken = onAccessToken
+        }
+
+        func stop() {
+            timer.stop()
         }
 
         func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
@@ -90,13 +101,17 @@ struct KickWebView: UIViewRepresentable {
             let detectAndClickLoginButtonScript = """
             (async function() {
                 try {
-                    // wait for 0.2 second for the page to load
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                    var loginButton = document.querySelector('[data-testid="login"]');
-                    if (loginButton) {
-                        loginButton.click();
-                        return true;
+                    for (var attempt = 0; attempt < 50; attempt++) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                        if (document.querySelector('input[name="emailOrUsername"]')) {
+                            return true;
+                        }
+                        var loginButton = document.querySelector('[data-testid="login"]');
+                        if (loginButton) {
+                            loginButton.click();
+                        }
                     }
+                    return false;
                 } catch (error) {
                     return false;
                 }
