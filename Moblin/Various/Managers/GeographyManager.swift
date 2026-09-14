@@ -1,7 +1,8 @@
 import CoreLocation
 import Foundation
 
-class GeographyManager: @unchecked Sendable {
+@MainActor
+class GeographyManager {
     private var task: Task<Void, any Error>?
     private var newLocation: CLLocation?
     private var location: CLLocation?
@@ -13,7 +14,7 @@ class GeographyManager: @unchecked Sendable {
         guard task == nil else {
             return
         }
-        task = Task { @MainActor in
+        task = Task {
             var delay = 5
             while true {
                 do {

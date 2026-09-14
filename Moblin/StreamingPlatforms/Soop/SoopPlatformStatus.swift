@@ -6,7 +6,8 @@ struct SoopChannelInfo: Codable {
 
 private let baseUrl = "https://api-channel.sooplive.com"
 
-class SoopPlatformStatus: @unchecked Sendable {
+@MainActor
+class SoopPlatformStatus {
     private var task: Task<Void, any Error>?
     var platformStatus: PlatformStatus = .unknown
 
@@ -15,7 +16,7 @@ class SoopPlatformStatus: @unchecked Sendable {
         guard let url = URL(string: "\(baseUrl)/v1.1/channel/\(userId)/home/section/broad") else {
             return
         }
-        task = Task { @MainActor in
+        task = Task {
             var delay = 5
             while true {
                 do {
