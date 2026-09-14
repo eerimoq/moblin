@@ -1292,7 +1292,7 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
     func remoteControlAssistantStats(data _: RemoteControlStats) {}
 }
 
-extension Model: @preconcurrency RemoteControlWebDelegate {
+extension Model: RemoteControlWebDelegate {
     func remoteControlWebDisconnected() {
         setGimbalMovement(x: 0, y: 0)
     }
