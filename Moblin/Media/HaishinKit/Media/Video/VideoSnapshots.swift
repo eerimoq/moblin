@@ -2,7 +2,7 @@ import AVFoundation
 import Collections
 import CoreImage
 import UIKit
-@preconcurrency import Vision
+import Vision
 
 final class VideoSnapshots: @unchecked Sendable {
     private let context: CIContext
