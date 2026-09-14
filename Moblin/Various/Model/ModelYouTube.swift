@@ -26,31 +26,43 @@ extension Model {
             guard let configuration else {
                 return
             }
-            let request = OIDAuthorizationRequest(configuration: configuration,
-                                                  clientId: youTubeClientId,
-                                                  clientSecret: nil,
-                                                  scopes: youTubeScopes,
-                                                  redirectURL: youTubeRedirectUri,
-                                                  responseType: OIDResponseTypeCode,
-                                                  additionalParameters: nil)
-            #if targetEnvironment(macCatalyst)
-            guard let userAgent = OIDExternalUserAgentCatalyst(presenting: rootViewController) else {
-                return
+            nonisolated(unsafe) let serviceConfiguration = configuration
+            MainActor.assumeIsolated {
+                self.youTubeSignIn(stream: stream,
+                                   configuration: serviceConfiguration,
+                                   rootViewController: rootViewController)
             }
-            #else
-            guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
-                return
-            }
-            #endif
-            self.youTube.session = OIDAuthState.authState(
-                byPresenting: request,
-                externalUserAgent: userAgent
-            ) { authState, _ in
-                stream.youTubeAuthState = authState
-                stream.youTubeWantsToBeLoggedIn = authState != nil
-                stream.youTubeNotLoggedInCount = 0
-                self.youTube.session = nil
-            }
+        }
+    }
+
+    private func youTubeSignIn(stream: SettingsStream,
+                               configuration: OIDServiceConfiguration,
+                               rootViewController: UIViewController)
+    {
+        let request = OIDAuthorizationRequest(configuration: configuration,
+                                              clientId: youTubeClientId,
+                                              clientSecret: nil,
+                                              scopes: youTubeScopes,
+                                              redirectURL: youTubeRedirectUri,
+                                              responseType: OIDResponseTypeCode,
+                                              additionalParameters: nil)
+        #if targetEnvironment(macCatalyst)
+        guard let userAgent = OIDExternalUserAgentCatalyst(presenting: rootViewController) else {
+            return
+        }
+        #else
+        guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
+            return
+        }
+        #endif
+        youTube.session = OIDAuthState.authState(
+            byPresenting: request,
+            externalUserAgent: userAgent
+        ) { authState, _ in
+            stream.youTubeAuthState = authState
+            stream.youTubeWantsToBeLoggedIn = authState != nil
+            stream.youTubeNotLoggedInCount = 0
+            self.youTube.session = nil
         }
     }
 
