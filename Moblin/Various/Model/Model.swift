@@ -474,7 +474,7 @@ final class Model: NSObject, ObservableObject {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, any Error>?
     var wiFiAwareReceiverTask: Task<Void, any Error>?
-    nonisolated(unsafe) let youTube = YouTube()
+    let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
@@ -526,7 +526,7 @@ final class Model: NSObject, ObservableObject {
     var inServiceBackground = false
     var chatPhoneBackgroundAudioPlayer: AVAudioPlayer?
     #if !targetEnvironment(macCatalyst)
-    nonisolated(unsafe) var liveActivity: Activity<LiveActivityAttributes>?
+    var liveActivity: Activity<LiveActivityAttributes>?
     #endif
     #if targetEnvironment(macCatalyst)
     var macStatusItem: MacStatusItem?
