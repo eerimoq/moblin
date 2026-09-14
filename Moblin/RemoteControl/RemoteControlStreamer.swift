@@ -437,7 +437,7 @@ class RemoteControlStreamer {
     }
 }
 
-extension RemoteControlStreamer: @preconcurrency WebSocketClientDelegate {
+extension RemoteControlStreamer: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
         logger.info("remote-control-streamer: Connected")
         startKeepAlive()

@@ -339,7 +339,7 @@ private class Relay: NSObject {
     }
 }
 
-extension Relay: @preconcurrency WebSocketClientDelegate {
+extension Relay: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {

@@ -702,7 +702,7 @@ final class TwitchChat {
     }
 }
 
-extension TwitchChat: @preconcurrency WebSocketClientDelegate {
+extension TwitchChat: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("twitch: chat: Connected")
         webSocket.send(string: "CAP REQ :twitch.tv/membership")

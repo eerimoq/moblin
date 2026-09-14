@@ -495,7 +495,7 @@ final class KickPusher: NSObject {
     }
 }
 
-extension KickPusher: @preconcurrency WebSocketClientDelegate {
+extension KickPusher: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("kick: Connected")
         sendSubscribe(channel: "chatrooms.\(channelId).v2")
