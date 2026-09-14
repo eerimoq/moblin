@@ -54,7 +54,8 @@ class HttpResponseParser: HttpParser {
     }
 }
 
-private class InterfaceTypeHttpClient: @unchecked Sendable {
+@MainActor
+private class InterfaceTypeHttpClient {
     private nonisolated(unsafe) static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
         .cellular,
         .wifi,
@@ -96,11 +97,13 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         }
         connect(endpoint, useTls) { interfaceTypeIndex in
             self.connection?.send(content: content, completion: .contentProcessed { error in
-                if error != nil {
-                    self.completed(data: nil)
-                    return
+                MainActor.assumeIsolated {
+                    if error != nil {
+                        self.completed(data: nil)
+                        return
+                    }
+                    self.receiveData(interfaceTypeIndex)
                 }
-                self.receiveData(interfaceTypeIndex)
             })
         }
     }
@@ -120,22 +123,22 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         parameters.requiredInterfaceType = interfaceType
         connection = NWConnection(to: endpoint, using: parameters)
         connection?.stateUpdateHandler = { state in
-            guard self.isCurrentConnection(interfaceTypeIndex) else {
-                return
-            }
-            switch state {
-            case .preparing:
-                break
-            case .ready:
-                self.updateGlobalInterfaceTypesIfNeeded()
-                DispatchQueue.main.async {
-                    onConnected(interfaceTypeIndex)
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
                 }
-            default:
-                self.connection?.stateUpdateHandler = nil
-                self.connection?.cancel()
-                self.interfaceTypeIndex += 1
-                self.connect(endpoint, useTls, onConnected)
+                switch state {
+                case .preparing:
+                    break
+                case .ready:
+                    self.updateGlobalInterfaceTypesIfNeeded()
+                    onConnected(interfaceTypeIndex)
+                default:
+                    self.connection?.stateUpdateHandler = nil
+                    self.connection?.cancel()
+                    self.interfaceTypeIndex += 1
+                    self.connect(endpoint, useTls, onConnected)
+                }
             }
         }
         connection?.start(queue: .main)
@@ -193,15 +196,17 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
 
     private func receiveData(_ interfaceTypeIndex: Int) {
         connection?.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, _, error in
-            guard self.isCurrentConnection(interfaceTypeIndex) else {
-                return
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
+                guard let data, error == nil else {
+                    self.completed(data: nil)
+                    return
+                }
+                self.handleResponse(data: data)
+                self.receiveData(interfaceTypeIndex)
             }
-            guard let data, error == nil else {
-                self.completed(data: nil)
-                return
-            }
-            self.handleResponse(data: data)
-            self.receiveData(interfaceTypeIndex)
         }
     }
 
@@ -214,12 +219,11 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
     }
 }
 
+@MainActor
 func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor (Data?) -> Void) {
     InterfaceTypeHttpClient().call(request: request, body: body) { data in
         if let data {
-            DispatchQueue.main.async {
-                completion(data)
-            }
+            completion(data)
         } else {
             httpCallUrlSession(request: request, body: body, completion: completion)
         }
