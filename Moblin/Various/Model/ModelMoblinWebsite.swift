@@ -148,24 +148,60 @@ extension Model {
         guard !isMac(), stream.goLiveNotificationMoblinWebsite else {
             return
         }
-        var channels: [MoblinWebsiteChannel] = []
-        let twitchChannelName = stream.twitchChannelName.trim()
-        if stream.twitchLoggedIn, !twitchChannelName.isEmpty {
-            channels.append(.init(platform: "twitch", name: twitchChannelName))
-        }
-        let youTubeHandle = String(stream.youTubeHandle.trim().trimmingPrefix("@"))
-        if stream.isYouTubeAuthorized(), !youTubeHandle.isEmpty {
-            channels.append(.init(platform: "youtube", name: youTubeHandle))
-        }
-        let kickChannelName = stream.kickChannelName.trim()
-        if stream.kickLoggedIn, !kickChannelName.isEmpty {
-            channels.append(.init(platform: "kick", name: kickChannelName))
-        }
-        guard !channels.isEmpty else {
-            return
-        }
+        let stream = stream
         Task {
+            var channels: [MoblinWebsiteChannel] = []
+            if stream.twitchLoggedIn, let name = await fetchTwitchChannelName(stream: stream), !name.isEmpty {
+                channels.append(.init(platform: "twitch", name: name))
+            }
+            if stream.isYouTubeAuthorized(), let name = await fetchYouTubeHandle(stream: stream),
+               !name.isEmpty
+            {
+                channels.append(.init(platform: "youtube", name: name))
+            }
+            if stream.kickLoggedIn, let name = await fetchKickChannelName(stream: stream), !name.isEmpty {
+                channels.append(.init(platform: "kick", name: name))
+            }
+            guard !channels.isEmpty else {
+                return
+            }
             await sendLive(channels: channels)
+        }
+    }
+
+    private func fetchTwitchChannelName(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            createTwitchApi(stream: stream).getUserInfo { info in
+                continuation.resume(returning: info?.login.trim())
+            }
+        }
+    }
+
+    private func fetchYouTubeHandle(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            getYouTubeApi(stream: stream) { youTubeApi in
+                guard let youTubeApi else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                youTubeApi.listChannels {
+                    switch $0 {
+                    case let .success(response):
+                        let handle = response.items.first?.snippet.customUrl?.trim().trimmingPrefix("@")
+                        continuation.resume(returning: handle.map { String($0) })
+                    case .authError, .error:
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
+    }
+
+    private func fetchKickChannelName(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            createKickApi(stream: stream).getUser { user in
+                continuation.resume(returning: user?.username.trim())
+            }
         }
     }
 }
