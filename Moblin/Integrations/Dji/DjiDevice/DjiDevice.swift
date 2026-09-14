@@ -45,11 +45,12 @@ enum DjiDeviceState {
     case stoppingStream
 }
 
+@MainActor
 protocol DjiDeviceDelegate: AnyObject {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState)
 }
 
-class DjiDevice: NSObject {
+class DjiDevice: NSObject, @unchecked Sendable {
     private var wifiSsid: String?
     private var wifiPassword: String?
     private var rtmpUrl: String?
@@ -157,7 +158,9 @@ class DjiDevice: NSObject {
         }
         logger.debug("dji-device: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.djiDeviceStreamingState(self, state: state)
+        MainActor.assumeIsolated {
+            delegate?.djiDeviceStreamingState(self, state: state)
+        }
     }
 
     func getState() -> DjiDeviceState {
