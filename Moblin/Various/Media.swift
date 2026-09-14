@@ -1240,10 +1240,8 @@ extension Media: SrtlaDelegate {
     }
 
     func srtlaError(message: String) {
-        DispatchQueue.main.async {
-            logger.info("stream: SRT error: \(message)")
-            self.delegate.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
-        }
+        logger.info("stream: SRT error: \(message)")
+        delegate.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
     }
 
     func srtlaReceivedPacket(packet: Data) {
@@ -1251,15 +1249,11 @@ extension Media: SrtlaDelegate {
     }
 
     func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
-        }
+        delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
     }
 
     func moblinkStreamerRestartTunnel(relayId: UUID) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerRestartTunnel(relayId: relayId)
-        }
+        delegate.mediaMoblinkStreamerRestartTunnel(relayId: relayId)
     }
 }
 
@@ -1280,9 +1274,7 @@ extension Media: RistStreamDelegate {
     }
 
     func ristStreamRelayDestinationAddress(address: String, port: UInt16) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
-        }
+        delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
     }
 }
 
