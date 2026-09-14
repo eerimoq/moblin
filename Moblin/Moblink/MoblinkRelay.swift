@@ -3,8 +3,10 @@ import Network
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 private let relayIdStorage = SimpleStringStorage(key: "srtlaRelayId")
-private nonisolated(unsafe) var relayId: String = ""
+@MainActor
+private var relayId: String = ""
 
+@MainActor
 func moblinkRelayLoadRelayId() {
     relayId = relayIdStorage.get()
     if relayId.isEmpty {
@@ -12,10 +14,12 @@ func moblinkRelayLoadRelayId() {
     }
 }
 
+@MainActor
 func getMoblinkRelayId() -> String {
     relayId
 }
 
+@MainActor
 func moblinkRelayResetId() {
     relayId = UUID().uuidString
     relayIdStorage.set(relayId)
