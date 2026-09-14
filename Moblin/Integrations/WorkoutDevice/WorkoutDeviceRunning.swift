@@ -41,9 +41,13 @@ class WorkoutDeviceRunning {
 
     func reset() {
         measurementCharacteristic = nil
-        lastRscUpdateTime = nil
+        resetMeasurements()
         distanceMetersFallback = 0
         usingDeviceDistance = false
+    }
+
+    func resetMeasurements() {
+        lastRscUpdateTime = nil
     }
 
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {
