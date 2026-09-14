@@ -108,10 +108,12 @@ struct YouTubeApiChannelListResponse: Codable {
     let items: [YouTubeApiChannel]
 }
 
+@MainActor
 protocol YouTubeApiDelegate: AnyObject {
     func youTubeApiUnauthorized()
 }
 
+@MainActor
 class YouTubeApi {
     private let accessToken: String
     weak var delegate: (any YouTubeApiDelegate)?

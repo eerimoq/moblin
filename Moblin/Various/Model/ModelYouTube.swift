@@ -239,7 +239,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency YouTubeApiDelegate {
+extension Model: YouTubeApiDelegate {
     func youTubeApiUnauthorized() {
         guard stream.isYouTubeAuthorized() else {
             return
