@@ -414,7 +414,7 @@ protocol WhipStreamDelegate: AnyObject {
     func whipStreamOnDisconnected(reason: String)
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }

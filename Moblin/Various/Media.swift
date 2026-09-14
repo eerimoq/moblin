@@ -30,7 +30,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnMobcamDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
-                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                            completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -1346,7 +1346,7 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
@@ -1446,7 +1446,7 @@ extension PreviewStreamHandler: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         media.delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
