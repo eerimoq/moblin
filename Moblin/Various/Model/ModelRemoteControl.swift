@@ -741,7 +741,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency RemoteControlStreamerDelegate {
+extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
         useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
         let subTitle: String?
