@@ -56,28 +56,19 @@ extension Model: @preconcurrency RistServerDelegate {
         }
     }
 
-    func ristServerOnAudioBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
-            return
-        }
+    func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func ristServerOnVideoBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer) {
-        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
-            return
-        }
+    func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
     func ristServerSetTargetLatencies(
-        virtualDestinationPort: UInt16,
+        cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        guard let cameraId = getRistStream(virtualDestinationPort: virtualDestinationPort)?.id else {
-            return
-        }
         media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
         media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
