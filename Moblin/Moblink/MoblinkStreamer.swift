@@ -3,6 +3,7 @@ import CryptoKit
 import Foundation
 import Network
 
+@MainActor
 protocol MoblinkStreamerDelegate: AnyObject {
     func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
     func moblinkStreamerTunnelRemoved(endpoint: NWEndpoint)
@@ -13,6 +14,7 @@ private struct RequestResponse {
     let onError: (String) -> Void
 }
 
+@MainActor
 private class Relay {
     let webSocket: NWConnection
     private var nextId: Int = 0
@@ -231,7 +233,8 @@ private class Relay {
 
 private let idStorage = SimpleStringStorage(key: "moblinkServerId")
 
-class MoblinkStreamer: NSObject, @unchecked Sendable {
+@MainActor
+class MoblinkStreamer: NSObject {
     private let port: UInt16
     private let password: String
     private let name: String
@@ -320,7 +323,11 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
                 domain: moblinkBonjourDomain,
                 txtRecord: NWTXTRecord(["name": name])
             )
-            server?.newConnectionHandler = handleNewConnection
+            server?.newConnectionHandler = { connection in
+                MainActor.assumeIsolated {
+                    self.handleNewConnection(connection: connection)
+                }
+            }
             server?.start(queue: .main)
             stopRetryStartTimer()
         } catch {
@@ -377,22 +384,24 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
 
     private func receivePacket(webSocket: NWConnection) {
         webSocket.receiveMessage { data, context, _, _ in
-            switch context?.webSocketOperation() {
-            case .text:
-                if let data, !data.isEmpty {
-                    self.handleMessage(webSocket: webSocket, packet: data)
+            MainActor.assumeIsolated {
+                switch context?.webSocketOperation() {
+                case .text:
+                    if let data, !data.isEmpty {
+                        self.handleMessage(webSocket: webSocket, packet: data)
+                        self.receivePacket(webSocket: webSocket)
+                    } else {
+                        self.handleDisconnected(webSocket: webSocket)
+                    }
+                case .ping:
+                    webSocket.sendWebSocket(data: data, opcode: .pong)
                     self.receivePacket(webSocket: webSocket)
-                } else {
+                case .pong:
+                    self.handlePong(webSocket: webSocket)
+                    self.receivePacket(webSocket: webSocket)
+                default:
                     self.handleDisconnected(webSocket: webSocket)
                 }
-            case .ping:
-                webSocket.sendWebSocket(data: data, opcode: .pong)
-                self.receivePacket(webSocket: webSocket)
-            case .pong:
-                self.handlePong(webSocket: webSocket)
-                self.receivePacket(webSocket: webSocket)
-            default:
-                self.handleDisconnected(webSocket: webSocket)
             }
         }
     }
