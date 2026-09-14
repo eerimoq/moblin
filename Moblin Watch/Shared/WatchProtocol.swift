@@ -135,14 +135,16 @@ enum WatchProtocolWorkoutType: Codable {
     case cycling
 }
 
-struct WatchProtocolWorkoutStats: Codable {
+struct WatchProtocolWorkoutStats: Codable, Equatable {
     var heartRate: Int?
     var activeEnergyBurned: Int?
     var distance: Int?
     var stepCount: Int?
     var power: Int?
+    var cyclingPower: Int?
+    var cyclingCadence: Int?
 
-    init(statistics: HKStatistics) {
+    mutating func update(statistics: HKStatistics) {
         switch statistics.quantityType {
         case HKQuantityType.quantityType(forIdentifier: .heartRate):
             if let heartRate = statistics.mostRecentQuantity()?
@@ -169,6 +171,22 @@ struct WatchProtocolWorkoutStats: Codable {
             }
         default:
             break
+        }
+        if #available(iOS 17.0, watchOS 10.0, *) {
+            switch statistics.quantityType {
+            case HKQuantityType.quantityType(forIdentifier: .cyclingPower):
+                if let cyclingPower = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
+                    self.cyclingPower = Int(cyclingPower)
+                }
+            case HKQuantityType.quantityType(forIdentifier: .cyclingCadence):
+                if let cyclingCadence = statistics.mostRecentQuantity()?
+                    .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
+                {
+                    self.cyclingCadence = Int(cyclingCadence)
+                }
+            default:
+                break
+            }
         }
     }
 }

@@ -35,14 +35,16 @@ class WorkoutDeviceCrankCadence {
     private var previousRevolutionsTime: UInt16?
     private let averageCadence = WorkoutDeviceAverageCalculator()
     private var latestAverageCadenceUpdateTime = ContinuousClock.now
+    private var reportsCadence = false
 
     func reset() {
         previousRevolutions = nil
         previousRevolutionsTime = nil
         averageCadence.reset()
+        reportsCadence = false
     }
 
-    func update(revolutions: UInt16?, time: UInt16?, now: ContinuousClock.Instant) -> Int {
+    func update(revolutions: UInt16?, time: UInt16?, now: ContinuousClock.Instant) -> Int? {
         var cadence = -1.0
         if let revolutions, let time {
             if let previousRevolutions, let previousRevolutionsTime {
@@ -64,10 +66,14 @@ class WorkoutDeviceCrankCadence {
             previousRevolutionsTime = time
         }
         if cadence != -1.0 {
+            reportsCadence = true
             averageCadence.update(value: cadence)
             latestAverageCadenceUpdateTime = now
         } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
             averageCadence.update(value: 0)
+        }
+        guard reportsCadence else {
+            return nil
         }
         return Int(averageCadence.averageIgnoreZeros())
     }

@@ -162,7 +162,7 @@ class WorkoutDeviceCyclingPower {
         measurementCharacteristic != nil
     }
 
-    func handleMeasurement(value: Data) throws -> (Int, Int) {
+    func handleMeasurement(value: Data) throws -> (Int, Int?) {
         let measurement = try PowerMeasurement(value: value)
         averagePower.update(value: Double(measurement.instantaneousPower))
         let cadence = crankCadence.update(revolutions: measurement.cumulativeCrankRevolutions,
