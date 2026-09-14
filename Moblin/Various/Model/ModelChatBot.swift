@@ -947,19 +947,17 @@ extension Model {
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
-                            DispatchQueue.main.async {
-                                if let tier = data?.tierAsNumber(),
-                                   tier >= permissions.minimumSubscriberTier
-                                {
-                                    onCompleted()
-                                    return
-                                }
-                                self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-                                    permissions: permissions,
-                                    onCompleted: onCompleted,
-                                    onNotAllowed: onNotAllowed
-                                )
+                            if let tier = data?.tierAsNumber(),
+                               tier >= permissions.minimumSubscriberTier
+                            {
+                                onCompleted()
+                                return
                             }
+                            self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
+                                permissions: permissions,
+                                onCompleted: onCompleted,
+                                onNotAllowed: onNotAllowed
+                            )
                         }
                         return
                     }
