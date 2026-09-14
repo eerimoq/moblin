@@ -26,11 +26,12 @@ private let statusPollInterval = 1.0
 private let startShutterDelay = 2.0
 private let batteryPollKeepAlives = 10
 
+@MainActor
 protocol GoProDeviceDelegate: AnyObject {
     func goProDeviceStreamingState(_ device: GoProDevice, state: GoProDeviceState)
 }
 
-final class GoProDevice: NSObject {
+final class GoProDevice: NSObject, @unchecked Sendable {
     weak var delegate: (any GoProDeviceDelegate)?
 
     private var wifiSsid = ""
@@ -163,7 +164,9 @@ final class GoProDevice: NSObject {
             return
         }
         self.state = state
-        delegate?.goProDeviceStreamingState(self, state: state)
+        MainActor.assumeIsolated {
+            delegate?.goProDeviceStreamingState(self, state: state)
+        }
     }
 
     private func beginSetup() {
