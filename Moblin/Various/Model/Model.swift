@@ -3439,7 +3439,7 @@ extension Model: UIDocumentPickerDelegate {
     }
 }
 
-extension Model: @preconcurrency FaxReceiverDelegate {
+extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         printAllCatPrinters(image: image)
     }
