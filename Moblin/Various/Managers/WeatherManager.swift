@@ -2,7 +2,8 @@ import CoreLocation
 import Foundation
 import WeatherKit
 
-class WeatherManager: @unchecked Sendable {
+@MainActor
+class WeatherManager {
     let weatherService = WeatherService()
     private var task: Task<Void, any Error>?
     private var location: CLLocation?
@@ -13,7 +14,7 @@ class WeatherManager: @unchecked Sendable {
         guard task == nil else {
             return
         }
-        task = Task { @MainActor in
+        task = Task {
             var delay = 5
             while true {
                 do {
