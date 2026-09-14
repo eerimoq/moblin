@@ -1070,7 +1070,7 @@ extension Model: MediaDelegate {
 
     nonisolated func mediaOnWhipPerform(request: URLRequest,
                                         queue: DispatchQueue,
-                                        completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                                        completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         DispatchQueue.main.async {
             switch self.stream.whip.httpTransport {
@@ -1081,16 +1081,24 @@ extension Model: MediaDelegate {
                       let url = request.url,
                       let httpMethod = request.httpMethod
                 else {
-                    completion?(nil, nil, "")
+                    queue.async {
+                        completion?(nil, nil, "")
+                    }
                     return
                 }
-                remoteControlAssistant.whipPerform(url: url.absoluteString,
-                                                   method: httpMethod,
-                                                   headers: request.allHTTPHeaderFields?.map { name, value in
-                                                       SettingsHttpHeader(name: name, value: value)
-                                                   } ?? [],
-                                                   body: request.httpBody ?? Data(),
-                                                   completion: completion)
+                let headers = request.allHTTPHeaderFields?.map { name, value in
+                    SettingsHttpHeader(name: name, value: value)
+                } ?? []
+                remoteControlAssistant.whipPerform(
+                    url: url.absoluteString,
+                    method: httpMethod,
+                    headers: headers,
+                    body: request.httpBody ?? Data()
+                ) { data, response, error in
+                    queue.async {
+                        completion?(data, response, error)
+                    }
+                }
             }
         }
     }
