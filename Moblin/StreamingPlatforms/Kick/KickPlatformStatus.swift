@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-class KickPlatformStatus: @unchecked Sendable {
+class KickPlatformStatus {
     private var task: Task<Void, any Error>?
     var platformStatus: PlatformStatus = .unknown
 

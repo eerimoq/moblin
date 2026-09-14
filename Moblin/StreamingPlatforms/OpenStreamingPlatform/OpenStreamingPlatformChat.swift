@@ -101,7 +101,7 @@ private struct FeaturesContainer: Codable {
 }
 
 @MainActor
-class OpenStreamingPlatformChat: @unchecked Sendable {
+class OpenStreamingPlatformChat {
     private var model: Model
     private var task: Task<Void, any Error>?
     private var connected: Bool = false

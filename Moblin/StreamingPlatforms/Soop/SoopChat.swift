@@ -80,7 +80,7 @@ struct PlayerLiveResponse: Codable {
 }
 
 @MainActor
-final class SoopChat: NSObject, @unchecked Sendable {
+final class SoopChat: NSObject {
     private var model: Model
     private var channelName: String
     private var streamId: String
