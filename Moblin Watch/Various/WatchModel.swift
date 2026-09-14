@@ -677,6 +677,7 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
         _ workoutBuilder: HKLiveWorkoutBuilder,
         didCollectDataOf collectedTypes: Set<HKSampleType>
     ) {
+        var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
                 continue
@@ -684,9 +685,13 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
             guard let statistics = workoutBuilder.statistics(for: quantityType) else {
                 continue
             }
-            DispatchQueue.main.async {
-                self.updateWorkoutStats(stats: WatchProtocolWorkoutStats(statistics: statistics))
-            }
+            stats.update(statistics: statistics)
+        }
+        guard stats != WatchProtocolWorkoutStats() else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.updateWorkoutStats(stats: stats)
         }
     }
 

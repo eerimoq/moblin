@@ -170,6 +170,7 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
     nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
                                     didCollectDataOf collectedTypes: Set<HKSampleType>)
     {
+        var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
                 continue
@@ -177,9 +178,13 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
             guard let statistics = workoutBuilder.statistics(for: quantityType) else {
                 continue
             }
-            DispatchQueue.main.async {
-                self.model?.handleWorkout(stats: WatchProtocolWorkoutStats(statistics: statistics))
-            }
+            stats.update(statistics: statistics)
+        }
+        guard stats != WatchProtocolWorkoutStats() else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.model?.handleWorkout(stats: stats)
         }
     }
 

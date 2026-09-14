@@ -1,5 +1,11 @@
 import Foundation
 
+enum CyclingSource: Int {
+    case watch
+    case cyclingPower
+    case cyclingSpeedCadence
+}
+
 extension Model {
     func isWorkoutDeviceEnabled(device: SettingsWorkoutDevice) -> Bool {
         device.enabled
@@ -57,23 +63,29 @@ extension Model {
         })
     }
 
-    func isWorkoutDeviceReportingCyclingPower() -> Bool {
-        isRecent(time: latestWorkoutDeviceCyclingPowerTime)
-    }
-
-    func isWorkoutDeviceReportingCyclingCadence() -> Bool {
-        isRecent(time: latestWorkoutDeviceCyclingCadenceTime)
-    }
-
-    private func isCyclingSpeedCadenceReportingCadence() -> Bool {
-        isRecent(time: latestCyclingSpeedCadenceCadenceTime)
-    }
-
-    private func isRecent(time: ContinuousClock.Instant?) -> Bool {
-        guard let time else {
-            return false
+    func setCyclingPower(_ power: Int, source: CyclingSource) {
+        guard isBetterCyclingSource(latest: latestCyclingPower, source: source) else {
+            return
         }
-        return time.duration(to: .now) < .seconds(5)
+        cyclingPower = power
+        latestCyclingPower = (source, .now)
+    }
+
+    func setCyclingCadence(_ cadence: Int, source: CyclingSource) {
+        guard isBetterCyclingSource(latest: latestCyclingCadence, source: source) else {
+            return
+        }
+        cyclingCadence = cadence
+        latestCyclingCadence = (source, .now)
+    }
+
+    private func isBetterCyclingSource(latest: (source: CyclingSource, time: ContinuousClock.Instant)?,
+                                       source: CyclingSource) -> Bool
+    {
+        guard let latest else {
+            return true
+        }
+        return source.rawValue >= latest.source.rawValue || latest.time.duration(to: .now) > .seconds(5)
     }
 }
 
@@ -103,11 +115,9 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
 
     func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
-            self.latestWorkoutDeviceCyclingPowerTime = .now
-            self.cyclingPower = power
-            if let cadence, !self.isCyclingSpeedCadenceReportingCadence() {
-                self.cyclingCadence = cadence
-                self.latestWorkoutDeviceCyclingCadenceTime = .now
+            self.setCyclingPower(power, source: .cyclingPower)
+            if let cadence {
+                self.setCyclingCadence(cadence, source: .cyclingPower)
             }
         }
     }
@@ -115,9 +125,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
     func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
         DispatchQueue.main.async {
             if let cadence {
-                self.cyclingCadence = cadence
-                self.latestCyclingSpeedCadenceCadenceTime = .now
-                self.latestWorkoutDeviceCyclingCadenceTime = .now
+                self.setCyclingCadence(cadence, source: .cyclingSpeedCadence)
             }
             if let speed {
                 self.cyclingSpeed = speed
