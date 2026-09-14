@@ -3422,9 +3422,9 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency AlertsEffectDelegate {
-    func alertsMakeErrorToast(title: String) {
-        makeErrorToast(title: title)
+extension Model: AlertsEffectDelegate {
+    nonisolated func alertsMakeErrorToast(title: String) {
+        makeErrorToastMain(title: title)
     }
 }
 
