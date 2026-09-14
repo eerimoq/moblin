@@ -17,11 +17,12 @@ private class DiscoveredSerivce {
     }
 }
 
+@MainActor
 protocol MoblinkScannerDelegate: AnyObject {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer])
 }
 
-class MoblinkScanner: NSObject {
+class MoblinkScanner: NSObject, @unchecked Sendable {
     private var browser: NetServiceBrowser?
     private var services: [DiscoveredSerivce] = []
     private weak var delegate: (any MoblinkScannerDelegate)?
@@ -57,7 +58,9 @@ class MoblinkScanner: NSObject {
             }
             streamers.append(.init(name: name, urls: service.urls))
         }
-        delegate?.moblinkScannerDiscoveredStreamers(streamers: streamers)
+        MainActor.assumeIsolated {
+            delegate?.moblinkScannerDiscoveredStreamers(streamers: streamers)
+        }
     }
 }
 

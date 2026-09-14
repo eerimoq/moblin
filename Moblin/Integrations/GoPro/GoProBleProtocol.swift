@@ -1,17 +1,19 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 import SwiftProtobuf
 
-let goProControlServiceId = CBUUID(string: "FEA6")
-let goProCommandId = CBUUID(string: "B5F90072-AA8D-11E3-9046-0002A5D5C51B")
-let goProCommandResponseId = CBUUID(string: "B5F90073-AA8D-11E3-9046-0002A5D5C51B")
-let goProSettingsId = CBUUID(string: "B5F90074-AA8D-11E3-9046-0002A5D5C51B")
-let goProSettingsResponseId = CBUUID(string: "B5F90075-AA8D-11E3-9046-0002A5D5C51B")
-let goProQueryId = CBUUID(string: "B5F90076-AA8D-11E3-9046-0002A5D5C51B")
-let goProQueryResponseId = CBUUID(string: "B5F90077-AA8D-11E3-9046-0002A5D5C51B")
-let goProCameraManagementServiceId = CBUUID(string: "B5F90090-AA8D-11E3-9046-0002A5D5C51B")
-let goProNetworkManagementId = CBUUID(string: "B5F90091-AA8D-11E3-9046-0002A5D5C51B")
-let goProNetworkManagementResponseId = CBUUID(string: "B5F90092-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProControlServiceId = CBUUID(string: "FEA6")
+nonisolated(unsafe) let goProCommandId = CBUUID(string: "B5F90072-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProCommandResponseId = CBUUID(string: "B5F90073-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProSettingsId = CBUUID(string: "B5F90074-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProSettingsResponseId = CBUUID(string: "B5F90075-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProQueryId = CBUUID(string: "B5F90076-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProQueryResponseId = CBUUID(string: "B5F90077-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProCameraManagementServiceId =
+    CBUUID(string: "B5F90090-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProNetworkManagementId = CBUUID(string: "B5F90091-AA8D-11E3-9046-0002A5D5C51B")
+nonisolated(unsafe) let goProNetworkManagementResponseId =
+    CBUUID(string: "B5F90092-AA8D-11E3-9046-0002A5D5C51B")
 
 let goProNetworkFeatureId: UInt8 = 0x02
 let goProPairingFeatureId: UInt8 = 0x03

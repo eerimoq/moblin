@@ -550,7 +550,7 @@ struct StreamYouTubeSettingsView: View {
                             }
                         }
                     } else {
-                        Task { @MainActor in
+                        Task {
                             do {
                                 let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
                                 submitVideoIds(value: videoId)

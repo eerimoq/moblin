@@ -412,7 +412,7 @@ class CameraLevel: ObservableObject {
 private let enterForegroundCountStorage = SimpleIntStorage(key: "enterForegroundCount")
 
 @MainActor
-final class Model: NSObject, ObservableObject, @unchecked Sendable {
+final class Model: NSObject, ObservableObject {
     var enterForegroundCount: Int {
         get {
             enterForegroundCountStorage.get()
@@ -474,7 +474,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, any Error>?
     var wiFiAwareReceiverTask: Task<Void, any Error>?
-    nonisolated(unsafe) let youTube = YouTube()
+    let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
@@ -508,7 +508,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
-    var media: Media!
+    nonisolated(unsafe) var media: Media!
     let hypeTrain = HypeTrain()
     let raid = Raid()
     let twitchPoll = TwitchPoll()
@@ -957,10 +957,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func makeErrorToastMain(title: String,
-                            font: Font? = nil,
-                            subTitle: String? = nil,
-                            vibrate: Bool = false)
+    nonisolated func makeErrorToastMain(title: String,
+                                        font: Font? = nil,
+                                        subTitle: String? = nil,
+                                        vibrate: Bool = false)
     {
         DispatchQueue.main.async {
             self.makeErrorToast(title: title, font: font, subTitle: subTitle, vibrate: vibrate)
@@ -1111,9 +1111,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
             await updateProductFromAppStore()
-            DispatchQueue.main.async {
-                self.updateIconImageFromDatabase()
-            }
+            updateIconImageFromDatabase()
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(systemVolumeDidChange),
@@ -3429,9 +3427,9 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency AlertsEffectDelegate {
-    func alertsMakeErrorToast(title: String) {
-        makeErrorToast(title: title)
+extension Model: AlertsEffectDelegate {
+    nonisolated func alertsMakeErrorToast(title: String) {
+        makeErrorToastMain(title: title)
     }
 }
 
@@ -3446,7 +3444,7 @@ extension Model: UIDocumentPickerDelegate {
     }
 }
 
-extension Model: @preconcurrency FaxReceiverDelegate {
+extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         printAllCatPrinters(image: image)
     }

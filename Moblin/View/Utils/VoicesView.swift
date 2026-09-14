@@ -127,7 +127,7 @@ private struct VoiceView: View {
     }
 
     private func playTtsMonsterTestMessage(voiceId: String) {
-        Task { @MainActor in
+        Task {
             guard !ttsMonsterApiToken.isEmpty else {
                 return
             }

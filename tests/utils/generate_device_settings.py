@@ -297,6 +297,7 @@ def base_settings(config: Config, remote_control_port: int):
         "location": {"enabled": True},
         "verboseStatuses": True,
         "showAllSettings": True,
+        "bigAudioLevelMeter": True,
         "debug": {"logLevel": "Debug"},
         "show": {"stream": True, "cpu": True, "microphone": True, "cameras": True},
         "chat": {"timestampColorEnabled": True, "animatedEmotes": True},

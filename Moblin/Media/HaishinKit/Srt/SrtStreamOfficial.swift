@@ -37,16 +37,20 @@ class SrtStreamOfficial: @unchecked Sendable {
             switch oldValue {
             case .publishing:
                 logger.info("srt: Stop publishing")
-                writer.stopRunning()
-                processor.stopEncoding(writer)
+                processorPipelineQueue.async {
+                    self.writer.stopRunning()
+                    self.processor.stopEncoding(self.writer)
+                }
             default:
                 break
             }
             switch readyState {
             case .publishing:
                 logger.info("srt: Start publishing")
-                processor.startEncoding(writer)
-                writer.startRunning()
+                processorPipelineQueue.async {
+                    self.processor.startEncoding(self.writer)
+                    self.writer.startRunning()
+                }
             default:
                 break
             }

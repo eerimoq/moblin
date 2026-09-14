@@ -146,7 +146,7 @@ private class ChatRenderer {
             var x: CGFloat = 3
             var highlightImageLineView: ChatLineUiView?
             var highlightImageSize = CGSize.zero
-            if let highlight = post.highlight {
+            if let highlight = post.highlight, highlight.titleSegments != nil {
                 var highlightStyle = style
                 highlightStyle.backgroundColor = nil
                 let key = ChatLineKey(postId: post.id, highlight: true)

@@ -113,20 +113,20 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency MediaPlayerDelegate {
-    func mediaPlayerFileLoaded(playerId: UUID, name: String) {
+extension Model: MediaPlayerDelegate {
+    nonisolated func mediaPlayerFileLoaded(playerId: UUID, name: String) {
         let name = "Media player: \(name)"
         let latency = mediaPlayerLatency
         media.addBufferedVideo(cameraId: playerId, name: name, latency: latency)
         media.addBufferedAudio(cameraId: playerId, name: name, latency: latency)
     }
 
-    func mediaPlayerFileUnloaded(playerId: UUID) {
+    nonisolated func mediaPlayerFileUnloaded(playerId: UUID) {
         media.removeBufferedVideo(cameraId: playerId)
         media.removeBufferedAudio(cameraId: playerId)
     }
 
-    func mediaPlayerStateUpdate(
+    nonisolated func mediaPlayerStateUpdate(
         playerId _: UUID,
         name: String,
         playing: Bool,
@@ -143,11 +143,11 @@ extension Model: @preconcurrency MediaPlayerDelegate {
         }
     }
 
-    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
-    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }

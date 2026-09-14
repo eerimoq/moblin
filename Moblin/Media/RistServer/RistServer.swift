@@ -5,10 +5,10 @@ import Rist
 protocol RistServerDelegate: AnyObject {
     func ristServerOnConnected(port: UInt16)
     func ristServerOnDisconnected(port: UInt16, reason: String)
-    func ristServerOnVideoBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer)
-    func ristServerOnAudioBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer)
+    func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func ristServerSetTargetLatencies(
-        virtualDestinationPort: UInt16,
+        cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     )
@@ -87,7 +87,7 @@ class RistServer: @unchecked Sendable {
             logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
             return
         }
-        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
+        let client = RistServerClient(cameraId: stream.id,
                                       latency: stream.latencySeconds(),
                                       softwareDecoding: softwareDecoding)
         client.server = self

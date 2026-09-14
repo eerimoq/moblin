@@ -1,6 +1,7 @@
 import Foundation
 import Network
 
+@MainActor
 protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerConnected()
     func remoteControlStreamerDisconnected()
@@ -64,6 +65,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
 
 private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
 
+@MainActor
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String

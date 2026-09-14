@@ -113,7 +113,7 @@ private struct PostView: View {
                         Rectangle()
                             .frame(width: 3)
                             .foregroundStyle(highlight.barColor)
-                        if chatSettings.compactEvents {
+                        if chatSettings.compactEvents, highlight.titleSegments != nil {
                             HighlightImageView(style: style, highlight: highlight)
                         }
                         VStack(alignment: .leading, spacing: 1) {

@@ -5,12 +5,14 @@ import SwiftUI
 private let shortestDelayMs = 500
 private let longestDelayMs = 10000
 
+@MainActor
 protocol WebSocketClientDelegate: AnyObject {
     func webSocketClientConnected(_ webSocket: WebSocketClient)
     func webSocketClientDisconnected(_ webSocket: WebSocketClient)
     func webSocketClientReceiveMessage(_ webSocket: WebSocketClient, string: String)
 }
 
+@MainActor
 final class WebSocketClient {
     private var webSocket: NWWebSocket
     private var connectTimer = SimpleTimer(queue: .main)
@@ -121,54 +123,68 @@ final class WebSocketClient {
 }
 
 extension WebSocketClient: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection _: any WebSocketConnection) {
+    nonisolated func webSocketDidConnect(connection _: any WebSocketConnection) {
         logger.debug("websocket: Connected")
-        connectDelayMs = shortestDelayMs
-        stopConnectTimer()
-        connected = true
-        delegate?.webSocketClientConnected(self)
+        MainActor.assumeIsolated {
+            connectDelayMs = shortestDelayMs
+            stopConnectTimer()
+            connected = true
+            delegate?.webSocketClientConnected(self)
+        }
     }
 
-    func webSocketDidDisconnect(connection _: any WebSocketConnection,
-                                closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
+    nonisolated func webSocketDidDisconnect(connection _: any WebSocketConnection,
+                                            closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
     {
         logger.debug("websocket: Disconnected")
-        stopInternal()
-        startConnectTimer()
-        delegate?.webSocketClientDisconnected(self)
-    }
-
-    func webSocketViabilityDidChange(connection _: any WebSocketConnection, isViable: Bool) {
-        logger.debug("websocket: Viability changed to \(isViable)")
-        guard !isViable else {
-            return
-        }
-        stopInternal()
-        startConnectTimer()
-        delegate?.webSocketClientDisconnected(self)
-    }
-
-    func webSocketDidAttemptBetterPathMigration(result _: Result<any WebSocketConnection, NWError>) {
-        logger.debug("websocket: Better path migration")
-    }
-
-    func webSocketDidReceiveError(connection _: any WebSocketConnection, error: NWError) {
-        logger.debug("websocket: Error \(error.localizedDescription)")
-        let connected = connected
-        stopInternal()
-        startConnectTimer()
-        if connected {
+        MainActor.assumeIsolated {
+            stopInternal()
+            startConnectTimer()
             delegate?.webSocketClientDisconnected(self)
         }
     }
 
-    func webSocketDidReceivePong(connection _: any WebSocketConnection) {
-        pongReceived = true
+    nonisolated func webSocketViabilityDidChange(connection _: any WebSocketConnection, isViable: Bool) {
+        logger.debug("websocket: Viability changed to \(isViable)")
+        guard !isViable else {
+            return
+        }
+        MainActor.assumeIsolated {
+            stopInternal()
+            startConnectTimer()
+            delegate?.webSocketClientDisconnected(self)
+        }
     }
 
-    func webSocketDidReceiveMessage(connection _: any WebSocketConnection, string: String) {
-        delegate?.webSocketClientReceiveMessage(self, string: string)
+    nonisolated func webSocketDidAttemptBetterPathMigration(
+        result _: Result<any WebSocketConnection, NWError>
+    ) {
+        logger.debug("websocket: Better path migration")
     }
 
-    func webSocketDidReceiveMessage(connection _: any WebSocketConnection, data _: Data) {}
+    nonisolated func webSocketDidReceiveError(connection _: any WebSocketConnection, error: NWError) {
+        logger.debug("websocket: Error \(error.localizedDescription)")
+        MainActor.assumeIsolated {
+            let connected = connected
+            stopInternal()
+            startConnectTimer()
+            if connected {
+                delegate?.webSocketClientDisconnected(self)
+            }
+        }
+    }
+
+    nonisolated func webSocketDidReceivePong(connection _: any WebSocketConnection) {
+        MainActor.assumeIsolated {
+            pongReceived = true
+        }
+    }
+
+    nonisolated func webSocketDidReceiveMessage(connection _: any WebSocketConnection, string: String) {
+        MainActor.assumeIsolated {
+            delegate?.webSocketClientReceiveMessage(self, string: string)
+        }
+    }
+
+    nonisolated func webSocketDidReceiveMessage(connection _: any WebSocketConnection, data _: Data) {}
 }

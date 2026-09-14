@@ -2,6 +2,7 @@ import Foundation
 @testable import Moblin
 import Testing
 
+@MainActor
 struct CheermotesSuite {
     private func makeCheermotes(_ prefixes: [String: [Int]]) -> Cheermotes {
         let cheermotes = Cheermotes()

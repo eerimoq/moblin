@@ -32,7 +32,7 @@ class Gimbal {
     }
 
     func setTracking(on: Bool) {
-        Task { @MainActor in
+        Task {
             try? await DockAccessoryManager.shared.setSystemTrackingEnabled(on)
             tracking = on
         }
@@ -56,7 +56,7 @@ class Gimbal {
         case .wakeup:
             .wakeup
         }
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             guard let self, !tracking else {
                 return
             }
@@ -65,7 +65,7 @@ class Gimbal {
     }
 
     func setMovement(velocity: Vector3D) {
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             guard let self, !tracking else {
                 return
             }

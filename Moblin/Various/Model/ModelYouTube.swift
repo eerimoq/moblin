@@ -131,7 +131,7 @@ extension Model {
                 }
             }
         } else if !stream.youTubeHandle.isEmpty {
-            Task { @MainActor in
+            Task {
                 if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
                     stopFetchingYouTubeChatVideoId()
                     guard videoId != stream.youTubeVideoIds else {
@@ -239,7 +239,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency YouTubeApiDelegate {
+extension Model: YouTubeApiDelegate {
     func youTubeApiUnauthorized() {
         guard stream.isYouTubeAuthorized() else {
             return

@@ -279,6 +279,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
 
     func clone() -> SettingsRistServerStream {
         let new = SettingsRistServerStream()
+        new.id = id
         new.name = name
         new.virtualDestinationPort = virtualDestinationPort
         new.latency = latency

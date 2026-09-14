@@ -25,6 +25,14 @@ struct StreamWizardGeneralSettingsView: View {
                     BackgroundStreamingFooterView()
                 }
             }
+            if !isMac() {
+                Section {
+                    Toggle(
+                        "Send Go live notification to [Moblin website](https://moblin.app/#streamers)",
+                        isOn: $createStreamWizard.goLiveNotificationMoblinWebsite
+                    )
+                }
+            }
             Section {
                 TextButtonView("Create") {
                     model.createStreamFromWizard()

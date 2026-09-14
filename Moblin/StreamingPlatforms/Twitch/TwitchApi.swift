@@ -222,6 +222,7 @@ struct TwitchApiValidateTokenData: Decodable {
     let expires_in: Int
 }
 
+@MainActor
 protocol TwitchApiDelegate: AnyObject {
     func twitchApiUnauthorized()
 }
@@ -244,6 +245,7 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
     return UIImage(data: imageData)
 }
 
+@MainActor
 class TwitchApi {
     private let clientId: String
     private let accessToken: String

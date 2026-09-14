@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 import re
 import socket
 import sys
@@ -483,6 +484,15 @@ class Moblin:
     def get_number_of_audio_channels(self) -> int:
         return self.get_status_top_right()["audioInfo"]["numberOfAudioChannels"]
 
+    def get_audio_level(self) -> float:
+        return parse_audio_level(self.get_status_top_right()["audioInfo"]["audioLevel"])
+
+    def get_audio_level_message(self) -> str:
+        return self.get_status_top_right()["audioLevel"]["message"]
+
+    def wait_for_audio_level(self, check: Callable[[float], bool], description: str):
+        wait_until(lambda: check(self.get_audio_level()), description)
+
     def get_mics(self) -> list[dict]:
         return self._get_settings()["mics"]
 
@@ -562,6 +572,14 @@ class BitrateStatus:
     bitrate: float
     multi_streaming: str | None
     total_bytes: float
+
+
+def parse_audio_level(audio_level: dict) -> float:
+    if "value" in audio_level:
+        return audio_level["value"]["_0"]
+    if "muted" in audio_level:
+        return math.nan
+    return math.inf
 
 
 def parse_ingests_status(message: str) -> IngestsStatus:

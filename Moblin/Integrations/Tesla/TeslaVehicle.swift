@@ -1,10 +1,10 @@
 import Collections
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import CryptoKit
 
-private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
-private let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
-private let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
 
 enum TeslaVehicleState {
     case idle
@@ -119,13 +119,14 @@ func teslaGeneratePrivateKey() -> P256.KeyAgreement.PrivateKey {
     P256.KeyAgreement.PrivateKey()
 }
 
+@MainActor
 protocol TeslaVehicleDelegate: AnyObject {
     func teslaVehicleState(_ vehicle: TeslaVehicle, state: TeslaVehicleState)
     func teslaVehicleVehicleSecurityConnected(_ vehicle: TeslaVehicle)
     func teslaVehicleInfotainmentConnected(_ vehicle: TeslaVehicle)
 }
 
-class TeslaVehicle: NSObject {
+class TeslaVehicle: NSObject, @unchecked Sendable {
     private let vin: String
     private let peripheralId: UUID
     private let clientPrivateKey: P256.KeyAgreement.PrivateKey
@@ -362,7 +363,9 @@ class TeslaVehicle: NSObject {
         }
         logger.info("tesla-vehicle: State change \(self.state) -> \(state)")
         self.state = state
-        delegate?.teslaVehicleState(self, state: state)
+        MainActor.assumeIsolated {
+            delegate?.teslaVehicleState(self, state: state)
+        }
     }
 
     private func getNextAddress() -> Data {
@@ -423,11 +426,15 @@ class TeslaVehicle: NSObject {
         switch domain {
         case .vehicleSecurity:
             vehicleSecurityHandshakeTimer.stop()
-            delegate?.teslaVehicleVehicleSecurityConnected(self)
+            MainActor.assumeIsolated {
+                delegate?.teslaVehicleVehicleSecurityConnected(self)
+            }
             try startInfotainmentHandshake()
         case .infotainment:
             infotainmentHandshakeTimer.stop()
-            delegate?.teslaVehicleInfotainmentConnected(self)
+            MainActor.assumeIsolated {
+                delegate?.teslaVehicleInfotainmentConnected(self)
+            }
         default:
             break
         }

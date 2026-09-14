@@ -252,6 +252,7 @@ private let url =
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
+@MainActor
 protocol KickPusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
@@ -275,7 +276,8 @@ protocol KickPusherDelegate: AnyObject {
     func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent)
 }
 
-final class KickPusher: NSObject, @unchecked Sendable {
+@MainActor
+final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
     private var chatroomChannelId: String
@@ -352,15 +354,11 @@ final class KickPusher: NSObject, @unchecked Sendable {
     }
 
     private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
-        }
+        delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: nil)
-        }
+        delegate?.kickPusherMakeErrorToast(title: title, subTitle: nil)
     }
 
     private func handleMessage(message: String) {

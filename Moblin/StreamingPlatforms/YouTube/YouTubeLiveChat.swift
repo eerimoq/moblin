@@ -183,7 +183,7 @@ private struct GetLiveChat: Codable {
 }
 
 @MainActor
-final class YouTubeLiveChat: NSObject, @unchecked Sendable {
+final class YouTubeLiveChat: NSObject {
     private var model: Model
     private var videoId: String
     private var task: Task<Void, any Error>?
@@ -240,15 +240,11 @@ final class YouTubeLiveChat: NSObject, @unchecked Sendable {
     }
 
     private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.model.makeErrorToast(title: title, subTitle: subTitle)
-        }
+        model.makeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.model.makeToast(title: title)
-        }
+        model.makeToast(title: title)
     }
 
     private func makeLiveChatUrl() -> URL? {

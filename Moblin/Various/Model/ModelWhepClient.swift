@@ -53,8 +53,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency WhepClientDelegate {
-    func whepClientOnPublishStart(streamId: UUID) {
+extension Model: WhepClientDelegate {
+    nonisolated func whepClientOnPublishStart(streamId: UUID) {
         DispatchQueue.main.async {
             guard let stream = self.getWhepStream(id: streamId) else {
                 return
@@ -67,7 +67,7 @@ extension Model: @preconcurrency WhepClientDelegate {
         }
     }
 
-    func whepClientOnPublishStop(streamId: UUID, reason: String) {
+    nonisolated func whepClientOnPublishStop(streamId: UUID, reason: String) {
         DispatchQueue.main.async {
             guard let stream = self.getWhepStream(id: streamId) else {
                 return
@@ -81,17 +81,17 @@ extension Model: @preconcurrency WhepClientDelegate {
         }
     }
 
-    func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func whepClientSetTargetLatencies(streamId: UUID,
-                                      _ videoTargetLatency: Double,
-                                      _ audioTargetLatency: Double)
+    nonisolated func whepClientSetTargetLatencies(streamId: UUID,
+                                                  _ videoTargetLatency: Double,
+                                                  _ audioTargetLatency: Double)
     {
         media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
         media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
