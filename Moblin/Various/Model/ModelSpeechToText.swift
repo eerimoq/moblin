@@ -166,7 +166,7 @@ extension Model: SpeechToTextDelegate {
     }
 }
 
-extension Model: @preconcurrency TranslatorDelegate {
+extension Model: TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
         let position: Int
         if let textAligner = speechToTextTextAligners[languageIdentifier] {
