@@ -355,7 +355,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency KickPusherDelegate {
+extension Model: KickPusherDelegate {
     func kickPusherMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }
@@ -485,26 +485,24 @@ extension Model: @preconcurrency KickPusherDelegate {
     }
 
     func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
-        DispatchQueue.main.async {
-            let text: String
-            let title: String
-            if event.permanent {
-                text = String(localized: "was banned from chat!")
-                title = String(localized: "User banned")
-            } else {
-                text = String(localized: "was timed out from chat!")
-                title = String(localized: "User timed out")
-            }
-            if self.stream.kickChatAlerts.bans {
-                self.appendKickChatAlertMessage(
-                    user: event.user.username,
-                    text: text,
-                    title: title,
-                    color: .red,
-                    image: "nosign",
-                    kind: .other
-                )
-            }
+        let text: String
+        let title: String
+        if event.permanent {
+            text = String(localized: "was banned from chat!")
+            title = String(localized: "User banned")
+        } else {
+            text = String(localized: "was timed out from chat!")
+            title = String(localized: "User timed out")
+        }
+        if stream.kickChatAlerts.bans {
+            appendKickChatAlertMessage(
+                user: event.user.username,
+                text: text,
+                title: title,
+                color: .red,
+                image: "nosign",
+                kind: .other
+            )
         }
     }
 
