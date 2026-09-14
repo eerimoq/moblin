@@ -1,12 +1,14 @@
 import AVKit
 import Speech
 
+@MainActor
 protocol SpeechToTextDelegate: AnyObject {
     func speechToTextPartialResult(position: Int, text: String)
     func speechToTextClear()
 }
 
-class SpeechToText: NSObject, @unchecked Sendable {
+@MainActor
+class SpeechToText: NSObject {
     private let speechRecognizer = SFSpeechRecognizer()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -19,25 +21,25 @@ class SpeechToText: NSObject, @unchecked Sendable {
     private var frozenTextPosition = 0
     private var previousBestTranscription = ""
 
-    func start(onError: @escaping (String) -> Void) {
+    func start(onError: @escaping @MainActor (String) -> Void) {
         isStarted = true
         clearFrozenText()
         previousBestTranscription = ""
         speechRecognizer?.delegate = self
         SFSpeechRecognizer.requestAuthorization { authStatus in
-            switch authStatus {
-            case .authorized:
-                OperationQueue.main.addOperation {
+            DispatchQueue.main.async {
+                switch authStatus {
+                case .authorized:
                     self.startAuthorized()
+                case .denied:
+                    onError("Speech recognition not allowed")
+                case .restricted:
+                    onError("Speech recognition restricted on this device")
+                case .notDetermined:
+                    onError("Speech recognition not yet authorized")
+                @unknown default:
+                    onError("Speech recognition error")
                 }
-            case .denied:
-                onError("Speech recognition not allowed")
-            case .restricted:
-                onError("Speech recognition restricted on this device")
-            case .notDetermined:
-                onError("Speech recognition not yet authorized")
-            @unknown default:
-                onError("Speech recognition error")
             }
         }
     }
@@ -132,7 +134,7 @@ class SpeechToText: NSObject, @unchecked Sendable {
 }
 
 extension SpeechToText: SFSpeechRecognizerDelegate {
-    func speechRecognizer(_: SFSpeechRecognizer, availabilityDidChange available: Bool) {
+    nonisolated func speechRecognizer(_: SFSpeechRecognizer, availabilityDidChange available: Bool) {
         logger.info("speech-to-text: Available \(available)")
     }
 }
