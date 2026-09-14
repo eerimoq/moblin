@@ -499,7 +499,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency ObsWebsocketDelegate {
+extension Model: ObsWebsocketDelegate {
     func obsWebsocketConnected() {
         updateObsStatus()
         updateStatusObsText()
