@@ -131,7 +131,7 @@ extension Model {
                 }
             }
         } else if !stream.youTubeHandle.isEmpty {
-            Task { @MainActor in
+            Task {
                 if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
                     stopFetchingYouTubeChatVideoId()
                     guard videoId != stream.youTubeVideoIds else {
