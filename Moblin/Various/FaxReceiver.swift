@@ -2,10 +2,12 @@ import CoreImage
 import Foundation
 import ImagePlayground
 
+@MainActor
 protocol FaxReceiverDelegate: AnyObject {
     func faxReceiverPrint(image: CIImage)
 }
 
+@MainActor
 class FaxReceiver {
     weak var delegate: (any FaxReceiverDelegate)?
 
