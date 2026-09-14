@@ -1,9 +1,9 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
-@preconcurrency import AVFoundation
+import AVFoundation
 import Collections
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import CoreImage
 import Foundation
 
@@ -70,15 +70,15 @@ private class CurrentJob {
     }
 }
 
-private let catPrinterServices = [
+private nonisolated(unsafe) let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
 nonisolated(unsafe) let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
-private let printCharacteristicId = CBUUID(string: "AE01")
-private let notifyCharacteristicId = CBUUID(string: "AE02")
-private let dataCharacteristicId = CBUUID(string: "AE03")
+private nonisolated(unsafe) let printCharacteristicId = CBUUID(string: "AE01")
+private nonisolated(unsafe) let notifyCharacteristicId = CBUUID(string: "AE02")
+private nonisolated(unsafe) let dataCharacteristicId = CBUUID(string: "AE03")
 
 private struct PrintJob {
     let image: CIImage
