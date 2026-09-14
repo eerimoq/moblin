@@ -39,12 +39,14 @@ private enum RelayState: String {
     case unknownError = "Unknown error"
 }
 
+@MainActor
 protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayNewState(state: MoblinkRelayState)
     func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?)
 }
 
-private class Relay: NSObject, @unchecked Sendable {
+@MainActor
+private class Relay: NSObject {
     private var streamerUrl: URL
     private var password: String
     private weak var delegate: (any MoblinkRelayDelegate)?
@@ -53,8 +55,8 @@ private class Relay: NSObject, @unchecked Sendable {
     private var startTunnelId: Int?
     private var destination: NWEndpoint?
     private var streamerListener: NWListener?
-    private var streamerConnection: NWConnection?
-    private var destinationConnection: NWConnection?
+    private nonisolated(unsafe) var streamerConnection: NWConnection?
+    private nonisolated(unsafe) var destinationConnection: NWConnection?
     var state: RelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
@@ -257,7 +259,7 @@ private class Relay: NSObject, @unchecked Sendable {
         startTunnelId = nil
     }
 
-    private func handleListenerStateChange(to state: NWListener.State) {
+    private nonisolated func handleListenerStateChange(to state: NWListener.State) {
         DispatchQueue.main.async {
             switch state {
             case .setup:
@@ -278,7 +280,7 @@ private class Relay: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handleDestinationStateUpdate(to state: NWConnection.State) {
+    private nonisolated func handleDestinationStateUpdate(to state: NWConnection.State) {
         logger.debug("moblink-relay: \(name): Destination state change to \(state)")
         DispatchQueue.main.async {
             switch state {
@@ -292,13 +294,13 @@ private class Relay: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handleNewListenerConnection(connection: NWConnection) {
+    private nonisolated func handleNewListenerConnection(connection: NWConnection) {
         streamerConnection = connection
         streamerConnection?.start(queue: moblinkRelayQueue)
         receiveStreamerPacket()
     }
 
-    private func receiveStreamerPacket() {
+    private nonisolated func receiveStreamerPacket() {
         streamerConnection?.receiveMessage { data, _, _, _ in
             if let data, !data.isEmpty {
                 self.handlePacketFromStreamer(packet: data)
@@ -312,11 +314,11 @@ private class Relay: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handlePacketFromStreamer(packet: Data) {
+    private nonisolated func handlePacketFromStreamer(packet: Data) {
         destinationConnection?.send(content: packet, completion: .idempotent)
     }
 
-    private func receiveDestinationPacket() {
+    private nonisolated func receiveDestinationPacket() {
         destinationConnection?.receiveMessage { data, _, _, error in
             if let data, !data.isEmpty {
                 self.handlePacketFromDestination(packet: data)
@@ -332,12 +334,12 @@ private class Relay: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handlePacketFromDestination(packet: Data) {
+    private nonisolated func handlePacketFromDestination(packet: Data) {
         streamerConnection?.send(content: packet, completion: .idempotent)
     }
 }
 
-extension Relay: WebSocketClientDelegate {
+extension Relay: @preconcurrency WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {
@@ -350,7 +352,8 @@ extension Relay: WebSocketClientDelegate {
     }
 }
 
-class MoblinkRelay: NSObject, @unchecked Sendable {
+@MainActor
+class MoblinkRelay: NSObject {
     private let name: String
     let streamerUrl: URL
     private let password: String
@@ -368,7 +371,11 @@ class MoblinkRelay: NSObject, @unchecked Sendable {
 
     func start() {
         started = true
-        networkPathMonitor.pathUpdateHandler = handleNetworkPathUpdate(path:)
+        networkPathMonitor.pathUpdateHandler = { path in
+            MainActor.assumeIsolated {
+                self.handleNetworkPathUpdate(path: path)
+            }
+        }
         networkPathMonitor.start(queue: .main)
         relayStateChanged()
     }

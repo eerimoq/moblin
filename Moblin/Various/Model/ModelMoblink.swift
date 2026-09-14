@@ -196,7 +196,7 @@ extension Model: MoblinkStreamerDelegate {
     }
 }
 
-extension Model: @preconcurrency MoblinkRelayDelegate {
+extension Model: MoblinkRelayDelegate {
     func moblinkRelayNewState(state: MoblinkRelayState) {
         moblink.relayState = state
     }
