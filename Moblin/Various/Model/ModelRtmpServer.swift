@@ -28,35 +28,31 @@ extension Model {
         ingests.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
-    func handleRtmpServerPublishStart(streamKey: String) {
-        DispatchQueue.main.async {
-            guard let stream = self.getRtmpStream(streamKey: streamKey) else {
-                return
-            }
-            let camera = stream.camera()
-            self.makeToast(title: String(localized: "\(camera) connected"))
-            let latency = stream.latencySeconds()
-            self.media.addBufferedVideo(cameraId: stream.id,
-                                        name: camera,
-                                        latency: latency,
-                                        trackDrift: stream.trackDrift)
-            self.media.addBufferedAudio(cameraId: stream.id,
-                                        name: camera,
-                                        latency: latency,
-                                        trackDrift: stream.trackDrift)
-            self.markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
-            self.markGoProIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
+    private func handleRtmpServerPublishStart(streamKey: String) {
+        guard let stream = getRtmpStream(streamKey: streamKey) else {
+            return
         }
+        let camera = stream.camera()
+        makeToast(title: String(localized: "\(camera) connected"))
+        let latency = stream.latencySeconds()
+        media.addBufferedVideo(cameraId: stream.id,
+                               name: camera,
+                               latency: latency,
+                               trackDrift: stream.trackDrift)
+        media.addBufferedAudio(cameraId: stream.id,
+                               name: camera,
+                               latency: latency,
+                               trackDrift: stream.trackDrift)
+        markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
+        markGoProIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
     }
 
-    func handleRtmpServerPublishStop(streamKey: String, reason: String? = nil) {
-        DispatchQueue.main.async {
-            guard let stream = self.getRtmpStream(streamKey: streamKey) else {
-                return
-            }
-            self.stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
-            self.switchMicIfNeededAfterNetworkCameraChange()
+    private func handleRtmpServerPublishStop(streamKey: String, reason: String) {
+        guard let stream = getRtmpStream(streamKey: streamKey) else {
+            return
         }
+        stopRtmpServerStream(stream: stream, showToast: true, reason: reason)
+        switchMicIfNeededAfterNetworkCameraChange()
     }
 
     private func stopRtmpServerStream(
@@ -83,14 +79,6 @@ extension Model {
         }
     }
 
-    func handleRtmpServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-    }
-
-    func handleRtmpServerAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-    }
-
     func stopRtmpServer() {
         ingests.rtmp?.stop()
         ingests.rtmp = nil
@@ -112,24 +100,28 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency RtmpServerDelegate {
-    func rtmpServerOnPublishStart(streamKey: String) {
-        handleRtmpServerPublishStart(streamKey: streamKey)
+extension Model: RtmpServerDelegate {
+    nonisolated func rtmpServerOnPublishStart(streamKey: String) {
+        DispatchQueue.main.async {
+            self.handleRtmpServerPublishStart(streamKey: streamKey)
+        }
     }
 
-    func rtmpServerOnPublishStop(streamKey: String, reason: String) {
-        handleRtmpServerPublishStop(streamKey: streamKey, reason: reason)
+    nonisolated func rtmpServerOnPublishStop(streamKey: String, reason: String) {
+        DispatchQueue.main.async {
+            self.handleRtmpServerPublishStop(streamKey: streamKey, reason: reason)
+        }
     }
 
-    func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        handleRtmpServerFrame(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    nonisolated func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        handleRtmpServerAudioBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    nonisolated func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func rtmpServerSetTargetLatencies(
+    nonisolated func rtmpServerSetTargetLatencies(
         cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
