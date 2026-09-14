@@ -65,13 +65,29 @@ private struct GoLiveNotificationView: View {
 
     var body: some View {
         Section {
-            NavigationLink {
-                Form {
-                    GoLiveNotificationDiscordTextSettingsView(stream: stream)
+            if !stream.goLiveNotificationDiscordWebhookUrl.isEmpty {
+                NavigationLink {
+                    Form {
+                        GoLiveNotificationDiscordTextSettingsView(stream: stream)
+                    }
+                    .navigationTitle("Discord")
+                } label: {
+                    DiscordLogoAndNameView()
                 }
-                .navigationTitle("Discord")
-            } label: {
-                DiscordLogoAndNameView()
+            }
+            if !isMac(), stream.goLiveNotificationMoblinWebsite {
+                NavigationLink {
+                    Form {
+                        Section {
+                            Toggle("Snapshot", isOn: $stream.goLiveNotificationMoblinWebsiteSnapshot)
+                        } footer: {
+                            Text("A snapshot of the stream is shown on the website when enabled.")
+                        }
+                    }
+                    .navigationTitle("Moblin website")
+                } label: {
+                    MoblinWebsiteLogoAndNameView()
+                }
             }
             Button {
                 sending = true

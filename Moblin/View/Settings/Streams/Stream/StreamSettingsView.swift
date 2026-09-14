@@ -74,6 +74,12 @@ struct DiscordLogoAndNameView: View {
     }
 }
 
+struct MoblinWebsiteLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "AppIconNoBackground", name: String(localized: "Moblin website"))
+    }
+}
+
 struct TtsMonsterLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
