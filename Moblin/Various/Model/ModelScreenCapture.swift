@@ -88,29 +88,25 @@ extension Model {
         makeToast(title: String(localized: "Screen capture stopped"))
         media.removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
-
-    private func handleScreenCaptureSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
-    }
 }
 
-extension Model: @preconcurrency SampleBufferReceiverDelegate {
-    func senderConnected() {
+extension Model: SampleBufferReceiverDelegate {
+    nonisolated func senderConnected() {
         DispatchQueue.main.async {
             self.handleScreenCaptureStarted(latency: screenRecordingLatency)
         }
     }
 
-    func senderDisconnected() {
+    nonisolated func senderDisconnected() {
         DispatchQueue.main.async {
             self.handleScreenCaptureStopped()
         }
     }
 
-    func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
+    nonisolated func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
-            handleScreenCaptureSampleBuffer(sampleBuffer)
+            media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }

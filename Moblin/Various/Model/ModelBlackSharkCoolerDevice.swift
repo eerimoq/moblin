@@ -23,14 +23,20 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency BlackSharkCoolerDeviceDelegate {
-    func blackSharkCoolerDeviceState(_: BlackSharkCoolerDevice, state: BlackSharkCoolerDeviceState) {
+extension Model: BlackSharkCoolerDeviceDelegate {
+    nonisolated func blackSharkCoolerDeviceState(
+        _: BlackSharkCoolerDevice,
+        state: BlackSharkCoolerDeviceState
+    ) {
         DispatchQueue.main.async {
             self.statusTopRight.blackSharkCoolerDeviceState = state
         }
     }
 
-    func blackSharkCoolerDeviceStatus(_: BlackSharkCoolerDevice, status: BlackSharkLib.CoolingState) {
+    nonisolated func blackSharkCoolerDeviceStatus(
+        _: BlackSharkCoolerDevice,
+        status: BlackSharkLib.CoolingState
+    ) {
         let phoneTemperature = status.phoneTemperature
         let heatsinkTemperature = status.heatsinkTemperature
         DispatchQueue.main.async {

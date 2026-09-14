@@ -508,7 +508,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
-    var media: Media!
+    nonisolated(unsafe) var media: Media!
     let hypeTrain = HypeTrain()
     let raid = Raid()
     let twitchPoll = TwitchPoll()
@@ -956,10 +956,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func makeErrorToastMain(title: String,
-                            font: Font? = nil,
-                            subTitle: String? = nil,
-                            vibrate: Bool = false)
+    nonisolated func makeErrorToastMain(title: String,
+                                        font: Font? = nil,
+                                        subTitle: String? = nil,
+                                        vibrate: Bool = false)
     {
         DispatchQueue.main.async {
             self.makeErrorToast(title: title, font: font, subTitle: subTitle, vibrate: vibrate)

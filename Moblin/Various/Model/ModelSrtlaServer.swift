@@ -45,14 +45,14 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency SrtlaServerDelegate {
-    func srtlaServerOnClientStart(cameraId: UUID, name: String) {
+extension Model: SrtlaServerDelegate {
+    nonisolated func srtlaServerOnClientStart(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
             self.srtlaServerOnClientStartInternal(cameraId: cameraId, name: name)
         }
     }
 
-    func srtlaServerOnClientStop(cameraId: UUID, name: String) {
+    nonisolated func srtlaServerOnClientStop(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
             self.srtlaServerOnClientStopInternal(cameraId: cameraId, name: name)
         }
@@ -70,15 +70,15 @@ extension Model: @preconcurrency SrtlaServerDelegate {
         media.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtlaServerSetTargetLatencies(
+    nonisolated func srtlaServerSetTargetLatencies(
         cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
