@@ -671,7 +671,8 @@ final class Model: NSObject, ObservableObject {
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
-    var latestCyclingSpeedCadenceCadenceTime: ContinuousClock.Instant?
+    var latestCyclingPower: CyclingSource.Latest?
+    var latestCyclingCadence: CyclingSource.Latest?
     var cyclingSpeed = 0.0
     var latestSubscriber = ""
     var latestFollower = ""
@@ -3365,6 +3366,12 @@ final class Model: NSObject, ObservableObject {
         }
         if let power = stats.power {
             workoutPower = power
+        }
+        if let cyclingPower = stats.cyclingPower {
+            setCyclingPower(cyclingPower, source: .watch)
+        }
+        if let cyclingCadence = stats.cyclingCadence {
+            setCyclingCadence(cyclingCadence, source: .watch)
         }
     }
 }

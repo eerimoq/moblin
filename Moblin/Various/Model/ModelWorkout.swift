@@ -12,6 +12,7 @@ private func types() -> Set<HKSampleType> {
     ]
     if #available(iOS 17.0, *) {
         types.insert(.quantityType(forIdentifier: .cyclingPower)!)
+        types.insert(.quantityType(forIdentifier: .cyclingCadence)!)
     }
     return types
 }
@@ -40,16 +41,20 @@ private class Workout: NSObject {
         let configuration = HKWorkoutConfiguration()
         let activityType: HKWorkoutActivityType
         let addStepCount: Bool
+        let addCyclingMetrics: Bool
         switch type {
         case .walking:
             activityType = .walking
             addStepCount = true
+            addCyclingMetrics = false
         case .running:
             activityType = .running
             addStepCount = true
+            addCyclingMetrics = false
         case .cycling:
             activityType = .cycling
             addStepCount = false
+            addCyclingMetrics = true
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -70,6 +75,16 @@ private class Workout: NSObject {
         if addStepCount {
             dataSource.enableCollection(
                 for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
+                predicate: nil
+            )
+        }
+        if addCyclingMetrics {
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingPower)!,
+                predicate: nil
+            )
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!,
                 predicate: nil
             )
         }
@@ -202,6 +217,7 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
     nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
                                     didCollectDataOf collectedTypes: Set<HKSampleType>)
     {
+        var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
                 continue
@@ -209,9 +225,13 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
             guard let statistics = workoutBuilder.statistics(for: quantityType) else {
                 continue
             }
-            DispatchQueue.main.async {
-                self.model?.handleWorkout(stats: WatchProtocolWorkoutStats(statistics: statistics))
-            }
+            stats.update(statistics: statistics)
+        }
+        guard stats != WatchProtocolWorkoutStats() else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.model?.handleWorkout(stats: stats)
         }
     }
 

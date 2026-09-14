@@ -1,5 +1,20 @@
 import Foundation
 
+enum CyclingSource: Int {
+    typealias Latest = (source: CyclingSource, time: ContinuousClock.Instant)
+
+    case watch
+    case cyclingPower
+    case cyclingSpeedCadence
+
+    func canReplace(latest: Latest?) -> Bool {
+        guard let latest else {
+            return true
+        }
+        return rawValue >= latest.source.rawValue || latest.time.duration(to: .now) > .seconds(5)
+    }
+}
+
 extension Model {
     func isWorkoutDeviceEnabled(device: SettingsWorkoutDevice) -> Bool {
         device.enabled
@@ -57,11 +72,24 @@ extension Model {
         })
     }
 
-    private func isCyclingSpeedCadenceReportingCadence() -> Bool {
-        guard let latestCyclingSpeedCadenceCadenceTime else {
+    @discardableResult
+    func setCyclingPower(_ power: Int, source: CyclingSource) -> Bool {
+        guard source.canReplace(latest: latestCyclingPower) else {
             return false
         }
-        return latestCyclingSpeedCadenceCadenceTime.duration(to: .now) < .seconds(5)
+        cyclingPower = power
+        latestCyclingPower = (source, .now)
+        return true
+    }
+
+    @discardableResult
+    func setCyclingCadence(_ cadence: Int, source: CyclingSource) -> Bool {
+        guard source.canReplace(latest: latestCyclingCadence) else {
+            return false
+        }
+        cyclingCadence = cadence
+        latestCyclingCadence = (source, .now)
+        return true
     }
 }
 
@@ -92,10 +120,10 @@ extension Model: WorkoutDeviceDelegate {
 
     nonisolated func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
-            self.cyclingPower = power
-            self.addWorkoutCyclingPower(power)
-            if let cadence, !self.isCyclingSpeedCadenceReportingCadence() {
-                self.cyclingCadence = cadence
+            if self.setCyclingPower(power, source: .cyclingPower) {
+                self.addWorkoutCyclingPower(power)
+            }
+            if let cadence, self.setCyclingCadence(cadence, source: .cyclingPower) {
                 self.addWorkoutCyclingCadence(cadence)
             }
         }
@@ -103,9 +131,7 @@ extension Model: WorkoutDeviceDelegate {
 
     nonisolated func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
         DispatchQueue.main.async {
-            if let cadence {
-                self.cyclingCadence = cadence
-                self.latestCyclingSpeedCadenceCadenceTime = .now
+            if let cadence, self.setCyclingCadence(cadence, source: .cyclingSpeedCadence) {
                 self.addWorkoutCyclingCadence(cadence)
             }
             if let speed {
