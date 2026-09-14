@@ -312,7 +312,13 @@ extension Model {
         }
     }
 
-    @objc func handleAudioRouteChange(notification _: Notification) {
+    @objc nonisolated func handleAudioRouteChange(notification _: Notification) {
+        DispatchQueue.main.async {
+            self.handleAudioRouteChange()
+        }
+    }
+
+    private func handleAudioRouteChange() {
         // Not sure about this...
         if isMac() {
             return
