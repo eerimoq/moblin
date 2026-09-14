@@ -3,7 +3,7 @@ import CoreImage
 import MetalPetal
 import SwiftUI
 import VideoToolbox
-@preconcurrency import Vision
+import Vision
 
 private let deltaLimit = 0.03
 

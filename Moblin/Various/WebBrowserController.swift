@@ -1,5 +1,5 @@
 import SwiftUI
-@preconcurrency import WebKit
+import WebKit
 
 class WebBrowserController: UIViewController, ObservableObject {
     @Published var showAlert = false

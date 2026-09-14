@@ -1,4 +1,4 @@
-@preconcurrency import AVFoundation
+import AVFoundation
 import CoreAudio
 
 final class AudioEncoderRingBuffer {
