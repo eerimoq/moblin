@@ -56,11 +56,7 @@ class HttpResponseParser: HttpParser {
 
 @MainActor
 private class InterfaceTypeHttpClient {
-    private nonisolated(unsafe) static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
-        .cellular,
-        .wifi,
-        .wiredEthernet,
-    ])
+    private static var interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
     private var interfaceTypes: [NWInterface.InterfaceType] = []
     private var interfaceTypeIndex: Int = 0
     private var connection: NWConnection?
@@ -69,7 +65,7 @@ private class InterfaceTypeHttpClient {
     private var responseParser = HttpResponseParser()
 
     init() {
-        interfaceTypes = Self.interfaceTypes.value
+        interfaceTypes = Self.interfaceTypes
     }
 
     private func stop() {
@@ -152,12 +148,9 @@ private class InterfaceTypeHttpClient {
         guard interfaceTypeIndex != 0 else {
             return
         }
-        nonisolated(unsafe)
         var interfaceTypes = interfaceTypes
-        let interfaceType = interfaceTypes[0]
-        interfaceTypes[0] = interfaceTypes[interfaceTypeIndex]
-        interfaceTypes[interfaceTypeIndex] = interfaceType
-        Self.interfaceTypes.mutate { $0 = interfaceTypes }
+        interfaceTypes.swapAt(0, interfaceTypeIndex)
+        Self.interfaceTypes = interfaceTypes
     }
 
     private func createRequest(request: URLRequest, body: Data?) -> (String, Int, Bool, Data)? {
