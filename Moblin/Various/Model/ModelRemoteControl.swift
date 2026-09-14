@@ -1138,7 +1138,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 }
 
-extension Model: @preconcurrency RemoteControlAssistantDelegate {
+extension Model: RemoteControlAssistantDelegate {
     func remoteControlAssistantConnected() {
         makeToast(title: String(localized: "Remote control streamer connected"))
         remoteControlAssistantStreamerState.filters = [:]

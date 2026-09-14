@@ -2,6 +2,7 @@ import Foundation
 @testable import Moblin
 import Testing
 
+@MainActor
 private final class Delegate: TwitchEventSubDelegate {
     var subscribes: [TwitchEventSubNotificationChannelSubscribeEvent] = []
     var resubscribes: [TwitchEventSubNotificationChannelSubscriptionMessageEvent] = []
@@ -116,10 +117,12 @@ private func chatNotification(noticeType: String, shared: Bool, payload: String)
     """
 }
 
+@MainActor
 private func makeEventSub(delegate: Delegate) -> TwitchEventSub {
     TwitchEventSub(remoteControl: true, userId: "111", accessToken: "", delegate: delegate)
 }
 
+@MainActor
 struct TwitchEventSubSuite {
     @Test
     func sub() {

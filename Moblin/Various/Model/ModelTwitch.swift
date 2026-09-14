@@ -767,7 +767,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency TwitchEventSubDelegate {
+extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         latestFollower = event.user_name
         let text = String(localized: "just followed!")
@@ -1214,7 +1214,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubNotification(message _: String) {}
 }
 
-extension Model: @preconcurrency TwitchChatDelegate {
+extension Model: TwitchChatDelegate {
     func twitchChatMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }
@@ -1263,7 +1263,7 @@ extension Model: @preconcurrency TwitchChatDelegate {
     }
 }
 
-extension Model: @preconcurrency TwitchApiDelegate {
+extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
         guard stream.twitchLoggedIn else {
             return
