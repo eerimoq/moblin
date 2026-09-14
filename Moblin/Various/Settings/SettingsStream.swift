@@ -1294,6 +1294,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var goLiveNotificationDiscordMessage: String = ""
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
     @Published var goLiveNotificationMoblinWebsite: Bool = false
+    @Published var goLiveNotificationMoblinWebsiteSnapshot: Bool = false
     @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
     var previewStream: SettingsStreamPreviewStream = .init()
     @Published var autoGoLive: Bool = false
@@ -1396,6 +1397,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case goLiveNotificationDiscordMessage
         case goLiveNotificationDiscordWebhookUrl
         case goLiveNotificationMoblinWebsite
+        case goLiveNotificationMoblinWebsiteSnapshot
         case multiStreaming
         case previewStream
         case autoGoLive
@@ -1493,6 +1495,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
         try container.encode(.goLiveNotificationMoblinWebsite, goLiveNotificationMoblinWebsite)
+        try container.encode(
+            .goLiveNotificationMoblinWebsiteSnapshot,
+            goLiveNotificationMoblinWebsiteSnapshot
+        )
         try container.encode(.multiStreaming, multiStreaming)
         try container.encode(.previewStream, previewStream)
         try container.encode(.autoGoLive, autoGoLive)
@@ -1621,6 +1627,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             ""
         )
         goLiveNotificationMoblinWebsite = container.decode(.goLiveNotificationMoblinWebsite, Bool.self, false)
+        goLiveNotificationMoblinWebsiteSnapshot = container.decode(
+            .goLiveNotificationMoblinWebsiteSnapshot,
+            Bool.self,
+            false
+        )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
         previewStream = container.decode(.previewStream, SettingsStreamPreviewStream.self, .init())
         autoGoLive = container.decode(.autoGoLive, Bool.self, false)
@@ -1715,6 +1726,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
         new.goLiveNotificationMoblinWebsite = goLiveNotificationMoblinWebsite
+        new.goLiveNotificationMoblinWebsiteSnapshot = goLiveNotificationMoblinWebsiteSnapshot
         new.multiStreaming = multiStreaming.clone()
         new.previewStream = previewStream.clone()
         new.autoGoLive = autoGoLive

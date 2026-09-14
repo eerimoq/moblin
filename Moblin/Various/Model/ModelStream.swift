@@ -161,17 +161,22 @@ extension Model {
     }
 
     func sendGoLiveNotification() {
-        if isGoLiveNotificationDiscordConfigured(),
-           let url = URL(string: stream.goLiveNotificationDiscordWebhookUrl)
-        {
+        let sendToDiscord = isGoLiveNotificationDiscordConfigured()
+        let sendToMoblinWebsite = stream.goLiveNotificationMoblinWebsite
+        let sendSnapshotToMoblinWebsite = stream.goLiveNotificationMoblinWebsiteSnapshot
+        if sendToDiscord || (sendToMoblinWebsite && sendSnapshotToMoblinWebsite) {
             media.takeSnapshot(age: 0.0) { image, _, _ in
-                guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
-                    return
+                if sendToDiscord,
+                   let discordUrl = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl),
+                   let imageJpeg = image.jpegData(compressionQuality: 0.9)
+                {
+                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, discordUrl)
                 }
-                self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
+                self.sendLiveToMoblinWebsite(snapshot: sendSnapshotToMoblinWebsite ? image : nil)
             }
+        } else {
+            sendLiveToMoblinWebsite(snapshot: nil)
         }
-        sendLiveToMoblinWebsite()
     }
 
     private func tryUploadGoLiveNotificationToDiscord(_ image: Data, _ url: URL) {
