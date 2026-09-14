@@ -526,7 +526,7 @@ final class Model: NSObject, ObservableObject {
     var inServiceBackground = false
     var chatPhoneBackgroundAudioPlayer: AVAudioPlayer?
     #if !targetEnvironment(macCatalyst)
-    var liveActivity: Activity<LiveActivityAttributes>?
+    nonisolated(unsafe) var liveActivity: Activity<LiveActivityAttributes>?
     #endif
     #if targetEnvironment(macCatalyst)
     var macStatusItem: MacStatusItem?
