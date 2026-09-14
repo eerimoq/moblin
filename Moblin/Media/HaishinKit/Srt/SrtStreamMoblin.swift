@@ -73,7 +73,7 @@ extension SrtStreamMoblin: MpegTsWriterDelegate {
 
 extension SrtStreamMoblin: SrtSenderDelegate {
     func srtSenderConnected() {
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
             self.delegate.srtStreamMoblinConnected()
@@ -81,7 +81,7 @@ extension SrtStreamMoblin: SrtSenderDelegate {
     }
 
     func srtSenderDisconnected() {
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
             self.delegate.srtStreamMoblinDisconnected()

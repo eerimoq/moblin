@@ -20,18 +20,14 @@ extension Model {
         let velocity = Vector3D(x: Double(x) * gimbalAngularVelocity,
                                 y: Double(y) * gimbalAngularVelocity,
                                 z: 0)
-        DispatchQueue.main.async {
-            Gimbal.shared?.setMovement(velocity: velocity)
-        }
+        Gimbal.shared?.setMovement(velocity: velocity)
     }
 
     func animateGimbal(motion: SettingsGimbalMotion) {
         guard #available(iOS 18.0, *) else {
             return
         }
-        DispatchQueue.main.async {
-            Gimbal.shared?.animate(motion: motion)
-        }
+        Gimbal.shared?.animate(motion: motion)
     }
 
     func getRemoteControlGimbalPresets() -> [RemoteControlSettingsGimbalPreset] {
@@ -46,7 +42,7 @@ extension Model {
         guard #available(iOS 18.0, *) else {
             return
         }
-        Task { @MainActor in
+        Task {
             do {
                 guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
                     return
@@ -101,7 +97,7 @@ extension Model {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.setZoomX(x: preset.zoomX, rate: 5)
         }
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             defer {
                 self?.moveToGimbalPresetQueueRunning = false
                 self?.processGimbalPresetQueue()

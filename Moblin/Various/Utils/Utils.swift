@@ -93,6 +93,7 @@ func emojiFlag(countryCode: String?) -> String {
     return emote
 }
 
+@MainActor
 func uploadImage(
     url: URL,
     paramName: String,

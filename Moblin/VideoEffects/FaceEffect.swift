@@ -197,7 +197,7 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
         else {
             return nil
         }
-        return (CGPoint(x: boundingBox.midX, y: boundingBox.midY + 0.3 * boundingBox.height),
+        return (CGPoint(x: boundingBox.midX, y: boundingBox.midY + 0.25 * boundingBox.height),
                 1.5 * boundingBox.height,
                 rotation)
     }

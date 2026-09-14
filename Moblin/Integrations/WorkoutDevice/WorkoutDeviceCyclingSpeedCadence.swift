@@ -1,8 +1,8 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
-let workoutDeviceCyclingSpeedCadenceServiceId = CBUUID(string: "1816")
-let workoutDeviceCyclingSpeedCadenceMeasurementCharacteristicId = CBUUID(string: "2A5B")
+nonisolated(unsafe) let workoutDeviceCyclingSpeedCadenceServiceId = CBUUID(string: "1816")
+nonisolated(unsafe) let workoutDeviceCyclingSpeedCadenceMeasurementCharacteristicId = CBUUID(string: "2A5B")
 
 private let measurementWheelRevolutionDataFlagIndex = 0
 private let measurementCrankRevolutionDataFlagIndex = 1

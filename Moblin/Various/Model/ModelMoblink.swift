@@ -178,7 +178,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency MoblinkStreamerDelegate {
+extension Model: MoblinkStreamerDelegate {
     func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         let connectionPriorities = stream.srt.connectionPriorities
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
@@ -196,7 +196,7 @@ extension Model: @preconcurrency MoblinkStreamerDelegate {
     }
 }
 
-extension Model: @preconcurrency MoblinkRelayDelegate {
+extension Model: MoblinkRelayDelegate {
     func moblinkRelayNewState(state: MoblinkRelayState) {
         moblink.relayState = state
     }
@@ -216,7 +216,7 @@ extension Model: @preconcurrency MoblinkRelayDelegate {
     }
 }
 
-extension Model: @preconcurrency MoblinkScannerDelegate {
+extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblink.scannerDiscoveredStreamers = streamers
         if !database.moblink.relay.manual {

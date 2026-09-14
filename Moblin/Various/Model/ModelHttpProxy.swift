@@ -42,8 +42,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency HttpProxyServerDelegate {
-    func httpProxyServerPortReady(port: NWEndpoint.Port) {
+extension Model: HttpProxyServerDelegate {
+    nonisolated func httpProxyServerPortReady(port: NWEndpoint.Port) {
         DispatchQueue.main.async {
             self.httpProxyPort = port
             self.proxyServerPortUpdated()

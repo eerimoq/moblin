@@ -1,6 +1,7 @@
 import Foundation
 import Network
 
+@MainActor
 protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebConnected()
     func remoteControlWebDisconnected()
@@ -91,7 +92,8 @@ private let staticFiles: [StaticFile] = [
 private let recordingsPrefix = "/recordings/"
 private let thumbnailsPrefix = "/thumbnails/"
 
-class RemoteControlWeb: @unchecked Sendable {
+@MainActor
+class RemoteControlWeb {
     private var server: HttpServer?
     private var started: Bool = false
     private var websocketServer: NWListener?
@@ -184,8 +186,16 @@ class RemoteControlWeb: @unchecked Sendable {
         options.autoReplyPing = true
         parameters.defaultProtocolStack.applicationProtocols.append(options)
         websocketServer = try? NWListener(using: parameters, on: .init(integer: Int(websocketPort)))
-        websocketServer?.stateUpdateHandler = handleWebsocketStateUpdate
-        websocketServer?.newConnectionHandler = handleNewWebsocketConnection
+        websocketServer?.stateUpdateHandler = { newState in
+            MainActor.assumeIsolated {
+                self.handleWebsocketStateUpdate(newState)
+            }
+        }
+        websocketServer?.newConnectionHandler = { connection in
+            MainActor.assumeIsolated {
+                self.handleNewWebsocketConnection(connection)
+            }
+        }
         websocketServer?.start(queue: .main)
     }
 
@@ -304,21 +314,23 @@ class RemoteControlWeb: @unchecked Sendable {
 
     private func receiveWebsocketPacket(connection: NWConnection) {
         connection.receiveMessage { data, context, _, _ in
-            switch context?.webSocketOperation() {
-            case .text:
-                if let data, !data.isEmpty {
-                    self.handleWebsocketMessage(connection: connection, packet: data)
+            MainActor.assumeIsolated {
+                switch context?.webSocketOperation() {
+                case .text:
+                    if let data, !data.isEmpty {
+                        self.handleWebsocketMessage(connection: connection, packet: data)
+                        self.receiveWebsocketPacket(connection: connection)
+                    } else {
+                        self.handleDisconnected(connection: connection)
+                    }
+                case .ping:
+                    connection.sendWebSocket(data: data, opcode: .pong)
                     self.receiveWebsocketPacket(connection: connection)
-                } else {
+                case .pong:
+                    self.receiveWebsocketPacket(connection: connection)
+                default:
                     self.handleDisconnected(connection: connection)
                 }
-            case .ping:
-                connection.sendWebSocket(data: data, opcode: .pong)
-                self.receiveWebsocketPacket(connection: connection)
-            case .pong:
-                self.receiveWebsocketPacket(connection: connection)
-            default:
-                self.handleDisconnected(connection: connection)
             }
         }
     }

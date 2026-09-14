@@ -131,6 +131,7 @@ extension Model {
         let stream = SettingsStream(name: createStreamWizard.name.trim())
         stream.backgroundStreaming = createStreamWizard.backgroundStreaming
         stream.autoGoLive = createStreamWizard.autoGoLive
+        stream.goLiveNotificationMoblinWebsite = createStreamWizard.goLiveNotificationMoblinWebsite
         if createStreamWizard.platform != .custom {
             if createStreamWizard.networkSetup != .direct {
                 if createStreamWizard.obsRemoteControlEnabled {
@@ -226,6 +227,7 @@ extension Model {
         createStreamWizard.name = ""
         createStreamWizard.backgroundStreaming = false
         createStreamWizard.autoGoLive = false
+        createStreamWizard.goLiveNotificationMoblinWebsite = false
         createStreamWizard.twitchChannelName = ""
         createStreamWizard.twitchChannelId = ""
         createStreamWizard.twitchAccessToken = ""

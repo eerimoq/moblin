@@ -1,4 +1,4 @@
-@preconcurrency import AVKit
+import AVKit
 import CoreMotion
 
 extension AVCaptureDevice {
@@ -119,7 +119,7 @@ private func getBestBackCameraDevice() -> AVCaptureDevice? {
     return device
 }
 
-let bestBackCameraDevice = getBestBackCameraDevice()
+nonisolated(unsafe) let bestBackCameraDevice = getBestBackCameraDevice()
 
 private func getBestFrontCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front)
@@ -129,7 +129,7 @@ private func getBestFrontCameraDevice() -> AVCaptureDevice? {
     return device
 }
 
-let bestFrontCameraDevice = getBestFrontCameraDevice()
+nonisolated(unsafe) let bestFrontCameraDevice = getBestFrontCameraDevice()
 
 private func getBestBackCameraId() -> CameraId {
     bestBackCameraDevice?.uniqueID ?? ""

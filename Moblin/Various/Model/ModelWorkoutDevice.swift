@@ -65,8 +65,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency WorkoutDeviceDelegate {
-    func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState) {
+extension Model: WorkoutDeviceDelegate {
+    nonisolated func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
@@ -80,7 +80,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int) {
+    nonisolated func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
@@ -90,7 +90,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
+    nonisolated func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
             self.cyclingPower = power
             self.addWorkoutCyclingPower(power)
@@ -101,7 +101,7 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
+    nonisolated func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
         DispatchQueue.main.async {
             if let cadence {
                 self.cyclingCadence = cadence
@@ -114,7 +114,10 @@ extension Model: @preconcurrency WorkoutDeviceDelegate {
         }
     }
 
-    func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics) {
+    nonisolated func workoutDeviceRunningMetrics(
+        _ device: WorkoutDevice,
+        metrics: WorkoutDeviceRunningMetrics
+    ) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return

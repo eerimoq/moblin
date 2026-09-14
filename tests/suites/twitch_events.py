@@ -270,17 +270,44 @@ class TwitchEventsOutgoingRaidCancelled(TwitchEventsTestCase):
         )
 
 
-class TwitchEventsFirstMessage(TwitchEventsTestCase):
-    """Send first time chatter messages."""
+class TwitchEventsChatFirstMessage(TwitchEventsTestCase):
+    """Send first time chatter message."""
 
     def run(self):
         manual_validation(LOGGER, "A first message chat highlight is shown for the first two messages.")
         highlight = chat_message.first_message_highlight()
         self.send_chat(
-            {"display_name": "Alice", "text": "Hello everyone!", "highlight": highlight},
-            {"display_name": "Bob", "text": "First time here", "highlight": highlight},
-            {"display_name": "Alice", "text": "Back again"},
+            {
+                "display_name": "Alice",
+                "text": "Hello everyone!",
+                "highlight": highlight,
+                "is_moderator": False,
+            },
+            {"display_name": "Bob", "text": "First time here", "highlight": highlight, "is_moderator": False},
         )
+
+
+class TwitchEventsChatAnnouncement(TwitchEventsTestCase):
+    """Send announcement chat message."""
+
+    def run(self):
+        manual_validation(LOGGER, "A moderator shield and an announcement highlight is shown.")
+        self.send_chat(
+            {
+                "display_name": "Carol",
+                "text": "Stream starts in five minutes",
+                "is_moderator": True,
+                "highlight": chat_message.announcement_highlight(),
+            }
+        )
+
+
+class TwitchEventsChatModerator(TwitchEventsTestCase):
+    """Send moderator chat message."""
+
+    def run(self):
+        manual_validation(LOGGER, "A moderator shield and an announcement highlight is shown.")
+        self.send_chat({"display_name": "Alice", "text": "Behave in chat please", "is_moderator": True})
 
 
 class TwitchEventsGigantifiedEmote(TwitchEventsTestCase):
@@ -339,7 +366,9 @@ def tests(moblin: Moblin):
         TwitchEventsAdBreak(moblin),
         TwitchEventsOutgoingRaid(moblin),
         TwitchEventsOutgoingRaidCancelled(moblin),
-        TwitchEventsFirstMessage(moblin),
+        TwitchEventsChatFirstMessage(moblin),
+        TwitchEventsChatAnnouncement(moblin),
+        TwitchEventsChatModerator(moblin),
         TwitchEventsGigantifiedEmote(moblin),
         TwitchEventsBigGif(moblin),
     ]

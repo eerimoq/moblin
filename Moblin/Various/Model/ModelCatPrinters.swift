@@ -67,7 +67,7 @@ extension Model {
     }
 
     func printEventCatPrinters(event: CatPrinterEvent, username: String, message: String) {
-        Task { @MainActor in
+        Task {
             var image: CIImage?
             for catPrinter in catPrinters.values {
                 guard let settings = getCatPrinterSettings(catPrinter: catPrinter) else {
@@ -245,8 +245,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency CatPrinterDelegate {
-    func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
+extension Model: CatPrinterDelegate {
+    nonisolated func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
         DispatchQueue.main.async {
             guard let device = self.getCatPrinterSettings(catPrinter: catPrinter) else {
                 return

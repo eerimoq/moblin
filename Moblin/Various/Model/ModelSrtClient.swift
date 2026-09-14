@@ -66,28 +66,28 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency SrtClientDelegate {
-    func srtClientConnected(cameraId: UUID) {
+extension Model: SrtClientDelegate {
+    nonisolated func srtClientConnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.srtClientConnectedInternal(cameraId: cameraId)
         }
     }
 
-    func srtClientDisconnected(cameraId: UUID) {
+    nonisolated func srtClientDisconnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.srtClientDisconnectedInternal(cameraId: cameraId)
         }
     }
 
-    func srtClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtClientOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtClientOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtClientSetTargetLatencies(
+    nonisolated func srtClientSetTargetLatencies(
         cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double

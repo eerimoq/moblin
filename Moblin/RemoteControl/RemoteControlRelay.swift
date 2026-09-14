@@ -13,6 +13,7 @@ private struct MessageConnect: Decodable {
     let data: MessageConnectData
 }
 
+@MainActor
 private class Connection {
     private let baseUrl: String
     private let bridgeId: String
@@ -71,6 +72,7 @@ extension Connection: WebSocketClientDelegate {
     }
 }
 
+@MainActor
 class RemoteControlRelay {
     private let baseUrl: String
     private let bridgeId: String

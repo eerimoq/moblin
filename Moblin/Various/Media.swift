@@ -30,7 +30,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnMobcamDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
-                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                            completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -46,8 +46,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnFps(fps: Int)
     func mediaMoblinkStreamerDestinationAddress(address: String, port: UInt16)
     func mediaMoblinkStreamerRestartTunnel(relayId: UUID)
-    func mediaSetZoomX(x: Float)
-    func mediaSetExposureBias(bias: Float)
+    @MainActor func mediaSetZoomX(x: Float)
+    @MainActor func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(auto: Bool)
     func mediaError(error: any Error)
 }
@@ -1240,10 +1240,8 @@ extension Media: SrtlaDelegate {
     }
 
     func srtlaError(message: String) {
-        DispatchQueue.main.async {
-            logger.info("stream: SRT error: \(message)")
-            self.delegate.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
-        }
+        logger.info("stream: SRT error: \(message)")
+        delegate.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
     }
 
     func srtlaReceivedPacket(packet: Data) {
@@ -1251,15 +1249,11 @@ extension Media: SrtlaDelegate {
     }
 
     func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
-        }
+        delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
     }
 
     func moblinkStreamerRestartTunnel(relayId: UUID) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerRestartTunnel(relayId: relayId)
-        }
+        delegate.mediaMoblinkStreamerRestartTunnel(relayId: relayId)
     }
 }
 
@@ -1280,9 +1274,7 @@ extension Media: RistStreamDelegate {
     }
 
     func ristStreamRelayDestinationAddress(address: String, port: UInt16) {
-        DispatchQueue.main.async {
-            self.delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
-        }
+        delegate.mediaMoblinkStreamerDestinationAddress(address: address, port: port)
     }
 }
 
@@ -1354,17 +1346,23 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
 
     func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
-        processor?.startEncoding(delegate)
+        nonisolated(unsafe) let delegate = delegate
+        processorPipelineQueue.async {
+            self.processor?.startEncoding(delegate)
+        }
     }
 
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
-        processor?.stopEncoding(delegate)
+        nonisolated(unsafe) let delegate = delegate
+        processorPipelineQueue.async {
+            self.processor?.stopEncoding(delegate)
+        }
     }
 }
 
@@ -1379,14 +1377,14 @@ extension Media: MobcamStreamDelegate {
 
     func mobcamStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         nonisolated(unsafe) let delegate = delegate
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor?.startEncoding(delegate)
         }
     }
 
     func mobcamStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         nonisolated(unsafe) let delegate = delegate
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor?.stopEncoding(delegate)
         }
     }
@@ -1448,7 +1446,7 @@ extension PreviewStreamHandler: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         media.delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
