@@ -671,8 +671,8 @@ final class Model: NSObject, ObservableObject {
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
-    var latestCyclingPower: CyclingSource.Latest?
-    var latestCyclingCadence: CyclingSource.Latest?
+    var latestCyclingPower: CyclingSampleInfo?
+    var latestCyclingCadence: CyclingSampleInfo?
     var cyclingSpeed = 0.0
     var latestSubscriber = ""
     var latestFollower = ""
