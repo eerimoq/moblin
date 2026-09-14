@@ -216,7 +216,7 @@ extension Model: @preconcurrency MoblinkRelayDelegate {
     }
 }
 
-extension Model: @preconcurrency MoblinkScannerDelegate {
+extension Model: MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblink.scannerDiscoveredStreamers = streamers
         if !database.moblink.relay.manual {
