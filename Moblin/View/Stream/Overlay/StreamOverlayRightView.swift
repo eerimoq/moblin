@@ -671,7 +671,7 @@ private struct StatusesView: View {
                       systemMonitor: model.systemMonitor,
                       textPlacement: textPlacement)
         if model.isShowingStatusAudioLevel(), textPlacement == .hide {
-            CompactAudioBarView(level: model.audio.level)
+            CompactAudioBarView(level: model.audio.level, muted: model.isMuteOn)
         }
     }
 }

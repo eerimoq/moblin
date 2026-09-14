@@ -3,9 +3,10 @@ import SwiftUI
 
 private struct AudioLevelView: View {
     let level: Float
+    let muted: Bool
 
     var body: some View {
-        if level.isNaN {
+        if muted {
             CompactAudioLevelIconView(
                 name: "microphone.slash",
                 foregroundColor: .white,
@@ -59,7 +60,7 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusAudioLevel() {
-            AudioLevelView(level: preview.audioLevel)
+            AudioLevelView(level: preview.audioLevel, muted: model.control.isMuted)
         }
     }
 }
@@ -81,7 +82,7 @@ class Preview: ObservableObject {
     @Published var scenes: [WatchProtocolScene] = []
     @Published var sceneId: UUID = .init()
     @Published var sceneIdPicker: UUID = .init()
-    @Published var audioLevel: Float = defaultAudioLevel
+    @Published var audioLevel: Float = -Float.infinity
 }
 
 struct PreviewView: View {
