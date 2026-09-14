@@ -62,24 +62,24 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency RtspClientDelegate {
-    func rtspClientErrorToast(title: String) {
+extension Model: RtspClientDelegate {
+    nonisolated func rtspClientErrorToast(title: String) {
         makeErrorToastMain(title: title)
     }
 
-    func rtspClientConnected(cameraId: UUID) {
+    nonisolated func rtspClientConnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.rtspClientConnectedInternal(cameraId: cameraId)
         }
     }
 
-    func rtspClientDisconnected(cameraId: UUID) {
+    nonisolated func rtspClientDisconnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.rtspClientDisconnectedInternal(cameraId: cameraId)
         }
     }
 
-    func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 }

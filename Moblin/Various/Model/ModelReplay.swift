@@ -194,8 +194,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency ReplayDelegate {
-    func replayOutputFrame(
+extension Model: ReplayDelegate {
+    nonisolated func replayOutputFrame(
         image: UIImage,
         offset _: Double,
         video: ReplayBufferFile,
@@ -209,20 +209,20 @@ extension Model: @preconcurrency ReplayDelegate {
     }
 }
 
-extension Model: @preconcurrency ReplayEffectDelegate {
-    func replayEffectStatus(timeLeft: Int) {
+extension Model: ReplayEffectDelegate {
+    nonisolated func replayEffectStatus(timeLeft: Int) {
         DispatchQueue.main.async {
             self.replay.timeLeft = timeLeft
         }
     }
 
-    func replayEffectCompleted() {
+    nonisolated func replayEffectCompleted() {
         DispatchQueue.main.async {
             self.replay.isPlaying = false
         }
     }
 
-    func replayEffectError(message: String) {
+    nonisolated func replayEffectError(message: String) {
         makeErrorToastMain(title: message)
     }
 }

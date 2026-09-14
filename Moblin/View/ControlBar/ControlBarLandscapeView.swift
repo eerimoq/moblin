@@ -219,16 +219,19 @@ private struct MainPageView: View {
 }
 
 @available(iOS 17, *)
-@MainActor
-private struct ControlBarPageScrollTargetBehavior: @preconcurrency ScrollTargetBehavior {
+private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
     let model: Model
 
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
-        target.rect.origin.x = controlBarScrollTargetBehavior(
-            model: model,
-            containerWidth: context.containerSize.width,
-            targetPosition: target.rect.minX
-        )
+        let containerWidth = context.containerSize.width
+        let targetPosition = target.rect.minX
+        target.rect.origin.x = MainActor.assumeIsolated {
+            controlBarScrollTargetBehavior(
+                model: model,
+                containerWidth: containerWidth,
+                targetPosition: targetPosition
+            )
+        }
     }
 }
 
