@@ -1246,7 +1246,7 @@ class ObsWebSocket {
     }
 }
 
-extension ObsWebSocket: @preconcurrency WebSocketClientDelegate {
+extension ObsWebSocket: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {

@@ -1038,7 +1038,7 @@ final class TwitchEventSub: NSObject {
     }
 }
 
-extension TwitchEventSub: @preconcurrency WebSocketClientDelegate {
+extension TwitchEventSub: WebSocketClientDelegate {
     func webSocketClientConnected(_: WebSocketClient) {}
 
     func webSocketClientDisconnected(_: WebSocketClient) {
