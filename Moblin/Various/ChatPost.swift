@@ -162,7 +162,7 @@ struct ChatHighlight {
         ChatHighlight(
             kind: .moderator,
             barColor: .green,
-            image: "shield.check",
+            image: "",
             titleSegments: nil
         )
     }

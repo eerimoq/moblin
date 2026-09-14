@@ -1,10 +1,18 @@
+import logging
+import subprocess
+from array import array
 from pathlib import Path
 
+from systest_moblin.ffmpeg import FFMPEG_COMMAND
+from systest_moblin.ffmpeg import FfmpegCommand
 from systest_moblin.ffmpeg import FfmpegRtspTestStream
 from systest_moblin.ffmpeg import FfmpegTestStream
 from systest_moblin.ffmpeg import FfmpegVideoCodec
 from systest_moblin.ffmpeg import FfmpegWhipTestStream
 from systest_moblin.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import measure_audio_band_levels
+from systest_moblin.ffmpeg import measure_max_volume
+from systest_moblin.ffmpeg import video_encoder_args
 
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
@@ -30,13 +38,58 @@ from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
 
+LOGGER = logging.getLogger(__name__)
 STREAM_ID = uuid()
 STREAM_2_ID = uuid()
 SECOND_INGEST_WIDGET_ID = uuid()
+LOUD_DURATION = 7
+LOUD_LEVEL_DB = -12
+LEVEL_WINDOW = 0.25
 FFMPEG_VIDEO_CODECS = {
     VideoCodec.H264: FfmpegVideoCodec.H264,
     VideoCodec.H265: FfmpegVideoCodec.HEVC,
 }
+
+
+class FfmpegLoudThenSilentTestStream(FfmpegCommand):
+    def __init__(self, url: str) -> None:
+        super().__init__()
+        self._url = url
+
+    def args(self) -> list[str]:
+        return [
+            "-re",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc2=size=1920x1080:rate=30",
+            "-re",
+            "-f",
+            "lavfi",
+            "-i",
+            f"aevalsrc=exprs='if(lt(t,{LOUD_DURATION}),sin(2*PI*1000*t),0)':s=48000",
+            *video_encoder_args(8_000_000, FfmpegVideoCodec.H264, True),
+            "-pix_fmt",
+            "yuv420p",
+            "-g",
+            "60",
+            "-keyint_min",
+            "60",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "128k",
+            "-ar",
+            "48000",
+            "-ac",
+            "1",
+            "-vf",
+            "qrencode=text=n %{frame_num} pts %{pts}:q=400:x=150,"
+            "drawtext=fontsize=60:text=%{frame_num}:x=10:y=100",
+            "-f",
+            TransportFormat.FLV,
+            self._url,
+        ]
 
 
 class IngestTestCase(TestCase):
@@ -86,6 +139,82 @@ class IngestRtmpServer(IngestTestCase):
         with FfmpegTestStream(url=self.moblin.ingest_rtmp_url(), files_dir=FILES_DIR):
             recording = self.record_ingest()
         self.assert_recording(recording, FILES_DIR, has_audio_time_codes=True)
+
+
+class IngestRtmpServerLoudThenSilent(IngestRtmpServer):
+    """Stream to an RTMP server ingest with maximum audio volume for a few seconds and then
+    silence for a few seconds. Validate that the audio level reported by the remote control is
+    the peak of the loud audio and then the silence level, and that the recording is loud and
+    then that all audio samples are exactly zero.
+
+    """
+
+    def run(self):
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        with FfmpegLoudThenSilentTestStream(url=self.moblin.ingest_rtmp_url()):
+            self.wait_for_ingest_stream_started()
+            with recorder:
+                self._assert_loud_audio_level()
+                self._assert_silent_audio_level()
+                self.moblin.wait_for_ingests(
+                    bitrate=Range(7_000_000, 9_000_000),
+                    total_bytes=4_000_000,
+                    number_of_ingests=1,
+                )
+        self._assert_loud_then_silent(recorder.recording)
+
+    def _assert_loud_audio_level(self):
+        self.moblin.wait_for_audio_level(lambda level: level > -30, "loud audio level")
+        level = self._get_audio_level()
+        self.assert_greater(level, -3, "Loud audio level.")
+        self.assert_less(level, 1, "Loud audio level.")
+
+    def _assert_silent_audio_level(self):
+        self.moblin.wait_for_audio_level(lambda level: level < -30, "silent audio level")
+        self.assert_equal(self._get_audio_level(), -160, "Silent audio level.")
+
+    def _get_audio_level(self) -> float:
+        level = self.moblin.get_audio_level()
+        message = self.moblin.get_audio_level_message()
+        LOGGER.debug("Remote control audio level %.1f dB shown as '%s'.", level, message)
+        self.assert_equal(message, f"{int(level)} dB, 1 ch")
+        return level
+
+    def _assert_loud_then_silent(self, recording: Path):
+        samples = _read_audio_samples(recording)
+        silence_start = _find_silence_start(samples)
+        duration = len(samples) / 48000
+        LOGGER.debug("All audio samples are zero from %.3f to %.3f s.", silence_start, duration)
+        self.assert_greater(duration - silence_start, 2, "The silent part is too short.")
+        self.assert_recording(recording, FILES_DIR, audio_bitrate_tolerance=80_000)
+        max_volume_db = measure_max_volume(recording)
+        LOGGER.debug("Max volume: %.1f dB", max_volume_db)
+        self.assert_greater(max_volume_db, -1, "The loud part is attenuated.")
+        loud = [
+            level
+            for level in measure_audio_band_levels(recording, [], LEVEL_WINDOW)
+            if level.time + LEVEL_WINDOW <= silence_start
+        ]
+        for level in loud:
+            LOGGER.debug("Audio level at %.2f s: %.1f dB", level.time, level.level)
+            self.assert_greater(level.level, LOUD_LEVEL_DB, f"Audio level at {level.time:.2f} s.")
+        self.assert_greater(len(loud) * LEVEL_WINDOW, 2, "The loud part is too short.")
+
+
+def _read_audio_samples(recording: Path) -> array:
+    output = subprocess.run(
+        [*FFMPEG_COMMAND, "-loglevel", "error", "-i", str(recording), "-vn", "-f", "f32le", "-"],
+        check=True,
+        capture_output=True,
+    ).stdout
+    samples = array("f")
+    samples.frombytes(output)
+    return samples
+
+
+def _find_silence_start(samples: array) -> float:
+    last_non_zero = next((index for index in range(len(samples) - 1, -1, -1) if samples[index] != 0), -1)
+    return (last_non_zero + 1) / 48000
 
 
 class IngestSrtServer(IngestTestCase):
@@ -569,6 +698,7 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
 def tests(moblin: Moblin):
     return [
         IngestRtmpServer(moblin),
+        IngestRtmpServerLoudThenSilent(moblin),
         IngestSrtServer(moblin),
         IngestSrtClient(moblin),
         IngestRtspClient(moblin, VideoCodec.H264),

@@ -122,7 +122,9 @@ class RtmpStream: @unchecked Sendable {
     func closeInternal() {
         setState(state: .initialized)
         stopConnectTimer()
-        processor.stopEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.stopEncoding(self)
+        }
     }
 
     func onInternal(data: AsObject) {
@@ -156,7 +158,9 @@ class RtmpStream: @unchecked Sendable {
             sendFCUnpublish()
             sendDeleteStream()
             sendCloseStream()
-            processor.stopEncoding(self)
+            processorPipelineQueue.async {
+                self.processor.stopEncoding(self)
+            }
         }
         switch state {
         case .open:
@@ -175,7 +179,9 @@ class RtmpStream: @unchecked Sendable {
 
     private func disconnectInternal() {
         setState(state: .initialized)
-        processor.stopEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.stopEncoding(self)
+        }
         stopConnectTimer()
         connection.disconnect()
     }
@@ -267,7 +273,9 @@ class RtmpStream: @unchecked Sendable {
              arguments: .string("onMetaData"), .object(createOnMetaData()))
         stopConnectTimer()
         delegate?.rtmpStreamConnected(self)
-        processor.startEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.startEncoding(self)
+        }
     }
 
     private func sendCreateStream() {
