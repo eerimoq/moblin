@@ -476,7 +476,6 @@ extension Model {
     }
 
     private func listMicsAsync(onCompleted: @MainActor @escaping ([SettingsMicsMic]) -> Void) {
-        nonisolated(unsafe)
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
         listRistMics(&mics)
@@ -485,10 +484,10 @@ extension Model {
         listRtmpMics(&mics)
         listWhipMics(&mics)
         listWhepMics(&mics)
-        processorControlQueue.async {
+        processorControlQueue.async { [mics] in
+            var mics = mics
             listAudioSessionMics(&mics)
-            let mics = mics
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [mics] in
                 onCompleted(mics)
             }
         }
