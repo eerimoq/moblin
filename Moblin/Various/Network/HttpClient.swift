@@ -230,6 +230,7 @@ func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor
     }
 }
 
+@MainActor
 private func httpCallUrlSession(request: URLRequest,
                                 body: Data?,
                                 completion: @escaping @MainActor (Data?) -> Void)
@@ -249,14 +250,10 @@ private func httpCallUrlSession(request: URLRequest,
     } else {
         httpRequest(request: request) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
+                completion(nil)
                 return
             }
-            DispatchQueue.main.async {
-                completion(data)
-            }
+            completion(data)
         }
     }
 }
