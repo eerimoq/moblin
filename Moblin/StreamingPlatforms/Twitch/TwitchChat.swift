@@ -283,7 +283,8 @@ struct TwitchChatMessage {
     }
 }
 
-private class Badges: @unchecked Sendable {
+@MainActor
+private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: URL] = [:]
@@ -312,18 +313,13 @@ private class Badges: @unchecked Sendable {
             guard let data else {
                 return
             }
-            DispatchQueue.main.async {
+            self.addBadges(badges: data)
+            TwitchApi(self.accessToken).getChannelChatBadges(broadcasterId: self.channelId) { data in
+                guard let data else {
+                    return
+                }
                 self.addBadges(badges: data)
-                TwitchApi(self.accessToken)
-                    .getChannelChatBadges(broadcasterId: self.channelId) { data in
-                        guard let data else {
-                            return
-                        }
-                        DispatchQueue.main.async {
-                            self.addBadges(badges: data)
-                            self.stopTryFetchAgainTimer()
-                        }
-                    }
+                self.stopTryFetchAgainTimer()
             }
         }
     }
@@ -349,7 +345,8 @@ private class Badges: @unchecked Sendable {
     }
 }
 
-class Cheermotes: @unchecked Sendable {
+@MainActor
+class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
@@ -374,10 +371,8 @@ class Cheermotes: @unchecked Sendable {
             guard let datas else {
                 return
             }
-            DispatchQueue.main.async {
-                self.addCheermotes(datas: datas)
-                self.stopTryFetchAgainTimer()
-            }
+            self.addCheermotes(datas: datas)
+            self.stopTryFetchAgainTimer()
         }
     }
 
@@ -419,6 +414,7 @@ class Cheermotes: @unchecked Sendable {
     }
 }
 
+@MainActor
 protocol TwitchChatDelegate: AnyObject {
     func twitchChatMakeErrorToast(title: String, subTitle: String?)
     func twitchChatAppendMessage(
@@ -440,7 +436,8 @@ protocol TwitchChatDelegate: AnyObject {
     func twitchChatDeleteUser(userId: String)
 }
 
-final class TwitchChat: @unchecked Sendable {
+@MainActor
+final class TwitchChat {
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: Badges
@@ -657,15 +654,11 @@ final class TwitchChat: @unchecked Sendable {
     }
 
     private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: subTitle)
-        }
+        delegate?.twitchChatMakeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: nil)
-        }
+        delegate?.twitchChatMakeErrorToast(title: title, subTitle: nil)
     }
 
     private func createSegments(text: String,
@@ -709,8 +702,8 @@ final class TwitchChat: @unchecked Sendable {
     }
 }
 
-extension TwitchChat: WebSocketClientDelegate {
-    func webSocketClientConnected(_ webSocket: WebSocketClient) {
+extension TwitchChat: @preconcurrency WebSocketClientDelegate {
+    func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("twitch: chat: Connected")
         webSocket.send(string: "CAP REQ :twitch.tv/membership")
         webSocket.send(string: "CAP REQ :twitch.tv/tags")
