@@ -1,13 +1,16 @@
 import Foundation
 
-enum CyclingSource: Int {
-    typealias Latest = (source: CyclingSource, time: ContinuousClock.Instant)
+struct CyclingSampleInfo {
+    let source: CyclingSource
+    let time: ContinuousClock.Instant
+}
 
+enum CyclingSource: Int {
     case watch
     case cyclingPower
     case cyclingSpeedCadence
 
-    func canReplace(latest: Latest?) -> Bool {
+    func canReplace(latest: CyclingSampleInfo?) -> Bool {
         guard let latest else {
             return true
         }
@@ -78,7 +81,7 @@ extension Model {
             return false
         }
         cyclingPower = power
-        latestCyclingPower = (source, .now)
+        latestCyclingPower = CyclingSampleInfo(source: source, time: .now)
         return true
     }
 
@@ -88,7 +91,7 @@ extension Model {
             return false
         }
         cyclingCadence = cadence
-        latestCyclingCadence = (source, .now)
+        latestCyclingCadence = CyclingSampleInfo(source: source, time: .now)
         return true
     }
 }
