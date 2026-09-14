@@ -131,7 +131,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency GoProDeviceDelegate {
+extension Model: GoProDeviceDelegate {
     func goProDeviceStreamingState(_ goProDevice: GoProDevice, state: GoProDeviceState) {
         guard let device = getGoProDeviceSettings(goProDevice) else {
             return
