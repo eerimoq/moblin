@@ -5,7 +5,7 @@ struct SrtClientSettingsView: View {
     @ObservedObject var srtClient: SettingsSrtClient
 
     private func status() -> String {
-        String(srtClient.streams.filter(\.enabled).count)
+        String(srtClient.streams.count(where: \.enabled))
     }
 
     private func deleteStream(at indexes: IndexSet) {

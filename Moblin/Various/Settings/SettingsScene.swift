@@ -3271,7 +3271,7 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
     }
 
     func holesPlayed(numHoles: Int) -> Int {
-        scores.prefix(numHoles).filter { $0 != -1 }.count
+        scores.prefix(numHoles).count(where: { $0 != -1 })
     }
 }
 

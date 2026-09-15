@@ -337,7 +337,7 @@ struct PollOption: Identifiable {
 }
 
 func canCreatePoll(title: String, options: [PollOption]) -> Bool {
-    !title.trim().isEmpty && options.filter { !$0.text.trim().isEmpty }.count >= 2
+    !title.trim().isEmpty && options.count(where: { !$0.text.trim().isEmpty }) >= 2
 }
 
 func pollOptionTitles(options: [PollOption]) -> [String] {

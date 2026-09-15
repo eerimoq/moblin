@@ -1671,7 +1671,7 @@ extension Model {
         _ textEffect: TextEffect,
         _ parts: [TextFormatPart]
     ) {
-        let length = parts.filter { $0 == .timer }.count
+        let length = parts.count(where: { $0 == .timer })
         text.timers.truncate(length: length, create: { .init() })
         textEffect.setTimersEndTime(endTimes: text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
@@ -1683,7 +1683,7 @@ extension Model {
         _ textEffect: TextEffect,
         _ parts: [TextFormatPart]
     ) {
-        let length = parts.filter { $0 == .stopwatch }.count
+        let length = parts.count(where: { $0 == .stopwatch })
         text.stopwatches.truncate(length: length, create: { .init() })
         textEffect.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
     }
@@ -1693,7 +1693,7 @@ extension Model {
         _ textEffect: TextEffect,
         _ parts: [TextFormatPart]
     ) {
-        let length = parts.filter { $0 == .checkbox }.count
+        let length = parts.count(where: { $0 == .checkbox })
         text.checkboxes.truncate(length: length, create: { .init() })
         textEffect.setCheckboxes(checkboxes: text.checkboxes.map(\.checked))
     }
@@ -1703,7 +1703,7 @@ extension Model {
         _ textEffect: TextEffect,
         _ parts: [TextFormatPart]
     ) {
-        let length = parts.filter { $0 == .rating }.count
+        let length = parts.count(where: { $0 == .rating })
         text.ratings.truncate(length: length, create: { .init() })
         textEffect.setRatings(ratings: text.ratings.map(\.rating))
     }
@@ -1713,7 +1713,7 @@ extension Model {
         _ textEffect: TextEffect,
         _ parts: [TextFormatPart]
     ) {
-        let length = parts.filter { $0 == .lapTimes }.count
+        let length = parts.count(where: { $0 == .lapTimes })
         text.lapTimes.truncate(length: length, create: { .init() })
         textEffect.setLapTimes(lapTimes: text.lapTimes.map(\.lapTimes))
     }

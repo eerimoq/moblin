@@ -50,7 +50,7 @@ struct RtspClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = rtspClient.streams.filter(\.enabled).count
+            numberOfEnabledStreams = rtspClient.streams.count(where: \.enabled)
         }
     }
 }

@@ -53,7 +53,7 @@ struct WhepClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = whepClient.streams.filter(\.enabled).count
+            numberOfEnabledStreams = whepClient.streams.count(where: \.enabled)
         }
     }
 }

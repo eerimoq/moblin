@@ -229,7 +229,7 @@ extension Model {
     }
 
     private func numberOfGameControllers() -> Int {
-        gameControllers.filter { $0 != nil }.count
+        gameControllers.count(where: { $0 != nil })
     }
 
     private func updateGameControllers() {
