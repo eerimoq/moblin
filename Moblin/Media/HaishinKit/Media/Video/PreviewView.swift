@@ -13,13 +13,7 @@ class PreviewView: UIView {
 
     var videoGravity: AVLayerVideoGravity = .resizeAspect {
         didSet {
-            if Thread.isMainThread {
-                layer.videoGravity = videoGravity
-            } else {
-                DispatchQueue.main.sync {
-                    layer.videoGravity = videoGravity
-                }
-            }
+            layer.videoGravity = videoGravity
         }
     }
 
