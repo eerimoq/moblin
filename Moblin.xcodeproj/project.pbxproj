@@ -1108,6 +1108,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Moblin uses Apple Music to play music while you stream.";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can show your heart rate on stream.";
@@ -1120,6 +1121,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
@@ -1175,6 +1177,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Moblin uses Apple Music to play music while you stream.";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can show your heart rate on stream.";
@@ -1187,6 +1190,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;

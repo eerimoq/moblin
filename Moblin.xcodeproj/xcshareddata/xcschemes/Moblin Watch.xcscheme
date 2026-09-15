@@ -72,7 +72,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "03ECDF452B8E4E5E00BD920E"
             BuildableName = "Moblin.app"
-            BlueprintName = "MoblinWatch"
             ReferencedContainer = "container:Moblin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -89,7 +88,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "03ECDF452B8E4E5E00BD920E"
             BuildableName = "Moblin.app"
-            BlueprintName = "MoblinWatch"
             ReferencedContainer = "container:Moblin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
