@@ -14,12 +14,16 @@ private func fetchCurrentWiFiSsidCoreWlan() -> String? {
 }
 #endif
 
-func fetchCurrentWiFiSsid(onCompleted: @escaping @Sendable (String?) -> Void) {
+@MainActor
+func fetchCurrentWiFiSsid(onCompleted: @escaping @MainActor (String?) -> Void) {
     #if targetEnvironment(macCatalyst)
     onCompleted(fetchCurrentWiFiSsidCoreWlan())
     #else
     NEHotspotNetwork.fetchCurrent { network in
-        onCompleted(network?.ssid)
+        let ssid = network?.ssid
+        DispatchQueue.main.async {
+            onCompleted(ssid)
+        }
     }
     #endif
 }

@@ -1900,9 +1900,7 @@ final class Model: NSObject, ObservableObject {
 
     private func updateCurrentSsid() {
         fetchCurrentWiFiSsid { ssid in
-            DispatchQueue.main.async {
-                self.currentWiFiSsid = ssid
-            }
+            self.currentWiFiSsid = ssid
         }
     }
 

@@ -22,9 +22,7 @@ extension CurrentWiFiNetwork: @MainActor CLLocationManagerDelegate {
             locationDenied = true
         default:
             fetchCurrentWiFiSsid { ssid in
-                Task { @MainActor in
-                    self.ssid = ssid
-                }
+                self.ssid = ssid
             }
         }
     }
