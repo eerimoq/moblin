@@ -14,9 +14,7 @@ extension Model {
         guard let message = chatBotMessages.popFirst() else {
             return
         }
-        DispatchQueue.main.async {
-            self.handleChatBotMessage(message: message)
-        }
+        handleChatBotMessage(message: message)
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
