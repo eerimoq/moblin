@@ -350,6 +350,42 @@ class TwitchEventsBigGif(TwitchEventsTestCase):
         )
 
 
+class YouTubeEventsSuperSticker(TwitchEventsTestCase):
+    """Send a YouTube Super Sticker with an amount and no message text."""
+
+    def run(self):
+        manual_validation(
+            LOGGER,
+            "A YouTube Super Sticker shows in chat and activity feed; non-compact events show its amount, while compact events show the icon.",
+        )
+        self.send_chat(
+            {
+                "platform": "youTube",
+                "display_name": "Frank",
+                "text": "",
+                "highlight": chat_message.super_sticker_highlight("$5.00"),
+            }
+        )
+
+
+class YouTubeEventsSuperChat(TwitchEventsTestCase):
+    """Send a YouTube Super Chat with an amount and message text."""
+
+    def run(self):
+        manual_validation(
+            LOGGER,
+            "A YouTube Super Chat shows in chat and activity feed; non-compact events show its amount and message.",
+        )
+        self.send_chat(
+            {
+                "platform": "youTube",
+                "display_name": "Grace",
+                "text": "Thanks for the stream!",
+                "highlight": chat_message.super_chat_highlight("$10.00"),
+            }
+        )
+
+
 def tests(moblin: Moblin):
     return [
         TwitchEventsFollows(moblin),
@@ -371,4 +407,6 @@ def tests(moblin: Moblin):
         TwitchEventsChatModerator(moblin),
         TwitchEventsGigantifiedEmote(moblin),
         TwitchEventsBigGif(moblin),
+        YouTubeEventsSuperSticker(moblin),
+        YouTubeEventsSuperChat(moblin),
     ]
