@@ -48,12 +48,7 @@ class WhipServer: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        nonisolated(unsafe)
-        var result: BitrateStatsInstant?
-        bitrateStats.mutate {
-            result = $0.update()
-        }
-        return result!
+        bitrateStats.mutate { $0.update() }
     }
 
     func isStreamConnected(streamId: UUID) -> Bool {

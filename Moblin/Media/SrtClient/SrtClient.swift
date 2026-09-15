@@ -61,11 +61,7 @@ class SrtClient: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        nonisolated(unsafe) var stats: BitrateStatsInstant?
-        bitrateStats.mutate {
-            stats = $0.update()
-        }
-        return stats!
+        bitrateStats.mutate { $0.update() }
     }
 
     private func connectSoon(delay: Double) {
