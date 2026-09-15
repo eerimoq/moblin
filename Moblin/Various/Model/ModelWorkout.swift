@@ -25,7 +25,7 @@ private class Workout: NSObject {
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
-    private var latestSampleTimes: [HKQuantityTypeIdentifier: ContinuousClock.Instant] = [:]
+    private var latestSampleTimes: [HKQuantityType: ContinuousClock.Instant] = [:]
     private var workoutType: WatchProtocolWorkoutType?
 
     func isActive() -> Bool {
@@ -34,7 +34,6 @@ private class Workout: NSObject {
 
     func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
-        workoutType = type
         #if targetEnvironment(macCatalyst)
         return false
         #else
@@ -58,6 +57,7 @@ private class Workout: NSObject {
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
+        workoutType = type
         latestSampleTimes.removeAll()
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
@@ -151,7 +151,7 @@ private class Workout: NSObject {
     }
 
     func add(heartRate: Int) {
-        add(identifier: .heartRate,
+        add(type: HKQuantityType(.heartRate),
             unit: .count().unitDivided(by: .minute()),
             value: Double(heartRate))
     }
@@ -160,32 +160,29 @@ private class Workout: NSObject {
         guard workoutType == .cycling else {
             return
         }
-        add(identifier: .cyclingPower, unit: .watt(), value: Double(cyclingPower))
+        add(type: HKQuantityType(.cyclingPower), unit: .watt(), value: Double(cyclingPower))
     }
 
     func add(cyclingCadence: Int) {
         guard workoutType == .cycling else {
             return
         }
-        add(identifier: .cyclingCadence,
+        add(type: HKQuantityType(.cyclingCadence),
             unit: .count().unitDivided(by: .minute()),
             value: Double(cyclingCadence))
     }
 
-    private func add(identifier: HKQuantityTypeIdentifier, unit: HKUnit, value: Double) {
+    private func add(type: HKQuantityType, unit: HKUnit, value: Double) {
         guard let workoutBuilder, workoutSession?.state == .running else {
             return
         }
-        guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier) else {
-            return
-        }
         let now = ContinuousClock.now
-        if let latest = latestSampleTimes[identifier], latest.duration(to: now) < .seconds(1) {
+        if let latest = latestSampleTimes[type], latest.duration(to: now) < .seconds(1) {
             return
         }
-        latestSampleTimes[identifier] = now
+        latestSampleTimes[type] = now
         let date = Date.now
-        let sample = HKQuantitySample(type: quantityType,
+        let sample = HKQuantitySample(type: type,
                                       quantity: HKQuantity(unit: unit, doubleValue: value),
                                       start: date,
                                       end: date)
@@ -293,7 +290,7 @@ extension Model {
     }
 
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {
-        var typesToShare: Set<HKSampleType> = [
+        var typesToShare: Set = [
             HKQuantityType.workoutType(),
             HKQuantityType.quantityType(forIdentifier: .heartRate)!,
         ]
