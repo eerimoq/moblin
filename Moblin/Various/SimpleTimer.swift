@@ -12,7 +12,7 @@ class SimpleTimer {
         stop()
     }
 
-    func startSingleShot(timeout: Double, handler: DispatchSourceProtocol.DispatchSourceHandler?) {
+    func startSingleShot(timeout: Double, handler: @escaping @Sendable () -> Void) {
         stop()
         timer = DispatchSource.makeTimerSource(queue: queue)
         timer!.schedule(deadline: .now() + timeout)
@@ -23,7 +23,7 @@ class SimpleTimer {
     func startPeriodic(
         interval: Double,
         initial: Double? = nil,
-        handler: DispatchSourceProtocol.DispatchSourceHandler?
+        handler: @escaping @Sendable () -> Void
     ) {
         stop()
         timer = DispatchSource.makeTimerSource(queue: queue)

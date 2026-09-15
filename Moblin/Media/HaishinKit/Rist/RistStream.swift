@@ -11,7 +11,7 @@ private enum RistPeerState {
     case disconnected
 }
 
-private class RistRemotePeer: AdaptiveBitrateDelegate {
+private class RistRemotePeer: AdaptiveBitrateDelegate, @unchecked Sendable {
     let interfaceName: String
     let interfaceType: NWInterface.InterfaceType?
     let relayEndpoint: NWEndpoint?

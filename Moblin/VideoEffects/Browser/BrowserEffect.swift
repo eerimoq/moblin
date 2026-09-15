@@ -51,7 +51,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private let mode: SettingsWidgetBrowserMode
     private var baseFps: Double
     private var fps: Double
-    private let snapshotTimer = SimpleTimer(queue: .main)
+    private let snapshotTimer = MainTimer()
     var startLoadingTime = ContinuousClock.now
     private let scale: Double
     private var sceneWidget: SettingsSceneWidget?
@@ -114,7 +114,6 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         DispatchQueue.main.async {
             userContentController.removeAllScriptMessageHandlers()
         }
-        stopTakeSnapshots()
     }
 
     override func isEnabled() -> Bool {
@@ -151,6 +150,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         Int(100 * webView.estimatedProgress)
     }
 
+    @MainActor
     func stop() {
         stopTakeSnapshots()
     }
@@ -261,11 +261,13 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         resumeTakeSnapshots()
     }
 
+    @MainActor
     private func stopTakeSnapshots() {
         stopped = true
         snapshotTimer.stop()
     }
 
+    @MainActor
     private func suspendTakeSnapshots() {
         suspended = true
         snapshotTimer.stop()

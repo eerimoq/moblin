@@ -7,7 +7,7 @@ protocol BufferedAudioSampleBufferDelegate: AnyObject {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
 }
 
-class BufferedAudio {
+class BufferedAudio: @unchecked Sendable {
     private var cameraId: UUID
     private let name: String
     private weak let processor: Processor?
