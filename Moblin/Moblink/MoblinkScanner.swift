@@ -22,7 +22,8 @@ protocol MoblinkScannerDelegate: AnyObject {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer])
 }
 
-class MoblinkScanner: NSObject, @unchecked Sendable {
+@MainActor
+class MoblinkScanner: NSObject {
     private var browser: NetServiceBrowser?
     private var services: [DiscoveredSerivce] = []
     private weak var delegate: (any MoblinkScannerDelegate)?
@@ -58,13 +59,11 @@ class MoblinkScanner: NSObject, @unchecked Sendable {
             }
             streamers.append(.init(name: name, urls: service.urls))
         }
-        MainActor.assumeIsolated {
-            delegate?.moblinkScannerDiscoveredStreamers(streamers: streamers)
-        }
+        delegate?.moblinkScannerDiscoveredStreamers(streamers: streamers)
     }
 }
 
-extension MoblinkScanner: NetServiceBrowserDelegate {
+extension MoblinkScanner: @MainActor NetServiceBrowserDelegate {
     func netServiceBrowser(_: NetServiceBrowser, didFind service: NetService, moreComing _: Bool) {
         guard !services.contains(where: { $0.service == service }) else {
             return
@@ -77,7 +76,7 @@ extension MoblinkScanner: NetServiceBrowserDelegate {
     func netServiceBrowser(_: NetServiceBrowser, didRemove _: NetService, moreComing _: Bool) {}
 }
 
-extension MoblinkScanner: NetServiceDelegate {
+extension MoblinkScanner: @MainActor NetServiceDelegate {
     func netServiceDidResolveAddress(_ service: NetService) {
         guard let discoveredService = services.first(where: { $0.service == service }) else {
             return
