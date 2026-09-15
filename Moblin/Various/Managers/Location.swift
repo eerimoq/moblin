@@ -19,6 +19,7 @@ private class BackgroundActivity {
     }
 }
 
+@MainActor
 class Location: NSObject, ObservableObject {
     @Published var isDenied = false
     private var manager = CLLocationManager()
@@ -85,7 +86,7 @@ class Location: NSObject, ObservableObject {
     }
 }
 
-extension Location: CLLocationManagerDelegate {
+extension Location: @MainActor CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         logger.debug("location: Auth did change \(manager.authorizationStatus)")
         switch manager.authorizationStatus {

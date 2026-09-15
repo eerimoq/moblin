@@ -74,7 +74,7 @@ private nonisolated(unsafe) let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
-nonisolated(unsafe) let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
+@MainActor let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
 private nonisolated(unsafe) let printCharacteristicId = CBUUID(string: "AE01")
 private nonisolated(unsafe) let notifyCharacteristicId = CBUUID(string: "AE02")
