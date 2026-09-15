@@ -151,6 +151,10 @@ class WorkoutDeviceCyclingPower {
 
     func reset() {
         measurementCharacteristic = nil
+        resetMeasurements()
+    }
+
+    func resetMeasurements() {
         crankCadence.reset()
     }
 

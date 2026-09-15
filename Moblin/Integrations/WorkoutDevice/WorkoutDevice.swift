@@ -83,8 +83,15 @@ class WorkoutDevice: NSObject, @unchecked Sendable {
         setState(state: .disconnected)
     }
 
+    private func resetMeasurements() {
+        cyclingPower.resetMeasurements()
+        cyclingSpeedCadence.resetMeasurements()
+        running.resetMeasurements()
+    }
+
     private func reconnect() {
         peripheral = nil
+        resetMeasurements()
         setState(state: .discovering)
         centralManager = CBCentralManager(delegate: self, queue: dispatchQueue)
     }

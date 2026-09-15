@@ -43,11 +43,15 @@ class WorkoutDeviceCyclingSpeedCadence {
 
     func reset() {
         measurementCharacteristic = nil
+        resetMeasurements()
+        reportsWheelRevolutions = false
+    }
+
+    func resetMeasurements() {
         previousWheelRevolutions = nil
         previousWheelRevolutionsTime = nil
         crankCadence.reset()
         averageSpeed.reset()
-        reportsWheelRevolutions = false
     }
 
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {

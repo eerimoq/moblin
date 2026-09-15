@@ -75,20 +75,24 @@ extension Model {
         })
     }
 
-    func setCyclingPower(_ power: Int, source: CyclingSource) {
+    @discardableResult
+    func setCyclingPower(_ power: Int, source: CyclingSource) -> Bool {
         guard source.canReplace(latest: latestCyclingPower) else {
-            return
+            return false
         }
         cyclingPower = power
         latestCyclingPower = CyclingSampleInfo(source: source, time: .now)
+        return true
     }
 
-    func setCyclingCadence(_ cadence: Int, source: CyclingSource) {
+    @discardableResult
+    func setCyclingCadence(_ cadence: Int, source: CyclingSource) -> Bool {
         guard source.canReplace(latest: latestCyclingCadence) else {
-            return
+            return false
         }
         cyclingCadence = cadence
         latestCyclingCadence = CyclingSampleInfo(source: source, time: .now)
+        return true
     }
 }
 
@@ -113,22 +117,25 @@ extension Model: WorkoutDeviceDelegate {
                 return
             }
             self.heartRates[device.name.lowercased()] = heartRate
+            self.addWorkoutHeartRate(heartRate)
         }
     }
 
     nonisolated func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int?) {
         DispatchQueue.main.async {
-            self.setCyclingPower(power, source: .cyclingPower)
-            if let cadence {
-                self.setCyclingCadence(cadence, source: .cyclingPower)
+            if self.setCyclingPower(power, source: .cyclingPower) {
+                self.addWorkoutCyclingPower(power)
+            }
+            if let cadence, self.setCyclingCadence(cadence, source: .cyclingPower) {
+                self.addWorkoutCyclingCadence(cadence)
             }
         }
     }
 
     nonisolated func workoutDeviceCyclingSpeedCadence(_: WorkoutDevice, speed: Double?, cadence: Int?) {
         DispatchQueue.main.async {
-            if let cadence {
-                self.setCyclingCadence(cadence, source: .cyclingSpeedCadence)
+            if let cadence, self.setCyclingCadence(cadence, source: .cyclingSpeedCadence) {
+                self.addWorkoutCyclingCadence(cadence)
             }
             if let speed {
                 self.cyclingSpeed = speed
