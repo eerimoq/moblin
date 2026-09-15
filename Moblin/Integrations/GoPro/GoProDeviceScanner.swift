@@ -6,8 +6,9 @@ struct GoProDiscoveredDevice {
     let name: String
 }
 
+@MainActor
 final class GoProDeviceScanner: NSObject, ObservableObject {
-    nonisolated(unsafe) static let shared = GoProDeviceScanner()
+    static let shared = GoProDeviceScanner()
     @Published var discoveredDevices: [GoProDiscoveredDevice] = []
     private var centralManager: CBCentralManager?
 
@@ -22,7 +23,7 @@ final class GoProDeviceScanner: NSObject, ObservableObject {
     }
 }
 
-extension GoProDeviceScanner: CBCentralManagerDelegate {
+extension GoProDeviceScanner: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         guard central.state == .poweredOn else {
             return

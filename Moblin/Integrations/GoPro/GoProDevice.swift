@@ -31,7 +31,8 @@ protocol GoProDeviceDelegate: AnyObject {
     func goProDeviceStreamingState(_ device: GoProDevice, state: GoProDeviceState)
 }
 
-final class GoProDevice: NSObject, @unchecked Sendable {
+@MainActor
+final class GoProDevice: NSObject {
     weak var delegate: (any GoProDeviceDelegate)?
 
     private var wifiSsid = ""
@@ -164,9 +165,7 @@ final class GoProDevice: NSObject, @unchecked Sendable {
             return
         }
         self.state = state
-        MainActor.assumeIsolated {
-            delegate?.goProDeviceStreamingState(self, state: state)
-        }
+        delegate?.goProDeviceStreamingState(self, state: state)
     }
 
     private func beginSetup() {
@@ -538,7 +537,7 @@ final class GoProDevice: NSObject, @unchecked Sendable {
     }
 }
 
-extension GoProDevice: CBCentralManagerDelegate {
+extension GoProDevice: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         guard central.state == .poweredOn else {
             if central.state != .unknown, central.state != .resetting {
@@ -573,7 +572,7 @@ extension GoProDevice: CBCentralManagerDelegate {
     }
 }
 
-extension GoProDevice: CBPeripheralDelegate {
+extension GoProDevice: @MainActor CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: (any Error)?) {
         guard error == nil else {
             fail()
