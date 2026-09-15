@@ -126,7 +126,8 @@ protocol TeslaVehicleDelegate: AnyObject {
     func teslaVehicleInfotainmentConnected(_ vehicle: TeslaVehicle)
 }
 
-class TeslaVehicle: NSObject, @unchecked Sendable {
+@MainActor
+class TeslaVehicle: NSObject {
     private let vin: String
     private let peripheralId: UUID
     private let clientPrivateKey: P256.KeyAgreement.PrivateKey
@@ -363,9 +364,7 @@ class TeslaVehicle: NSObject, @unchecked Sendable {
         }
         logger.info("tesla-vehicle: State change \(self.state) -> \(state)")
         self.state = state
-        MainActor.assumeIsolated {
-            delegate?.teslaVehicleState(self, state: state)
-        }
+        delegate?.teslaVehicleState(self, state: state)
     }
 
     private func getNextAddress() -> Data {
@@ -426,15 +425,11 @@ class TeslaVehicle: NSObject, @unchecked Sendable {
         switch domain {
         case .vehicleSecurity:
             vehicleSecurityHandshakeTimer.stop()
-            MainActor.assumeIsolated {
-                delegate?.teslaVehicleVehicleSecurityConnected(self)
-            }
+            delegate?.teslaVehicleVehicleSecurityConnected(self)
             try startInfotainmentHandshake()
         case .infotainment:
             infotainmentHandshakeTimer.stop()
-            MainActor.assumeIsolated {
-                delegate?.teslaVehicleInfotainmentConnected(self)
-            }
+            delegate?.teslaVehicleInfotainmentConnected(self)
         default:
             break
         }
@@ -561,7 +556,7 @@ class TeslaVehicle: NSObject, @unchecked Sendable {
     }
 }
 
-extension TeslaVehicle: CBCentralManagerDelegate {
+extension TeslaVehicle: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
@@ -604,7 +599,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     }
 }
 
-extension TeslaVehicle: CBPeripheralDelegate {
+extension TeslaVehicle: @MainActor CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             logger.info("tesla-vehicle: No services found")

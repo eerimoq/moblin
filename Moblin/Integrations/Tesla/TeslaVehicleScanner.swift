@@ -1,7 +1,8 @@
 import CoreBluetooth
 
+@MainActor
 class TeslaVehicleScanner: NSObject, ObservableObject {
-    nonisolated(unsafe) static let shared = TeslaVehicleScanner()
+    static let shared = TeslaVehicleScanner()
     @Published var discoveredPeripherals: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
 
@@ -16,7 +17,7 @@ class TeslaVehicleScanner: NSObject, ObservableObject {
     }
 }
 
-extension TeslaVehicleScanner: CBCentralManagerDelegate {
+extension TeslaVehicleScanner: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: nil)
