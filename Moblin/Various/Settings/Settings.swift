@@ -2182,13 +2182,13 @@ private let exportFiles = [
 
 private let storage = SimpleStringStorage(key: "settings")
 
-final class Settings: @unchecked Sendable {
+@MainActor
+final class Settings {
     private var realDatabase = Database()
     var database: Database {
         realDatabase
     }
 
-    @MainActor
     func load() {
         do {
             try tryLoadAndMigrate(settings: storage.get())
@@ -2198,7 +2198,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
         addSensitiveData(database: realDatabase)
@@ -2215,7 +2214,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func reset() {
         realDatabase = createDefault()
         store()
@@ -2249,7 +2247,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
         do {
             try tryLoadAndMigrate(settings: settings)
@@ -2260,7 +2257,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func exportToFile(onCompleted: @MainActor @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.get().utf8)
