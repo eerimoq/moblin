@@ -23,6 +23,8 @@ private let versions = [
         "• Various improvements to workouts. 🧑‍🏭 KleMiX",
         "• Make ABR rate control work on iOS 27 by not settings data rate limit.",
         "• Fix quick button safe area when building with Xcode 27.",
+        "• Make looping macros not crash when no delay action.",
+        "• Create widget effect wizard.",
     ]),
     Version(version: "35.0.0", date: "2026-09-09", changes: [
         "• Show wrong password message in remote control streamer.",
