@@ -14,7 +14,7 @@ protocol MobcamStreamDelegate: AnyObject {
 }
 
 final class MobcamStream: @unchecked Sendable {
-    private weak var delegate: (any MobcamStreamDelegate)?
+    private weak let delegate: (any MobcamStreamDelegate)?
     private var listener: NWListener?
     private var connection: NWConnection?
     private var reader = MobcamStreamMessageReader()

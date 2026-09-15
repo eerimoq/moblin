@@ -37,7 +37,7 @@ class RtmpServerClient: @unchecked Sendable {
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
     private var chunkStream: RtmpServerChunkStream!
     var streamKey: String = ""
-    weak var server: RtmpServer?
+    weak let server: RtmpServer?
     var latestReceiveTime = ContinuousClock.now
     var connectionState: RtmpServerClientConnectionState {
         didSet {

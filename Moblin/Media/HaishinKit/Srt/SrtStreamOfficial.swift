@@ -25,7 +25,7 @@ class SrtStreamOfficial: @unchecked Sendable {
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
-    weak var srtStreamDelegate: (any SrtStreamOfficialDelegate)?
+    weak let srtStreamDelegate: (any SrtStreamOfficialDelegate)?
     private let processor: Processor
 
     private var readyState: ReadyState = .initialized {

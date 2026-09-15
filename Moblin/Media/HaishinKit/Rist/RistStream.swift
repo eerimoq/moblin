@@ -20,7 +20,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     var adaptiveWeight: AdaptiveBitrateRistExperiment?
     private var state: RistPeerState = .connecting
     private var connectingTimer = SimpleTimer(queue: ristQueue)
-    weak var stream: RistStream?
+    weak let stream: RistStream?
 
     init(interfaceName: String,
          interfaceType: NWInterface.InterfaceType?,
@@ -106,7 +106,7 @@ class RistStream: @unchecked Sendable {
     private var bonding: Bool = false
     private var url: String = ""
     private var state: RistStreamState = .connecting
-    private weak var ristDelegate: (any RistStreamDelegate)?
+    private weak let ristDelegate: (any RistStreamDelegate)?
     private let processor: Processor
     private var totalByteCount = Atomic<Int64>(0)
 

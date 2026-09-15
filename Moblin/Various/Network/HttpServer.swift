@@ -180,7 +180,7 @@ class HttpServerResponse {
 
 private class HttpServerConnection: @unchecked Sendable {
     private let connection: NWConnection
-    private weak var server: HttpServer?
+    private weak let server: HttpServer?
     private var parser = HttpRequestParser()
     private var request: HttpServerRequest?
 

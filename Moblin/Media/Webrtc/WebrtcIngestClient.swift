@@ -93,7 +93,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private let syncTimestamps: Bool
     private let softwareDecoding: Bool
     private(set) var peerConnectionId: Int32 = -1
-    weak var delegate: (any WebrtcIngestClientDelegate)?
+    weak let delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?

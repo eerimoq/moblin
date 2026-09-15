@@ -286,7 +286,7 @@ final class KickPusher: NSObject {
     private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
-    private weak var delegate: (any KickPusherDelegate)?
+    private weak let delegate: (any KickPusherDelegate)?
 
     init(
         delegate: any KickPusherDelegate,

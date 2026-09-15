@@ -32,7 +32,7 @@ class RemoteControlAssistant: NSObject {
     var connectionErrorMessage = ""
     private var streamerWebSocket: NWConnection?
     private var retryStartTimer = SimpleTimer(queue: .main)
-    private weak var delegate: (any RemoteControlAssistantDelegate)?
+    private weak let delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified = false
     private var challenge = ""
     private var salt = ""

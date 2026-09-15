@@ -69,7 +69,7 @@ private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: (any RemoteControlStreamerDelegate)?
+    private weak let delegate: (any RemoteControlStreamerDelegate)?
     private var webSocket: WebSocketClient
     var connectionErrorMessage: String = ""
     private var connected = false

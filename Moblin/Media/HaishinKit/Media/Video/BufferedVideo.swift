@@ -8,7 +8,7 @@ class BufferedVideo {
     private var cameraId: UUID
     private let name: String
     private let update: Bool
-    private weak var processor: Processor?
+    private weak let processor: Processor?
     private let driftTracker: DriftTracker
     private let trackDrift: Bool
     private var hasBufferBeenAppended = false

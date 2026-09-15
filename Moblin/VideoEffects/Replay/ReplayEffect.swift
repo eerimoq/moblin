@@ -41,7 +41,7 @@ final class ReplayEffect: VideoEffect, @unchecked Sendable {
     private let speed: Double
     private let reader: ReplayEffectReplayReader
     private var startPresentationTimeStamp: Double?
-    private weak var delegate: (any ReplayEffectDelegate)?
+    private weak let delegate: (any ReplayEffectDelegate)?
     private var lastImageOffset: Double?
     private var latestImage: EffectImageCiImage?
     private var cancelled = false

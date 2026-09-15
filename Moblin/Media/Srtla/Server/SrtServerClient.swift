@@ -4,7 +4,7 @@ import libsrt
 let srtServerClientLatency = 0.5
 
 class SrtServerClient {
-    private weak var server: SrtServer?
+    private weak let server: SrtServer?
     private let cameraId: UUID
     private let reader: MpegTsReader
 

@@ -25,7 +25,7 @@ private class Relay {
     private let password: String
     private var address: String?
     private var port: UInt16?
-    weak var streamer: MoblinkStreamer?
+    weak let streamer: MoblinkStreamer?
     private var tunnelEndpoint: NWEndpoint?
     var relayId = UUID()
     var name = ""

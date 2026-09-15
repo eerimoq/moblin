@@ -80,7 +80,7 @@ class RtmpStream: @unchecked Sendable {
     private var prevRebasedAudioTimeStamp: Double?
     private var prevRebasedVideoTimeStamp: Double?
     private let processor: Processor
-    weak var delegate: (any RtmpStreamDelegate)?
+    weak let delegate: (any RtmpStreamDelegate)?
 
     init(name: String, processor: Processor, delegate: any RtmpStreamDelegate, queue: DispatchQueue) {
         self.name = name

@@ -32,7 +32,7 @@ let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 class SrtlaClient: NSObject, @unchecked Sendable {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
-    private weak var delegate: (any SrtlaDelegate)?
+    private weak let delegate: (any SrtlaDelegate)?
     private let passThrough: Bool
     private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
     private var state: State = .idle {

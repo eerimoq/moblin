@@ -99,7 +99,7 @@ class RemoteControlWeb {
     private var websocketServer: NWListener?
     private var websocketPort: UInt16 = 0
     private let websocketRetryTimer = SimpleTimer(queue: .main)
-    private weak var delegate: (any RemoteControlWebDelegate)?
+    private weak let delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
     private var connectionsRequestingPreview: Set<ObjectIdentifier> = []
 

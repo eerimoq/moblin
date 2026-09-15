@@ -330,7 +330,7 @@ private class RtpVideoProcessor: RtpProcessor {
     private var timeStampRebaser = TimeStampRebaser()
     private var decoder: VideoDecoder
     private var formatDescription: CMFormatDescription?
-    private weak var client: RtspClient?
+    private weak let client: RtspClient?
 
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
