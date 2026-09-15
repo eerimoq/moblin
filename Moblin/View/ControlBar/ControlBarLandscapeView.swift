@@ -361,6 +361,5 @@ struct ControlBarLandscapeView: View {
         .background {
             ControlBarBackgroundView(controlBar: model.controlBar)
         }
-        .ignoresSafeArea(.all, edges: edgesToIgnore())
     }
 }
