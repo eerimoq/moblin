@@ -31,7 +31,7 @@ private class Relay {
     var name = ""
     var batteryPercentage: Int?
     var thermalState: MoblinkThermalState?
-    private var pingTimer = SimpleTimer(queue: .main)
+    private var pingTimer = MainTimer()
     var pongReceived = true
 
     init(webSocket: NWConnection, password: String, streamer: MoblinkStreamer) {
@@ -240,7 +240,7 @@ class MoblinkStreamer: NSObject {
     private let name: String
     private var server: NWListener?
     var connectionErrorMessage = ""
-    private var retryStartTimer = SimpleTimer(queue: .main)
+    private var retryStartTimer = MainTimer()
     fileprivate weak var delegate: (any MoblinkStreamerDelegate)?
     private var relays: [Relay] = []
     private var destinationAddress: String?

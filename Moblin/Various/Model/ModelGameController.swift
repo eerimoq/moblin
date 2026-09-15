@@ -39,7 +39,7 @@ extension Model {
                     moveToGimbalPreset(id: gimbalPresetId)
                 }
             } else if let gimbalPresetId = functionData.gimbalPresetId {
-                let timer = SimpleTimer(queue: .main)
+                let timer = MainTimer()
                 timer.startSingleShot(timeout: 0.5) { [weak self] in
                     self?.gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
                     self?.saveGimbalPreset(id: gimbalPresetId)

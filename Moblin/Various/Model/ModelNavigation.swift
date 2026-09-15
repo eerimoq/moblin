@@ -42,7 +42,7 @@ class Navigation: ObservableObject {
     @Published var longPressLocation: MKMapItem?
     @Published var searchText: String = ""
     @Published var searchResults: [MKMapItem] = []
-    let timer = SimpleTimer(queue: .main)
+    let timer = MainTimer()
 
     func updateCameraPosition(settings: SettingsNavigation, region: MKCoordinateRegion? = nil) {
         guard let region = region ?? cameraRegion else {

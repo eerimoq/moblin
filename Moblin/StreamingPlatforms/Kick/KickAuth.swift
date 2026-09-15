@@ -63,7 +63,7 @@ struct KickWebView: UIViewRepresentable {
     class Coordinator: NSObject, WKNavigationDelegate {
         let onAccessToken: (String) -> Void
         private var loginButtonClicked = false
-        private let timer = SimpleTimer(queue: .main)
+        private let timer = MainTimer()
 
         init(_ onAccessToken: @escaping (String) -> Void) {
             self.onAccessToken = onAccessToken

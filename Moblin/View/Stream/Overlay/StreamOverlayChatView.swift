@@ -300,7 +300,7 @@ private struct SeparatorView: View {
     @Binding var draggedActivityFeedHeight: Double?
     @State private var dragStartActivityFeedHeight: Double?
     @State private var hasNewPosts = false
-    @State private var hideNewPostsTimer = SimpleTimer(queue: .main)
+    @State private var hideNewPostsTimer = MainTimer()
 
     private func handleNewPost() {
         guard activityFeedHeight == 0 else {

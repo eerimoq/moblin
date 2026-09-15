@@ -60,7 +60,7 @@ private class InterfaceTypeHttpClient {
     private var interfaceTypes: [NWInterface.InterfaceType] = []
     private var interfaceTypeIndex: Int = 0
     private var connection: NWConnection?
-    private let timer = SimpleTimer(queue: .main)
+    private let timer = MainTimer()
     private var completion: ((Data?) -> Void)?
     private var responseParser = HttpResponseParser()
 

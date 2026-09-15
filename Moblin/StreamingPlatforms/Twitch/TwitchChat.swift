@@ -288,7 +288,7 @@ private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: URL] = [:]
-    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
+    private var tryFetchAgainTimer = MainTimer()
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -350,7 +350,7 @@ class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
-    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
+    private var tryFetchAgainTimer = MainTimer()
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId

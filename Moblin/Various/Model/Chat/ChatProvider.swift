@@ -13,7 +13,7 @@ class ChatProvider: ObservableObject {
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
     @Published var showLabel = false
-    private let hideLabelTimer = SimpleTimer(queue: .main)
+    private let hideLabelTimer = MainTimer()
 
     init(maximumNumberOfMessages: Int) {
         self.maximumNumberOfMessages = maximumNumberOfMessages

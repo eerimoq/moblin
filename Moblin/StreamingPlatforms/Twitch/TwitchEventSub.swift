@@ -463,7 +463,7 @@ final class TwitchEventSub: NSObject {
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
     private var started = false
-    private let connectDelayTimer = SimpleTimer(queue: .main)
+    private let connectDelayTimer = MainTimer()
 
     init(
         remoteControl: Bool,

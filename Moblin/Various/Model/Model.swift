@@ -123,7 +123,7 @@ class HypeTrain: ObservableObject {
     @Published var status = noValue
     @Published var level: Int?
     @Published var progress: ProgressBar?
-    var timer = SimpleTimer(queue: .main)
+    var timer = MainTimer()
 }
 
 enum RaidState {
@@ -140,7 +140,7 @@ class Raid: ObservableObject {
     @Published var channelLogin: String = ""
     @Published var message: String = ""
     @Published var progress = ProgressBar()
-    var timer = SimpleTimer(queue: .main)
+    var timer = MainTimer()
 }
 
 enum TwitchPollState {
@@ -163,7 +163,7 @@ class TwitchPoll: ObservableObject {
     @Published var totalVotes = 0
     @Published var message = ""
     var endsAt: Date?
-    var timer = SimpleTimer(queue: .main)
+    var timer = MainTimer()
 }
 
 enum TwitchPredictionState {
@@ -190,7 +190,7 @@ class TwitchPrediction: ObservableObject {
     @Published var totalChannelPoints = 0
     @Published var message = ""
     var locksAt: Date?
-    var timer = SimpleTimer(queue: .main)
+    var timer = MainTimer()
 }
 
 @MainActor
@@ -360,7 +360,7 @@ class DrawOnStream: ObservableObject {
 
 @MainActor
 class StealthMode: ObservableObject {
-    var hideButtonsTimer = SimpleTimer(queue: .main)
+    var hideButtonsTimer = MainTimer()
     @Published var showButtons = true
     @Published var image: UIImage?
 }
@@ -637,7 +637,7 @@ final class Model: NSObject, ObservableObject {
     let alertMediaStorage = AlertMediaStorage()
     let vTuberStorage = VTuberStorage()
     let pngTuberStorage = PngTuberStorage()
-    let reconnectTimer = SimpleTimer(queue: .main)
+    let reconnectTimer = MainTimer()
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
@@ -664,10 +664,10 @@ final class Model: NSObject, ObservableObject {
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
-    let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
-    let twitchSearchChannelsTimer = SimpleTimer(queue: .main)
-    let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
-    let kickSearchChannelsTimer = SimpleTimer(queue: .main)
+    let twitchSearchCategoriesTimer = MainTimer()
+    let twitchSearchChannelsTimer = MainTimer()
+    let kickSearchCategoriesTimer = MainTimer()
+    let kickSearchChannelsTimer = MainTimer()
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()
@@ -705,13 +705,13 @@ final class Model: NSObject, ObservableObject {
     var cyclingSpeed = 0.0
     var latestSubscriber = ""
     var latestFollower = ""
-    private let periodicTimer20ms = SimpleTimer(queue: .main)
-    private let periodicTimer200ms = SimpleTimer(queue: .main)
-    private let periodicTimer1s = SimpleTimer(queue: .main)
-    private let periodicTimer3s = SimpleTimer(queue: .main)
-    private let periodicTimer5s = SimpleTimer(queue: .main)
-    private let periodicTimer10s = SimpleTimer(queue: .main)
-    private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
+    private let periodicTimer20ms = MainTimer()
+    private let periodicTimer200ms = MainTimer()
+    private let periodicTimer1s = MainTimer()
+    private let periodicTimer3s = MainTimer()
+    private let periodicTimer5s = MainTimer()
+    private let periodicTimer10s = MainTimer()
+    private let periodicTimerBatteryLevel = MainTimer()
     var currentWorkoutDeviceSettings: SettingsWorkoutDevice?
     var workoutDevices: [UUID: WorkoutDevice] = [:]
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
@@ -735,7 +735,7 @@ final class Model: NSObject, ObservableObject {
     var gameControllers: [GCController?] = []
     var moveToGimbalPresetQueue: Deque<UUID> = []
     var moveToGimbalPresetQueueRunning = false
-    var gimbalPresetLongPressTimers: [String: SimpleTimer] = [:]
+    var gimbalPresetLongPressTimers: [String: MainTimer] = [:]
     var latestKnownLocation: CLLocation?
     var slopePercent = 0.0
     var previousSlopeAltitude: Double? = 0.0
@@ -802,7 +802,7 @@ final class Model: NSObject, ObservableObject {
     var httpProxyServer: HttpProxyServer?
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
-    let photoShootTimer = SimpleTimer(queue: .main)
+    let photoShootTimer = MainTimer()
 
     weak var processor: Processor? {
         didSet {

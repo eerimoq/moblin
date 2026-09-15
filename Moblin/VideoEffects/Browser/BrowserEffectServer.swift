@@ -72,7 +72,7 @@ protocol BrowserEffectServerDelegate: AnyObject {
 class BrowserEffectServer: NSObject {
     weak var webView: WKWebView?
     private let subscriptions = Subscriptions()
-    private let pingTimer = SimpleTimer(queue: .main)
+    private let pingTimer = MainTimer()
     private var gotPing = true
     private let moblinAccess: Bool
     weak var delegate: (any BrowserEffectServerDelegate)?

@@ -181,7 +181,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var isStarted: Bool = false
     @Published var model: SettingsDjiDeviceModel = .unknown
     @Published var state: DjiDeviceState?
-    let autoRestartStreamTimer = SimpleTimer(queue: .main)
+    let autoRestartStreamTimer = MainTimer()
 
     init() {
         bluetoothPeripheralName = nil

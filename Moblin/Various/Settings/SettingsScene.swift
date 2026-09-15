@@ -2282,7 +2282,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     @Published var focusToBreakChatMessage: String = ""
     @Published var breakToFocusChatMessage: String = ""
     var onPhaseChanged: ((PomodoroPhase) -> Void)?
-    private var timer = SimpleTimer(queue: .main)
+    private var timer = MainTimer()
 
     enum CodingKeys: CodingKey {
         case focusDuration
@@ -2344,9 +2344,10 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         breakToFocusSoundId = container.decode(.breakToFocusSoundId, UUID?.self, nil)
         focusToBreakChatMessage = container.decode(.focusToBreakChatMessage, String.self, "")
         breakToFocusChatMessage = container.decode(.breakToFocusChatMessage, String.self, "")
-        reset()
+        secondsRemaining = focusDuration * 60
     }
 
+    @MainActor
     func start() {
         guard !isRunning else {
             return
@@ -2357,11 +2358,13 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         }
     }
 
+    @MainActor
     func pause() {
         isRunning = false
         timer.stop()
     }
 
+    @MainActor
     func reset() {
         pause()
         phase = .focus

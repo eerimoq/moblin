@@ -74,7 +74,7 @@ class RemoteControlStreamer {
     var connectionErrorMessage: String = ""
     private var connected = false
     private var encryption: RemoteControlEncryption
-    private let keepAliveTimer = SimpleTimer(queue: .main)
+    private let keepAliveTimer = MainTimer()
     private var gotPong = true
     private var wrongPassword = false
 

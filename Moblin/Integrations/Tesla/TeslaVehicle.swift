@@ -141,8 +141,8 @@ class TeslaVehicle: NSObject {
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
     weak var delegate: (any TeslaVehicleDelegate)?
-    private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
-    private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
+    private let vehicleSecurityHandshakeTimer = MainTimer()
+    private let infotainmentHandshakeTimer = MainTimer()
 
     init?(vin: String, privateKeyPem: String, peripheralId: UUID, handshake _: Bool = true) {
         self.vin = vin

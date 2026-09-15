@@ -61,13 +61,13 @@ final class GoProDevice: NSObject {
     private var scanMatch: OpenGopro_ResponseGetApEntries.ScanEntry?
     private var supportedLenses: [OpenGopro_EnumLens]?
 
-    private let operationTimeoutTimer = SimpleTimer(queue: .main)
-    private let wifiTimeoutTimer = SimpleTimer(queue: .main)
-    private let pairingFallbackTimer = SimpleTimer(queue: .main)
-    private let statusPollTimer = SimpleTimer(queue: .main)
-    private let startShutterTimer = SimpleTimer(queue: .main)
-    private let stopTimer = SimpleTimer(queue: .main)
-    private let keepAliveTimer = SimpleTimer(queue: .main)
+    private let operationTimeoutTimer = MainTimer()
+    private let wifiTimeoutTimer = MainTimer()
+    private let pairingFallbackTimer = MainTimer()
+    private let statusPollTimer = MainTimer()
+    private let startShutterTimer = MainTimer()
+    private let stopTimer = MainTimer()
+    private let keepAliveTimer = MainTimer()
 
     func startLiveStream(
         wifiSsid: String,

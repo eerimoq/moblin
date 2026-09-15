@@ -15,9 +15,9 @@ protocol WebSocketClientDelegate: AnyObject {
 @MainActor
 final class WebSocketClient {
     private var webSocket: NWWebSocket
-    private var connectTimer = SimpleTimer(queue: .main)
+    private var connectTimer = MainTimer()
     private var networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
-    private var pingTimer = SimpleTimer(queue: .main)
+    private var pingTimer = MainTimer()
     private var pongReceived = true
     weak var delegate: (any WebSocketClientDelegate)?
     private let url: URL

@@ -31,7 +31,7 @@ class RemoteControlAssistant: NSObject {
     private var server: NWListener?
     var connectionErrorMessage = ""
     private var streamerWebSocket: NWConnection?
-    private var retryStartTimer = SimpleTimer(queue: .main)
+    private var retryStartTimer = MainTimer()
     private weak let delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified = false
     private var challenge = ""
@@ -46,9 +46,9 @@ class RemoteControlAssistant: NSObject {
     private var twitchEventSubNotiticationWaitForResponse = false
     private var chatMessageHistory: Deque<RemoteControlChatMessage> = []
     private var nextChatMessageId = 0
-    private let keepAliveTimer = SimpleTimer(queue: .main)
+    private let keepAliveTimer = MainTimer()
     private var gotPing = false
-    private var pingTimer = SimpleTimer(queue: .main)
+    private var pingTimer = MainTimer()
     private var pongReceived = true
 
     init(

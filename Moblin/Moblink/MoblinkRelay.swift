@@ -63,7 +63,7 @@ private class Relay: NSObject {
     private nonisolated(unsafe) var destinationConnection: NWConnection?
     var state: RelayState = .none
     private var started = false
-    private let reconnectTimer = SimpleTimer(queue: .main)
+    private let reconnectTimer = MainTimer()
     var destinationInterface: NWInterface
     private var id: String
     private weak var relay: MoblinkRelay?
