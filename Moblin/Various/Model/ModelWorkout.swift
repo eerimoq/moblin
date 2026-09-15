@@ -3,16 +3,16 @@ import WatchConnectivity
 
 private func types() -> Set<HKSampleType> {
     var types: Set<HKSampleType> = [
-        .quantityType(forIdentifier: .heartRate)!,
-        .quantityType(forIdentifier: .distanceCycling)!,
-        .quantityType(forIdentifier: .distanceWalkingRunning)!,
-        .quantityType(forIdentifier: .stepCount)!,
-        .quantityType(forIdentifier: .activeEnergyBurned)!,
-        .quantityType(forIdentifier: .runningPower)!,
+        heartRateType,
+        distanceCyclingType,
+        distanceWalkingRunningType,
+        stepCountType,
+        activeEnergyBurnedType,
+        runningPowerType,
     ]
     if #available(iOS 17.0, *) {
-        types.insert(.quantityType(forIdentifier: .cyclingPower)!)
-        types.insert(.quantityType(forIdentifier: .cyclingCadence)!)
+        types.insert(cyclingPowerType)
+        types.insert(cyclingCadenceType)
     }
     return types
 }
@@ -73,20 +73,11 @@ private class Workout: NSObject {
             workoutConfiguration: configuration
         )
         if addStepCount {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: stepCountType, predicate: nil)
         }
         if addCyclingMetrics {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .cyclingPower)!,
-                predicate: nil
-            )
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: cyclingPowerType, predicate: nil)
+            dataSource.enableCollection(for: cyclingCadenceType, predicate: nil)
         }
         workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
@@ -151,23 +142,21 @@ private class Workout: NSObject {
     }
 
     func add(heartRate: Int) {
-        add(type: HKQuantityType(.heartRate),
-            unit: .count().unitDivided(by: .minute()),
-            value: Double(heartRate))
+        add(type: heartRateType, unit: .count().unitDivided(by: .minute()), value: Double(heartRate))
     }
 
     func add(cyclingPower: Int) {
         guard workoutType == .cycling else {
             return
         }
-        add(type: HKQuantityType(.cyclingPower), unit: .watt(), value: Double(cyclingPower))
+        add(type: cyclingPowerType, unit: .watt(), value: Double(cyclingPower))
     }
 
     func add(cyclingCadence: Int) {
         guard workoutType == .cycling else {
             return
         }
-        add(type: HKQuantityType(.cyclingCadence),
+        add(type: cyclingCadenceType,
             unit: .count().unitDivided(by: .minute()),
             value: Double(cyclingCadence))
     }
@@ -290,13 +279,13 @@ extension Model {
     }
 
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {
-        var typesToShare: Set = [
+        var typesToShare: Set<HKSampleType> = [
             HKQuantityType.workoutType(),
-            HKQuantityType.quantityType(forIdentifier: .heartRate)!,
+            heartRateType,
         ]
         if #available(iOS 17.0, *) {
-            typesToShare.insert(HKQuantityType.quantityType(forIdentifier: .cyclingPower)!)
-            typesToShare.insert(HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!)
+            typesToShare.insert(cyclingPowerType)
+            typesToShare.insert(cyclingCadenceType)
         }
         healthStore.requestAuthorization(toShare: typesToShare, read: types()) { _, _ in
             DispatchQueue.main.async {

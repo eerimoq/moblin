@@ -1,5 +1,6 @@
 import AVFoundation
 import AVKit
+import HealthKit
 import MapKit
 import Network
 import SwiftUI
@@ -13,6 +14,16 @@ let controlBarQuickButtonNameSingleColumnSize = 12.0
 let controlBarQuickButtonSingleQuickButtonSize = 60.0
 let stealthModeButtonSize = 80.0
 let maximumNumberOfWatchChatMessages = 50
+let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+let distanceCyclingType = HKQuantityType.quantityType(forIdentifier: .distanceCycling)!
+let distanceWalkingRunningType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+let runningPowerType = HKQuantityType.quantityType(forIdentifier: .runningPower)!
+@available(iOS 17.0, watchOS 10.0, *)
+let cyclingPowerType = HKQuantityType.quantityType(forIdentifier: .cyclingPower)!
+@available(iOS 17.0, watchOS 10.0, *)
+let cyclingCadenceType = HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!
 let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 let scoreboardBlueColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color()

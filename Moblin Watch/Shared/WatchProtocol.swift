@@ -146,26 +146,25 @@ struct WatchProtocolWorkoutStats: Codable, Equatable {
 
     mutating func update(statistics: HKStatistics) {
         switch statistics.quantityType {
-        case HKQuantityType.quantityType(forIdentifier: .heartRate):
+        case heartRateType:
             if let heartRate = statistics.mostRecentQuantity()?
                 .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
             {
                 self.heartRate = Int(heartRate)
             }
-        case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
+        case activeEnergyBurnedType:
             if let activeEnergyBurned = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
                 self.activeEnergyBurned = Int(activeEnergyBurned)
             }
-        case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning),
-             HKQuantityType.quantityType(forIdentifier: .distanceCycling):
+        case distanceWalkingRunningType, distanceCyclingType:
             if let distance = statistics.sumQuantity()?.doubleValue(for: .meter()) {
                 self.distance = Int(distance)
             }
-        case HKQuantityType.quantityType(forIdentifier: .stepCount):
+        case stepCountType:
             if let stepCount = statistics.sumQuantity()?.doubleValue(for: .count()) {
                 self.stepCount = Int(stepCount)
             }
-        case HKQuantityType.quantityType(forIdentifier: .runningPower):
+        case runningPowerType:
             if let power = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
                 self.power = Int(power)
             }
@@ -174,11 +173,11 @@ struct WatchProtocolWorkoutStats: Codable, Equatable {
         }
         if #available(iOS 17.0, watchOS 10.0, *) {
             switch statistics.quantityType {
-            case HKQuantityType.quantityType(forIdentifier: .cyclingPower):
+            case cyclingPowerType:
                 if let cyclingPower = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
                     self.cyclingPower = Int(cyclingPower)
                 }
-            case HKQuantityType.quantityType(forIdentifier: .cyclingCadence):
+            case cyclingCadenceType:
                 if let cyclingCadence = statistics.mostRecentQuantity()?
                     .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
                 {

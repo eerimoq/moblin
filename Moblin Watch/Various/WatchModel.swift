@@ -10,14 +10,14 @@ import WatchConnectivity
 private let previewTimeout = Duration.seconds(6)
 
 private let healthKitTypes: Set<HKSampleType> = [
-    .quantityType(forIdentifier: .heartRate)!,
-    .quantityType(forIdentifier: .distanceCycling)!,
-    .quantityType(forIdentifier: .distanceWalkingRunning)!,
-    .quantityType(forIdentifier: .stepCount)!,
-    .quantityType(forIdentifier: .activeEnergyBurned)!,
-    .quantityType(forIdentifier: .runningPower)!,
-    .quantityType(forIdentifier: .cyclingPower)!,
-    .quantityType(forIdentifier: .cyclingCadence)!,
+    heartRateType,
+    distanceCyclingType,
+    distanceWalkingRunningType,
+    stepCountType,
+    activeEnergyBurnedType,
+    runningPowerType,
+    cyclingPowerType,
+    cyclingCadenceType,
 ]
 
 struct WatchChatPostSegment: Identifiable {
@@ -412,20 +412,11 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
             workoutConfiguration: configuration
         )
         if addStepCount {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: stepCountType, predicate: nil)
         }
         if addCyclingMetrics {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .cyclingPower)!,
-                predicate: nil
-            )
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: cyclingPowerType, predicate: nil)
+            dataSource.enableCollection(for: cyclingCadenceType, predicate: nil)
         }
         workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
