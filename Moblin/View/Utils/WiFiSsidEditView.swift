@@ -13,19 +13,17 @@ private class CurrentWiFiNetwork: NSObject, ObservableObject {
     }
 }
 
-extension CurrentWiFiNetwork: CLLocationManagerDelegate {
-    nonisolated func locationManagerDidChangeAuthorization(_: CLLocationManager) {
-        MainActor.assumeIsolated {
-            switch locationManager.authorizationStatus {
-            case .notDetermined:
-                locationManager.requestWhenInUseAuthorization()
-            case .denied, .restricted:
-                locationDenied = true
-            default:
-                fetchCurrentWiFiSsid { ssid in
-                    Task { @MainActor in
-                        self.ssid = ssid
-                    }
+extension CurrentWiFiNetwork: @MainActor CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_: CLLocationManager) {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            locationDenied = true
+        default:
+            fetchCurrentWiFiSsid { ssid in
+                Task { @MainActor in
+                    self.ssid = ssid
                 }
             }
         }
