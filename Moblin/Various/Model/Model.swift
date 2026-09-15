@@ -2153,9 +2153,7 @@ final class Model: NSObject, ObservableObject {
 
     func playAlert(alert: AlertsEffectAlert) {
         for alertsEffect in enabledAlertsEffects {
-            DispatchQueue.main.async {
-                alertsEffect.play(alert: alert)
-            }
+            alertsEffect.play(alert: alert)
         }
     }
 
@@ -3370,9 +3368,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         setQuickButton(type: type, isOn: true)
-        DispatchQueue.main.async {
-            effect?.play(alert: .quickButton)
-        }
+        effect?.play(alert: .quickButton)
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             self.setQuickButton(type: type, isOn: false)
         }
