@@ -1,87 +1,72 @@
 import SwiftUI
 
+private struct EffectLabelView: View {
+    let model: Model
+    @ObservedObject var effect: SettingsVideoEffect
+
+    var body: some View {
+        HStack {
+            DraggableItemPrefixView()
+            Toggle(effect.type.toString(), isOn: $effect.enabled)
+                .onChange(of: effect.enabled) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
+        }
+    }
+}
+
 private struct EffectView: View {
     @EnvironmentObject var model: Model
     let widget: SettingsWidget
     @ObservedObject var effect: SettingsVideoEffect
 
     var body: some View {
-        NavigationLink {
-            Form {
-                Section {
-                    Picker("Type", selection: $effect.type) {
-                        ForEach(SettingsVideoEffectType.allCases, id: \.self) {
-                            Text($0.toString())
-                                .tag($0)
-                        }
-                    }
-                    .onChange(of: effect.type) { _ in
-                        model.resetSelectedScene(changeScene: false)
+        switch effect.type {
+        case .grayScale, .sepia, .whirlpool, .pinch:
+            EffectLabelView(model: model, effect: effect)
+        default:
+            NavigationLink {
+                Form {
+                    switch effect.type {
+                    case .shape:
+                        ShapeEffectView(model: model, widget: widget, effect: effect, shape: effect.shape)
+                    case .removeBackground:
+                        RemoveBackgroundEffectView(model: model,
+                                                   widget: widget,
+                                                   effect: effect,
+                                                   removeBackground: effect.removeBackground)
+                    case .dewarp360:
+                        Dewarp360EffectView(model: model,
+                                            widget: widget,
+                                            effect: effect,
+                                            dewarp360: effect.dewarp360)
+                    case .anamorphicLens:
+                        AnamorphicLensEffectView(model: model,
+                                                 widget: widget,
+                                                 effect: effect,
+                                                 anamorphicLens: effect.anamorphicLens)
+                    case .lut:
+                        LutEffectView(model: model,
+                                      color: model.database.color,
+                                      widget: widget,
+                                      effect: effect,
+                                      lut: effect.lut)
+                    case .opacity:
+                        OpacityEffectView(
+                            model: model,
+                            widget: widget,
+                            effect: effect,
+                            opacity: effect.opacity
+                        )
+                    case .mask:
+                        MaskEffectView(model: model, widget: widget, effect: effect, mask: effect.mask)
+                    default:
+                        EmptyView()
                     }
                 }
-                switch effect.type {
-                case .shape:
-                    ShapeEffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        shape: effect.shape
-                    )
-                case .removeBackground:
-                    RemoveBackgroundEffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        removeBackground: effect.removeBackground
-                    )
-                case .dewarp360:
-                    Dewarp360EffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        dewarp360: effect.dewarp360
-                    )
-                case .anamorphicLens:
-                    AnamorphicLensEffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        anamorphicLens: effect.anamorphicLens
-                    )
-                case .lut:
-                    LutEffectView(
-                        model: model,
-                        color: model.database.color,
-                        widget: widget,
-                        effect: effect,
-                        lut: effect.lut
-                    )
-                case .opacity:
-                    OpacityEffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        opacity: effect.opacity
-                    )
-                case .mask:
-                    MaskEffectView(
-                        model: model,
-                        widget: widget,
-                        effect: effect,
-                        mask: effect.mask
-                    )
-                default:
-                    EmptyView()
-                }
-            }
-            .navigationTitle(effect.type.toString())
-        } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Toggle(effect.type.toString(), isOn: $effect.enabled)
-                    .onChange(of: effect.enabled) { _ in
-                        model.resetSelectedScene(changeScene: false)
-                    }
+                .navigationTitle(effect.type.toString())
+            } label: {
+                EffectLabelView(model: model, effect: effect)
             }
         }
     }
@@ -90,6 +75,8 @@ private struct EffectView: View {
 struct WidgetEffectsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
+    @State private var presentingCreateWizard = false
+    @State private var newEffect = SettingsVideoEffect()
 
     private func deleteEffect(at offsets: IndexSet) {
         widget.effects.remove(atOffsets: offsets)
@@ -111,9 +98,18 @@ struct WidgetEffectsView: View {
                 model.resetSelectedScene(changeScene: false)
             }
             .onDelete(perform: deleteEffect)
-            AddButtonView {
-                widget.effects.append(SettingsVideoEffect())
-                model.resetSelectedScene(changeScene: false)
+            CreateButtonView {
+                newEffect = SettingsVideoEffect()
+                presentingCreateWizard = true
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                NavigationStack {
+                    WidgetEffectWizardSettingsView(model: model,
+                                                   widget: widget,
+                                                   effect: newEffect,
+                                                   presentingCreateWizard: $presentingCreateWizard)
+                        .navigationBarTitleDisplayMode(.inline)
+                }
             }
         } header: {
             Text("Effects")
