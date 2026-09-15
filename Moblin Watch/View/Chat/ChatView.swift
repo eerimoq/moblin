@@ -4,6 +4,7 @@ import DequeModule
 import SwiftUI
 import WrappingHStack
 
+@MainActor
 class Chat: ObservableObject {
     @Published var posts = Deque<WatchChatPost>()
 }

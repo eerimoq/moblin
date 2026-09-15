@@ -1,6 +1,7 @@
 import Collections
 import Foundation
 
+@MainActor
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
     var pausedPosts: Deque<ChatPost> = []

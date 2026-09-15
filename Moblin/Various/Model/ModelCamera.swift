@@ -16,6 +16,7 @@ enum CameraShowType: Equatable {
     case focus
 }
 
+@MainActor
 class CameraShow: ObservableObject {
     @Published var type: CameraShowType?
 
@@ -28,6 +29,7 @@ class CameraShow: ObservableObject {
     }
 }
 
+@MainActor
 class CameraState: ObservableObject {
     let show = CameraShow()
     var isFocusesLocked: [AVCaptureDevice: Bool] = [:]

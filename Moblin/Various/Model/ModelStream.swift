@@ -9,6 +9,7 @@ let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
 let lowBatteryMessage = String(localized: "Low battery")
 
+@MainActor
 class CreateStreamWizard: ObservableObject {
     var platform: WizardPlatform = .custom
     var networkSetup: WizardNetworkSetup = .direct

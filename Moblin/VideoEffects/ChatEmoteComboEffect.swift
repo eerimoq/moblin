@@ -4,6 +4,7 @@ import SwiftUI
 
 private let borderWidth = 1.5
 
+@MainActor
 private class EmoteComboState: ObservableObject {
     @Published var emoteUrl: URL?
     @Published var count: Int = 0
@@ -46,14 +47,16 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
     private var comboImage: EffectImageCgImage?
     private var renderer: ImageRenderer<EmoteComboView>?
     private var cancellable: AnyCancellable?
-    private let state = EmoteComboState()
+    private let state: EmoteComboState
     private var settings = SettingsWidgetChatEmoteCombo()
     private var currentEmoteUrl: URL?
     private var comboCount: Int = 0
     private let timer = SimpleTimer(queue: .main)
 
+    @MainActor
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
+        state = EmoteComboState()
         super.init()
     }
 

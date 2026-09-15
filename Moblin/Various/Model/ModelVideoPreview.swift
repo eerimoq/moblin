@@ -15,6 +15,7 @@ class VideoPreviewFeed: Identifiable, ObservableObject {
     }
 }
 
+@MainActor
 class VideoPreviewProvider: ObservableObject {
     @Published var feeds: [VideoPreviewFeed] = []
 }

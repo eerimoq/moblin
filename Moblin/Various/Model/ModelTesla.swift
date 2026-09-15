@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class Tesla: ObservableObject {
     var vehicle: TeslaVehicle?
     var chargeState = CarServer_ChargeState()

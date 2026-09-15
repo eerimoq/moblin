@@ -2,6 +2,7 @@ import AVFoundation
 import CoreLocation
 import SwiftUI
 
+@MainActor
 class CreateWidgetWizard: ObservableObject {
     @Published var name: String = ""
     @Published var type: SettingsWidgetType = .text

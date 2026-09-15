@@ -12,6 +12,7 @@ struct ObsSceneMediaSource: Identifiable {
     var input: String
 }
 
+@MainActor
 class QuickButtonObs: ObservableObject {
     var sourceFetchScreenshot = false
     var sourceScreenshotIsFetching = false

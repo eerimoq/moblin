@@ -2,6 +2,7 @@ import Combine
 import MetalPetal
 import SwiftUI
 
+@MainActor
 private class PollState: ObservableObject {
     let size: CGSize
     @Published var text = String(localized: "No votes yet")
@@ -38,6 +39,7 @@ final class PollEffect: VideoEffect, @unchecked Sendable {
     private var cancellable: AnyCancellable?
     private let state: PollState
 
+    @MainActor
     init(canvasSize: CGSize) {
         state = PollState(size: canvasSize)
         super.init()
@@ -46,6 +48,7 @@ final class PollEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     func updateText(text: String) {
         guard state.text != text else {
             return

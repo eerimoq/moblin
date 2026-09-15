@@ -1,6 +1,7 @@
 import AVFAudio
 import SwiftUI
 
+@MainActor
 class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel
 
@@ -13,12 +14,14 @@ class AudioLevel: ObservableObject {
     }
 }
 
+@MainActor
 class AudioProvider: ObservableObject {
     let level = AudioLevel()
     @Published var numberOfChannels: Int = 0
     @Published var sampleRate: Double = 0
 }
 
+@MainActor
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
     @Published var inputGain: Float = 1.0

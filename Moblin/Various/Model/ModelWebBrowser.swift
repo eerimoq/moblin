@@ -1,6 +1,7 @@
 import Foundation
 import WebKit
 
+@MainActor
 class WebBrowserState: ObservableObject {
     @Published var isSmall = false
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 import WebKit
 
+@MainActor
 class WebBrowserController: UIViewController, ObservableObject {
     @Published var showAlert = false
 }

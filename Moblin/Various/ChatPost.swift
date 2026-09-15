@@ -221,6 +221,7 @@ struct ChatHighlight {
     }
 }
 
+@MainActor
 class ChatPostState: ObservableObject {
     @Published var deleted: Bool
 

@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class AutoSceneSwitcherProvider: ObservableObject {
     fileprivate var switchTime: ContinuousClock.Instant?
     fileprivate var sceneIds: [UUID] = []

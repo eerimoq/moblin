@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 func basicWidgetSettingsTitle(_ createWidgetWizard: CreateWidgetWizard) -> String {
     String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
 }
@@ -25,6 +26,7 @@ private struct AddWidgetToSceneView: View {
     }
 }
 
+@MainActor
 private class SceneToAddWidgetTo: Identifiable, ObservableObject {
     let id: UUID = .init()
     let scene: SettingsScene

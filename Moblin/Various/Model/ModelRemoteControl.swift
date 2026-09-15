@@ -3,6 +3,7 @@ import CoreLocation
 import Foundation
 import SwiftUI
 
+@MainActor
 class RemoteControl: ObservableObject {
     @Published var general: RemoteControlStatusGeneral?
     @Published var topLeft: RemoteControlStatusTopLeft?

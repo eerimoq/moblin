@@ -4,6 +4,7 @@ import SwiftUI
 private let clockFieldWidth = 70.0
 private let clockFont: Font = .system(size: 35)
 
+@MainActor
 class Generic: ObservableObject {
     var id: UUID = .init()
     @Published var homeTeam: String = ""

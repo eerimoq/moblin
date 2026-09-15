@@ -1,6 +1,7 @@
 import CoreMedia
 import Foundation
 
+@MainActor
 class MediaPlayerPlayer: ObservableObject {
     @Published var playing = false
     @Published var position: Float = 0

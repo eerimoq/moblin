@@ -64,6 +64,7 @@ private struct StatusesView: View {
     }
 }
 
+@MainActor
 class Preview: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var recordingLength = noValue

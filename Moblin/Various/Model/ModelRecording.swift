@@ -1,6 +1,7 @@
 import AVFoundation
 import Foundation
 
+@MainActor
 class RecordingProvider: ObservableObject {
     @Published var length = noValue
 }

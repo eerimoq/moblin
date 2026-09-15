@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class ReplayProvider: ObservableObject {
     @Published var selectedId: UUID?
     @Published var isSaving = false

@@ -2,6 +2,7 @@ import Foundation
 import Network
 import UIKit
 
+@MainActor
 class Moblink: ObservableObject {
     var streamer: MoblinkStreamer?
     var relays: [MoblinkRelay] = []

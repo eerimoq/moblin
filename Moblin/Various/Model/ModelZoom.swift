@@ -4,6 +4,7 @@ import Foundation
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
+@MainActor
 class Zoom: ObservableObject {
     var xPinch: Float = 1.0
     var backX: Float = 0.5
