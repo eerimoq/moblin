@@ -71,7 +71,7 @@ func screenScale() -> CGFloat {
     if isMac() {
         2
     } else {
-        UIScreen().scale
+        getWindow()?.screen.scale ?? UIScreen.main.scale
     }
 }
 
