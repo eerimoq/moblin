@@ -83,7 +83,8 @@ struct WatchChatPost: Identifiable {
     }
 }
 
-class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
+@MainActor
+class WatchModel: NSObject, ObservableObject {
     let chat = Chat()
     let preview = Preview()
     let control = Control()
@@ -118,8 +119,10 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
 
     private func startPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            self.updatePreview()
-            self.keepAlive()
+            MainActor.assumeIsolated {
+                self.updatePreview()
+                self.keepAlive()
+            }
         })
     }
 
@@ -532,7 +535,6 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
 
-    @MainActor
     private func handleWorkoutStateChange(session: HKWorkoutSession,
                                           toState: HKWorkoutSessionState,
                                           date: Date)
@@ -557,7 +559,6 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    @MainActor
     private func handleWorkoutError(session: HKWorkoutSession) {
         guard session === workoutSession else {
             return
@@ -566,7 +567,6 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         finishedWorkout(session: session)
     }
 
-    @MainActor
     private func finishedWorkout(session _: HKWorkoutSession) {
         workoutSession = nil
         workoutBuilder = nil
@@ -575,13 +575,13 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
 }
 
 extension WatchModel: WCSessionDelegate {
-    func session(
+    nonisolated func session(
         _: WCSession,
         activationDidCompleteWith _: WCSessionActivationState,
         error _: (any Error)?
     ) {}
 
-    func session(_: WCSession, didReceiveMessage message: [String: Any]) {
+    nonisolated func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let (type, value) = WatchMessageToWatch.unpack(message) else {
             return
         }
@@ -635,9 +635,9 @@ extension WatchModel: WCSessionDelegate {
         }
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {}
+    nonisolated func sessionReachabilityDidChange(_: WCSession) {}
 
-    func session(
+    nonisolated func session(
         _: WCSession,
         didFinish _: WCSessionUserInfoTransfer,
         error _: (any Error)?
@@ -645,7 +645,7 @@ extension WatchModel: WCSessionDelegate {
 }
 
 extension WatchModel: HKWorkoutSessionDelegate {
-    func workoutSession(
+    nonisolated func workoutSession(
         _ session: HKWorkoutSession,
         didChangeTo toState: HKWorkoutSessionState,
         from _: HKWorkoutSessionState,
@@ -656,7 +656,7 @@ extension WatchModel: HKWorkoutSessionDelegate {
         }
     }
 
-    func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
+    nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
         DispatchQueue.main.async {
             self.handleWorkoutError(session: session)
         }
@@ -664,7 +664,7 @@ extension WatchModel: HKWorkoutSessionDelegate {
 }
 
 extension WatchModel: HKLiveWorkoutBuilderDelegate {
-    func workoutBuilder(
+    nonisolated func workoutBuilder(
         _ workoutBuilder: HKLiveWorkoutBuilder,
         didCollectDataOf collectedTypes: Set<HKSampleType>
     ) {
@@ -686,5 +686,5 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
         }
     }
 
-    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
+    nonisolated func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }
