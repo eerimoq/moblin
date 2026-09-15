@@ -102,19 +102,23 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
+@MainActor
 class DebugOverlayProvider: ObservableObject {
     @Published var debugLines: [String] = []
 }
 
+@MainActor
 class StreamUptimeProvider: ObservableObject {
     @Published var uptime = noValue
 }
 
+@MainActor
 class ProgressBar: ObservableObject {
     @Published var progress: Float = 0
     @Published var goal: Float = 1
 }
 
+@MainActor
 class HypeTrain: ObservableObject {
     @Published var status = noValue
     @Published var level: Int?
@@ -129,6 +133,7 @@ enum RaidState {
     case completed
 }
 
+@MainActor
 class Raid: ObservableObject {
     @Published var state: RaidState = .idle
     @Published var channelImage: String = ""
@@ -150,6 +155,7 @@ struct TwitchPollChoice: Identifiable {
     let votes: Int
 }
 
+@MainActor
 class TwitchPoll: ObservableObject {
     @Published var state: TwitchPollState = .idle
     @Published var title = ""
@@ -176,6 +182,7 @@ struct TwitchPredictionOutcome: Identifiable {
     let winner: Bool
 }
 
+@MainActor
 class TwitchPrediction: ObservableObject {
     @Published var state: TwitchPredictionState = .idle
     @Published var title = ""
@@ -186,6 +193,7 @@ class TwitchPrediction: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
+@MainActor
 class Ingests: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
@@ -197,6 +205,7 @@ class Ingests: ObservableObject {
     @Published var speedAndTotal = noValue
 }
 
+@MainActor
 class Bitrate: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
@@ -204,6 +213,7 @@ class Bitrate: ObservableObject {
     @Published var statusIconColor: Color?
 }
 
+@MainActor
 class Bonding: ObservableObject {
     @Published var statistics = noValue
     @Published var rtts = noValue
@@ -211,16 +221,19 @@ class Bonding: ObservableObject {
     var statisticsFormatter = BondingStatisticsFormatter()
 }
 
+@MainActor
 class Show: ObservableObject {
     @Published var cameraPreview = false
     @Published var chatPhone = false
 }
 
+@MainActor
 class Battery: ObservableObject {
     @Published var level = 0.0
     @Published var state: UIDevice.BatteryState = .full
 }
 
+@MainActor
 class StatusOther: ObservableObject {
     @Published var ipStatuses: [IPMonitor.Status] = []
     @Published var thermalState = ProcessInfo.processInfo.thermalState
@@ -247,6 +260,7 @@ struct ChatPlatformStatus: Equatable {
     let connected: Bool
 }
 
+@MainActor
 class StatusTopLeft: ObservableObject {
     @Published var numberOfViewersIconColor: Color = .white
     @Published var numberOfViewersCompact = noValue
@@ -259,6 +273,7 @@ class StatusTopLeft: ObservableObject {
     @Published var statusObsText = noValue
 }
 
+@MainActor
 class SystemMonitor: ObservableObject {
     @Published var appCpu = 0
     @Published var cpu = 0
@@ -273,6 +288,7 @@ class SystemMonitor: ObservableObject {
     }
 }
 
+@MainActor
 class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatusChanged = false
     @Published var remoteControlOk = false
@@ -306,12 +322,14 @@ class Toast: ObservableObject {
     var onTapped: (() -> Void)?
 }
 
+@MainActor
 class SceneSelector: ObservableObject {
     @Published var trigger = 0
     @Published var sceneIndex = 0
     var selectedSceneId = UUID()
 }
 
+@MainActor
 class StreamOverlay: ObservableObject {
     @Published var showMediaPlayerControls = false
     @Published var isFrontCameraSelected = false
@@ -325,6 +343,7 @@ class StreamOverlay: ObservableObject {
     @Published var isTorchOn = false
 }
 
+@MainActor
 class Store: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
@@ -332,23 +351,27 @@ class Store: ObservableObject {
     var hasBoughtSomething: Bool = true
 }
 
+@MainActor
 class DrawOnStream: ObservableObject {
     @Published var lines: [DrawOnStreamLine] = []
     @Published var selectedColor: Color = .pink
     @Published var selectedWidth: CGFloat = 4
 }
 
+@MainActor
 class StealthMode: ObservableObject {
     var hideButtonsTimer = SimpleTimer(queue: .main)
     @Published var showButtons = true
     @Published var image: UIImage?
 }
 
+@MainActor
 class ControlBar: ObservableObject {
     @Published var backgroundImage: UIImage?
     @Published var backgroundImageOpacity: Double = 1.0
 }
 
+@MainActor
 class QuickButtonChat: ObservableObject {
     @Published var showAllChatMessages = true
     @Published var showFirstTimeChatterMessage = true
@@ -358,16 +381,19 @@ class QuickButtonChat: ObservableObject {
     @Published var chatAlertsPaused = false
 }
 
+@MainActor
 class ExternalDisplay: ObservableObject {
     @Published var chatEnabled = false
 }
 
+@MainActor
 class GoProState: ObservableObject {
     @Published var launchLiveStreamSelection: UUID?
     @Published var wifiCredentialsSelection: UUID?
     @Published var rtmpUrlSelection: UUID?
 }
 
+@MainActor
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var selectedButtonType: SettingsQuickButtonType?
@@ -375,15 +401,18 @@ class QuickButtons: ObservableObject {
     @Published var activePage: Int? = 1
 }
 
+@MainActor
 class Snapshot: ObservableObject {
     @Published var countdown = 0
     @Published var currentJob: SnapshotJob?
 }
 
+@MainActor
 class Orientation: ObservableObject {
     @Published var isPortrait: Bool = false
 }
 
+@MainActor
 class CameraLevel: ObservableObject {
     private var motion = CMMotionManager()
     @Published var angle: Double?
