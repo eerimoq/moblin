@@ -9,6 +9,7 @@ extension Model {
         macro.running = true
         macro.nextActionIndex = 0
         macro.repeatCurrentCount = 0
+        macro.delayed = false
         macro.stack = [macro]
         remoteControlMacrosStateChanged()
         executeNextAction(macro: macro)
@@ -129,16 +130,21 @@ extension Model {
         }
         if shouldRepeat {
             currentMacro.nextActionIndex = 0
-        } else {
-            currentMacro.running = false
-            currentMacro.finished = true
-            currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
-                currentMacro.finished = false
+            let timeout = currentMacro.delayed ? 0.0 : 1.0
+            currentMacro.delayed = false
+            currentMacro.delayTimer.startSingleShot(timeout: timeout) {
+                self.executeNextAction(macro: macro)
             }
-            macro.stack.removeLast()
-            if macro.stack.isEmpty {
-                remoteControlMacrosStateChanged()
-            }
+            return
+        }
+        currentMacro.running = false
+        currentMacro.finished = true
+        currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
+            currentMacro.finished = false
+        }
+        macro.stack.removeLast()
+        if macro.stack.isEmpty {
+            remoteControlMacrosStateChanged()
         }
         executeNextAction(macro: macro)
     }
@@ -237,6 +243,9 @@ extension Model {
                               action: SettingsMacrosAction,
                               macro: SettingsMacrosMacro) -> Bool
     {
+        for macro in macro.stack {
+            macro.delayed = true
+        }
         currentMacro.delayTimer.startSingleShot(timeout: action.delay) {
             self.executeNextAction(macro: macro)
         }
