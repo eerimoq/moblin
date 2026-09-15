@@ -17,9 +17,9 @@ class AlertsEffectVideoReader: @unchecked Sendable {
     private var basePresentationTimeStamp: Double?
 
     init(path: URL) {
-        lockQueue.async {
+        lockQueue.async { [self] in
             let asset = AVAsset(url: path)
-            self.reader = try? AVAssetReader(asset: asset)
+            reader = try? AVAssetReader(asset: asset)
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
                 let self2 = self
                 lockQueue.async {

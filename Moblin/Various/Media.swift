@@ -1200,15 +1200,15 @@ extension Media: ProcessorDelegate {
 
 extension Media: SrtlaDelegate {
     func srtlaReady(port: UInt16) {
-        processorControlQueue.async {
-            if self.srtStreamOld != nil {
+        processorControlQueue.async { [self] in
+            if srtStreamOld != nil {
                 do {
-                    try self.srtStreamOld?.open(self.makeLocalhostSrtUrl(
-                        url: self.srtUrl,
+                    try srtStreamOld?.open(makeLocalhostSrtUrl(
+                        url: srtUrl,
                         port: port,
-                        latency: self.latency,
-                        overheadBandwidth: self.overheadBandwidth,
-                        maximumBandwidthFollowInput: self.maximumBandwidthFollowInput
+                        latency: latency,
+                        overheadBandwidth: overheadBandwidth,
+                        maximumBandwidthFollowInput: maximumBandwidthFollowInput
                     )) { [weak self] data in
                         guard let self else {
                             return false
@@ -1232,9 +1232,9 @@ extension Media: SrtlaDelegate {
                     }
                 }
             } else {
-                self.srtStreamNew?.open(streamId: extractSrtStreamId(url: self.srtUrl),
-                                        latency: UInt16(clamping: self.latency),
-                                        experimental: self.experimental)
+                srtStreamNew?.open(streamId: extractSrtStreamId(url: srtUrl),
+                                   latency: UInt16(clamping: latency),
+                                   experimental: experimental)
             }
         }
     }

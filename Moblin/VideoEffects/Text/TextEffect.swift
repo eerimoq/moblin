@@ -180,15 +180,15 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
                               lines: [])
         self.delay = delay
         super.init()
-        DispatchQueue.main.async {
-            self.renderer = ImageRenderer(content: TextView(state: self.state))
-            self.cancellable = self.renderer?.objectWillChange.sink { [weak self] in
+        DispatchQueue.main.async { [self] in
+            renderer = ImageRenderer(content: TextView(state: state))
+            cancellable = renderer?.objectWillChange.sink { [weak self] in
                 guard let self else {
                     return
                 }
                 setOverlay(image: renderer?.cgImage)
             }
-            self.setOverlay(image: self.renderer?.cgImage)
+            setOverlay(image: renderer?.cgImage)
         }
     }
 

@@ -219,12 +219,12 @@ class SrtSender: @unchecked Sendable {
     }
 
     func start() {
-        srtlaClientQueue.async {
-            self.clock = SrtClock()
-            self.latestReceivedPacketTime = .now
-            self.setState(state: .connecting)
-            self.outputPacket(packet: self.createInductionHandshakePacket())
-            self.connectTimer.startSingleShot(timeout: 5) { [weak self] in
+        srtlaClientQueue.async { [self] in
+            clock = SrtClock()
+            latestReceivedPacketTime = .now
+            setState(state: .connecting)
+            outputPacket(packet: createInductionHandshakePacket())
+            connectTimer.startSingleShot(timeout: 5) { [weak self] in
                 self?.handleConnectTimeout()
             }
         }

@@ -60,7 +60,7 @@ class Gimbal {
             guard let self, !tracking else {
                 return
             }
-            _ = try await accessory?.animate(motion: motion)
+            _ = try? await accessory?.animate(motion: motion)
         }
     }
 
@@ -69,7 +69,7 @@ class Gimbal {
             guard let self, !tracking else {
                 return
             }
-            _ = try await accessory?.setAngularVelocity(velocity)
+            _ = try? await accessory?.setAngularVelocity(velocity)
         }
     }
 

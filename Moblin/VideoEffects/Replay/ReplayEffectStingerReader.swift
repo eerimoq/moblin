@@ -77,10 +77,10 @@ class ReplayEffectStingerReader: @unchecked Sendable {
     }
 
     private func setup(path: URL) {
-        replayEffectQueue.async {
+        replayEffectQueue.async { [self] in
             let asset = AVAsset(url: path)
-            self.reader = try? AVAssetReader(asset: asset)
-            self.duration = asset.duration()
+            reader = try? AVAssetReader(asset: asset)
+            duration = asset.duration()
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
                 let self2 = self
                 replayEffectQueue.async {
