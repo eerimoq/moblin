@@ -9,8 +9,9 @@ struct DjiDiscoveredDevice {
     let model: SettingsDjiDeviceModel
 }
 
+@MainActor
 class DjiDeviceScanner: NSObject, ObservableObject {
-    nonisolated(unsafe) static let shared = DjiDeviceScanner()
+    static let shared = DjiDeviceScanner()
     @Published var discoveredDevices: [DjiDiscoveredDevice] = []
     private var centralManager: CBCentralManager?
 
@@ -25,7 +26,7 @@ class DjiDeviceScanner: NSObject, ObservableObject {
     }
 }
 
-extension DjiDeviceScanner: CBCentralManagerDelegate {
+extension DjiDeviceScanner: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: nil, options: nil)

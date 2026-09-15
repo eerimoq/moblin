@@ -50,7 +50,8 @@ protocol DjiDeviceDelegate: AnyObject {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState)
 }
 
-class DjiDevice: NSObject, @unchecked Sendable {
+@MainActor
+class DjiDevice: NSObject {
     private var wifiSsid: String?
     private var wifiPassword: String?
     private var rtmpUrl: String?
@@ -158,9 +159,7 @@ class DjiDevice: NSObject, @unchecked Sendable {
         }
         logger.debug("dji-device: State change \(self.state) -> \(state)")
         self.state = state
-        MainActor.assumeIsolated {
-            delegate?.djiDeviceStreamingState(self, state: state)
-        }
+        delegate?.djiDeviceStreamingState(self, state: state)
     }
 
     func getState() -> DjiDeviceState {
@@ -168,7 +167,7 @@ class DjiDevice: NSObject, @unchecked Sendable {
     }
 }
 
-extension DjiDevice: CBCentralManagerDelegate {
+extension DjiDevice: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
@@ -203,7 +202,7 @@ extension DjiDevice: CBCentralManagerDelegate {
     }
 }
 
-extension DjiDevice: CBPeripheralDelegate {
+extension DjiDevice: @MainActor CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             return
