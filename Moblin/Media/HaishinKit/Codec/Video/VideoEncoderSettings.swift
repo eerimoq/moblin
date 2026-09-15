@@ -113,10 +113,14 @@ struct VideoEncoderSettings {
     func bitrateProperties(bitrate: UInt32) -> [VTSessionProperty] {
         switch rateControl {
         case .abr:
-            [
-                .init(key: .averageBitRate, value: bitrate as CFNumber),
-                .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)),
-            ]
+            if #available(iOS 27, *) {
+                [.init(key: .averageBitRate, value: bitrate as CFNumber)]
+            } else {
+                [
+                    .init(key: .averageBitRate, value: bitrate as CFNumber),
+                    .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)),
+                ]
+            }
         case .cbr:
             [.init(key: .constantBitRate, value: bitrate as CFNumber)]
         case .vbr:
