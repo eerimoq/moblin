@@ -8,6 +8,22 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "35.1.0", date: "2026-09-15", changes: [
+        "• Add BLE cycling speed and cadence (CSC) workout device support. 🧑‍🏭 KleMiX",
+        "• Live2D in VTuber. 💡 Aislynn Bloomtear and Spillmaker",
+        "• Fix manual Moblink relay streamer URL validation. 🐛 NT4admin®",
+        "• Improved chat bot command input validation.",
+        "• Optional Go live notification to Moblin website. 💡 JohannesLiv",
+        "• Improved input validation in general.",
+        "• Move Moblin icon slightly down in face blur effect.",
+        "• SRT 1.5.7.",
+        "• Try to fix crash the sometimes happens when starting or stopping a stream.",
+        "• Lots of Swift 6 adaptions.",
+        "• Fix for stream playing in Kick auth. 🧑‍🏭 iChrisIRL",
+        "• Various improvements to workouts. 🧑‍🏭 KleMiX",
+        "• Make ABR rate control work on iOS 27 by not settings data rate limit.",
+        "• Fix quick button safe area when building with Xcode 27.",
+    ]),
     Version(version: "35.0.0", date: "2026-09-09", changes: [
         "• Show wrong password message in remote control streamer.",
         "• Make changing control bar background image crop less laggy.",
