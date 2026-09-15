@@ -1289,11 +1289,9 @@ extension Model {
             return
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
-        DispatchQueue.main.async {
-            effect.update(scoreboard: widget.scoreboard,
-                          config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
-                          players: self.database.scoreboardPlayers)
-        }
+        effect.update(scoreboard: widget.scoreboard,
+                      config: getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                      players: database.scoreboardPlayers)
         if isWatchLocal() {
             switch widget.scoreboard.sport {
             case .padel:

@@ -351,26 +351,22 @@ extension Model {
                     continue
                 }
                 scoreboard.generic.clock.tick()
-                DispatchQueue.main.async {
-                    effect.update(
-                        scoreboard: scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
-                        players: self.database.scoreboardPlayers
-                    )
-                }
+                effect.update(
+                    scoreboard: scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: scoreboard),
+                    players: database.scoreboardPlayers
+                )
                 sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
             default:
                 guard !scoreboard.modular.clock.isStopped else {
                     continue
                 }
                 widget.scoreboard.modular.clock.tick()
-                DispatchQueue.main.async {
-                    effect.update(
-                        scoreboard: scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
-                        players: self.database.scoreboardPlayers
-                    )
-                }
+                effect.update(
+                    scoreboard: scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: scoreboard),
+                    players: database.scoreboardPlayers
+                )
                 remoteControlScoreboardUpdate(scoreboard: scoreboard)
             }
         }
@@ -485,21 +481,17 @@ extension Model {
     }
 
     private func updateScoreboardEffect(widget: SettingsWidget) {
-        DispatchQueue.main.async {
-            self.getScoreboardEffect(id: widget.id)?
-                .update(scoreboard: widget.scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
-                        players: self.database.scoreboardPlayers)
-        }
+        getScoreboardEffect(id: widget.id)?
+            .update(scoreboard: widget.scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                    players: database.scoreboardPlayers)
     }
 
     private func updateGolfScoreboardEffect(widget: SettingsWidget) {
-        DispatchQueue.main.async {
-            self.getScoreboardEffect(id: widget.id)?
-                .update(scoreboard: widget.scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
-                        players: self.database.scoreboardPlayers)
-        }
+        getScoreboardEffect(id: widget.id)?
+            .update(scoreboard: widget.scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                    players: database.scoreboardPlayers)
     }
 
     private func updateAllGolfScoreboardEffects(golf: SettingsWidgetGolfScoreboard) {
