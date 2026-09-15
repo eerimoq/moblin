@@ -93,6 +93,7 @@ extension Model {
         if database.location.resetWhenGoingLive {
             resetLocationData()
         }
+        macrosEventOccurred(MacroEvent(event: .goLive))
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
@@ -124,6 +125,7 @@ extension Model {
             return false
         }
         logger.info("stream: Stop")
+        macrosEventOccurred(MacroEvent(event: .end))
         streamTotalBytes += UInt64(media.streamTotal())
         streaming = false
         if stream.recording.autoStopRecording {

@@ -10,6 +10,8 @@ extension Model {
         macro.nextActionIndex = 0
         macro.repeatCurrentCount = 0
         macro.delayed = false
+        macro.waitingForEventAction = nil
+        macro.eventQueue.removeAll()
         macro.stack = [macro]
         remoteControlMacrosStateChanged()
         executeNextAction(macro: macro)
@@ -31,8 +33,10 @@ extension Model {
         for macro in macro.stack {
             macro.delayTimer.stop()
             macro.finishedTimer.stop()
+            macro.waitingForEventAction = nil
         }
         macro.stack.removeAll()
+        macro.eventQueue.removeAll()
         remoteControlMacrosStateChanged()
     }
 
@@ -58,6 +62,44 @@ extension Model {
         } else if !macro.finished {
             startMacro(macro: macro)
         }
+    }
+
+    func autoStartMacros() {
+        for macro in database.macros.macros where macro.runAtAppStart {
+            startMacro(macro: macro)
+        }
+    }
+
+    func macrosEventOccurred(_ event: MacroEvent) {
+        for macro in database.macros.macros where macro.running {
+            macro.eventQueue.append(event)
+            if macro.eventQueue.count > 100 {
+                macro.eventQueue.removeFirst()
+            }
+        }
+        for macro in database.macros.macros where macro.running {
+            continueMacroIfQueuedEventMatches(macro: macro)
+        }
+    }
+
+    private func continueMacroIfQueuedEventMatches(macro: SettingsMacrosMacro) {
+        guard let currentMacro = macro.stack.last,
+              let action = currentMacro.waitingForEventAction,
+              takeQueuedEvent(macro: macro, action: action)
+        else {
+            return
+        }
+        currentMacro.waitingForEventAction = nil
+        executeNextAction(macro: macro)
+    }
+
+    private func takeQueuedEvent(macro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
+        while !macro.eventQueue.isEmpty {
+            if action.matches(event: macro.eventQueue.removeFirst()) {
+                return true
+            }
+        }
+        return false
     }
 
     func getRemoteControlMacros() -> [RemoteControlMacro] {
@@ -182,10 +224,12 @@ extension Model {
             executeDelay(currentMacro: currentMacro,
                          action: action,
                          macro: macro)
-        case .macro:
-            executeMacro(action: action, macro: macro)
+        case .waitForEvent:
+            executeWaitForEvent(currentMacro: currentMacro, action: action, macro: macro)
         case .ifCondition:
             executeIfCondition(currentMacro: currentMacro, action: action)
+        case .macro:
+            executeMacro(action: action, macro: macro)
         case .djiDevices:
             executeDjiDevices(action: action)
         case .record:
@@ -275,6 +319,17 @@ extension Model {
             currentMacro.nextActionIndex += action.ifRunCount
         }
         return true
+    }
+
+    private func executeWaitForEvent(currentMacro: SettingsMacrosMacro,
+                                     action: SettingsMacrosAction,
+                                     macro: SettingsMacrosMacro) -> Bool
+    {
+        if takeQueuedEvent(macro: macro, action: action) {
+            return true
+        }
+        currentMacro.waitingForEventAction = action
+        return false
     }
 
     private func executeFilters(action: SettingsMacrosAction) -> Bool {

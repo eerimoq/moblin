@@ -111,6 +111,28 @@ class MacroActionFunction(StrEnum):
     DELAY = "Delay"
     MACRO = "Macro"
     IF = "If"
+    WAIT_FOR_EVENT = "Wait for event"
+
+
+class MacroEvent(StrEnum):
+    TWITCH_FOLLOW = "Twitch follow"
+    TWITCH_SUBSCRIPTION = "Twitch subscription"
+    TWITCH_GIFT_SUBSCRIPTION = "Twitch gift subscription"
+    TWITCH_RESUBSCRIPTION = "Twitch resubscription"
+    TWITCH_REWARD = "Twitch reward"
+    TWITCH_RAID = "Twitch raid"
+    TWITCH_CHEER = "Twitch cheer"
+    TWITCH_WATCH_STREAK = "Twitch watch streak"
+    KICK_SUBSCRIPTION = "Kick subscription"
+    KICK_GIFT_SUBSCRIPTIONS = "Kick gift subscriptions"
+    KICK_REWARD = "Kick reward"
+    KICK_HOST = "Kick host"
+    KICK_KICKS = "Kick kicks"
+    STREAM_STARTED = "Stream started"
+    STREAM_STOPPED = "Stream stopped"
+    RECORDING_STARTED = "Recording started"
+    RECORDING_STOPPED = "Recording stopped"
+    SCENE_SWITCHED = "Scene switched"
 
 
 class MacroRepeatMode(StrEnum):
@@ -344,6 +366,21 @@ def macro_if_action(value: str, comparison: MacroIfComparison, other_value: str,
         "ifComparison": comparison,
         "ifOtherValue": other_value,
         "ifRunCount": run_count,
+    }
+
+
+def macro_wait_for_event_action(
+    event: MacroEvent,
+    minimum_amount: int = 0,
+    text: str = "",
+    scene_id: str | None = None,
+):
+    return {
+        "function": MacroActionFunction.WAIT_FOR_EVENT,
+        "event": event,
+        "eventMinimumAmount": minimum_amount,
+        "eventText": text,
+        "eventSceneId": scene_id,
     }
 
 

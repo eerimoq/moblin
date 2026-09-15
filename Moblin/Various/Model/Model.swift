@@ -1255,6 +1255,7 @@ final class Model: NSObject, ObservableObject {
         startGForceManager()
         chatBotCustomCommandsTextChanged()
         macrosTextFormatChanged()
+        autoStartMacros()
         loadStealthModeImage()
         loadControlBarBackgroundImage()
         loadFaceBackgroundImage()

@@ -419,6 +419,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickSubscription(event: event))
         printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickSubscription, amount: event.months))
         latestSubscriber = event.username
     }
 
@@ -444,6 +445,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickGiftedSubscriptions(event: event))
         printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickGiftSubscriptions, amount: event.gifted_usernames.count))
         latestSubscriber = user
     }
 
@@ -466,6 +468,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickReward(event: event))
         printEventCatPrinters(event: .kickReward, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickReward, text: event.reward_title))
     }
 
     func kickPusherStreamHost(event: KickPusherStreamHostEvent) {
@@ -486,6 +489,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickHost(event: event))
         printEventCatPrinters(event: .kickHost, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickHost, amount: event.number_viewers))
     }
 
     func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
@@ -530,6 +534,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickKicks(event: event))
         printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
+        macrosEventOccurred(MacroEvent(event: .kickKicks, amount: event.gift.amount))
     }
 }
 

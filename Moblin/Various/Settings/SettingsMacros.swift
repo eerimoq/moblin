@@ -1,4 +1,5 @@
 import AVFoundation
+import Collections
 import Foundation
 
 enum SettingsReaction: Codable, CaseIterable {
@@ -92,8 +93,9 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case gimbalPreset = "Move to gimbal preset"
     case sendChatMessage = "Send chat message"
     case delay = "Delay"
-    case macro = "Macro"
+    case waitForEvent = "Wait for event"
     case ifCondition = "If"
+    case macro = "Macro"
 
     func toString() -> String {
         switch self {
@@ -125,12 +127,111 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "Send chat message")
         case .delay:
             String(localized: "Delay")
-        case .macro:
-            String(localized: "Run macro")
+        case .waitForEvent:
+            String(localized: "Wait for event")
         case .ifCondition:
             String(localized: "If")
+        case .macro:
+            String(localized: "Run macro")
         }
     }
+}
+
+enum SettingsMacrosEvent: String, Codable, CaseIterable {
+    case twitchFollow = "Twitch follow"
+    case twitchSubscription = "Twitch subscription"
+    case twitchGiftSubscription = "Twitch gift subscription"
+    case twitchResubscription = "Twitch resubscription"
+    case twitchReward = "Twitch reward"
+    case twitchRaid = "Twitch raid"
+    case twitchCheer = "Twitch cheer"
+    case twitchWatchStreak = "Twitch watch streak"
+    case kickSubscription = "Kick subscription"
+    case kickGiftSubscriptions = "Kick gift subscriptions"
+    case kickReward = "Kick reward"
+    case kickHost = "Kick host"
+    case kickKicks = "Kick kicks"
+    case goLive = "Stream started"
+    case end = "Stream stopped"
+    case startRecording = "Recording started"
+    case stopRecording = "Recording stopped"
+    case switchScene = "Scene switched"
+
+    func toString() -> String {
+        switch self {
+        case .twitchFollow:
+            String(localized: "Twitch follow")
+        case .twitchSubscription:
+            String(localized: "Twitch subscription")
+        case .twitchGiftSubscription:
+            String(localized: "Twitch gift subscription")
+        case .twitchResubscription:
+            String(localized: "Twitch resubscription")
+        case .twitchReward:
+            String(localized: "Twitch reward")
+        case .twitchRaid:
+            String(localized: "Twitch raid")
+        case .twitchCheer:
+            String(localized: "Twitch bits")
+        case .twitchWatchStreak:
+            String(localized: "Twitch watch streak")
+        case .kickSubscription:
+            String(localized: "Kick subscription")
+        case .kickGiftSubscriptions:
+            String(localized: "Kick gift subscriptions")
+        case .kickReward:
+            String(localized: "Kick reward")
+        case .kickHost:
+            String(localized: "Kick host")
+        case .kickKicks:
+            String(localized: "Kick kicks")
+        case .goLive:
+            String(localized: "Go live")
+        case .end:
+            String(localized: "End")
+        case .startRecording:
+            String(localized: "Start recording")
+        case .stopRecording:
+            String(localized: "Stop recording")
+        case .switchScene:
+            String(localized: "Switch scene")
+        }
+    }
+
+    func minimumAmountTitle() -> String? {
+        switch self {
+        case .twitchGiftSubscription, .kickGiftSubscriptions:
+            String(localized: "Minimum subscriptions")
+        case .twitchResubscription, .kickSubscription:
+            String(localized: "Minimum months")
+        case .twitchRaid, .kickHost:
+            String(localized: "Minimum viewers")
+        case .twitchCheer:
+            String(localized: "Minimum bits")
+        case .twitchWatchStreak:
+            String(localized: "Minimum watch streak")
+        case .kickKicks:
+            String(localized: "Minimum kicks")
+        default:
+            nil
+        }
+    }
+
+    func textTitle() -> String? {
+        switch self {
+        case .twitchReward, .kickReward:
+            String(localized: "Reward")
+        default:
+            nil
+        }
+    }
+}
+
+struct MacroEvent {
+    let event: SettingsMacrosEvent
+    var amount: Int = 0
+    var text: String = ""
+    var sceneId: UUID?
 }
 
 enum SettingsMacrosActionIfComparison: String, CaseIterable, Codable {
@@ -208,6 +309,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var ifComparison: SettingsMacrosActionIfComparison = .equal
     @Published var ifOtherValue: String = ""
     @Published var ifRunCount: Int = 1
+    @Published var event: SettingsMacrosEvent = .twitchFollow
+    @Published var eventMinimumAmount: Int = 0
+    @Published var eventText: String = ""
+    @Published var eventSceneId: UUID?
     var needsWeather: Bool = false
     var needsGeography: Bool = false
     var needsGForce: Bool = false
@@ -235,6 +340,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case ifComparison
         case ifOtherValue
         case ifRunCount
+        case event
+        case eventMinimumAmount
+        case eventText
+        case eventSceneId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -259,6 +368,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.ifComparison, ifComparison)
         try container.encode(.ifOtherValue, ifOtherValue)
         try container.encode(.ifRunCount, ifRunCount)
+        try container.encode(.event, event)
+        try container.encode(.eventMinimumAmount, eventMinimumAmount)
+        try container.encode(.eventText, eventText)
+        try container.encode(.eventSceneId, eventSceneId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -283,6 +396,21 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         ifComparison = container.decode(.ifComparison, SettingsMacrosActionIfComparison.self, .equal)
         ifOtherValue = container.decode(.ifOtherValue, String.self, "")
         ifRunCount = container.decode(.ifRunCount, Int.self, 1)
+        event = container.decode(.event, SettingsMacrosEvent.self, .twitchFollow)
+        eventMinimumAmount = container.decode(.eventMinimumAmount, Int.self, 0)
+        eventText = container.decode(.eventText, String.self, "")
+        eventSceneId = container.decode(.eventSceneId, UUID?.self, nil)
+    }
+
+    func matches(event: MacroEvent) -> Bool {
+        guard event.event == self.event, event.amount >= eventMinimumAmount else {
+            return false
+        }
+        if let eventSceneId, event.sceneId != eventSceneId {
+            return false
+        }
+        let text = eventText.trim()
+        return text.isEmpty || event.text.trim().caseInsensitiveCompare(text) == .orderedSame
     }
 }
 
@@ -313,7 +441,10 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var repeatMode: SettingsMacrosMacroRepeatMode = .off
     @Published var repeatCount: Int = 5
     @Published var closePanelOnRun: Bool = false
+    @Published var runAtAppStart: Bool = false
     var nextActionIndex: Int = 0
+    var waitingForEventAction: SettingsMacrosAction?
+    var eventQueue: Deque<MacroEvent> = []
     var repeatCurrentCount: Int = 0
     var delayed: Bool = false
     let delayTimer = MainTimer()
@@ -329,6 +460,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         case repeatMode
         case repeatCount
         case closePanelOnRun
+        case runAtAppStart
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -339,6 +471,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         try container.encode(.repeatMode, repeatMode)
         try container.encode(.repeatCount, repeatCount)
         try container.encode(.closePanelOnRun, closePanelOnRun)
+        try container.encode(.runAtAppStart, runAtAppStart)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -349,6 +482,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         repeatMode = container.decode(.repeatMode, SettingsMacrosMacroRepeatMode.self, .off)
         repeatCount = container.decode(.repeatCount, Int.self, 5)
         closePanelOnRun = container.decode(.closePanelOnRun, Bool.self, false)
+        runAtAppStart = container.decode(.runAtAppStart, Bool.self, false)
     }
 
     func copy() -> SettingsMacrosMacro {

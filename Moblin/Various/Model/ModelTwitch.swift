@@ -782,6 +782,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchFollow, username: event.user_name, message: text)
+        macrosEventOccurred(MacroEvent(event: .twitchFollow))
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
@@ -816,6 +817,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
+        macrosEventOccurred(MacroEvent(event: .twitchSubscription))
         latestSubscriber = event.user_name
     }
 
@@ -846,6 +848,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: textWithMessage)
+        macrosEventOccurred(MacroEvent(event: .twitchGiftSubscription, amount: event.total))
         latestSubscriber = user
     }
 
@@ -885,6 +888,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: textWithMessage)
+        macrosEventOccurred(MacroEvent(event: .twitchResubscription, amount: event.cumulative_months))
         latestSubscriber = event.user_name
     }
 
@@ -919,6 +923,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
+        macrosEventOccurred(MacroEvent(event: .twitchSubscription))
         latestSubscriber = event.user_name
     }
 
@@ -944,6 +949,7 @@ extension Model: TwitchEventSubDelegate {
                 chatter: event.chatter
             )
         }
+        macrosEventOccurred(MacroEvent(event: .twitchWatchStreak, amount: event.streak_count))
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
@@ -968,6 +974,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchReward, username: event.user_name, message: text)
+        macrosEventOccurred(MacroEvent(event: .twitchReward, text: event.reward.title))
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
@@ -1004,6 +1011,7 @@ extension Model: TwitchEventSubDelegate {
                 username: event.from_broadcaster_user_name,
                 message: textWithMessage
             )
+            macrosEventOccurred(MacroEvent(event: .twitchRaid, amount: event.viewers))
         }
     }
 
@@ -1028,6 +1036,7 @@ extension Model: TwitchEventSubDelegate {
         }
         let message = event.message.isEmpty ? text : "\(text) \(event.message)"
         printEventCatPrinters(event: .twitchCheer(amount: event.bits), username: user, message: message)
+        macrosEventOccurred(MacroEvent(event: .twitchCheer, amount: event.bits))
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {

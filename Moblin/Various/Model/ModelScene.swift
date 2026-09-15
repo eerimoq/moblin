@@ -196,6 +196,7 @@ extension Model {
             return
         }
         if let index = findEnabledSceneIndex(id: id) {
+            macrosEventOccurred(MacroEvent(event: .switchScene, sceneId: id))
             sceneSelector.sceneIndex = index
             setSceneId(id: id)
             sceneUpdated(attachCamera: true, updateRemoteScene: false)

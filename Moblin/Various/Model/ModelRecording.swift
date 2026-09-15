@@ -11,6 +11,7 @@ extension Model {
         guard !isChatPhone() else {
             return
         }
+        macrosEventOccurred(MacroEvent(event: .startRecording))
         setIsRecording(value: true)
         if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {
@@ -27,6 +28,7 @@ extension Model {
         guard isRecording else {
             return
         }
+        macrosEventOccurred(MacroEvent(event: .stopRecording))
         setIsRecording(value: false)
         if let toastTitle {
             makeToast(title: toastTitle, subTitle: toastSubTitle)

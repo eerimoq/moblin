@@ -186,15 +186,6 @@ private struct ActionView: View {
                             Slider(value: $action.delay, in: 1 ... 60)
                             Text("\(Int(action.delay))s")
                         }
-                    case .macro:
-                        Picker("Macro", selection: $action.macroId) {
-                            Text("-- None --")
-                                .tag(nil as UUID?)
-                            ForEach(macros.macros) {
-                                Text($0.name)
-                                    .tag($0.id as UUID?)
-                            }
-                        }
                     case .djiDevices:
                         ForEach(database.djiDevices.devices) { device in
                             Toggle(device.name, isOn: Binding(
@@ -246,6 +237,41 @@ private struct ActionView: View {
                                 Text($0.toString())
                             }
                         }
+                    case .waitForEvent:
+                        Picker("Event", selection: $action.event) {
+                            ForEach(SettingsMacrosEvent.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                        if let title = action.event.minimumAmountTitle() {
+                            TextEditNavigationView(
+                                title: title,
+                                value: String(action.eventMinimumAmount),
+                                onSubmit: {
+                                    action.eventMinimumAmount = Int($0) ?? 0
+                                },
+                                keyboardType: .numbersAndPunctuation
+                            )
+                        }
+                        if let title = action.event.textTitle() {
+                            TextEditNavigationView(
+                                title: title,
+                                value: action.eventText,
+                                onSubmit: {
+                                    action.eventText = $0
+                                }
+                            )
+                        }
+                        if action.event == .switchScene {
+                            Picker("Scene", selection: $action.eventSceneId) {
+                                Text("-- Any --")
+                                    .tag(nil as UUID?)
+                                ForEach(database.scenes) {
+                                    SceneNameView(scene: $0)
+                                        .tag($0.id as UUID?)
+                                }
+                            }
+                        }
                     case .ifCondition:
                         NavigationLink {
                             TextFormatView(title: String(localized: "Value"),
@@ -273,12 +299,34 @@ private struct ActionView: View {
                                 Text(String($0))
                             }
                         }
+                    case .macro:
+                        Picker("Macro", selection: $action.macroId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(macros.macros) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case nil:
                         EmptyView()
                     }
                 } footer: {
-                    if action.function == .ifCondition {
+                    switch action.function {
+                    case .waitForEvent:
+                        switch action.event {
+                        case .twitchReward, .kickReward:
+                            Text("""
+                            Wait until a viewer redeems the reward, then continue with the following \
+                            actions. Leave reward empty to wait for any reward.
+                            """)
+                        default:
+                            Text("Wait until the event happens, then continue with the following actions.")
+                        }
+                    case .ifCondition:
                         Text("Run given number of following actions if the condition is met.")
+                    default:
+                        EmptyView()
                     }
                 }
             }
@@ -327,11 +375,6 @@ private struct ActionView: View {
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")
-                case .macro:
-                    if let macroName = macros.macros.first(where: { $0.id == action.macroId })?.name {
-                        Spacer()
-                        GrayTextView(text: macroName)
-                    }
                 case .djiDevices:
                     Spacer()
                     GrayTextView(text: String(action.djiDevices.count))
@@ -352,11 +395,27 @@ private struct ActionView: View {
                 case .reaction:
                     Spacer()
                     GrayTextView(text: action.reaction.toString())
+                case .waitForEvent:
+                    Spacer()
+                    if action.event == .switchScene,
+                       let sceneName = model.getSceneName(id: action.eventSceneId)
+                    {
+                        GrayTextView(text: "\(action.event.toString()) (\(sceneName))")
+                    } else if !action.eventText.isEmpty {
+                        GrayTextView(text: "\(action.event.toString()) (\(action.eventText))")
+                    } else {
+                        GrayTextView(text: action.event.toString())
+                    }
                 case .ifCondition:
                     Spacer()
                     GrayTextView(
                         text: "\(action.ifValue) \(action.ifComparison.toString()) \(action.ifOtherValue)"
                     )
+                case .macro:
+                    if let macroName = macros.macros.first(where: { $0.id == action.macroId })?.name {
+                        Spacer()
+                        GrayTextView(text: macroName)
+                    }
                 case nil:
                     EmptyView()
                 }
@@ -429,6 +488,12 @@ private struct MacroView: View {
                 }
                 Section {
                     Toggle("Close macros panel on run", isOn: $macro.closePanelOnRun)
+                    Toggle("Run at app start", isOn: $macro.runAtAppStart)
+                } footer: {
+                    Text("""
+                    Run at app start is useful for macros that wait for events, for example to run \
+                    actions when someone follows. Set repeat to forever to wait again after each event.
+                    """)
                 }
                 Section {
                     if macro.running {
@@ -469,7 +534,8 @@ struct MacrosSettingsView: View {
             Section {
                 Text("""
                 A macro is a sequence of actions that can change settings, filters, etc. with a \
-                single button tap.
+                single button tap. It can also wait for events, for example new followers, before \
+                continuing.
                 """)
             }
             Section {
