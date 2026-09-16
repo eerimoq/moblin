@@ -91,43 +91,23 @@ struct ChatSettingsAppearanceView: View {
                 }
                 Section {
                     if database.showAllSettings {
-                        ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
-                            .onChange(of: chat.timestampColorColor) { _ in
-                                guard let color = chat.timestampColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.timestampColor = color
-                                model.reloadChatMessages()
-                            }
-                        ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
-                            .onChange(of: chat.usernameColorColor) { _ in
-                                guard let color = chat.usernameColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.usernameColor = color
-                                model.reloadChatMessages()
-                            }
+                        RgbColorPickerView(title: "Timestamp", color: $chat.timestampColorColor) {
+                            chat.timestampColor = $0
+                            model.reloadChatMessages()
+                        }
+                        RgbColorPickerView(title: "Name", color: $chat.usernameColorColor) {
+                            chat.usernameColor = $0
+                            model.reloadChatMessages()
+                        }
                         Toggle("Same color for all names", isOn: $chat.sameUsernameColor)
-                        ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
-                            .onChange(of: chat.messageColorColor) { _ in
-                                guard let color = chat.messageColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.messageColor = color
-                                model.reloadChatMessages()
-                            }
+                        RgbColorPickerView(title: "Message", color: $chat.messageColorColor) {
+                            chat.messageColor = $0
+                            model.reloadChatMessages()
+                        }
                     }
                     Toggle(isOn: $chat.backgroundColorEnabled) {
-                        ColorPicker(
-                            "Background",
-                            selection: $chat.backgroundColorColor,
-                            supportsOpacity: false
-                        )
-                        .onChange(of: chat.backgroundColorColor) { _ in
-                            guard let color = chat.backgroundColorColor.toRgb() else {
-                                return
-                            }
-                            chat.backgroundColor = color
+                        RgbColorPickerView(title: "Background", color: $chat.backgroundColorColor) {
+                            chat.backgroundColor = $0
                             model.reloadChatMessages()
                         }
                     }
@@ -135,14 +115,10 @@ struct ChatSettingsAppearanceView: View {
                         model.reloadChatMessages()
                     }
                     Toggle(isOn: $chat.shadowColorEnabled) {
-                        ColorPicker("Border", selection: $chat.shadowColorColor, supportsOpacity: false)
-                            .onChange(of: chat.shadowColorColor) { _ in
-                                guard let color = chat.shadowColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.shadowColor = color
-                                model.reloadChatMessages()
-                            }
+                        RgbColorPickerView(title: "Border", color: $chat.shadowColorColor) {
+                            chat.shadowColor = $0
+                            model.reloadChatMessages()
+                        }
                     }
                     .onChange(of: chat.shadowColorEnabled) { _ in
                         model.reloadChatMessages()

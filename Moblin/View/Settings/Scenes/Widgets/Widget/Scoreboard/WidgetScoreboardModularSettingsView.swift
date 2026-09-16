@@ -13,20 +13,14 @@ private struct TeamView: View {
                         team.name = $0
                         updated()
                     }
-                    ColorPicker("Text", selection: $team.textColorColor, supportsOpacity: false)
-                        .onChange(of: team.textColorColor) {
-                            if let rgb = $0.toRgb() {
-                                team.textColor = rgb
-                            }
-                            updated()
-                        }
-                    ColorPicker("Background", selection: $team.backgroundColorColor, supportsOpacity: false)
-                        .onChange(of: team.backgroundColorColor) {
-                            if let rgb = $0.toRgb() {
-                                team.backgroundColor = rgb
-                            }
-                            updated()
-                        }
+                    RgbColorPickerView(title: "Text", color: $team.textColorColor) {
+                        team.textColor = $0
+                        updated()
+                    }
+                    RgbColorPickerView(title: "Background", color: $team.backgroundColorColor) {
+                        team.backgroundColor = $0
+                        updated()
+                    }
                 }
             }
             .navigationTitle(side)

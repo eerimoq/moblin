@@ -226,23 +226,16 @@ private struct SceneColorView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var scene: SettingsScene
 
-    private func onColorChange(color: Color) {
-        guard let color = color.toRgb() else {
-            return
-        }
-        scene.backgroundColor = color
-        model.sceneSelector.objectWillChange.send()
-    }
-
     var body: some View {
         Section {
-            ColorPicker("Background", selection: $scene.color)
-                .onChange(of: scene.color) { _ in
-                    onColorChange(color: scene.color)
-                }
+            RgbColorPickerView(title: "Background", color: $scene.backgroundColorColor, opacity: true) {
+                scene.backgroundColor = $0
+                model.sceneSelector.objectWillChange.send()
+            }
             TextButtonView("Reset") {
-                scene.color = defaultSegmentedPickerSelectedColor.color()
-                onColorChange(color: scene.color)
+                scene.backgroundColor = defaultSegmentedPickerSelectedColor
+                scene.backgroundColorColor = scene.backgroundColor.color()
+                model.sceneSelector.objectWillChange.send()
             }
         } header: {
             Text("Color")

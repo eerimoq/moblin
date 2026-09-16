@@ -75,14 +75,6 @@ struct QuickButtonsButtonSettingsView: View {
     @ObservedObject var button: SettingsQuickButton
     let showAll: Bool
 
-    private func onColorChange(color: Color) {
-        guard let color = color.toRgb() else {
-            return
-        }
-        button.backgroundColor = color
-        model.updateQuickButtonPairs()
-    }
-
     private func moveUp() {
         var otherButton: SettingsQuickButton?
         let pairs = model.getQuickButtonPairs(page: button.page)
@@ -237,13 +229,14 @@ struct QuickButtonsButtonSettingsView: View {
                 Text("Layout")
             }
             Section {
-                ColorPicker("Background", selection: $button.color, supportsOpacity: false)
-                    .onChange(of: button.color) { _ in
-                        onColorChange(color: button.color)
-                    }
+                RgbColorPickerView(title: "Background", color: $button.color) {
+                    button.backgroundColor = $0
+                    model.updateQuickButtonPairs()
+                }
                 TextButtonView("Reset") {
-                    button.color = defaultQuickButtonColor.color()
-                    onColorChange(color: button.color)
+                    button.backgroundColor = defaultQuickButtonColor
+                    button.color = button.backgroundColor.color()
+                    model.updateQuickButtonPairs()
                 }
             } header: {
                 Text("Color")

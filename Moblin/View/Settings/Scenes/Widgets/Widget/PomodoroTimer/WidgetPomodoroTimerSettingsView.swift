@@ -152,34 +152,22 @@ struct WidgetPomodoroTimerSettingsView: View {
             }
         }
         Section {
-            ColorPicker("Background", selection: $pomodoroTimer.backgroundColorColor, supportsOpacity: true)
-                .onChange(of: pomodoroTimer.backgroundColorColor) { _ in
-                    guard let color = pomodoroTimer.backgroundColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.backgroundColor = color
-                }
-            ColorPicker("Text", selection: $pomodoroTimer.foregroundColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.foregroundColorColor) { _ in
-                    guard let color = pomodoroTimer.foregroundColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.foregroundColor = color
-                }
-            ColorPicker("Focus", selection: $pomodoroTimer.focusColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.focusColorColor) { _ in
-                    guard let color = pomodoroTimer.focusColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.focusColor = color
-                }
-            ColorPicker("Break", selection: $pomodoroTimer.breakColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.breakColorColor) { _ in
-                    guard let color = pomodoroTimer.breakColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.breakColor = color
-                }
+            RgbColorPickerView(
+                title: "Background",
+                color: $pomodoroTimer.backgroundColorColor,
+                opacity: true
+            ) {
+                pomodoroTimer.backgroundColor = $0
+            }
+            RgbColorPickerView(title: "Text", color: $pomodoroTimer.foregroundColorColor) {
+                pomodoroTimer.foregroundColor = $0
+            }
+            RgbColorPickerView(title: "Focus", color: $pomodoroTimer.focusColorColor) {
+                pomodoroTimer.focusColor = $0
+            }
+            RgbColorPickerView(title: "Break", color: $pomodoroTimer.breakColorColor) {
+                pomodoroTimer.breakColor = $0
+            }
         } header: {
             Text("Colors")
         }

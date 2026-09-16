@@ -1664,28 +1664,20 @@ struct WidgetTextSettingsView: View {
             }
         }
         Section {
-            ColorPicker("Background", selection: $text.backgroundColorColor, supportsOpacity: true)
-                .onChange(of: text.backgroundColorColor) { _ in
-                    guard let color = text.backgroundColorColor.toRgb() else {
-                        return
-                    }
-                    text.backgroundColor = color
-                    for effect in model.getTextEffects(id: widget.id) {
-                        effect.setBackgroundColor(color: color)
-                    }
-                    model.remoteSceneSettingsUpdated()
+            RgbColorPickerView(title: "Background", color: $text.backgroundColorColor, opacity: true) {
+                text.backgroundColor = $0
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setBackgroundColor(color: $0)
                 }
-            ColorPicker("Foreground", selection: $text.foregroundColorColor, supportsOpacity: true)
-                .onChange(of: text.foregroundColorColor) { _ in
-                    guard let color = text.foregroundColorColor.toRgb() else {
-                        return
-                    }
-                    text.foregroundColor = color
-                    for effect in model.getTextEffects(id: widget.id) {
-                        effect.setForegroundColor(color: color)
-                    }
-                    model.remoteSceneSettingsUpdated()
+                model.remoteSceneSettingsUpdated()
+            }
+            RgbColorPickerView(title: "Foreground", color: $text.foregroundColorColor, opacity: true) {
+                text.foregroundColor = $0
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setForegroundColor(color: $0)
                 }
+                model.remoteSceneSettingsUpdated()
+            }
         } header: {
             Text("Colors")
         }

@@ -98,22 +98,14 @@ struct WidgetBingoCardSettingsView: View {
             Text("Marks")
         }
         Section {
-            ColorPicker("Background", selection: $bingoCard.backgroundColorColor, supportsOpacity: true)
-                .onChange(of: bingoCard.backgroundColorColor) { _ in
-                    guard let color = bingoCard.backgroundColorColor.toRgb() else {
-                        return
-                    }
-                    bingoCard.backgroundColor = color
-                    updateEffect()
-                }
-            ColorPicker("Foreground", selection: $bingoCard.foregroundColorColor, supportsOpacity: false)
-                .onChange(of: bingoCard.foregroundColorColor) { _ in
-                    guard let color = bingoCard.foregroundColorColor.toRgb() else {
-                        return
-                    }
-                    bingoCard.foregroundColor = color
-                    updateEffect()
-                }
+            RgbColorPickerView(title: "Background", color: $bingoCard.backgroundColorColor, opacity: true) {
+                bingoCard.backgroundColor = $0
+                updateEffect()
+            }
+            RgbColorPickerView(title: "Foreground", color: $bingoCard.foregroundColorColor) {
+                bingoCard.foregroundColor = $0
+                updateEffect()
+            }
         } header: {
             Text("Colors")
         }

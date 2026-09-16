@@ -14,14 +14,6 @@ struct ZoomSettingsView: View {
         model.frontZoomPresetSettingUpdated()
     }
 
-    private func onColorChange(color: Color) {
-        guard let color = color.toRgb() else {
-            return
-        }
-        zoom.backgroundColor = color
-        model.zoom.objectWillChange.send()
-    }
-
     var body: some View {
         Form {
             Section {
@@ -121,13 +113,14 @@ struct ZoomSettingsView: View {
                 Text("The zoom (in X) to set when switching to given camera, if enabled.")
             }
             Section {
-                ColorPicker("Background", selection: $zoom.backgroundColorColor)
-                    .onChange(of: zoom.backgroundColorColor) { _ in
-                        onColorChange(color: zoom.backgroundColorColor)
-                    }
+                RgbColorPickerView(title: "Background", color: $zoom.backgroundColorColor, opacity: true) {
+                    zoom.backgroundColor = $0
+                    model.zoom.objectWillChange.send()
+                }
                 TextButtonView("Reset") {
-                    zoom.backgroundColorColor = defaultSegmentedPickerSelectedColor.color()
-                    onColorChange(color: zoom.backgroundColorColor)
+                    zoom.backgroundColor = defaultSegmentedPickerSelectedColor
+                    zoom.backgroundColorColor = zoom.backgroundColor.color()
+                    model.zoom.objectWillChange.send()
                 }
             } header: {
                 Text("Color")

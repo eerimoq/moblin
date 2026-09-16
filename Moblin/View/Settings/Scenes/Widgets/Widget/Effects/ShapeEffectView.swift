@@ -41,14 +41,10 @@ private struct BorderView: View {
                     updateWidget()
                 }
             }
-            ColorPicker("Color", selection: $shape.borderColorColor, supportsOpacity: false)
-                .onChange(of: shape.borderColorColor) { _ in
-                    guard let borderColor = shape.borderColorColor.toRgb() else {
-                        return
-                    }
-                    shape.borderColor = borderColor
-                    updateWidget()
-                }
+            RgbColorPickerView(title: "Color", color: $shape.borderColorColor) {
+                shape.borderColor = $0
+                updateWidget()
+            }
         } header: {
             Text("Border")
         }

@@ -80,45 +80,29 @@ struct WidgetChatSettingsView: View {
         }
         Section {
             if database.showAllSettings {
-                ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
-                    .onChange(of: chat.usernameColorColor) { _ in
-                        guard let color = chat.usernameColorColor.toRgb() else {
-                            return
-                        }
-                        chat.usernameColor = color
-                        setEffectSettings()
-                    }
-                ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
-                    .onChange(of: chat.messageColorColor) { _ in
-                        guard let color = chat.messageColorColor.toRgb() else {
-                            return
-                        }
-                        chat.messageColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Name", color: $chat.usernameColorColor) {
+                    chat.usernameColor = $0
+                    setEffectSettings()
+                }
+                RgbColorPickerView(title: "Message", color: $chat.messageColorColor) {
+                    chat.messageColor = $0
+                    setEffectSettings()
+                }
             }
             Toggle(isOn: $chat.backgroundColorEnabled) {
-                ColorPicker("Background", selection: $chat.backgroundColorColor, supportsOpacity: false)
-                    .onChange(of: chat.backgroundColorColor) { _ in
-                        guard let color = chat.backgroundColorColor.toRgb() else {
-                            return
-                        }
-                        chat.backgroundColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Background", color: $chat.backgroundColorColor) {
+                    chat.backgroundColor = $0
+                    setEffectSettings()
+                }
             }
             .onChange(of: chat.backgroundColorEnabled) { _ in
                 setEffectSettings()
             }
             Toggle(isOn: $chat.shadowColorEnabled) {
-                ColorPicker("Border", selection: $chat.shadowColorColor, supportsOpacity: false)
-                    .onChange(of: chat.shadowColorColor) { _ in
-                        guard let color = chat.shadowColorColor.toRgb() else {
-                            return
-                        }
-                        chat.shadowColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Border", color: $chat.shadowColorColor) {
+                    chat.shadowColor = $0
+                    setEffectSettings()
+                }
             }
             .onChange(of: chat.shadowColorEnabled) { _ in
                 setEffectSettings()

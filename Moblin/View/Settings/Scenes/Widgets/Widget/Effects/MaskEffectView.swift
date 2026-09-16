@@ -488,24 +488,16 @@ struct MaskEffectView: View {
                 updateWidget()
             }
             if mask.backgroundType != .transparent {
-                ColorPicker("Color", selection: $mask.backgroundColorColor, supportsOpacity: false)
-                    .onChange(of: mask.backgroundColorColor) { _ in
-                        guard let color = mask.backgroundColorColor.toRgb() else {
-                            return
-                        }
-                        mask.backgroundColor = color
-                        updateWidget()
-                    }
+                RgbColorPickerView(title: "Color", color: $mask.backgroundColorColor) {
+                    mask.backgroundColor = $0
+                    updateWidget()
+                }
             }
             if mask.backgroundType == .checkerboard {
-                ColorPicker("Color 2", selection: $mask.backgroundColorColor2, supportsOpacity: false)
-                    .onChange(of: mask.backgroundColorColor2) { _ in
-                        guard let color = mask.backgroundColorColor2.toRgb() else {
-                            return
-                        }
-                        mask.backgroundColor2 = color
-                        updateWidget()
-                    }
+                RgbColorPickerView(title: "Color 2", color: $mask.backgroundColorColor2) {
+                    mask.backgroundColor2 = $0
+                    updateWidget()
+                }
             }
         } header: {
             Text("Background")

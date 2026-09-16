@@ -64,22 +64,14 @@ struct AlertColorsView: View {
     var body: some View {
         if alert.positionType == .scene {
             Section {
-                ColorPicker("Text", selection: $textColor, supportsOpacity: false)
-                    .onChange(of: textColor) { color in
-                        guard let color = color.toRgb() else {
-                            return
-                        }
-                        alert.textColor = color
-                        model.updateAlertsSettings()
-                    }
-                ColorPicker("Accent", selection: $accentColor, supportsOpacity: false)
-                    .onChange(of: accentColor) { color in
-                        guard let color = color.toRgb() else {
-                            return
-                        }
-                        alert.accentColor = color
-                        model.updateAlertsSettings()
-                    }
+                RgbColorPickerView(title: "Text", color: $textColor) {
+                    alert.textColor = $0
+                    model.updateAlertsSettings()
+                }
+                RgbColorPickerView(title: "Accent", color: $accentColor) {
+                    alert.accentColor = $0
+                    model.updateAlertsSettings()
+                }
             } header: {
                 Text("Colors")
             }
