@@ -2215,11 +2215,13 @@ final class Settings {
     }
 
     func reset() {
+        removeFilesAndFolders()
         realDatabase = createDefault()
         store()
     }
 
     func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
+        removeFilesAndFolders()
         let root = URL.documentsDirectory
         DispatchQueue.global().async {
             let settingsJson = root.appendingPathComponent(settingsJsonName)
@@ -2248,6 +2250,7 @@ final class Settings {
     }
 
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
+        removeFilesAndFolders()
         do {
             try tryLoadAndMigrate(settings: settings)
             store()
@@ -2305,6 +2308,12 @@ final class Settings {
             DispatchQueue.main.async {
                 onCompleted(url)
             }
+        }
+    }
+
+    private func removeFilesAndFolders() {
+        for file in exportFiles {
+            file.remove()
         }
     }
 

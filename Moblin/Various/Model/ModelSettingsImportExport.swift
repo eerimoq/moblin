@@ -8,7 +8,7 @@ extension Model {
     }
 
     func importSettingsFromFile(url: URL, completion: @escaping @MainActor (Bool) -> Void) {
-        stopAllMacros()
+        cleanupBeforeImport()
         settings.importFromFile(url: url) {
             self.importDone(message: $0)
             completion($0 == nil)
@@ -44,7 +44,7 @@ extension Model {
                 }
             }
         } else if let settings = UIPasteboard.general.string {
-            stopAllMacros()
+            cleanupBeforeImport()
             self.settings.importFromClipboard(settings: settings) {
                 self.importDone(message: $0)
                 completion()
@@ -57,6 +57,10 @@ extension Model {
 
     func exportToFile(completion: @escaping @MainActor (URL?) -> Void) {
         settings.exportToFile(onCompleted: completion)
+    }
+
+    private func cleanupBeforeImport() {
+        stopAllMacros()
     }
 
     private func importDone(message: String?) {
