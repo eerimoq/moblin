@@ -25,6 +25,7 @@ private let versions = [
         "• Fix quick button safe area when building with Xcode 27.",
         "• Make looping macros not crash when no delay action.",
         "• Create widget effect wizard.",
+        "• Show YouTube super sticker and super chat amount when compact events are enabled. 🐛 xcopy94",
     ]),
     Version(version: "35.0.0", date: "2026-09-09", changes: [
         "• Show wrong password message in remote control streamer.",
