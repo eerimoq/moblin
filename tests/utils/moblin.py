@@ -257,8 +257,9 @@ class Moblin:
         display_name: str = "Tester",
         segments: list[dict] | None = None,
         highlight: dict | None = None,
+        platform: str = "twitch",
     ):
-        message = self._create_chat_message(text, is_moderator, display_name, segments)
+        message = self._create_chat_message(text, is_moderator, display_name, segments, platform)
         if highlight is not None:
             message["highlight"] = highlight
         self._request({"chatMessages": {"history": False, "messages": [message]}})
@@ -508,11 +509,12 @@ class Moblin:
         is_moderator: bool,
         display_name: str,
         segments: list[dict] | None,
+        platform: str,
     ):
         self._chat_message_id = max(self._chat_message_id + 1, int(time.time() * 1000))
         return {
             "id": self._chat_message_id,
-            "platform": {"twitch": {}},
+            "platform": {platform: {}},
             "displayName": display_name,
             "user": display_name.lower(),
             "userBadges": [],
