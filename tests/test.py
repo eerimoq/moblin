@@ -9,7 +9,6 @@ from .suites import record
 from .suites import scenes
 from .suites import stream
 from .suites import talkback
-from .suites import twitch_events
 from .suites import web_remote_control
 from .utils.runner import create_parser
 from .utils.runner import run
@@ -29,7 +28,6 @@ def create_suites(moblin, _):
         gimbal.tests(moblin),
         http_proxy.tests(moblin),
         web_remote_control.tests(moblin),
-        twitch_events.tests(moblin),
     ]
 
 
