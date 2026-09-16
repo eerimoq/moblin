@@ -363,6 +363,9 @@ private struct ActionView: View {
             }
         }
         .listRowBackground(ActionIfBarsView(bars: ifBars))
+        .contextMenuDeleteButton {
+            macro.actions.removeAll(where: { $0 === action })
+        }
     }
 }
 
@@ -447,6 +450,10 @@ private struct MacroView: View {
             .navigationTitle("Macro")
         } label: {
             Text(macro.name)
+        }
+        .contextMenuDeleteButton {
+            macros.macros.removeAll(where: { $0 === macro })
+            model.remoteControlMacrosStateChanged()
         }
     }
 }
