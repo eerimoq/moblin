@@ -106,21 +106,21 @@ struct ChatHighlight {
         )
     }
 
-    static func makePaidMessage(amount: String) -> ChatHighlight {
+    static func makePaidMessage() -> ChatHighlight {
         ChatHighlight(
             kind: .other,
             barColor: .orange,
             image: "message",
-            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Chat\(amount)"))
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Chat"))
         )
     }
 
-    static func makePaidSticker(amount: String) -> ChatHighlight {
+    static func makePaidSticker() -> ChatHighlight {
         ChatHighlight(
             kind: .other,
             barColor: .green,
             image: "doc.plaintext",
-            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Sticker\(amount)"))
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Sticker"))
         )
     }
 

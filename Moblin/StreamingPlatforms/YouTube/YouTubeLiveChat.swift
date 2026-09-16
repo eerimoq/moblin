@@ -32,24 +32,20 @@ func fetchYouTubeVideoId(handle: String) async throws -> String {
 private let minimumPollDelayMs = 200
 private let maximumPollDelayMs = 3000
 
-private func createPaidMessageHighlight(chatDescription: ChatDescription) -> ChatHighlight {
-    var amount = ""
-    if let text = chatDescription.purchaseAmountText?.simpleText {
-        amount = ", \(text)"
+private func createPaidMessageText(chatDescription: ChatDescription) -> String {
+    if let amount = chatDescription.purchaseAmountText?.simpleText {
+        String(localized: "sent a \(amount) Super Chat!")
+    } else {
+        String(localized: "sent a Super Chat!")
     }
-    return ChatHighlight.makePaidMessage(amount: amount)
 }
 
-private func createPaidStickerHighlight(chatDescription: ChatDescription) -> ChatHighlight {
-    var amount = ""
-    if let text = chatDescription.purchaseAmountText?.simpleText {
-        amount = ", \(text)"
+private func createPaidStickerText(chatDescription: ChatDescription) -> String {
+    if let amount = chatDescription.purchaseAmountText?.simpleText {
+        String(localized: "sent a \(amount) Super Sticker!")
+    } else {
+        String(localized: "sent a Super Sticker!")
     }
-    return ChatHighlight.makePaidSticker(amount: amount)
-}
-
-private func createMemberHighlight() -> ChatHighlight {
-    ChatHighlight.makeMember()
 }
 
 private struct InvalidationContinuationData: Codable {
@@ -298,19 +294,21 @@ final class YouTubeLiveChat: NSObject {
                     if let chatDescription = item.liveChatPaidMessageRenderer {
                         numberOfMessages += handleChatDescription(
                             chatDescription: chatDescription,
-                            highlight: createPaidMessageHighlight(chatDescription: chatDescription)
+                            text: createPaidMessageText(chatDescription: chatDescription),
+                            highlight: ChatHighlight.makePaidMessage()
                         )
                     }
                     if let chatDescription = item.liveChatPaidStickerRenderer {
                         numberOfMessages += handleChatDescription(
                             chatDescription: chatDescription,
-                            highlight: createPaidStickerHighlight(chatDescription: chatDescription)
+                            text: createPaidStickerText(chatDescription: chatDescription),
+                            highlight: ChatHighlight.makePaidSticker()
                         )
                     }
                     if let chatDescription = item.liveChatMembershipItemRenderer {
                         numberOfMessages += handleChatDescription(
                             chatDescription: chatDescription,
-                            highlight: createMemberHighlight()
+                            highlight: ChatHighlight.makeMember()
                         )
                     }
                     if let giftPurchase = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
@@ -356,10 +354,14 @@ final class YouTubeLiveChat: NSObject {
     }
 
     private func handleChatDescription(chatDescription: ChatDescription,
+                                       text: String? = nil,
                                        highlight: ChatHighlight?) -> Int
     {
         var id = 0
         var segments: [ChatPostSegment] = []
+        if let text {
+            segments += createSegments(message: text, id: &id)
+        }
         if let headerSubtext = chatDescription.headerSubtext {
             for run in headerSubtext.runs {
                 if let text = run.text {

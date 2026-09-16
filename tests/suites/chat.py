@@ -571,14 +571,14 @@ class ChatYouTubeSuperSticker(ChatEventsTestCase):
     def run(self):
         manual_validation(
             LOGGER,
-            "A YouTube Super Sticker shows in chat and activity feed; non-compact events show its amount, while compact events show the icon.",
+            "A YouTube Super Sticker shows in chat and activity feed with its amount in the message text, in both compact and non-compact events.",
         )
         self.send_chat(
             {
                 "platform": "youTube",
                 "display_name": "Frank",
-                "text": "",
-                "highlight": chat_message.super_sticker_highlight("$5.00"),
+                "text": "sent a $5.00 Super Sticker!",
+                "highlight": chat_message.super_sticker_highlight(),
             }
         )
 
@@ -589,14 +589,14 @@ class ChatYouTubeSuperChat(ChatEventsTestCase):
     def run(self):
         manual_validation(
             LOGGER,
-            "A YouTube Super Chat shows in chat and activity feed; non-compact events show its amount and message.",
+            "A YouTube Super Chat shows in chat and activity feed with its amount and message in the message text, in both compact and non-compact events.",
         )
         self.send_chat(
             {
                 "platform": "youTube",
                 "display_name": "Grace",
-                "text": "Thanks for the stream!",
-                "highlight": chat_message.super_chat_highlight("$10.00"),
+                "text": "sent a $10.00 Super Chat! Thanks for the stream!",
+                "highlight": chat_message.super_chat_highlight(),
             }
         )
 

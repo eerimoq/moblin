@@ -33,11 +33,9 @@ def announcement_highlight() -> dict:
     return highlight("other", (52, 199, 89), "horn.blast", "Announcement")
 
 
-def super_sticker_highlight(amount: str = "$5.00") -> dict:
-    title = "Super Sticker" if not amount else f"Super Sticker, {amount}"
-    return highlight("other", (52, 199, 89), "doc.plaintext", title)
+def super_sticker_highlight() -> dict:
+    return highlight("other", (52, 199, 89), "doc.plaintext", "Super Sticker")
 
 
-def super_chat_highlight(amount: str = "$5.00") -> dict:
-    title = "Super Chat" if not amount else f"Super Chat, {amount}"
-    return highlight("other", (255, 149, 0), "message", title)
+def super_chat_highlight() -> dict:
+    return highlight("other", (255, 149, 0), "message", "Super Chat")
