@@ -163,8 +163,6 @@ extension Model {
 
     func sendGoLiveNotification(onCompleted: (@MainActor () -> Void)? = nil) {
         let sendToDiscord = isGoLiveNotificationDiscordConfigured()
-        let sendToMoblinWebsite = stream.goLiveNotificationMoblinWebsite
-        let sendSnapshotToMoblinWebsite = stream.goLiveNotificationMoblinWebsiteSnapshot
         var pending = 1
         let completeOne: @MainActor () -> Void = {
             pending -= 1
@@ -172,21 +170,17 @@ extension Model {
                 onCompleted?()
             }
         }
-        if sendToDiscord || (sendToMoblinWebsite && sendSnapshotToMoblinWebsite) {
+        if sendToDiscord, let discordUrl = URL(string: stream.goLiveNotificationDiscordWebhookUrl) {
+            pending += 1
             media.takeSnapshot(age: 0.0) { image, _, _ in
-                if sendToDiscord,
-                   let discordUrl = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl),
-                   let imageJpeg = image.jpegData(compressionQuality: 0.9)
-                {
-                    pending += 1
-                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, discordUrl, onCompleted: completeOne)
+                guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
+                    completeOne()
+                    return
                 }
-                self.sendLiveToMoblinWebsite(snapshot: sendSnapshotToMoblinWebsite ? image : nil,
-                                             onCompleted: completeOne)
+                self.tryUploadGoLiveNotificationToDiscord(imageJpeg, discordUrl, onCompleted: completeOne)
             }
-        } else {
-            sendLiveToMoblinWebsite(snapshot: nil, onCompleted: completeOne)
         }
+        sendLiveToMoblinWebsite(onCompleted: completeOne)
     }
 
     private func tryUploadGoLiveNotificationToDiscord(_ image: Data,

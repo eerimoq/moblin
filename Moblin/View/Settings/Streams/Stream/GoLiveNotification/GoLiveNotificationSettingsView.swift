@@ -64,13 +64,6 @@ struct GoLiveNotificationSettingsView: View {
                         "[Moblin website](https://moblin.app/#streamers)",
                         isOn: $stream.goLiveNotificationMoblinWebsite
                     )
-                    if stream.goLiveNotificationMoblinWebsite {
-                        Toggle("Snapshot", isOn: $stream.goLiveNotificationMoblinWebsiteSnapshot)
-                    }
-                } footer: {
-                    if stream.goLiveNotificationMoblinWebsite {
-                        Text("A snapshot of the stream is shown on the website when enabled.")
-                    }
                 }
             }
         }

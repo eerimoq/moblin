@@ -75,20 +75,6 @@ private struct GoLiveNotificationView: View {
                     DiscordLogoAndNameView()
                 }
             }
-            if !isMac(), stream.goLiveNotificationMoblinWebsite {
-                NavigationLink {
-                    Form {
-                        Section {
-                            Toggle("Snapshot", isOn: $stream.goLiveNotificationMoblinWebsiteSnapshot)
-                        } footer: {
-                            Text("A snapshot of the stream is shown on the website when enabled.")
-                        }
-                    }
-                    .navigationTitle("Moblin website")
-                } label: {
-                    MoblinWebsiteLogoAndNameView()
-                }
-            }
             Button {
                 sending = true
                 model.sendGoLiveNotification {

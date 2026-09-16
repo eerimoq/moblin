@@ -1,7 +1,6 @@
 import CryptoKit
 import DeviceCheck
 import Foundation
-import UIKit
 
 private let liveUrl = URL(string: "https://api.moblin.app/streamers/live")!
 private let challengeUrl = URL(string: "https://api.moblin.app/streamers/live/challenge")!
@@ -14,7 +13,6 @@ private struct MoblinWebsiteChannel: Encodable {
 
 private struct MoblinWebsiteLive: Encodable {
     let channels: [MoblinWebsiteChannel]
-    let image: String?
     let challenge: String
     let keyId: String
     let attestation: String
@@ -92,14 +90,10 @@ private func fetchChallenge() async throws -> String {
     return try JSONDecoder().decode(MoblinWebsiteChallenge.self, from: data).challenge
 }
 
-private func postLive(channels: [MoblinWebsiteChannel],
-                      image: String?,
-                      appAttest: MoblinWebsiteAppAttest) async throws
-{
+private func postLive(channels: [MoblinWebsiteChannel], appAttest: MoblinWebsiteAppAttest) async throws {
     let challenge = try await fetchChallenge()
     let live = MoblinWebsiteLive(
         channels: channels,
-        image: image,
         challenge: challenge,
         keyId: appAttest.keyId,
         attestation: appAttest.attestation!.base64EncodedString(),
@@ -130,7 +124,7 @@ private func postLive(channels: [MoblinWebsiteChannel],
     }
 }
 
-private func sendLive(channels: [MoblinWebsiteChannel], image: String?) async {
+private func sendLive(channels: [MoblinWebsiteChannel]) async {
     guard DCAppAttestService.shared.isSupported else {
         logger.info("moblin-website: App Attest is not supported on this device")
         return
@@ -138,34 +132,24 @@ private func sendLive(channels: [MoblinWebsiteChannel], image: String?) async {
     do {
         let attestedBefore = loadAppAttest()?.attestation != nil
         do {
-            try await postLive(channels: channels, image: image, appAttest: attestedKey())
+            try await postLive(channels: channels, appAttest: attestedKey())
         } catch let MoblinWebsiteError.keyRejected(reason) where attestedBefore {
             logger.info("moblin-website: Key rejected (\(reason)), attesting a new one")
             storeAppAttest(nil)
-            try await postLive(channels: channels, image: image, appAttest: attestedKey())
+            try await postLive(channels: channels, appAttest: attestedKey())
         }
     } catch {
         logger.info("moblin-website: Failed to send live: \(error)")
     }
 }
 
-private func encodeImage(_ image: UIImage) -> String? {
-    var image = image
-    let maxDimension = image.size.maximum()
-    if maxDimension > 320 {
-        image = image.resize(height: image.size.height * 320 / maxDimension)
-    }
-    return image.jpegData(compressionQuality: 0.8)?.base64EncodedString()
-}
-
 extension Model {
-    func sendLiveToMoblinWebsite(snapshot: UIImage?, onCompleted: (@MainActor () -> Void)? = nil) {
+    func sendLiveToMoblinWebsite(onCompleted: (@MainActor () -> Void)? = nil) {
         guard !isMac(), stream.goLiveNotificationMoblinWebsite else {
             onCompleted?()
             return
         }
         let stream = stream
-        let image = snapshot.flatMap(encodeImage)
         Task {
             defer {
                 onCompleted?()
@@ -185,7 +169,7 @@ extension Model {
             guard !channels.isEmpty else {
                 return
             }
-            await sendLive(channels: channels, image: image)
+            await sendLive(channels: channels)
         }
     }
 
