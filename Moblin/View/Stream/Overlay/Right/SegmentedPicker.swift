@@ -36,9 +36,8 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
 
     @ViewBuilder func overlay(for item: T) -> some View {
         if item == selectedItem {
-            RoundedRectangle(cornerRadius: 6)
+            Rectangle()
                 .fill(selectedColor)
-                .padding(2)
                 .matchedGeometryEffect(id: "selectedSegmentHighlight", in: selectionAnimation)
         }
     }
