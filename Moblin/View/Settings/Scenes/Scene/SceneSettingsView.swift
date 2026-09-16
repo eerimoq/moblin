@@ -222,6 +222,36 @@ private struct QuickSwitchGroupView: View {
     }
 }
 
+private struct SceneColorView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var scene: SettingsScene
+
+    private func onColorChange(color: Color) {
+        guard let color = color.toRgb() else {
+            return
+        }
+        scene.backgroundColor = color
+        model.sceneSelector.objectWillChange.send()
+    }
+
+    var body: some View {
+        Section {
+            ColorPicker("Background", selection: $scene.color)
+                .onChange(of: scene.color) { _ in
+                    onColorChange(color: scene.color)
+                }
+            TextButtonView("Reset") {
+                scene.color = defaultSegmentedPickerSelectedColor.color()
+                onColorChange(color: scene.color)
+            }
+        } header: {
+            Text("Color")
+        } footer: {
+            Text("Background color of the scene button when selected.")
+        }
+    }
+}
+
 private struct SceneMicView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -351,6 +381,7 @@ struct SceneSettingsView: View {
             QuickSwitchGroupView(database: database, scene: scene)
             SceneMicView(database: database, scene: scene)
             WidgetsView(database: database, scene: scene)
+            SceneColorView(scene: scene)
         }
         .navigationTitle("Scene")
     }

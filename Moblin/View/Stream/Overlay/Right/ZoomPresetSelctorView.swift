@@ -14,6 +14,7 @@ private struct ZoomPresetView: View {
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
+    let selectedColor: Color
     let width: CGFloat
 
     private func segmentWidth() -> Double {
@@ -39,7 +40,7 @@ private struct ZoomPresetView: View {
             if let value {
                 model.setZoomPreset(id: value.id)
             }
-        })) {
+        }), selectedColor: selectedColor) {
             PickerItemView(preset: $0)
                 .frame(
                     width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
@@ -63,6 +64,7 @@ private struct ZoomPresetVView: View {
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
+    let selectedColor: Color
     let width: CGFloat
 
     private func segmentWidth() -> Double {
@@ -88,7 +90,7 @@ private struct ZoomPresetVView: View {
             if let value {
                 model.setZoomPreset(id: value.id)
             }
-        })) {
+        }), selectedColor: selectedColor) {
             PickerItemView(preset: $0)
                 .frame(
                     width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
@@ -133,6 +135,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
             ZoomPresetView(database: model.database,
                            presets: presets(),
                            selectedPresetId: selectedPresetId(),
+                           selectedColor: model.database.zoom.backgroundColor.color(),
                            width: width)
         }
     }
@@ -163,6 +166,7 @@ struct StreamOverlayRightZoomPresetVSelctorView: View {
         ZoomPresetVView(database: model.database,
                         presets: presets(),
                         selectedPresetId: selectedPresetId(),
+                        selectedColor: model.database.zoom.backgroundColor.color(),
                         width: width)
     }
 }

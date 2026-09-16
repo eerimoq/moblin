@@ -6,6 +6,7 @@ let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+let defaultSegmentedPickerSelectedColor = RgbColor(red: 142, green: 142, blue: 147, opacity: 0.6)
 let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
@@ -322,6 +323,8 @@ class SettingsZoom: Codable, ObservableObject {
     @Published var switchToBack: SettingsZoomSwitchTo = .init()
     @Published var switchToFront: SettingsZoomSwitchTo = .init()
     @Published var speed: Float = 5.0
+    var backgroundColor: RgbColor = defaultSegmentedPickerSelectedColor
+    @Published var backgroundColorColor: Color = defaultSegmentedPickerSelectedColor.color()
 
     init() {}
 
@@ -331,6 +334,7 @@ class SettingsZoom: Codable, ObservableObject {
         case switchToBack
         case switchToFront
         case speed
+        case backgroundColor
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -340,6 +344,7 @@ class SettingsZoom: Codable, ObservableObject {
         try container.encode(.switchToBack, switchToBack)
         try container.encode(.switchToFront, switchToFront)
         try container.encode(.speed, speed)
+        try container.encode(.backgroundColor, backgroundColor)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -349,6 +354,12 @@ class SettingsZoom: Codable, ObservableObject {
         switchToBack = container.decode(.switchToBack, SettingsZoomSwitchTo.self, .init())
         switchToFront = container.decode(.switchToFront, SettingsZoomSwitchTo.self, .init())
         speed = container.decode(.speed, Float.self, 5.0)
+        backgroundColor = container.decode(
+            .backgroundColor,
+            RgbColor.self,
+            defaultSegmentedPickerSelectedColor
+        )
+        backgroundColorColor = backgroundColor.color()
     }
 }
 

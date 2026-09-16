@@ -3905,6 +3905,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var micId: String = ""
     @Published var quickSwitchGroup: Int?
     @Published var mirror: Bool = false
+    var backgroundColor: RgbColor = defaultSegmentedPickerSelectedColor
+    @Published var backgroundColorColor: Color = defaultSegmentedPickerSelectedColor.color()
 
     init(name: String) {
         self.name = name
@@ -3941,6 +3943,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         case micId
         case quickSwitchGroup
         case mirror
+        case backgroundColor
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -3970,6 +3973,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.micId, micId)
         try container.encode(.quickSwitchGroup, quickSwitchGroup)
         try container.encode(.mirror, mirror)
+        try container.encode(.backgroundColor, backgroundColor)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -4007,6 +4011,12 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         micId = container.decode(.micId, String.self, "")
         quickSwitchGroup = container.decode(.quickSwitchGroup, Int?.self, nil)
         mirror = container.decode(.mirror, Bool.self, false)
+        backgroundColor = container.decode(
+            .backgroundColor,
+            RgbColor.self,
+            defaultSegmentedPickerSelectedColor
+        )
+        backgroundColorColor = backgroundColor.color()
     }
 
     func clone() -> SettingsScene {
@@ -4024,6 +4034,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         new.micId = micId
         new.quickSwitchGroup = quickSwitchGroup
         new.mirror = mirror
+        new.backgroundColor = backgroundColor
+        new.backgroundColorColor = backgroundColorColor
         return new
     }
 
