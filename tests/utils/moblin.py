@@ -298,6 +298,30 @@ class Moblin:
     def get_state(self) -> dict:
         return self._events.state()
 
+    def get_scene(self) -> str:
+        return self.get_state()["scene"].upper()
+
+    def wait_for_scene(self, scene_id: str):
+        wait_until(lambda: self.get_scene() == scene_id.upper(), f"scene {scene_id} to be selected")
+
+    def start_macro(self, macro_id: str):
+        self._request({"startMacro": {"id": macro_id}})
+
+    def stop_macro(self, macro_id: str):
+        self._request({"stopMacro": {"id": macro_id}})
+
+    def is_macro_running(self, macro_id: str) -> bool:
+        for macro in self.get_state().get("macros") or []:
+            if macro["id"].upper() == macro_id.upper():
+                return macro["running"]
+        return False
+
+    def wait_for_macro_running(self, macro_id: str, running: bool):
+        wait_until(
+            lambda: self.is_macro_running(macro_id) == running,
+            f"macro to be {'running' if running else 'stopped'}",
+        )
+
     def go_live(self):
         self._request({"setLive": {"on": True}})
 

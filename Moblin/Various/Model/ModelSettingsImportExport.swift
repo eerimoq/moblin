@@ -8,6 +8,7 @@ extension Model {
     }
 
     func importSettingsFromFile(url: URL, completion: @escaping @MainActor (Bool) -> Void) {
+        stopAllMacros()
         settings.importFromFile(url: url) {
             self.importDone(message: $0)
             completion($0 == nil)
@@ -43,6 +44,7 @@ extension Model {
                 }
             }
         } else if let settings = UIPasteboard.general.string {
+            stopAllMacros()
             self.settings.importFromClipboard(settings: settings) {
                 self.importDone(message: $0)
                 completion()

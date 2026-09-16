@@ -452,6 +452,7 @@ private struct MacroView: View {
             Text(macro.name)
         }
         .contextMenuDeleteButton {
+            model.stopMacro(macro: macro)
             macros.macros.removeAll(where: { $0 === macro })
             model.remoteControlMacrosStateChanged()
         }
@@ -481,6 +482,9 @@ struct MacrosSettingsView: View {
                         model.remoteControlMacrosStateChanged()
                     }
                     .onDelete { offsets in
+                        for offset in offsets {
+                            model.stopMacro(macro: macros.macros[offset])
+                        }
                         macros.macros.remove(atOffsets: offsets)
                         model.remoteControlMacrosStateChanged()
                     }

@@ -105,6 +105,30 @@ class DjiDeviceResolution(StrEnum):
     R480P = "480p"
 
 
+class MacroActionFunction(StrEnum):
+    SCENE = "Scene"
+    MUTE = "Mute"
+    DELAY = "Delay"
+    MACRO = "Macro"
+    IF = "If"
+
+
+class MacroRepeatMode(StrEnum):
+    OFF = "off"
+    COUNT = "count"
+    FOREVER = "forever"
+
+
+class MacroIfComparison(StrEnum):
+    EQUAL = "="
+    NOT_EQUAL = "!="
+    LESS_THAN = "<"
+    LESS_EQUAL = "<="
+    GREATER_THAN = ">"
+    GREATER_EQUAL = ">="
+    CONTAINS = "Contains"
+
+
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
     QUAD_HD_4_3 = "1920x1440"
@@ -278,6 +302,48 @@ def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
         "name": name,
         "type": WidgetType.BROWSER,
         "browser": {"url": url, "width": 1920, "height": 1080, **browser},
+    }
+
+
+def macro_settings(
+    macro_id: str,
+    name: str,
+    actions: list[dict],
+    repeat_mode: MacroRepeatMode = MacroRepeatMode.OFF,
+    repeat_count: int = 5,
+):
+    return {
+        "id": macro_id,
+        "name": name,
+        "actions": actions,
+        "repeatMode": repeat_mode,
+        "repeatCount": repeat_count,
+    }
+
+
+def macro_scene_action(scene_id: str):
+    return {"function": MacroActionFunction.SCENE, "sceneId": scene_id}
+
+
+def macro_mute_action(mute: bool):
+    return {"function": MacroActionFunction.MUTE, "mute": mute}
+
+
+def macro_delay_action(seconds: float):
+    return {"function": MacroActionFunction.DELAY, "delay": seconds}
+
+
+def macro_run_macro_action(macro_id: str):
+    return {"function": MacroActionFunction.MACRO, "macroId": macro_id}
+
+
+def macro_if_action(value: str, comparison: MacroIfComparison, other_value: str, run_count: int = 1):
+    return {
+        "function": MacroActionFunction.IF,
+        "ifValue": value,
+        "ifComparison": comparison,
+        "ifOtherValue": other_value,
+        "ifRunCount": run_count,
     }
 
 

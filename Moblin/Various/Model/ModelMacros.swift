@@ -36,6 +36,12 @@ extension Model {
         remoteControlMacrosStateChanged()
     }
 
+    func stopAllMacros() {
+        for macro in database.macros.macros {
+            stopMacro(macro: macro)
+        }
+    }
+
     func stopMacro(id: UUID) {
         guard let macro = database.macros.macros.first(where: { $0.id == id }) else {
             return
