@@ -200,7 +200,9 @@ class MediaPlayer: @unchecked Sendable {
         )
         reader.add(videoTrackOutput!)
         asset.loadTracks(withMediaType: .audio) { tracks, error in
-            self.loadAudioTrackCompletion(tracks: tracks, error: error)
+            mediaPlayerQueue.async {
+                self.loadAudioTrackCompletion(tracks: tracks, error: error)
+            }
         }
     }
 
