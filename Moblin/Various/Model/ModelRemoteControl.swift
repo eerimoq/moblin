@@ -855,7 +855,7 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetTorch(on: Bool) {
         streamOverlay.isTorchOn = on
         updateTorch()
-        toggleQuickButton(type: .torch)
+        setQuickButton(type: .torch, isOn: on)
     }
 
     func remoteControlStreamerReloadBrowserWidgets() {
