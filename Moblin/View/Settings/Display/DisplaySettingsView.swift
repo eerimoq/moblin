@@ -225,6 +225,14 @@ struct DisplaySettingsView: View {
                     Text("Make sure silent mode is off for vibrations to work.")
                 }
             }
+            Section {
+                Toggle("Connection status sound", isOn: $database.show.connectionStatusSound)
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Enable to play a short sound when the stream fails to connect.")
+                }
+            }
+
             if database.showAllSettings {
                 if !isMac() {
                     Section {
