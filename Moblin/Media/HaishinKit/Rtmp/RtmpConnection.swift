@@ -68,6 +68,7 @@ class RtmpConnection: @unchecked Sendable {
         }
         self.uri = uri
         chunkReader.clear()
+        socket.close(isDisconnected: false)
         socket = RtmpSocket(name: name, queue: queue)
         socket.delegate = self
         if scheme == "rtmps" {
