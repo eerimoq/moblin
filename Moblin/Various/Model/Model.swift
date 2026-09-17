@@ -2726,6 +2726,7 @@ final class Model: NSObject, ObservableObject {
             for: ProcessInfo.thermalStateDidChangeNotification,
             object: nil
         )
+        .receive(on: DispatchQueue.main)
         .sink { @MainActor _ in
             self.updateThermalState()
         }
