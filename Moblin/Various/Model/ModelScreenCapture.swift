@@ -21,7 +21,7 @@ extension Model {
                 if otherScene.videoSource.cameraPosition == .screenCapture {
                     return true
                 }
-                if sceneWidgetsNeedMacScreenCapture(scene: scene, addedSceneIds: &addedSceneIds) {
+                if sceneWidgetsNeedMacScreenCapture(scene: otherScene, addedSceneIds: &addedSceneIds) {
                     return true
                 }
             }
