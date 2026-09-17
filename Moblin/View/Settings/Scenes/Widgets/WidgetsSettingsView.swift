@@ -28,13 +28,13 @@ private struct WidgetsSettingsItemView: View {
             SwipeLeftToDeleteButtonView {
                 database.widgets.removeAll(where: { $0 === widget })
                 model.removeDeadWidgetsFromScenes()
-                model.resetSelectedScene()
+                model.resetSelectedScene(changeScene: false)
             }
         }
         .contextMenuDeleteButton {
             database.widgets.removeAll(where: { $0 === widget })
             model.removeDeadWidgetsFromScenes()
-            model.resetSelectedScene()
+            model.resetSelectedScene(changeScene: false)
         }
     }
 }
