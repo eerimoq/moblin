@@ -432,12 +432,16 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         encoder.settings.mutate { $0 = settings }
         encoder.delegate = delegate
         encoder.startRunning()
-        previewEncoder = encoder
+        processorPipelineQueue.async {
+            self.previewEncoder = encoder
+        }
     }
 
     func stopPreviewEncoding() {
-        previewEncoder?.stopRunning()
-        previewEncoder = nil
+        processorPipelineQueue.async {
+            self.previewEncoder?.stopRunning()
+            self.previewEncoder = nil
+        }
     }
 
     func setSize(capture: CGSize, canvas: CGSize) {
