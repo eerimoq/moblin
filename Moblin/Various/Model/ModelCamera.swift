@@ -915,10 +915,7 @@ extension Model {
     }
 
     func setExposureBias(bias: Float) {
-        guard let position = cameraPosition else {
-            return
-        }
-        guard let device = preferredCamera(position: position) else {
+        guard let device = cameraDevice else {
             return
         }
         if bias < device.minExposureTargetBias {
