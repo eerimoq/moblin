@@ -578,6 +578,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         new.implementation = implementation
         new.bigPackets = bigPackets
         new.bigPacketsMigrated = bigPacketsMigrated
+        new.implemenationMigrated = implemenationMigrated
         return new
     }
 }
@@ -737,6 +738,9 @@ class SettingsStreamRecording: Codable, ObservableObject {
 
     func clone() -> SettingsStreamRecording {
         let new = SettingsStreamRecording()
+        new.overrideStream = overrideStream
+        new.resolution = resolution
+        new.fps = fps
         new.videoCodec = videoCodec
         new.videoBitrate = videoBitrate
         new.maxKeyFrameInterval = maxKeyFrameInterval
@@ -1665,6 +1669,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.youTubeNotLoggedInCount = youTubeNotLoggedInCount
         new.youTubeVideoIds = youTubeVideoIds
         new.youTubeHandle = youTubeHandle
+        new.youTubeScheduleStreamTitle = youTubeScheduleStreamTitle
+        new.youTubeScheduleStreamVisibility = youTubeScheduleStreamVisibility
+        new.youTubeScheduleStreamAutoStop = youTubeScheduleStreamAutoStop
         new.soopChannelName = soopChannelName
         new.soopStreamId = soopStreamId
         new.openStreamingPlatformUrl = openStreamingPlatformUrl
@@ -1693,6 +1700,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.h264Profile = h264Profile
         new.bFrames = bFrames
         new.adaptiveEncoderResolution = adaptiveEncoderResolution
+        new.adaptiveEncoderResolutionThreashold = adaptiveEncoderResolutionThreashold
         new.adaptiveBitrate = adaptiveBitrate
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
@@ -1708,6 +1716,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.realtimeIrlPushKey = realtimeIrlPushKey
         new.portrait = portrait
         new.backgroundStreaming = backgroundStreaming
+        new.backgroundStreamingPiP = backgroundStreamingPiP
         new.estimatedViewerDelay = estimatedViewerDelay
         new.ntpPoolAddress = ntpPoolAddress
         new.timecodesEnabled = timecodesEnabled
