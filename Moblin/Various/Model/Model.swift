@@ -122,6 +122,7 @@ class Banners: ObservableObject {
     @Published var minimized = false
 }
 
+@MainActor
 class HypeTrain: ObservableObject {
     @Published var level: Int?
     @Published var progress: ProgressBar?
@@ -1220,7 +1221,6 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setTtsMonsterApiToken(apiToken: chat.ttsMonster.apiToken)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
-        updateFaceFilterSettings()
         initMediaPlayers()
         autoStartDjiDevices()
         autoStartGoProDevices()

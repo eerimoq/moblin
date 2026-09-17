@@ -19,6 +19,7 @@ extension Model {
 
     func loadStealthModeImage() {
         guard let data = try? Data(contentsOf: stealthModeImagePath) else {
+            stealthMode.image = nil
             return
         }
         stealthMode.image = UIImage(data: data)
