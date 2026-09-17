@@ -67,6 +67,7 @@ class SampleBufferReceiver: @unchecked Sendable {
             try setIgnoreSigPipe(fd: senderFd)
             delegate?.senderConnected()
             try? readLoop(senderFd: senderFd)
+            Darwin.close(senderFd)
             delegate?.senderDisconnected()
         }
     }
