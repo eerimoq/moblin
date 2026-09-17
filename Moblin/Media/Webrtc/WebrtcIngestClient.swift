@@ -18,10 +18,11 @@ protocol WebrtcIngestClientDelegate: AnyObject {
 }
 
 private func decodeNtpTimestamp(v: UInt64) -> Double? {
-    guard v >= 2_208_988_800 else {
+    let seconds = v >> 32
+    guard seconds >= 2_208_988_800 else {
         return nil
     }
-    let secs = Int64(bitPattern: (v >> 32) - 2_208_988_800)
+    let secs = Int64(seconds - 2_208_988_800)
     let nanos = Int64(Double(((v & 0xFFFF_FFFF) * 1_000_000_000) / (1 << 32)))
     return Double(secs) + Double(nanos) / 1_000_000_000
 }
