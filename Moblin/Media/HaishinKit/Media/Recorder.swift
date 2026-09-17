@@ -461,7 +461,9 @@ final class Recorder: NSObject, @unchecked Sendable {
         audioOutputSettings: [String: Any],
         videoOutputSettings: [String: Any]
     ) {
-        self.replay = replay
+        fileWriterQueue.async {
+            self.replay = replay
+        }
         self.audioOutputSettings = audioOutputSettings
         self.videoOutputSettings = videoOutputSettings
         guard writer == nil else {
