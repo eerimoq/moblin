@@ -226,7 +226,7 @@ struct TwitchChatMessage {
     var sourceRoomId: String?
 
     init(string: String) throws {
-        var parts = string.components(separatedBy: .whitespaces)
+        var parts = string.components(separatedBy: " ")
         if let tagsPart = parts.first, tagsPart.hasPrefix("@") {
             let tagsString = tagsPart[tagsPart.index(after: tagsPart.startIndex)...]
             for tag in tagsString.split(separator: ";") {
