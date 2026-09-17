@@ -208,6 +208,7 @@ private struct HostChannelView: View {
             }
             .onAppear {
                 channels = []
+                cursor = nil
                 loadMoreChannels()
             }
         }
