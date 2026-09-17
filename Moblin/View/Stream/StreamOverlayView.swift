@@ -181,6 +181,8 @@ struct StreamOverlayView: View {
                                     fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
                         .allowsHitTesting(chatSettings.enabled)
+                    BannersView(model: model, banners: model.banners)
+                        .frame(maxWidth: orientation.isPortrait ? .infinity : 400)
                 }
                 HStack {
                     Spacer()

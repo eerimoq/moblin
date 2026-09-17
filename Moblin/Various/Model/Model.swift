@@ -118,11 +118,13 @@ class ProgressBar: ObservableObject {
 }
 
 @MainActor
+class Banners: ObservableObject {
+    @Published var minimized = false
+}
+
 class HypeTrain: ObservableObject {
-    @Published var status = noValue
     @Published var level: Int?
     @Published var progress: ProgressBar?
-    var timer = MainTimer()
 }
 
 enum RaidState {
@@ -139,7 +141,6 @@ class Raid: ObservableObject {
     @Published var channelLogin: String = ""
     @Published var message: String = ""
     @Published var progress = ProgressBar()
-    var timer = MainTimer()
 }
 
 enum TwitchPollState {
@@ -162,7 +163,6 @@ class TwitchPoll: ObservableObject {
     @Published var totalVotes = 0
     @Published var message = ""
     var endsAt: Date?
-    var timer = MainTimer()
 }
 
 enum TwitchPredictionState {
@@ -189,7 +189,6 @@ class TwitchPrediction: ObservableObject {
     @Published var totalChannelPoints = 0
     @Published var message = ""
     var locksAt: Date?
-    var timer = MainTimer()
 }
 
 @MainActor
@@ -537,6 +536,7 @@ final class Model: NSObject, ObservableObject {
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     nonisolated(unsafe) var media: Media!
+    let banners = Banners()
     let hypeTrain = HypeTrain()
     let raid = Raid()
     let twitchPoll = TwitchPoll()
@@ -3215,10 +3215,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             String(localized: "Not configured")
         }
-    }
-
-    func isShowingStatusHypeTrain() -> Bool {
-        hypeTrain.status != noValue
     }
 
     func isShowingStatusAdsRemainingTimer() -> Bool {

@@ -83,38 +83,6 @@ private struct ReplayStatusView: View {
     }
 }
 
-private struct CollapsedHypeTrainView: View {
-    let status: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 1) {
-            let train = Image(systemName: "train.side.front.car")
-                .frame(width: 17, height: 17)
-                .padding(.horizontal, 2)
-                .foregroundStyle(color)
-            if #available(iOS 18.0, *) {
-                train
-                    .symbolEffect(
-                        .wiggle.forward.byLayer,
-                        options: .repeat(.periodic(delay: 2.0))
-                    )
-            } else {
-                train
-            }
-            Text(status)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 2)
-        }
-        .font(smallFont)
-        .background(backgroundColor)
-        .cornerRadius(5)
-        .padding(20)
-        .contentShape(Rectangle())
-        .padding(-20)
-    }
-}
-
 private struct CollapsedAdsRemainingTimerView: View {
     @ObservedObject var status: StatusTopRight
 
@@ -267,26 +235,6 @@ private struct CpuStatusView: View {
                 StreamOverlayIconAndTextView(
                     icon: "cpu",
                     text: systemMonitor.format(),
-                    textPlacement: textPlacement
-                )
-            }
-        }
-    }
-}
-
-private struct HypeTrainStatusView: View {
-    let model: Model
-    @ObservedObject var hypeTrain: HypeTrain
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        if model.isShowingStatusHypeTrain() {
-            if textPlacement == .hide {
-                CollapsedHypeTrainView(status: hypeTrain.status, color: .white)
-            } else {
-                StreamOverlayIconAndTextView(
-                    icon: "train.side.front.car",
-                    text: hypeTrain.status,
                     textPlacement: textPlacement
                 )
             }
@@ -580,9 +528,6 @@ private struct StatusesView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        HypeTrainStatusView(model: model,
-                            hypeTrain: model.hypeTrain,
-                            textPlacement: textPlacement)
         AdsRemainingTimerView(model: model,
                               status: model.statusTopRight,
                               textPlacement: textPlacement)

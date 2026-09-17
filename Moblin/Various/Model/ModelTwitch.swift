@@ -549,9 +549,6 @@ extension Model {
     func twitchRaidCompleted() {
         raid.state = .completed
         raid.message = String(localized: "Raid completed!")
-        raid.timer.startSingleShot(timeout: 60) {
-            self.removeRaid()
-        }
     }
 
     func updateTwitchRaid() {
@@ -567,7 +564,6 @@ extension Model {
         raid.state = .idle
         raid.channelImage = ""
         raid.channelLogin = ""
-        raid.timer.stop()
     }
 
     private func appendTwitchRaidSent(channelId: String, channelName: String) {
@@ -637,7 +633,6 @@ extension Model {
 
     func removeTwitchPoll() {
         twitchPoll.state = .idle
-        twitchPoll.timer.stop()
     }
 
     private func updateTwitchPrediction(
@@ -668,32 +663,11 @@ extension Model {
 
     func removeTwitchPrediction() {
         twitchPrediction.state = .idle
-        twitchPrediction.timer.stop()
-    }
-
-    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
-        guard goal > 0 else {
-            return
-        }
-        let percentage = Int(100 * Float(progress) / Float(goal))
-        hypeTrain.status = "LVL \(level), \(percentage)%"
-    }
-
-    private func startHypeTrainTimer(timeout: Double) {
-        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
-            self?.removeHypeTrain()
-        }
-    }
-
-    private func stopHypeTrainTimer() {
-        hypeTrain.timer.stop()
     }
 
     func removeHypeTrain() {
         hypeTrain.level = nil
         hypeTrain.progress = nil
-        hypeTrain.status = noValue
-        stopHypeTrainTimer()
     }
 
     private func makeTwitchAlertSegments(text: String,
@@ -1044,8 +1018,6 @@ extension Model: TwitchEventSubDelegate {
         hypeTrain.progress = ProgressBar()
         hypeTrain.progress?.progress = Float(event.progress)
         hypeTrain.progress?.goal = Float(event.goal)
-        updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-        startHypeTrainTimer(timeout: 600)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(text: String(localized: "started a hype train!")),
@@ -1064,8 +1036,6 @@ extension Model: TwitchEventSubDelegate {
         }
         hypeTrain.progress?.progress = Float(event.progress)
         hypeTrain.progress?.goal = Float(event.goal)
-        updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
-        startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
@@ -1075,8 +1045,6 @@ extension Model: TwitchEventSubDelegate {
         }
         hypeTrain.progress?.progress = 1
         hypeTrain.progress?.goal = 1
-        updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
-        startHypeTrainTimer(timeout: 60)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(
@@ -1100,9 +1068,6 @@ extension Model: TwitchEventSubDelegate {
     private func updateOngoingTwitchPoll(event: TwitchEventSubChannelPollEvent) {
         updateTwitchPoll(event: event, state: .ongoing)
         updateTwitchPollCountdown()
-        twitchPoll.timer.startSingleShot(timeout: 1900) { [weak self] in
-            self?.removeTwitchPoll()
-        }
     }
 
     func twitchEventSubChannelPollBegin(event: TwitchEventSubChannelPollEvent) {
@@ -1135,9 +1100,6 @@ extension Model: TwitchEventSubDelegate {
         } else {
             return
         }
-        twitchPoll.timer.startSingleShot(timeout: 60) { [weak self] in
-            self?.removeTwitchPoll()
-        }
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(text: text),
@@ -1152,9 +1114,6 @@ extension Model: TwitchEventSubDelegate {
     private func updateOngoingTwitchPrediction(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .ongoing)
         updateTwitchPredictionCountdown()
-        twitchPrediction.timer.startSingleShot(timeout: 1900) { [weak self] in
-            self?.removeTwitchPrediction()
-        }
     }
 
     func twitchEventSubChannelPredictionBegin(event: TwitchEventSubChannelPredictionEvent) {
@@ -1179,7 +1138,6 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .locked)
         twitchPrediction.message = String(localized: "Locked, waiting for outcome")
-        twitchPrediction.timer.stop()
     }
 
     func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent) {
@@ -1191,9 +1149,6 @@ extension Model: TwitchEventSubDelegate {
         } else {
             twitchPrediction.message = String(localized: "Prediction cancelled")
             text = String(localized: "cancelled the prediction: \(event.title)")
-        }
-        twitchPrediction.timer.startSingleShot(timeout: 60) { [weak self] in
-            self?.removeTwitchPrediction()
         }
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
