@@ -2315,6 +2315,7 @@ final class Settings {
                 DispatchQueue.main.async {
                     onCompleted(nil)
                 }
+                return
             }
             DispatchQueue.main.async {
                 onCompleted(url)
