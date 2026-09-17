@@ -685,7 +685,8 @@ extension Model {
         color: Color,
         image: String,
         kind: ChatHighlightKind,
-        sharedChat: TwitchEventSubSharedChat?
+        sharedChat: TwitchEventSubSharedChat?,
+        chatter: TwitchEventSubChatter? = nil
     ) {
         let highlight = ChatHighlight(
             kind: kind,
@@ -693,9 +694,15 @@ extension Model {
             image: image,
             titleSegments: [ChatPostSegment(id: 0, text: title)]
         )
+        let userColor = RgbColor.fromHex(string: chatter?.color ?? "")
+        let userBadges = (chatter?.badges ?? []).compactMap {
+            twitchChat?.getBadgeUrl(badgeId: "\($0.set_id)/\($0.id)")
+        }
         if let sharedChat, let twitchChat {
             twitchChat.getSourceChannelIcon(sourceRoomId: sharedChat.broadcasterUserId) { sourceChannelIcon in
                 self.appendTwitchChatAlertMessage(user: user,
+                                                  userColor: userColor,
+                                                  userBadges: userBadges,
                                                   segments: segments,
                                                   highlight: highlight,
                                                   sourceChannelIcon: sourceChannelIcon)
@@ -703,6 +710,8 @@ extension Model {
         } else {
             appendTwitchChatAlertMessage(
                 user: user,
+                userColor: userColor,
+                userBadges: userBadges,
                 segments: segments,
                 highlight: highlight,
                 sourceChannelIcon: nil
@@ -712,6 +721,8 @@ extension Model {
 
     private func appendTwitchChatAlertMessage(
         user: String,
+        userColor: RgbColor?,
+        userBadges: [URL],
         segments: [ChatPostSegment],
         highlight: ChatHighlight,
         sourceChannelIcon: URL?
@@ -721,8 +732,8 @@ extension Model {
                           displayName: user,
                           user: user,
                           userId: nil,
-                          userColor: nil,
-                          userBadges: [],
+                          userColor: userColor,
+                          userBadges: userBadges,
                           segments: segments,
                           timestamp: statusOther.digitalClock,
                           timestampTime: .now,
@@ -800,7 +811,8 @@ extension Model: TwitchEventSubDelegate {
                 color: .cyan,
                 image: "party.popper",
                 kind: .other,
-                sharedChat: event.sharedChat
+                sharedChat: event.sharedChat,
+                chatter: event.chatter
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
@@ -829,7 +841,8 @@ extension Model: TwitchEventSubDelegate {
                 color: .cyan,
                 image: "gift",
                 kind: .other,
-                sharedChat: event.sharedChat
+                sharedChat: event.sharedChat,
+                chatter: event.chatter
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: textWithMessage)
@@ -867,7 +880,8 @@ extension Model: TwitchEventSubDelegate {
                 color: .cyan,
                 image: "party.popper",
                 kind: .other,
-                sharedChat: event.sharedChat
+                sharedChat: event.sharedChat,
+                chatter: event.chatter
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: textWithMessage)
@@ -900,7 +914,8 @@ extension Model: TwitchEventSubDelegate {
                 color: .cyan,
                 image: "party.popper",
                 kind: .other,
-                sharedChat: event.sharedChat
+                sharedChat: event.sharedChat,
+                chatter: event.chatter
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
@@ -925,7 +940,8 @@ extension Model: TwitchEventSubDelegate {
                 color: .orange,
                 image: "flame",
                 kind: .other,
-                sharedChat: event.sharedChat
+                sharedChat: event.sharedChat,
+                chatter: event.chatter
             )
         }
     }
@@ -979,7 +995,8 @@ extension Model: TwitchEventSubDelegate {
                     color: .pink,
                     image: "person.3",
                     kind: .other,
-                    sharedChat: event.sharedChat
+                    sharedChat: event.sharedChat,
+                    chatter: event.chatter
                 )
             }
             printEventCatPrinters(

@@ -536,6 +536,10 @@ final class TwitchChat {
         emotes.isReady()
     }
 
+    func getBadgeUrl(badgeId: String) -> URL? {
+        badges.getUrl(badgeId: badgeId)
+    }
+
     private func handleMessage(message: String) throws {
         let message = try TwitchChatMessage(string: message)
         switch message.command {

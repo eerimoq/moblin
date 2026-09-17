@@ -41,6 +41,16 @@ struct TwitchEventSubSharedChat: Decodable {
     var broadcasterUserName: String
 }
 
+struct TwitchEventSubBadge: Decodable {
+    var set_id: String
+    var id: String
+}
+
+struct TwitchEventSubChatter: Decodable {
+    var color: String
+    var badges: [TwitchEventSubBadge]
+}
+
 struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var user_name: String
     var tier: String
@@ -48,6 +58,7 @@ struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var is_prime: Bool?
     var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -71,6 +82,7 @@ struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
     var tier: String?
     var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 
     func tierAsNumber() -> Int? {
         guard let tier else {
@@ -85,6 +97,7 @@ struct TwitchEventSubNotificationChannelWatchStreakEvent {
     var streak_count: Int
     var message: TwitchEventSubMessage
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 }
 
 struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
@@ -93,6 +106,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var tier: String
     var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -114,6 +128,7 @@ struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
     var tier: String
     var message: TwitchEventSubMessage
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
@@ -166,6 +181,8 @@ private struct NotificationChannelChatNotificationRaid: Decodable {
 private struct NotificationChannelChatNotificationEvent: Decodable {
     var chatter_user_name: String
     var chatter_is_anonymous: Bool
+    var color: String
+    var badges: [TwitchEventSubBadge]
     var source_broadcaster_user_id: String?
     var source_broadcaster_user_name: String?
     var message: TwitchEventSubMessage
@@ -189,6 +206,13 @@ private struct NotificationChannelChatNotificationEvent: Decodable {
         }
         return TwitchEventSubSharedChat(broadcasterUserId: source_broadcaster_user_id,
                                         broadcasterUserName: source_broadcaster_user_name)
+    }
+
+    func chatter() -> TwitchEventSubChatter? {
+        guard !chatter_is_anonymous else {
+            return nil
+        }
+        return TwitchEventSubChatter(color: color, badges: badges)
     }
 }
 
@@ -257,6 +281,7 @@ struct TwitchEventSubChannelRaidEvent: Decodable {
     var viewers: Int
     var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
+    var chatter: TwitchEventSubChatter?
 }
 
 private struct NotificationChannelRaidPayload: Decodable {
@@ -863,7 +888,8 @@ final class TwitchEventSub: NSObject {
                                                              is_gift: false,
                                                              is_prime: sub.is_prime,
                                                              message: event.message,
-                                                             sharedChat: event.sharedChat()))
+                                                             sharedChat: event.sharedChat(),
+                                                             chatter: event.chatter()))
     }
 
     private func handleChatNotificationResub(event: NotificationChannelChatNotificationEvent) {
@@ -876,7 +902,8 @@ final class TwitchEventSub: NSObject {
                          streak_months: resub.streak_months,
                          tier: resub.sub_tier,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
@@ -908,7 +935,8 @@ final class TwitchEventSub: NSObject {
             event: .init(user_name: event.chatter_user_name,
                          tier: primePaidUpgrade.sub_tier,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
@@ -917,7 +945,8 @@ final class TwitchEventSub: NSObject {
             event: .init(user_name: event.chatter_user_name,
                          tier: nil,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
@@ -930,7 +959,8 @@ final class TwitchEventSub: NSObject {
                          from_broadcaster_user_name: raid.user_name,
                          viewers: raid.viewer_count,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
@@ -942,7 +972,8 @@ final class TwitchEventSub: NSObject {
             event: .init(user_name: event.chatter_user_name,
                          streak_count: watchStreak.streak_count,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
@@ -956,7 +987,8 @@ final class TwitchEventSub: NSObject {
                          total: total,
                          tier: tier,
                          message: event.message,
-                         sharedChat: event.sharedChat())
+                         sharedChat: event.sharedChat(),
+                         chatter: event.chatter())
         )
     }
 
