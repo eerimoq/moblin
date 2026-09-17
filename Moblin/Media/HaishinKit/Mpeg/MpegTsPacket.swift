@@ -75,7 +75,7 @@ enum TSTimestamp {
 
     static func encode(_ b: Int64, _ m: UInt8) -> Data {
         var encoded = Data(count: dataSize)
-        encoded[0] = UInt8(truncatingIfNeeded: b >> 29) | 0x01 | m
+        encoded[0] = (UInt8(truncatingIfNeeded: b >> 29) & 0x0E) | 0x01 | m
         encoded[1] = UInt8(truncatingIfNeeded: b >> 22)
         encoded[2] = UInt8(truncatingIfNeeded: b >> 14) | 0x01
         encoded[3] = UInt8(truncatingIfNeeded: b >> 7)
