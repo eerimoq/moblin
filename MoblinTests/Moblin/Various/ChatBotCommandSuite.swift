@@ -47,6 +47,16 @@ struct ChatBotCommandSuite {
     }
 
     @Test
+    func singleWordQuotesPopFirst() throws {
+        let message = createMessage(text: "!moblin widget \"Foo\" enable")
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
+        #expect(command.popFirst() == "widget")
+        #expect(command.popFirst() == "Foo")
+        #expect(command.popFirst() == "enable")
+        #expect(command.popFirst() == nil)
+    }
+
+    @Test
     func whitespaces() throws {
         let message = createMessage(text: "!moblin  widget  \"My   Foo 1\"  enable \"    \"  a")
         let command = try #require(ChatBotCommand(message: message, aliases: []))
