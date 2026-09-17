@@ -51,7 +51,7 @@ class RtmpConnection: @unchecked Sendable {
     weak var stream: RtmpStream?
     var callCompletions: [Int: ([AsValue]) -> Void] = [:]
     private var nextTransactionId = 0
-    private var timer = SimpleTimer(queue: processorControlQueue)
+    private let timer: SimpleTimer
     private let chunkReader = RtmpChunkReader()
     private let name: String
     private let queue: DispatchQueue
@@ -59,6 +59,7 @@ class RtmpConnection: @unchecked Sendable {
     init(name: String, queue: DispatchQueue) {
         self.name = name
         self.queue = queue
+        timer = SimpleTimer(queue: queue)
         socket = RtmpSocket(name: name, queue: queue)
     }
 
