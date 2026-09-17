@@ -310,7 +310,7 @@ private struct StreamerView: View {
                 }
                 Section {
                     Toggle("Enabled", isOn: $streamer.relay.enabled)
-                        .onChange(of: streamer.enabled) { _ in
+                        .onChange(of: streamer.relay.enabled) { _ in
                             reloadIfEnabled()
                         }
                     TextEditNavigationView(
