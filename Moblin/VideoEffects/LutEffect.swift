@@ -82,13 +82,16 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     }
     let numberOfPixels = Int(width * height)
     let numberOutputOfComponents = numberOfPixels * 4
-    var cube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
     let componentsPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
     guard componentsPerPixel == 3 || componentsPerPixel == 4 else {
         throw String(localized: "LUT image is not 3 or 4 components per pixel")
     }
     let hasAlpha = componentsPerPixel == 4
-    let originalCube = cube
+    let originalCube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
+    defer {
+        originalCube.deallocate()
+    }
+    var cube = originalCube
     let rows = Int(height) / dimension
     let columns = Int(width) / dimension
     for row in 0 ..< rows {
