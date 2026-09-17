@@ -122,6 +122,7 @@ class Banners: ObservableObject {
     @Published var minimized = false
 }
 
+@MainActor
 class HypeTrain: ObservableObject {
     @Published var level: Int?
     @Published var progress: ProgressBar?
