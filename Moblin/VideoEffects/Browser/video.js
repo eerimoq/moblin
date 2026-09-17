@@ -20,7 +20,6 @@ class MoblinCanvasDrawer {
     clearInterval(this.timer);
     this.timer = null;
     this.setPlaying(false);
-    moblinideoPlayingUpdated();
   };
 
   handleTimer = () => {
