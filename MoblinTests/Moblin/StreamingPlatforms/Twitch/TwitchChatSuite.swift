@@ -114,6 +114,21 @@ struct TwitchChatSuite {
     }
 
     @Test
+    func unicodeWhitespaces() throws {
+        let message = try TwitchChatMessage(string: """
+        @display-name=eerimoq;\
+        reply-parent-display-name=someone;\
+        reply-parent-msg-body=こんにちは\u{3000}みなさん \
+        :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+        PRIVMSG \
+        #eerimoq \
+        :hi\u{00A0}all
+        """)
+        #expect(message.replyText == "こんにちは\u{3000}みなさん")
+        #expect(message.parameters == ["#eerimoq", "hi\u{00A0}all"])
+    }
+
+    @Test
     func unescapedTagValueEndingInBackslash() throws {
         let message = try TwitchChatMessage(string: """
         @reply-parent-msg-body=a\\sb\\ \
