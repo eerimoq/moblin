@@ -49,8 +49,7 @@ private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] 
     guard parts.count == 2,
           let emoteId = parts.first,
           let emoteRangesString = parts.last,
-          let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0"),
-          let stillUrl = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/static/dark/3.0")
+          let urls = makeTwitchEmoteUrls(id: String(emoteId))
     else {
         return []
     }
@@ -59,7 +58,7 @@ private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] 
         guard let range = parseRange(emoteRangeString) else {
             continue
         }
-        emotes.append(ChatMessageEmote(url: url, stillUrl: stillUrl, range: range))
+        emotes.append(ChatMessageEmote(url: urls.moving, stillUrl: urls.still, range: range))
     }
     return emotes
 }
