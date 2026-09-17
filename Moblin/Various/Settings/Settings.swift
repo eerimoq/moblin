@@ -1952,6 +1952,7 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOn: "lock.fill",
                                  imageOff: "lock",
                                  page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .image,
                                  imageOn: "camera.fill",
                                  imageOff: "camera",
