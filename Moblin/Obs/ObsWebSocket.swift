@@ -1195,7 +1195,7 @@ class ObsWebSocket {
 
     private func handleRequestResponse(data: Data) throws {
         let (requestId, status, data) = try unpackRequestResponse(data: data)
-        guard let request = requests[requestId] else {
+        guard let request = requests.removeValue(forKey: requestId) else {
             logger.debug("Unexpected request id in response")
             return
         }
@@ -1209,7 +1209,7 @@ class ObsWebSocket {
 
     private func handleRequestBatchResponse(data: Data) throws {
         let (requestId, results) = try unpackRequestBatchResponse(data: data)
-        guard let batchRequest = batchRequests[requestId] else {
+        guard let batchRequest = batchRequests.removeValue(forKey: requestId) else {
             logger.debug("Unexpected request id in batch response")
             return
         }
