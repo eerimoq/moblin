@@ -59,7 +59,12 @@ private final class Delegate: TwitchEventSubDelegate {
     func twitchEventSubNotification(message _: String) {}
 }
 
-private func chatNotification(noticeType: String, shared: Bool, payload: String) -> String {
+private func chatNotification(
+    noticeType: String,
+    shared: Bool,
+    payload: String,
+    message: String = #"{"text": "hello", "fragments": []}"#
+) -> String {
     let payload = payload.isEmpty ? "" : "\(payload),"
     let source = shared ? """
     "source_broadcaster_user_id": "222",
@@ -95,7 +100,7 @@ private func chatNotification(noticeType: String, shared: Bool, payload: String)
           "badges": [],
           "system_message": "",
           "message_id": "m",
-          "message": {"text": "hello", "fragments": []},
+          "message": \(message),
           "notice_type": "\(noticeType)",
           "sub": null,
           "resub": null,
@@ -135,6 +140,7 @@ struct TwitchEventSubSuite {
         #expect(delegate.subscribes.count == 1)
         #expect(delegate.subscribes.first?.user_name == "Viewer")
         #expect(delegate.subscribes.first?.tierAsNumber() == 1)
+        #expect(delegate.subscribes.first?.message?.text == "hello")
         #expect(delegate.subscribes.first?.sharedChat == nil)
     }
 
@@ -179,6 +185,41 @@ struct TwitchEventSubSuite {
     }
 
     @Test
+    func resubMessageFragments() {
+        let delegate = Delegate()
+        makeEventSub(delegate: delegate).handleMessage(messageText: chatNotification(
+            noticeType: "resub",
+            shared: false,
+            payload: #"""
+            "resub": {
+              "cumulative_months": 2,
+              "duration_months": 1,
+              "streak_months": null,
+              "sub_tier": "1000",
+              "is_prime": false,
+              "is_gift": false
+            }
+            """#,
+            message: #"""
+            {
+              "text": "Kappa hi",
+              "fragments": [
+                {"type": "emote", "text": "Kappa", "cheermote": null,
+                 "emote": {"id": "25", "emote_set_id": "0", "owner_id": "0", "format": ["static"]},
+                 "mention": null},
+                {"type": "text", "text": " hi", "cheermote": null, "emote": null, "mention": null}
+              ]
+            }
+            """#
+        ))
+        #expect(delegate.resubscribes.count == 1)
+        let fragments = delegate.resubscribes.first?.message.fragments ?? []
+        #expect(fragments.map(\.type) == ["emote", "text"])
+        #expect(fragments.map(\.text) == ["Kappa", " hi"])
+        #expect(fragments.map(\.emote?.id) == ["25", nil])
+    }
+
+    @Test
     func sharedChatCommunitySubGift() {
         let delegate = Delegate()
         makeEventSub(delegate: delegate).handleMessage(messageText: chatNotification(
@@ -189,6 +230,7 @@ struct TwitchEventSubSuite {
         #expect(delegate.gifts.count == 1)
         #expect(delegate.gifts.first?.user_name == "Viewer")
         #expect(delegate.gifts.first?.total == 5)
+        #expect(delegate.gifts.first?.message?.text == "hello")
         #expect(delegate.gifts.first?.sharedChat?.broadcasterUserName == "Partner")
     }
 
@@ -223,6 +265,7 @@ struct TwitchEventSubSuite {
         ))
         #expect(delegate.upgrades.count == 1)
         #expect(delegate.upgrades.first?.tierAsNumber() == nil)
+        #expect(delegate.upgrades.first?.message?.text == "hello")
         #expect(delegate.upgrades.first?.sharedChat?.broadcasterUserId == "222")
     }
 
@@ -246,6 +289,7 @@ struct TwitchEventSubSuite {
         #expect(delegate.raids.first?.from_broadcaster_user_id == "555")
         #expect(delegate.raids.first?.from_broadcaster_user_name == "Raider")
         #expect(delegate.raids.first?.viewers == 42)
+        #expect(delegate.raids.first?.message?.text == "hello")
         #expect(delegate.raids.first?.sharedChat?.broadcasterUserId == "222")
     }
 }

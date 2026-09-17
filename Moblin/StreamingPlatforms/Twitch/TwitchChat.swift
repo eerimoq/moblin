@@ -184,6 +184,26 @@ func createTwitchSegments(text: String,
     return segments
 }
 
+func createTwitchSegments(fragments: [TwitchEventSubMessageFragment],
+                          emotesManager: Emotes,
+                          id: inout Int) -> [ChatPostSegment]
+{
+    var segments: [ChatPostSegment] = []
+    for fragment in fragments {
+        if fragment.type == "emote", let emote = fragment.emote,
+           let urls = makeTwitchEmoteUrls(id: emote.id)
+        {
+            segments.append(ChatPostSegment(id: id, url: ChatPostUrl(moving: urls.moving, still: urls.still)))
+            id += 1
+            segments.append(ChatPostSegment(id: id, text: ""))
+            id += 1
+        } else {
+            segments += emotesManager.createSegments(text: fragment.text, id: &id)
+        }
+    }
+    return segments
+}
+
 struct TwitchChatMessage {
     let command: TwitchChatCommand
     let parameters: [String]
@@ -492,7 +512,20 @@ final class TwitchChat {
     }
 
     func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
-        createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
+        createSegments(text: text, fragments: [], bits: bits)
+    }
+
+    func createSegments(text: String,
+                        fragments: [TwitchEventSubMessageFragment],
+                        bits: String?) -> [ChatPostSegment]
+    {
+        var id = 0
+        var segments = createTwitchSegments(text: text, emotes: [], emotesManager: emotes, id: &id)
+        segments += createTwitchSegments(fragments: fragments, emotesManager: emotes, id: &id)
+        if bits != nil {
+            segments = replaceCheermotes(segments: segments)
+        }
+        return segments
     }
 
     func isConnected() -> Bool {

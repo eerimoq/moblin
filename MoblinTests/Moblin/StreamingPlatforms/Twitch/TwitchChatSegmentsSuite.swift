@@ -16,6 +16,23 @@ private func gifNames(_ segments: [ChatPostSegment]) -> [String?] {
     segments.map { $0.bigGifUrl?.moving?.lastPathComponent }
 }
 
+private func textFragment(_ text: String) -> TwitchEventSubMessageFragment {
+    TwitchEventSubMessageFragment(type: "text", text: text, emote: nil)
+}
+
+private func emoteFragment(_ text: String, id: String) -> TwitchEventSubMessageFragment {
+    TwitchEventSubMessageFragment(type: "emote", text: text, emote: .init(id: id))
+}
+
+private func twitchEmoteIds(_ segments: [ChatPostSegment]) -> [String?] {
+    segments.map { segment in
+        guard let path = segment.url?.still?.path else {
+            return nil
+        }
+        return path.split(separator: "/").dropFirst(2).first.map(String.init)
+    }
+}
+
 struct TwitchChatSegmentsSuite {
     private func createSegments(_ text: String,
                                 _ emotes: [ChatMessageEmote],
@@ -26,6 +43,72 @@ struct TwitchChatSegmentsSuite {
                                     emotes: emotes,
                                     emotesManager: makeEmotes(thirdParty),
                                     id: &id)
+    }
+
+    private func createSegments(_ fragments: [TwitchEventSubMessageFragment],
+                                thirdParty: [String] = []) -> [ChatPostSegment]
+    {
+        var id = 0
+        return createTwitchSegments(fragments: fragments, emotesManager: makeEmotes(thirdParty), id: &id)
+    }
+
+    @Test
+    func fragmentsWithoutEmotes() {
+        let segments = createSegments([textFragment("hello world")])
+        #expect(texts(segments) == ["hello ", "world "])
+        #expect(twitchEmoteIds(segments) == [nil, nil])
+    }
+
+    @Test
+    func fragmentsWithEmoteInTheMiddle() {
+        let segments = createSegments([
+            textFragment("hi "),
+            emoteFragment("Kappa", id: "25"),
+            textFragment(" lol"),
+        ])
+        #expect(texts(segments) == ["hi ", nil, "", "lol "])
+        #expect(twitchEmoteIds(segments) == [nil, "25", nil, nil])
+    }
+
+    @Test
+    func fragmentsWithAdjacentEmotes() {
+        let segments = createSegments([
+            emoteFragment("Kappa", id: "25"),
+            textFragment(" "),
+            emoteFragment("PogChamp", id: "305954156"),
+        ])
+        #expect(texts(segments) == [nil, "", nil, ""])
+        #expect(twitchEmoteIds(segments) == ["25", nil, "305954156", nil])
+    }
+
+    @Test
+    func fragmentsWithThirdPartyEmoteInText() {
+        let segments = createSegments([textFragment("LUL "), emoteFragment("Kappa", id: "25")],
+                                      thirdParty: ["LUL"])
+        #expect(texts(segments) == ["", "", nil, ""])
+        #expect(emoteNames(segments).first == "LUL")
+        #expect(twitchEmoteIds(segments)[2] == "25")
+    }
+
+    @Test
+    func fragmentsWithMentionAndCheermoteAreText() {
+        let segments = createSegments([
+            TwitchEventSubMessageFragment(type: "mention", text: "@Viewer", emote: nil),
+            textFragment(" "),
+            TwitchEventSubMessageFragment(type: "cheermote", text: "Cheer100", emote: nil),
+        ])
+        #expect(texts(segments) == ["@Viewer ", "Cheer100 "])
+        #expect(twitchEmoteIds(segments) == [nil, nil])
+    }
+
+    @Test
+    func fragmentIdsAreUnique() {
+        let segments = createSegments([
+            textFragment("a "),
+            emoteFragment("Kappa", id: "25"),
+            textFragment(" LUL b"),
+        ], thirdParty: ["LUL"])
+        #expect(Set(segments.map(\.id)).count == segments.count)
     }
 
     @Test

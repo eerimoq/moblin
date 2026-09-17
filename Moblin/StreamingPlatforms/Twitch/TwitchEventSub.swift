@@ -21,8 +21,19 @@ private struct WelcomeMessage: Decodable {
     var payload: WelcomePayload
 }
 
+struct TwitchEventSubMessageFragmentEmote: Decodable {
+    var id: String
+}
+
+struct TwitchEventSubMessageFragment: Decodable {
+    var type: String
+    var text: String
+    var emote: TwitchEventSubMessageFragmentEmote?
+}
+
 struct TwitchEventSubMessage: Decodable {
     var text: String
+    var fragments: [TwitchEventSubMessageFragment]
 }
 
 struct TwitchEventSubSharedChat: Decodable {
@@ -35,6 +46,7 @@ struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var tier: String
     var is_gift: Bool
     var is_prime: Bool?
+    var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int {
@@ -57,6 +69,7 @@ private struct NotificationChannelSubscribeMessage: Decodable {
 struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
     var user_name: String
     var tier: String?
+    var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int? {
@@ -78,6 +91,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var user_name: String?
     var total: Int
     var tier: String
+    var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
 
     func tierAsNumber() -> Int {
@@ -241,6 +255,7 @@ struct TwitchEventSubChannelRaidEvent: Decodable {
     var from_broadcaster_user_id: String
     var from_broadcaster_user_name: String
     var viewers: Int
+    var message: TwitchEventSubMessage?
     var sharedChat: TwitchEventSubSharedChat?
 }
 
@@ -847,6 +862,7 @@ final class TwitchEventSub: NSObject {
                                                              tier: sub.sub_tier,
                                                              is_gift: false,
                                                              is_prime: sub.is_prime,
+                                                             message: event.message,
                                                              sharedChat: event.sharedChat()))
     }
 
@@ -891,13 +907,17 @@ final class TwitchEventSub: NSObject {
         delegate.twitchEventSubChannelSubscriptionUpgrade(
             event: .init(user_name: event.chatter_user_name,
                          tier: primePaidUpgrade.sub_tier,
+                         message: event.message,
                          sharedChat: event.sharedChat())
         )
     }
 
     private func handleChatNotificationGiftPaidUpgrade(event: NotificationChannelChatNotificationEvent) {
         delegate.twitchEventSubChannelSubscriptionUpgrade(
-            event: .init(user_name: event.chatter_user_name, tier: nil, sharedChat: event.sharedChat())
+            event: .init(user_name: event.chatter_user_name,
+                         tier: nil,
+                         message: event.message,
+                         sharedChat: event.sharedChat())
         )
     }
 
@@ -909,6 +929,7 @@ final class TwitchEventSub: NSObject {
             event: .init(from_broadcaster_user_id: raid.user_id,
                          from_broadcaster_user_name: raid.user_name,
                          viewers: raid.viewer_count,
+                         message: event.message,
                          sharedChat: event.sharedChat())
         )
     }
@@ -934,6 +955,7 @@ final class TwitchEventSub: NSObject {
             event: .init(user_name: event.chatter_is_anonymous ? nil : event.chatter_user_name,
                          total: total,
                          tier: tier,
+                         message: event.message,
                          sharedChat: event.sharedChat())
         )
     }

@@ -696,27 +696,30 @@ extension Model {
         stopHypeTrainTimer()
     }
 
+    private func makeTwitchAlertSegments(text: String,
+                                         fragments: [TwitchEventSubMessageFragment] = [],
+                                         bits: String? = nil) -> [ChatPostSegment]
+    {
+        twitchChat?.createSegments(text: text, fragments: fragments, bits: bits)
+            ?? makeChatPostTextSegments(text: text)
+    }
+
     private func appendTwitchChatAlertMessage(
         user: String,
-        text: String,
+        segments: [ChatPostSegment],
         title: String,
         color: Color,
         image: String,
         kind: ChatHighlightKind,
-        sharedChat: TwitchEventSubSharedChat?,
-        bits: String? = nil
+        sharedChat: TwitchEventSubSharedChat?
     ) {
-        guard let twitchChat else {
-            return
-        }
-        let segments = twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits)
         let highlight = ChatHighlight(
             kind: kind,
             barColor: color,
             image: image,
             titleSegments: [ChatPostSegment(id: 0, text: title)]
         )
-        if let sharedChat {
+        if let sharedChat, let twitchChat {
             twitchChat.getSourceChannelIcon(sourceRoomId: sharedChat.broadcasterUserId) { sourceChannelIcon in
                 self.appendTwitchChatAlertMessage(user: user,
                                                   segments: segments,
@@ -759,6 +762,13 @@ extension Model {
                           sourceChannelIcon: sourceChannelIcon)
     }
 
+    private func joinTwitchAlertText(_ text: String, _ message: TwitchEventSubMessage?) -> String {
+        guard let message, !message.text.isEmpty else {
+            return text
+        }
+        return "\(text) \(message.text)"
+    }
+
     private func isTwitchSharedChatAlertEnabled(
         _ sharedChat: TwitchEventSubSharedChat?,
         alerts: SettingsTwitchAlerts
@@ -778,7 +788,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.follows {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text),
                 title: String(localized: "New follower"),
                 color: .pink,
                 image: "medal",
@@ -798,10 +808,11 @@ extension Model: TwitchEventSubDelegate {
         } else {
             String(localized: "just subscribed tier \(event.tierAsNumber())!")
         }
+        let textWithMessage = joinTwitchAlertText(text, event.message)
         if stream.twitchToastAlerts.subscriptions,
            isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
         {
-            makeToast(title: "\(event.user_name) \(text)")
+            makeToast(title: "\(event.user_name) \(textWithMessage)")
         }
         guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
             return
@@ -810,7 +821,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.subscriptions {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text, fragments: event.message?.fragments ?? []),
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
@@ -818,7 +829,7 @@ extension Model: TwitchEventSubDelegate {
                 sharedChat: event.sharedChat
             )
         }
-        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
         latestSubscriber = event.user_name
     }
 
@@ -826,10 +837,11 @@ extension Model: TwitchEventSubDelegate {
         let user = event.user_name ?? String(localized: "Anonymous")
         let text =
             String(localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!")
+        let textWithMessage = joinTwitchAlertText(text, event.message)
         if stream.twitchToastAlerts.giftSubscriptions,
            isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
         {
-            makeToast(title: "\(user) \(text)")
+            makeToast(title: "\(user) \(textWithMessage)")
         }
         guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
             return
@@ -838,7 +850,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.giftSubscriptions {
             appendTwitchChatAlertMessage(
                 user: user,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text, fragments: event.message?.fragments ?? []),
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
                 image: "gift",
@@ -846,7 +858,7 @@ extension Model: TwitchEventSubDelegate {
                 sharedChat: event.sharedChat
             )
         }
-        printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
+        printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: textWithMessage)
         latestSubscriber = user
     }
 
@@ -856,18 +868,18 @@ extension Model: TwitchEventSubDelegate {
         let text = if let streakMonths = event.streak_months {
             String(localized: """
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
-            \(streakMonths) in a row! \(event.message.text)
+            \(streakMonths) in a row!
             """)
         } else {
-            String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """)
+            String(
+                localized: "just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months!"
+            )
         }
+        let textWithMessage = joinTwitchAlertText(text, event.message)
         if stream.twitchToastAlerts.resubscriptions,
            isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
         {
-            makeToast(title: "\(event.user_name) \(text)")
+            makeToast(title: "\(event.user_name) \(textWithMessage)")
         }
         guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
             return
@@ -876,7 +888,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.resubscriptions {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text, fragments: event.message.fragments),
                 title: String(localized: "New resubscribe"),
                 color: .cyan,
                 image: "party.popper",
@@ -884,7 +896,7 @@ extension Model: TwitchEventSubDelegate {
                 sharedChat: event.sharedChat
             )
         }
-        printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
+        printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: textWithMessage)
         latestSubscriber = event.user_name
     }
 
@@ -896,10 +908,11 @@ extension Model: TwitchEventSubDelegate {
         } else {
             String(localized: "just continued their gift subscription!")
         }
+        let textWithMessage = joinTwitchAlertText(text, event.message)
         if stream.twitchToastAlerts.subscriptions,
            isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
         {
-            makeToast(title: "\(event.user_name) \(text)")
+            makeToast(title: "\(event.user_name) \(textWithMessage)")
         }
         guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
             return
@@ -908,7 +921,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.subscriptions {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text, fragments: event.message?.fragments ?? []),
                 title: String(localized: "New subscriber"),
                 color: .cyan,
                 image: "party.popper",
@@ -916,20 +929,16 @@ extension Model: TwitchEventSubDelegate {
                 sharedChat: event.sharedChat
             )
         }
-        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: textWithMessage)
         latestSubscriber = event.user_name
     }
 
     func twitchEventSubChannelWatchStreak(event: TwitchEventSubNotificationChannelWatchStreakEvent) {
-        let text = if event.message.text.isEmpty {
-            String(localized: "just watched \(event.streak_count) streams in a row!")
-        } else {
-            String(localized: "just watched \(event.streak_count) streams in a row! \(event.message.text)")
-        }
+        let text = String(localized: "just watched \(event.streak_count) streams in a row!")
         if stream.twitchToastAlerts.isWatchStreakEnabled(count: event.streak_count),
            isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
         {
-            makeToast(title: "\(event.user_name) \(text)")
+            makeToast(title: "\(event.user_name) \(joinTwitchAlertText(text, event.message))")
         }
         guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
             return
@@ -937,7 +946,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.isWatchStreakEnabled(count: event.streak_count) {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text, fragments: event.message.fragments),
                 title: String(localized: "Watch streak"),
                 color: .orange,
                 image: "flame",
@@ -960,7 +969,7 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.rewards {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
-                text: text,
+                segments: makeTwitchAlertSegments(text: text),
                 title: String(localized: "Reward redemption"),
                 color: .blue,
                 image: "medal.star",
@@ -978,10 +987,11 @@ extension Model: TwitchEventSubDelegate {
             appendTwitchRaidReceived(channelId: event.from_broadcaster_user_id,
                                      channelName: event.from_broadcaster_user_name)
             let text = String(localized: "raided with a party of \(event.viewers)!")
+            let textWithMessage = joinTwitchAlertText(text, event.message)
             if stream.twitchToastAlerts.raids,
                isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchToastAlerts)
             {
-                makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+                makeToast(title: "\(event.from_broadcaster_user_name) \(textWithMessage)")
             }
             guard isTwitchSharedChatAlertEnabled(event.sharedChat, alerts: stream.twitchChatAlerts) else {
                 return
@@ -990,7 +1000,7 @@ extension Model: TwitchEventSubDelegate {
             if stream.twitchChatAlerts.raids {
                 appendTwitchChatAlertMessage(
                     user: event.from_broadcaster_user_name,
-                    text: text,
+                    segments: makeTwitchAlertSegments(text: text, fragments: event.message?.fragments ?? []),
                     title: String(localized: "Raid"),
                     color: .pink,
                     image: "person.3",
@@ -1001,7 +1011,7 @@ extension Model: TwitchEventSubDelegate {
             printEventCatPrinters(
                 event: .twitchRaid,
                 username: event.from_broadcaster_user_name,
-                message: text
+                message: textWithMessage
             )
         }
     }
@@ -1017,13 +1027,12 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchChatAlerts.isBitsEnabled(amount: event.bits) {
             appendTwitchChatAlertMessage(
                 user: user,
-                text: "\(text) \(event.message)",
+                segments: makeTwitchAlertSegments(text: "\(text) \(event.message)", bits: ""),
                 title: String(localized: "Cheer"),
                 color: .green,
                 image: "suit.diamond",
                 kind: .other,
-                sharedChat: nil,
-                bits: ""
+                sharedChat: nil
             )
         }
         let message = event.message.isEmpty ? text : "\(text) \(event.message)"
@@ -1039,7 +1048,7 @@ extension Model: TwitchEventSubDelegate {
         startHypeTrainTimer(timeout: 600)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: String(localized: "started a hype train!"),
+            segments: makeTwitchAlertSegments(text: String(localized: "started a hype train!")),
             title: String(localized: "Hype train started"),
             color: .purple,
             image: "train.side.front.car",
@@ -1070,7 +1079,9 @@ extension Model: TwitchEventSubDelegate {
         startHypeTrainTimer(timeout: 60)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: String(localized: "ended the hype train at level \(event.level)!"),
+            segments: makeTwitchAlertSegments(
+                text: String(localized: "ended the hype train at level \(event.level)!")
+            ),
             title: String(localized: "Hype train ended"),
             color: .purple,
             image: "train.side.rear.car",
@@ -1098,7 +1109,7 @@ extension Model: TwitchEventSubDelegate {
         updateOngoingTwitchPoll(event: event)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: String(localized: "started a poll: \(event.title)"),
+            segments: makeTwitchAlertSegments(text: String(localized: "started a poll: \(event.title)")),
             title: String(localized: "Poll started"),
             color: .indigo,
             image: "chart.bar",
@@ -1129,7 +1140,7 @@ extension Model: TwitchEventSubDelegate {
         }
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: text,
+            segments: makeTwitchAlertSegments(text: text),
             title: String(localized: "Poll ended"),
             color: .indigo,
             image: "chart.bar",
@@ -1150,7 +1161,9 @@ extension Model: TwitchEventSubDelegate {
         updateOngoingTwitchPrediction(event: event)
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: String(localized: "started a prediction: \(event.title)"),
+            segments: makeTwitchAlertSegments(
+                text: String(localized: "started a prediction: \(event.title)")
+            ),
             title: String(localized: "Prediction started"),
             color: .mint,
             image: "questionmark.diamond",
@@ -1184,7 +1197,7 @@ extension Model: TwitchEventSubDelegate {
         }
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
-            text: text,
+            segments: makeTwitchAlertSegments(text: text),
             title: String(localized: "Prediction ended"),
             color: .mint,
             image: "trophy",
