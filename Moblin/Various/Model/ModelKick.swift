@@ -282,7 +282,11 @@ extension Model {
         }
     }
 
-    func fetchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+    func fetchKickCategories(
+        stream: SettingsStream,
+        query: String,
+        onComplete: @escaping ([KickCategory]?) -> Void
+    ) {
         createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
     }
 
