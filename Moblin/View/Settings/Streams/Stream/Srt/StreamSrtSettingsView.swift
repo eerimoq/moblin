@@ -44,6 +44,7 @@ struct StreamSrtSettingsView: View {
             return
         }
         srt.overheadBandwidth = overheadBandwidth
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {
@@ -96,6 +97,7 @@ struct StreamSrtSettingsView: View {
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0)%" }
                     )
+                    .disabled(stream.enabled && model.isLive)
                     .disabled(stream.enabled && model.isLive)
                 case .moblin:
                     EmptyView()
