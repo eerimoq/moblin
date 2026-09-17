@@ -34,6 +34,8 @@
 	<array>
 		<string>elgato-device-driver</string>
 	</array>
+	<key>MoblinWebsiteApiUrl</key>
+	<string>$(MOBLIN_WEBSITE_API_URL)</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

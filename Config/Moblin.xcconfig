@@ -1,3 +1,5 @@
+MOBLIN_WEBSITE_API_URL = https:/$()/api.moblin.app
+
 #include "Base.xcconfig"
 
 PRODUCT_BUNDLE_IDENTIFIER = $(BASE_PRODUCT_BUNDLE_IDENTIFIER)

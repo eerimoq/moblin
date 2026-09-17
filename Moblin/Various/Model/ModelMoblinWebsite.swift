@@ -2,8 +2,9 @@ import CryptoKit
 import DeviceCheck
 import Foundation
 
-private let liveUrl = URL(string: "https://api.moblin.app/streamers/live")!
-private let challengeUrl = URL(string: "https://api.moblin.app/streamers/live/challenge")!
+private let baseUrl = Bundle.main.object(forInfoDictionaryKey: "MoblinWebsiteApiUrl") as! String
+private let liveUrl = URL(string: "\(baseUrl)/streamers/live")!
+private let challengeUrl = URL(string: "\(baseUrl)/streamers/live/challenge")!
 private let appAttestStorage = SimpleStringStorage(key: "moblinWebsiteAppAttest")
 
 private struct MoblinWebsiteChannel: Encodable {
