@@ -5,11 +5,11 @@ import SwiftUI
 
 private let loaderQueue = DispatchQueue(label: "com.eerimoq.mobs.lut-loader")
 
-private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
-    let dimensionFloat = Float(dimension)
-    let x = min(max(point.x * dimensionFloat - 1, 0), dimensionFloat - 1)
-    let y = min(max(point.y * dimensionFloat - 1, 0), dimensionFloat - 1)
-    let z = min(max(point.z * dimensionFloat - 1, 0), dimensionFloat - 1)
+func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
+    let maxIndex = Float(dimension - 1)
+    let x = min(max(point.x * maxIndex, 0), maxIndex)
+    let y = min(max(point.y * maxIndex, 0), maxIndex)
+    let z = min(max(point.z * maxIndex, 0), maxIndex)
     let x0 = Int(floor(x))
     let x1 = min(x0 + 1, dimension - 1)
     let y0 = Int(floor(y))
@@ -32,7 +32,7 @@ private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimen
     return c0 * (1 - zd) + c1 * zd
 }
 
-private func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3<Float>] {
+func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3<Float>] {
     let newPoints = stride(from: 0.0, through: 1.0, by: 1.0 / Float(64 - 1)).map { Float($0) }
     var lut64 = Array(repeating: SIMD3<Float>(0, 0, 0), count: 64 * 64 * 64)
     for i in 0 ..< 64 {
@@ -48,6 +48,18 @@ private func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3
         }
     }
     return lut64
+}
+
+func lutEffectConvertCube(data: Data) throws -> SC3DLut {
+    var sc3dLut = try SC3DLut(fileData: data)
+    if sc3dLut.size > 64 {
+        let bigLut = sc3dLut.entries.map { entry in SIMD3<Float>(entry.red, entry.green, entry.blue) }
+        sc3dLut.entries = convertLutTo64(bigLut: bigLut, bigDimension: sc3dLut.size).map { entry in
+            LutEntry(red: entry.x, green: entry.y, blue: entry.z)
+        }
+        sc3dLut.size = 64
+    }
+    return sc3dLut
 }
 
 func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
@@ -121,7 +133,7 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
 }
 
-private func makeLutImage(dimension: Int, cubeData: Data) -> MTIImage? {
+func makeLutCgImage(dimension: Int, cubeData: Data) -> CGImage? {
     let pixelsCount = dimension * dimension * dimension
     guard cubeData.count == pixelsCount * 4 * 4 else {
         return nil
@@ -150,13 +162,17 @@ private func makeLutImage(dimension: Int, cubeData: Data) -> MTIImage? {
                             bytesPerRow: dimension * dimension * 4,
                             space: CGColorSpaceCreateDeviceRGB(),
                             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-    guard let cgImage = context?.makeImage() else {
+    return context?.makeImage()
+}
+
+private func makeLutImage(dimension: Int, cubeData: Data) -> MTIImage? {
+    guard let cgImage = makeLutCgImage(dimension: dimension, cubeData: cubeData) else {
         return nil
     }
     return MTIImage(cgImage: cgImage, options: [.SRGB: false], isOpaque: true)
 }
 
-private func makeCubeData(_ entries: [LutEntry]) -> Data {
+func makeCubeData(_ entries: [LutEntry]) -> Data {
     var cube: [Float] = []
     cube.reserveCapacity(entries.count * 4)
     for entry in entries {
@@ -266,14 +282,7 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func loadDiskCubeLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
-        var sc3dLut = try SC3DLut(contentsOf: imageStorage.makePath(id: lut.id))
-        if sc3dLut.size > 64 {
-            let bigLut = sc3dLut.entries.map { entry in SIMD3<Float>(entry.red, entry.green, entry.blue) }
-            sc3dLut.entries = convertLutTo64(bigLut: bigLut, bigDimension: sc3dLut.size).map { entry in
-                LutEntry(red: entry.x, green: entry.y, blue: entry.z)
-            }
-            sc3dLut.size = 64
-        }
+        let sc3dLut = try lutEffectConvertCube(data: Data(contentsOf: imageStorage.makePath(id: lut.id)))
         nonisolated(unsafe)
         let filter = try sc3dLut.ciFilter()
         nonisolated(unsafe)
