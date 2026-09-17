@@ -246,6 +246,7 @@ private struct StreamerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var streamer: SettingsRemoteControlAssistant
+    @ObservedObject var streamerRelay: SettingsRemoteControlServerRelay
 
     private func reloadIfEnabled() {
         guard streamer.id == remoteControlSettings.selectedStreamer else {
@@ -254,9 +255,9 @@ private struct StreamerView: View {
         let assistant = model.database.remoteControl.assistant
         assistant.enabled = streamer.enabled
         assistant.port = streamer.port
-        assistant.relay.enabled = streamer.relay.enabled
-        assistant.relay.baseUrl = streamer.relay.baseUrl
-        assistant.relay.bridgeId = streamer.relay.bridgeId
+        assistant.relay.enabled = streamerRelay.enabled
+        assistant.relay.baseUrl = streamerRelay.baseUrl
+        assistant.relay.bridgeId = streamerRelay.bridgeId
         model.reloadRemoteControlRelay()
         model.reloadRemoteControlAssistant()
     }
@@ -270,7 +271,7 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayUrl(value: String) {
-        streamer.relay.baseUrl = value
+        streamerRelay.baseUrl = value
         reloadIfEnabled()
     }
 
@@ -282,7 +283,7 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayBridgeId(value: String) {
-        streamer.relay.bridgeId = value
+        streamerRelay.bridgeId = value
         reloadIfEnabled()
     }
 
@@ -309,19 +310,19 @@ private struct StreamerView: View {
                     Text("Assistant")
                 }
                 Section {
-                    Toggle("Enabled", isOn: $streamer.relay.enabled)
-                        .onChange(of: streamer.enabled) { _ in
+                    Toggle("Enabled", isOn: $streamerRelay.enabled)
+                        .onChange(of: streamerRelay.enabled) { _ in
                             reloadIfEnabled()
                         }
                     TextEditNavigationView(
                         title: String(localized: "Base URL"),
-                        value: streamer.relay.baseUrl,
+                        value: streamerRelay.baseUrl,
                         onChange: isValidWebSocketUrl,
                         onSubmit: submitAssistantRelayUrl
                     )
                     TextEditNavigationView(
                         title: String(localized: "Bridge id"),
-                        value: streamer.relay.bridgeId,
+                        value: streamerRelay.bridgeId,
                         onChange: changeAssistantRelayBridgeId,
                         onSubmit: submitAssistantRelayBridgeId,
                         sensitive: true
@@ -332,7 +333,7 @@ private struct StreamerView: View {
                     Text("Use a relay server when the assistant is behind CGNAT or similar.")
                 }
                 if streamer.enabled {
-                    RemoteControlUrlsView(relay: streamer.relay,
+                    RemoteControlUrlsView(relay: streamerRelay,
                                           port: $streamer.port,
                                           status: model.statusOther)
                 }
@@ -410,7 +411,7 @@ struct RemoteControlStreamersView: View {
         Section {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
-                    StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
+                    StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer, streamerRelay: streamer.relay)
                         .contextMenuDeleteButton {
                             if let offsets = makeOffsets(remoteControlSettings.streamers, streamer.id) {
                                 deleteStreamer(at: offsets)
