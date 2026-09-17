@@ -613,9 +613,12 @@ final class TwitchChat {
                 badgeUrls.append(badgeUrl)
             }
         }
-        let isAction = text.starts(with: "\u{01}ACTION")
+        let isAction = text.hasPrefix("\u{01}ACTION ")
         if isAction {
-            text = String(text.dropFirst(7))
+            text = String(text.dropFirst(8))
+            if text.hasSuffix("\u{01}") {
+                text.removeLast()
+            }
         }
         let segments = createSegments(
             text: text,
