@@ -104,7 +104,7 @@ func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
 
 func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
     let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
-    let beta = atan(point.y / point.x)
+    let beta = atan2(point.y, point.x)
     return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
 }
 
