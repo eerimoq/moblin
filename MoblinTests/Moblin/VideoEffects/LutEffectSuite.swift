@@ -156,6 +156,56 @@ struct LutEffectSuite {
     }
 
     @Test
+    func parseCubeFileFormats() throws {
+        let lut = try SC3DLut(fileData: Data("""
+        # Created by test\r
+        TITLE "My LUT"\r
+        \r
+        LUT_3D_SIZE 2\r
+        \t0 0 0\r
+        1.5e-1\t-0.25 +.5  \r
+        0.125E+1 100e-3 1E0\r
+        0.000001 1. 12345678901234567890
+        7e-4 8.50 9
+        1 2 3
+        4 5 6
+        7 8 9
+        """.utf8))
+        #expect(lut.title == "My LUT")
+        #expect(lut.size == 2)
+        #expect(lut.entries.count == 8)
+        #expect(isEqual(entry(lut, red: 0, green: 0, blue: 0), SIMD3(0, 0, 0)))
+        #expect(isEqual(entry(lut, red: 1, green: 0, blue: 0), SIMD3(0.15, -0.25, 0.5)))
+        #expect(isEqual(entry(lut, red: 0, green: 1, blue: 0), SIMD3(1.25, 0.1, 1)))
+        let big = entry(lut, red: 1, green: 1, blue: 0)
+        #expect(isEqual(big.x, 0.000001, epsilon: 1e-12))
+        #expect(big.y == 1)
+        #expect(isEqual(big.z, 12_345_678_901_234_567_890, epsilon: 1e12))
+        #expect(isEqual(entry(lut, red: 0, green: 0, blue: 1), SIMD3(0.0007, 8.5, 9)))
+    }
+
+    @Test
+    func parseCubeFileSyntaxErrors() {
+        for line in ["1 2", "1 2 3 4", "1 2 x", "1e 2 3", "1.2.3 4 5", "- 2 3", "1 2 3;"] {
+            #expect(throws: SwiftCubeError.self) {
+                _ = try SC3DLut(fileData: Data("LUT_3D_SIZE 1\n\(line)\n".utf8))
+            }
+        }
+        #expect(throws: SwiftCubeError.self) {
+            _ = try SC3DLut(fileData: Data("LUT_3D_SIZE 100\n".utf8))
+        }
+        #expect(throws: SwiftCubeError.self) {
+            _ = try SC3DLut(fileData: Data("LUT_3D_SIZE 1\nDOMAIN_MIN 0 0 0\n1 1 1\n".utf8))
+        }
+        #expect(throws: SwiftCubeError.self) {
+            _ = try SC3DLut(fileData: Data("LUT_3D_SIZE 1\nFOO\n1 1 1\n".utf8))
+        }
+        #expect(throws: SwiftCubeError.self) {
+            _ = try SC3DLut(fileData: Data("1 1 1\n".utf8))
+        }
+    }
+
+    @Test
     func lutImageRoundTrip() throws {
         let dimension = 8
         let original = try lutEffectConvertCube(data: makeCubeFile(dimension: dimension, linear))
