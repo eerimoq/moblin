@@ -58,14 +58,10 @@ final class VideoSnapshots: @unchecked Sendable {
         guard let sampleBuffer = makeCopy(sampleBuffer) else {
             return
         }
+        let sampleBuffers = takeSnapshotSampleBuffers
+        let age = takeSnapshotAge
         DispatchQueue.global().async {
-            self.takeSnapshot(
-                sampleBuffer,
-                self.takeSnapshotSampleBuffers,
-                presentationTimeStamp,
-                self.takeSnapshotAge,
-                takeSnapshotComplete
-            )
+            self.takeSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age, takeSnapshotComplete)
         }
         self.takeSnapshotComplete = nil
     }
