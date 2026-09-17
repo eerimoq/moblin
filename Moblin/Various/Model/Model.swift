@@ -564,7 +564,6 @@ final class Model: NSObject, ObservableObject {
     var isRecorderRecording = false
     var currentRecording: Recording?
     let recording = RecordingProvider()
-    private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
     let audio = AudioProvider()
     var inputGainObservation: NSKeyValueObservation?
@@ -2722,14 +2721,16 @@ final class Model: NSObject, ObservableObject {
 
     private func setupThermalState() {
         updateThermalState()
-        NotificationCenter.default.publisher(
-            for: ProcessInfo.thermalStateDidChangeNotification,
-            object: nil
-        )
-        .sink { @MainActor _ in
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleThermalStateDidChange),
+                                               name: ProcessInfo.thermalStateDidChangeNotification,
+                                               object: nil)
+    }
+
+    @objc nonisolated func handleThermalStateDidChange() {
+        DispatchQueue.main.async {
             self.updateThermalState()
         }
-        .store(in: &subscriptions)
     }
 
     private func updateThermalState() {
