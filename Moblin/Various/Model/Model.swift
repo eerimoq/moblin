@@ -1221,7 +1221,6 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setTtsMonsterApiToken(apiToken: chat.ttsMonster.apiToken)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
-        updateFaceFilterSettings()
         initMediaPlayers()
         autoStartDjiDevices()
         autoStartGoProDevices()

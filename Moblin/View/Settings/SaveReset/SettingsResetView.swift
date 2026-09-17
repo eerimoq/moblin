@@ -19,7 +19,9 @@ struct SettingsResetView: View {
                     model.reloadStream()
                     model.resetSelectedScene()
                     model.updateQuickButtonPairs()
+                    model.loadStealthModeImage()
                     model.loadControlBarBackgroundImage()
+                    model.loadFaceBackgroundImage()
                 }
             }
         }

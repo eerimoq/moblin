@@ -74,7 +74,6 @@ struct StreamOverlayRightFaceView: View {
                                     model.saveFaceBackgroundImage(data: data)
                                     DispatchQueue.main.async {
                                         model.loadFaceBackgroundImage()
-                                        model.updateFaceFilterSettings()
                                     }
                                 case .success(nil):
                                     logger.info("face: background image is nil")
