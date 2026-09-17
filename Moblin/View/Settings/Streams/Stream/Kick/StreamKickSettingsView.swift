@@ -39,7 +39,7 @@ private struct KickCategoryPickerView: View {
     private func fetchDefaultCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
         for categoryName in categoryNames {
-            model.fetchKickCategories(query: categoryName) { result in
+            model.fetchKickCategories(stream: stream, query: categoryName) { result in
                 if let category = result?.first {
                     categories.append(category)
                 }
