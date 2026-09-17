@@ -746,7 +746,7 @@ extension TwitchChat: WebSocketClientDelegate {
         webSocket.send(string: "CAP REQ :twitch.tv/commands")
         webSocket.send(string: "PASS oauth:SCHMOOPIIE")
         webSocket.send(string: "NICK justinfan67420")
-        webSocket.send(string: "JOIN #\(channelName)")
+        webSocket.send(string: "JOIN #\(channelName.lowercased())")
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {
