@@ -317,7 +317,7 @@ class MediaPlayer: @unchecked Sendable {
     }
 
     private func getCurrentFile() -> SettingsMediaPlayerFile? {
-        guard currentFileIndex < settings.playlist.count else {
+        guard currentFileIndex >= 0, currentFileIndex < settings.playlist.count else {
             logger.info("media-player: File index out of range")
             return nil
         }
