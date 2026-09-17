@@ -6,19 +6,26 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     @ObservedObject var srt: SettingsStreamSrt
     @ObservedObject var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate
 
+    private func updateAdaptiveBitrate() {
+        guard stream.enabled else {
+            return
+        }
+        model.updateAdaptiveBitrateSrt(srt: srt)
+    }
+
     private func submitFastIrlPacketsInFlight(value: Float) {
         adaptiveBitrate.fastIrlSettings.packetsInFlight = Int32(value)
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func submitFastMinimumBitrate(value: Float) {
         adaptiveBitrate.fastIrlSettings.minimumBitrate = value / 1000
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func submitBitrateIncreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.pifDiffIncreaseFactor = value
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatBitrateIncreaseSpeed(value: Float) -> String {
@@ -27,7 +34,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitBitrateDecreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighDecreaseFactor = powf(1 - (value / 100), 0.2)
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatBitrateDecreaseSpeed(value: Float) -> String {
@@ -36,7 +43,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitMinimumBitrateDecreaseSpeed(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighMinimumDecrease = value / 5 / 1000
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatMinimumBitrateDecreaseSpeed(value: Float) -> String {
@@ -45,7 +52,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitMinimumBitrate(value: Float) {
         adaptiveBitrate.customSettings.minimumBitrate = value / 1000
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatMinimumBitrate(value: Float) -> String {
@@ -54,7 +61,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitPacketsInFlight(value: Float) {
         adaptiveBitrate.customSettings.packetsInFlight = Int32(value)
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatPacketsInFlight(value: Float) -> String {
@@ -63,7 +70,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitAllowedRttSpike(value: Float) {
         adaptiveBitrate.customSettings.rttDiffHighAllowedSpike = value
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     private func formatAllowedRttSpike(value: Float) -> String {
@@ -72,7 +79,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
 
     private func submitBelaboxMinimumBitrate(value: Float) {
         adaptiveBitrate.belaboxSettings.minimumBitrate = value / 1000
-        model.updateAdaptiveBitrateSrt(srt: srt)
+        updateAdaptiveBitrate()
     }
 
     var body: some View {
@@ -84,10 +91,10 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     }
                 }
                 .onChange(of: adaptiveBitrate.algorithm) { _ in
-                    if srt.adaptiveBitrateEnabled {
+                    if stream.enabled, srt.adaptiveBitrateEnabled {
                         model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
                     }
-                    model.updateAdaptiveBitrateSrt(srt: srt)
+                    updateAdaptiveBitrate()
                 }
             } footer: {
                 Text("""
