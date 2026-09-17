@@ -21,9 +21,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var debugLogging: Bool = false
     var debugLoggingMigrated: Bool = false
     @Published var debugOverlay: Bool = false
-    var srtOverheadBandwidth: Int32 = 25
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
-    var maximumBandwidthFollowInput: Bool = true
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
@@ -60,9 +58,7 @@ class SettingsDebug: Codable, ObservableObject {
         case debugLogging
         case debugLoggingMigrated
         case srtOverlay
-        case srtOverheadBandwidth
         case cameraSwitchRemoveBlackish
-        case maximumBandwidthFollowInput
         case bluetoothOutputOnly
         case maximumLogLines
         case pixelFormat
@@ -106,9 +102,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.debugLogging, debugLogging)
         try container.encode(.debugLoggingMigrated, debugLoggingMigrated)
         try container.encode(.srtOverlay, debugOverlay)
-        try container.encode(.srtOverheadBandwidth, srtOverheadBandwidth)
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
-        try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
         try container.encode(.pixelFormat, pixelFormat)
@@ -151,9 +145,7 @@ class SettingsDebug: Codable, ObservableObject {
             debugLoggingMigrated = true
         }
         debugOverlay = container.decode(.srtOverlay, Bool.self, false)
-        srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
-        maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])

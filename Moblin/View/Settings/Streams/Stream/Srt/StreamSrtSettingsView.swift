@@ -44,6 +44,7 @@ struct StreamSrtSettingsView: View {
             return
         }
         srt.overheadBandwidth = overheadBandwidth
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {
