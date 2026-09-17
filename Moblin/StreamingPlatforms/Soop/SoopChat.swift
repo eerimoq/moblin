@@ -162,6 +162,7 @@ final class SoopChat: NSObject {
 
     func stop() {
         logger.debug("soop: stop")
+        webSocket.cancel()
         keepAliveTask?.cancel()
         keepAliveTask = nil
         task?.cancel()
