@@ -475,6 +475,8 @@ class TeslaVehicle: NSObject {
         // logger.info("tesla-vehicle: Got \(payload.hexString()) of \(payload.count) bytes")
         if reader.bytesAvailable > 0 {
             receiveBuffer = try reader.readBytes(reader.bytesAvailable)
+        } else {
+            receiveBuffer.removeAll()
         }
         let message = try UniversalMessage_RoutableMessage(serializedBytes: payload)
         guard case let .routingAddress(address) = message.toDestination.subDestination else {
