@@ -7,9 +7,9 @@ private let loaderQueue = DispatchQueue(label: "com.eerimoq.mobs.lut-loader")
 
 private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
     let dimensionFloat = Float(dimension)
-    let x = min(max(point.x * dimensionFloat - 1, 0), dimensionFloat - 1)
-    let y = min(max(point.y * dimensionFloat - 1, 0), dimensionFloat - 1)
-    let z = min(max(point.z * dimensionFloat - 1, 0), dimensionFloat - 1)
+    let x = min(max(point.x * (dimensionFloat - 1), 0), dimensionFloat - 1)
+    let y = min(max(point.y * (dimensionFloat - 1), 0), dimensionFloat - 1)
+    let z = min(max(point.z * (dimensionFloat - 1), 0), dimensionFloat - 1)
     let x0 = Int(floor(x))
     let x1 = min(x0 + 1, dimension - 1)
     let y0 = Int(floor(y))
