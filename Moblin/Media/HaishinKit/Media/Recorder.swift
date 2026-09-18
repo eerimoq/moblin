@@ -175,7 +175,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         if offset < -maximumAudioPresentationTimeStampOffset {
             return
         }
-        if offset > maximumAudioPresentationTimeStampOffset {
+        if offset > maximumAudioPresentationTimeStampOffset, offset < 10 {
             appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
         }
         guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
