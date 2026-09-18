@@ -298,7 +298,7 @@ private struct KickGiftItemView: View {
 
 private struct KickGiftsView: View {
     @EnvironmentObject var model: Model
-    let kick: SettingsWidgetAlertsKick
+    @ObservedObject var kick: SettingsWidgetAlertsKick
 
     private func deleteKickGift(at offsets: IndexSet) {
         kick.kickGifts.remove(atOffsets: offsets)
@@ -324,10 +324,8 @@ private struct KickGiftsView: View {
                     .onDelete(perform: deleteKickGift)
                 }
                 CreateButtonView {
-                    let kickGift = SettingsWidgetAlertsKickGiftsAlert()
-                    kick.kickGifts.append(kickGift)
+                    kick.kickGifts.append(SettingsWidgetAlertsKickGiftsAlert())
                     model.updateAlertsSettings()
-                    model.objectWillChange.send()
                 }
             } footer: {
                 VStack(alignment: .leading) {

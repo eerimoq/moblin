@@ -258,7 +258,7 @@ private struct TwitchCheerBitsItemView: View {
 
 private struct TwitchCheerBitsView: View {
     @EnvironmentObject var model: Model
-    let twitch: SettingsWidgetAlertsTwitch
+    @ObservedObject var twitch: SettingsWidgetAlertsTwitch
 
     private func deleteCheerBit(at offsets: IndexSet) {
         twitch.cheerBits.remove(atOffsets: offsets)
@@ -284,10 +284,8 @@ private struct TwitchCheerBitsView: View {
                     .onDelete(perform: deleteCheerBit)
                 }
                 CreateButtonView {
-                    let cheerBits = SettingsWidgetAlertsCheerBitsAlert()
-                    twitch.cheerBits.append(cheerBits)
+                    twitch.cheerBits.append(SettingsWidgetAlertsCheerBitsAlert())
                     model.updateAlertsSettings()
-                    model.objectWillChange.send()
                 }
             } footer: {
                 VStack(alignment: .leading) {

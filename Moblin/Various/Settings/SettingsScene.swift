@@ -1282,12 +1282,12 @@ private func createDefaultKickGifts() -> [SettingsWidgetAlertsKickGiftsAlert] {
     return kickGifts
 }
 
-class SettingsWidgetAlertsTwitch: Codable {
+class SettingsWidgetAlertsTwitch: Codable, ObservableObject {
     var follows: SettingsWidgetAlertsAlert = .init()
     var subscriptions: SettingsWidgetAlertsAlert = .init()
     var raids: SettingsWidgetAlertsAlert = .init()
     var cheers: SettingsWidgetAlertsAlert = .init()
-    var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = createDefaultCheerBits()
+    @Published var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = createDefaultCheerBits()
     var redemptions: [SettingsWidgetAlertsAlert] = []
 
     init() {}
@@ -1343,12 +1343,12 @@ class SettingsWidgetAlertsTwitch: Codable {
     }
 }
 
-class SettingsWidgetAlertsKick: Codable {
+class SettingsWidgetAlertsKick: Codable, ObservableObject {
     var subscriptions: SettingsWidgetAlertsAlert = .init()
     var giftedSubscriptions: SettingsWidgetAlertsAlert = .init()
     var hosts: SettingsWidgetAlertsAlert = .init()
     var rewards: SettingsWidgetAlertsAlert = .init()
-    var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = createDefaultKickGifts()
+    @Published var kickGifts: [SettingsWidgetAlertsKickGiftsAlert] = createDefaultKickGifts()
 
     init() {}
 
