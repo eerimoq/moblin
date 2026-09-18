@@ -17,8 +17,8 @@ protocol WebrtcIngestClientDelegate: AnyObject {
     func webrtcIngestClientOnDataReceived(streamId: UUID, count: Int)
 }
 
-private func decodeNtpTimestamp(v: UInt64) -> Double? {
-    guard v >= 2_208_988_800 else {
+func decodeNtpTimestamp(v: UInt64) -> Double? {
+    guard v >> 32 >= 2_208_988_800 else {
         return nil
     }
     let secs = Int64(bitPattern: (v >> 32) - 2_208_988_800)
