@@ -19,7 +19,7 @@ enum RtmpHandshake {
     static func createC2Packet(_ s0s1packet: Data) -> Data {
         let writer = ByteWriter()
         writer.writeBytes(s0s1packet.subdata(in: 1 ..< 5))
-        writer.writeInt32(Int32(Date().timeIntervalSince1970 - timestamp))
+        writer.writeUInt32(UInt32(truncatingIfNeeded: Int64(Date().timeIntervalSince1970 - timestamp)))
         writer.writeBytes(s0s1packet.subdata(in: 9 ..< RtmpHandshake.sigSize + 1))
         return writer.data
     }
