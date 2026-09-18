@@ -2488,7 +2488,7 @@ final class Model: NSObject, ObservableObject {
             fps = max(fps, 1.0)
         }
         media.setLowFpsImage(fps: fps)
-        lowFpsImageFps = max(UInt64(fps), 1)
+        lowFpsImageFps = UInt64(max(fps, 1))
     }
 
     func setSceneSwitchTransition() {
