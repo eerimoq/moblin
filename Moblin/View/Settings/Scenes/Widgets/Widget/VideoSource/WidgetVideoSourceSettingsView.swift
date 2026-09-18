@@ -181,25 +181,16 @@ struct WidgetVideoSourceSettingsView: View {
                 .onChange(of: videoSource.rotation) { _ in
                     setEffectSettings()
                 }
-            Toggle(isOn: Binding(get: {
-                videoSource.mirror
-            }, set: { value in
-                videoSource.mirror = value
-                setEffectSettings()
-            })) {
-                Text("Mirror")
-            }
+            Toggle("Mirror", isOn: $videoSource.mirror)
+                .onChange(of: videoSource.mirror) { _ in
+                    setEffectSettings()
+                }
         }
         Section {
-            Toggle(isOn: Binding(get: {
-                videoSource.trackFaceEnabled
-            }, set: { value in
-                videoSource.trackFaceEnabled = value
-                setEffectSettings()
-                model.objectWillChange.send()
-            })) {
-                Text("Enabled")
-            }
+            Toggle("Enabled", isOn: $videoSource.trackFaceEnabled)
+                .onChange(of: videoSource.trackFaceEnabled) { _ in
+                    setEffectSettings()
+                }
             HStack {
                 Text("Zoom")
                 Slider(

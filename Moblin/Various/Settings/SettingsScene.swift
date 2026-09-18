@@ -2952,9 +2952,9 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     var cropWidth: Double = 0.5
     var cropHeight: Double = 1.0
     @Published var rotation: Double = 0.0
-    var trackFaceEnabled: Bool = false
+    @Published var trackFaceEnabled: Bool = false
     @Published var trackFaceZoom: Double = 0.75
-    var mirror: Bool = false
+    @Published var mirror: Bool = false
     @Published var borderWidth: Double = 0
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color = .clear
