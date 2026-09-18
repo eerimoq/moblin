@@ -305,7 +305,13 @@ private class Relay: NSObject {
     }
 
     private nonisolated func receiveStreamerPacket() {
-        streamerConnection?.receiveMessage { data, _, _, _ in
+        guard let connection = streamerConnection else {
+            return
+        }
+        connection.receiveMessage { data, _, _, _ in
+            guard connection === self.streamerConnection else {
+                return
+            }
             if let data, !data.isEmpty {
                 self.handlePacketFromStreamer(packet: data)
                 self.receiveStreamerPacket()
@@ -323,7 +329,13 @@ private class Relay: NSObject {
     }
 
     private nonisolated func receiveDestinationPacket() {
-        destinationConnection?.receiveMessage { data, _, _, error in
+        guard let connection = destinationConnection else {
+            return
+        }
+        connection.receiveMessage { data, _, _, error in
+            guard connection === self.destinationConnection else {
+                return
+            }
             if let data, !data.isEmpty {
                 self.handlePacketFromDestination(packet: data)
             }
