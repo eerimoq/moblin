@@ -69,6 +69,22 @@ private struct CustomSoundView: View {
     }
 }
 
+private struct SoundGalleryItemView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var sound: SettingsAlertsMediaGalleryItem
+
+    var body: some View {
+        NavigationLink {
+            CustomSoundView(
+                media: sound,
+                audioPlayer: loadSound(model: model, soundId: sound.id)
+            )
+        } label: {
+            Text(sound.name)
+        }
+    }
+}
+
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
@@ -86,19 +102,12 @@ private struct SoundGalleryView: View {
             Section {
                 List {
                     ForEach(gallery.customSounds) { sound in
-                        NavigationLink {
-                            CustomSoundView(
-                                media: sound,
-                                audioPlayer: loadSound(model: model, soundId: sound.id)
-                            )
-                        } label: {
-                            Text(sound.name)
-                        }
-                        .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(gallery.customSounds, sound.id) {
-                                deleteSound(at: offsets)
+                        SoundGalleryItemView(sound: sound)
+                            .contextMenuDeleteButton {
+                                if let offsets = makeOffsets(gallery.customSounds, sound.id) {
+                                    deleteSound(at: offsets)
+                                }
                             }
-                        }
                     }
                     .onDelete(perform: deleteSound)
                 }

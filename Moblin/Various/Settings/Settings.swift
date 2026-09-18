@@ -888,12 +888,29 @@ class WebBrowserSettings: Codable, ObservableObject {
     }
 }
 
-class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
+class SettingsAlertsMediaGalleryItem: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
+    @Published var name: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+    }
 
     init(name: String) {
         self.name = name
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
     }
 }
 

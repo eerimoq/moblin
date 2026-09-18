@@ -28,7 +28,7 @@ func loadAlertImage(model: Model, imageId: UUID) -> Data? {
 }
 
 private struct CustomImageView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
     @State var image: Data?
@@ -78,8 +78,25 @@ private struct CustomImageView: View {
     }
 }
 
+private struct ImageGalleryItemView: View {
+    let model: Model
+    @ObservedObject var image: SettingsAlertsMediaGalleryItem
+
+    var body: some View {
+        NavigationLink {
+            CustomImageView(
+                model: model,
+                media: image,
+                image: loadAlertImage(model: model, imageId: image.id)
+            )
+        } label: {
+            Text(image.name)
+        }
+    }
+}
+
 private struct ImageGalleryView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
@@ -95,19 +112,12 @@ private struct ImageGalleryView: View {
             Section {
                 List {
                     ForEach(gallery.customImages) { image in
-                        NavigationLink {
-                            CustomImageView(
-                                media: image,
-                                image: loadAlertImage(model: model, imageId: image.id)
-                            )
-                        } label: {
-                            Text(image.name)
-                        }
-                        .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(gallery.customImages, image.id) {
-                                deleteImage(at: offsets)
+                        ImageGalleryItemView(model: model, image: image)
+                            .contextMenuDeleteButton {
+                                if let offsets = makeOffsets(gallery.customImages, image.id) {
+                                    deleteImage(at: offsets)
+                                }
                             }
-                        }
                     }
                     .onDelete(perform: deleteImage)
                 }
@@ -123,7 +133,7 @@ private struct ImageGalleryView: View {
 }
 
 struct AlertImageSelectorView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
@@ -181,7 +191,7 @@ struct AlertImageSelectorView: View {
             }
             Section {
                 NavigationLink {
-                    ImageGalleryView(gallery: gallery, alert: alert, imageId: $imageId)
+                    ImageGalleryView(model: model, gallery: gallery, alert: alert, imageId: $imageId)
                 } label: {
                     Text("My images")
                 }

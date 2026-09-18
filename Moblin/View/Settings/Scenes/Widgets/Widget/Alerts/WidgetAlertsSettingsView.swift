@@ -177,6 +177,7 @@ struct AlertMediaView: View {
             case .gifAndSound:
                 NavigationLink {
                     AlertImageSelectorView(
+                        model: model,
                         gallery: model.database.alertsMediaGallery,
                         alert: alert,
                         imageId: $alert.imageId,
