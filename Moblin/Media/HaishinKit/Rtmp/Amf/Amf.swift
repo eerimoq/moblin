@@ -54,6 +54,7 @@ enum AmfError: Error {
     case notString
     case notObject
     case notAmf0
+    case tooDeep
 }
 
 private enum Amf0Type: UInt8 {
@@ -155,7 +156,16 @@ final class Amf0Encoder: ByteWriter {
 }
 
 final class Amf0Decoder: ByteReader {
+    private var depth = 0
+
     func decode() throws -> AsValue {
+        guard depth < 32 else {
+            throw AmfError.tooDeep
+        }
+        depth += 1
+        defer {
+            depth -= 1
+        }
         let type = try readAmf0Type()
         switch type {
         case .number:

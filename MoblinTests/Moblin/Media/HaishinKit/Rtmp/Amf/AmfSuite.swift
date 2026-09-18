@@ -178,6 +178,19 @@ struct AmfSuite {
     }
 
     @Test
+    func decodeTooDeeplyNested() {
+        var encoded = Data()
+        for _ in 0 ..< 10000 {
+            encoded += Data([0x0A, 0x00, 0x00, 0x00, 0x01])
+        }
+        encoded += Data([0x05])
+        let decoder = Amf0Decoder(data: encoded)
+        #expect(throws: AmfError.tooDeep) {
+            try decoder.decode()
+        }
+    }
+
+    @Test
     func decodeRtmpFoo() throws {
         let data = Data([
             0x02, 0x00, 0x07, 0x5F, 0x72, 0x65, 0x73, 0x75, 0x6C, 0x74,
