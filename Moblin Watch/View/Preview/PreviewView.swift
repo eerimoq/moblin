@@ -3,9 +3,10 @@ import SwiftUI
 
 private struct AudioLevelView: View {
     let level: Float
+    let muted: Bool
 
     var body: some View {
-        if level.isNaN {
+        if muted {
             CompactAudioLevelIconView(
                 name: "microphone.slash",
                 foregroundColor: .white,
@@ -25,6 +26,7 @@ private struct AudioLevelView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: WatchModel
     @ObservedObject var preview: Preview
+    @ObservedObject var control: Control
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -59,7 +61,7 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusAudioLevel() {
-            AudioLevelView(level: preview.audioLevel)
+            AudioLevelView(level: preview.audioLevel, muted: control.isMuted)
         }
     }
 }
@@ -82,7 +84,7 @@ class Preview: ObservableObject {
     @Published var scenes: [WatchProtocolScene] = []
     @Published var sceneId: UUID = .init()
     @Published var sceneIdPicker: UUID = .init()
-    @Published var audioLevel: Float = defaultAudioLevel
+    @Published var audioLevel: Float = -Float.infinity
 }
 
 struct PreviewView: View {
@@ -136,10 +138,10 @@ struct PreviewView: View {
                     VStack(alignment: .trailing, spacing: 1) {
                         Spacer()
                         if preview.verboseStatuses {
-                            StatusesView(preview: preview, textPlacement: .beforeIcon)
+                            StatusesView(preview: preview, control: model.control, textPlacement: .beforeIcon)
                         } else {
                             HStack(spacing: 1) {
-                                StatusesView(preview: preview, textPlacement: .hide)
+                                StatusesView(preview: preview, control: model.control, textPlacement: .hide)
                             }
                         }
                     }

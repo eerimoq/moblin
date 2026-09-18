@@ -4,7 +4,6 @@ let clippingThresholdDb: Float = -0.2
 let redThresholdDb: Float = -8.5
 let yellowThresholdDb: Float = -20
 let zeroThresholdDb: Float = -60
-let defaultAudioLevel: Float = -160.0
 
 struct CompactAudioLevelIconView: View {
     let name: String
