@@ -1130,10 +1130,7 @@ final class Model: NSObject, ObservableObject {
         removeUnusedAlertMedias()
         removeUnusedVTubers()
         removeUnusedPngTubers()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: nil)
+        addObserver(UIDevice.orientationDidChangeNotification, #selector(orientationDidChange))
         store.iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
@@ -1141,65 +1138,44 @@ final class Model: NSObject, ObservableObject {
             await updateProductFromAppStore()
             updateIconImageFromDatabase()
         }
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(systemVolumeDidChange),
-                                               name: Notification.Name("SystemVolumeDidChange"),
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidChangeActive),
-                                               name: UIApplication.willResignActiveNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidChangeActive),
-                                               name: UIApplication.didBecomeActiveNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleAudioRouteChange),
-                                               name: AVAudioSession.routeChangeNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleDidEnterBackgroundNotification),
-                                               name: UIApplication.didEnterBackgroundNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleWillEnterForegroundNotification),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleWillTerminate),
-                                               name: UIApplication.willTerminateNotification,
-                                               object: nil)
+        addObserver(Notification.Name("SystemVolumeDidChange"), #selector(systemVolumeDidChange))
+        addObserver(UIApplication.willResignActiveNotification, #selector(applicationDidChangeActive))
+        addObserver(UIApplication.didBecomeActiveNotification, #selector(applicationDidChangeActive))
+        addObserver(AVAudioSession.routeChangeNotification, #selector(handleAudioRouteChange))
+        addObserver(
+            UIApplication.didEnterBackgroundNotification,
+            #selector(handleDidEnterBackgroundNotification)
+        )
+        addObserver(
+            UIApplication.willEnterForegroundNotification,
+            #selector(handleWillEnterForegroundNotification)
+        )
+        addObserver(UIApplication.willTerminateNotification, #selector(handleWillTerminate))
         updateOrientation()
         reloadHttpProxyServer()
         reloadIngests()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleBatteryStateDidChangeNotification),
-                                               name: UIDevice.batteryStateDidChangeNotification,
-                                               object: nil)
+        addObserver(
+            UIDevice.batteryStateDidChangeNotification,
+            #selector(handleBatteryStateDidChangeNotification)
+        )
         updateBatteryState()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleGameControllerDidConnect),
-                                               name: NSNotification.Name.GCControllerDidConnect,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleGameControllerDidDisconnect),
-                                               name: NSNotification.Name.GCControllerDidDisconnect,
-                                               object: nil)
+        addObserver(NSNotification.Name.GCControllerDidConnect, #selector(handleGameControllerDidConnect))
+        addObserver(
+            NSNotification.Name.GCControllerDidDisconnect,
+            #selector(handleGameControllerDidDisconnect)
+        )
         GCController.startWirelessControllerDiscovery {}
         reloadLocation()
         currentStreamId = stream.id
         lutUpdated()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleCaptureDeviceWasConnected),
-                                               name: AVCaptureDevice.wasConnectedNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleCaptureDeviceWasDisconnected),
-                                               name: AVCaptureDevice.wasDisconnectedNotification,
-                                               object: nil)
+        addObserver(AVCaptureDevice.wasConnectedNotification, #selector(handleCaptureDeviceWasConnected))
+        addObserver(
+            AVCaptureDevice.wasDisconnectedNotification,
+            #selector(handleCaptureDeviceWasDisconnected)
+        )
         if WCSession.isSupported() {
             let session = WCSession.default
             session.delegate = self
@@ -2720,12 +2696,13 @@ final class Model: NSObject, ObservableObject {
             }
     }
 
+    private func addObserver(_ name: Notification.Name, _ selector: Selector) {
+        NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
+    }
+
     private func setupThermalState() {
         updateThermalState()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleThermalStateDidChange),
-                                               name: ProcessInfo.thermalStateDidChangeNotification,
-                                               object: nil)
+        addObserver(ProcessInfo.thermalStateDidChangeNotification, #selector(handleThermalStateDidChange))
     }
 
     @objc nonisolated func handleThermalStateDidChange() {
