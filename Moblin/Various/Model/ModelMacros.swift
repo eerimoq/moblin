@@ -71,14 +71,21 @@ extension Model {
     }
 
     func macrosEventOccurred(_ event: MacroEvent) {
+        var anyRunning = false
         for macro in database.macros.macros where macro.running {
             macro.eventQueue.append(event)
             if macro.eventQueue.count > 100 {
                 macro.eventQueue.removeFirst()
             }
+            anyRunning = true
         }
-        for macro in database.macros.macros where macro.running {
-            continueMacroIfQueuedEventMatches(macro: macro)
+        guard anyRunning else {
+            return
+        }
+        DispatchQueue.main.async {
+            for macro in self.database.macros.macros where macro.running {
+                self.continueMacroIfQueuedEventMatches(macro: macro)
+            }
         }
     }
 
