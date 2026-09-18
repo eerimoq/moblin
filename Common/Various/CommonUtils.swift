@@ -617,11 +617,9 @@ func formatAudioLevelDb(level: Float) -> String {
 }
 
 func formatAudioLevel(level: Float) -> String {
-    if level == -Float.infinity {
-        "Muted,"
-    } else if level == .infinity {
-        "Unknown,"
-    } else if level.isNaN {
+    if level == -.infinity {
+        "Silent,"
+    } else if level.isNaN || level == .infinity {
         "Unknown,"
     } else {
         formatAudioLevelDb(level: level)

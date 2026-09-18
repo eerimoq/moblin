@@ -99,7 +99,7 @@ private struct RemoteControlSrtConnectionPrioritiesView: View {
 private struct RemoteControlAudioLevelView: View {
     var level: Float
     var channels: Int?
-    var isMuted: Bool?
+    var muted: Bool?
     private let barsPerDb: Float = 0.3
 
     // Approx 60 * 0.3 = 20
@@ -148,13 +148,13 @@ private struct RemoteControlAudioLevelView: View {
             Image(systemName: "waveform")
                 .frame(width: 20)
             HStack(spacing: 1) {
-                if isMuted == true {
+                if muted == true {
                     if channels == nil {
                         Text("Muted")
                     } else {
                         Text("Muted,")
                     }
-                } else if level == -Float.infinity {
+                } else if level == -.infinity || level.isNaN { // backwards compatibility
                     if channels == nil {
                         Text("Silent")
                     } else {
@@ -300,7 +300,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         RemoteControlAudioLevelView(
                             level: audioInfo.audioLevel.toFloat(),
                             channels: audioInfo.numberOfAudioChannels,
-                            isMuted: remoteControl.general?.isMuted ?? remoteControl.muted
+                            muted: remoteControl.general?.isMuted ?? remoteControl.muted
                         )
                     } else {
                         // Backwards compatibility. Remove later.

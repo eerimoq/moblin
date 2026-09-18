@@ -26,6 +26,7 @@ private struct AudioLevelView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: WatchModel
     @ObservedObject var preview: Preview
+    @ObservedObject var control: Control
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
@@ -60,7 +61,7 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusAudioLevel() {
-            AudioLevelView(level: preview.audioLevel, muted: model.control.isMuted)
+            AudioLevelView(level: preview.audioLevel, muted: control.isMuted)
         }
     }
 }
@@ -137,10 +138,10 @@ struct PreviewView: View {
                     VStack(alignment: .trailing, spacing: 1) {
                         Spacer()
                         if preview.verboseStatuses {
-                            StatusesView(preview: preview, textPlacement: .beforeIcon)
+                            StatusesView(preview: preview, control: model.control, textPlacement: .beforeIcon)
                         } else {
                             HStack(spacing: 1) {
-                                StatusesView(preview: preview, textPlacement: .hide)
+                                StatusesView(preview: preview, control: model.control, textPlacement: .hide)
                             }
                         }
                     }
