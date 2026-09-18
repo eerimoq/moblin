@@ -17,7 +17,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -60,7 +60,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -106,7 +106,7 @@ private struct TwitchRaidsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -198,7 +198,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),

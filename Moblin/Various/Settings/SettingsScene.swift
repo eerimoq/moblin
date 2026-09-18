@@ -1105,7 +1105,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
     var textToSpeechEnabled: Bool = true
     var textToSpeechDelay: Double = 1.5
     @Published var textToSpeechLanguageVoices: [String: SettingsVoice] = .init()
-    var positionType: SettingsWidgetAlertPositionType = .scene
+    @Published var positionType: SettingsWidgetAlertPositionType = .scene
     var facePosition: SettingsWidgetAlertFacePosition = .init()
 
     init() {}

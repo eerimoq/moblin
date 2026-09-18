@@ -285,26 +285,23 @@ private struct AlertPositionFaceView: View {
 
 struct AlertPositionView: View {
     @EnvironmentObject var model: Model
-    let alert: SettingsWidgetAlertsAlert
-    @State var positionType: SettingsWidgetAlertPositionType
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Section {
-            Picker("Type", selection: $positionType) {
+            Picker("Type", selection: $alert.positionType) {
                 ForEach(SettingsWidgetAlertPositionType.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
-            .onChange(of: positionType) { _ in
-                alert.positionType = positionType
+            .onChange(of: alert.positionType) { _ in
                 model.updateAlertsSettings()
-                model.objectWillChange.send()
             }
         } header: {
             Text("Position")
         }
         Section {
-            switch positionType {
+            switch alert.positionType {
             case .face:
                 AlertPositionFaceView(alert: alert)
             default:

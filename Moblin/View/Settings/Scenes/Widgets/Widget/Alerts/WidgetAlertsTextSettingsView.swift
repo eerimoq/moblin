@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AlertFontView: View {
     @EnvironmentObject var model: Model
-    let alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State var fontSize: Float
     @State var fontDesign: SettingsFontDesign
     @State var fontWeight: SettingsFontWeight
@@ -57,7 +57,7 @@ struct AlertFontView: View {
 
 struct AlertColorsView: View {
     @EnvironmentObject var model: Model
-    let alert: SettingsWidgetAlertsAlert
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State var textColor: Color
     @State var accentColor: Color
 

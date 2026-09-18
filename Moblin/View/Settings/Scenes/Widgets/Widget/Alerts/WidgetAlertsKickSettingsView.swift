@@ -17,7 +17,7 @@ private struct KickSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -61,7 +61,7 @@ private struct KickGiftedSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -106,7 +106,7 @@ private struct KickHostsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -150,7 +150,7 @@ private struct KickRewardsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -238,7 +238,7 @@ private struct KickGiftView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),

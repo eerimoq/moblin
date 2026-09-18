@@ -33,7 +33,7 @@ private struct ChatBotCommandView: View {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
                 AlertMediaView(alert: alert)
-                AlertPositionView(alert: alert, positionType: alert.positionType)
+                AlertPositionView(alert: alert)
                 AlertColorsView(
                     alert: alert,
                     textColor: alert.textColor.color(),
