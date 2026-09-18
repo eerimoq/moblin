@@ -189,7 +189,7 @@ private class Relay {
         guard identified else {
             throw "Relay not identified"
         }
-        guard let request = requests[id] else {
+        guard let request = requests.removeValue(forKey: id) else {
             logger.info("moblink-streamer: \(name): Unexpected id in response")
             return
         }
