@@ -173,6 +173,9 @@ class MpegTsReader: @unchecked Sendable {
     {
         let ptsDelta = (presentationTimeStamp - latestPresentationTimeStamp).seconds
         let timePerBuffer = Double(samplesPerBuffer) / sampleFrequency
+        guard ptsDelta.isFinite, ptsDelta < 10 else {
+            return 0
+        }
         let numberOfGapBuffers = (ptsDelta / timePerBuffer - 1).rounded()
         guard numberOfGapBuffers.isFinite else {
             return 0
