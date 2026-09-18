@@ -8,6 +8,29 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "35.2.0", date: "2026-09-18", changes: [
+        "• Configurable scene buttons colors. 💡 JohannesLiv",
+        "• Configurable zoom preset button color.",
+        "• Remove settings images when resetting/importing settings.",
+        "• Do not allow uploading snapshot as part of go live notification to Moblin website. 💡 Chat",
+        "• Make scene and zoom preset buttons look better. 💡 3l3ktr0l4mpe",
+        "• Show banner with various info, like poll, prediction, raid, etc. in main view.",
+        "  • Tap it to minimize.",
+        "• Twitch chatter name color and badges in events.",
+        "• Fix possible crash when thermal state changes. 🧑‍🏭 gabbloxen",
+        "• Fix browser widget bug making teardown not work. 🧑‍🏭 gabbloxen",
+        "• Fix possible MPEG-TS decode crash and encode timestamp wraparound encode bug. 🧑‍🏭 gabbloxen",
+        "• Make icon as face blur work better to the left in the image. 🧑‍🏭 gabbloxen",
+        "• Fix off by one in LUT calculations. 🧑‍🏭 gabbloxen",
+        "• Fix remote control relay toggle. 🧑‍🏭 gabbloxen",
+        "• Faster .cube LUT loading.",
+        "• Use SRT overhead bandwidth and maximum bandwidth follow input settings. 🧑‍🏭 gabbloxen",
+        "• Set the torch quick button state from remote control instead of toggling it. 🧑‍🏭 gabbloxen",
+        "• Add the lock screen quick button to the database again. 🧑‍🏭 gabbloxen",
+        "• Fix various threading, cast and range problems.",
+        "• Wait for event macro action.",
+        "• Ignore data from old Moblink, Remote control and OBS remote control connections.",
+    ]),
     Version(version: "35.1.0", date: "2026-09-15", changes: [
         "• Add BLE cycling speed and cadence (CSC) workout device support. 🧑‍🏭 KleMiX",
         "• Live2D in VTuber. 💡 Aislynn Bloomtear and Spillmaker",
