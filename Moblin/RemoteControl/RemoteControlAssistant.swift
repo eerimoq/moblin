@@ -420,7 +420,10 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
-    private func handleDisconnected(webSocket _: NWConnection) {
+    private func handleDisconnected(webSocket: NWConnection) {
+        guard streamerWebSocket == nil || webSocket === streamerWebSocket else {
+            return
+        }
         logger.debug("remote-control-assistant: Streamer disconnected")
         stopKeepAlive()
         stopPingTimer()
