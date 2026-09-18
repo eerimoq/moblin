@@ -39,8 +39,8 @@ class MpegTsTimecodeGenerator {
             decodeTimeStamp = presentationTimeStamp
         }
         if let previousDecodeTimeStamp {
-            estimatedFrameDuration = 0.7 * estimatedFrameDuration + 0.3 *
-                (decodeTimeStamp - previousDecodeTimeStamp)
+            estimatedFrameDuration = max(0.7 * estimatedFrameDuration + 0.3 *
+                (decodeTimeStamp - previousDecodeTimeStamp), 0.001)
         }
         previousDecodeTimeStamp = decodeTimeStamp
         let now = Date(timeIntervalSince1970: presentationTimeStampBase
