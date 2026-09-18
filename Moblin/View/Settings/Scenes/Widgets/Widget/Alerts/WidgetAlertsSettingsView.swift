@@ -177,6 +177,7 @@ struct AlertMediaView: View {
             case .gifAndSound:
                 NavigationLink {
                     AlertImageSelectorView(
+                        gallery: model.database.alertsMediaGallery,
                         alert: alert,
                         imageId: $alert.imageId,
                         loopCount: Float(alert.imageLoopCount)
@@ -185,7 +186,9 @@ struct AlertMediaView: View {
                     TextItemLocalizedView(name: "Image", value: getImageName(model: model, id: alert.imageId))
                 }
                 NavigationLink {
-                    AlertSoundSelectorView(alert: alert, soundId: $alert.soundId)
+                    AlertSoundSelectorView(gallery: model.database.alertsMediaGallery,
+                                           alert: alert,
+                                           soundId: $alert.soundId)
                 } label: {
                     TextItemLocalizedView(name: "Sound", value: getSoundName(model: model, id: alert.soundId))
                 }

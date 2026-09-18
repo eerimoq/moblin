@@ -925,11 +925,40 @@ private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 
-class SettingsAlertsMediaGallery: Codable {
+class SettingsAlertsMediaGallery: Codable, ObservableObject {
     var bundledImages = allBundledAlertsMediaGalleryImages
-    var customImages: [SettingsAlertsMediaGalleryItem] = []
+    @Published var customImages: [SettingsAlertsMediaGalleryItem] = []
     var bundledSounds = allBundledAlertsMediaGallerySounds
-    var customSounds: [SettingsAlertsMediaGalleryItem] = []
+    @Published var customSounds: [SettingsAlertsMediaGalleryItem] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case bundledImages
+        case customImages
+        case bundledSounds
+        case customSounds
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.bundledImages, bundledImages)
+        try container.encode(.customImages, customImages)
+        try container.encode(.bundledSounds, bundledSounds)
+        try container.encode(.customSounds, customSounds)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        bundledImages = container.decode(.bundledImages,
+                                         [SettingsAlertsMediaGalleryItem].self,
+                                         allBundledAlertsMediaGalleryImages)
+        customImages = container.decode(.customImages, [SettingsAlertsMediaGalleryItem].self, [])
+        bundledSounds = container.decode(.bundledSounds,
+                                         [SettingsAlertsMediaGalleryItem].self,
+                                         allBundledAlertsMediaGallerySounds)
+        customSounds = container.decode(.customSounds, [SettingsAlertsMediaGalleryItem].self, [])
+    }
 
     func getWhiteStarImageId() -> UUID {
         bundledImages[3].id

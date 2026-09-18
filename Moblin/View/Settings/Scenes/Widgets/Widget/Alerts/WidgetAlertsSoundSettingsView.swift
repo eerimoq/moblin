@@ -71,11 +71,12 @@ private struct CustomSoundView: View {
 
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     private func deleteSound(at offsets: IndexSet) {
-        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
+        gallery.customSounds.remove(atOffsets: offsets)
         model.fixAlertMedias()
         soundId = alert.soundId
     }
@@ -84,7 +85,7 @@ private struct SoundGalleryView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.alertsMediaGallery.customSounds) { sound in
+                    ForEach(gallery.customSounds) { sound in
                         NavigationLink {
                             CustomSoundView(
                                 media: sound,
@@ -94,10 +95,7 @@ private struct SoundGalleryView: View {
                             Text(sound.name)
                         }
                         .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(
-                                model.database.alertsMediaGallery.customSounds,
-                                sound.id
-                            ) {
+                            if let offsets = makeOffsets(gallery.customSounds, sound.id) {
                                 deleteSound(at: offsets)
                             }
                         }
@@ -105,9 +103,7 @@ private struct SoundGalleryView: View {
                     .onDelete(perform: deleteSound)
                 }
                 TextButtonView("Add") {
-                    let sound = SettingsAlertsMediaGalleryItem(name: "My sound")
-                    model.database.alertsMediaGallery.customSounds.append(sound)
-                    model.objectWillChange.send()
+                    gallery.customSounds.append(SettingsAlertsMediaGalleryItem(name: "My sound"))
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))
@@ -122,6 +118,7 @@ private var player: AudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
@@ -129,7 +126,7 @@ struct AlertSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(model.getAllAlertSounds()) { sound in
+                    ForEach(gallery.bundledSounds + gallery.customSounds) { sound in
                         HStack {
                             Text(sound.name)
                             Spacer()
@@ -151,7 +148,7 @@ struct AlertSoundSelectorView: View {
             }
             Section {
                 NavigationLink {
-                    SoundGalleryView(alert: alert, soundId: $soundId)
+                    SoundGalleryView(gallery: gallery, alert: alert, soundId: $soundId)
                 } label: {
                     Text("My sounds")
                 }
