@@ -206,8 +206,8 @@ class RtmpStream: @unchecked Sendable {
         }
         let dataWasSent = dataTimeStamps[handlerName] != nil
         let timestamp = dataWasSent ?
-            UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
-            UInt32(startedAt.timeIntervalSinceNow * -1000)
+            UInt32(max((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000, 0)) :
+            UInt32(max(startedAt.timeIntervalSinceNow * -1000, 0))
         let chunk = RtmpChunk(
             type: dataWasSent ? RtmpChunkType.one : RtmpChunkType.zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
