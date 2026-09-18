@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ from .utils import Range
 LOGGER = logging.getLogger(__name__)
 
 REPORT_WIDTH = 64
+RE_SYSTEM_MONITOR = re.compile(r"^(?:[\d.,]+%/)?([\d.,]+)% ([\d.,]+) MB$")
 
 
 class MonitorError(Exception):
@@ -642,11 +644,11 @@ def get_message(status, name: str) -> str:
 
 
 def parse_system_monitor(message: str) -> tuple[float, float]:
-    parts = message.split()
-    if len(parts) != 3:
+    match = RE_SYSTEM_MONITOR.match(message)
+    if match is None:
         raise MonitorError(f"Failed to parse system monitor: {message}")
-    cpu_percent = float(parts[0].rstrip("%").replace(",", "."))
-    ram_mb = float(parts[1].replace(",", "."))
+    cpu_percent = float(match.group(1).replace(",", "."))
+    ram_mb = float(match.group(2).replace(",", "."))
     return cpu_percent, ram_mb
 
 
