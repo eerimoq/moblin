@@ -197,7 +197,10 @@ final class Amf0Decoder: ByteReader {
         guard try readAmf0Type() == .number else {
             throw AmfError.notNumber
         }
-        return try Int(decodeDoubleValue())
+        guard let value = try Int(exactly: decodeDoubleValue().rounded(.towardZero)) else {
+            throw AmfError.notNumber
+        }
+        return value
     }
 
     func decodeString() throws -> String {

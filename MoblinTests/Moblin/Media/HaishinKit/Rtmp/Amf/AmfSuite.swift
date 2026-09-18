@@ -156,6 +156,27 @@ struct AmfSuite {
         #expect(decoded == .date(value))
     }
 
+    @Test(arguments: [
+        Data([0x00, 0x7F, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+        Data([0x00, 0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+        Data([0x00, 0xFF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+        Data([0x00, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    ])
+    func decodeIntNotRepresentable(_ encoded: Data) {
+        let decoder = Amf0Decoder(data: encoded)
+        #expect(throws: AmfError.notNumber) {
+            try decoder.decodeInt()
+        }
+    }
+
+    @Test
+    func decodeIntTruncates() throws {
+        let serializer = Amf0Encoder()
+        serializer.encode(.number(-1.75))
+        let decoder = Amf0Decoder(data: serializer.data)
+        #expect(try decoder.decodeInt() == -1)
+    }
+
     @Test
     func decodeRtmpFoo() throws {
         let data = Data([
