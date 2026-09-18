@@ -302,7 +302,7 @@ extension Model {
         }
     }
 
-    @objc nonisolated func systemVolumeDidChange(notification: NSNotification) {
+    @objc nonisolated func handleSystemVolumeDidChange(notification: NSNotification) {
         guard let userInfo = notification.userInfo,
               let volume = userInfo["Volume"] as? Float,
               let reason = userInfo["Reason"] as? String,

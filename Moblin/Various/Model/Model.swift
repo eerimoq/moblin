@@ -1130,7 +1130,7 @@ final class Model: NSObject, ObservableObject {
         removeUnusedAlertMedias()
         removeUnusedVTubers()
         removeUnusedPngTubers()
-        addObserver(UIDevice.orientationDidChangeNotification, #selector(orientationDidChange))
+        addObserver(UIDevice.orientationDidChangeNotification, #selector(handleOrientationDidChange))
         store.iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
@@ -1138,29 +1138,26 @@ final class Model: NSObject, ObservableObject {
             await updateProductFromAppStore()
             updateIconImageFromDatabase()
         }
-        addObserver(Notification.Name("SystemVolumeDidChange"), #selector(systemVolumeDidChange))
-        addObserver(UIApplication.willResignActiveNotification, #selector(applicationDidChangeActive))
-        addObserver(UIApplication.didBecomeActiveNotification, #selector(applicationDidChangeActive))
+        addObserver(Notification.Name("SystemVolumeDidChange"), #selector(handleSystemVolumeDidChange))
+        addObserver(UIApplication.willResignActiveNotification, #selector(handleApplicationDidChangeActive))
+        addObserver(UIApplication.didBecomeActiveNotification, #selector(handleApplicationDidChangeActive))
         addObserver(AVAudioSession.routeChangeNotification, #selector(handleAudioRouteChange))
         addObserver(
             UIApplication.didEnterBackgroundNotification,
-            #selector(handleDidEnterBackgroundNotification)
+            #selector(handleApplicationDidEnterBackground)
         )
         addObserver(
             UIApplication.willEnterForegroundNotification,
-            #selector(handleWillEnterForegroundNotification)
+            #selector(handleApplicationWillEnterForeground)
         )
-        addObserver(UIApplication.willTerminateNotification, #selector(handleWillTerminate))
+        addObserver(UIApplication.willTerminateNotification, #selector(handleApplicationWillTerminate))
         updateOrientation()
         reloadHttpProxyServer()
         reloadIngests()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
-        addObserver(
-            UIDevice.batteryStateDidChangeNotification,
-            #selector(handleBatteryStateDidChangeNotification)
-        )
+        addObserver(UIDevice.batteryStateDidChangeNotification, #selector(handleBatteryStateDidChange))
         updateBatteryState()
         addObserver(NSNotification.Name.GCControllerDidConnect, #selector(handleGameControllerDidConnect))
         addObserver(
@@ -1267,7 +1264,7 @@ final class Model: NSObject, ObservableObject {
         reloadWhepClient()
     }
 
-    @objc func applicationDidChangeActive(notification: NSNotification) {
+    @objc func handleApplicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
     }
 
@@ -1508,7 +1505,7 @@ final class Model: NSObject, ObservableObject {
         updateCameraLists()
     }
 
-    @objc func handleDidEnterBackgroundNotification() {
+    @objc func handleApplicationDidEnterBackground() {
         guard !isMac() else {
             return
         }
@@ -1534,7 +1531,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    @objc func handleWillEnterForegroundNotification() {
+    @objc func handleApplicationWillEnterForeground() {
         stopLiveActivity()
         guard !isMac() else {
             return
@@ -1594,7 +1591,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    @objc func handleWillTerminate() {
+    @objc func handleApplicationWillTerminate() {
         if isRecording {
             suspendRecording()
         }
@@ -1706,7 +1703,7 @@ final class Model: NSObject, ObservableObject {
         return .off
     }
 
-    @objc func handleBatteryStateDidChangeNotification() {
+    @objc func handleBatteryStateDidChange() {
         updateBatteryState()
     }
 
@@ -1731,7 +1728,7 @@ final class Model: NSObject, ObservableObject {
         updateCameraPreviewRotation()
     }
 
-    @objc private func orientationDidChange(animated _: Bool) {
+    @objc private func handleOrientationDidChange(animated _: Bool) {
         updateOrientation()
     }
 
