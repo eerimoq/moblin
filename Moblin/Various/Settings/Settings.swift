@@ -461,9 +461,28 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     case ipv4AndIpv6 = "IPv4 and IPv6"
 }
 
-class SettingsMediaPlayerFile: Codable, Identifiable {
+class SettingsMediaPlayerFile: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My video"
+    @Published var name: String = "My video"
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My video")
+    }
 
     func clone() -> SettingsMediaPlayerFile {
         let new = SettingsMediaPlayerFile()
