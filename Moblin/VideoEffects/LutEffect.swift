@@ -224,8 +224,18 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
                 default:
                     "\(error)"
                 }
+                let title = switch lut?.type {
+                case .bundled:
+                    String(localized: "Failed to load bundled file")
+                case .disk:
+                    String(localized: "Failed to load .png file")
+                case .diskCube:
+                    String(localized: "Failed to load .cube file")
+                case nil:
+                    ""
+                }
                 DispatchQueue.main.async {
-                    onError(String(localized: "Failed to load .cube file"), subTitle)
+                    onError(title, subTitle)
                 }
             }
         }
