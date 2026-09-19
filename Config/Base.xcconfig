@@ -1,7 +1,7 @@
 #include "User.xcconfig"
 
-MARKETING_VERSION = 35.2.0
-CURRENT_PROJECT_VERSION = 275
+MARKETING_VERSION = 35.3.0
+CURRENT_PROJECT_VERSION = 290
 
 // Dynamic actor isolation checks are assertions. Keep them in Debug, drop them in Release.
 OTHER_SWIFT_FLAGS[config=Release] = $(inherited) -disable-dynamic-actor-isolation
