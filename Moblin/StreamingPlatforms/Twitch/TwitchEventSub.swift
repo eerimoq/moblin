@@ -179,7 +179,7 @@ private struct NotificationChannelChatNotificationRaid: Decodable {
 }
 
 private struct NotificationChannelChatNotificationEvent: Decodable {
-    var chatter_user_name: String
+    var chatter_user_name: String?
     var chatter_is_anonymous: Bool
     var color: String
     var badges: [TwitchEventSubBadge]
@@ -213,6 +213,10 @@ private struct NotificationChannelChatNotificationEvent: Decodable {
             return nil
         }
         return TwitchEventSubChatter(color: color, badges: badges)
+    }
+
+    func userName() -> String {
+        chatter_user_name ?? ""
     }
 }
 
@@ -883,7 +887,7 @@ final class TwitchEventSub: NSObject {
         guard let sub = event.sub ?? event.shared_chat_sub else {
             return
         }
-        delegate.twitchEventSubChannelSubscribe(event: .init(user_name: event.chatter_user_name,
+        delegate.twitchEventSubChannelSubscribe(event: .init(user_name: event.userName(),
                                                              tier: sub.sub_tier,
                                                              is_gift: false,
                                                              is_prime: sub.is_prime,
@@ -897,7 +901,7 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelSubscriptionMessage(
-            event: .init(user_name: event.chatter_user_name,
+            event: .init(user_name: event.userName(),
                          cumulative_months: resub.cumulative_months,
                          streak_months: resub.streak_months,
                          tier: resub.sub_tier,
@@ -932,7 +936,7 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelSubscriptionUpgrade(
-            event: .init(user_name: event.chatter_user_name,
+            event: .init(user_name: event.userName(),
                          tier: primePaidUpgrade.sub_tier,
                          message: event.message,
                          sharedChat: event.sharedChat(),
@@ -942,7 +946,7 @@ final class TwitchEventSub: NSObject {
 
     private func handleChatNotificationGiftPaidUpgrade(event: NotificationChannelChatNotificationEvent) {
         delegate.twitchEventSubChannelSubscriptionUpgrade(
-            event: .init(user_name: event.chatter_user_name,
+            event: .init(user_name: event.userName(),
                          tier: nil,
                          message: event.message,
                          sharedChat: event.sharedChat(),
@@ -969,7 +973,7 @@ final class TwitchEventSub: NSObject {
             return
         }
         delegate.twitchEventSubChannelWatchStreak(
-            event: .init(user_name: event.chatter_user_name,
+            event: .init(user_name: event.userName(),
                          streak_count: watchStreak.streak_count,
                          message: event.message,
                          sharedChat: event.sharedChat(),
@@ -983,7 +987,7 @@ final class TwitchEventSub: NSObject {
         tier: String
     ) {
         delegate.twitchEventSubChannelSubscriptionGift(
-            event: .init(user_name: event.chatter_is_anonymous ? nil : event.chatter_user_name,
+            event: .init(user_name: event.chatter_is_anonymous ? nil : event.userName(),
                          total: total,
                          tier: tier,
                          message: event.message,

@@ -35,7 +35,7 @@ def _user(name: str | None) -> dict:
     return {"user_id": user_id(name), "user_login": name.lower(), "user_name": name}
 
 
-def _prefixed(prefix: str, name: str) -> dict:
+def _prefixed(prefix: str, name: str | None) -> dict:
     return {f"{prefix}_{key}": value for key, value in _user(name).items()}
 
 
@@ -74,11 +74,10 @@ def follow(user_name: str) -> dict:
 
 def chat_notification(
     notice_type: str,
-    chatter_user_name: str,
+    chatter_user_name: str | None,
     notice: dict | None = None,
     message: str = "",
     shared: bool = False,
-    chatter_is_anonymous: bool = False,
 ) -> dict:
     source: dict
     if shared:
@@ -101,8 +100,8 @@ def chat_notification(
         **_broadcaster(),
         **source,
         **_prefixed("chatter", chatter_user_name),
-        "chatter_is_anonymous": chatter_is_anonymous,
-        "color": "#FF4500",
+        "chatter_is_anonymous": chatter_user_name is None,
+        "color": "" if chatter_user_name is None else "#FF4500",
         "badges": [],
         "system_message": "",
         "message_id": str(uuid.uuid4()),
@@ -179,10 +178,11 @@ def chat_resub(
 
 
 def chat_sub_gift(
-    user_name: str,
+    user_name: str | None,
     recipient_user_name: str,
     tier: str = "1000",
     shared: bool = False,
+    community_gift_id: str | None = None,
 ) -> dict:
     notice_type = _notice_type("sub_gift", shared)
     return chat_notification(
@@ -190,10 +190,10 @@ def chat_sub_gift(
         user_name,
         {
             "duration_months": 1,
-            "cumulative_total": 1,
+            "cumulative_total": None if user_name is None else 1,
             **_prefixed("recipient", recipient_user_name),
             "sub_tier": tier,
-            "community_gift_id": None,
+            "community_gift_id": community_gift_id,
         },
         shared=shared,
     )
@@ -204,19 +204,19 @@ def chat_community_sub_gift(
     total: int,
     tier: str = "1000",
     shared: bool = False,
+    community_gift_id: str | None = None,
 ) -> dict:
     notice_type = _notice_type("community_sub_gift", shared)
     return chat_notification(
         notice_type,
-        user_name or "AnAnonymousGifter",
+        user_name,
         {
-            "id": str(uuid.uuid4()),
+            "id": community_gift_id or str(uuid.uuid4()),
             "total": total,
             "sub_tier": tier,
             "cumulative_total": None if user_name is None else total,
         },
         shared=shared,
-        chatter_is_anonymous=user_name is None,
     )
 
 
