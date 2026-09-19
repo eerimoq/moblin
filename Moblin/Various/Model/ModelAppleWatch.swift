@@ -392,8 +392,9 @@ extension Model: WCSessionDelegate {
         logger.debug("watch: Session inactive")
     }
 
-    nonisolated func sessionDidDeactivate(_: WCSession) {
+    nonisolated func sessionDidDeactivate(_ session: WCSession) {
         logger.debug("watch: Session deactive")
+        session.activate()
     }
 
     nonisolated func sessionReachabilityDidChange(_: WCSession) {
