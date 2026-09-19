@@ -1,11 +1,5 @@
 import Foundation
 
-private enum AdjustDriftDirection {
-    case up
-    case down
-    case none
-}
-
 class DriftTracker {
     private let media: String
     private let name: String
@@ -14,7 +8,6 @@ class DriftTracker {
     private var latestEstimatedFillLevelPresentationTimeStamp = 0.0
     private var latestAdjustDriftPresentationTimeStamp = -1.0
     private var drift = 0.0
-    private var adjustDriftDirection: AdjustDriftDirection = .none
 
     init(media: String, name: String, targetFillLevel: Double) {
         self.media = media
@@ -35,14 +28,16 @@ class DriftTracker {
     }
 
     func setDrift(drift: Double) {
+        let estimatedFillLevel = estimatedFillLevel + drift - self.drift
         logger.debug("""
         buffered-\(media): drift-tracker: \(name): Other media set drift. \
-        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
+        Estimated fill level \(formatThreeDecimals(self.estimatedFillLevel)) -> \
+        \(formatThreeDecimals(estimatedFillLevel)) \
         (target \(formatThreeDecimals(targetFillLevel))), \
         Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
+        self.estimatedFillLevel = estimatedFillLevel
         self.drift = drift
-        adjustDriftDirection = .none
     }
 
     func getDrift() -> Double {
@@ -56,11 +51,6 @@ class DriftTracker {
         latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
         let currentFillLevel = newestPresentationTimeStamp + drift - outputPresentationTimeStamp
         estimatedFillLevel = estimatedFillLevel * 0.95 + currentFillLevel * 0.05
-        if estimatedFillLevel < lowWaterMark() {
-            adjustDriftDirection = .up
-        } else if estimatedFillLevel > highWaterMark() {
-            adjustDriftDirection = .down
-        }
         // Don't adjust too often to allow the moving average above to adjust.
         if latestAdjustDriftPresentationTimeStamp == -1 {
             latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
@@ -69,15 +59,10 @@ class DriftTracker {
             return nil
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
-        switch adjustDriftDirection {
-        case .up:
-            adjustDrift(adjustment: targetFillLevel - estimatedFillLevel)
-        case .down:
-            adjustDrift(adjustment: -(estimatedFillLevel - targetFillLevel))
-        case .none:
+        guard estimatedFillLevel < lowWaterMark() || estimatedFillLevel > highWaterMark() else {
             return nil
         }
-        adjustDriftDirection = .none
+        adjustDrift(adjustment: targetFillLevel - estimatedFillLevel)
         return drift
     }
 
