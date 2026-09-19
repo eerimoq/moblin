@@ -430,7 +430,7 @@ extension Model: KickPusherDelegate {
             just gifted \(event.gifted_usernames.count) subscription(s)! \
             They've gifted \(event.gifter_total) in total!
             """)
-        if stream.kickChatAlerts.giftedSubscriptions {
+        if stream.kickToastAlerts.giftedSubscriptions {
             makeToast(title: "🎁 \(user) \(text)")
         }
         if stream.kickChatAlerts.giftedSubscriptions {
