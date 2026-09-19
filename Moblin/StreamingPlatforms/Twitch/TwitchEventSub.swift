@@ -51,7 +51,7 @@ struct TwitchEventSubChatter: Decodable {
     var badges: [TwitchEventSubBadge]
 }
 
-struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
+struct TwitchEventSubNotificationChannelSubscribeEvent {
     var user_name: String
     var tier: String
     var is_gift: Bool
@@ -67,14 +67,6 @@ struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     func isPrime() -> Bool {
         is_prime == true
     }
-}
-
-private struct NotificationChannelSubscribePayload: Decodable {
-    var event: TwitchEventSubNotificationChannelSubscribeEvent
-}
-
-private struct NotificationChannelSubscribeMessage: Decodable {
-    var payload: NotificationChannelSubscribePayload
 }
 
 struct TwitchEventSubNotificationChannelSubscriptionUpgradeEvent {
@@ -100,7 +92,7 @@ struct TwitchEventSubNotificationChannelWatchStreakEvent {
     var chatter: TwitchEventSubChatter?
 }
 
-struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
+struct TwitchEventSubNotificationChannelSubscriptionGiftEvent {
     var user_name: String?
     var total: Int
     var tier: String
@@ -113,15 +105,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     }
 }
 
-private struct NotificationChannelSubscriptionGiftPayload: Decodable {
-    var event: TwitchEventSubNotificationChannelSubscriptionGiftEvent
-}
-
-private struct NotificationChannelSubscriptionGiftMessage: Decodable {
-    var payload: NotificationChannelSubscriptionGiftPayload
-}
-
-struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
+struct TwitchEventSubNotificationChannelSubscriptionMessageEvent {
     var user_name: String
     var cumulative_months: Int
     var streak_months: Int?
@@ -133,14 +117,6 @@ struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
     func tierAsNumber() -> Int {
         twitchTierAsNumber(tier: tier)
     }
-}
-
-private struct NotificationChannelSubscriptionMessagePayload: Decodable {
-    var event: TwitchEventSubNotificationChannelSubscriptionMessageEvent
-}
-
-private struct NotificationChannelSubscriptionMessageMessage: Decodable {
-    var payload: NotificationChannelSubscriptionMessagePayload
 }
 
 private struct NotificationChannelChatNotificationSub: Decodable {
@@ -476,9 +452,6 @@ protocol TwitchEventSubDelegate: AnyObject {
 }
 
 private let subTypeChannelFollow = "channel.follow"
-private let subTypeChannelSubscribe = "channel.subscribe"
-private let subTypeChannelSubscriptionGift = "channel.subscription.gift"
-private let subTypeChannelSubscriptionMessage = "channel.subscription.message"
 private let subTypeChannelChatNotification = "channel.chat.notification"
 private let subTypeChannelChannelPointsCustomRewardRedemptionAdd =
     "channel.channel_points_custom_reward_redemption.add"
@@ -771,12 +744,6 @@ final class TwitchEventSub: NSObject {
             switch message.metadata.subscription_type {
             case subTypeChannelFollow:
                 try handleNotificationChannelFollow(messageData: messageData)
-            case subTypeChannelSubscribe:
-                try handleNotificationChannelSubscribe(messageData: messageData)
-            case subTypeChannelSubscriptionGift:
-                try handleNotificationChannelSubscriptionGift(messageData: messageData)
-            case subTypeChannelSubscriptionMessage:
-                try handleNotificationChannelSubscriptionMessage(messageData: messageData)
             case subTypeChannelChatNotification:
                 try handleNotificationChannelChatNotification(messageData: messageData)
             case subTypeChannelChannelPointsCustomRewardRedemptionAdd:
@@ -829,30 +796,6 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelFollow(event: message.payload.event)
-    }
-
-    private func handleNotificationChannelSubscribe(messageData: Data) throws {
-        let message = try JSONDecoder().decode(
-            NotificationChannelSubscribeMessage.self,
-            from: messageData
-        )
-        delegate.twitchEventSubChannelSubscribe(event: message.payload.event)
-    }
-
-    private func handleNotificationChannelSubscriptionGift(messageData: Data) throws {
-        let message = try JSONDecoder().decode(
-            NotificationChannelSubscriptionGiftMessage.self,
-            from: messageData
-        )
-        delegate.twitchEventSubChannelSubscriptionGift(event: message.payload.event)
-    }
-
-    private func handleNotificationChannelSubscriptionMessage(messageData: Data) throws {
-        let message = try JSONDecoder().decode(
-            NotificationChannelSubscriptionMessageMessage.self,
-            from: messageData
-        )
-        delegate.twitchEventSubChannelSubscriptionMessage(event: message.payload.event)
     }
 
     private func handleNotificationChannelChatNotification(messageData: Data) throws {
