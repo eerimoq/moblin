@@ -1,11 +1,11 @@
-import Foundation
+import Collections
 
 class DriftTracker {
     private let media: String
     private let name: String
     private var targetFillLevel: Double
-    private var estimatedFillLevel: Double
-    private var latestEstimatedFillLevelPresentationTimeStamp = 0.0
+    private var fillLevels: Deque<Double> = []
+    private var latestFillLevelPresentationTimeStamp = 0.0
     private var latestAdjustDriftPresentationTimeStamp = -1.0
     private var drift = 0.0
 
@@ -13,7 +13,6 @@ class DriftTracker {
         self.media = media
         self.name = name
         self.targetFillLevel = targetFillLevel
-        estimatedFillLevel = targetFillLevel
     }
 
     func setTargetFillLevel(targetFillLevel: Double) {
@@ -21,22 +20,15 @@ class DriftTracker {
         buffered-\(media): drift-tracker: \(name): Setting target fill level to \
         \(formatThreeDecimals(targetFillLevel)) (was \(formatThreeDecimals(self.targetFillLevel)))
         """)
-        if targetFillLevel > self.targetFillLevel {
-            estimatedFillLevel = targetFillLevel
-        }
+        fillLevels.removeAll()
         self.targetFillLevel = targetFillLevel
     }
 
     func setDrift(drift: Double) {
-        let estimatedFillLevel = estimatedFillLevel + drift - self.drift
         logger.debug("""
         buffered-\(media): drift-tracker: \(name): Other media set drift. \
-        Estimated fill level \(formatThreeDecimals(self.estimatedFillLevel)) -> \
-        \(formatThreeDecimals(estimatedFillLevel)) \
-        (target \(formatThreeDecimals(targetFillLevel))), \
         Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
-        self.estimatedFillLevel = estimatedFillLevel
         self.drift = drift
     }
 
@@ -45,13 +37,14 @@ class DriftTracker {
     }
 
     func update(_ outputPresentationTimeStamp: Double, _ newestPresentationTimeStamp: Double) -> Double? {
-        guard outputPresentationTimeStamp > latestEstimatedFillLevelPresentationTimeStamp + 0.5 else {
+        guard outputPresentationTimeStamp > latestFillLevelPresentationTimeStamp + 0.5 else {
             return nil
         }
-        latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
-        let currentFillLevel = newestPresentationTimeStamp + drift - outputPresentationTimeStamp
-        estimatedFillLevel = estimatedFillLevel * 0.98 + currentFillLevel * 0.02
-        // Don't adjust too often to allow the moving average above to adjust.
+        latestFillLevelPresentationTimeStamp = outputPresentationTimeStamp
+        fillLevels.append(newestPresentationTimeStamp - outputPresentationTimeStamp)
+        if fillLevels.count > 60 {
+            fillLevels.removeFirst()
+        }
         if latestAdjustDriftPresentationTimeStamp == -1 {
             latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
         }
@@ -59,15 +52,19 @@ class DriftTracker {
             return nil
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
+        guard fillLevels.count >= 30 else {
+            return nil
+        }
+        let estimatedFillLevel = fillLevels.sorted()[fillLevels.count / 2] + drift
         guard estimatedFillLevel < lowWaterMark() || estimatedFillLevel > highWaterMark() else {
             return nil
         }
-        adjustDrift(adjustment: targetFillLevel - estimatedFillLevel)
+        adjustDrift(estimatedFillLevel: estimatedFillLevel)
         return drift
     }
 
-    private func adjustDrift(adjustment: Double) {
-        let drift = drift + adjustment
+    private func adjustDrift(estimatedFillLevel: Double) {
+        let drift = drift + targetFillLevel - estimatedFillLevel
         logger.debug("""
         buffered-\(media): drift-tracker: \(name): \
         Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
@@ -75,7 +72,6 @@ class DriftTracker {
         Drift \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift
-        estimatedFillLevel += adjustment
     }
 
     private func lowWaterMark() -> Double {
