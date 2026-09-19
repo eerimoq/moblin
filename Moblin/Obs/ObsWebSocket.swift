@@ -728,34 +728,16 @@ class ObsWebSocket {
         onSuccess: @escaping ([ObsMediaSourceSettings?]) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        var requests: [String] = []
-        for inputName in inputNames {
-            guard let (request, _) = try? packRequest(
-                type: .getInputSettings,
-                request: GetInputSettingsRequest(inputName: inputName)
-            ) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            guard let request = String(bytes: request, encoding: .utf8) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            requests.append(request)
-        }
-        executeBatchRequest(requests: requests, onError: onError) { results in
-            onSuccess(results.map { status, response in
-                guard status.result, let response else {
-                    return nil
-                }
-                do {
-                    let response = try JSONDecoder().decode(GetInputSettingsResponse.self, from: response)
-                    return ObsMediaSourceSettings(
-                        input: response.inputSettings.input,
-                        isLocalFile: response.inputSettings.is_local_file
+        performRequestBatch(type: .getInputSettings,
+                            requests: inputNames.map { GetInputSettingsRequest(inputName: $0) },
+                            onError: onError)
+        { (responses: [GetInputSettingsResponse?]) in
+            onSuccess(responses.map { response in
+                response.map {
+                    ObsMediaSourceSettings(
+                        input: $0.inputSettings.input,
+                        isLocalFile: $0.inputSettings.is_local_file
                     )
-                } catch {
-                    return nil
                 }
             })
         }
@@ -765,33 +747,11 @@ class ObsWebSocket {
                            onSuccess: @escaping ([Bool?]) -> Void,
                            onError: @escaping (String) -> Void)
     {
-        var requests: [String] = []
-        for inputName in inputNames {
-            guard let (request, _) = try? packRequest(
-                type: .getInputMute,
-                request: GetInputMute(inputName: inputName)
-            ) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            guard let request = String(bytes: request, encoding: .utf8) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            requests.append(request)
-        }
-        executeBatchRequest(requests: requests, onError: onError) { results in
-            onSuccess(results.map { status, response in
-                guard status.result, let response else {
-                    return nil
-                }
-                do {
-                    let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
-                    return response.inputMuted
-                } catch {
-                    return nil
-                }
-            })
+        performRequestBatch(type: .getInputMute,
+                            requests: inputNames.map { GetInputMute(inputName: $0) },
+                            onError: onError)
+        { (responses: [GetInputMuteResponse?]) in
+            onSuccess(responses.map { $0?.inputMuted })
         }
     }
 
@@ -826,21 +786,37 @@ class ObsWebSocket {
         }
     }
 
-    private func executeBatchRequest(
-        requests: [String],
+    private func performRequestBatch<Response: Decodable>(
+        type: RequestType,
+        requests: [any Encodable],
         onError: @escaping (String) -> Void,
-        onComplete: @escaping ([(ResponseRequestStatus, Data?)]) -> Void
+        onSuccess: @escaping ([Response?]) -> Void
     ) {
         guard isConnected() else {
             onError("Not connected to server")
             return
         }
+        var packedRequests: [String] = []
+        for request in requests {
+            guard let (request, _) = try? packRequest(type: type, request: request) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            packedRequests.append(String.fromUtf8(data: request))
+        }
         let requestId = getNextId()
-        batchRequests[requestId] = BatchRequest(onComplete: onComplete)
+        batchRequests[requestId] = BatchRequest(onComplete: { results in
+            onSuccess(results.map { status, response in
+                guard status.result, let response else {
+                    return nil
+                }
+                return try? JSONDecoder().decode(Response.self, from: response)
+            })
+        })
         let requestBatch = """
         {
           "requestId": \(requestId),
-          "requests": [\(requests.joined(separator: ","))]
+          "requests": [\(packedRequests.joined(separator: ","))]
         }
         """
         send(op: .requestBatch, data: requestBatch.utf8Data)
