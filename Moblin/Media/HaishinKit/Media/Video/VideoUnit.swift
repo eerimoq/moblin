@@ -405,9 +405,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedVideoDriftInternal(cameraId: cameraId, drift: drift)
-        }
+        bufferedVideos[cameraId]?.setDrift(drift: drift)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
@@ -552,10 +550,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
         }
         #endif
-    }
-
-    private func setBufferedVideoDriftInternal(cameraId: UUID, drift: Double) {
-        bufferedVideos[cameraId]?.setDrift(drift: drift)
     }
 
     private func setBufferedVideoTargetLatencyInternal(cameraId: UUID, latency: Double) {

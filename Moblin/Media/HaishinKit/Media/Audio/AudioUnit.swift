@@ -275,9 +275,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedAudioDriftInternal(cameraId: cameraId, drift: drift)
-        }
+        bufferedAudios[cameraId]?.setDrift(drift: drift)
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
@@ -341,10 +339,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func appendBufferedAudioSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
-    }
-
-    private func setBufferedAudioDriftInternal(cameraId: UUID, drift: Double) {
-        bufferedAudios[cameraId]?.setDrift(drift: drift)
     }
 
     private func setBufferedAudioTargetLatencyInternal(cameraId: UUID, latency: Double) {
