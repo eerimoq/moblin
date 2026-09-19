@@ -1115,6 +1115,7 @@ final class Model: NSObject, ObservableObject {
         zoom.frontPresetId = database.zoom.front[0].id
         streamPreviewView.videoGravity = .resizeAspect
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
+        cameraPreviewView.backgroundColor = .black
         updateDigitalClock(now: Date())
         twitchChat = TwitchChat(delegate: self)
         setupSampleBufferReceiver()
@@ -1266,6 +1267,14 @@ final class Model: NSObject, ObservableObject {
 
     @objc func handleApplicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
+        guard !isMac() else {
+            return
+        }
+        if isAppActive {
+            media.setShowCameraPreview(updateShowCameraPreview())
+        } else if pictureInPictureEnabled() {
+            media.setShowCameraPreview(false)
+        }
     }
 
     func startGForceManager() {

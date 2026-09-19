@@ -448,6 +448,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.effectsProcessor.reset()
             self.bufferedPool = nil
+            self.blackImageBuffer = nil
+            self.blackFormatDescription = nil
+            self.enqueueBlackToDrawable()
         }
         processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
     }
@@ -914,6 +917,18 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             appendSampleBufferWithDetections(completion)
             nextCompletedDetectionsSequenceNumber += 1
         }
+    }
+
+    private func enqueueBlackToDrawable() {
+        guard let sampleBuffer = makeBlackSampleBuffer(
+            duration: .invalid,
+            presentationTimeStamp: CMClockGetHostTimeClock().time,
+            decodeTimeStamp: .invalid
+        ) else {
+            return
+        }
+        sampleBuffer.setAttachmentDisplayImmediately()
+        drawable?.enqueue(sampleBuffer, isFirstAfterAttach: false)
     }
 
     private func appendSampleBufferWithDetections(_ completion: DetectionsCompletion) {

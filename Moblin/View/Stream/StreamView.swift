@@ -106,10 +106,13 @@ struct StreamView: View {
     var body: some View {
         if show.chatPhone {
             Color.black
-        } else if show.cameraPreview {
-            cameraPreviewView
         } else {
-            streamPreviewView
+            ZStack {
+                streamPreviewView
+                if show.cameraPreview {
+                    cameraPreviewView
+                }
+            }
         }
     }
 }
