@@ -523,7 +523,7 @@ class ObsWebSocket {
         self.url = url
         self.password = password
         self.delegate = delegate
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, loopback: url.isLoopback())
     }
 
     func start() {
@@ -538,7 +538,7 @@ class ObsWebSocket {
 
     private func startInternal() {
         stopInternal()
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, loopback: url.isLoopback())
         webSocket.delegate = self
         webSocket.start()
     }

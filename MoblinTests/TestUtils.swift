@@ -22,16 +22,16 @@ class MessageQueue<Message: Sendable>: @unchecked Sendable {
     private var continuations: [CheckedContinuation<Message, Never>] = []
 
     func put(_ message: Message) {
-        if let continuation = continuations.popLast() {
-            continuation.resume(returning: message)
+        if !continuations.isEmpty {
+            continuations.removeFirst().resume(returning: message)
         } else {
             buffer.append(message)
         }
     }
 
     func get() async -> Message {
-        if let message = buffer.popLast() {
-            message
+        if !buffer.isEmpty {
+            buffer.removeFirst()
         } else {
             await withCheckedContinuation {
                 continuations.append($0)
