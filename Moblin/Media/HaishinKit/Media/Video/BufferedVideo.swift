@@ -82,7 +82,11 @@ class BufferedVideo {
         }
         if !isInitialBuffering, hasBufferBeenAppended, update {
             hasBufferBeenAppended = false
-            if trackDrift, let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
+            if trackDrift,
+               let newestSampleBuffer = sampleBuffers.last ?? currentSampleBuffer,
+               let drift = driftTracker.update(outputPresentationTimeStamp,
+                                               newestSampleBuffer.presentationTimeStamp.seconds)
+            {
                 processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
             }
         }

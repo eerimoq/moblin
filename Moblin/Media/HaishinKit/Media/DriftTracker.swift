@@ -1,5 +1,4 @@
-import Collections
-import CoreMedia
+import Foundation
 
 private enum AdjustDriftDirection {
     case up
@@ -50,14 +49,12 @@ class DriftTracker {
         drift
     }
 
-    func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) -> Double? {
+    func update(_ outputPresentationTimeStamp: Double, _ newestPresentationTimeStamp: Double) -> Double? {
         guard outputPresentationTimeStamp > latestEstimatedFillLevelPresentationTimeStamp + 0.5 else {
             return nil
         }
         latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
-        let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-        let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-        let currentFillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
+        let currentFillLevel = newestPresentationTimeStamp + drift - outputPresentationTimeStamp
         estimatedFillLevel = estimatedFillLevel * 0.95 + currentFillLevel * 0.05
         if estimatedFillLevel < lowWaterMark() {
             adjustDriftDirection = .up
