@@ -50,7 +50,7 @@ class DriftTracker {
         }
         latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
         let currentFillLevel = newestPresentationTimeStamp + drift - outputPresentationTimeStamp
-        estimatedFillLevel = estimatedFillLevel * 0.95 + currentFillLevel * 0.05
+        estimatedFillLevel = estimatedFillLevel * 0.98 + currentFillLevel * 0.02
         // Don't adjust too often to allow the moving average above to adjust.
         if latestAdjustDriftPresentationTimeStamp == -1 {
             latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
@@ -75,6 +75,7 @@ class DriftTracker {
         Drift \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift
+        estimatedFillLevel += adjustment
     }
 
     private func lowWaterMark() -> Double {
