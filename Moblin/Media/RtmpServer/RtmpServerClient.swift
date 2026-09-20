@@ -49,7 +49,6 @@ class RtmpServerClient: @unchecked Sendable {
     private var totalBytesReceivedAcked: UInt64 = 0
     var latency: Int32 = 2000
     var cameraId: UUID = .init()
-    var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: 2.0)
     private var basePresentationTimeStamp: Double
     private var inputBuffer = Data()
     private var receiveSize: Int = 0
@@ -104,17 +103,6 @@ class RtmpServerClient: @unchecked Sendable {
 
     func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
         server?.delegate.rtmpServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func updateTargetLatencies() {
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
-            return
-        }
-        server?.delegate.rtmpServerSetTargetLatencies(
-            cameraId: cameraId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     private func handleData(data: Data) {

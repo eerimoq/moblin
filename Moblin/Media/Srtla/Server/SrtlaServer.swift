@@ -15,11 +15,6 @@ protocol SrtlaServerDelegate: AnyObject {
     func srtlaServerOnClientStop(cameraId: UUID, name: String)
     func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
     func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
-    func srtlaServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class SrtlaServer: @unchecked Sendable {

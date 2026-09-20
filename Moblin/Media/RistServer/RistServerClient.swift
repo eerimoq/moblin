@@ -33,12 +33,4 @@ extension RistServerClient: MpegTsReaderDelegate {
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
         server?.delegate.ristServerOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
-
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
-        server?.delegate.ristServerSetTargetLatencies(
-            cameraId: cameraId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
-    }
 }

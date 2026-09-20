@@ -8,11 +8,6 @@ protocol WhipServerDelegate: AnyObject {
     func whipServerOnPublishStop(streamId: UUID, reason: String)
     func whipServerOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whipServerSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class WhipServer: @unchecked Sendable {
@@ -199,14 +194,6 @@ extension WhipServer: WhipServerClientDelegate {
 
     func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate.whipServerOnAudioBuffer(streamId: streamId, sampleBuffer)
-    }
-
-    func whipServerClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        delegate.whipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
     }
 
     func whipServerClientOnDataReceived(streamId _: UUID, count: Int) {

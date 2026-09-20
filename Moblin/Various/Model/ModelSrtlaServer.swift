@@ -77,13 +77,4 @@ extension Model: SrtlaServerDelegate {
     nonisolated func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
-
-    nonisolated func srtlaServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
-    }
 }

@@ -9,11 +9,6 @@ protocol WhepClientDelegate: AnyObject {
     func whepClientOnPublishStop(streamId: UUID, reason: String)
     func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whepClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class WhepClient: @unchecked Sendable {
@@ -202,18 +197,6 @@ extension WhepClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate.whepClientOnAudioBuffer(streamId: streamId, sampleBuffer)
-    }
-
-    func webrtcIngestClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        delegate.whepClientSetTargetLatencies(
-            streamId: streamId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {

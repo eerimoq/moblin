@@ -401,16 +401,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
-        bufferedVideos[cameraId]?.setDrift(drift: drift)
-    }
-
-    func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedVideoTargetLatencyInternal(cameraId: cameraId, latency: latency)
-        }
-    }
-
     func startEncoding(_ delegate: any VideoEncoderDelegate) {
         encoder.delegate = delegate
         encoder.controlDelegate = self
@@ -527,7 +517,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                     name: device.device.localizedName,
                     update: false,
                     latency: params.builtinDelay,
-                    processor: self.processor
+                    processor: self.processor,
+                    driftTracker: nil
                 )
                 self.bufferedVideos[device.id] = bufferedVideo
                 self.bufferedVideoBuiltins[device.device] = bufferedVideo
@@ -550,10 +541,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
         }
         #endif
-    }
-
-    private func setBufferedVideoTargetLatencyInternal(cameraId: UUID, latency: Double) {
-        bufferedVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
     private func startFrameTimer() {
@@ -750,12 +737,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             name: name,
             update: true,
             latency: latency,
-            processor: processor
+            processor: processor,
+            driftTracker: processor?.driftTracker(cameraId: cameraId, name: name)
         )
     }
 
     private func removeBufferedVideoInternal(cameraId: UUID) {
         bufferedVideos.removeValue(forKey: cameraId)
+        processor?.removeDriftTracker(cameraId: cameraId)
     }
 
     private func makeBlackSampleBuffer(

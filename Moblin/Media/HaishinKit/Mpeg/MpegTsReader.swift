@@ -3,7 +3,6 @@ import AVFoundation
 protocol MpegTsReaderDelegate: AnyObject {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer)
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double)
 }
 
 class MpegTsReader: @unchecked Sendable {
@@ -24,7 +23,6 @@ class MpegTsReader: @unchecked Sendable {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private var videoDecoder: VideoDecoder?
-    private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
     private let softwareDecoding: Bool
     private let targetLatency: Double
@@ -46,7 +44,6 @@ class MpegTsReader: @unchecked Sendable {
         self.timecodesEnabled = timecodesEnabled
         self.softwareDecoding = softwareDecoding
         self.targetLatency = targetLatency
-        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
     }
 
     func handlePacketFromClient(packet: Data) throws {
@@ -61,7 +58,6 @@ class MpegTsReader: @unchecked Sendable {
                 try handleProgramMedia(packet: packet, data: data)
             }
         }
-        updateTargetLatencies()
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -91,8 +87,6 @@ class MpegTsReader: @unchecked Sendable {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer
-            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
             return
         }
@@ -184,8 +178,6 @@ class MpegTsReader: @unchecked Sendable {
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer
-            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         guard let videoDecoder else {
             return
         }
@@ -530,13 +522,6 @@ class MpegTsReader: @unchecked Sendable {
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp
-    }
-
-    private func updateTargetLatencies() {
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
-            return
-        }
-        delegate?.mpegTsReaderSetTargetLatencies(videoTargetLatency, audioTargetLatency)
     }
 }
 

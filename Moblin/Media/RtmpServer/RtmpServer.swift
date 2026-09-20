@@ -11,11 +11,6 @@ protocol RtmpServerDelegate: AnyObject {
     func rtmpServerOnPublishStop(streamKey: String, reason: String)
     func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func rtmpServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class RtmpServer: @unchecked Sendable {

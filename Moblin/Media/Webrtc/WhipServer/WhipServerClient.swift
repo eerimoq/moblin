@@ -6,11 +6,6 @@ protocol WhipServerClientDelegate: AnyObject {
     func whipServerClientOnDisconnected(streamId: UUID, reason: String)
     func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whipServerClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
     func whipServerClientOnDataReceived(streamId: UUID, count: Int)
 }
 
@@ -78,18 +73,6 @@ extension WhipServerClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate?.whipServerClientOnAudioBuffer(streamId: streamId, sampleBuffer)
-    }
-
-    func webrtcIngestClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        delegate?.whipServerClientSetTargetLatencies(
-            streamId: streamId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {

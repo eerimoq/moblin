@@ -9,7 +9,7 @@ class BufferedVideo {
     private let name: String
     private let update: Bool
     private weak let processor: Processor?
-    private let driftTracker: DriftTracker
+    private let driftTracker: DriftTracker?
     private var hasBufferBeenAppended = false
     private var stats = BufferedStats()
     let latency: Double
@@ -19,22 +19,20 @@ class BufferedVideo {
         name: String,
         update: Bool,
         latency: Double,
-        processor: Processor?
+        processor: Processor?,
+        driftTracker: DriftTracker?
     ) {
         self.cameraId = cameraId
         self.name = name
         self.update = update
         self.latency = latency
         self.processor = processor
-        driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
+        self.driftTracker = driftTracker
+        driftTracker?.addMedia(.video, targetFillLevel: latency)
     }
 
     deinit {
         processor?.delegate.streamVideoBufferedVideoRemoved(cameraId: cameraId)
-    }
-
-    func setTargetLatency(latency: Double) {
-        driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -54,7 +52,7 @@ class BufferedVideo {
         }
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
-        let drift = driftTracker.getDrift()
+        let drift = driftTracker?.getDrift() ?? 0.0
         while let nextSampleBuffer = sampleBuffers.first {
             if sampleBuffers.count > 200 {
                 sampleBuffer = nextSampleBuffer
@@ -79,11 +77,10 @@ class BufferedVideo {
         }
         if !isInitialBuffering, hasBufferBeenAppended, update {
             hasBufferBeenAppended = false
-            if let newestSampleBuffer = sampleBuffers.last ?? currentSampleBuffer,
-               let drift = driftTracker.update(outputPresentationTimeStamp,
-                                               newestSampleBuffer.presentationTimeStamp.seconds)
-            {
-                processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
+            if let driftTracker, let newestSampleBuffer = sampleBuffers.last ?? currentSampleBuffer {
+                driftTracker.update(media: .video,
+                                    outputPresentationTimeStamp,
+                                    newestSampleBuffer.presentationTimeStamp.seconds)
             }
         }
     }
@@ -157,9 +154,5 @@ class BufferedVideo {
 
     func numberOfBuffers() -> Int {
         sampleBuffers.count
-    }
-
-    func setDrift(drift: Double) {
-        driftTracker.setDrift(drift: drift)
     }
 }

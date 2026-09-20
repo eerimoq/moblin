@@ -9,9 +9,6 @@ protocol SrtClientDelegate: AnyObject {
     func srtClientDisconnected(cameraId: UUID)
     func srtClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func srtClientOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func srtClientSetTargetLatencies(cameraId: UUID,
-                                     _ videoTargetLatency: Double,
-                                     _ audioTargetLatency: Double)
 }
 
 let srtClientLatency = 0.5
@@ -194,10 +191,6 @@ extension SrtClient: MpegTsReaderDelegate {
 
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate?.srtClientOnAudioBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
-        delegate?.srtClientSetTargetLatencies(cameraId: cameraId, videoTargetLatency, audioTargetLatency)
     }
 }
 

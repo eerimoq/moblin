@@ -88,12 +88,4 @@ extension Model: WhepClientDelegate {
     nonisolated func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
-
-    nonisolated func whepClientSetTargetLatencies(streamId: UUID,
-                                                  _ videoTargetLatency: Double,
-                                                  _ audioTargetLatency: Double)
-    {
-        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
-    }
 }
