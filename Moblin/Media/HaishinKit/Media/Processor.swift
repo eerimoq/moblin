@@ -160,8 +160,8 @@ final class Processor: @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
-        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
+        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
@@ -176,8 +176,8 @@ final class Processor: @unchecked Sendable {
         video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
-        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
+        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedAudio(cameraId: UUID) {

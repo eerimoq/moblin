@@ -193,8 +193,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 name: "builtin",
                 latency: params.builtinDelay,
                 processor: self.processor,
-                manualOutput: true,
-                trackDrift: true
+                manualOutput: true
             )
         }
         if let device = params.device {
@@ -253,12 +252,9 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
         processorPipelineQueue.async {
-            self.addBufferedAudioInternal(cameraId: cameraId,
-                                          name: name,
-                                          latency: latency,
-                                          trackDrift: trackDrift)
+            self.addBufferedAudioInternal(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
@@ -316,18 +312,13 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    private func addBufferedAudioInternal(cameraId: UUID,
-                                          name: String,
-                                          latency: Double,
-                                          trackDrift: Bool)
-    {
+    private func addBufferedAudioInternal(cameraId: UUID, name: String, latency: Double) {
         let bufferedAudio = BufferedAudio(
             cameraId: cameraId,
             name: name,
             latency: latency,
             processor: processor,
-            manualOutput: false,
-            trackDrift: trackDrift
+            manualOutput: false
         )
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
