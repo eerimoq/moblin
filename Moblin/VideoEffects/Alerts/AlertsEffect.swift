@@ -37,8 +37,7 @@ private struct Pipeline {
     var playing: Bool = false
     var messageImage: EffectImageCiImage?
     var images: any AlertsEffectImages = AlertsEffectGifImages()
-    var x: Double = 0
-    var y: Double = 0
+    var layout = SettingsWidgetLayout()
     var landmarkSettings: AlertsEffectLandmarkSettings?
 
     mutating func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
@@ -116,8 +115,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return executePositionScene(image,
                                         alertImage.getCiImage(),
                                         messageImage.getCiImage(),
-                                        pipeline.x,
-                                        pipeline.y)
+                                        pipeline.layout)
         }
     }
 
@@ -135,8 +133,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return executePositionSceneMetalPetal(image,
                                                   alertImage.getMetalPetalImage(),
                                                   messageImage.getMetalPetalImage(),
-                                                  pipeline.x,
-                                                  pipeline.y)
+                                                  pipeline.layout)
         }
     }
 
@@ -158,10 +155,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         settings
     }
 
-    func setPosition(x: Double, y: Double) {
+    func setLayout(_ layout: SettingsWidgetLayout) {
         processorPipelineQueue.async {
-            self.pipeline.x = x
-            self.pipeline.y = y
+            self.pipeline.layout = layout
         }
     }
 
@@ -600,18 +596,24 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return filter.outputImage ?? image
     }
 
+    private func alertAndMessageSize(_ alertSize: CGSize, _ messageSize: CGSize) -> CGSize {
+        CGSize(width: alertSize.width, height: alertSize.height + messageSize.height)
+    }
+
     private func executePositionScene(
         _ image: CIImage,
         _ alertImage: CIImage,
         _ messageImage: CIImage,
-        _ x: Double,
-        _ y: Double
+        _ layout: SettingsWidgetLayout
     ) -> CIImage {
-        let xPos = toPixels(x, image.extent.width)
-        let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
+        let alertSize = alertImage.extent.size
+        let messageSize = messageImage.extent.size
+        let size = alertAndMessageSize(alertSize, messageSize)
+        let position = layoutPosition(layout, size, image.extent.size)
+        let xPos = position.x
+        let yPos = image.extent.height - position.y - alertSize.height
         return messageImage
-            .translated(x: -(messageImage.extent.width - alertImage.extent.width) / 2,
-                        y: -messageImage.extent.height)
+            .translated(x: -(messageSize.width - alertSize.width) / 2, y: -messageSize.height)
             .composited(over: alertImage)
             .translated(x: xPos, y: yPos)
             .composited(over: image)
@@ -622,22 +624,20 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         _ image: MTIImage,
         _ alertImage: MTIImage,
         _ messageImage: MTIImage,
-        _ x: Double,
-        _ y: Double
+        _ layout: SettingsWidgetLayout
     ) -> MTIImage {
         let alertSize = alertImage.extent.size
         let messageSize = messageImage.extent.size
-        let xPos = toPixels(x, image.extent.width)
-        let yPos = toPixels(y, image.extent.height)
+        let size = alertAndMessageSize(alertSize, messageSize)
+        let position = layoutPosition(layout, size, image.extent.size)
+        let xPos = position.x + alertSize.width / 2
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [
             .init(content: alertImage,
-                  position: CGPoint(x: xPos + alertSize.width / 2,
-                                    y: yPos + alertSize.height / 2)),
+                  position: CGPoint(x: xPos, y: position.y + alertSize.height / 2)),
             .init(content: messageImage,
-                  position: CGPoint(x: xPos + alertSize.width / 2,
-                                    y: yPos + alertSize.height + messageSize.height / 2)),
+                  position: CGPoint(x: xPos, y: position.y + alertSize.height + messageSize.height / 2)),
         ]
         return filter.outputImage ?? image
     }

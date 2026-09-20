@@ -100,10 +100,7 @@ extension CGImage {
     }
 }
 
-func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
-                             _ size: CGSize,
-                             _ streamSize: CGSize) -> CGPoint
-{
+func layoutPosition(_ layout: SettingsWidgetLayout, _ size: CGSize, _ streamSize: CGSize) -> CGPoint {
     var x: Double
     var y: Double
     if layout.alignment.isHorizontalCenter() {
@@ -120,7 +117,15 @@ func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
     } else {
         y = streamSize.height - toPixels(layout.y, streamSize.height) - size.height
     }
-    return CGPoint(x: x + size.width / 2, y: y + size.height / 2)
+    return CGPoint(x: x, y: y)
+}
+
+func metalPetalLayerPosition(_ layout: SettingsWidgetLayout,
+                             _ size: CGSize,
+                             _ streamSize: CGSize) -> CGPoint
+{
+    let position = layoutPosition(layout, size, streamSize)
+    return CGPoint(x: position.x + size.width / 2, y: position.y + size.height / 2)
 }
 
 extension MTIImage {

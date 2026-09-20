@@ -1257,7 +1257,7 @@ extension Model {
         guard let effect = alertsEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setPosition(x: sceneWidget.layout.x, y: sceneWidget.layout.y)
+        effect.setLayout(sceneWidget.layout)
         enabledAlertsEffects.append(effect)
         effects.append(effect)
         if widget.alerts.needsSubtitles {
