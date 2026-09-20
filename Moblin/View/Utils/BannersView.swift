@@ -14,6 +14,34 @@ private struct ProgressBarView: View {
     }
 }
 
+private struct HypeTrainProgressView: View {
+    @ObservedObject var progress: ProgressBar
+    let message: String
+
+    private func percentage() -> Int {
+        guard progress.goal > 0 else {
+            return 0
+        }
+        return Int(100 * min(progress.progress / progress.goal, 1))
+    }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ProgressView(value: min(progress.progress, progress.goal), total: progress.goal)
+                .tint(.white)
+                .scaleEffect(x: 1, y: 4, anchor: .center)
+            HStack {
+                Text(String("\(percentage())%"))
+                Spacer()
+                Text(message)
+            }
+            .font(.footnote)
+        }
+        .foregroundStyle(.white)
+        .padding([.leading, .trailing, .bottom], 10)
+    }
+}
+
 private struct HypeTrainView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -51,7 +79,7 @@ private struct HypeTrainView: View {
                 .padding(10)
             }
             if let progress = hypeTrain.progress {
-                ProgressBarView(progress: progress)
+                HypeTrainProgressView(progress: progress, message: hypeTrain.message)
             }
         }
         .background(bannerBackgroundColor)

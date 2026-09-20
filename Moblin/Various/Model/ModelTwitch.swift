@@ -665,9 +665,19 @@ extension Model {
         twitchPrediction.state = .idle
     }
 
+    func updateHypeTrainCountdown() {
+        guard hypeTrain.progress != nil, let expiresAt = hypeTrain.expiresAt else {
+            return
+        }
+        let countdown = formatTwitchCountdown(expiresAt)
+        hypeTrain.message = String(localized: "Ends in \(countdown)")
+    }
+
     func removeHypeTrain() {
         hypeTrain.level = nil
         hypeTrain.progress = nil
+        hypeTrain.expiresAt = nil
+        hypeTrain.message = ""
     }
 
     func makeTwitchAlertSegments(text: String,
@@ -1044,6 +1054,8 @@ extension Model: TwitchEventSubDelegate {
         hypeTrain.progress = ProgressBar()
         hypeTrain.progress?.progress = Float(event.progress)
         hypeTrain.progress?.goal = Float(event.goal)
+        hypeTrain.expiresAt = parseTwitchTimestamp(event.expires_at)
+        updateHypeTrainCountdown()
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(text: String(localized: "started a hype train!")),
@@ -1062,6 +1074,8 @@ extension Model: TwitchEventSubDelegate {
         }
         hypeTrain.progress?.progress = Float(event.progress)
         hypeTrain.progress?.goal = Float(event.goal)
+        hypeTrain.expiresAt = parseTwitchTimestamp(event.expires_at)
+        updateHypeTrainCountdown()
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
@@ -1071,6 +1085,8 @@ extension Model: TwitchEventSubDelegate {
         }
         hypeTrain.progress?.progress = 1
         hypeTrain.progress?.goal = 1
+        hypeTrain.expiresAt = nil
+        hypeTrain.message = String(localized: "Ended")
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(

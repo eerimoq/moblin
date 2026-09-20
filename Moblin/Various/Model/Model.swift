@@ -126,6 +126,8 @@ class Banners: ObservableObject {
 class HypeTrain: ObservableObject {
     @Published var level: Int?
     @Published var progress: ProgressBar?
+    @Published var message = ""
+    var expiresAt: Date?
 }
 
 enum RaidState {
@@ -1827,6 +1829,7 @@ final class Model: NSObject, ObservableObject {
         updateTwitchRaid()
         updateTwitchPollCountdown()
         updateTwitchPredictionCountdown()
+        updateHypeTrainCountdown()
     }
 
     private func handle3sTimer() {

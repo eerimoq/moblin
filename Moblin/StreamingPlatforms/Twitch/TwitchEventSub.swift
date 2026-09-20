@@ -292,7 +292,6 @@ struct TwitchEventSubChannelHypeTrainBeginEvent: Decodable {
     var level: Int
     // periphery:ignore
     var started_at: String
-    // periphery:ignore
     var expires_at: String
 }
 
@@ -310,7 +309,6 @@ struct TwitchEventSubChannelHypeTrainProgressEvent: Decodable {
     var level: Int
     // periphery:ignore
     var started_at: String
-    // periphery:ignore
     var expires_at: String
 }
 
