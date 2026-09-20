@@ -35,14 +35,8 @@ extension Model {
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
         let latency = stream.latencySeconds()
-        media.addBufferedVideo(cameraId: stream.id,
-                               name: camera,
-                               latency: latency,
-                               trackDrift: stream.trackDrift)
-        media.addBufferedAudio(cameraId: stream.id,
-                               name: camera,
-                               latency: latency,
-                               trackDrift: stream.trackDrift)
+        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
+        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
         markDjiIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
         markGoProIsStreamingIfNeeded(rtmpServerStreamId: stream.id)
     }

@@ -389,12 +389,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool) {
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processorPipelineQueue.async {
-            self.addBufferedVideoInternal(cameraId: cameraId,
-                                          name: name,
-                                          latency: latency,
-                                          trackDrift: trackDrift)
+            self.addBufferedVideoInternal(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
@@ -530,7 +527,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                     name: device.device.localizedName,
                     update: false,
                     latency: params.builtinDelay,
-                    processor: self.processor, trackDrift: true
+                    processor: self.processor
                 )
                 self.bufferedVideos[device.id] = bufferedVideo
                 self.bufferedVideoBuiltins[device.device] = bufferedVideo
@@ -747,18 +744,13 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         bufferedVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    private func addBufferedVideoInternal(cameraId: UUID,
-                                          name: String,
-                                          latency: Double,
-                                          trackDrift: Bool)
-    {
+    private func addBufferedVideoInternal(cameraId: UUID, name: String, latency: Double) {
         bufferedVideos[cameraId] = BufferedVideo(
             cameraId: cameraId,
             name: name,
             update: true,
             latency: latency,
-            processor: processor,
-            trackDrift: trackDrift
+            processor: processor
         )
     }
 
@@ -1125,12 +1117,7 @@ extension VideoUnit: VideoEncoderControlDelegate {
 @available(macCatalyst 18.2, *)
 extension VideoUnit: MacScreenCaptureDelegate {
     func macScreenCaptureDidStart(latency: Double) {
-        addBufferedVideo(
-            cameraId: screenCaptureCameraId,
-            name: screenCaptureCameraName,
-            latency: latency,
-            trackDrift: false
-        )
+        addBufferedVideo(cameraId: screenCaptureCameraId, name: screenCaptureCameraName, latency: latency)
     }
 
     func macScreenCaptureDidStop() {

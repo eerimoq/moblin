@@ -10,7 +10,6 @@ class BufferedVideo {
     private let update: Bool
     private weak let processor: Processor?
     private let driftTracker: DriftTracker
-    private let trackDrift: Bool
     private var hasBufferBeenAppended = false
     private var stats = BufferedStats()
     let latency: Double
@@ -20,15 +19,13 @@ class BufferedVideo {
         name: String,
         update: Bool,
         latency: Double,
-        processor: Processor?,
-        trackDrift: Bool
+        processor: Processor?
     ) {
         self.cameraId = cameraId
         self.name = name
         self.update = update
         self.latency = latency
         self.processor = processor
-        self.trackDrift = trackDrift
         driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
 
@@ -82,8 +79,7 @@ class BufferedVideo {
         }
         if !isInitialBuffering, hasBufferBeenAppended, update {
             hasBufferBeenAppended = false
-            if trackDrift,
-               let newestSampleBuffer = sampleBuffers.last ?? currentSampleBuffer,
+            if let newestSampleBuffer = sampleBuffers.last ?? currentSampleBuffer,
                let drift = driftTracker.update(outputPresentationTimeStamp,
                                                newestSampleBuffer.presentationTimeStamp.seconds)
             {

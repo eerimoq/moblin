@@ -8,14 +8,12 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
-    @Published var trackDrift: Bool = true
 
     enum CodingKeys: CodingKey {
         case id
         case name
         case streamKey
         case latency
-        case trackDrift
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -24,7 +22,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
-        try container.encode(.trackDrift, trackDrift)
     }
 
     init() {}
@@ -35,7 +32,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
-        trackDrift = container.decode(.trackDrift, Bool.self, true)
     }
 
     func camera() -> String {
@@ -52,7 +48,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
-        new.trackDrift = trackDrift
         return new
     }
 }
