@@ -55,6 +55,7 @@ class VTuberType(StrEnum):
 class Alignment(StrEnum):
     BOTTOM_LEFT = "BottomLeft"
     BOTTOM_RIGHT = "BottomRight"
+    CENTER = "Center"
     TOP_CENTER = "TopCenter"
     TOP_LEFT = "TopLeft"
     TOP_RIGHT = "TopRight"

@@ -253,7 +253,7 @@ class ChatEventsTestCase(TestCase):
                 "scenes": [
                     {
                         **FRONT_SCENE_SETTINGS,
-                        "widgets": [scene_widget_settings(ALERTS_WIDGET_ID, 0, 0, 100)],
+                        "widgets": [scene_widget_settings(ALERTS_WIDGET_ID, 0, 0, 100, Alignment.CENTER)],
                     }
                 ],
                 "widgets": [
