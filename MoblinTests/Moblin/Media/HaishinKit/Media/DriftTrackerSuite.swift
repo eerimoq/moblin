@@ -21,6 +21,21 @@ struct DriftTrackerSuite {
     }
 
     @Test
+    func slowCatchUpAfterStallDoesNotAdjust() {
+        let tracker = createTracker()
+        var adjustments = drive(tracker, from: 0, to: 60, video: { time in time + 1.0 })
+        adjustments += drive(
+            tracker,
+            from: 61.3,
+            to: 87.3,
+            video: { time in time - 0.3 + (time - 61.3) * 0.05 }
+        )
+        adjustments += drive(tracker, from: 87.3, to: 200, video: { time in time + 1.0 })
+        #expect(adjustments.isEmpty)
+        #expect(tracker.getDrift() == 0)
+    }
+
+    @Test
     func sustainedJumpAdjustsToTarget() {
         let tracker = createTracker()
         var adjustments = drive(tracker, from: 0, to: 50, video: { time in time + 1.0 })

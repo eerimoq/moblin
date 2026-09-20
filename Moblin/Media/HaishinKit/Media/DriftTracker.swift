@@ -83,14 +83,17 @@ class DriftTracker {
                 $0.fillLevels.count >= 30
                     && outputPresentationTimeStamp - $0.latestFillLevelPresentationTimeStamp < 20.0
             }
-            .map { ($0, estimateDeviation($0)) }
-        guard let (state, deviation) = deviations.min(by: { $0.1 < $1.1 }) else {
+            .map { ($0, estimateDeviations($0)) }
+        guard let (state, (_, upperDeviation)) = deviations.min(by: { $0.1.upper < $1.1.upper }),
+              let lowerDeviation = deviations.map(\.1.lower).min()
+        else {
             return
         }
-        guard deviation < state.lowWaterMark() || deviation > 0.2 else {
-            return
+        if upperDeviation < state.lowWaterMark() {
+            adjustDrift(deviation: upperDeviation)
+        } else if lowerDeviation > 0.2 {
+            adjustDrift(deviation: lowerDeviation)
         }
-        adjustDrift(deviation: deviation)
     }
 
     private func state(_ media: DriftTrackerMedia) -> DriftTrackerMediaState? {
@@ -102,8 +105,9 @@ class DriftTracker {
         }
     }
 
-    private func estimateDeviation(_ state: DriftTrackerMediaState) -> Double {
-        state.fillLevels.sorted()[state.fillLevels.count / 2] + drift - state.targetFillLevel
+    private func estimateDeviations(_ state: DriftTrackerMediaState) -> (lower: Double, upper: Double) {
+        let deviations = state.fillLevels.sorted().map { $0 + drift - state.targetFillLevel }
+        return (deviations[deviations.count / 4], deviations[3 * deviations.count / 4])
     }
 
     private func adjustDrift(deviation: Double) {
