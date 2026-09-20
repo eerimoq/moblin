@@ -812,7 +812,7 @@ enum RemoteControlStatusGeneralFlame: String, Codable {
 }
 
 enum RemoteControlStatusTopRightAudioLevel: Codable {
-    case muted
+    case muted // not changed to .silent for backwards compatibility with older versions of the streamer
     case unknown
     case value(Float)
 

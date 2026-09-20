@@ -5,7 +5,7 @@ import SwiftUI
 class AudioLevel: ObservableObject {
     @Published var level: Float = -Float.infinity
 
-    func isMuted() -> Bool {
+    func isSilent() -> Bool {
         level == -Float.infinity
     }
 

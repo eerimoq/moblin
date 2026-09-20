@@ -450,7 +450,7 @@ extension Model {
 
     private func remoteControlStreamerCreateStatusTopRight() -> RemoteControlStatusTopRight {
         var topRight = RemoteControlStatusTopRight()
-        let level = formatAudioLevel(level: audio.level.level) +
+        let level = formatAudioLevel(level: audio.level.level, muted: isMuteOn) +
             formatAudioLevelChannels(channels: audio.numberOfChannels)
         topRight.audioLevel = RemoteControlStatusItem(message: level)
         topRight.audioInfo = .init(
