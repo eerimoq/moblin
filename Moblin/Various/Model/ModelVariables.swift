@@ -5,6 +5,12 @@ extension Model {
         let location = locationManager.getLatestKnownLocation()
         let weather = weatherManager.getLatestWeather()?.currentWeather
         let placemark = geographyManager.getLatestPlacemark()
+        let workoutDevices = enabledWorkoutDevices
+        let cycling = cyclingMetricsStore.genericMetrics(deviceIds: workoutDevices.map(\.id), now: timestamp)
+        let currentCyclingMetrics = cyclingMetricsStore.metricsByName(
+            devices: workoutDevices.map { (id: $0.id, name: $0.name) },
+            now: timestamp
+        )
         return Variables(
             timestamp: timestamp,
             bitrate: bitrate.speedMbpsOneDecimal,
@@ -47,7 +53,9 @@ extension Model {
             teslaMedia: textEffectTeslaMedia(),
             cyclingPower: "\(cyclingPower) W",
             cyclingCadence: "\(cyclingCadence)",
-            cyclingSpeed: cyclingSpeed,
+            cyclingSpeed: cycling.speed ?? 0,
+            cyclingDistance: cycling.distance ?? 0,
+            cyclingMetrics: currentCyclingMetrics,
             runningMetrics: runningMetrics,
             browserTitle: getBrowserTitle(),
             gForce: gForceManager?.getLatest(),

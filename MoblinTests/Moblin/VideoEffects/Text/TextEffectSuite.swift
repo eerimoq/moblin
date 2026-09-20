@@ -293,6 +293,118 @@ struct TextEffectSuite {
     }
 
     @Test
+    func loadFormatCyclingSpeed() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{cyclingspeed}")
+        #expect(parts == [.cyclingSpeed(.system)])
+        parts = loader.load(format: "{cyclingspeed:device:T1}")
+        #expect(parts == [.cyclingSpeedDevice("t1")])
+        #expect(loader.load(format: "{cyclingSpeed:km/h}") == [.cyclingSpeed(.kilometersPerHour)])
+        #expect(loader.load(format: "{cyclingSpeed:mph}") == [.cyclingSpeed(.milesPerHour)])
+        #expect(loader.load(format: "{cyclingSpeed:m/s}") == [.cyclingSpeed(.metersPerSecond)])
+    }
+
+    @Test
+    func loadFormatCyclingDistance() {
+        let loader = TextFormatLoader()
+        var parts = loader.load(format: "{cyclingdistance}")
+        #expect(parts == [.cyclingDistance(.system)])
+        parts = loader.load(format: "{cyclingdistance:device:C1}")
+        #expect(parts == [.cyclingDistanceDevice("c1")])
+        #expect(loader.load(format: "{cyclingDistance:km}") == [.cyclingDistance(.kilometers)])
+        #expect(loader.load(format: "{cyclingDistance:mi}") == [.cyclingDistance(.miles)])
+    }
+
+    @Test(arguments: ["m/s", "km/h", "mph", "km", "mi", "m", "ft", "yd", "nmi", "ly", "My bike"])
+    func explicitCyclingPrefixSelectsDevice(name: String) {
+        let loader = TextFormatLoader()
+        #expect(loader
+            .load(format: "{cyclingSpeed:device:\(name)}") == [.cyclingSpeedDevice(name.lowercased())])
+        #expect(loader
+            .load(format: "{cyclingDistance:device:\(name)}") == [.cyclingDistanceDevice(name.lowercased())])
+    }
+
+    @Test
+    func gpsSpeedUnitOverridesRemainAvailable() {
+        let loader = TextFormatLoader()
+        #expect(loader.load(format: "{speed:km/h}") == [.speed(.kilometersPerHour)])
+        #expect(loader.load(format: "{speed:mph}") == [.speed(.milesPerHour)])
+        #expect(loader.load(format: "{speed:m/s}") == [.speed(.metersPerSecond)])
+    }
+
+    @Test(arguments: ["m/s", "km/h", "mph", "km", "mi", "m", "ft", "yd", "nmi", "ly", "My bike"])
+    func namedCyclingMetricsUseSystemUnits(name: String) {
+        let variables = createVariables(cyclingSpeed: 5, cyclingDistance: 1500, cyclingMetrics: [
+            name.lowercased(): .init(speed: 5, distance: 1500),
+        ])
+        let genericSpeed = format(format: "{cyclingSpeed}", variables: variables).toPlainText()
+        let genericDistance = format(format: "{cyclingDistance}", variables: variables).toPlainText()
+        #expect(genericSpeed == format(format: "{speed}", variables: variables).toPlainText())
+        #expect(genericDistance == Moblin.format(distance: 1500))
+        #expect(format(format: "{cyclingSpeed:device:\(name)}", variables: variables)
+            .toPlainText() == genericSpeed)
+        #expect(format(format: "{cyclingDistance:device:\(name)}", variables: variables).toPlainText()
+            == genericDistance)
+        let missing = createVariables(cyclingSpeed: 10, cyclingDistance: 1500)
+        #expect(format(format: "{cyclingSpeed:device:\(name)}", variables: missing).toPlainText() == "-")
+        #expect(format(format: "{cyclingDistance:device:\(name)}", variables: missing).toPlainText() == "-")
+    }
+
+    @Test
+    func formatsIndependentCyclingDevices() {
+        let variables = createVariables(cyclingMetrics: [
+            "t1": .init(speed: 3, distance: 1000),
+            "c1": .init(speed: 10, distance: 5000),
+        ])
+        let t1Speed = format(format: "{cyclingSpeed:device:t1}", variables: variables).toPlainText()
+        let c1Speed = format(format: "{cyclingSpeed:device:C1}", variables: variables).toPlainText()
+        let t1Distance = format(format: "{cyclingDistance:device:t1}", variables: variables).toPlainText()
+        let c1Distance = format(format: "{cyclingDistance:device:C1}", variables: variables).toPlainText()
+        #expect(t1Speed != "-")
+        #expect(t1Speed != c1Speed)
+        #expect(t1Distance != "-")
+        #expect(t1Distance != c1Distance)
+        #expect(format(format: "{cyclingSpeed:device:missing}", variables: variables).toPlainText() == "-")
+    }
+
+    @Test(arguments: ["en_US", "sv_SE"])
+    func cyclingSpeedUsesLocaleUnits(localeIdentifier: String) {
+        let variables = createVariables(cyclingSpeed: 5, cyclingMetrics: ["km/h": .init(speed: 5)])
+        let formatter = TextEffectFormatter(
+            formatParts: loadTextFormat(format: "{cyclingSpeed} / {cyclingSpeed:device:km/h}"),
+            timersEndTime: [], stopwatches: [], checkboxes: [], ratings: [], lapTimes: []
+        )
+        formatter.speedFormatter.locale = Locale(identifier: localeIdentifier)
+        formatter.speedFormatter.numberFormatter.maximumFractionDigits = 0
+        let reference = MeasurementFormatter()
+        reference.locale = Locale(identifier: localeIdentifier)
+        reference.numberFormatter.maximumFractionDigits = 0
+        reference.unitOptions = []
+        let expected = reference.string(from: Measurement(value: 5, unit: UnitSpeed.metersPerSecond))
+        #expect(formatter.format(variables: variables, now: .now)
+            .toPlainText() == "\(expected) / \(expected)")
+    }
+
+    @Test(arguments: ["km/h", "mph", "m/s"])
+    func cyclingUnitOverridesDoNotSelectDevices(unit: String) {
+        let variables = createVariables(cyclingSpeed: 5, cyclingMetrics: [unit: .init(speed: 15)])
+        let generic = format(format: "{cyclingSpeed:\(unit)}", variables: variables).toPlainText()
+        #expect(generic == format(format: "{speed:\(unit)}", variables: variables).toPlainText())
+        let named = format(format: "{cyclingSpeed:device:\(unit)}", variables: variables).toPlainText()
+        #expect(generic != named)
+        let combined = format(
+            format: "{cyclingSpeed:\(unit)}|{cyclingSpeed:device:\(unit)}|{cyclingSpeed:\(unit)}",
+            variables: variables
+        ).toPlainText()
+        #expect(combined == "\(generic)|\(named)|\(generic)")
+    }
+
+    @Test(arguments: ["{cyclingSpeed:device:}", "{cyclingDistance:device:}", "{cyclingSpeed:T1}"])
+    func invalidCyclingOptionsRemainText(value: String) {
+        #expect(TextFormatLoader().load(format: value) == [.text(value)])
+    }
+
+    @Test
     func loadFormatSubtitles() {
         let loader = TextFormatLoader()
         var parts = loader.load(format: "{subtitles}")
@@ -334,6 +446,9 @@ struct TextEffectSuite {
     private func createVariables(conditions: String? = nil,
                                  condition: WeatherCondition? = nil,
                                  heartRates: [String: Int?] = [:],
+                                 cyclingSpeed: Double = 0,
+                                 cyclingDistance: Double = 0,
+                                 cyclingMetrics: [String: WorkoutDeviceCyclingMetrics] = [:],
                                  gForce: GForce? = nil,
                                  systemMonitor: String = "") -> Variables
     {
@@ -378,7 +493,9 @@ struct TextEffectSuite {
                   teslaMedia: "",
                   cyclingPower: "",
                   cyclingCadence: "",
-                  cyclingSpeed: 0,
+                  cyclingSpeed: cyclingSpeed,
+                  cyclingDistance: cyclingDistance,
+                  cyclingMetrics: cyclingMetrics,
                   runningMetrics: [:],
                   browserTitle: "",
                   gForce: gForce,
