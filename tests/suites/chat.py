@@ -316,6 +316,25 @@ class ChatTwitchSubscriptions(ChatEventsTestCase):
         )
 
 
+class ChatTwitchSubscriptionEmotes(ChatEventsTestCase):
+    """Send resubscription events with emotes in the user message."""
+
+    def run(self):
+        manual_validation(LOGGER, "The alert and chat highlight show the emotes in each message.")
+        kappa = event_sub.emote_fragment("Kappa", "25")
+        four_head = event_sub.emote_fragment("4Head", "354")
+        self.send(
+            event_sub.chat_resub("Ivan", 12, 12, "1000", [event_sub.text_fragment("Best stream "), kappa]),
+            event_sub.chat_resub(
+                "Judy",
+                3,
+                None,
+                "2000",
+                [kappa, event_sub.text_fragment(" love it "), four_head],
+            ),
+        )
+
+
 class ChatTwitchSharedChat(ChatEventsTestCase):
     """Send shared chat subscription, gift, upgrade, raid and watch streak events."""
 
@@ -616,6 +635,7 @@ def tests(moblin: Moblin):
         ChatEmotes(moblin),
         ChatTwitchFollows(moblin),
         ChatTwitchSubscriptions(moblin),
+        ChatTwitchSubscriptionEmotes(moblin),
         ChatTwitchSharedChat(moblin),
         ChatTwitchCheers(moblin),
         ChatTwitchRewards(moblin),

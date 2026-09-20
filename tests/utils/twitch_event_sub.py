@@ -72,13 +72,31 @@ def follow(user_name: str) -> dict:
     )
 
 
+def text_fragment(text: str) -> dict:
+    return {"type": "text", "text": text, "cheermote": None, "emote": None, "mention": None}
+
+
+def emote_fragment(name: str, emote_id: str) -> dict:
+    return {
+        "type": "emote",
+        "text": name,
+        "cheermote": None,
+        "emote": {"id": emote_id, "emote_set_id": "0", "owner_id": "0", "format": ["static"]},
+        "mention": None,
+    }
+
+
 def chat_notification(
     notice_type: str,
     chatter_user_name: str | None,
     notice: dict | None = None,
-    message: str = "",
+    message: str | list[dict] = "",
     shared: bool = False,
 ) -> dict:
+    fragments: list[dict] = []
+    if isinstance(message, list):
+        fragments = message
+        message = "".join(fragment["text"] for fragment in fragments)
     source: dict
     if shared:
         source = {
@@ -105,7 +123,7 @@ def chat_notification(
         "badges": [],
         "system_message": "",
         "message_id": str(uuid.uuid4()),
-        "message": {"text": message, "fragments": []},
+        "message": {"text": message, "fragments": fragments},
         "notice_type": notice_type,
         "sub": None,
         "resub": None,
@@ -153,7 +171,7 @@ def chat_resub(
     cumulative_months: int,
     streak_months: int | None,
     tier: str,
-    message: str,
+    message: str | list[dict],
     shared: bool = False,
 ) -> dict:
     notice_type = _notice_type("resub", shared)
