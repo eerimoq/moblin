@@ -47,7 +47,8 @@ struct BufferedAudioSuite {
 
     @Test
     func processDriftChange() {
-        let bufferedAudio = createBufferedAudio()
+        let driftTracker = DriftTracker(name: "")
+        let bufferedAudio = createBufferedAudio(driftTracker: driftTracker)
         let sampleBuffers = [
             createSampleBuffer(presentationTimeStamp: 1.000),
             createSampleBuffer(presentationTimeStamp: 1.021),
@@ -69,7 +70,7 @@ struct BufferedAudioSuite {
         #expect(bufferedAudio.numberOfBuffers() == 15)
         var timestamp = 1.000
         expectSequence(bufferedAudio, sampleBuffers, &timestamp, 0 ..< 2)
-        bufferedAudio.setDrift(drift: 0.1)
+        driftTracker.setDrift(drift: 0.1)
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
         timestamp += 0.021
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[2])
@@ -90,7 +91,7 @@ struct BufferedAudioSuite {
         timestamp += 0.021
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[6])
         timestamp += 0.021
-        bufferedAudio.setDrift(drift: 0)
+        driftTracker.setDrift(drift: 0)
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[7])
         timestamp += 0.021
         #expect(bufferedAudio.getSampleBuffer(timestamp) === sampleBuffers[12])
@@ -157,12 +158,12 @@ struct BufferedAudioSuite {
     }
 }
 
-private func createBufferedAudio() -> BufferedAudio {
+private func createBufferedAudio(driftTracker: DriftTracker = DriftTracker(name: "")) -> BufferedAudio {
     BufferedAudio(cameraId: .init(),
                   name: "",
                   latency: 0.1,
-                  processor: nil,
-                  manualOutput: true)
+                  manualOutput: true,
+                  driftTracker: driftTracker)
 }
 
 private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer {

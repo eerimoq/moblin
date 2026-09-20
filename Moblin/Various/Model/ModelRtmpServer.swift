@@ -114,13 +114,4 @@ extension Model: RtmpServerDelegate {
     nonisolated func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
-
-    nonisolated func rtmpServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
-    }
 }

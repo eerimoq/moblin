@@ -107,13 +107,4 @@ extension Model: WhipServerDelegate {
     nonisolated func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
-
-    nonisolated func whipServerSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
-    }
 }

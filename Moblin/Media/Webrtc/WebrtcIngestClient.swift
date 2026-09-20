@@ -8,11 +8,6 @@ protocol WebrtcIngestClientDelegate: AnyObject {
     func webrtcIngestClientOnDisconnected(streamId: UUID, reason: String)
     func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func webrtcIngestClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
     func webrtcIngestClientOnGatheringComplete(streamId: UUID, localDescription: String)
     func webrtcIngestClientOnDataReceived(streamId: UUID, count: Int)
 }
@@ -103,7 +98,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
-    private var targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let iceServers: [String]
     private var videoCodec: VideoCodec = .h264
     private var videoTrackId: Int32 = -1
@@ -128,7 +122,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
         self.softwareDecoding = softwareDecoding
         self.iceServers = iceServers
         self.dispatchQueue = dispatchQueue
-        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
         videoTimestamper = TrackTimestamper(name: "\(name) video",
                                             clockRate: 90000,
                                             syncTimestamps: syncTimestamps)
@@ -410,8 +403,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }
-        targetLatenciesSynchronizer.setLatestVideoPresentationTimeStamp(presentationTimeStamp)
-        updateTargetLatencies()
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
@@ -472,8 +463,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return
         }
-        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(presentationTimeStamp)
-        updateTargetLatencies()
         delegate?.webrtcIngestClientOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 
@@ -520,17 +509,6 @@ final class WebrtcIngestClient: @unchecked Sendable {
             basePresentationTimeStamp = currentPresentationTimeStamp().seconds + latency
         }
         return basePresentationTimeStamp
-    }
-
-    private func updateTargetLatencies() {
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
-            return
-        }
-        delegate?.webrtcIngestClientSetTargetLatencies(
-            streamId: streamId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 }
 

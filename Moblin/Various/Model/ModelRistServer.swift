@@ -64,15 +64,6 @@ extension Model: RistServerDelegate {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    nonisolated func ristServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
-    }
-
     private func ristServerOnConnectedInternal(virtualDestinationPort: UInt16) {
         guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
             return

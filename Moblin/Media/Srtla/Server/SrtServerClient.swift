@@ -66,12 +66,4 @@ extension SrtServerClient: MpegTsReaderDelegate {
             sampleBuffer: sampleBuffer
         )
     }
-
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
-        server?.srtlaServer?.delegate.srtlaServerSetTargetLatencies(
-            cameraId: cameraId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
-    }
 }

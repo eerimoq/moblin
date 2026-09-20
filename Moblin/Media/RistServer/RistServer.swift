@@ -7,11 +7,6 @@ protocol RistServerDelegate: AnyObject {
     func ristServerOnDisconnected(port: UInt16, reason: String)
     func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func ristServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 let ristServerQueue = DispatchQueue(label: "com.eerimoq.rist-server")

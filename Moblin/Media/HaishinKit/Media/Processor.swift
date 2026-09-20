@@ -39,6 +39,7 @@ final class Processor: @unchecked Sendable {
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
+    private var driftTrackers: [UUID: DriftTracker] = [:]
     let delegate: any ProcessorDelegate
 
     init(delegate: any ProcessorDelegate) {
@@ -172,10 +173,6 @@ final class Processor: @unchecked Sendable {
         video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
-        video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
-    }
-
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
         audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
@@ -186,10 +183,6 @@ final class Processor: @unchecked Sendable {
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {
-        audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {
@@ -362,12 +355,17 @@ final class Processor: @unchecked Sendable {
         video.encoder
     }
 
-    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        audio.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
+    func driftTracker(cameraId: UUID, name: String) -> DriftTracker {
+        if let driftTracker = driftTrackers[cameraId] {
+            return driftTracker
+        }
+        let driftTracker = DriftTracker(name: name)
+        driftTrackers[cameraId] = driftTracker
+        return driftTracker
     }
 
-    func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
-        video.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
+    func removeDriftTracker(cameraId: UUID) {
+        driftTrackers.removeValue(forKey: cameraId)
     }
 
     private func attachCameraInternal(params: VideoUnitAttachParams) throws {

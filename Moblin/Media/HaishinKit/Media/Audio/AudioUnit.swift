@@ -192,8 +192,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 cameraId: UUID(),
                 name: "builtin",
                 latency: params.builtinDelay,
-                processor: self.processor,
-                manualOutput: true
+                manualOutput: true,
+                driftTracker: nil
             )
         }
         if let device = params.device {
@@ -270,16 +270,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        bufferedAudios[cameraId]?.setDrift(drift: drift)
-    }
-
-    func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedAudioTargetLatencyInternal(cameraId: cameraId, latency: latency)
-        }
-    }
-
     private func attachDevice(_ device: AVCaptureDevice) throws {
         session.beginConfiguration()
         defer {
@@ -317,8 +307,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             cameraId: cameraId,
             name: name,
             latency: latency,
-            processor: processor,
-            manualOutput: false
+            manualOutput: false,
+            driftTracker: processor?.driftTracker(cameraId: cameraId, name: name)
         )
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
@@ -326,14 +316,11 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func removeBufferedAudioInternal(cameraId: UUID) {
         bufferedAudios.removeValue(forKey: cameraId)?.stopOutput()
+        processor?.removeDriftTracker(cameraId: cameraId)
     }
 
     private func appendBufferedAudioSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
-    }
-
-    private func setBufferedAudioTargetLatencyInternal(cameraId: UUID, latency: Double) {
-        bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
     private func appendNewSampleBuffer(_ processor: Processor,

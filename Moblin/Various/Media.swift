@@ -1009,10 +1009,6 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
-        processor?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
-    }
-
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
@@ -1023,10 +1019,6 @@ final class Media: NSObject, @unchecked Sendable {
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         processor?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
-        processor?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
     }
 
     func attachDefaultAudioDevice(builtinDelay: Double) {

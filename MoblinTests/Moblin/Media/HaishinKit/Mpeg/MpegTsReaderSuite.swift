@@ -5,7 +5,6 @@ import Testing
 private class Mock: MpegTsReaderDelegate {
     var audioSampleBuffers: [CMSampleBuffer] = []
     var videoSampleBuffers: [CMSampleBuffer] = []
-    var targetLatencies: [(Double, Double)] = []
 
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         audioSampleBuffers.append(sampleBuffer)
@@ -13,10 +12,6 @@ private class Mock: MpegTsReaderDelegate {
 
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
         videoSampleBuffers.append(sampleBuffer)
-    }
-
-    func mpegTsReaderSetTargetLatencies(_ audioLatency: Double, _ videoLatency: Double) {
-        targetLatencies.append((audioLatency, videoLatency))
     }
 }
 
@@ -100,7 +95,6 @@ struct MpegTsReaderSuite {
         try reader.handlePacketFromClient(packet: packet)
         #expect(mock.audioSampleBuffers.count == 119)
         #expect(mock.videoSampleBuffers.count == 0)
-        #expect(mock.targetLatencies.isEmpty)
         for audioSampleBuffer in mock.audioSampleBuffers {
             let audioStreamBasicDescription = try #require(audioSampleBuffer.formatDescription?
                 .audioStreamBasicDescription)

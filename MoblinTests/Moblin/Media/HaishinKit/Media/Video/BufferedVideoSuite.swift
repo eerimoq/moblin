@@ -33,7 +33,12 @@ struct BufferedVideoSuite {
 }
 
 private func createBufferedVideo() -> BufferedVideo {
-    BufferedVideo(cameraId: .init(), name: "", update: true, latency: 0.1, processor: nil)
+    BufferedVideo(cameraId: .init(),
+                  name: "",
+                  update: true,
+                  latency: 0.1,
+                  processor: nil,
+                  driftTracker: DriftTracker(name: ""))
 }
 
 private func createVideoSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer {

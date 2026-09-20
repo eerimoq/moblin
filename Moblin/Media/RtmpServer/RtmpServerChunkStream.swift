@@ -236,8 +236,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         {
             client.latency = stream.latency
             client.cameraId = stream.id
-            client.targetLatenciesSynchronizer =
-                TargetLatenciesSynchronizer(targetLatency: stream.latencySeconds())
             isStreamKeyConfigured = true
         } else {
             isStreamKeyConfigured = false
@@ -410,9 +408,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         guard let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: pcmAudioBuffer) else {
             return
         }
-        client.targetLatenciesSynchronizer
-            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        client.updateTargetLatencies()
         client.handleAudioBuffer(sampleBuffer: sampleBuffer)
     }
 
@@ -576,9 +571,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         else {
             return
         }
-        client.targetLatenciesSynchronizer
-            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        client.updateTargetLatencies()
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
