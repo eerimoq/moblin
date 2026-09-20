@@ -2,6 +2,44 @@ import AVFoundation
 @testable import Moblin
 import Testing
 
+private func twitchEmoteIds(_ segments: [ChatPostSegment]) -> [String?] {
+    segments.map { segment in
+        guard let path = segment.url?.still?.path else {
+            return nil
+        }
+        return path.split(separator: "/").dropFirst(2).first.map(String.init)
+    }
+}
+
+@MainActor
+private final class Delegate: TwitchChatDelegate {
+    var messages: [(displayName: String, segments: [ChatPostSegment], isAction: Bool)] = []
+
+    func twitchChatMakeErrorToast(title _: String, subTitle _: String?) {}
+
+    func twitchChatAppendMessage(
+        messageId _: String?,
+        displayName: String,
+        user _: String,
+        userId _: String?,
+        userColor _: RgbColor?,
+        userBadges _: [URL],
+        segments: [ChatPostSegment],
+        isAction: Bool,
+        isSubscriber _: Bool,
+        isModerator _: Bool,
+        bits _: String?,
+        highlight _: ChatHighlight?,
+        sourceChannelIcon _: URL?
+    ) {
+        messages.append((displayName, segments, isAction))
+    }
+
+    func twitchChatDeleteMessage(messageId _: String) {}
+
+    func twitchChatDeleteUser(userId _: String) {}
+}
+
 struct TwitchChatSuite {
     @Test
     func emptyMessage() {
@@ -296,6 +334,52 @@ struct TwitchChatSuite {
         #expect(message.messageId == "announcement")
         #expect(message.id == "e60e8de0-eb07-49b1-aa77-96cb5f5fabb1")
         #expect(message.badges == ["broadcaster/1", "subscriber/0", "sub-gifter/1"])
+    }
+
+    @Test
+    @MainActor
+    func meMessageIsAction() throws {
+        let delegate = Delegate()
+        let chat = TwitchChat(delegate: delegate)
+        try chat.webSocketClientReceiveMessage(
+            WebSocketClient(url: #require(URL(string: "wss://irc-ws.chat.twitch.tv"))),
+            string: """
+            @badge-info=subscriber/24;\
+            badges=broadcaster/1,subscriber/0,sub-gifter/1;\
+            client-nonce=cf55e555054a4114a1f3b40af7cc1183;\
+            color=;\
+            display-name=eerimoq;\
+            emotes=emotesv2_1927bf80a13d46049223d39d14ea1e40:8-23/425618:2-4;\
+            first-msg=0;\
+            flags=;\
+            id=817ca58d-0717-47dd-9151-23b195eaf3b7;\
+            mod=0;\
+            returning-chatter=0;\
+            room-id=63482386;\
+            subscriber=1;\
+            tmi-sent-ts=1789920112420;\
+            turbo=0;\
+            user-id=63482386;\
+            user-type= \
+            :eerimoq!eerimoq@eerimoq.tmi.twitch.tv \
+            PRIVMSG \
+            #eerimoq \
+            :\u{01}ACTION 1 LUL 2 eerimoPartyDance\u{01}
+            """
+        )
+        #expect(delegate.messages.count == 1)
+        #expect(delegate.messages.first?.isAction == true)
+        #expect(delegate.messages.first?.displayName == "eerimoq")
+        let segments = delegate.messages.first?.segments ?? []
+        #expect(texts(segments) == ["1 ", nil, "", "2 ", nil, ""])
+        #expect(twitchEmoteIds(segments) == [
+            nil,
+            "425618",
+            nil,
+            nil,
+            "emotesv2_1927bf80a13d46049223d39d14ea1e40",
+            nil,
+        ])
     }
 
     @Test
