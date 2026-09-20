@@ -461,7 +461,7 @@ final class KickPusher: NSObject {
         delegate?.kickPusherKicksGifted(event: event)
     }
 
-    private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
+    func makeChatPostSegments(content: String) -> [ChatPostSegment] {
         var id = 0
         return createKickSegments(message: content, emotesManager: emotes, id: &id)
     }

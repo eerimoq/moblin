@@ -526,6 +526,19 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
             .monospaced
         }
     }
+
+    func toUiKit() -> UIFontDescriptor.SystemDesign {
+        switch self {
+        case .default:
+            .default
+        case .serif:
+            .serif
+        case .rounded:
+            .rounded
+        case .monospaced:
+            .monospaced
+        }
+    }
 }
 
 enum SettingsFontWeight: String, Codable, CaseIterable {
@@ -545,6 +558,17 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     }
 
     func toSystem() -> Font.Weight {
+        switch self {
+        case .regular:
+            .regular
+        case .light:
+            .light
+        case .bold:
+            .bold
+        }
+    }
+
+    func toUiKit() -> UIFont.Weight {
         switch self {
         case .regular:
             .regular

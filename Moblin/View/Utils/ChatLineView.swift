@@ -32,6 +32,8 @@ struct ChatLineContent: Equatable {
     var backgroundColor: UIColor?
     var leadingPadding: CGFloat = 0
     var topAligned = false
+    var fontWeight: UIFont.Weight = .regular
+    var fontDesign: UIFontDescriptor.SystemDesign = .default
 }
 
 private let strikethroughKey = NSAttributedString.Key("moblinChatLineStrikethrough")
@@ -79,13 +81,17 @@ private struct ChatLineLayout {
     let metrics: [ImageRunMetrics]
 }
 
-private func makeFont(size: CGFloat, bold: Bool, italic: Bool) -> UIFont {
-    let font = UIFont.systemFont(ofSize: size, weight: bold ? .bold : .regular)
-    guard italic else {
+private func makeFont(content: ChatLineContent, style: ChatLineTextStyle) -> UIFont {
+    let size = content.fontSize
+    var font = UIFont.systemFont(ofSize: size, weight: style.bold ? .bold : content.fontWeight)
+    if content.fontDesign != .default, let descriptor = font.fontDescriptor.withDesign(content.fontDesign) {
+        font = UIFont(descriptor: descriptor, size: size)
+    }
+    guard style.italic else {
         return font
     }
     var traits: UIFontDescriptor.SymbolicTraits = [.traitItalic]
-    if bold {
+    if style.bold {
         traits.insert(.traitBold)
     }
     guard let descriptor = font.fontDescriptor.withSymbolicTraits(traits) else {
@@ -113,7 +119,7 @@ private func makeLayout(content: ChatLineContent, availableWidth: CGFloat) -> Ch
                 text = text.replacingOccurrences(of: " ", with: "\u{00A0}")
             }
             var attributes: [NSAttributedString.Key: Any] = [
-                .font: makeFont(size: content.fontSize, bold: style.bold, italic: style.italic),
+                .font: makeFont(content: content, style: style),
                 .foregroundColor: style.color,
                 strikethroughKey: style.strikethrough,
             ]

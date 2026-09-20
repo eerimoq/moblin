@@ -670,9 +670,9 @@ extension Model {
         hypeTrain.progress = nil
     }
 
-    private func makeTwitchAlertSegments(text: String,
-                                         fragments: [TwitchEventSubMessageFragment] = [],
-                                         bits: String? = nil) -> [ChatPostSegment]
+    func makeTwitchAlertSegments(text: String,
+                                 fragments: [TwitchEventSubMessageFragment] = [],
+                                 bits: String? = nil) -> [ChatPostSegment]
     {
         twitchChat?.createSegments(text: text, fragments: fragments, bits: bits)
             ?? makeChatPostTextSegments(text: text)

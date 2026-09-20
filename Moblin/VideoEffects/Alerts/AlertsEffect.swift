@@ -3,12 +3,6 @@ import Collections
 import MetalPetal
 import SwiftUI
 import Vision
-import WrappingHStack
-
-private struct Word: Identifiable {
-    let id: UUID = .init()
-    let text: String
-}
 
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
@@ -31,6 +25,10 @@ enum AlertsEffectAlert {
 
 protocol AlertsEffectDelegate: AnyObject {
     func alertsMakeErrorToast(title: String)
+    @MainActor func alertsMakeTwitchSegments(text: String,
+                                             fragments: [TwitchEventSubMessageFragment],
+                                             bits: String?) -> [ChatPostSegment]
+    @MainActor func alertsMakeKickSegments(text: String) -> [ChatPostSegment]
 }
 
 private struct Pipeline {
@@ -76,6 +74,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var aiBaseUrl: URL?
     private var pipeline = Pipeline()
+    private var messageLineView: ChatLineUiView?
 
     init(
         settings: SettingsWidgetAlerts,
@@ -281,12 +280,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         media: AlertsEffectMedia,
         username: String,
         message: String,
+        segments: [ChatPostSegment]? = nil,
         settings: SettingsWidgetAlertsAlert,
         delayAfterPlaying: Double = 3.0
     ) {
         isPlaying = true
         self.delayAfterPlaying = delayAfterPlaying
-        let messageImage = renderMessage(username: username, message: message, settings: settings)
+        setMessage(username: username,
+                   segments: segments ?? makeChatPostTextSegments(text: message),
+                   settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
         let player = media.getPlayer()
         let ai = self.settings.ai
@@ -306,7 +308,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     self.play(player: player,
                               username: username,
                               message: message,
-                              messageImage: messageImage,
                               landmarkSettings: landmarkSettings,
                               settings: settings)
                 }
@@ -314,7 +315,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             play(player: player,
                  username: username,
                  message: message,
-                 messageImage: messageImage,
                  landmarkSettings: landmarkSettings,
                  settings: settings)
         }
@@ -323,13 +323,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private func play(player: AlertsEffectPlayer,
                       username: String,
                       message: String,
-                      messageImage: EffectImageCiImage?,
                       landmarkSettings: AlertsEffectLandmarkSettings?,
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
             self.pipeline.images = player.images
-            self.pipeline.messageImage = messageImage
             self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
@@ -372,36 +370,66 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     @MainActor
-    private func renderMessage(username: String,
-                               message: String,
-                               settings: SettingsWidgetAlertsAlert) -> EffectImageCiImage?
-    {
-        let words = message.split(separator: " ").map { Word(text: String($0)) }
-        let message = WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Text("\(username) ")
-                .foregroundStyle(settings.accentColor.color())
-            ForEach(words) { word in
-                Text("\(word.text) ")
-                    .foregroundStyle(settings.textColor.color())
+    private func setMessage(
+        username: String,
+        segments: [ChatPostSegment],
+        settings: SettingsWidgetAlertsAlert
+    ) {
+        let style = ChatLineStyle(fontSize: CGFloat(settings.fontSize),
+                                  borderColor: .black,
+                                  borderWidth: 2,
+                                  leadingPadding: 0,
+                                  fontWeight: settings.fontWeight.toUiKit(),
+                                  fontDesign: settings.fontDesign.toUiKit())
+        let textColor = settings.textColor.uiColor()
+        var items = [style.textItem(
+            text: "\(username) ",
+            color: settings.accentColor.uiColor(),
+            deleted: false
+        )]
+        for segment in segments {
+            if let text = segment.text {
+                items.append(style.textItem(text: text, color: textColor, deleted: false))
+            }
+            if let url = segment.url?.url(animated: false) {
+                items.append(style.emoteItem(url: url, deleted: false))
+                items.append(style.textItem(text: " ", color: textColor, deleted: false))
             }
         }
-        .font(.system(
-            size: CGFloat(settings.fontSize),
-            weight: settings.fontWeight.toSystem(),
-            design: settings.fontDesign.toSystem()
-        ))
-        .stroke(color: .black, width: 2)
-        .frame(width: 1000)
-        let renderer = ImageRenderer(content: message)
-        guard let image = renderer.uiImage, let image = CIImage(image: image) else {
-            return nil
+        getMessageLineView().setContent(style.content(items: items))
+        updateMessageImage()
+    }
+
+    @MainActor
+    private func getMessageLineView() -> ChatLineUiView {
+        if let messageLineView {
+            return messageLineView
         }
-        return image.toEffectImage(isOpaque: false)
+        let lineView = ChatLineUiView()
+        lineView.onImageLoaded = { [weak self] in
+            self?.updateMessageImage()
+        }
+        messageLineView = lineView
+        return lineView
+    }
+
+    @MainActor
+    private func updateMessageImage() {
+        let lineView = getMessageLineView()
+        let size = lineView.size(availableWidth: 1000)
+        lineView.frame = CGRect(origin: .zero, size: size)
+        lineView.layoutIfNeeded()
+        lineView.layer.displayIfNeeded()
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            lineView.layer.render(in: context.cgContext)
+        }
+        let messageImage = image.cgImage.map { CIImage(cgImage: $0).toEffectImage(isOpaque: false) }
+        processorPipelineQueue.async {
+            self.pipeline.messageImage = messageImage
+        }
     }
 
     private func isInRectangle(_ x: Double,
@@ -709,21 +737,24 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
-        let message = if let streakMonths = event.streak_months {
+        let text = if let streakMonths = event.streak_months {
             String(localized: """
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
-            \(streakMonths) in a row! \(event.message.text)
+            \(streakMonths) in a row!
             """)
         } else {
-            String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """)
+            String(
+                localized: "just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months!"
+            )
         }
+        let message = event.message.text.isEmpty ? text : "\(text) \(event.message.text)"
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
             message: message,
+            segments: delegate?.alertsMakeTwitchSegments(text: text,
+                                                         fragments: event.message.fragments,
+                                                         bits: nil),
             settings: settings.twitch.subscriptions
         )
     }
@@ -791,10 +822,12 @@ extension AlertsEffect {
                 return
             }
             let bits = countFormatter.format(event.bits)
+            let message = String(localized: "cheered \(bits) bits! \(event.message)")
             play(
                 media: twitchCheersMedias[index],
                 username: event.user_name ?? "Anonymous",
-                message: String(localized: "cheered \(bits) bits! \(event.message)"),
+                message: message,
+                segments: delegate?.alertsMakeTwitchSegments(text: message, fragments: [], bits: ""),
                 settings: cheerBit.alert
             )
             break
@@ -871,6 +904,7 @@ extension AlertsEffect {
         play(media: kickRewardMedia,
              username: event.username,
              message: message,
+             segments: delegate?.alertsMakeKickSegments(text: message),
              settings: settings.kick.rewards)
     }
 

@@ -3434,6 +3434,17 @@ extension Model: AlertsEffectDelegate {
     nonisolated func alertsMakeErrorToast(title: String) {
         makeErrorToastMain(title: title)
     }
+
+    func alertsMakeTwitchSegments(text: String,
+                                  fragments: [TwitchEventSubMessageFragment],
+                                  bits: String?) -> [ChatPostSegment]
+    {
+        makeTwitchAlertSegments(text: text, fragments: fragments, bits: bits)
+    }
+
+    func alertsMakeKickSegments(text: String) -> [ChatPostSegment] {
+        kickPusher?.makeChatPostSegments(content: text) ?? makeChatPostTextSegments(text: text)
+    }
 }
 
 extension Model: UIDocumentPickerDelegate {
