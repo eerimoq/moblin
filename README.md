@@ -566,3 +566,43 @@ It's built with SolidJS.
    `just web-remote-control-frontend-build`
 
 4. Done!
+
+## Twitch login callback server
+
+Twitch login uses `ASWebAuthenticationSession` with an `https://mys-lang.org/auth` callback. For iOS to
+hand the callback to Moblin, `mys-lang.org` must serve an Apple App Site Association file that lists
+Moblin's app identifier, and Moblin's entitlements must contain `webcredentials:mys-lang.org` (they
+already do).
+
+1. Create `.well-known/apple-app-site-association` (no file extension) with
+   the following content.
+
+   ```json
+   {
+     "webcredentials": {
+       "apps": [
+         "L82N7LD4N5.com.eerimoq.Mobs"
+       ]
+     }
+   }
+   ```
+
+2. Serve it over HTTPS as `application/json` in nginx.
+
+   ```nginx
+   location /.well-known/apple-app-site-association {
+       default_type application/json;
+   }
+   ```
+
+3. Reload nginx.
+
+   `sudo nginx -s reload`
+
+4. Verify that it is served.
+
+   `curl -i https://mys-lang.org/.well-known/apple-app-site-association`
+
+5. Done!
+
+Apple's CDN caches the file, so it may take a while before a change reaches devices.
