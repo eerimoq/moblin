@@ -243,6 +243,11 @@ private struct ActionView: View {
                                 Text($0.toString())
                             }
                         }
+                        .onChange(of: action.event) { _ in
+                            action.eventMinimumAmount = 0
+                            action.eventText = ""
+                            action.eventSceneId = nil
+                        }
                         if let title = action.event.minimumAmountTitle() {
                             TextEditNavigationView(
                                 title: title,
