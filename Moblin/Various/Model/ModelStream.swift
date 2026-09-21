@@ -977,12 +977,6 @@ extension Model: MediaDelegate {
         }
     }
 
-    nonisolated func mediaOnAudioMuteChange() {
-        DispatchQueue.main.async {
-            self.updateAudioLevel()
-        }
-    }
-
     nonisolated func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         DispatchQueue.main.async {
             self.speechToText?.append(sampleBuffer: sampleBuffer)

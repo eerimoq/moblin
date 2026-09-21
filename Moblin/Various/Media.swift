@@ -19,7 +19,6 @@ protocol MediaDelegate: AnyObject {
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
                             completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
-    func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
     func mediaOnAttachCameraError()
