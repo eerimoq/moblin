@@ -81,6 +81,7 @@ extension MoblinkScanner: @MainActor NetServiceDelegate {
         guard let discoveredService = services.first(where: { $0.service == service }) else {
             return
         }
+        discoveredService.urls.removeAll()
         for address in service.addresses ?? [] {
             let (address, ipv6) = getAddressInfo(address: address)
             if let url = formatWebsocketUrl(address: address, ipv6: ipv6, port: service.port) {
