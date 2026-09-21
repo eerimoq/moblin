@@ -9,6 +9,7 @@ struct YouTubeApiLiveBroadcastThumbnails: Codable {
 }
 
 struct YouTubeApiLiveBroadcastSnippet: Codable {
+    let channelId: String?
     let title: String
     let thumbnails: YouTubeApiLiveBroadcastThumbnails
     let scheduledStartTime: String?
