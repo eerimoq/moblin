@@ -114,15 +114,17 @@ final class Recorder: NSObject, @unchecked Sendable {
     }
 
     func setUrl(url: URL?) {
-        fileWriterQueue.async {
-            if let url {
-                try? Data().write(to: url)
-                self.fileHandle = FileHandle(forWritingAtPath: url.path)
-                if let initSegment = self.initSegment {
-                    self.fileHandle?.write(initSegment)
+        queue.async {
+            self.fileWriterQueue.async {
+                if let url {
+                    try? Data().write(to: url)
+                    self.fileHandle = FileHandle(forWritingAtPath: url.path)
+                    if let initSegment = self.initSegment {
+                        self.fileHandle?.write(initSegment)
+                    }
+                } else {
+                    self.fileHandle = nil
                 }
-            } else {
-                self.fileHandle = nil
             }
         }
     }
@@ -490,9 +492,12 @@ final class Recorder: NSObject, @unchecked Sendable {
             reset()
             return
         }
+        let finished = DispatchSemaphore(value: 0)
         writer.finishWriting {
-            self.delegate?.recorderFinished()
+            finished.signal()
         }
+        finished.wait()
+        delegate?.recorderFinished()
         reset()
     }
 
