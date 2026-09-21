@@ -11,7 +11,6 @@ extension Model {
         guard !isChatPhone() else {
             return
         }
-        macrosEventOccurred(MacroEvent(event: .startRecording))
         setIsRecording(value: true)
         if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {
@@ -21,7 +20,9 @@ extension Model {
                                subTitle: String(localized: "Is the disk connected?"))
             }
             setIsRecording(value: false)
+            return
         }
+        macrosEventOccurred(MacroEvent(event: .startRecording))
     }
 
     func stopRecording(toastTitle: String? = nil, toastSubTitle: String? = nil) {
