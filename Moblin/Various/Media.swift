@@ -3,18 +3,6 @@ import Network
 import SwiftUI
 import VideoToolbox
 
-private func isMuted(level: Float) -> Bool {
-    level.isNaN
-}
-
-private func becameMuted(old: Float, new: Float) -> Bool {
-    !isMuted(level: old) && isMuted(level: new)
-}
-
-private func becameUnmuted(old: Float, new: Float) -> Bool {
-    isMuted(level: old) && !isMuted(level: new)
-}
-
 protocol MediaDelegate: AnyObject {
     func mediaOnSrtConnected()
     func mediaOnSrtDisconnected(_ reason: String)
@@ -1109,15 +1097,7 @@ final class Media: NSObject, @unchecked Sendable {
 extension Media: ProcessorDelegate {
     func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double) {
         DispatchQueue.main.async {
-            if becameMuted(old: self.currentAudioLevel, new: audioLevel) || becameUnmuted(
-                old: self.currentAudioLevel,
-                new: audioLevel
-            ) {
-                self.currentAudioLevel = audioLevel
-                self.delegate.mediaOnAudioMuteChange()
-            } else {
-                self.currentAudioLevel = audioLevel
-            }
+            self.currentAudioLevel = audioLevel
             self.numberOfAudioChannels = numberOfAudioChannels
             self.audioSampleRate = sampleRate
         }

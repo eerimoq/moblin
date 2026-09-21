@@ -273326,6 +273326,7 @@
       }
     },
     "Unknown," : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

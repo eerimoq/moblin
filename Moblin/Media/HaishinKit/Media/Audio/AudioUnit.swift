@@ -354,7 +354,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             )
             updateAudioLevel(
                 sampleBuffer: sampleBuffer,
-                audioLevel: muted ? .nan : audioLevel,
+                audioLevel: audioLevel,
                 numberOfAudioChannels: numberOfAudioChannels
             )
         }

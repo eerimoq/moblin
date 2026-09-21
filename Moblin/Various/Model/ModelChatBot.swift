@@ -275,7 +275,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
-            guard !self.isMuteOn else {
+            guard !self.audio.muted else {
                 return
             }
             self.makeToast(
@@ -292,7 +292,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
-            guard self.isMuteOn else {
+            guard self.audio.muted else {
                 return
             }
             self.makeToast(

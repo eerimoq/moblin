@@ -628,7 +628,6 @@ final class Model: NSObject, ObservableObject {
     var enabledChatEffects: [ChatEffect] = []
     var enabledChatEmoteComboEffects: [ChatEmoteComboEffect] = []
     var speechToTextAlertMatchOffset = 0
-    var isMuteOn = false
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
     nonisolated let imageStorage = ImageStorage()
@@ -2292,11 +2291,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setMuteOn(value: Bool) {
-        if value {
-            isMuteOn = true
-        } else {
-            isMuteOn = false
-        }
+        audio.muted = value
         updateMute()
         setQuickButton(type: .mute, isOn: value)
     }
@@ -3059,23 +3054,23 @@ final class Model: NSObject, ObservableObject {
     }
 
     func toggleMute() {
-        isMuteOn.toggle()
+        audio.muted.toggle()
         updateMute()
     }
 
     func setMuted(value: Bool) {
-        isMuteOn = value
+        audio.muted = value
         updateMute()
     }
 
     func updateMute() {
-        media.setMute(on: isMuteOn)
+        media.setMute(on: audio.muted)
         if isWatchLocal() {
-            sendIsMutedToWatch(isMuteOn: isMuteOn)
+            sendIsMutedToWatch(isMuteOn: audio.muted)
         }
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
-        remoteControlStateChanged(state: .init(muted: isMuteOn))
+        remoteControlStateChanged(state: .init(muted: audio.muted))
     }
 
     private func makeFlameRedToast() {

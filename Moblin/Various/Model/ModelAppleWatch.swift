@@ -42,7 +42,7 @@ extension Model {
             sendThermalStateToWatch(thermalState: statusOther.thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)
-            sendIsMutedToWatch(isMuteOn: isMuteOn)
+            sendIsMutedToWatch(isMuteOn: audio.muted)
             sendViewerCountWatch()
             sendScoreboardPlayersToWatch()
             if let widget = getEnabledScoreboardWidgetsInSelectedScene()

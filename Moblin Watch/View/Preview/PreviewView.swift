@@ -2,10 +2,11 @@ import Combine
 import SwiftUI
 
 private struct AudioLevelView: View {
+    @ObservedObject var control: Control
     let level: Float
 
     var body: some View {
-        if level.isNaN {
+        if control.isMuted {
             CompactAudioLevelIconView(
                 name: "microphone.slash",
                 foregroundColor: .white,
@@ -59,7 +60,7 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusAudioLevel() {
-            AudioLevelView(level: preview.audioLevel)
+            AudioLevelView(control: model.control, level: preview.audioLevel)
         }
     }
 }

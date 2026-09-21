@@ -153,12 +153,6 @@ private struct RemoteControlAudioLevelView: View {
                     } else {
                         Text("Muted,")
                     }
-                } else if level == .infinity {
-                    if channels == nil {
-                        Text("Unknown")
-                    } else {
-                        Text("Unknown,")
-                    }
                 } else {
                     HStack(spacing: 0) {
                         if isClipping() {

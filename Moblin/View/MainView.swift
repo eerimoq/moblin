@@ -258,10 +258,10 @@ private struct InstantReplayCountdownView: View {
 }
 
 private struct MutedView: View {
-    @ObservedObject var level: AudioLevel
+    @ObservedObject var audio: AudioProvider
 
     var body: some View {
-        if level.isMuted() {
+        if audio.muted {
             Image(systemName: "microphone.slash")
                 .font(.system(size: 80))
                 .foregroundStyle(.red)
@@ -494,7 +494,7 @@ struct MainView: View {
                 if model.showDrawOnStream, model.stream.portrait {
                     DrawOnStreamView(model: model)
                 }
-                MutedView(level: model.audio.level)
+                MutedView(audio: model.audio)
                 PhotoShootView(enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,
@@ -550,7 +550,7 @@ struct MainView: View {
                 if model.showDrawOnStream {
                     DrawOnStreamView(model: model)
                 }
-                MutedView(level: model.audio.level)
+                MutedView(audio: model.audio)
                 PhotoShootView(enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,

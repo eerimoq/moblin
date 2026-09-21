@@ -4,19 +4,12 @@ import SwiftUI
 @MainActor
 class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel
-
-    func isMuted() -> Bool {
-        level.isNaN
-    }
-
-    func isUnknown() -> Bool {
-        level == .infinity
-    }
 }
 
 @MainActor
 class AudioProvider: ObservableObject {
     let level = AudioLevel()
+    @Published var muted: Bool = false
     @Published var numberOfChannels: Int = 0
     @Published var sampleRate: Double = 0
 }
@@ -276,12 +269,7 @@ extension Model {
         if newAudioLevel == audio.level.level {
             return
         }
-        if abs(audio.level.level - newAudioLevel) > 7
-            || newAudioLevel.isNaN
-            || newAudioLevel == .infinity
-            || audio.level.level.isNaN
-            || audio.level.level == .infinity
-        {
+        if abs(audio.level.level - newAudioLevel) > 7 {
             audio.level.level = newAudioLevel
             if isWatchLocal() {
                 sendAudioLevelToWatch(audioLevel: audio.level.level)

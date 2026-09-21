@@ -36,7 +36,7 @@ extension Model {
             area: placemark?.subAdministrativeArea,
             city: placemark?.locality,
             neighborhood: placemark?.subLocality,
-            muted: isMuteOn,
+            muted: audio.muted,
             heartRates: heartRates,
             activeEnergyBurned: workoutActiveEnergyBurned,
             workoutDistance: workoutDistance,

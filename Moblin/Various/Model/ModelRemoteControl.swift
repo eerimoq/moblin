@@ -419,7 +419,7 @@ extension Model {
         general.wiFiSsid = currentWiFiSsid
         general.isLive = isLive
         general.isRecording = isRecording
-        general.isMuted = isMuteOn
+        general.isMuted = audio.muted
         return general
     }
 
@@ -450,17 +450,15 @@ extension Model {
 
     private func remoteControlStreamerCreateStatusTopRight() -> RemoteControlStatusTopRight {
         var topRight = RemoteControlStatusTopRight()
-        let level = formatAudioLevel(level: audio.level.level) +
+        let level = formatAudioLevel(level: audio.level.level, muted: audio.muted) +
             formatAudioLevelChannels(channels: audio.numberOfChannels)
         topRight.audioLevel = RemoteControlStatusItem(message: level)
         topRight.audioInfo = .init(
             audioLevel: .unknown,
             numberOfAudioChannels: audio.numberOfChannels
         )
-        if audio.level.level.isNaN {
+        if audio.muted {
             topRight.audioInfo!.audioLevel = .muted
-        } else if audio.level.level.isInfinite {
-            topRight.audioInfo!.audioLevel = .unknown
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
         }
@@ -599,7 +597,7 @@ extension Model {
         state.debugLogging = database.debug.debugLogging
         state.streaming = isLive
         state.recording = isRecording
-        state.muted = isMuteOn
+        state.muted = audio.muted
         state.stealthMode = showStealthMode
         state.previewStream = isPreviewStreaming
         state.torchOn = streamOverlay.isTorchOn

@@ -27,9 +27,7 @@ struct CompactAudioLevelIconView: View {
 }
 
 func compactAudioLevelColors(level: Float) -> (Color, Color) {
-    if level == .infinity {
-        (.brown, backgroundColor)
-    } else if level > clippingThresholdDb {
+    if level > clippingThresholdDb {
         (.white, .red)
     } else if level > redThresholdDb {
         (.red, backgroundColor)
