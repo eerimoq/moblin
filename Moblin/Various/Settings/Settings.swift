@@ -2399,9 +2399,7 @@ final class Settings {
             if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
                 stream.twitchAccessToken = accessToken
             }
-            if !stream.kickAccessToken.isEmpty {
-                storeKickAccessTokenInKeychain(streamId: stream.id, accessToken: stream.kickAccessToken)
-            } else if let accessToken = loadKickAccessTokenFromKeychain(streamId: stream.id) {
+            if let accessToken = loadKickAccessTokenFromKeychain(streamId: stream.id) {
                 stream.kickAccessToken = accessToken
             }
         }

@@ -1533,6 +1533,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickChatroomChannelId = container.decode(.kickChatroomChannelId, String?.self, nil)
         kickSlug = container.decode(.kickSlug, String?.self, nil)
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
+        if !kickAccessToken.isEmpty {
+            storeKickAccessTokenInKeychain(streamId: id, accessToken: kickAccessToken)
+        }
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
         kickNotLoggedInCount = container.decode(.kickNotLoggedInCount, Int.self, 0)
