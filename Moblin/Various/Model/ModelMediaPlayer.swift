@@ -18,6 +18,13 @@ extension Model {
         removeUnusedMediaPlayerFiles()
     }
 
+    func reloadMediaPlayersAfterSettingsImport() {
+        for playerId in Array(mediaPlayers.keys) {
+            deleteMediaPlayer(playerId: playerId)
+        }
+        initMediaPlayers()
+    }
+
     private func removeUnusedMediaPlayerFiles() {
         for mediaId in mediaStorage.ids() {
             var found = false

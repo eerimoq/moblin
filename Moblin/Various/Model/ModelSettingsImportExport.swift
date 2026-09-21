@@ -91,6 +91,7 @@ extension Model {
         reloadGoProDevicesAfterSettingsImport()
         reloadCatPrintersAfterSettingsImport()
         reloadWorkoutDevicesAfterSettingsImport()
+        reloadMediaPlayersAfterSettingsImport()
         reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
