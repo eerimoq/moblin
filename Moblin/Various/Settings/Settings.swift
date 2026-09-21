@@ -2282,13 +2282,13 @@ final class Settings {
     }
 
     func store() {
+        let database = extractSensitiveData(fromDatabase: realDatabase)
         do {
-            let database = extractSensitiveData(fromDatabase: realDatabase)
             try storage.set(realDatabase.toString())
-            insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
         } catch {
             logger.info("settings: Failed to store.")
         }
+        insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
     }
 
     func reset() {
