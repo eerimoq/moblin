@@ -2298,13 +2298,13 @@ final class Settings {
     }
 
     func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
-        removeFilesAndFolders()
         let root = URL.documentsDirectory
         DispatchQueue.global().async {
             let settingsJson = root.appendingPathComponent(settingsJsonName)
             try? FileManager.default.removeItem(at: settingsJson)
             do {
                 try ZipArchiveReader.withFile(url.path) { reader in
+                    self.removeFilesAndFolders()
                     try reader.extract(to: .init(root.path()))
                 }
             } catch {
@@ -2327,9 +2327,9 @@ final class Settings {
     }
 
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
-        removeFilesAndFolders()
         do {
             try tryLoadAndMigrate(settings: settings)
+            removeFilesAndFolders()
             store()
             onCompleted(nil)
         } catch {
@@ -2388,7 +2388,7 @@ final class Settings {
         }
     }
 
-    private func removeFilesAndFolders() {
+    private nonisolated func removeFilesAndFolders() {
         for file in exportFiles {
             file.remove()
         }
