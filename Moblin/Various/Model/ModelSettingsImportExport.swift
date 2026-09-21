@@ -92,6 +92,10 @@ extension Model {
         reloadCatPrintersAfterSettingsImport()
         reloadWorkoutDevicesAfterSettingsImport()
         reloadMediaPlayersAfterSettingsImport()
+        reloadMoblinkRelay()
+        reloadMoblinkStreamer()
+        reloadTeslaVehicle()
+        setSelectedStreamDeck()
         reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
