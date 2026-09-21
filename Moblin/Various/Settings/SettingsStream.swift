@@ -1535,6 +1535,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
         if !kickAccessToken.isEmpty {
             storeKickAccessTokenInKeychain(streamId: id, accessToken: kickAccessToken)
+            kickAccessToken = ""
         }
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
