@@ -155,12 +155,18 @@ private final class RtcTrack {
             }
         } catch {
             rtcDeleteTrack(trackId)
+            Unmanaged.passUnretained(self).release()
             throw error
         }
     }
 
     deinit {
         rtcDeleteTrack(trackId)
+    }
+
+    func close() {
+        rtcDeleteTrack(trackId)
+        Unmanaged.passUnretained(self).release()
     }
 
     func setTimestamp(presentationTimeStamp: Double) throws {
@@ -286,12 +292,14 @@ private final class PeerConnection {
             })
         } catch {
             rtcDeletePeerConnection(peerConnectionId)
+            Unmanaged.passUnretained(self).release()
             throw error
         }
     }
 
     func close() {
         rtcDeletePeerConnection(peerConnectionId)
+        Unmanaged.passUnretained(self).release()
     }
 
     func addTrack(config: RtcTrackConfig, streamId: String) throws -> RtcTrack {
@@ -517,10 +525,12 @@ final class WhipStream: @unchecked Sendable {
         }
         sessionUrl = nil
         endpointUrl = nil
+        videoTrack?.close()
+        videoTrack = nil
+        audioTrack?.close()
+        audioTrack = nil
         peerConnection?.close()
         peerConnection = nil
-        videoTrack = nil
-        audioTrack = nil
         connected = false
         offerSent = false
         connectTimer.stop()
