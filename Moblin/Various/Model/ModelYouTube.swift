@@ -55,14 +55,22 @@ extension Model {
             return
         }
         #endif
-        youTube.session = OIDAuthState.authState(
-            byPresenting: request,
-            externalUserAgent: userAgent
-        ) { authState, _ in
-            stream.youTubeAuthState = authState
-            stream.youTubeWantsToBeLoggedIn = authState != nil
-            stream.youTubeNotLoggedInCount = 0
-            self.youTube.session = nil
+        youTube.session = OIDAuthState.authState(byPresenting: request,
+                                                 externalUserAgent: userAgent,
+                                                 callback: makeYouTubeSignInCallback(stream: stream))
+    }
+
+    private nonisolated func makeYouTubeSignInCallback(stream: SettingsStream)
+        -> OIDAuthStateAuthorizationCallback
+    {
+        { authState, _ in
+            nonisolated(unsafe) let authState = authState
+            DispatchQueue.main.async {
+                stream.youTubeAuthState = authState
+                stream.youTubeWantsToBeLoggedIn = authState != nil
+                stream.youTubeNotLoggedInCount = 0
+                self.youTube.session = nil
+            }
         }
     }
 
