@@ -1097,6 +1097,15 @@ class SettingsWidgetAlertFacePosition: Codable {
     var y: Double = 0.25
     var width: Double = 0.5
     var height: Double = 0.5
+
+    func clone() -> SettingsWidgetAlertFacePosition {
+        let new = SettingsWidgetAlertFacePosition()
+        new.x = x
+        new.y = y
+        new.width = width
+        new.height = height
+        return new
+    }
 }
 
 enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
@@ -1236,7 +1245,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
         new.textToSpeechDelay = textToSpeechDelay
         new.textToSpeechLanguageVoices = textToSpeechLanguageVoices
         new.positionType = positionType
-        new.facePosition = facePosition
+        new.facePosition = facePosition.clone()
         return new
     }
 }
