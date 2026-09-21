@@ -127,13 +127,17 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             newLocation: newLocation,
             zoomOutFactor: zoomOutFactor
         )
+        self.mapSnapshotter?.cancel()
         self.mapSnapshotter = mapSnapshotter
-        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        mapSnapshotter.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
                 return
             }
             let mapSnapshot = CIImage(cgImage: image).toEffectImage(isOpaque: true)
             processorPipelineQueue.async {
+                guard mapSnapshotter === self.mapSnapshotter else {
+                    return
+                }
                 self.mapSnapshot = mapSnapshot
                 self.dotOffsetRatio = dotOffsetRatio
             }
