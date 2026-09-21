@@ -233,8 +233,9 @@ extension Model {
             sendTwitchChatMessage(message: message) {
                 switch $0 {
                 case .authError:
-                    self.showTwitchAuth = true
-                    self.twitchLogin(stream: self.stream)
+                    self.twitchLogin(stream: self.stream) {
+                        self.showTwitchAuth = true
+                    }
                 default:
                     break
                 }

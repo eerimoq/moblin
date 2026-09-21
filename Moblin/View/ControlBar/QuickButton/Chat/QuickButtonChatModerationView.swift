@@ -50,8 +50,9 @@ struct ExecutorView<Content: View>: View {
 
     private func handleState() {
         if executor.state == .authError {
-            model.showModerationAuth = true
-            model.twitchLogin(stream: model.stream)
+            model.twitchLogin(stream: model.stream) {
+                model.showModerationAuth = true
+            }
         }
     }
 

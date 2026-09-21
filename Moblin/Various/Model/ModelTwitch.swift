@@ -189,7 +189,10 @@ extension Model {
                                                                  title: nil) { _ in }
     }
 
-    func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
+    func twitchLogin(stream: SettingsStream,
+                     onComplete: (() -> Void)? = nil,
+                     showWebBrowser: @escaping () -> Void)
+    {
         twitchAuthOnComplete = { accessToken in
             storeTwitchAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
             stream.twitchLoggedIn = true
@@ -211,6 +214,7 @@ extension Model {
                 onComplete?()
             }
         }
+        twitchAuth.login(showWebBrowser: showWebBrowser)
     }
 
     func twitchLogout(stream: SettingsStream) {

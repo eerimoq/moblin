@@ -214,8 +214,9 @@ struct StreamTwitchSettingsView: View {
             Section {
                 if !loggedIn {
                     TextButtonView("Login") {
-                        model.showTwitchAuth = true
-                        model.twitchLogin(stream: stream, onComplete: onLoggedIn)
+                        model.twitchLogin(stream: stream, onComplete: onLoggedIn) {
+                            model.showTwitchAuth = true
+                        }
                     }
                 } else {
                     TextButtonView("Logout") {
