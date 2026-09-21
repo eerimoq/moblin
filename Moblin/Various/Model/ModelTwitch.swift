@@ -584,8 +584,18 @@ extension Model {
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
         let twitchApi = TwitchApi(stream.twitchAccessToken)
-        twitchApi.delegate = self
+        twitchApi.onUnauthorized = { [weak self] in
+            self?.twitchApiUnauthorized(stream: stream)
+        }
         return twitchApi
+    }
+
+    private func twitchApiUnauthorized(stream: SettingsStream) {
+        guard stream.twitchLoggedIn else {
+            return
+        }
+        stream.twitchLoggedIn = false
+        makeNotLoggedInToToast(platform: .twitch)
     }
 
     private func getStream() {
@@ -1222,7 +1232,7 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubUnauthorized() {
-        twitchApiUnauthorized()
+        twitchApiUnauthorized(stream: stream)
     }
 
     func twitchEventSubNotification(message _: String) {}
@@ -1274,15 +1284,5 @@ extension Model: TwitchChatDelegate {
 
     func twitchChatDeleteUser(userId: String) {
         deleteChatUser(userId: userId)
-    }
-}
-
-extension Model: TwitchApiDelegate {
-    func twitchApiUnauthorized() {
-        guard stream.twitchLoggedIn else {
-            return
-        }
-        stream.twitchLoggedIn = false
-        makeNotLoggedInToToast(platform: .twitch)
     }
 }

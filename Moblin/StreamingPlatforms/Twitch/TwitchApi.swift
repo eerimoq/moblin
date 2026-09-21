@@ -222,11 +222,6 @@ struct TwitchApiValidateTokenData: Decodable {
     let expires_in: Int
 }
 
-@MainActor
-protocol TwitchApiDelegate: AnyObject {
-    func twitchApiUnauthorized()
-}
-
 func fetchTwitchProfilePicture(username: String) async -> UIImage? {
     guard let url = URL(string: "https://decapi.me/twitch/avatar/\(username)") else {
         return nil
@@ -249,7 +244,7 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
-    weak var delegate: (any TwitchApiDelegate)?
+    var onUnauthorized: (() -> Void)?
 
     init(_ accessToken: String) {
         clientId = twitchMoblinAppClientId
@@ -903,7 +898,7 @@ class TwitchApi {
                 }
                 let isForbidden = forbiddenIsAuthError && response?.http?.isForbidden == true
                 if response?.http?.isUnauthorized == true || isForbidden {
-                    self.delegate?.twitchApiUnauthorized()
+                    self.onUnauthorized?()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

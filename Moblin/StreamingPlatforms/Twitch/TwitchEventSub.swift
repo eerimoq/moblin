@@ -492,7 +492,12 @@ final class TwitchEventSub: NSObject {
         twitchApi = TwitchApi(accessToken)
         webSocket = .init(url: url)
         super.init()
-        twitchApi.delegate = self
+        twitchApi.onUnauthorized = { [weak self] in
+            guard let self, started else {
+                return
+            }
+            self.delegate.twitchEventSubUnauthorized()
+        }
     }
 
     func start() {
@@ -1046,11 +1051,5 @@ extension TwitchEventSub: WebSocketClientDelegate {
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {
         handleMessage(messageText: string)
-    }
-}
-
-extension TwitchEventSub: TwitchApiDelegate {
-    func twitchApiUnauthorized() {
-        delegate.twitchEventSubUnauthorized()
     }
 }
