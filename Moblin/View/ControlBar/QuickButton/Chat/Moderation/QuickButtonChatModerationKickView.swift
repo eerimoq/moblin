@@ -122,13 +122,10 @@ private struct RaidChannelSearchView: View {
                                 let searchText = searchText.lowercased()
                                 let first = $0.username.lowercased()
                                 let second = $1.username.lowercased()
-                                if first.hasPrefix(searchText) {
-                                    return true
-                                } else if second.hasPrefix(searchText) {
-                                    return false
-                                } else {
-                                    return true
+                                if first.hasPrefix(searchText) != second.hasPrefix(searchText) {
+                                    return first.hasPrefix(searchText)
                                 }
+                                return first < second
                             })
                             executor.completedNoTimer(result: .success(Data()))
                         } else {

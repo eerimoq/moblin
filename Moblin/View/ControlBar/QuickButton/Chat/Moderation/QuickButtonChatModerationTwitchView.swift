@@ -327,13 +327,10 @@ private struct RaidChannelSearchView: View {
                                 let searchText = searchText.lowercased()
                                 let first = $0.display_name.lowercased()
                                 let second = $1.display_name.lowercased()
-                                if first.hasPrefix(searchText) {
-                                    return true
-                                } else if second.hasPrefix(searchText) {
-                                    return false
-                                } else {
-                                    return true
+                                if first.hasPrefix(searchText) != second.hasPrefix(searchText) {
+                                    return first.hasPrefix(searchText)
                                 }
+                                return first < second
                             })
                             executor.completedNoTimer(result: .success(Data()))
                         case .authError:
