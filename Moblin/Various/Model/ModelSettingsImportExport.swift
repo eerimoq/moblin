@@ -90,6 +90,7 @@ extension Model {
         reloadDjiDevicesAfterSettingsImport()
         reloadGoProDevicesAfterSettingsImport()
         reloadCatPrintersAfterSettingsImport()
+        reloadWorkoutDevicesAfterSettingsImport()
         reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
