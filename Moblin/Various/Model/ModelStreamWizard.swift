@@ -163,6 +163,9 @@ extension Model {
             stream.kickAccessToken = createStreamWizard.kickAccessToken
             stream.kickLoggedIn = createStreamWizard.kickLoggedIn
             stream.kickWantsToBeLoggedIn = createStreamWizard.kickLoggedIn
+            if stream.kickLoggedIn, !stream.kickAccessToken.isEmpty {
+                storeKickAccessTokenInKeychain(streamId: stream.id, accessToken: stream.kickAccessToken)
+            }
             stream.kickChannelId = createStreamWizard.kickChannelId
             stream.kickSlug = createStreamWizard.kickSlug
             stream.kickChatroomChannelId = createStreamWizard.kickChatroomChannelId

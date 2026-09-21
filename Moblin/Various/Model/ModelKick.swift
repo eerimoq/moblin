@@ -12,6 +12,7 @@ extension Model {
 
     func kickLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
         kickAuthOnComplete = { accessToken in
+            storeKickAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
             stream.kickLoggedIn = true
             stream.kickWantsToBeLoggedIn = true
             stream.kickNotLoggedInCount = 0
@@ -40,6 +41,7 @@ extension Model {
 
     func kickLogout(stream: SettingsStream) {
         stream.kickAccessToken = ""
+        removeKickAccessTokenInKeychain(streamId: stream.id)
         stream.kickLoggedIn = false
         stream.kickWantsToBeLoggedIn = false
         stream.kickChannelName = ""
