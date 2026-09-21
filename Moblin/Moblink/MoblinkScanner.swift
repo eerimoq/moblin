@@ -73,7 +73,10 @@ extension MoblinkScanner: @MainActor NetServiceBrowserDelegate {
         service.resolve(withTimeout: 5.0)
     }
 
-    func netServiceBrowser(_: NetServiceBrowser, didRemove _: NetService, moreComing _: Bool) {}
+    func netServiceBrowser(_: NetServiceBrowser, didRemove service: NetService, moreComing _: Bool) {
+        services.removeAll(where: { $0.service == service })
+        discoveredStreamersUpdated()
+    }
 }
 
 extension MoblinkScanner: @MainActor NetServiceDelegate {
