@@ -34,7 +34,7 @@ class VideoEncoder: @unchecked Sendable {
     private var session: VTCompressionSession? {
         didSet {
             oldValue?.invalidate()
-            invalidateSession = false
+            invalidateSession = session == nil
         }
     }
 
@@ -81,7 +81,7 @@ class VideoEncoder: @unchecked Sendable {
             controlDelegate?.videoEncoderControlResolutionChanged(self, resolution: resolution)
         }
         if invalidateSession {
-            session = makeSession(settings: settings)
+            session = makeSession(settings: settings, videoSize: oldBitrateVideoSize)
         }
         updateBitrate(settings: settings)
         let err = session?.encodeFrame(
