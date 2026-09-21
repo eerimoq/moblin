@@ -19,9 +19,12 @@ struct KickLoginView: View {
                     }
                 }
                 .padding()
-                KickWebView {
-                    onAccessToken($0)
-                    presenting = false
+                ScrollView {
+                    KickWebView {
+                        onAccessToken($0)
+                        presenting = false
+                    }
+                    .frame(height: 1200)
                 }
             }
             .ignoresSafeArea(.keyboard)
