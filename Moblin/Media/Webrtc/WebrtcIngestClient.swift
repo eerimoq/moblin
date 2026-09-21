@@ -105,6 +105,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private let videoTimestamper: TrackTimestamper
     private let audioTimestamper: TrackTimestamper
     private let dispatchQueue: DispatchQueue
+    private var retainedSelf: [Unmanaged<WebrtcIngestClient>] = []
 
     init(name: String,
          streamId: UUID,
@@ -141,7 +142,9 @@ final class WebrtcIngestClient: @unchecked Sendable {
         guard peerConnectionId >= 0 else {
             throw "Failed to create peer connection"
         }
-        rtcSetUserPointer(peerConnectionId, Unmanaged.passRetained(self).toOpaque())
+        let clientPointer = Unmanaged.passRetained(self)
+        retainedSelf.append(clientPointer)
+        rtcSetUserPointer(peerConnectionId, clientPointer.toOpaque())
         try checkOk(rtcSetStateChangeCallback(peerConnectionId) { _, state, pointer in
             toIngestClient(pointer: pointer)?.handleStateChange(state: state)
         })
@@ -216,8 +219,9 @@ final class WebrtcIngestClient: @unchecked Sendable {
 
     func setTrackCodec(trackId: Int32, description: String) {
         let descriptionLower = description.lowercased()
-        let clientPointer = Unmanaged.passRetained(self).toOpaque()
-        rtcSetUserPointer(trackId, clientPointer)
+        let clientPointer = Unmanaged.passRetained(self)
+        retainedSelf.append(clientPointer)
+        rtcSetUserPointer(trackId, clientPointer.toOpaque())
         if let videoCodec = VideoCodec(trackDescription: descriptionLower) {
             self.videoCodec = videoCodec
             videoTrackId = trackId
@@ -260,6 +264,10 @@ final class WebrtcIngestClient: @unchecked Sendable {
         pcmAudioBuffer = nil
         rtcDeletePeerConnection(peerConnectionId)
         peerConnectionId = -1
+        for clientPointer in retainedSelf {
+            clientPointer.release()
+        }
+        retainedSelf.removeAll()
         connected = false
         if let reason {
             delegate?.webrtcIngestClientOnDisconnected(streamId: streamId, reason: reason)
