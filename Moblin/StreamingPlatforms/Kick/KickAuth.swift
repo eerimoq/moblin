@@ -126,3 +126,26 @@ struct KickWebView: UIViewRepresentable {
         }
     }
 }
+
+func storeKickAccessTokenInKeychain(streamId: UUID, accessToken: String) {
+    createKeychain(streamId: streamId.uuidString).store(value: accessToken)
+}
+
+func loadKickAccessTokenFromKeychain(streamId: UUID) -> String? {
+    createKeychain(streamId: streamId.uuidString).load()
+}
+
+func removeKickAccessTokenInKeychain(streamId: UUID) {
+    createKeychain(streamId: streamId.uuidString).remove()
+}
+
+func removeUnusedKickAccessTokensInKeychain(usedStreamIds: [UUID]) {
+    let usedStreamIds = Set(usedStreamIds.map(\.uuidString))
+    for streamId in Keychain.loadStreamIds(server: kickDomain) where !usedStreamIds.contains(streamId) {
+        createKeychain(streamId: streamId).remove()
+    }
+}
+
+private func createKeychain(streamId: String) -> Keychain {
+    Keychain(streamId: streamId, server: kickDomain, logPrefix: "kick: auth")
+}

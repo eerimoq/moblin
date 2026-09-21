@@ -2399,6 +2399,11 @@ final class Settings {
             if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
                 stream.twitchAccessToken = accessToken
             }
+            if !stream.kickAccessToken.isEmpty {
+                storeKickAccessTokenInKeychain(streamId: stream.id, accessToken: stream.kickAccessToken)
+            } else if let accessToken = loadKickAccessTokenFromKeychain(streamId: stream.id) {
+                stream.kickAccessToken = accessToken
+            }
         }
     }
 
@@ -2408,6 +2413,8 @@ final class Settings {
             let toStream = SettingsStream(name: "")
             toStream.twitchAccessToken = fromStream.twitchAccessToken
             fromStream.twitchAccessToken = ""
+            toStream.kickAccessToken = fromStream.kickAccessToken
+            fromStream.kickAccessToken = ""
             toDatabase.streams.append(toStream)
         }
         return toDatabase
@@ -2416,6 +2423,7 @@ final class Settings {
     private func insertSensitiveData(toDatabase: Database, fromDatabase: Database) {
         for (index, fromStream) in fromDatabase.streams.enumerated() where index < toDatabase.streams.count {
             toDatabase.streams[index].twitchAccessToken = fromStream.twitchAccessToken
+            toDatabase.streams[index].kickAccessToken = fromStream.kickAccessToken
         }
     }
 

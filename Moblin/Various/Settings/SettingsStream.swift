@@ -1661,6 +1661,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.kickLoggedIn = kickLoggedIn
         new.kickWantsToBeLoggedIn = kickWantsToBeLoggedIn
         new.kickNotLoggedInCount = kickNotLoggedInCount
+        if kickLoggedIn {
+            storeKickAccessTokenInKeychain(streamId: new.id, accessToken: kickAccessToken)
+        }
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
