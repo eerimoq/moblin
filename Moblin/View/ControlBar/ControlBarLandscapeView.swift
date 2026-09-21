@@ -253,7 +253,7 @@ private struct PageIndicatorView: View {
                     .padding(.bottom, 0)
                     .foregroundStyle(.white)
                     .onTapGesture {
-                        quickButtons.page = page
+                        quickButtons.page = (visiblePages().firstIndex(of: page) ?? 0) + 1
                         quickButtons.activePage = page
                         model.updateQuickButtonPairs()
                     }
