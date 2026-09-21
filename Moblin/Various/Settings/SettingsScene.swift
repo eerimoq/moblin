@@ -1273,7 +1273,7 @@ class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
         let new = SettingsWidgetAlertsCheerBitsAlert()
         new.bits = bits
         new.comparisonOperator = comparisonOperator
-        new.alert = alert
+        new.alert = alert.clone()
         return new
     }
 }
@@ -1288,7 +1288,7 @@ class SettingsWidgetAlertsKickGiftsAlert: Codable, Identifiable {
         let new = SettingsWidgetAlertsKickGiftsAlert()
         new.amount = amount
         new.comparisonOperator = comparisonOperator
-        new.alert = alert
+        new.alert = alert.clone()
         return new
     }
 }
