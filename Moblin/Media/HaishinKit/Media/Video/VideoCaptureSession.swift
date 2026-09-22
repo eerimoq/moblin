@@ -183,7 +183,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 colorSpace: colorSpace
             )
         }
-        try configureCaptureSession(params: params)
+        try configure(params: params)
         // FPS must be set after starting the capture session.
         updateDevicesFormat()
     }
@@ -203,7 +203,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
     }
 
-    private func configureCaptureSession(params: VideoUnitAttachParams) throws {
+    private func configure(params: VideoUnitAttachParams) throws {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
