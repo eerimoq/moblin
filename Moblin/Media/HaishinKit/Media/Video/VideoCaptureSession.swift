@@ -197,6 +197,11 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
 
     func attach(params: VideoUnitAttachParams) throws {
         isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
+        session.beginConfiguration()
+        defer {
+            session.commitConfiguration()
+        }
+        removeDevices(session)
         for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
@@ -205,30 +210,6 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 colorSpace: colorSpace
             )
         }
-        try configure(params: params)
-    }
-
-    func takePhoto() {
-        for device in devices {
-            guard let photoOutput = device.photoOutput else {
-                continue
-            }
-            let settings = AVCapturePhotoSettings()
-            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-            settings.photoQualityPrioritization = .balanced
-            if #available(iOS 18, *) {
-                settings.isShutterSoundSuppressionEnabled = true
-            }
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
-    }
-
-    private func configure(params: VideoUnitAttachParams) throws {
-        session.beginConfiguration()
-        defer {
-            session.commitConfiguration()
-        }
-        removeDevices(session)
         for device in params.devices.devices {
             try attachDevice(device, session, params.attachPhotoShoot)
         }
@@ -254,6 +235,21 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
         updateCameraControls()
         attachCameraPreviewLayers(params: params)
+    }
+
+    func takePhoto() {
+        for device in devices {
+            guard let photoOutput = device.photoOutput else {
+                continue
+            }
+            let settings = AVCapturePhotoSettings()
+            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
+            settings.photoQualityPrioritization = .balanced
+            if #available(iOS 18, *) {
+                settings.isShutterSoundSuppressionEnabled = true
+            }
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
 
     private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
