@@ -68,7 +68,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     weak var processor: Processor?
     let session = makeCaptureSession()
     private var device: AVCaptureDevice?
-    private var captureSessionDevices: [CaptureSessionDevice] = []
+    private var devices: [CaptureSessionDevice] = []
     private var isRunning = false
     private var cameraControlsEnabled = false
     private var captureSize = CGSize(width: 1920, height: 1080)
@@ -83,7 +83,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 return
             }
             session.beginConfiguration()
-            for device in captureSessionDevices {
+            for device in devices {
                 for connection in device.connections().filter(\.isVideoOrientationSupported) {
                     setOrientation(device: device.device.device,
                                    isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
@@ -164,7 +164,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     func stopOutputtingSampleBuffers() {
-        for device in captureSessionDevices {
+        for device in devices {
             device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
         }
     }
@@ -185,7 +185,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     func takePhoto() {
-        for device in captureSessionDevices {
+        for device in devices {
             guard let photoOutput = device.photoOutput else {
                 continue
             }
@@ -210,7 +210,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
-        for device in captureSessionDevices {
+        for device in devices {
             for connection in device.output.connections {
                 if connection.isVideoMirroringSupported {
                     connection.isVideoMirrored = device.device.isVideoMirrored
@@ -226,7 +226,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                                orientation: videoOrientation)
             }
         }
-        for device in captureSessionDevices {
+        for device in devices {
             device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
         }
         updateCameraControls()
@@ -236,7 +236,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
         for (id, previewLayer) in params.cameraPreviewLayers {
             guard params.attachCameraPreview,
-                  let device = captureSessionDevices.first(where: { $0.device.id == id }),
+                  let device = devices.first(where: { $0.device.id == id }),
                   let port = device.input.ports.first(where: { $0.mediaType == .video })
             else {
                 if previewLayer.session != nil {
@@ -270,7 +270,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     private func updateDevicesFormat() {
-        for device in captureSessionDevices {
+        for device in devices {
             setDeviceFormat(
                 device: device.device.device,
                 fps: fps,
@@ -497,7 +497,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         if failed {
             processor?.delegate.streamVideoAttachCameraError()
         } else {
-            captureSessionDevices.append(CaptureSessionDevice(
+            devices.append(CaptureSessionDevice(
                 device: device,
                 input: input,
                 output: output,
@@ -509,12 +509,12 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     private func removeDevices(_ session: AVCaptureSession) {
-        for device in captureSessionDevices {
+        for device in devices {
             removeConnection(session, device.connection)
             removeInput(session, device.input)
             removeOutput(session, device.output)
         }
-        captureSessionDevices.removeAll()
+        devices.removeAll()
     }
 
     private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) {
@@ -606,7 +606,7 @@ extension VideoCaptureSession: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        let cameraId = captureSessionDevices.first(where: { $0.device.device == input.device })?.device.id
+        let cameraId = devices.first(where: { $0.device.device == input.device })?.device.id
         delegate?.videoCaptureSessionDidOutput(input.device, cameraId, sampleBuffer)
     }
 }
