@@ -2942,7 +2942,7 @@ final class Model: NSObject, ObservableObject {
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
-                self.cameraPreviewView.select(id: devices.hasSceneDevice ? devices.devices.first?.id : nil)
+                self.cameraPreviewView.select(id: devices.getSceneDevice()?.id)
                 self.updateCameraPreviewRotation()
                 self.updateVideoPreviews()
             }

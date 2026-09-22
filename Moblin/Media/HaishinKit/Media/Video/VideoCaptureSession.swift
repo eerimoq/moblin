@@ -10,6 +10,10 @@ struct CaptureDevice {
 struct CaptureDevices {
     var hasSceneDevice: Bool
     var devices: [CaptureDevice]
+
+    func getSceneDevice() -> CaptureDevice? {
+        hasSceneDevice ? devices.first : nil
+    }
 }
 
 protocol VideoCaptureSessionDelegate: AnyObject {
@@ -209,7 +213,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             try attachDevice(device, session, params.attachPhotoShoot)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
-        device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
+        device = params.devices.getSceneDevice()?.device
         for device in devices {
             for connection in device.output.connections {
                 if connection.isVideoMirroringSupported {
