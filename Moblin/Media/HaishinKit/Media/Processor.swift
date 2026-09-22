@@ -51,13 +51,13 @@ final class Processor: @unchecked Sendable {
 
     func setTorch(value: Bool) {
         processorControlQueue.async {
-            self.video.torch = value
+            self.video.setTorch(value: value)
         }
     }
 
     func setTorchLevel(value: Float) {
         processorControlQueue.async {
-            self.video.torchLevel = value
+            self.video.setTorchLevel(value: value)
         }
     }
 
@@ -88,7 +88,7 @@ final class Processor: @unchecked Sendable {
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
         processorControlQueue.async {
-            self.video.videoOrientation = value
+            self.video.setVideoOrientation(value: value)
         }
     }
 

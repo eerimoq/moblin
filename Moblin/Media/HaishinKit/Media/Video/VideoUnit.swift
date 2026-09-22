@@ -179,31 +179,20 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var currentAttachParams: VideoUnitAttachParams?
     private var macScreenCaptureActive = false
 
-    var videoOrientation: AVCaptureVideoOrientation {
-        get {
-            captureSession.videoOrientation
-        }
-        set {
-            captureSession.videoOrientation = newValue
-        }
+    func setVideoOrientation(value: AVCaptureVideoOrientation) {
+        captureSession.videoOrientation = value
     }
 
-    var torch: Bool {
-        get {
-            captureSession.torch
-        }
-        set {
-            captureSession.torch = newValue
-        }
+    private func getVideoOrientation() -> AVCaptureVideoOrientation {
+        captureSession.videoOrientation
     }
 
-    var torchLevel: Float {
-        get {
-            captureSession.torchLevel
-        }
-        set {
-            captureSession.torchLevel = newValue
-        }
+    func setTorch(value: Bool) {
+        captureSession.torch = value
+    }
+
+    func setTorchLevel(value: Float) {
+        captureSession.torchLevel = value
     }
 
     override init() {
@@ -921,7 +910,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             imageBuffer,
             completion,
             self,
-            videoOrientation
+            getVideoOrientation()
         )
         if cleanRecordings {
             processor?.recorder.appendVideo(sampleBuffer)
