@@ -183,10 +183,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         captureSession.videoOrientation = value
     }
 
-    private func getVideoOrientation() -> AVCaptureVideoOrientation {
-        captureSession.videoOrientation
-    }
-
     func setTorch(value: Bool) {
         captureSession.torch = value
     }
@@ -910,7 +906,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             imageBuffer,
             completion,
             self,
-            getVideoOrientation()
+            captureSession.videoOrientation
         )
         if cleanRecordings {
             processor?.recorder.appendVideo(sampleBuffer)
