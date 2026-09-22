@@ -179,18 +179,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var currentAttachParams: VideoUnitAttachParams?
     private var macScreenCaptureActive = false
 
-    func setVideoOrientation(value: AVCaptureVideoOrientation) {
-        captureSession.videoOrientation = value
-    }
-
-    func setTorch(value: Bool) {
-        captureSession.torch = value
-    }
-
-    func setTorchLevel(value: Float) {
-        captureSession.torchLevel = value
-    }
-
     override init() {
         let effectsProcessor = VideoEffectsProcessor()
         self.effectsProcessor = effectsProcessor
@@ -217,6 +205,18 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func stopRunning() {
         captureSession.stopRunning()
+    }
+
+    func setVideoOrientation(value: AVCaptureVideoOrientation) {
+        captureSession.videoOrientation = value
+    }
+
+    func setTorch(value: Bool) {
+        captureSession.torch = value
+    }
+
+    func setTorchLevel(value: Float) {
+        captureSession.torchLevel = value
     }
 
     func setFps(fps: Float64, preferAutoFps: Bool) {
