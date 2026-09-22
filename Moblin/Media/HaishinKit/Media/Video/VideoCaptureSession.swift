@@ -23,6 +23,26 @@ protocol VideoCaptureSessionDelegate: AnyObject {
     func videoCaptureSessionWasInterrupted()
 }
 
+private final class DeviceOutputHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private let device: AVCaptureDevice
+    private let cameraId: UUID
+    private weak var delegate: (any VideoCaptureSessionDelegate)?
+
+    init(device: AVCaptureDevice, cameraId: UUID, delegate: (any VideoCaptureSessionDelegate)?) {
+        self.device = device
+        self.cameraId = cameraId
+        self.delegate = delegate
+    }
+
+    func captureOutput(
+        _: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from _: AVCaptureConnection
+    ) {
+        delegate?.videoCaptureSessionDidOutput(device, cameraId, sampleBuffer)
+    }
+}
+
 private struct CaptureSessionDevice {
     let device: CaptureDevice
     let input: AVCaptureInput
@@ -30,6 +50,7 @@ private struct CaptureSessionDevice {
     let connection: AVCaptureConnection
     let photoOutput: AVCapturePhotoOutput?
     let photoConnection: AVCaptureConnection?
+    let outputHandler: DeviceOutputHandler
 
     func connections() -> [AVCaptureConnection] {
         if let photoConnection {
@@ -231,7 +252,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             }
         }
         for device in devices {
-            device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
+            device.output.setSampleBufferDelegate(device.outputHandler, queue: processorPipelineQueue)
         }
         updateCameraControls()
         attachCameraPreviewLayers(params: params)
@@ -507,7 +528,12 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 output: output,
                 connection: connection!,
                 photoOutput: photoOutput,
-                photoConnection: photoConnection
+                photoConnection: photoConnection,
+                outputHandler: DeviceOutputHandler(
+                    device: device.device,
+                    cameraId: device.id,
+                    delegate: delegate
+                )
             ))
         }
     }
@@ -598,20 +624,6 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             session.removeControl(control)
         }
         session.setControlsDelegate(nil, queue: nil)
-    }
-}
-
-extension VideoCaptureSession: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
-            return
-        }
-        let cameraId = devices.first(where: { $0.device.device == input.device })?.device.id
-        delegate?.videoCaptureSessionDidOutput(input.device, cameraId, sampleBuffer)
     }
 }
 
