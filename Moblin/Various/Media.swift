@@ -793,6 +793,8 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func setFps(fps: Int, preferAutoFps: Bool) {
+        videoEncoderSettings.expectedFrameRate = Double(fps)
+        commitVideoEncoderSettings()
         processor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 

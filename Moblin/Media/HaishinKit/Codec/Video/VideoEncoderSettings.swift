@@ -37,6 +37,7 @@ struct VideoEncoderSettings {
     }
 
     var videoSize: CMVideoDimensions
+    var expectedFrameRate: Float64 = VideoUnit.defaultFrameRate
     var bitrate: UInt32
     var rateControl: RateControl = .abr
     var maxKeyFrameIntervalDuration: Int32
@@ -79,6 +80,7 @@ struct VideoEncoderSettings {
 
     func shouldInvalidateSession(_ other: VideoEncoderSettings) -> Bool {
         !(videoSize == other.videoSize &&
+            expectedFrameRate == other.expectedFrameRate &&
             maxKeyFrameIntervalDuration == other.maxKeyFrameIntervalDuration &&
             allowFrameReordering == other.allowFrameReordering &&
             profileLevel == other.profileLevel &&
@@ -90,7 +92,7 @@ struct VideoEncoderSettings {
         var properties: [VTSessionProperty] = [
             .init(key: .realTime, value: kCFBooleanTrue),
             .init(key: .profileLevel, value: profileLevel as NSObject),
-            .init(key: .expectedFrameRate, value: VideoUnit.defaultFrameRate as CFNumber),
+            .init(key: .expectedFrameRate, value: expectedFrameRate as CFNumber),
             .init(key: .maxKeyFrameIntervalDuration, value: maxKeyFrameIntervalDuration as CFNumber),
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
