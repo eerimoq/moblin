@@ -13,7 +13,7 @@ struct VideoStabilizationSettingsView: View {
         }
         .onChange(of: mode) {
             model.database.videoStabilizationMode = $0
-            model.reattachCamera()
+            model.attachCamera()
         }
     }
 }

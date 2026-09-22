@@ -537,7 +537,7 @@ extension Model {
         if database.alwaysAttachCameraPreview {
             media.setShowCameraPreview(updateShowCameraPreview())
         } else {
-            reattachCamera()
+            attachCamera()
         }
     }
 

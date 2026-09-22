@@ -1659,7 +1659,7 @@ final class Model: NSObject, ObservableObject {
         externalDisplayWindow = window
         updateExternalMonitorWindow()
         externalDisplayPreview = true
-        reattachCamera()
+        attachCamera()
     }
 
     func disableScreenPreview() {
@@ -1676,7 +1676,7 @@ final class Model: NSObject, ObservableObject {
     func externalMonitorDisconnected() {
         externalDisplayWindow = nil
         externalDisplayPreview = false
-        reattachCamera()
+        attachCamera()
     }
 
     private func updateExternalMonitorWindow() {
@@ -2728,11 +2728,6 @@ final class Model: NSObject, ObservableObject {
         if statusOther.thermalState == .critical {
             makeFlameRedToast()
         }
-    }
-
-    func reattachCamera() {
-        detachCamera()
-        attachCamera()
     }
 
     func detachCamera() {

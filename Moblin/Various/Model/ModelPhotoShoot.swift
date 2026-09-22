@@ -14,7 +14,7 @@ extension Model {
 
     func togglePhotoShoot() {
         if !database.alwaysAttachPhotoShoot {
-            reattachCamera()
+            attachCamera()
         }
     }
 }

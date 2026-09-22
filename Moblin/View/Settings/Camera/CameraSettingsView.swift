@@ -201,7 +201,7 @@ private struct CameraPreviewSettingsView: View {
         Section {
             Toggle("Instant camera preview", isOn: $database.alwaysAttachCameraPreview)
                 .onChange(of: database.alwaysAttachCameraPreview) { _ in
-                    model.reattachCamera()
+                    model.attachCamera()
                 }
         } footer: {
             Text("""
@@ -220,7 +220,7 @@ private struct PhotoShootSettingsView: View {
         Section {
             Toggle("Instant photo shoot", isOn: $database.alwaysAttachPhotoShoot)
                 .onChange(of: database.alwaysAttachPhotoShoot) { _ in
-                    model.reattachCamera()
+                    model.attachCamera()
                 }
         } footer: {
             Text("""

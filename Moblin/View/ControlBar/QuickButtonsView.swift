@@ -336,7 +336,7 @@ struct QuickButtonsInnerView: View {
 
     private func portraitAction() {
         model.setDisplayPortrait(portrait: !model.database.portrait)
-        model.reattachCamera()
+        model.attachCamera()
     }
 
     private func goProAction() {
