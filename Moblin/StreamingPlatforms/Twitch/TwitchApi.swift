@@ -631,6 +631,22 @@ class TwitchApi {
         }
     }
 
+    func sendShoutout(
+        broadcasterId: String,
+        toBroadcasterId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
+        let subPath = makeUrl(
+            "chat/shoutouts",
+            [
+                ("from_broadcaster_id", broadcasterId),
+                ("to_broadcaster_id", toBroadcasterId),
+                ("moderator_id", broadcasterId),
+            ]
+        )
+        doPost(subPath: subPath, body: Data(), onComplete: onComplete)
+    }
+
     func searchCategories(query: String, onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
         doGet(subPath: makeUrl("search/categories", [("query", query), ("first", "10")])) {
             switch $0 {

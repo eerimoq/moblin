@@ -92,6 +92,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case djiDevices = "DJI devices"
     case gimbalPreset = "Move to gimbal preset"
     case sendChatMessage = "Send chat message"
+    case sendTwitchShoutout = "Send Twitch shoutout"
     case delay = "Delay"
     case waitForEvent = "Wait for event"
     case ifCondition = "If"
@@ -125,6 +126,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "Move to gimbal preset")
         case .sendChatMessage:
             String(localized: "Send chat message")
+        case .sendTwitchShoutout:
+            String(localized: "Send Twitch shoutout")
         case .delay:
             String(localized: "Delay")
         case .waitForEvent:
@@ -217,6 +220,37 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
         }
     }
 
+    func variables() -> [MacroVariable] {
+        switch self {
+        case .twitchFollow:
+            [.twitchFollowUser]
+        case .twitchSubscription:
+            [.twitchSubscriptionUser]
+        case .twitchGiftSubscription:
+            [.twitchGiftSubscriptionUser]
+        case .twitchResubscription:
+            [.twitchResubscriptionUser]
+        case .twitchReward:
+            [.twitchRewardUser]
+        case .twitchWatchStreak:
+            [.twitchWatchStreakUser]
+        case .twitchCheer:
+            [.twitchCheerUser]
+        case .twitchRaid:
+            [.twitchRaidChannelId, .twitchRaidChannelName]
+        default:
+            []
+        }
+    }
+
+    func variablesToString() -> String? {
+        let variables = variables()
+        guard !variables.isEmpty else {
+            return nil
+        }
+        return variables.map { $0.toString() }.joined(separator: ", ")
+    }
+
     func textTitle() -> String? {
         switch self {
         case .twitchReward, .kickReward:
@@ -227,11 +261,52 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
     }
 }
 
+enum MacroVariable: String {
+    case twitchFollowUser
+    case twitchSubscriptionUser
+    case twitchGiftSubscriptionUser
+    case twitchResubscriptionUser
+    case twitchRewardUser
+    case twitchWatchStreakUser
+    case twitchCheerUser
+    case twitchRaidChannelId
+    case twitchRaidChannelName
+
+    func toString() -> String {
+        "{\(rawValue)}"
+    }
+}
+
+class MacroVariables {
+    private var values: [MacroVariable: String] = [:]
+
+    func set(_ variables: [MacroVariable: String]) {
+        values.merge(variables) { _, new in new }
+    }
+
+    func get(_ variable: MacroVariable) -> String? {
+        values[variable]
+    }
+
+    func removeAll() {
+        values.removeAll()
+    }
+
+    func substitute(_ text: String) -> String {
+        var text = text
+        for (variable, value) in values {
+            text = text.replacingOccurrences(of: variable.toString(), with: value, options: .caseInsensitive)
+        }
+        return text
+    }
+}
+
 struct MacroEvent {
     let event: SettingsMacrosEvent
     var amount: Int = 0
     var text: String = ""
     var sceneId: UUID?
+    var variables: [MacroVariable: String] = [:]
 }
 
 enum SettingsMacrosActionIfComparison: String, CaseIterable, Codable {
@@ -442,6 +517,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var repeatCount: Int = 5
     @Published var closePanelOnRun: Bool = false
     @Published var runAtAppStart: Bool = false
+    let variables = MacroVariables()
     var nextActionIndex: Int = 0
     var waitingForEventAction: SettingsMacrosAction?
     var eventQueue: Deque<MacroEvent> = []

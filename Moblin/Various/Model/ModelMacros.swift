@@ -12,6 +12,7 @@ extension Model {
         macro.delayed = false
         macro.waitingForEventAction = nil
         macro.eventQueue.removeAll()
+        macro.variables.removeAll()
         macro.stack = [macro]
         remoteControlMacrosStateChanged()
         executeNextAction(macro: macro)
@@ -102,7 +103,9 @@ extension Model {
 
     private func takeQueuedEvent(macro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
         while !macro.eventQueue.isEmpty {
-            if action.matches(event: macro.eventQueue.removeFirst()) {
+            let event = macro.eventQueue.removeFirst()
+            if action.matches(event: event) {
+                macro.variables.set(event.variables)
                 return true
             }
         }
@@ -226,7 +229,9 @@ extension Model {
         case .gimbalPreset:
             executeGimbalPreset(action: action)
         case .sendChatMessage:
-            executeSendChatMessage(action: action)
+            executeSendChatMessage(action: action, variables: macro.variables)
+        case .sendTwitchShoutout:
+            executeSendTwitchShoutout(variables: macro.variables)
         case .delay:
             executeDelay(currentMacro: currentMacro,
                          action: action,
@@ -234,7 +239,7 @@ extension Model {
         case .waitForEvent:
             executeWaitForEvent(currentMacro: currentMacro, action: action, macro: macro)
         case .ifCondition:
-            executeIfCondition(currentMacro: currentMacro, action: action)
+            executeIfCondition(currentMacro: currentMacro, action: action, variables: macro.variables)
         case .macro:
             executeMacro(action: action, macro: macro)
         case .djiDevices:
@@ -291,8 +296,15 @@ extension Model {
         return true
     }
 
-    private func executeSendChatMessage(action: SettingsMacrosAction) -> Bool {
-        sendChatMessage(message: formatPlainText(formatString: action.chatMessage))
+    private func executeSendChatMessage(action: SettingsMacrosAction, variables: MacroVariables) -> Bool {
+        sendChatMessage(message: formatPlainText(formatString: variables.substitute(action.chatMessage)))
+        return true
+    }
+
+    private func executeSendTwitchShoutout(variables: MacroVariables) -> Bool {
+        if let channelId = variables.get(.twitchRaidChannelId) {
+            sendTwitchShoutout(channelId: channelId)
+        }
         return true
     }
 
@@ -319,9 +331,12 @@ extension Model {
         return true
     }
 
-    private func executeIfCondition(currentMacro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
-        let value = formatPlainText(formatString: action.ifValue)
-        let otherValue = formatPlainText(formatString: action.ifOtherValue)
+    private func executeIfCondition(currentMacro: SettingsMacrosMacro,
+                                    action: SettingsMacrosAction,
+                                    variables: MacroVariables) -> Bool
+    {
+        let value = formatPlainText(formatString: variables.substitute(action.ifValue))
+        let otherValue = formatPlainText(formatString: variables.substitute(action.ifOtherValue))
         if !action.ifComparison.evaluate(value: value, otherValue: otherValue) {
             currentMacro.nextActionIndex += action.ifRunCount
         }

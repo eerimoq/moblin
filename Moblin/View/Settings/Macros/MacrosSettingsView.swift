@@ -180,6 +180,8 @@ private struct ActionView: View {
                         } label: {
                             TextItemLocalizedView(name: "Message", value: action.chatMessage)
                         }
+                    case .sendTwitchShoutout:
+                        EmptyView()
                     case .delay:
                         HStack {
                             Text("Delay")
@@ -314,15 +316,27 @@ private struct ActionView: View {
                 } footer: {
                     switch action.function {
                     case .waitForEvent:
-                        switch action.event {
-                        case .twitchReward, .kickReward:
-                            Text("""
-                            Wait until a viewer redeems the reward, then continue with the following \
-                            actions. Leave reward empty to wait for any reward.
-                            """)
-                        default:
-                            Text("Wait until the event happens, then continue with the following actions.")
+                        VStack(alignment: .leading, spacing: 5) {
+                            switch action.event {
+                            case .twitchReward, .kickReward:
+                                Text("""
+                                Wait until a viewer redeems the reward, then continue with the following \
+                                actions. Leave reward empty to wait for any reward.
+                                """)
+                            default:
+                                Text("""
+                                Wait until the event happens, then continue with the following actions.
+                                """)
+                            }
+                            if let variables = action.event.variablesToString() {
+                                Text("Sets \(variables), which following actions can use.")
+                            }
                         }
+                    case .sendTwitchShoutout:
+                        Text("""
+                        Send a Twitch shoutout to the channel in {twitchRaidChannelId}, typically set \
+                        by an earlier Twitch raid event.
+                        """)
                     case .ifCondition:
                         Text("Run given number of following actions if the condition is met.")
                     default:
@@ -390,7 +404,7 @@ private struct ActionView: View {
                 case .torch:
                     Spacer()
                     GrayTextView(text: action.torch ? String(localized: "On") : String(localized: "Off"))
-                case .snapshot:
+                case .snapshot, .sendTwitchShoutout:
                     EmptyView()
                 case .reaction:
                     Spacer()
