@@ -540,6 +540,8 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
 
     private func removeDevices(_ session: AVCaptureSession) {
         for device in devices {
+            removeConnection(session, device.photoConnection)
+            removeOutput(session, device.photoOutput)
             removeConnection(session, device.connection)
             removeInput(session, device.input)
             removeOutput(session, device.output)
