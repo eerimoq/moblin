@@ -51,14 +51,6 @@ private struct CaptureSessionDevice {
     let photoOutput: AVCapturePhotoOutput?
     let photoConnection: AVCaptureConnection?
     let outputHandler: DeviceOutputHandler
-
-    func connections() -> [AVCaptureConnection] {
-        if let photoConnection {
-            [connection, photoConnection]
-        } else {
-            [connection]
-        }
-    }
 }
 
 private func makeCaptureSession() -> AVCaptureMultiCamSession {
@@ -110,12 +102,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             }
             session.beginConfiguration()
             for device in devices {
-                for connection in device.connections().filter(\.isVideoOrientationSupported) {
-                    setOrientation(device: device.device.device,
-                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                                   connection: connection,
-                                   orientation: videoOrientation)
-                }
+                updateOrientation(device: device)
             }
             session.commitConfiguration()
         }
@@ -209,28 +196,17 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 preferAutoFrameRate: preferAutoFps,
                 colorSpace: colorSpace
             )
-        }
-        for device in params.devices.devices {
             try attachDevice(device, session, params.attachPhotoShoot)
         }
         device = params.devices.getSceneDevice()?.device
         for device in devices {
-            for connection in device.output.connections {
-                if connection.isVideoMirroringSupported {
-                    connection.isVideoMirrored = device.device.isVideoMirrored
-                }
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
-                }
+            if device.connection.isVideoMirroringSupported {
+                device.connection.isVideoMirrored = device.device.isVideoMirrored
             }
-            for connection in device.connections() where connection.isVideoOrientationSupported {
-                setOrientation(device: device.device.device,
-                               isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                               connection: connection,
-                               orientation: videoOrientation)
+            if device.connection.isVideoStabilizationSupported {
+                device.connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
             }
-        }
-        for device in devices {
+            updateOrientation(device: device)
             device.output.setSampleBufferDelegate(device.outputHandler, queue: processorPipelineQueue)
         }
         updateCameraControls()
@@ -250,6 +226,23 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             }
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
+    }
+
+    private func updateOrientation(device: CaptureSessionDevice) {
+        updateOrientation(device: device, connection: device.connection)
+        if let photoConnection = device.photoConnection {
+            updateOrientation(device: device, connection: photoConnection)
+        }
+    }
+
+    private func updateOrientation(device: CaptureSessionDevice, connection: AVCaptureConnection) {
+        guard connection.isVideoOrientationSupported else {
+            return
+        }
+        setOrientation(device: device.device.device,
+                       isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                       connection: connection,
+                       orientation: videoOrientation)
     }
 
     private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
