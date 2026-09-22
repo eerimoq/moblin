@@ -61,7 +61,7 @@ private struct CaptureSessionDevice {
     }
 }
 
-private func makeCaptureSession() -> AVCaptureSession {
+private func makeCaptureSession() -> AVCaptureMultiCamSession {
     let session = AVCaptureMultiCamSession()
     session.automaticallyConfiguresCaptureDeviceForWideColor = false
     #if !targetEnvironment(macCatalyst)
@@ -465,7 +465,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     private func attachDevice(_ device: CaptureDevice,
-                              _ session: AVCaptureSession,
+                              _ session: AVCaptureMultiCamSession,
                               _ attachPhotoShoot: Bool) throws
     {
         let input = try AVCaptureDeviceInput(device: device.device)
@@ -532,7 +532,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
     }
 
-    private func removeDevices(_ session: AVCaptureSession) {
+    private func removeDevices(_ session: AVCaptureMultiCamSession) {
         for device in devices {
             removeConnection(session, device.photoConnection)
             removeOutput(session, device.photoOutput)
@@ -543,19 +543,19 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         devices.removeAll()
     }
 
-    private func removeConnection(_ session: AVCaptureSession, _ connection: AVCaptureConnection?) {
+    private func removeConnection(_ session: AVCaptureMultiCamSession, _ connection: AVCaptureConnection?) {
         if let connection, session.connections.contains(connection) {
             session.removeConnection(connection)
         }
     }
 
-    private func removeInput(_ session: AVCaptureSession, _ input: AVCaptureInput?) {
+    private func removeInput(_ session: AVCaptureMultiCamSession, _ input: AVCaptureInput?) {
         if let input, session.inputs.contains(input) {
             session.removeInput(input)
         }
     }
 
-    private func removeOutput(_ session: AVCaptureSession, _ output: AVCaptureOutput?) {
+    private func removeOutput(_ session: AVCaptureMultiCamSession, _ output: AVCaptureOutput?) {
         if let output, session.outputs.contains(output) {
             session.removeOutput(output)
         }
