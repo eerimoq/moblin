@@ -17,6 +17,7 @@ import requests
 from moblin_assistant import make_client_request
 from systest import ManagedProcess
 from systest import wait_until
+from websockets.exceptions import ConnectionClosed
 from websockets.sync.client import ClientConnection
 from websockets.sync.client import connect
 
@@ -229,11 +230,12 @@ class Moblin:
                 response = self._request(
                     {"importSettings": {"data": b64encode(settings_file.read_bytes()).decode("utf-8")}}
                 )
-            except Exception:
+            except ConnectionClosed:
                 response = None
             if response is not None and "ok" not in response["result"]:
                 raise Exception(f"Import settings failed: {response['result']}")
             time.sleep(2)
+            self._wait_until_streamer_is_connected(log=False)
 
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
@@ -562,19 +564,21 @@ class Moblin:
                 return item["id"]
         raise Exception(f"Unknown {kind} item {name}")
 
-    def _wait_until_streamer_is_connected(self):
-        LOGGER.info(
-            "Waiting for %s's remote control streamer to connect to port %d...",
-            self.device_name,
-            self._remote_control_port,
-        )
+    def _wait_until_streamer_is_connected(self, log=True):
+        if log:
+            LOGGER.info(
+                "Waiting for %s's remote control streamer to connect to port %d...",
+                self.device_name,
+                self._remote_control_port,
+            )
 
         def check() -> bool:
             self.ping()
             return True
 
         wait_until(check, "streamer to connect", ignore_errors=True)
-        LOGGER.info("Remote control streamer connected")
+        if log:
+            LOGGER.info("Remote control streamer connected")
 
 
 def create_receiver(config: Config) -> Moblin:
