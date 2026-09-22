@@ -63,6 +63,7 @@ private struct CaptureSessionDevice {
 
 private func makeCaptureSession() -> AVCaptureSession {
     let session = AVCaptureMultiCamSession()
+    session.automaticallyConfiguresCaptureDeviceForWideColor = false
     #if !targetEnvironment(macCatalyst)
     if session.isMultitaskingCameraAccessSupported {
         session.isMultitaskingCameraAccessEnabled = true
@@ -205,8 +206,6 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             )
         }
         try configure(params: params)
-        // FPS must be set after starting the capture session.
-        updateDevicesFormat()
     }
 
     func takePhoto() {
@@ -233,7 +232,6 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         for device in params.devices.devices {
             try attachDevice(device, session, params.attachPhotoShoot)
         }
-        session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = params.devices.getSceneDevice()?.device
         for device in devices {
             for connection in device.output.connections {
