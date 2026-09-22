@@ -876,10 +876,6 @@ class MacroWaitForRecordingStartedAndStopped(MacroTestCase):
         self.wait_for_muted(False)
         self.moblin.wait_for_macro_running(MACRO_ID, False)
 
-    def teardown(self):
-        super().teardown()
-        self.moblin.delete_all_recordings()
-
 
 class MacroWaitForEventStopAndRestart(MacroTestCase):
     """Stop a macro while it waits for an event. Validate that the event no longer

@@ -23,6 +23,7 @@ class TestCase(test_case.TestCase):
     def teardown(self):
         self.moblin.end()
         self.moblin.stop_recording()
+        self.moblin.delete_all_recordings()
         self.moving_picture_off()
 
     def skip_if_missing_capability(self, capability: Capability):
