@@ -1,8 +1,8 @@
 import CoreText
 import SwiftUI
 
-struct FontFamilyPickerView: View {
-    @Binding var selectedFontFamily: String?
+private struct FontFamilyPickerView: View {
+    @Binding var font: SettingsFont
     var onChange: () -> Void
     @State private var fontFamilies: [String] = []
 
@@ -14,10 +14,10 @@ struct FontFamilyPickerView: View {
                         Text("System")
                         Spacer()
                         Button {
-                            selectedFontFamily = nil
+                            font = SettingsFont()
                             onChange()
                         } label: {
-                            if selectedFontFamily == nil {
+                            if font.family == nil {
                                 Image(systemName: "checkmark")
                             }
                         }
@@ -28,10 +28,12 @@ struct FontFamilyPickerView: View {
                                 .font(.custom(family, size: 17))
                             Spacer()
                             Button {
-                                selectedFontFamily = family
+                                font = SettingsFont(family: family,
+                                                    style: UIFont.fontNames(forFamilyName: family)
+                                                        .first ?? "")
                                 onChange()
                             } label: {
-                                if selectedFontFamily == family {
+                                if font.family == family {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -77,9 +79,9 @@ func fontStyleName(family: String, fontName: String) -> String {
     return fontName
 }
 
-struct FontStylePickerView: View {
-    var fontFamily: String
-    @Binding var selectedFontStyle: String
+private struct FontStylePickerView: View {
+    let fontFamily: String
+    @Binding var font: SettingsFont
     var onChange: () -> Void
 
     private func fontStyles() -> [String] {
@@ -94,10 +96,10 @@ struct FontStylePickerView: View {
                         .font(.custom(style, size: 17))
                     Spacer()
                     Button {
-                        selectedFontStyle = style
+                        font.style = style
                         onChange()
                     } label: {
-                        if selectedFontStyle == style {
+                        if font.style == style {
                             Image(systemName: "checkmark")
                         }
                     }
@@ -105,5 +107,34 @@ struct FontStylePickerView: View {
             }
         }
         .navigationTitle("Style")
+    }
+}
+
+struct FontSettingsView: View {
+    @Binding var font: SettingsFont
+    var onChange: () -> Void
+
+    var body: some View {
+        NavigationLink {
+            FontFamilyPickerView(font: $font, onChange: onChange)
+        } label: {
+            HStack {
+                Text("Family")
+                Spacer()
+                GrayTextView(text: font.familyString())
+            }
+        }
+        if let family = font.family {
+            NavigationLink {
+                FontStylePickerView(fontFamily: family, font: $font, onChange: onChange)
+            } label: {
+                HStack {
+                    Text("Style")
+                    Spacer()
+                    GrayTextView(text: font.styleString())
+                }
+            }
+            .disabled(UIFont.fontNames(forFamilyName: family).count == 1)
+        }
     }
 }

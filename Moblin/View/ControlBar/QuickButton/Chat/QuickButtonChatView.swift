@@ -13,8 +13,7 @@ private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
         linkify: true,
         nicknames: chat.nicknames,
         displayStyle: chat.displayStyle,
-        fontFamily: chat.fontFamily,
-        fontStyle: chat.fontStyle
+        font: chat.font
     )
 }
 

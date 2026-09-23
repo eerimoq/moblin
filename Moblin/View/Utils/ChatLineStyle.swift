@@ -26,8 +26,7 @@ struct ChatLineStyle {
     var displayStyle: SettingsChatDisplayStyle = .username
     var fontWeight: UIFont.Weight = .regular
     var fontDesign: UIFontDescriptor.SystemDesign = .default
-    var fontFamily: String?
-    var fontStyle: String = ""
+    var font = SettingsFont()
 
     func content(items: [ChatLineItem], topAligned: Bool = false) -> ChatLineContent {
         ChatLineContent(items: items,
@@ -39,8 +38,7 @@ struct ChatLineStyle {
                         topAligned: topAligned,
                         fontWeight: fontWeight,
                         fontDesign: fontDesign,
-                        fontFamily: fontFamily,
-                        fontStyle: fontStyle)
+                        font: font)
     }
 
     func emoteItem(url: URL, scale: Float = 1, deleted: Bool) -> ChatLineItem {

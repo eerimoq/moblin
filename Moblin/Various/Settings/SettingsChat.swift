@@ -592,8 +592,7 @@ class SettingsChat: Codable, ObservableObject {
     static let defaultBigGifScale: Float = 2.0
     static let defaultActivityFeedHeight: Double = 0.2
     @Published var fontSize: Float = 19.0
-    @Published var fontFamily: String?
-    @Published var fontStyle: String = ""
+    @Published var font: SettingsFont = .init()
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
     @Published var sameUsernameColor: Bool = false
@@ -718,8 +717,8 @@ class SettingsChat: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
-        try container.encode(.fontFamily, fontFamily)
-        try container.encode(.fontStyle, fontStyle)
+        try container.encode(.fontFamily, font.family)
+        try container.encode(.fontStyle, font.style)
         try container.encode(.usernameColor, usernameColor)
         try container.encode(.sameUsernameColor, sameUsernameColor)
         try container.encode(.messageColor, messageColor)
@@ -781,8 +780,8 @@ class SettingsChat: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = container.decode(.fontSize, Float.self, 19.0)
-        fontFamily = container.decode(.fontFamily, String?.self, nil)
-        fontStyle = container.decode(.fontStyle, String.self, "")
+        font.family = container.decode(.fontFamily, String?.self, nil)
+        font.style = container.decode(.fontStyle, String.self, "")
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
         sameUsernameColor = container.decode(.sameUsernameColor, Bool.self, false)
@@ -877,22 +876,6 @@ class SettingsChat: Codable, ObservableObject {
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
         bigGifScale = container.decode(.bigGifScale, Float.self, Self.defaultBigGifScale)
         compactEvents = container.decode(.compactEvents, Bool.self, true)
-    }
-
-    func fontFamilyString() -> String {
-        if let fontFamily {
-            fontFamily
-        } else {
-            String(localized: "System")
-        }
-    }
-
-    func fontStyleString() -> String {
-        if let fontFamily {
-            fontStyleName(family: fontFamily, fontName: fontStyle)
-        } else {
-            ""
-        }
     }
 
     func getRotation() -> Double {

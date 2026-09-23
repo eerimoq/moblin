@@ -34,8 +34,7 @@ struct ChatLineContent: Equatable {
     var topAligned = false
     var fontWeight: UIFont.Weight = .regular
     var fontDesign: UIFontDescriptor.SystemDesign = .default
-    var fontFamily: String?
-    var fontStyle: String = ""
+    var font = SettingsFont()
 }
 
 private let strikethroughKey = NSAttributedString.Key("moblinChatLineStrikethrough")
@@ -85,12 +84,11 @@ private struct ChatLineLayout {
 
 private func makeBaseFont(content: ChatLineContent, bold: Bool = false) -> UIFont {
     let size = content.fontSize
-    if let fontFamily = content.fontFamily {
-        let name = content.fontStyle.isEmpty ? fontFamily : content.fontStyle
-        if let font = UIFont(name: name, size: size) {
+    if let family = content.font.family {
+        if let name = content.font.name(), let font = UIFont(name: name, size: size) {
             return font
         }
-        return UIFont(descriptor: UIFontDescriptor(fontAttributes: [.family: fontFamily]), size: size)
+        return UIFont(descriptor: UIFontDescriptor(fontAttributes: [.family: family]), size: size)
     }
     let font = UIFont.systemFont(ofSize: size, weight: bold ? .bold : content.fontWeight)
     guard content.fontDesign != .default, let descriptor = font.fontDescriptor.withDesign(content.fontDesign)
@@ -106,7 +104,7 @@ private func makeFont(content: ChatLineContent, style: ChatLineTextStyle) -> UIF
     if style.italic {
         traits.insert(.traitItalic)
     }
-    if style.bold, content.fontFamily != nil || style.italic {
+    if style.bold, content.font.family != nil || style.italic {
         traits.insert(.traitBold)
     }
     guard !traits.isEmpty, let descriptor = font.fontDescriptor.withSymbolicTraits(traits) else {

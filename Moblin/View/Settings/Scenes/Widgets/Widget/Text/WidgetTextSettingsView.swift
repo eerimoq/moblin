@@ -1594,48 +1594,13 @@ struct WidgetTextSettingsView: View {
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
-            NavigationLink {
-                FontFamilyPickerView(
-                    selectedFontFamily: $text.fontFamily,
-                    onChange: {
-                        if let fontFamily = text.fontFamily {
-                            text.fontStyle = UIFont.fontNames(forFamilyName: fontFamily).first ?? ""
-                        }
-                        for effect in model.getTextEffects(id: widget.id) {
-                            effect.setFontFamily(family: text.fontFamily)
-                            effect.setFontStyle(style: text.fontStyle)
-                        }
-                        model.remoteSceneSettingsUpdated()
-                    }
-                )
-            } label: {
-                HStack {
-                    Text("Family")
-                    Spacer()
-                    GrayTextView(text: text.fontFamilyString())
+            FontSettingsView(font: $text.font) {
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setFont(font: text.font)
                 }
+                model.remoteSceneSettingsUpdated()
             }
-            if let fontFamily = text.fontFamily {
-                NavigationLink {
-                    FontStylePickerView(
-                        fontFamily: fontFamily,
-                        selectedFontStyle: $text.fontStyle,
-                        onChange: {
-                            for effect in model.getTextEffects(id: widget.id) {
-                                effect.setFontStyle(style: text.fontStyle)
-                            }
-                            model.remoteSceneSettingsUpdated()
-                        }
-                    )
-                } label: {
-                    HStack {
-                        Text("Style")
-                        Spacer()
-                        GrayTextView(text: text.fontStyleString())
-                    }
-                }
-                .disabled(UIFont.fontNames(forFamilyName: fontFamily).count == 1)
-            } else {
+            if text.font.family == nil {
                 Picker("Design", selection: $text.fontDesign) {
                     ForEach(SettingsFontDesign.allCases, id: \.self) {
                         Text($0.toString())

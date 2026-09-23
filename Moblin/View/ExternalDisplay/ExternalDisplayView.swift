@@ -11,8 +11,7 @@ private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
         animatedEmotes: chat.animatedEmotes,
         nicknames: chat.nicknames,
         displayStyle: chat.displayStyle,
-        fontFamily: chat.fontFamily,
-        fontStyle: chat.fontStyle
+        font: chat.font
     )
 }
 

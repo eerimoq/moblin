@@ -32,36 +32,8 @@ struct ChatSettingsAppearanceView: View {
                             .frame(width: 25)
                     }
                     if database.showAllSettings {
-                        NavigationLink {
-                            FontFamilyPickerView(selectedFontFamily: $chat.fontFamily) {
-                                if let fontFamily = chat.fontFamily {
-                                    chat.fontStyle = UIFont.fontNames(forFamilyName: fontFamily).first ?? ""
-                                }
-                                model.reloadChatMessages()
-                            }
-                        } label: {
-                            HStack {
-                                Text("Family")
-                                Spacer()
-                                GrayTextView(text: chat.fontFamilyString())
-                            }
-                        }
-                        if let fontFamily = chat.fontFamily {
-                            NavigationLink {
-                                FontStylePickerView(
-                                    fontFamily: fontFamily,
-                                    selectedFontStyle: $chat.fontStyle
-                                ) {
-                                    model.reloadChatMessages()
-                                }
-                            } label: {
-                                HStack {
-                                    Text("Style")
-                                    Spacer()
-                                    GrayTextView(text: chat.fontStyleString())
-                                }
-                            }
-                            .disabled(UIFont.fontNames(forFamilyName: fontFamily).count == 1)
+                        FontSettingsView(font: $chat.font) {
+                            model.reloadChatMessages()
                         }
                         Toggle("Bold name", isOn: $chat.boldUsername)
                             .onChange(of: chat.boldUsername) { _ in

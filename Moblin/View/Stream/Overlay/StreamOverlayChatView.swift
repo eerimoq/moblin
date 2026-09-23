@@ -22,8 +22,7 @@ private func makeChatLineStyle(chat: SettingsChat, interactive: Bool) -> ChatLin
         highlightDefaultColor: chat.messageColorColor,
         nicknames: chat.nicknames,
         displayStyle: chat.displayStyle,
-        fontFamily: chat.fontFamily,
-        fontStyle: chat.fontStyle
+        font: chat.font
     )
 }
 
