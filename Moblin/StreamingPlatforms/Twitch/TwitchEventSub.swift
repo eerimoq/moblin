@@ -474,6 +474,7 @@ final class TwitchEventSub: NSObject {
     private var remoteControl: Bool
     private let userId: String
     private var sessionId: String = ""
+    private var remainingSubscriptions = 0
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
@@ -521,6 +522,7 @@ final class TwitchEventSub: NSObject {
 
     func stopInternal() {
         connected = false
+        sessionId = ""
         webSocket.stop()
         connectDelayTimer.stop()
     }
@@ -561,164 +563,52 @@ final class TwitchEventSub: NSObject {
             return
         }
         sessionId = message.payload.session.id
-        subscribeToChannelFollow()
+        subscribe()
     }
 
-    private func subscribeToChannelFollow() {
-        let body = createBody(
-            type: subTypeChannelFollow,
-            version: 2,
-            condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
-        )
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
+    private func subscribe() {
+        let broadcaster = "{\"broadcaster_user_id\":\"\(userId)\"}"
+        let broadcasterAndModerator =
+            "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
+        let subscriptions = [
+            (subTypeChannelFollow, 2, broadcasterAndModerator),
+            (subTypeChannelChatNotification,
+             1,
+             "{\"broadcaster_user_id\":\"\(userId)\",\"user_id\":\"\(userId)\"}"),
+            (subTypeChannelChannelPointsCustomRewardRedemptionAdd, 1, broadcaster),
+            (subTypeChannelRaid, 1, "{\"to_broadcaster_user_id\":\"\(userId)\"}"),
+            (subTypeChannelRaid, 1, "{\"from_broadcaster_user_id\":\"\(userId)\"}"),
+            (subTypeChannelCheer, 1, broadcaster),
+            (subTypeChannelHypeTrainBegin, 2, broadcaster),
+            (subTypeChannelHypeTrainProgress, 2, broadcaster),
+            (subTypeChannelHypeTrainEnd, 2, broadcaster),
+            (subTypeChannelAdBreakBegin, 1, broadcaster),
+            (subTypeChannelModerate, 2, broadcasterAndModerator),
+            (subTypeChannelPollBegin, 1, broadcaster),
+            (subTypeChannelPollProgress, 1, broadcaster),
+            (subTypeChannelPollEnd, 1, broadcaster),
+            (subTypeChannelPredictionBegin, 1, broadcaster),
+            (subTypeChannelPredictionProgress, 1, broadcaster),
+            (subTypeChannelPredictionLock, 1, broadcaster),
+            (subTypeChannelPredictionEnd, 1, broadcaster),
+        ]
+        let sessionId = sessionId
+        remainingSubscriptions = subscriptions.count
+        for (type, version, condition) in subscriptions {
+            let body = createBody(type: type, version: version, condition: condition)
+            twitchApi.createEventSubSubscription(body: body) { ok in
+                guard sessionId == self.sessionId else {
+                    return
+                }
+                guard ok else {
+                    logger.info("twitch: event-sub: Failed to subscribe to \(type)")
+                    return
+                }
+                self.remainingSubscriptions -= 1
+                if self.remainingSubscriptions == 0 {
+                    self.connected = true
+                }
             }
-            self.subscribeToChannelChatNotification()
-        }
-    }
-
-    private func subscribeToChannelChatNotification() {
-        let body = createBody(
-            type: subTypeChannelChatNotification,
-            version: 1,
-            condition: "{\"broadcaster_user_id\":\"\(userId)\",\"user_id\":\"\(userId)\"}"
-        )
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
-            }
-            self.subscribeToChannelPointsCustomRewardRedemptionAdd()
-        }
-    }
-
-    private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
-        subscribeBroadcasterUserId(type: subTypeChannelChannelPointsCustomRewardRedemptionAdd) {
-            self.subscribeToChannelRaidTo()
-        }
-    }
-
-    private func subscribeToChannelRaidTo() {
-        let body = createBody(type: subTypeChannelRaid,
-                              version: 1,
-                              condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
-            }
-            self.subscribeToChannelRaidFrom()
-        }
-    }
-
-    private func subscribeToChannelRaidFrom() {
-        let body = createBody(type: subTypeChannelRaid,
-                              version: 1,
-                              condition: "{\"from_broadcaster_user_id\":\"\(userId)\"}")
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
-            }
-            self.subscribeToChannelCheer()
-        }
-    }
-
-    private func subscribeToChannelCheer() {
-        subscribeBroadcasterUserId(type: subTypeChannelCheer) {
-            self.subscribeToChannelHypeTrainBegin()
-        }
-    }
-
-    private func subscribeToChannelHypeTrainBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainBegin, version: 2) {
-            self.subscribeToChannelHypeTrainProgress()
-        }
-    }
-
-    private func subscribeToChannelHypeTrainProgress() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainProgress, version: 2) {
-            self.subscribeToChannelHypeTrainEnd()
-        }
-    }
-
-    private func subscribeToChannelHypeTrainEnd() {
-        subscribeBroadcasterUserId(type: subTypeChannelHypeTrainEnd, version: 2) {
-            self.subscribeTochannelAdBreakBegin()
-        }
-    }
-
-    private func subscribeTochannelAdBreakBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelAdBreakBegin) {
-            self.subscribeToChannelModerate()
-        }
-    }
-
-    private func subscribeToChannelModerate() {
-        let body = createBody(
-            type: subTypeChannelModerate,
-            version: 2,
-            condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
-        )
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
-            }
-            self.subscribeToChannelPollBegin()
-        }
-    }
-
-    private func subscribeToChannelPollBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelPollBegin) {
-            self.subscribeToChannelPollProgress()
-        }
-    }
-
-    private func subscribeToChannelPollProgress() {
-        subscribeBroadcasterUserId(type: subTypeChannelPollProgress) {
-            self.subscribeToChannelPollEnd()
-        }
-    }
-
-    private func subscribeToChannelPollEnd() {
-        subscribeBroadcasterUserId(type: subTypeChannelPollEnd) {
-            self.subscribeToChannelPredictionBegin()
-        }
-    }
-
-    private func subscribeToChannelPredictionBegin() {
-        subscribeBroadcasterUserId(type: subTypeChannelPredictionBegin) {
-            self.subscribeToChannelPredictionProgress()
-        }
-    }
-
-    private func subscribeToChannelPredictionProgress() {
-        subscribeBroadcasterUserId(type: subTypeChannelPredictionProgress) {
-            self.subscribeToChannelPredictionLock()
-        }
-    }
-
-    private func subscribeToChannelPredictionLock() {
-        subscribeBroadcasterUserId(type: subTypeChannelPredictionLock) {
-            self.subscribeToChannelPredictionEnd()
-        }
-    }
-
-    private func subscribeToChannelPredictionEnd() {
-        subscribeBroadcasterUserId(type: subTypeChannelPredictionEnd) {
-            self.connected = true
-        }
-    }
-
-    private func subscribeBroadcasterUserId(
-        type: String,
-        version: Int = 1,
-        onSuccess: @escaping () -> Void
-    ) {
-        let body = createBroadcasterUserIdBody(type: type, version: version)
-        twitchApi.createEventSubSubscription(body: body) { ok in
-            guard ok else {
-                return
-            }
-            onSuccess()
         }
     }
 
@@ -734,12 +624,6 @@ final class TwitchEventSub: NSObject {
             }
         }
         """
-    }
-
-    private func createBroadcasterUserIdBody(type: String, version: Int = 1) -> String {
-        createBody(type: type,
-                   version: version,
-                   condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
     }
 
     private func handleNotification(message: BasicMessage, messageText: String, messageData: Data) {
