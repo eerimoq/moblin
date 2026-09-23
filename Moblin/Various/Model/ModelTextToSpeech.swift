@@ -12,6 +12,9 @@ extension Model {
         guard database.chat.textToSpeechEnabled, post.live, post.filter?.textToSpeech != false else {
             return false
         }
+        guard isTextToSpeechOutputAllowed() else {
+            return false
+        }
         if database.chat.textToSpeechSubscribersOnly {
             guard post.isSubscriber else {
                 return false
@@ -24,6 +27,17 @@ extension Model {
             return false
         }
         return post.user != nil
+    }
+
+    func isTextToSpeechOutputAllowed() -> Bool {
+        !database.chat.textToSpeechBluetoothSpeakerOnly || isBluetoothAudioOutput
+    }
+
+    func stopTextToSpeechIfOutputNotAllowed() {
+        guard database.chat.textToSpeechEnabled, !isTextToSpeechOutputAllowed() else {
+            return
+        }
+        chatTextToSpeech.reset(running: true)
     }
 
     private func isTextToSpeechEnabledForAnyAlertWidget() -> Bool {
