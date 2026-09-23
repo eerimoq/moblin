@@ -28,6 +28,7 @@ class SettingsDebug: Codable, ObservableObject {
     // To be removed.
     var faceToBeRemoved: SettingsFace = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
+    @Published var nativeLowLightBoost: Bool = false
     var blurSceneSwitch: Bool = true
     // To be removed.
     var preferStereoMicToBeRemoved: Bool = false
@@ -64,6 +65,7 @@ class SettingsDebug: Codable, ObservableObject {
         case pixelFormat
         case beautyFilterSettings
         case allowVideoRangePixelFormat
+        case nativeLowLightBoost
         case blurSceneSwitch
         case preferStereoMic
         case twitchRewards
@@ -108,6 +110,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.pixelFormat, pixelFormat)
         try container.encode(.beautyFilterSettings, faceToBeRemoved)
         try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
+        try container.encode(.nativeLowLightBoost, nativeLowLightBoost)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
         try container.encode(.preferStereoMic, preferStereoMicToBeRemoved)
         try container.encode(.twitchRewards, twitchRewards)
@@ -151,6 +154,7 @@ class SettingsDebug: Codable, ObservableObject {
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
         faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
+        nativeLowLightBoost = container.decode(.nativeLowLightBoost, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
         preferStereoMicToBeRemoved = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)

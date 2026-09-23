@@ -1,7 +1,22 @@
+import Foundation
 @testable import Moblin
 import Testing
 
 struct SettingsSuite {
+    @Test
+    func nativeLowLightBoostDefaultsOffAndRoundTrips() throws {
+        #expect(!SettingsDebug().nativeLowLightBoost)
+        let decoded = try JSONDecoder().decode(SettingsDebug.self, from: Data("{}".utf8))
+        #expect(!decoded.nativeLowLightBoost)
+        for enabled in [false, true] {
+            let settings = SettingsDebug()
+            settings.nativeLowLightBoost = enabled
+            let data = try JSONEncoder().encode(settings)
+            let restored = try JSONDecoder().decode(SettingsDebug.self, from: data)
+            #expect(restored.nativeLowLightBoost == enabled)
+        }
+    }
+
     @Test
     func streamUrlSchemeSelectsProtocol() {
         let stream = SettingsStream(name: "Test")

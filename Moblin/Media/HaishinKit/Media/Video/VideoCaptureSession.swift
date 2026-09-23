@@ -1,6 +1,8 @@
 import AVFoundation
 import Photos
 
+let nativeLowLightBoost = Atomic(false)
+
 struct CaptureDevice {
     let device: AVCaptureDevice
     let id: UUID
@@ -437,6 +439,12 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 device.activeFormat = format
             }
             device.activeColorSpace = colorSpace
+            let enabled = nativeLowLightBoost.value
+            if device.isLowLightBoostSupported,
+               device.automaticallyEnablesLowLightBoostWhenAvailable != enabled
+            {
+                device.automaticallyEnablesLowLightBoostWhenAvailable = enabled
+            }
             if useAutoFrameRate {
                 device.setAutoFps()
                 processor?.delegate.streamSelectedFps(auto: true)
