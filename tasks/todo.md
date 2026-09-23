@@ -68,8 +68,7 @@ an invented example.
 ## Documentation decisions
 
 - Keep shared conventions in `CONTRIBUTING.md` and a short execution checklist
-  in the repository instruction file. Replace the old local guide with links
-  so its stale claims cannot compete with current guidance.
+  in `AGENTS.md`, the single repository instruction file.
 - Correct the Python formatter and module invocation, distinguish Swift
   compiler mode from formatter mode, and describe SwiftUI localization
   accurately.
@@ -81,20 +80,16 @@ an invented example.
 
 ## Validation
 
-- Standard-library documentation checks passed: 45 local links, heading anchors,
+- Standard-library documentation checks passed: 43 local links, heading anchors,
   balanced fences, final newlines, and no trailing whitespace or non-ASCII text.
   All four shell blocks passed `bash -n`; all five documented `just` invocations
   name existing recipes. Twelve architecture and tooling assertions matched
   their current source or configuration.
-- `git diff --check -- CLAUDE.md` passed with exit 0. The equivalent new-file
-  checks, `git diff --no-index --check -- /dev/null AGENTS.md` and the same
-  command for `CONTRIBUTING.md` and `tasks/todo.md`, emitted no diagnostics.
-  Their exit 1 denotes the added file in a no-index comparison.
-- The local Unicode and metadata service inspected all four Markdown files
+- `git diff --cached --check` passed with exit 0 and no diagnostics.
+- The local Unicode and metadata service inspected all three Markdown files
   without findings. Cleaning returned identical bytes; no rewrite was applied.
 - SHA-256 checks confirmed all 11 pre-existing modified or untracked files were
-  unchanged. Only the four documentation files were added or edited. Global
-  guidance was untouched.
+  unchanged. Only documentation paths changed. Global guidance was untouched.
 
 Xcode builds, Swift unit tests, and device tests were not run for this
 documentation change. Xcode is unavailable on this host. The repository task
