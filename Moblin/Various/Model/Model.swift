@@ -937,6 +937,10 @@ final class Model: NSObject, ObservableObject {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
+    func setNativeLowLightBoost() {
+        nativeLowLightBoost = database.debug.nativeLowLightBoost
+    }
+
     func setHighQualityDownsampling() {
         highQualityDownsampling = database.graphicsHighQualityDownsampling
     }
@@ -1074,6 +1078,7 @@ final class Model: NSObject, ObservableObject {
         faxReceiver.delegate = self
         fixAlertMediasNoUpdate()
         setAllowVideoRangePixelFormat()
+        setNativeLowLightBoost()
         setHighQualityDownsampling()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop

@@ -28,6 +28,10 @@ struct DebugVideoSettingsView: View {
                     .onChange(of: debug.allowVideoRangePixelFormat) { _ in
                         model.setAllowVideoRangePixelFormat()
                     }
+                Toggle("Native low light boost", isOn: $debug.nativeLowLightBoost)
+                    .onChange(of: debug.nativeLowLightBoost) { _ in
+                        model.setNativeLowLightBoost()
+                    }
             } footer: {
                 Text("Change camera and restart stream for these to work properly.")
             }

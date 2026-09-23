@@ -46,6 +46,13 @@ extension AVCaptureDevice {
             isAutoVideoFrameRateEnabled = true
         }
     }
+
+    func setLowLightBoost(value: Bool) {
+        guard isLowLightBoostSupported else {
+            return
+        }
+        automaticallyEnablesLowLightBoostWhenAvailable = value
+    }
 }
 
 extension AVCaptureDevice {
