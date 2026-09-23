@@ -133,7 +133,14 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
             }
         }
     }
-    return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
+    guard dimension > 64 else {
+        return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
+    }
+    let bigLut = stride(from: 0, to: numberOutputOfComponents, by: 4).map { index in
+        SIMD3(originalCube[index], originalCube[index + 1], originalCube[index + 2])
+    }
+    let lut64 = convertLutTo64(bigLut: bigLut, bigDimension: dimension)
+    return (64, makeCubeData(lut64.map { LutEntry(red: $0.x, green: $0.y, blue: $0.z) }))
 }
 
 func makeLutCgImage(dimension: Int, cubeData: Data) -> CGImage? {

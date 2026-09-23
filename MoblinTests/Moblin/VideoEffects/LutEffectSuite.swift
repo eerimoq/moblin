@@ -1,3 +1,4 @@
+import MetalPetal
 @testable import Moblin
 import SwiftCube
 import SwiftUI
@@ -230,6 +231,60 @@ struct LutEffectSuite {
                 }
             }
         }
+    }
+
+    @Test
+    func convertBigPngLutTo64() throws {
+        let dimension = 65
+        let original = try SC3DLut(fileData: makeCubeFile(dimension: dimension, linear))
+        let cgImage = try #require(makeLutCgImage(dimension: dimension,
+                                                  cubeData: makeCubeData(original.entries)))
+        let (convertedDimension, convertedData) = try lutEffectConvertLut(image: UIImage(cgImage: cgImage))
+        #expect(convertedDimension == 64)
+        #expect(convertedData.count == 64 * 64 * 64 * 4 * 4)
+        for (red, green, blue) in [
+            (0, 0, 0),
+            (63, 0, 0),
+            (0, 63, 0),
+            (0, 0, 63),
+            (21, 42, 63),
+            (63, 63, 63),
+        ] {
+            let actual = entry(convertedData, dimension: 64, red: red, green: green, blue: blue)
+            let expected = linear(SIMD3(Float(red), Float(green), Float(blue)) / 63)
+            #expect(isEqual(actual, expected, epsilon: 0.6 / 255))
+        }
+    }
+
+    @Test
+    func renderBigPngLutWithMetalPetal() throws {
+        let size = 2744
+        let context = try #require(CGContext(data: nil,
+                                             width: size,
+                                             height: size,
+                                             bitsPerComponent: 8,
+                                             bytesPerRow: size * 4,
+                                             space: CGColorSpaceCreateDeviceRGB(),
+                                             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        let pngLut = try #require(context.makeImage())
+        let (dimension, cubeData) = try lutEffectConvertLut(image: UIImage(cgImage: pngLut))
+        #expect(dimension == 64)
+        let lutCgImage = try #require(makeLutCgImage(dimension: Int(dimension), cubeData: cubeData))
+        let filter = MTIColorLookupFilter()
+        filter.inputColorLookupTable = MTIImage(cgImage: lutCgImage, options: [.SRGB: false], isOpaque: true)
+        filter.inputImage = MTIImage(color: MTIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1),
+                                     sRGB: false,
+                                     size: CGSize(width: 64, height: 64))
+        let outputImage = try #require(filter.outputImage)
+        var pixelBuffer: CVPixelBuffer?
+        CVPixelBufferCreate(kCFAllocatorDefault,
+                            64,
+                            64,
+                            kCVPixelFormatType_32BGRA,
+                            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,
+                            &pixelBuffer)
+        let metalPetalContext = try MTIContext(device: #require(MTLCreateSystemDefaultDevice()))
+        try metalPetalContext.render(outputImage, to: #require(pixelBuffer))
     }
 
     @Test
