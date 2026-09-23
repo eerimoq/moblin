@@ -1265,6 +1265,20 @@ extension Model: TwitchEventSubDelegate {
         }
     }
 
+    func twitchEventSubChannelShoutoutCreate(event: TwitchEventSubChannelShoutoutCreateEvent) {
+        appendTwitchChatAlertMessage(
+            user: event.moderator_user_name,
+            segments: makeTwitchAlertSegments(
+                text: String(localized: "gave a shoutout to \(event.to_broadcaster_user_name)!")
+            ),
+            title: String(localized: "Shoutout sent"),
+            color: .orange,
+            image: "megaphone",
+            kind: .other,
+            sharedChat: nil
+        )
+    }
+
     func twitchEventSubUnauthorized() {
         twitchApiUnauthorized(stream: stream)
     }

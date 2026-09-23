@@ -20,6 +20,7 @@ private final class Delegate: TwitchEventSubDelegate {
     var polls: [(phase: String, event: TwitchEventSubChannelPollEvent)] = []
     var predictions: [(phase: String, event: TwitchEventSubChannelPredictionEvent)] = []
     var moderates: [TwitchEventSubChannelModerateEvent] = []
+    var shoutoutCreates: [TwitchEventSubChannelShoutoutCreateEvent] = []
     var unauthorizedCount = 0
     var notifications: [String] = []
 
@@ -111,6 +112,10 @@ private final class Delegate: TwitchEventSubDelegate {
 
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent) {
         moderates.append(event)
+    }
+
+    func twitchEventSubChannelShoutoutCreate(event: TwitchEventSubChannelShoutoutCreateEvent) {
+        shoutoutCreates.append(event)
     }
 
     func twitchEventSubUnauthorized() {
@@ -653,6 +658,35 @@ struct TwitchEventSubSuite {
         #expect(delegate.adBreaks.count == 1)
         #expect(delegate.adBreaks.first?.duration_seconds == 60)
         #expect(delegate.adBreaks.first?.is_automatic == false)
+    }
+
+    @Test
+    func shoutoutCreate() {
+        let delegate = Delegate()
+        makeEventSub(delegate: delegate).handleMessage(messageText: notification(
+            subscriptionType: "channel.shoutout.create",
+            event: #"""
+            {
+              "broadcaster_user_id": "111",
+              "broadcaster_user_login": "me",
+              "broadcaster_user_name": "Me",
+              "moderator_user_id": "444",
+              "moderator_user_login": "mod",
+              "moderator_user_name": "Mod",
+              "to_broadcaster_user_id": "555",
+              "to_broadcaster_user_login": "friend",
+              "to_broadcaster_user_name": "Friend",
+              "viewer_count": 860,
+              "started_at": "2026-09-06T10:00:00.000Z",
+              "cooldown_ends_at": "2026-09-06T10:02:00.000Z",
+              "target_cooldown_ends_at": "2026-09-06T11:00:00.000Z"
+            }
+            """#
+        ))
+        #expect(delegate.shoutoutCreates.count == 1)
+        #expect(delegate.shoutoutCreates.first?.moderator_user_name == "Mod")
+        #expect(delegate.shoutoutCreates.first?.to_broadcaster_user_name == "Friend")
+        #expect(delegate.notifications.count == 1)
     }
 
     @Test

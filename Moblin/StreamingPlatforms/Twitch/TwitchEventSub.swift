@@ -414,6 +414,19 @@ private struct NotificationChannelModerateMessage: Decodable {
     var payload: NotificationChannelModeratePayload
 }
 
+struct TwitchEventSubChannelShoutoutCreateEvent: Decodable {
+    var moderator_user_name: String
+    var to_broadcaster_user_name: String
+}
+
+private struct NotificationChannelShoutoutCreatePayload: Decodable {
+    var event: TwitchEventSubChannelShoutoutCreateEvent
+}
+
+private struct NotificationChannelShoutoutCreateMessage: Decodable {
+    var payload: NotificationChannelShoutoutCreatePayload
+}
+
 private let url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 @MainActor
@@ -445,6 +458,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent)
     func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent)
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent)
+    func twitchEventSubChannelShoutoutCreate(event: TwitchEventSubChannelShoutoutCreateEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -467,6 +481,7 @@ private let subTypeChannelPredictionBegin = "channel.prediction.begin"
 private let subTypeChannelPredictionProgress = "channel.prediction.progress"
 private let subTypeChannelPredictionLock = "channel.prediction.lock"
 private let subTypeChannelPredictionEnd = "channel.prediction.end"
+private let subTypeChannelShoutoutCreate = "channel.shoutout.create"
 
 private let initialReconnectDelay = 5.0
 
@@ -615,6 +630,7 @@ final class TwitchEventSub: NSObject {
             .init(type: subTypeChannelPredictionProgress, version: 1, condition: broadcaster),
             .init(type: subTypeChannelPredictionLock, version: 1, condition: broadcaster),
             .init(type: subTypeChannelPredictionEnd, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelShoutoutCreate, version: 1, condition: broadcasterAndModerator),
         ]
     }
 
@@ -712,6 +728,8 @@ final class TwitchEventSub: NSObject {
                 try handleChannelPredictionLock(messageData: messageData)
             case subTypeChannelPredictionEnd:
                 try handleChannelPredictionEnd(messageData: messageData)
+            case subTypeChannelShoutoutCreate:
+                try handleChannelShoutoutCreate(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {
                     logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -972,6 +990,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelModerate(event: message.payload.event)
+    }
+
+    private func handleChannelShoutoutCreate(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelShoutoutCreateMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelShoutoutCreate(event: message.payload.event)
     }
 }
 
