@@ -34,6 +34,34 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            NavigationLink {
+                FontFamilyPickerView(selectedFontFamily: $chat.fontFamily) {
+                    if let fontFamily = chat.fontFamily {
+                        chat.fontStyle = UIFont.fontNames(forFamilyName: fontFamily).first ?? ""
+                    }
+                    setEffectSettings()
+                }
+            } label: {
+                HStack {
+                    Text("Font family")
+                    Spacer()
+                    GrayTextView(text: chat.fontFamilyString())
+                }
+            }
+            if let fontFamily = chat.fontFamily {
+                NavigationLink {
+                    FontStylePickerView(fontFamily: fontFamily, selectedFontStyle: $chat.fontStyle) {
+                        setEffectSettings()
+                    }
+                } label: {
+                    HStack {
+                        Text("Font style")
+                        Spacer()
+                        GrayTextView(text: chat.fontStyleString())
+                    }
+                }
+                .disabled(UIFont.fontNames(forFamilyName: fontFamily).count == 1)
+            }
             Picker("Messages", selection: $chat.maximumNumberOfMessages) {
                 ForEach([1, 2, 3, 4, 5], id: \.self) {
                     Text(String($0))

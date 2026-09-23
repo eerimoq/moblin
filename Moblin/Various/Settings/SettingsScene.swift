@@ -1904,6 +1904,8 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
 class SettingsWidgetChat: Codable, ObservableObject {
     var id: UUID = .init()
     @Published var fontSize: Float = 19.0
+    @Published var fontFamily: String?
+    @Published var fontStyle: String = ""
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
@@ -1926,6 +1928,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case id
         case fontSize
+        case fontFamily
+        case fontStyle
         case usernameColor
         case messageColor
         case backgroundColor
@@ -1947,6 +1951,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.fontSize, fontSize)
+        try container.encode(.fontFamily, fontFamily)
+        try container.encode(.fontStyle, fontStyle)
         try container.encode(.usernameColor, usernameColor)
         try container.encode(.messageColor, messageColor)
         try container.encode(.backgroundColor, backgroundColor)
@@ -1966,6 +1972,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         fontSize = container.decode(.fontSize, Float.self, 19.0)
+        fontFamily = container.decode(.fontFamily, String?.self, nil)
+        fontStyle = container.decode(.fontStyle, String.self, "")
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
         messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
@@ -1987,6 +1995,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
 
     func update(other: SettingsWidgetChat) {
         fontSize = other.fontSize
+        fontFamily = other.fontFamily
+        fontStyle = other.fontStyle
         usernameColor = other.usernameColor
         usernameColorColor = other.usernameColorColor
         messageColor = other.messageColor
@@ -2004,6 +2014,22 @@ class SettingsWidgetChat: Codable, ObservableObject {
         sharedChatIcons = other.sharedChatIcons
         height = other.height
         maximumNumberOfMessages = other.maximumNumberOfMessages
+    }
+
+    func fontFamilyString() -> String {
+        if let fontFamily {
+            fontFamily
+        } else {
+            String(localized: "System")
+        }
+    }
+
+    func fontStyleString() -> String {
+        if let fontFamily {
+            fontStyleName(family: fontFamily, fontName: fontStyle)
+        } else {
+            ""
+        }
     }
 }
 
