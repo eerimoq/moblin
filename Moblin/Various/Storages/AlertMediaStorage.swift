@@ -2,13 +2,17 @@ import Foundation
 
 let alertsStorageDirectory = "Alerts"
 
+func createAlertVideosDirectory() -> URL {
+    createAndGetDirectory(name: alertsStorageDirectory, "Videos")
+}
+
 class AlertVideoMediaStorage {
     private var fileManager: FileManager
     private var mediasUrl: URL
 
     init() {
         fileManager = FileManager.default
-        mediasUrl = createAndGetDirectory(name: alertsStorageDirectory, "Videos")
+        mediasUrl = createAlertVideosDirectory()
     }
 
     func makePath(filename: String) -> URL {

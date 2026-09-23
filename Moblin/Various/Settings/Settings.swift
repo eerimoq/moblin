@@ -2257,6 +2257,14 @@ private let exportFiles = [
     controlBarBackgroundImagePath,
 ]
 
+private func recreateExportDirectories() {
+    for directory in exportDirectories {
+        try? FileManager.default.removeItem(at: URL.documentsDirectory.appending(component: directory))
+        _ = createAndGetDirectory(name: directory)
+    }
+    _ = createAlertVideosDirectory()
+}
+
 private let storage = SimpleStringStorage(key: "settings")
 
 @MainActor
@@ -2305,6 +2313,7 @@ final class Settings {
             try? FileManager.default.removeItem(at: settingsJson)
             do {
                 try ZipArchiveReader.withFile(url.path) { reader in
+                    recreateExportDirectories()
                     try reader.extract(to: .init(root.path()))
                 }
             } catch {
