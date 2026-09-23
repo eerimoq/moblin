@@ -10,7 +10,9 @@ private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
         badges: chat.badges,
         animatedEmotes: chat.animatedEmotes,
         nicknames: chat.nicknames,
-        displayStyle: chat.displayStyle
+        displayStyle: chat.displayStyle,
+        fontFamily: chat.fontFamily,
+        fontStyle: chat.fontStyle
     )
 }
 
