@@ -152,7 +152,7 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
     case kickSubscription = "Kick subscription"
     case kickGiftSubscriptions = "Kick gift subscriptions"
     case kickReward = "Kick reward"
-    case kickHost = "Kick host"
+    case kickRaid = "Kick raid"
     case kickKicks = "Kick kicks"
     case goLive = "Stream started"
     case end = "Stream stopped"
@@ -184,8 +184,8 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
             String(localized: "Kick gift subscriptions")
         case .kickReward:
             String(localized: "Kick reward")
-        case .kickHost:
-            String(localized: "Kick host")
+        case .kickRaid:
+            String(localized: "Kick raid")
         case .kickKicks:
             String(localized: "Kick kicks")
         case .goLive:
@@ -207,7 +207,7 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
             String(localized: "Minimum subscriptions")
         case .twitchResubscription, .kickSubscription:
             String(localized: "Minimum months")
-        case .twitchRaid, .kickHost:
+        case .twitchRaid, .kickRaid:
             String(localized: "Minimum viewers")
         case .twitchCheer:
             String(localized: "Minimum bits")
@@ -243,14 +243,6 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
         }
     }
 
-    func variablesToString() -> String? {
-        let variables = variables()
-        guard !variables.isEmpty else {
-            return nil
-        }
-        return variables.map { $0.toString() }.joined(separator: ", ")
-    }
-
     func textTitle() -> String? {
         switch self {
         case .twitchReward, .kickReward:
@@ -274,6 +266,29 @@ enum MacroVariable: String {
 
     func toString() -> String {
         "{\(rawValue)}"
+    }
+
+    func description() -> String {
+        switch self {
+        case .twitchFollowUser:
+            String(localized: "Name of the user who followed")
+        case .twitchSubscriptionUser:
+            String(localized: "Name of the user who subscribed")
+        case .twitchGiftSubscriptionUser:
+            String(localized: "Name of the user who gifted subscriptions")
+        case .twitchResubscriptionUser:
+            String(localized: "Name of the user who resubscribed")
+        case .twitchRewardUser:
+            String(localized: "Name of the user who redeemed the reward")
+        case .twitchWatchStreakUser:
+            String(localized: "Name of the user who shared the watch streak")
+        case .twitchCheerUser:
+            String(localized: "Name of the user who cheered")
+        case .twitchRaidChannelId:
+            String(localized: "Id of the raiding channel")
+        case .twitchRaidChannelName:
+            String(localized: "Name of the raiding channel")
+        }
     }
 }
 

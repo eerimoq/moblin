@@ -491,7 +491,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickHost(event: event))
         printEventCatPrinters(event: .kickHost, username: user, message: text)
-        macrosEventOccurred(MacroEvent(event: .kickHost, amount: event.number_viewers))
+        macrosEventOccurred(MacroEvent(event: .kickRaid, amount: event.number_viewers))
     }
 
     func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
