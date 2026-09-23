@@ -315,10 +315,13 @@ class TwitchApi {
         }
     }
 
-    func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
-        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, forbiddenIsAuthError: true) {
-            onComplete($0.isSuccessful())
-        }
+    func createEventSubSubscription(body: String, onComplete: @escaping (OperationResult) -> Void) {
+        doPost(
+            subPath: "eventsub/subscriptions",
+            body: body.utf8Data,
+            forbiddenIsAuthError: true,
+            onComplete: onComplete
+        )
     }
 
     func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {

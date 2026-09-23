@@ -468,6 +468,14 @@ private let subTypeChannelPredictionProgress = "channel.prediction.progress"
 private let subTypeChannelPredictionLock = "channel.prediction.lock"
 private let subTypeChannelPredictionEnd = "channel.prediction.end"
 
+private let initialReconnectDelay = 5.0
+
+private struct Subscription {
+    let type: String
+    let version: Int
+    let condition: String
+}
+
 @MainActor
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
@@ -475,6 +483,7 @@ final class TwitchEventSub: NSObject {
     private let userId: String
     private var sessionId: String = ""
     private var remainingSubscriptions = 0
+    private var reconnectDelay = initialReconnectDelay
     private var twitchApi: TwitchApi
     private let delegate: any TwitchEventSubDelegate
     private var connected = false
@@ -504,6 +513,7 @@ final class TwitchEventSub: NSObject {
     func start() {
         logger.debug("twitch: event-sub: Start")
         stopInternal()
+        reconnectDelay = initialReconnectDelay
         connectDelayTimer.startSingleShot(timeout: 2.0) { [weak self] in
             guard let self, started else {
                 return
@@ -563,53 +573,92 @@ final class TwitchEventSub: NSObject {
             return
         }
         sessionId = message.payload.session.id
-        subscribe()
+        let subscriptions = makeSubscriptions()
+        remainingSubscriptions = subscriptions.count
+        subscribe(subscriptions: subscriptions)
     }
 
-    private func subscribe() {
+    private func makeSubscriptions() -> [Subscription] {
         let broadcaster = "{\"broadcaster_user_id\":\"\(userId)\"}"
         let broadcasterAndModerator =
             "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
-        let subscriptions = [
-            (subTypeChannelFollow, 2, broadcasterAndModerator),
-            (subTypeChannelChatNotification,
-             1,
-             "{\"broadcaster_user_id\":\"\(userId)\",\"user_id\":\"\(userId)\"}"),
-            (subTypeChannelChannelPointsCustomRewardRedemptionAdd, 1, broadcaster),
-            (subTypeChannelRaid, 1, "{\"to_broadcaster_user_id\":\"\(userId)\"}"),
-            (subTypeChannelRaid, 1, "{\"from_broadcaster_user_id\":\"\(userId)\"}"),
-            (subTypeChannelCheer, 1, broadcaster),
-            (subTypeChannelHypeTrainBegin, 2, broadcaster),
-            (subTypeChannelHypeTrainProgress, 2, broadcaster),
-            (subTypeChannelHypeTrainEnd, 2, broadcaster),
-            (subTypeChannelAdBreakBegin, 1, broadcaster),
-            (subTypeChannelModerate, 2, broadcasterAndModerator),
-            (subTypeChannelPollBegin, 1, broadcaster),
-            (subTypeChannelPollProgress, 1, broadcaster),
-            (subTypeChannelPollEnd, 1, broadcaster),
-            (subTypeChannelPredictionBegin, 1, broadcaster),
-            (subTypeChannelPredictionProgress, 1, broadcaster),
-            (subTypeChannelPredictionLock, 1, broadcaster),
-            (subTypeChannelPredictionEnd, 1, broadcaster),
+        return [
+            .init(type: subTypeChannelFollow, version: 2, condition: broadcasterAndModerator),
+            .init(type: subTypeChannelChatNotification,
+                  version: 1,
+                  condition: "{\"broadcaster_user_id\":\"\(userId)\",\"user_id\":\"\(userId)\"}"),
+            .init(
+                type: subTypeChannelChannelPointsCustomRewardRedemptionAdd,
+                version: 1,
+                condition: broadcaster
+            ),
+            .init(
+                type: subTypeChannelRaid,
+                version: 1,
+                condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}"
+            ),
+            .init(
+                type: subTypeChannelRaid,
+                version: 1,
+                condition: "{\"from_broadcaster_user_id\":\"\(userId)\"}"
+            ),
+            .init(type: subTypeChannelCheer, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelHypeTrainBegin, version: 2, condition: broadcaster),
+            .init(type: subTypeChannelHypeTrainProgress, version: 2, condition: broadcaster),
+            .init(type: subTypeChannelHypeTrainEnd, version: 2, condition: broadcaster),
+            .init(type: subTypeChannelAdBreakBegin, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelModerate, version: 2, condition: broadcasterAndModerator),
+            .init(type: subTypeChannelPollBegin, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPollProgress, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPollEnd, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPredictionBegin, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPredictionProgress, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPredictionLock, version: 1, condition: broadcaster),
+            .init(type: subTypeChannelPredictionEnd, version: 1, condition: broadcaster),
         ]
+    }
+
+    private func subscribe(subscriptions: [Subscription]) {
         let sessionId = sessionId
-        remainingSubscriptions = subscriptions.count
-        for (type, version, condition) in subscriptions {
-            let body = createBody(type: type, version: version, condition: condition)
-            twitchApi.createEventSubSubscription(body: body) { ok in
+        for subscription in subscriptions {
+            let body = createBody(type: subscription.type,
+                                  version: subscription.version,
+                                  condition: subscription.condition)
+            twitchApi.createEventSubSubscription(body: body) { result in
                 guard sessionId == self.sessionId else {
                     return
                 }
-                guard ok else {
-                    logger.info("twitch: event-sub: Failed to subscribe to \(type)")
-                    return
-                }
-                self.remainingSubscriptions -= 1
-                if self.remainingSubscriptions == 0 {
-                    self.connected = true
-                }
+                self.handleSubscribeResult(subscription: subscription, result: result)
             }
         }
+    }
+
+    private func handleSubscribeResult(subscription: Subscription, result: OperationResult) {
+        switch result {
+        case .success:
+            remainingSubscriptions -= 1
+            if remainingSubscriptions == 0 {
+                connected = true
+                reconnectDelay = initialReconnectDelay
+            }
+        case .authError:
+            logger.info("twitch: event-sub: Not authorized to subscribe to \(subscription.type)")
+        case .error:
+            logger.info("twitch: event-sub: Failed to subscribe to \(subscription.type)")
+            reconnectLater()
+        }
+    }
+
+    private func reconnectLater() {
+        logger.info("twitch: event-sub: Reconnecting in \(reconnectDelay) seconds")
+        stopInternal()
+        connectDelayTimer.startSingleShot(timeout: reconnectDelay) { [weak self] in
+            guard let self, started else {
+                return
+            }
+            connect()
+        }
+        reconnectDelay = min(reconnectDelay * 2, 120)
     }
 
     private func createBody(type: String, version: Int, condition: String) -> String {
