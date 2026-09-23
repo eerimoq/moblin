@@ -19,6 +19,11 @@ private func makeLut(dimension: Int,
     return lut
 }
 
+private func makeCubeData(dimension: Int, _ function: (SIMD3<Float>) -> SIMD3<Float>) -> Data {
+    let cube = makeLut(dimension: dimension, function).map { SIMD4($0, 1) }
+    return Data(bytes: cube, count: cube.count * 16)
+}
+
 private func makeCubeFile(dimension: Int, _ function: (SIMD3<Float>) -> SIMD3<Float>) -> Data {
     var lines = ["TITLE \"Test\"", "LUT_3D_SIZE \(dimension)"]
     for entry in makeLut(dimension: dimension, function) {
@@ -49,6 +54,10 @@ private func entry(_ lut: SC3DLut, red: Int, green: Int, blue: Int) -> SIMD3<Flo
     return SIMD3(entry.red, entry.green, entry.blue)
 }
 
+private func sampler(_ lut: [SIMD3<Float>], dimension: Int) -> (Int, Int, Int) -> SIMD3<Float> {
+    { red, green, blue in lut[(blue * dimension + green) * dimension + red] }
+}
+
 private func entry(_ cubeData: Data, dimension: Int, red: Int, green: Int, blue: Int) -> SIMD3<Float> {
     let index = 4 * ((blue * dimension + green) * dimension + red)
     return cubeData.withUnsafeBytes { rawCube in
@@ -65,8 +74,12 @@ struct LutEffectSuite {
         for blue in 0 ..< dimension {
             for green in 0 ..< dimension {
                 for red in 0 ..< dimension {
-                    let point = SIMD3(Float(blue), Float(green), Float(red)) / Float(dimension - 1)
-                    let value = interpolate3d(at: point, in: lut, dimension: dimension)
+                    let point = SIMD3(Float(red), Float(green), Float(blue)) / Float(dimension - 1)
+                    let value = interpolate3d(
+                        at: point,
+                        dimension: dimension,
+                        sampler(lut, dimension: dimension)
+                    )
                     #expect(isEqual(value, lut[blue * dimension * dimension + green * dimension + red]))
                 }
             }
@@ -83,48 +96,47 @@ struct LutEffectSuite {
             SIMD3<Float>(0.75, 0, 1),
             SIMD3<Float>(0.99, 0.01, 0.4),
         ] {
-            let value = interpolate3d(at: point, in: lut, dimension: dimension)
-            #expect(isEqual(value, linear(SIMD3(point.z, point.y, point.x))))
+            let value = interpolate3d(at: point, dimension: dimension, sampler(lut, dimension: dimension))
+            #expect(isEqual(value, linear(point)))
         }
     }
 
     @Test
     func interpolate3dClampsOutOfRangeInput() {
-        let lut = makeLut(dimension: 4, identity)
-        #expect(isEqual(interpolate3d(at: SIMD3(-1, -0.5, -10), in: lut, dimension: 4), SIMD3(0, 0, 0)))
-        #expect(isEqual(interpolate3d(at: SIMD3(1.5, 2, 100), in: lut, dimension: 4), SIMD3(1, 1, 1)))
+        let lut = sampler(makeLut(dimension: 4, identity), dimension: 4)
+        #expect(isEqual(interpolate3d(at: SIMD3(-1, -0.5, -10), dimension: 4, lut), SIMD3(0, 0, 0)))
+        #expect(isEqual(interpolate3d(at: SIMD3(1.5, 2, 100), dimension: 4, lut), SIMD3(1, 1, 1)))
     }
 
     @Test
-    func convertIdentityLutTo64() {
-        let lut64 = convertLutTo64(bigLut: makeLut(dimension: 65, identity), bigDimension: 65)
-        #expect(lut64.count == 64 * 64 * 64)
-        for (actual, expected) in zip(lut64, makeLut(dimension: 64, identity)) {
-            #expect(isEqual(actual, expected))
-        }
-    }
-
-    @Test
-    func convertLutTo64KeepsChannelOrder() {
-        let lut64 = convertLutTo64(bigLut: makeLut(dimension: 96, linear), bigDimension: 96)
-        for (actual, expected) in zip(lut64, makeLut(dimension: 64, linear)) {
-            #expect(isEqual(actual, expected))
+    func makeBigLutCubeKeepsChannelOrder() {
+        let (dimension, cubeData) = makeLutCube(
+            dimension: 96,
+            sampler(makeLut(dimension: 96, linear), dimension: 96)
+        )
+        #expect(dimension == 64)
+        #expect(cubeData.count == 64 * 64 * 64 * 4 * 4)
+        for blue in 0 ..< 64 {
+            for green in 0 ..< 64 {
+                for red in 0 ..< 64 {
+                    let actual = entry(cubeData, dimension: 64, red: red, green: green, blue: blue)
+                    let expected = linear(SIMD3(Float(red), Float(green), Float(blue)) / 63)
+                    #expect(isEqual(actual, expected))
+                }
+            }
         }
     }
 
     @Test
     func convertCubeFile() throws {
-        let lut = try lutEffectConvertCube(data: makeCubeFile(dimension: 3, swapRedAndBlue))
-        #expect(lut.size == 3)
-        #expect(lut.entries.count == 27)
-        #expect(isEqual(entry(lut, red: 0, green: 0, blue: 0), SIMD3(0, 0, 0)))
-        #expect(isEqual(entry(lut, red: 2, green: 0, blue: 0), SIMD3(0, 0, 1)))
-        #expect(isEqual(entry(lut, red: 0, green: 1, blue: 0), SIMD3(0, 0.5, 0)))
-        #expect(isEqual(entry(lut, red: 0, green: 0, blue: 2), SIMD3(1, 0, 0)))
-        #expect(isEqual(entry(lut, red: 2, green: 2, blue: 2), SIMD3(1, 1, 1)))
-        let cubeData = makeCubeData(lut.entries)
+        let (dimension, cubeData) = try lutEffectConvertCube(data: makeCubeFile(dimension: 3, swapRedAndBlue))
+        #expect(dimension == 3)
         #expect(cubeData.count == 27 * 4 * 4)
+        #expect(isEqual(entry(cubeData, dimension: 3, red: 0, green: 0, blue: 0), SIMD3(0, 0, 0)))
         #expect(isEqual(entry(cubeData, dimension: 3, red: 2, green: 0, blue: 0), SIMD3(0, 0, 1)))
+        #expect(isEqual(entry(cubeData, dimension: 3, red: 0, green: 1, blue: 0), SIMD3(0, 0.5, 0)))
+        #expect(isEqual(entry(cubeData, dimension: 3, red: 0, green: 0, blue: 2), SIMD3(1, 0, 0)))
+        #expect(isEqual(entry(cubeData, dimension: 3, red: 2, green: 2, blue: 2), SIMD3(1, 1, 1)))
         cubeData.withUnsafeBytes { rawCube in
             let cube = rawCube.bindMemory(to: Float.self)
             for index in stride(from: 3, to: cube.count, by: 4) {
@@ -135,12 +147,13 @@ struct LutEffectSuite {
 
     @Test
     func convertBigCubeFileTo64() throws {
-        let lut = try lutEffectConvertCube(data: makeCubeFile(dimension: 65, linear))
-        #expect(lut.size == 64)
-        #expect(lut.entries.count == 64 * 64 * 64)
-        #expect(isEqual(entry(lut, red: 0, green: 0, blue: 0), linear(SIMD3(0, 0, 0))))
-        #expect(isEqual(entry(lut, red: 63, green: 0, blue: 0), linear(SIMD3(1, 0, 0))))
-        #expect(isEqual(entry(lut, red: 21, green: 42, blue: 63), linear(SIMD3(21 / 63, 42 / 63, 1))))
+        let (dimension, cubeData) = try lutEffectConvertCube(data: makeCubeFile(dimension: 65, linear))
+        #expect(dimension == 64)
+        #expect(cubeData.count == 64 * 64 * 64 * 4 * 4)
+        #expect(isEqual(entry(cubeData, dimension: 64, red: 0, green: 0, blue: 0), linear(SIMD3(0, 0, 0))))
+        #expect(isEqual(entry(cubeData, dimension: 64, red: 63, green: 0, blue: 0), linear(SIMD3(1, 0, 0))))
+        #expect(isEqual(entry(cubeData, dimension: 64, red: 21, green: 42, blue: 63),
+                        linear(SIMD3(21 / 63, 42 / 63, 1))))
     }
 
     @Test
@@ -209,8 +222,7 @@ struct LutEffectSuite {
     @Test
     func lutImageRoundTrip() throws {
         let dimension = 8
-        let original = try lutEffectConvertCube(data: makeCubeFile(dimension: dimension, linear))
-        let cubeData = makeCubeData(original.entries)
+        let (_, cubeData) = try lutEffectConvertCube(data: makeCubeFile(dimension: dimension, linear))
         let cgImage = try #require(makeLutCgImage(dimension: dimension, cubeData: cubeData))
         #expect(cgImage.width == dimension * dimension)
         #expect(cgImage.height == dimension)
@@ -226,7 +238,7 @@ struct LutEffectSuite {
                         green: green,
                         blue: blue
                     )
-                    let expected = entry(original, red: red, green: green, blue: blue)
+                    let expected = entry(cubeData, dimension: dimension, red: red, green: green, blue: blue)
                     #expect(isEqual(actual, expected, epsilon: 0.6 / 255))
                 }
             }
@@ -236,9 +248,8 @@ struct LutEffectSuite {
     @Test
     func convertBigPngLutTo64() throws {
         let dimension = 65
-        let original = try SC3DLut(fileData: makeCubeFile(dimension: dimension, linear))
         let cgImage = try #require(makeLutCgImage(dimension: dimension,
-                                                  cubeData: makeCubeData(original.entries)))
+                                                  cubeData: makeCubeData(dimension: dimension, linear)))
         let (convertedDimension, convertedData) = try lutEffectConvertLut(image: UIImage(cgImage: cgImage))
         #expect(convertedDimension == 64)
         #expect(convertedData.count == 64 * 64 * 64 * 4 * 4)
@@ -254,6 +265,35 @@ struct LutEffectSuite {
             let expected = linear(SIMD3(Float(red), Float(green), Float(blue)) / 63)
             #expect(isEqual(actual, expected, epsilon: 0.6 / 255))
         }
+    }
+
+    @Test
+    func renderCubeLutWithMetalPetal() throws {
+        let (dimension, cubeData) = try lutEffectConvertCube(data: makeCubeFile(dimension: 8, swapRedAndBlue))
+        let lutCgImage = try #require(makeLutCgImage(dimension: Int(dimension), cubeData: cubeData))
+        let filter = MTIColorLookupFilter()
+        filter.inputColorLookupTable = MTIImage(cgImage: lutCgImage, options: [.SRGB: false], isOpaque: true)
+        filter.inputImage = MTIImage(color: MTIColor(red: 0.25, green: 0.5, blue: 0.75, alpha: 1),
+                                     sRGB: false,
+                                     size: CGSize(width: 4, height: 4))
+        let outputImage = try #require(filter.outputImage)
+        var pixelBuffer: CVPixelBuffer?
+        CVPixelBufferCreate(kCFAllocatorDefault,
+                            4,
+                            4,
+                            kCVPixelFormatType_32BGRA,
+                            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,
+                            &pixelBuffer)
+        let metalPetalContext = try MTIContext(device: #require(MTLCreateSystemDefaultDevice()))
+        let outputPixelBuffer = try #require(pixelBuffer)
+        try metalPetalContext.render(outputImage, to: outputPixelBuffer)
+        CVPixelBufferLockBaseAddress(outputPixelBuffer, .readOnly)
+        let pixel = try #require(CVPixelBufferGetBaseAddress(outputPixelBuffer))
+            .assumingMemoryBound(to: UInt8.self)
+        #expect(abs(Int(pixel[0]) - 64) <= 2)
+        #expect(abs(Int(pixel[1]) - 128) <= 2)
+        #expect(abs(Int(pixel[2]) - 191) <= 2)
+        CVPixelBufferUnlockBaseAddress(outputPixelBuffer, .readOnly)
     }
 
     @Test

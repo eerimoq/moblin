@@ -40,6 +40,7 @@ class WidgetType(StrEnum):
     ALERTS = "Alerts"
     BROWSER = "Browser"
     CHAT = "Chat"
+    IMAGE = "Image"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
     TEXT = "Text"
@@ -81,6 +82,15 @@ class BitrateRateControl(StrEnum):
     ABR = "ABR"
     CBR = "CBR"
     VBR = "VBR"
+
+
+class VideoEffectType(StrEnum):
+    LUT = "lut"
+
+
+class ColorLutType(StrEnum):
+    PNG = "disk"
+    CUBE = "diskCube"
 
 
 class GraphicsImplementation(StrEnum):

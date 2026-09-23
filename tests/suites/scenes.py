@@ -1,4 +1,5 @@
 import logging
+import math
 import time
 from pathlib import Path
 
@@ -21,8 +22,10 @@ from ..utils.generate_device_settings import SCREEN_SCENE_SETTINGS
 from ..utils.generate_device_settings import Alignment
 from ..utils.generate_device_settings import BitrateRateControl
 from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import ColorLutType
 from ..utils.generate_device_settings import GraphicsImplementation
 from ..utils.generate_device_settings import SceneName
+from ..utils.generate_device_settings import VideoEffectType
 from ..utils.generate_device_settings import VideoStabilizationMode
 from ..utils.generate_device_settings import VTuberType
 from ..utils.generate_device_settings import WidgetType
@@ -38,6 +41,7 @@ from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import manual_confirmation
+from ..utils.utils import write_png
 
 LOGGER = logging.getLogger(__name__)
 WIDTH = 1920
@@ -49,6 +53,7 @@ SMALL_MAP_CROP = Crop(x=0, y=0, width=216, height=216)
 LARGE_MAP_CROP = Crop(x=576, y=0, width=432, height=432)
 TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
 BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
+IMAGE_CROP = Crop(x=20, y=20, width=40, height=40)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
 FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
@@ -57,6 +62,8 @@ MAP_SMALL_WIDGET_ID = uuid()
 MAP_LARGE_WIDGET_ID = uuid()
 PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
+IMAGE_WIDGET_ID = uuid()
+LUT_ID = uuid()
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
 V_TUBER_LIVE_2D_MODEL_ID = uuid()
@@ -68,10 +75,52 @@ GRAPHICS_IMPLEMENTATION_NAMES = {
     GraphicsImplementation.CORE_IMAGE: "CoreImage",
     GraphicsImplementation.METAL_PETAL: "MetalPetal",
 }
+COLOR_LUT_TYPE_NAMES = {
+    ColorLutType.CUBE: "Cube",
+    ColorLutType.PNG: "Png",
+}
+COLOR_LUTS_KEYS = {
+    ColorLutType.CUBE: "diskLutsCube",
+    ColorLutType.PNG: "diskLutsPng",
+}
+CUBE_LUT_DIMENSION = 33
+PNG_LUT_DIMENSION = 196
 
 
 def is_map_dot(pixel: Pixel) -> bool:
     return pixel.blue > 180 and pixel.blue - pixel.red > 80 and pixel.blue - pixel.green > 60
+
+
+def lut_levels(dimension: int) -> list[int]:
+    return [round(255 * index / (dimension - 1)) for index in range(dimension)]
+
+
+def create_swap_red_and_blue_cube_lut(path: Path):
+    values = [f"{level / 255:.6f}" for level in lut_levels(CUBE_LUT_DIMENSION)]
+    lines = [f"LUT_3D_SIZE {CUBE_LUT_DIMENSION}"]
+    for blue in values:
+        for green in values:
+            for red in values:
+                lines.append(f"{blue} {green} {red}")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def create_swap_red_and_blue_png_lut(path: Path):
+    dimension = PNG_LUT_DIMENSION
+    levels = lut_levels(dimension)
+    tiles_per_side = math.isqrt(dimension)
+    size = tiles_per_side * dimension
+    rgba = bytearray()
+    tile = bytearray(4 * dimension)
+    tile[2::4] = bytes(levels)
+    tile[3::4] = b"\xff" * dimension
+    for tile_row in range(tiles_per_side):
+        for green in levels:
+            tile[1::4] = bytes([green]) * dimension
+            for tile_column in range(tiles_per_side):
+                tile[0::4] = bytes([levels[tile_row * tiles_per_side + tile_column]]) * dimension
+                rgba += tile
+    write_png(path, size, size, bytes(rgba))
 
 
 def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
@@ -333,9 +382,10 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
 
 
 class WidgetTestCase(GraphicsImplementationTestCase):
-    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None, **overrides):
         self.moblin.import_settings(
             overrides={
+                **overrides,
                 "graphicsImplementation": self.graphics_implementation,
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
@@ -496,6 +546,75 @@ class SceneVTuberLive2DWidget(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
+class SceneImageWidgetLut(WidgetTestCase):
+    """A red image widget with a LUT effect that swaps red and blue. Validate that the
+    image is rendered blue. The PNG LUT is 196x196x196 and must be downsampled.
+
+    """
+
+    def __init__(
+        self,
+        moblin: Moblin,
+        lut_type: ColorLutType,
+        graphics_implementation: GraphicsImplementation,
+    ):
+        super().__init__(
+            moblin,
+            graphics_implementation,
+            f"SceneImageWidget{COLOR_LUT_TYPE_NAMES[lut_type]}Lut",
+        )
+        self.lut_type = lut_type
+
+    def setup(self):
+        image_file = FILES_DIR / "red.png"
+        write_png(image_file, 64, 64, bytes([255, 0, 0, 255]) * 64 * 64)
+        if self.lut_type == ColorLutType.CUBE:
+            lut_file = FILES_DIR / "swap_red_and_blue.cube"
+            create_swap_red_and_blue_cube_lut(lut_file)
+        else:
+            lut_file = FILES_DIR / "swap_red_and_blue.png"
+            create_swap_red_and_blue_png_lut(lut_file)
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(IMAGE_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": IMAGE_WIDGET_ID,
+                    "name": "Image",
+                    "type": WidgetType.IMAGE,
+                    "effects": [
+                        {
+                            "type": VideoEffectType.LUT,
+                            "enabled": True,
+                            "lut": {"lut": LUT_ID},
+                        }
+                    ],
+                }
+            ],
+            files={
+                f"Images/{IMAGE_WIDGET_ID}": image_file,
+                f"Images/{LUT_ID}": lut_file,
+            },
+            color={
+                COLOR_LUTS_KEYS[self.lut_type]: [
+                    {
+                        "id": LUT_ID,
+                        "type": self.lut_type,
+                        "name": "Swap red and blue",
+                    }
+                ],
+            },
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        image = read_video_frame(recording_file, FRAME_TIMESTAMP, IMAGE_CROP)
+        pixel = image.pixel(image.width // 2, image.height // 2)
+        self.assert_greater(pixel.blue, 200, f"Blue in {pixel}")
+        self.assert_less(pixel.red, 60, f"Red in {pixel}")
+        self.assert_less(pixel.green, 60, f"Green in {pixel}")
+        self.assert_black_background(recording_file)
+
+
 def tests(moblin: Moblin):
     test_cases = [
         SceneSwitchMultipleTimes(moblin),
@@ -511,5 +630,7 @@ def tests(moblin: Moblin):
             ScenePngTuberWidget(moblin, graphics_implementation),
             SceneVTuberWidget(moblin, graphics_implementation),
             SceneVTuberLive2DWidget(moblin, graphics_implementation),
+            SceneImageWidgetLut(moblin, ColorLutType.CUBE, graphics_implementation),
+            SceneImageWidgetLut(moblin, ColorLutType.PNG, graphics_implementation),
         ]
     return test_cases

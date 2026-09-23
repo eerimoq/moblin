@@ -99378,6 +99378,7 @@
       }
     },
     "Failed to get LUT data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

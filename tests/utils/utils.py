@@ -1,4 +1,6 @@
+import struct
 import subprocess
+import zlib
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
@@ -34,6 +36,20 @@ def manual_confirmation(message: str):
 def create_qr_code_image(text: str, output_image: Path):
     command = ["qrtool", "encode", "--output", str(output_image), text]
     subprocess.run(command, check=True)
+
+
+def write_png(path: Path, width: int, height: int, rgba: bytes):
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    stride = 4 * width
+    scanlines = b"".join(b"\x00" + rgba[y * stride : (y + 1) * stride] for y in range(height))
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(scanlines))
+        + chunk(b"IEND", b"")
+    )
 
 
 def format_generic_stream_url_stream_name(number: int, url: str) -> str:
