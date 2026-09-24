@@ -1702,7 +1702,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/swift-zip-archive";
 			requirement = {
-				branch = main;
+				branch = "real-main";
 				kind = branch;
 			};
 		};

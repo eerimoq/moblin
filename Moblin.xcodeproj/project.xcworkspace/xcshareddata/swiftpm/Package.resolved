@@ -177,7 +177,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eerimoq/swift-zip-archive",
       "state" : {
-        "branch" : "main",
+        "branch" : "real-main",
         "revision" : "750253d799a63b04c43ba9138c3cf5fa79f7acd7"
       }
     },
