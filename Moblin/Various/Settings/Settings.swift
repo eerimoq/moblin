@@ -2365,7 +2365,11 @@ final class Settings {
                 .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {
-                try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
+                try ZipArchiveWriter.withFile(
+                    url.path,
+                    options: .create,
+                    configuration: .init(compression: .noCompression)
+                ) { writer in
                     try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
                     for fileUrl in exportFiles where fileUrl.exists() {
                         try writer.writeFile(filename: fileUrl.lastPathComponent, sourceFile: fileUrl.path)
