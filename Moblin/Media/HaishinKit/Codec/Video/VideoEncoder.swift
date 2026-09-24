@@ -15,17 +15,9 @@ protocol VideoEncoderControlDelegate: AnyObject {
 }
 
 class VideoEncoder: @unchecked Sendable {
-    var settings: Atomic<VideoEncoderSettings> = .init(.init()) {
-        didSet {
-            lockQueue.async {
-                if self.settings.value.shouldInvalidateSession(oldValue.value) {
-                    self.invalidateSession = true
-                    self.currentBitrate = 0
-                }
-            }
-        }
-    }
+    var settings: Atomic<VideoEncoderSettings> = .init(.init())
 
+    private var oldSettings = VideoEncoderSettings()
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
@@ -72,6 +64,11 @@ class VideoEncoder: @unchecked Sendable {
             return
         }
         let settings = settings.value
+        if settings.shouldInvalidateSession(oldSettings) {
+            invalidateSession = true
+            currentBitrate = 0
+        }
+        oldSettings = settings
         let newBitrateVideoSize = updateAdaptiveResolution(settings: settings)
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
@@ -81,7 +78,7 @@ class VideoEncoder: @unchecked Sendable {
             controlDelegate?.videoEncoderControlResolutionChanged(self, resolution: resolution)
         }
         if invalidateSession {
-            session = makeSession(settings: settings)
+            session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
         }
         updateBitrate(settings: settings)
         let err = session?.encodeFrame(
