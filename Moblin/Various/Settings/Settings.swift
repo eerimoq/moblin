@@ -2257,6 +2257,12 @@ private let exportFiles = [
     controlBarBackgroundImagePath,
 ]
 
+private func removeExportFiles() {
+    for file in exportFiles {
+        file.remove()
+    }
+}
+
 private func recreateExportDirectories() {
     for directory in exportDirectories {
         try? FileManager.default.removeItem(at: URL.documentsDirectory.appending(component: directory))
@@ -2265,11 +2271,18 @@ private func recreateExportDirectories() {
     _ = createAlertVideosDirectory()
 }
 
-private func validateArchive(reader: ZipArchiveReader<ZipFileStorage>) throws -> String? {
-    guard try reader.readDirectory().contains(where: { $0.filename.string == settingsJsonName }) else {
-        return String(localized: "Settings file not found in archive")
+private func extractArchive(url: URL) throws -> [UInt8]? {
+    try ZipArchiveReader.withFile(url.path) { reader in
+        let entries = try reader.readDirectory()
+        guard let settingsEntry = entries.first(where: { $0.filename.string == settingsJsonName }) else {
+            return nil
+        }
+        removeExportFiles()
+        recreateExportDirectories()
+        try reader.extract(to: .init(URL.documentsDirectory.path()))
+        URL.documentsDirectory.appending(component: settingsJsonName).remove()
+        return try reader.readFile(settingsEntry)
     }
-    return nil
 }
 
 private let storage = SimpleStringStorage(key: "settings")
@@ -2307,39 +2320,20 @@ final class Settings {
     }
 
     func reset() {
-        removeFilesAndFolders()
+        removeExportFiles()
         realDatabase = createDefault()
         store()
     }
 
     func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
-        removeFilesAndFolders()
-        let root = URL.documentsDirectory
         DispatchQueue.global().async {
-            let settingsJson = root.appendingPathComponent(settingsJsonName)
-            try? FileManager.default.removeItem(at: settingsJson)
-            var errorMessage: String?
-            do {
-                try ZipArchiveReader.withFile(url.path) { reader in
-                    if let message = try validateArchive(reader: reader) {
-                        errorMessage = message
-                        return
-                    }
-                    recreateExportDirectories()
-                    try reader.extract(to: .init(root.path()))
-                }
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-            if let errorMessage {
-                DispatchQueue.main.async {
-                    onCompleted(errorMessage)
-                }
-                return
-            }
+            let settings = Result { try extractArchive(url: url) }
             DispatchQueue.main.async {
                 do {
-                    let settings = try Data(contentsOf: settingsJson)
+                    guard let settings = try settings.get() else {
+                        onCompleted(String(localized: "Settings file not found in archive"))
+                        return
+                    }
                     try self.tryLoadAndMigrate(settings: String(bytes: settings, encoding: .utf8) ?? "")
                     self.store()
                     onCompleted(nil)
@@ -2351,7 +2345,7 @@ final class Settings {
     }
 
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
-        removeFilesAndFolders()
+        removeExportFiles()
         do {
             try tryLoadAndMigrate(settings: settings)
             store()
@@ -2373,31 +2367,25 @@ final class Settings {
             do {
                 try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
                     try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
-                    let fileManager = FileManager.default
-                    let prefixCount = createAndGetDirectory().standardizedFileURL.path.count + 1
                     for fileUrl in exportFiles where fileUrl.exists() {
-                        let filePath = fileUrl.standardizedFileURL.path
-                        let relativeFilePath = String(filePath.dropFirst(prefixCount))
-                        try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                        try writer.writeFile(filename: fileUrl.lastPathComponent, sourceFile: fileUrl.path)
                     }
                     for directory in exportDirectories {
-                        let directoryUrl = createAndGetDirectory(name: directory)
-                        guard let enumerator = fileManager.enumerator(
-                            at: directoryUrl,
-                            includingPropertiesForKeys: nil,
+                        guard let enumerator = FileManager.default.enumerator(
+                            at: URL.documentsDirectory.appending(component: directory),
+                            includingPropertiesForKeys: [.isRegularFileKey],
                             options: [.producesRelativePathURLs]
                         ) else {
                             continue
                         }
-                        for case let fileUrl as URL in enumerator {
-                            guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
-                                  values.isRegularFile == true
-                            else {
-                                continue
-                            }
-                            let filePath = fileUrl.standardizedFileURL.path
-                            let relativeFilePath = String(filePath.dropFirst(prefixCount))
-                            try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                        for case let fileUrl as URL in enumerator
+                            where (try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]))?
+                            .isRegularFile == true
+                        {
+                            try writer.writeFile(
+                                filename: "\(directory)/\(fileUrl.relativePath)",
+                                sourceFile: fileUrl.path
+                            )
                         }
                     }
                 }
@@ -2409,12 +2397,6 @@ final class Settings {
                     onCompleted(nil)
                 }
             }
-        }
-    }
-
-    private func removeFilesAndFolders() {
-        for file in exportFiles {
-            file.remove()
         }
     }
 
