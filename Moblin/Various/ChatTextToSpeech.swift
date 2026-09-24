@@ -63,7 +63,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var sayUsername: Bool = false
     private var defaultLanguage: String?
     private var detectLanguagePerMessage: Bool = false
-    private var pauseBetweenMessages: Double = 0.0
+    private var pauseBetweenMessages: Double = 0.5
     private var voices: [String: SettingsVoice] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
     private var synthesizer = createSpeechSynthesizer()
@@ -245,9 +245,8 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         synthesizer.delegate = self
         audioPlayer?.stop()
         isSpeaking = false
-        stopPauseBetweenMessages()
         currentlyPlayingMessage = nil
-        trySayNextMessage()
+        sayNextMessageAfterPause(pause: 0.5)
     }
 
     private func stopPauseBetweenMessages() {
@@ -432,15 +431,15 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         textToSpeechDispatchQueue.async {
             self.isSpeaking = false
             self.currentlyPlayingMessage = nil
-            if self.pauseBetweenMessages > 0 {
-                self.isPausingBetweenMessages = true
-                self.pauseBetweenMessagesTimer.startSingleShot(timeout: self.pauseBetweenMessages) {
-                    self.isPausingBetweenMessages = false
-                    self.trySayNextMessage()
-                }
-            } else {
-                self.trySayNextMessage()
-            }
+            self.sayNextMessageAfterPause(pause: self.pauseBetweenMessages)
+        }
+    }
+
+    private func sayNextMessageAfterPause(pause: Double) {
+        isPausingBetweenMessages = true
+        pauseBetweenMessagesTimer.startSingleShot(timeout: pause) {
+            self.isPausingBetweenMessages = false
+            self.trySayNextMessage()
         }
     }
 }
