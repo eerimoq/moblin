@@ -1700,10 +1700,10 @@
 		};
 		03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/adam-fowler/swift-zip-archive";
+			repositoryURL = "https://github.com/eerimoq/swift-zip-archive";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.6.4;
+				branch = main;
+				kind = branch;
 			};
 		};
 		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {

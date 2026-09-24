@@ -1,5 +1,5 @@
 {
-  "originHash" : "57f8a2424c79da548cbb9298fdb239bd727e5c166369f054b34dafd2ece1aaa9",
+  "originHash" : "305c4ea624cdfbe3367e078035225d74abd86c0afceaf2b4e0468392a60ff951",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -175,10 +175,10 @@
     {
       "identity" : "swift-zip-archive",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/adam-fowler/swift-zip-archive",
+      "location" : "https://github.com/eerimoq/swift-zip-archive",
       "state" : {
-        "revision" : "0958a719c924d2b3cb27cd7d9f76b4cfb04549f2",
-        "version" : "0.8.1"
+        "branch" : "main",
+        "revision" : "4a527e7ec0f784a0e4f5e8219492f9431dc5f736"
       }
     },
     {
