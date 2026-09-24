@@ -2265,6 +2265,13 @@ private func recreateExportDirectories() {
     _ = createAlertVideosDirectory()
 }
 
+private func validateArchive(reader: ZipArchiveReader<ZipFileStorage>) throws -> String? {
+    guard try reader.readDirectory().contains(where: { $0.filename.string == settingsJsonName }) else {
+        return String(localized: "Settings file not found in archive")
+    }
+    return nil
+}
+
 private let storage = SimpleStringStorage(key: "settings")
 
 @MainActor
@@ -2311,14 +2318,22 @@ final class Settings {
         DispatchQueue.global().async {
             let settingsJson = root.appendingPathComponent(settingsJsonName)
             try? FileManager.default.removeItem(at: settingsJson)
+            var errorMessage: String?
             do {
                 try ZipArchiveReader.withFile(url.path) { reader in
+                    if let message = try validateArchive(reader: reader) {
+                        errorMessage = message
+                        return
+                    }
                     recreateExportDirectories()
                     try reader.extract(to: .init(root.path()))
                 }
             } catch {
+                errorMessage = error.localizedDescription
+            }
+            if let errorMessage {
                 DispatchQueue.main.async {
-                    onCompleted(error.localizedDescription)
+                    onCompleted(errorMessage)
                 }
                 return
             }
