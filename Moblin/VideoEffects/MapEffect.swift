@@ -15,6 +15,7 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
     private var dotOffsetRatio = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
+    private var isSnapshotInProgress = false
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
@@ -109,6 +110,9 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func update(size: CGSize) {
+        guard !isSnapshotInProgress else {
+            return
+        }
         let (newLocation, zoomOutFactor, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
@@ -128,12 +132,17 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             zoomOutFactor: zoomOutFactor
         )
         self.mapSnapshotter = mapSnapshotter
-        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        isSnapshotInProgress = true
+        mapSnapshotter.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
+                processorPipelineQueue.async {
+                    self.isSnapshotInProgress = false
+                }
                 return
             }
             let mapSnapshot = CIImage(cgImage: image).toEffectImage(isOpaque: true)
             processorPipelineQueue.async {
+                self.isSnapshotInProgress = false
                 self.mapSnapshot = mapSnapshot
                 self.dotOffsetRatio = dotOffsetRatio
             }
