@@ -3,11 +3,14 @@ import SwiftUI
 struct NameEditView: View {
     @Binding var name: String
     var existingNames: [any Named] = []
+    var caseInsensitive = false
 
     private func onChange(value: String) -> String? {
         if value.isEmpty {
             String(localized: "Empty names are not allowed.")
-        } else if existingNames.contains(where: { $0.name == value }), value != name {
+        } else if existingNames.contains(where: {
+            caseInsensitive ? $0.name.lowercased() == value.lowercased() : $0.name == value
+        }), value != name {
             String(localized: "The name '\(value)' is already in use.")
         } else {
             nil
