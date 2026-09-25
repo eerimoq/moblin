@@ -303,11 +303,54 @@ private struct PredictionView: View {
     }
 }
 
+private func makeRaidSuggestions(channels: [TwitchApiChannel],
+                                 streams: [TwitchApiStreamData]?) -> [RaidSuggestion]
+{
+    var viewerCounts: [String: Int] = [:]
+    for stream in streams ?? [] {
+        viewerCounts[stream.user_id] = stream.viewer_count
+    }
+    return channels.map {
+        RaidSuggestion(id: $0.id,
+                       name: $0.display_name,
+                       category: $0.game_name,
+                       title: $0.title,
+                       viewerCount: viewerCounts[$0.id],
+                       image: $0.thumbnail_url)
+    }
+}
+
 private struct RaidChannelSearchView: View {
     let model: Model
     @State private var searchText: String = ""
-    @State private var channels: [TwitchApiChannel] = []
+    @State private var suggestions: [RaidSuggestion] = []
     @StateObject private var executor = Executor()
+
+    private func search() {
+        guard !searchText.isEmpty else {
+            suggestions = []
+            return
+        }
+        let filter = searchText
+        executor.startProgress()
+        model.searchTwitchChannels(stream: model.stream, filter: filter) {
+            switch $0 {
+            case let .success(channels):
+                let channels = sortedBySearchPrefix(channels, searchText: filter) { $0.display_name }
+                model.getTwitchStreams(stream: model.stream, userIds: channels.map(\.id), live: true) {
+                    guard filter == searchText else {
+                        return
+                    }
+                    suggestions = makeRaidSuggestions(channels: channels, streams: $0)
+                    executor.completedNoTimer(result: .success(Data()))
+                }
+            case .authError:
+                executor.completedNoTimer(result: .authError)
+            case .error:
+                executor.completedNoTimer(result: .error)
+            }
+        }
+    }
 
     var body: some View {
         Section {
@@ -315,41 +358,12 @@ private struct RaidChannelSearchView: View {
                 .autocapitalization(.none)
                 .autocorrectionDisabled(true)
                 .onChange(of: searchText) { _ in
-                    guard !searchText.isEmpty else {
-                        channels = []
-                        return
-                    }
-                    executor.startProgress()
-                    model.searchTwitchChannels(stream: model.stream, filter: searchText) {
-                        switch $0 {
-                        case let .success(channels):
-                            self
-                                .channels = sortedBySearchPrefix(channels, searchText: searchText) {
-                                    $0.display_name
-                                }
-                            executor.completedNoTimer(result: .success(Data()))
-                        case .authError:
-                            executor.completedNoTimer(result: .authError)
-                        case .error:
-                            executor.completedNoTimer(result: .error)
-                        }
-                    }
+                    search()
                 }
         }
         Section {
             ExecutorView(executor: executor, centerNonContent: true) {
-                ForEach(channels) { channel in
-                    RaidChannelView(buttonText: "Raid",
-                                    channel: channel.display_name,
-                                    category: channel.game_name,
-                                    title: channel.title,
-                                    image: channel.thumbnail_url,
-                                    isLive: true,
-                                    viewerCount: nil)
-                    {
-                        model.startRaidTwitchChannel(channelId: channel.id, onComplete: $0)
-                    }
-                }
+                RaidSuggestionsView(model: model, suggestions: suggestions)
             }
         }
     }
@@ -360,7 +374,7 @@ private struct RaidSuggestion: Identifiable {
     let name: String
     let category: String
     let title: String
-    let viewerCount: Int
+    let viewerCount: Int?
     var image: String?
 }
 
