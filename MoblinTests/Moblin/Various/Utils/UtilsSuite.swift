@@ -124,4 +124,17 @@ struct UtilsSuite {
         #expect("hello!".truncate(length: 2) == "..")
         #expect("hello!".truncate(length: 0) == "")
     }
+
+    @Test
+    func sortedBySearchPrefixPutsPrefixMatchesFirst() {
+        let names = ["xqc", "Bob", "abob", "bobby", "carl", "BOBBO"]
+        #expect(sortedBySearchPrefix(names, searchText: "bob") { $0 } == [
+            "Bob", "bobby", "BOBBO", "xqc", "abob", "carl",
+        ])
+    }
+
+    @Test
+    func sortedBySearchPrefixWithoutMatches() {
+        #expect(sortedBySearchPrefix(["c", "a", "b"], searchText: "z") { $0 } == ["c", "a", "b"])
+    }
 }

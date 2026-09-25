@@ -317,6 +317,13 @@ func makeUniqueName(name: String, existingNames: [some Named]) -> String {
     }
 }
 
+func sortedBySearchPrefix<T>(_ items: [T], searchText: String, name: (T) -> String) -> [T] {
+    let searchText = searchText.lowercased()
+    let matches = items.filter { name($0).lowercased().hasPrefix(searchText) }
+    let others = items.filter { !name($0).lowercased().hasPrefix(searchText) }
+    return matches + others
+}
+
 func createSpeechSynthesizer() -> AVSpeechSynthesizer {
     let synthesizer = AVSpeechSynthesizer()
     // Using the application audio session makes mic buffers 144 bytes, which adds a lot of overhead.
