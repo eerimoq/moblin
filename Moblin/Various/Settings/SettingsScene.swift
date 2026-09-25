@@ -495,6 +495,34 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     }
 }
 
+struct SettingsFont: Equatable {
+    var family: String?
+    var style: String = ""
+
+    func name() -> String? {
+        guard let family else {
+            return nil
+        }
+        return style.isEmpty ? family : style
+    }
+
+    func familyString() -> String {
+        if let family {
+            family
+        } else {
+            String(localized: "System")
+        }
+    }
+
+    func styleString() -> String {
+        if let family {
+            fontStyleName(family: family, fontName: style)
+        } else {
+            ""
+        }
+    }
+}
+
 enum SettingsFontDesign: String, Codable, CaseIterable {
     case `default` = "Default"
     case serif = "Serif"
@@ -779,8 +807,7 @@ class SettingsWidgetText: Codable, ObservableObject {
     var clearForegroundColor: Bool = false
     var fontSize: Int = 30
     @Published var fontSizeFloat: Float
-    @Published var fontFamily: String?
-    @Published var fontStyle: String = ""
+    @Published var font: SettingsFont = .init()
     @Published var fontDesign: SettingsFontDesign = .default
     @Published var fontWeight: SettingsFontWeight = .regular
     @Published var fontMonospacedDigits: Bool = false
@@ -847,8 +874,8 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.foregroundColor, foregroundColor)
         try container.encode(.clearForegroundColor, clearForegroundColor)
         try container.encode(.fontSize, fontSize)
-        try container.encode(.fontFamily, fontFamily)
-        try container.encode(.fontStyle, fontStyle)
+        try container.encode(.fontFamily, font.family)
+        try container.encode(.fontStyle, font.style)
         try container.encode(.fontDesign, fontDesign)
         try container.encode(.fontWeight, fontWeight)
         try container.encode(.fontMonospacedDigits, fontMonospacedDigits)
@@ -890,8 +917,8 @@ class SettingsWidgetText: Codable, ObservableObject {
         clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
         fontSize = container.decode(.fontSize, Int.self, 30)
         fontSizeFloat = Float(fontSize)
-        fontFamily = container.decode(.fontFamily, String?.self, nil)
-        fontStyle = container.decode(.fontStyle, String.self, "")
+        font.family = container.decode(.fontFamily, String?.self, nil)
+        font.style = container.decode(.fontStyle, String.self, "")
         fontDesign = container.decode(.fontDesign, SettingsFontDesign.self, .default)
         fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
         fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)
@@ -916,22 +943,6 @@ class SettingsWidgetText: Codable, ObservableObject {
         widthEnabled = container.decode(.widthEnabled, Bool.self, false)
         width = container.decode(.width, Int.self, Self.defaultWidth)
         cornerRadius = container.decode(.cornerRadius, Int.self, Self.defaultCornerRadius)
-    }
-
-    func fontFamilyString() -> String {
-        if let fontFamily {
-            fontFamily
-        } else {
-            String(localized: "System")
-        }
-    }
-
-    func fontStyleString() -> String {
-        if let fontFamily {
-            fontStyleName(family: fontFamily, fontName: fontStyle)
-        } else {
-            ""
-        }
     }
 }
 
@@ -1904,6 +1915,7 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
 class SettingsWidgetChat: Codable, ObservableObject {
     var id: UUID = .init()
     @Published var fontSize: Float = 19.0
+    @Published var font: SettingsFont = .init()
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
@@ -1926,6 +1938,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case id
         case fontSize
+        case fontFamily
+        case fontStyle
         case usernameColor
         case messageColor
         case backgroundColor
@@ -1947,6 +1961,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.fontSize, fontSize)
+        try container.encode(.fontFamily, font.family)
+        try container.encode(.fontStyle, font.style)
         try container.encode(.usernameColor, usernameColor)
         try container.encode(.messageColor, messageColor)
         try container.encode(.backgroundColor, backgroundColor)
@@ -1966,6 +1982,8 @@ class SettingsWidgetChat: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         fontSize = container.decode(.fontSize, Float.self, 19.0)
+        font.family = container.decode(.fontFamily, String?.self, nil)
+        font.style = container.decode(.fontStyle, String.self, "")
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
         messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
@@ -1987,6 +2005,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
 
     func update(other: SettingsWidgetChat) {
         fontSize = other.fontSize
+        font = other.font
         usernameColor = other.usernameColor
         usernameColorColor = other.usernameColorColor
         messageColor = other.messageColor

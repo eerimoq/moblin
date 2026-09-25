@@ -764,6 +764,7 @@ final class Model: NSObject, ObservableObject {
     var latestVolumeChangeSequenceNumber: Int?
     let volumeView = MPVolumeView(frame: .zero)
     var latestSetVolumeTime = ContinuousClock.now
+    var isBluetoothAudioOutput = false
     private var appStoreUpdateListenerTask: Task<Void, any Error>?
     var products: [String: Product] = [:]
     var streamTotalBytes: UInt64 = 0
@@ -937,6 +938,10 @@ final class Model: NSObject, ObservableObject {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
+    func setNativeLowLightBoost() {
+        nativeLowLightBoost = database.debug.nativeLowLightBoost
+    }
+
     func setHighQualityDownsampling() {
         highQualityDownsampling = database.graphicsHighQualityDownsampling
     }
@@ -1074,6 +1079,7 @@ final class Model: NSObject, ObservableObject {
         faxReceiver.delegate = self
         fixAlertMediasNoUpdate()
         setAllowVideoRangePixelFormat()
+        setNativeLowLightBoost()
         setHighQualityDownsampling()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
@@ -1144,6 +1150,7 @@ final class Model: NSObject, ObservableObject {
         addObserver(UIApplication.willResignActiveNotification, #selector(handleApplicationDidChangeActive))
         addObserver(UIApplication.didBecomeActiveNotification, #selector(handleApplicationDidChangeActive))
         addObserver(AVAudioSession.routeChangeNotification, #selector(handleAudioRouteChange))
+        updateIsBluetoothAudioOutput()
         addObserver(
             UIApplication.didEnterBackgroundNotification,
             #selector(handleApplicationDidEnterBackground)

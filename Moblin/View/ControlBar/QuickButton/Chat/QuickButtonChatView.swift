@@ -12,7 +12,8 @@ private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
         bigGifScale: chat.bigGifScale,
         linkify: true,
         nicknames: chat.nicknames,
-        displayStyle: chat.displayStyle
+        displayStyle: chat.displayStyle,
+        font: chat.font
     )
 }
 

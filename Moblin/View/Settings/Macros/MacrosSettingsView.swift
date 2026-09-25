@@ -96,6 +96,24 @@ private struct TextFormatView: View {
     }
 }
 
+private struct MacroVariableView: View {
+    let model: Model
+    let variable: MacroVariable
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                UIPasteboard.general.string = variable.toString()
+                model.makeToast(title: String(localized: "Copied \(variable.toString()) to clipboard"))
+            } label: {
+                Text(variable.toString())
+                    .font(.title3)
+            }
+            Text(variable.description())
+        }
+    }
+}
+
 private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -328,9 +346,6 @@ private struct ActionView: View {
                                 Wait until the event happens, then continue with the following actions.
                                 """)
                             }
-                            if let variables = action.event.variablesToString() {
-                                Text("Sets \(variables), which following actions can use.")
-                            }
                         }
                     case .sendTwitchShoutout:
                         Text("""
@@ -341,6 +356,20 @@ private struct ActionView: View {
                         Text("Run given number of following actions if the condition is met.")
                     default:
                         EmptyView()
+                    }
+                }
+                if action.function == .waitForEvent, !action.event.variables().isEmpty {
+                    Section {
+                        ForEach(action.event.variables(), id: \.self) { variable in
+                            MacroVariableView(model: model, variable: variable)
+                        }
+                    } header: {
+                        Text("Variables")
+                    } footer: {
+                        Text("""
+                        Variables set by the event. Following actions can use them in text. Tap a \
+                        variable to copy it to the clipboard.
+                        """)
                     }
                 }
             }

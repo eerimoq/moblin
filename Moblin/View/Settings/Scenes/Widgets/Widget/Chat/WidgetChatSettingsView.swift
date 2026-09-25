@@ -13,7 +13,7 @@ struct WidgetChatSettingsView: View {
     var body: some View {
         Section {
             HStack {
-                Text("Font size")
+                Text("Size")
                 Slider(
                     value: $chat.fontSize,
                     in: 10 ... 50,
@@ -34,6 +34,23 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            if database.showAllSettings {
+                FontSettingsView(font: $chat.font) {
+                    setEffectSettings()
+                }
+                Toggle("Bold name", isOn: $chat.boldUsername)
+                    .onChange(of: chat.boldUsername) { _ in
+                        setEffectSettings()
+                    }
+                Toggle("Bold message", isOn: $chat.boldMessage)
+                    .onChange(of: chat.boldMessage) { _ in
+                        setEffectSettings()
+                    }
+            }
+        } header: {
+            Text("Font")
+        }
+        Section {
             Picker("Messages", selection: $chat.maximumNumberOfMessages) {
                 ForEach([1, 2, 3, 4, 5], id: \.self) {
                     Text(String($0))
@@ -60,14 +77,6 @@ struct WidgetChatSettingsView: View {
                 .onChange(of: chat.displayStyle) { _ in
                     setEffectSettings()
                 }
-                Toggle("Bold name", isOn: $chat.boldUsername)
-                    .onChange(of: chat.boldUsername) { _ in
-                        setEffectSettings()
-                    }
-                Toggle("Bold message", isOn: $chat.boldMessage)
-                    .onChange(of: chat.boldMessage) { _ in
-                        setEffectSettings()
-                    }
                 Toggle("Badges", isOn: $chat.badges)
                     .onChange(of: chat.badges) { _ in
                         setEffectSettings()
@@ -77,6 +86,8 @@ struct WidgetChatSettingsView: View {
                         setEffectSettings()
                     }
             }
+        } header: {
+            Text("General")
         }
         Section {
             if database.showAllSettings {

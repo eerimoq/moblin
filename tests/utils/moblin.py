@@ -237,6 +237,12 @@ class Moblin:
             time.sleep(2)
             self._wait_until_streamer_is_connected(log=False)
 
+    def import_settings_archive(self, archive: Path) -> dict:
+        response = self._request(
+            {"importSettings": {"data": b64encode(archive.read_bytes()).decode("utf-8")}}
+        )
+        return response["result"]
+
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 

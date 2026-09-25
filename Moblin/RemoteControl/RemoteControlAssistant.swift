@@ -709,6 +709,8 @@ extension RemoteControlAssistant: TwitchEventSubDelegate {
 
     func twitchEventSubChannelModerate(event _: TwitchEventSubChannelModerateEvent) {}
 
+    func twitchEventSubChannelShoutoutCreate(event _: TwitchEventSubChannelShoutoutCreateEvent) {}
+
     func twitchEventSubChannelPollBegin(event _: TwitchEventSubChannelPollEvent) {}
 
     func twitchEventSubChannelPollProgress(event _: TwitchEventSubChannelPollEvent) {}

@@ -19,7 +19,8 @@ private func makeChatLineStyle(settings: SettingsWidgetChat) -> ChatLineStyle {
         highlightSymbolColor: .white,
         highlightDefaultColor: settings.messageColorColor,
         nicknames: settings.nicknames,
-        displayStyle: settings.displayStyle
+        displayStyle: settings.displayStyle,
+        font: settings.font
     )
 }
 

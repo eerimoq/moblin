@@ -9,12 +9,13 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget: SettingsSceneWidget?
     private var location: CLLocation = .init()
     private var size: CGSize = .zero
-    private var newLocations: Deque<CLLocation> = [.init()]
+    private var newLocations: Deque<CLLocation> = []
     private var mapSnapshotter: MKMapSnapshotter?
     private let dot: EffectImageCgImage?
     private var dotOffsetRatio = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
+    private var isSnapshotInProgress = false
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
@@ -102,19 +103,25 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
                                                       info)
     }
 
-    private func nextNewLocation() -> CLLocation {
+    private func nextNewLocation() -> CLLocation? {
         let now = Date()
         let delay = widget.delay
-        return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first!
+        return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first
     }
 
     private func update(size: CGSize) {
+        guard !isSnapshotInProgress else {
+            return
+        }
         let (newLocation, zoomOutFactor, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
             }
             return (self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }()
+        guard let newLocation else {
+            return
+        }
         guard size != self.size
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
@@ -128,12 +135,17 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             zoomOutFactor: zoomOutFactor
         )
         self.mapSnapshotter = mapSnapshotter
-        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        isSnapshotInProgress = true
+        mapSnapshotter.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
+                processorPipelineQueue.async {
+                    self.isSnapshotInProgress = false
+                }
                 return
             }
             let mapSnapshot = CIImage(cgImage: image).toEffectImage(isOpaque: true)
             processorPipelineQueue.async {
+                self.isSnapshotInProgress = false
                 self.mapSnapshot = mapSnapshot
                 self.dotOffsetRatio = dotOffsetRatio
             }

@@ -592,6 +592,7 @@ class SettingsChat: Codable, ObservableObject {
     static let defaultBigGifScale: Float = 2.0
     static let defaultActivityFeedHeight: Double = 0.2
     @Published var fontSize: Float = 19.0
+    @Published var font: SettingsFont = .init()
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
     @Published var sameUsernameColor: Bool = false
@@ -628,6 +629,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechSubscribersOnly: Bool = false
     @Published var textToSpeechFilter: Bool = true
     @Published var textToSpeechFilterMentions: Bool = true
+    @Published var textToSpeechBluetoothSpeakerOnly: Bool = false
     @Published var ttsMonster: SettingsTtsMonster = .init()
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
@@ -654,6 +656,8 @@ class SettingsChat: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case fontSize
+        case fontFamily
+        case fontStyle
         case usernameColor
         case sameUsernameColor
         case messageColor
@@ -685,6 +689,7 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechSubscribersOnly
         case textToSpeechFilter
         case textToSpeechFilterMentions
+        case textToSpeechBluetoothSpeakerOnly
         case ttsMonster
         case mirrored
         case botEnabled
@@ -714,6 +719,8 @@ class SettingsChat: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
+        try container.encode(.fontFamily, font.family)
+        try container.encode(.fontStyle, font.style)
         try container.encode(.usernameColor, usernameColor)
         try container.encode(.sameUsernameColor, sameUsernameColor)
         try container.encode(.messageColor, messageColor)
@@ -745,6 +752,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechSubscribersOnly, textToSpeechSubscribersOnly)
         try container.encode(.textToSpeechFilter, textToSpeechFilter)
         try container.encode(.textToSpeechFilterMentions, textToSpeechFilterMentions)
+        try container.encode(.textToSpeechBluetoothSpeakerOnly, textToSpeechBluetoothSpeakerOnly)
         try container.encode(.ttsMonster, ttsMonster)
         try container.encode(.mirrored, mirrored)
         try container.encode(.botEnabled, botEnabled)
@@ -775,6 +783,8 @@ class SettingsChat: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = container.decode(.fontSize, Float.self, 19.0)
+        font.family = container.decode(.fontFamily, String?.self, nil)
+        font.style = container.decode(.fontStyle, String.self, "")
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
         sameUsernameColor = container.decode(.sameUsernameColor, Bool.self, false)
@@ -834,6 +844,11 @@ class SettingsChat: Codable, ObservableObject {
         textToSpeechSubscribersOnly = container.decode(.textToSpeechSubscribersOnly, Bool.self, false)
         textToSpeechFilter = container.decode(.textToSpeechFilter, Bool.self, true)
         textToSpeechFilterMentions = container.decode(.textToSpeechFilterMentions, Bool.self, true)
+        textToSpeechBluetoothSpeakerOnly = container.decode(
+            .textToSpeechBluetoothSpeakerOnly,
+            Bool.self,
+            false
+        )
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)

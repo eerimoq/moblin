@@ -177,6 +177,14 @@ struct ChatTextToSpeechSettingsView: View {
             } footer: {
                 Text("Do not say messages that contains mentions, except when you are mentioned.")
             }
+            Section {
+                Toggle("Bluetooth speaker only", isOn: $chat.textToSpeechBluetoothSpeakerOnly)
+                    .onChange(of: chat.textToSpeechBluetoothSpeakerOnly) { _ in
+                        model.stopTextToSpeechIfOutputNotAllowed()
+                    }
+            } footer: {
+                Text("Only say messages when a Bluetooth speaker or headset is the audio output.")
+            }
         }
         .onAppear {
             appleVoices = AVSpeechSynthesisVoice.speechVoices()

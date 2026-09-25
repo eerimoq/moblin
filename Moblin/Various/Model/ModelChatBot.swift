@@ -157,6 +157,9 @@ extension Model {
             permissions: database.chat.botCommandPermissions.tts,
             command: command
         ) {
+            guard self.isTextToSpeechOutputAllowed() else {
+                return
+            }
             let user = command.user() ?? "Unknown"
             self.chatTextToSpeech.say(
                 messageId: nil,

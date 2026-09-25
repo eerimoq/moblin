@@ -310,6 +310,8 @@ extension Model {
     }
 
     private func handleAudioRouteChange() {
+        updateIsBluetoothAudioOutput()
+        stopTextToSpeechIfOutputNotAllowed()
         // Not sure about this...
         if isMac() {
             return
@@ -318,6 +320,12 @@ extension Model {
         let session = AVAudioSession.sharedInstance()
         mic.inputGainSettable = session.isInputGainSettable
         mic.inputGain = session.inputGain
+    }
+
+    func updateIsBluetoothAudioOutput() {
+        isBluetoothAudioOutput = AVAudioSession.sharedInstance().currentRoute.outputs.contains {
+            [.bluetoothA2DP, .bluetoothHFP, .bluetoothLE].contains($0.portType)
+        }
     }
 
     private func handleSystemVolumeDidChange(volume: Float, reason: String, sequenceNumber: Int) {

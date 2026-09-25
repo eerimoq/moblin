@@ -17,17 +17,9 @@ private struct PickerView: UIViewControllerRepresentable {
 }
 
 private func unzipLive2DModel(from url: URL, to directory: URL) throws {
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     try ZipArchiveReader.withFile(url.path) { reader in
-        for entry in try reader.readDirectory() where !entry.isDirectory {
-            let components = entry.filename.components.map(\.string)
-            if components.contains("__MACOSX") || components.contains("..") {
-                continue
-            }
-            let file = directory.appending(path: components.joined(separator: "/"))
-            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(),
-                                                    withIntermediateDirectories: true)
-            try Data(reader.readFile(entry)).write(to: file)
-        }
+        try reader.extract(to: .init(directory.path))
     }
 }
 

@@ -202,6 +202,7 @@ private struct MenuView: View {
                                                    button: button,
                                                    showAll: true)
                         .navigationBarTitleDisplayMode(.inline)
+                        .id(button.id)
                 }
             }
         case .streamingButtonSettings:

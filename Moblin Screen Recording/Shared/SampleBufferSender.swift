@@ -1,4 +1,5 @@
 import ReplayKit
+import System
 import VideoToolbox
 
 private func connect(fd: Int32, addr: sockaddr_un) throws {
@@ -14,22 +15,17 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
 }
 
 class SampleBufferSender: NSObject {
-    private var fd: Int32
+    private var fd: FileDescriptor?
     private var videoEncoder: VideoEncoder?
     private var appGroup: String?
-
-    override init() {
-        fd = -1
-        super.init()
-    }
 
     func start(appGroup: String) {
         self.appGroup = appGroup
     }
 
     func stop() {
-        Darwin.close(fd)
-        fd = -1
+        try? fd?.close()
+        fd = nil
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
@@ -44,7 +40,7 @@ class SampleBufferSender: NSObject {
     }
 
     private func isConnected() -> Bool {
-        fd != -1
+        fd != nil
     }
 
     private func tryConnect() -> Bool {
@@ -52,12 +48,13 @@ class SampleBufferSender: NSObject {
             return false
         }
         do {
-            fd = try createSocket()
-            try setIgnoreSigPipe(fd: fd)
+            let rawFd = try createSocket()
+            fd = FileDescriptor(rawValue: rawFd)
+            try setIgnoreSigPipe(fd: rawFd)
             let containerDir = try createContainerDir(appGroup: appGroup)
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
-            try connect(fd: fd, addr: addr)
+            try connect(fd: rawFd, addr: addr)
         } catch {
             stop()
             return false
@@ -85,23 +82,11 @@ class SampleBufferSender: NSObject {
     }
 
     private func send(data: Data) throws {
-        try data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            try send(pointer: pointer)
-        }
+        _ = try fd?.writeAll(data)
     }
 
     private func send(pointer: UnsafeRawBufferPointer) throws {
-        guard let basePointer = pointer.baseAddress else {
-            return
-        }
-        var offset = 0
-        while offset < pointer.count {
-            let res = Darwin.write(fd, basePointer.advanced(by: offset), pointer.count - offset)
-            if res == -1 {
-                throw "Send failed"
-            }
-            offset += res
-        }
+        _ = try fd?.writeAll(pointer)
     }
 }
 

@@ -34,6 +34,7 @@ struct ChatLineContent: Equatable {
     var topAligned = false
     var fontWeight: UIFont.Weight = .regular
     var fontDesign: UIFontDescriptor.SystemDesign = .default
+    var font = SettingsFont()
 }
 
 private let strikethroughKey = NSAttributedString.Key("moblinChatLineStrikethrough")
@@ -81,30 +82,42 @@ private struct ChatLineLayout {
     let metrics: [ImageRunMetrics]
 }
 
-private func makeFont(content: ChatLineContent, style: ChatLineTextStyle) -> UIFont {
+private func makeBaseFont(content: ChatLineContent, bold: Bool = false) -> UIFont {
     let size = content.fontSize
-    var font = UIFont.systemFont(ofSize: size, weight: style.bold ? .bold : content.fontWeight)
-    if content.fontDesign != .default, let descriptor = font.fontDescriptor.withDesign(content.fontDesign) {
-        font = UIFont(descriptor: descriptor, size: size)
+    if let family = content.font.family {
+        if let name = content.font.name(), let font = UIFont(name: name, size: size) {
+            return font
+        }
+        return UIFont(descriptor: UIFontDescriptor(fontAttributes: [.family: family]), size: size)
     }
-    guard style.italic else {
-        return font
-    }
-    var traits: UIFontDescriptor.SymbolicTraits = [.traitItalic]
-    if style.bold {
-        traits.insert(.traitBold)
-    }
-    guard let descriptor = font.fontDescriptor.withSymbolicTraits(traits) else {
+    let font = UIFont.systemFont(ofSize: size, weight: bold ? .bold : content.fontWeight)
+    guard content.fontDesign != .default, let descriptor = font.fontDescriptor.withDesign(content.fontDesign)
+    else {
         return font
     }
     return UIFont(descriptor: descriptor, size: size)
+}
+
+private func makeFont(content: ChatLineContent, style: ChatLineTextStyle) -> UIFont {
+    let font = makeBaseFont(content: content, bold: style.bold)
+    var traits: UIFontDescriptor.SymbolicTraits = []
+    if style.italic {
+        traits.insert(.traitItalic)
+    }
+    if style.bold, content.font.family != nil || style.italic {
+        traits.insert(.traitBold)
+    }
+    guard !traits.isEmpty, let descriptor = font.fontDescriptor.withSymbolicTraits(traits) else {
+        return font
+    }
+    return UIFont(descriptor: descriptor, size: content.fontSize)
 }
 
 @MainActor
 private func makeLayout(content: ChatLineContent, availableWidth: CGFloat) -> ChatLineLayout {
     let player = EmotesPlayer.shared
     let sizesVersion = player.sizesVersion
-    let baseFont = UIFont.systemFont(ofSize: content.fontSize)
+    let baseFont = makeBaseFont(content: content)
     let fontAscent = baseFont.ascender
     let fontDescent = -baseFont.descender
     let string = NSMutableAttributedString()

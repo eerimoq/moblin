@@ -10,7 +10,7 @@ struct ChatSettingsAppearanceView: View {
             Form {
                 Section {
                     HStack {
-                        Text("Font size")
+                        Text("Size")
                         Slider(
                             value: $chat.fontSize,
                             in: 10 ... 30,
@@ -31,29 +31,46 @@ struct ChatSettingsAppearanceView: View {
                         Text(String(Int(chat.fontSize)))
                             .frame(width: 25)
                     }
-                    HStack {
-                        Text("Big GIF scale")
-                        Slider(
-                            value: $chat.bigGifScale,
-                            in: 1 ... 10,
-                            step: 1,
-                            label: {
-                                EmptyView()
-                            },
-                            onEditingChanged: { begin in
-                                guard !begin else {
-                                    return
-                                }
-                                model.reloadChatMessages()
-                            }
-                        )
-                        .onChange(of: chat.bigGifScale) { _ in
+                    if database.showAllSettings {
+                        FontSettingsView(font: $chat.font) {
                             model.reloadChatMessages()
                         }
-                        Text(String(Int(chat.bigGifScale)))
-                            .frame(width: 25)
+                        Toggle("Bold name", isOn: $chat.boldUsername)
+                            .onChange(of: chat.boldUsername) { _ in
+                                model.reloadChatMessages()
+                            }
+                        Toggle("Bold message", isOn: $chat.boldMessage)
+                            .onChange(of: chat.boldMessage) { _ in
+                                model.reloadChatMessages()
+                            }
                     }
-                    if database.showAllSettings {
+                } header: {
+                    Text("Font")
+                }
+                if database.showAllSettings {
+                    Section {
+                        HStack {
+                            Text("Big GIF scale")
+                            Slider(
+                                value: $chat.bigGifScale,
+                                in: 1 ... 10,
+                                step: 1,
+                                label: {
+                                    EmptyView()
+                                },
+                                onEditingChanged: { begin in
+                                    guard !begin else {
+                                        return
+                                    }
+                                    model.reloadChatMessages()
+                                }
+                            )
+                            .onChange(of: chat.bigGifScale) { _ in
+                                model.reloadChatMessages()
+                            }
+                            Text(String(Int(chat.bigGifScale)))
+                                .frame(width: 25)
+                        }
                         Picker("Display style", selection: $chat.displayStyle) {
                             ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
                                 Text(displayStyle.toString())
@@ -61,14 +78,6 @@ struct ChatSettingsAppearanceView: View {
                         }
                         Toggle("Timestamp", isOn: $chat.timestampColorEnabled)
                             .onChange(of: chat.timestampColorEnabled) { _ in
-                                model.reloadChatMessages()
-                            }
-                        Toggle("Bold name", isOn: $chat.boldUsername)
-                            .onChange(of: chat.boldUsername) { _ in
-                                model.reloadChatMessages()
-                            }
-                        Toggle("Bold message", isOn: $chat.boldMessage)
-                            .onChange(of: chat.boldMessage) { _ in
                                 model.reloadChatMessages()
                             }
                         Toggle("Badges", isOn: $chat.badges)
@@ -87,6 +96,8 @@ struct ChatSettingsAppearanceView: View {
                             .onChange(of: chat.compactEvents) { _ in
                                 model.reloadChatMessages()
                             }
+                    } header: {
+                        Text("General")
                     }
                 }
                 Section {

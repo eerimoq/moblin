@@ -1,5 +1,6 @@
 import AVFoundation
 import ReplayKit
+import System
 
 let screenRecordingLatency = 0.2
 
@@ -63,15 +64,17 @@ class SampleBufferReceiver: @unchecked Sendable {
 
     private func acceptLoop() throws {
         while true {
-            let senderFd = try accept(fd: listenerFd)
-            try setIgnoreSigPipe(fd: senderFd)
+            let senderFd = try FileDescriptor(rawValue: accept(fd: listenerFd))
+            try setIgnoreSigPipe(fd: senderFd.rawValue)
             delegate?.senderConnected()
-            try? readLoop(senderFd: senderFd)
+            try? senderFd.closeAfter {
+                try readLoop(senderFd: senderFd)
+            }
             delegate?.senderDisconnected()
         }
     }
 
-    private func readLoop(senderFd: Int32) throws {
+    private func readLoop(senderFd: FileDescriptor) throws {
         while true {
             let header = try readHeader(senderFd)
             switch header.type {
@@ -83,7 +86,7 @@ class SampleBufferReceiver: @unchecked Sendable {
         }
     }
 
-    private func handleVideoFormat(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+    private func handleVideoFormat(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
         let hvcC = try read(senderFd, header.size)
         let config = MpegTsVideoConfigHevc(hvcC: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
@@ -94,7 +97,7 @@ class SampleBufferReceiver: @unchecked Sendable {
         }
     }
 
-    private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+    private func handleVideoBuffer(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
         let data = try read(senderFd, header.size)
         let timestamp = CMTime(seconds: header.presentationTimeStamp + screenRecordingLatency)
         var timing = CMSampleTimingInfo(
@@ -125,30 +128,26 @@ class SampleBufferReceiver: @unchecked Sendable {
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
-    private func readHeader(_ senderFd: Int32) throws -> SampleBufferHeader {
+    private func readHeader(_ senderFd: FileDescriptor) throws -> SampleBufferHeader {
         let sizeData = try read(senderFd, 4)
         let size = Int(sizeData.getUInt32Be())
         let data = try read(senderFd, size)
         return try PropertyListDecoder().decode(SampleBufferHeader.self, from: data)
     }
 
-    private func read(_ senderFd: Int32, _ count: Int) throws -> Data {
+    private func read(_ senderFd: FileDescriptor, _ count: Int) throws -> Data {
         var data = Data(count: count)
-        try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            try readPointer(senderFd, pointer.baseAddress!, count)
+        try data.withUnsafeMutableBytes { pointer in
+            var offset = 0
+            while offset < count {
+                let readCount = try senderFd.read(into: .init(rebasing: pointer[offset...]))
+                if readCount == 0 {
+                    throw "Closed"
+                }
+                offset += readCount
+            }
         }
         return data
-    }
-
-    private func readPointer(_ senderFd: Int32, _ pointer: UnsafeMutableRawPointer, _ count: Int) throws {
-        var offset = 0
-        while offset < count {
-            let readCount = Darwin.read(senderFd, pointer.advanced(by: offset), count - offset)
-            if readCount <= 0 {
-                throw "Closed"
-            }
-            offset += readCount
-        }
     }
 }
 

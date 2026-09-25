@@ -1,3 +1,4 @@
+import Accelerate
 import CoreImage
 import MetalPetal
 import SwiftCube
@@ -5,7 +6,10 @@ import SwiftUI
 
 private let loaderQueue = DispatchQueue(label: "com.eerimoq.mobs.lut-loader")
 
-func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
+func interpolate3d(at point: SIMD3<Float>,
+                   dimension: Int,
+                   _ lut: (Int, Int, Int) -> SIMD3<Float>) -> SIMD3<Float>
+{
     let maxIndex = Float(dimension - 1)
     let x = min(max(point.x * maxIndex, 0), maxIndex)
     let y = min(max(point.y * maxIndex, 0), maxIndex)
@@ -19,121 +23,89 @@ func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: In
     let xd = x - Float(x0)
     let yd = y - Float(y0)
     let zd = z - Float(z0)
-    let c00 = lut[x0 * dimension * dimension + y0 * dimension + z0] * (1 - xd) +
-        lut[x1 * dimension * dimension + y0 * dimension + z0] * xd
-    let c01 = lut[x0 * dimension * dimension + y0 * dimension + z1] * (1 - xd) +
-        lut[x1 * dimension * dimension + y0 * dimension + z1] * xd
-    let c10 = lut[x0 * dimension * dimension + y1 * dimension + z0] * (1 - xd) +
-        lut[x1 * dimension * dimension + y1 * dimension + z0] * xd
-    let c11 = lut[x0 * dimension * dimension + y1 * dimension + z1] * (1 - xd) +
-        lut[x1 * dimension * dimension + y1 * dimension + z1] * xd
+    let c00 = lut(x0, y0, z0) * (1 - xd) + lut(x1, y0, z0) * xd
+    let c01 = lut(x0, y0, z1) * (1 - xd) + lut(x1, y0, z1) * xd
+    let c10 = lut(x0, y1, z0) * (1 - xd) + lut(x1, y1, z0) * xd
+    let c11 = lut(x0, y1, z1) * (1 - xd) + lut(x1, y1, z1) * xd
     let c0 = c00 * (1 - yd) + c10 * yd
     let c1 = c01 * (1 - yd) + c11 * yd
     return c0 * (1 - zd) + c1 * zd
 }
 
-func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3<Float>] {
-    let newPoints = stride(from: 0.0, through: 1.0, by: 1.0 / Float(64 - 1)).map { Float($0) }
-    var lut64 = Array(repeating: SIMD3<Float>(0, 0, 0), count: 64 * 64 * 64)
-    for i in 0 ..< 64 {
-        for j in 0 ..< 64 {
-            for k in 0 ..< 64 {
-                let point = SIMD3(newPoints[i], newPoints[j], newPoints[k])
-                lut64[i * 64 * 64 + j * 64 + k] = interpolate3d(
-                    at: point,
-                    in: bigLut,
-                    dimension: bigDimension
-                )
+func makeLutCube(dimension: Int, _ lut: (Int, Int, Int) -> SIMD3<Float>) -> (Float, Data) {
+    let newDimension = min(dimension, 64)
+    var cube = [SIMD4<Float>](repeating: .zero, count: newDimension * newDimension * newDimension)
+    var index = 0
+    for blue in 0 ..< newDimension {
+        for green in 0 ..< newDimension {
+            for red in 0 ..< newDimension {
+                let entry: SIMD3<Float>
+                if newDimension == dimension {
+                    entry = lut(red, green, blue)
+                } else {
+                    let point = SIMD3(Float(red), Float(green), Float(blue)) / Float(newDimension - 1)
+                    entry = interpolate3d(at: point, dimension: dimension, lut)
+                }
+                cube[index] = SIMD4(entry, 1)
+                index += 1
             }
         }
     }
-    return lut64
+    return (Float(newDimension), Data(bytes: cube, count: cube.count * 16))
 }
 
-func lutEffectConvertCube(data: Data) throws -> SC3DLut {
-    var sc3dLut = try SC3DLut(fileData: data)
-    if sc3dLut.size > 64 {
-        let bigLut = sc3dLut.entries.map { entry in SIMD3<Float>(entry.red, entry.green, entry.blue) }
-        sc3dLut.entries = convertLutTo64(bigLut: bigLut, bigDimension: sc3dLut.size).map { entry in
-            LutEntry(red: entry.x, green: entry.y, blue: entry.z)
-        }
-        sc3dLut.size = 64
+func lutEffectConvertCube(data: Data) throws -> (Float, Data) {
+    let lut = try SC3DLut(fileData: data)
+    let dimension = lut.size!
+    return makeLutCube(dimension: dimension) { red, green, blue in
+        let entry = lut.entries[(blue * dimension + green) * dimension + red]
+        return SIMD3(entry.red, entry.green, entry.blue)
     }
-    return sc3dLut
 }
 
 func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
-    let width = image.size.width * image.scale
-    let height = image.size.height * image.scale
+    let width = Int(image.size.width * image.scale)
+    let height = Int(image.size.height * image.scale)
     let dimension = Int(cbrt(Double(width * height)))
-    guard dimension > 0, Int(width) % dimension == 0, Int(height) % dimension == 0 else {
+    guard dimension > 0, width % dimension == 0, height % dimension == 0 else {
         throw String(localized: "LUT image is not a cube")
     }
-    guard dimension * dimension * dimension == Int(width * height) else {
+    guard dimension * dimension * dimension == width * height else {
         throw String(localized: "LUT image is not a cube")
     }
     guard let cgImage = image.cgImage else {
         throw String(localized: "LUT image conversion failed")
     }
-    guard let data = cgImage.dataProvider?.data else {
-        throw String(localized: "Failed to get LUT data")
-    }
-    let length = CFDataGetLength(data)
-    guard let data = CFDataGetBytePtr(data) else {
+    guard let data = cgImage.dataProvider?.data, let bytes = CFDataGetBytePtr(data) else {
         throw String(localized: "Failed to get LUT pixels")
     }
-    var pixels: [Float]
-    if cgImage.bitsPerComponent == 8 {
-        pixels = stride(from: 0, to: length, by: 1).map { Float(data[$0]) / 255.0 }
-    } else if cgImage.bitsPerComponent == 16 {
-        pixels = data.withMemoryRebound(to: UInt16.self, capacity: length / 2) { data in
-            stride(from: 0, to: length / 2, by: 1).map { Float(data[$0].littleEndian) / 65535.0 }
-        }
-    } else {
+    guard cgImage.bitsPerComponent == 8 || cgImage.bitsPerComponent == 16 else {
         throw String(localized: "LUT image is not 8 or 16 bits per pixel component")
-    }
-    let numberOfPixels = Int(width * height)
-    let numberOutputOfComponents = numberOfPixels * 4
-    var cube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
-    let originalCube = cube
-    defer {
-        originalCube.deallocate()
     }
     let componentsPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
     guard componentsPerPixel == 3 || componentsPerPixel == 4 else {
         throw String(localized: "LUT image is not 3 or 4 components per pixel")
     }
-    let hasAlpha = componentsPerPixel == 4
-    let rows = Int(height) / dimension
-    let columns = Int(width) / dimension
-    for row in 0 ..< rows {
-        for column in 0 ..< columns {
-            for lr in 0 ..< dimension {
-                let rowStrides = Int(width) * (row * dimension + lr) * componentsPerPixel
-                let columnStrides = column * dimension * componentsPerPixel
-                var index = (rowStrides + columnStrides)
-                for _ in 0 ..< dimension {
-                    cube.pointee = pixels[index]
-                    cube += 1
-                    index += 1
-                    cube.pointee = pixels[index]
-                    cube += 1
-                    index += 1
-                    cube.pointee = pixels[index]
-                    cube += 1
-                    index += 1
-                    if hasAlpha {
-                        cube.pointee = pixels[index]
-                        index += 1
-                    } else {
-                        cube.pointee = 1.0
-                    }
-                    cube += 1
-                }
-            }
+    guard CFDataGetLength(data) >= width * height * cgImage.bitsPerPixel / 8 else {
+        throw String(localized: "Failed to get LUT pixels")
+    }
+    func component(_ index: Int) -> Float {
+        if cgImage.bitsPerComponent == 8 {
+            return Float(bytes[index]) / 255
+        } else {
+            let value = UnsafeRawPointer(bytes).loadUnaligned(fromByteOffset: 2 * index, as: UInt16.self)
+            return Float(value.littleEndian) / 65535
         }
     }
-    return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
+    let columns = width / dimension
+    return withExtendedLifetime(data) {
+        makeLutCube(dimension: dimension) { red, green, blue in
+            let row = blue / columns * dimension + green
+            let column = blue % columns * dimension + red
+            let index = (row * width + column) * componentsPerPixel
+            return SIMD3(component(index), component(index + 1), component(index + 2))
+        }
+    }
 }
 
 func makeLutCgImage(dimension: Int, cubeData: Data) -> CGImage? {
@@ -141,19 +113,31 @@ func makeLutCgImage(dimension: Int, cubeData: Data) -> CGImage? {
     guard cubeData.count == pixelsCount * 4 * 4 else {
         return nil
     }
-    var pixels = [UInt8](repeating: 0, count: pixelsCount * 4)
+    var cube = [UInt8](repeating: 0, count: pixelsCount * 4)
     cubeData.withUnsafeBytes { rawCube in
-        let cube = rawCube.bindMemory(to: Float.self)
-        for blue in 0 ..< dimension {
-            for green in 0 ..< dimension {
-                for red in 0 ..< dimension {
-                    let cubeIndex = 4 * ((blue * dimension + green) * dimension + red)
-                    let pixelIndex = 4 * (green * dimension * dimension + blue * dimension + red)
-                    for component in 0 ..< 4 {
-                        pixels[pixelIndex + component] = UInt8(
-                            min(max((cube[cubeIndex + component] * 255).rounded(), 0), 255)
-                        )
-                    }
+        cube.withUnsafeMutableBytes { cube in
+            var source = vImage_Buffer(data: UnsafeMutableRawPointer(mutating: rawCube.baseAddress),
+                                       height: 1,
+                                       width: vImagePixelCount(cube.count),
+                                       rowBytes: rawCube.count)
+            var destination = vImage_Buffer(data: cube.baseAddress,
+                                            height: 1,
+                                            width: vImagePixelCount(cube.count),
+                                            rowBytes: cube.count)
+            vImageConvert_PlanarFtoPlanar8(&source, &destination, 1, 0, vImage_Flags(kvImageNoFlags))
+        }
+    }
+    var pixels = [UInt8](repeating: 0, count: pixelsCount * 4)
+    let segmentSize = 4 * dimension
+    cube.withUnsafeBytes { cube in
+        pixels.withUnsafeMutableBytes { pixels in
+            var cubeIndex = 0
+            for blue in 0 ..< dimension {
+                for green in 0 ..< dimension {
+                    let pixelIndex = 4 * (green * dimension * dimension + blue * dimension)
+                    pixels.baseAddress!.advanced(by: pixelIndex)
+                        .copyMemory(from: cube.baseAddress!.advanced(by: cubeIndex), byteCount: segmentSize)
+                    cubeIndex += segmentSize
                 }
             }
         }
@@ -173,18 +157,6 @@ private func makeLutImage(dimension: Int, cubeData: Data) -> MTIImage? {
         return nil
     }
     return MTIImage(cgImage: cgImage, options: [.SRGB: false], isOpaque: true)
-}
-
-func makeCubeData(_ entries: [LutEntry]) -> Data {
-    var cube: [Float] = []
-    cube.reserveCapacity(entries.count * 4)
-    for entry in entries {
-        cube.append(entry.red)
-        cube.append(entry.green)
-        cube.append(entry.blue)
-        cube.append(1)
-    }
-    return Data(bytes: cube, count: cube.count * 4)
 }
 
 final class LutEffect: VideoEffect, @unchecked Sendable {
@@ -295,19 +267,15 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func loadDiskCubeLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
-        let sc3dLut = try lutEffectConvertCube(data: Data(contentsOf: imageStorage.makePath(id: lut.id)))
-        nonisolated(unsafe)
-        let filter = try sc3dLut.ciFilter()
-        nonisolated(unsafe)
-        let lutImage = makeLutImage(dimension: sc3dLut.size, cubeData: makeCubeData(sc3dLut.entries))
-        processorPipelineQueue.async {
-            self.filter = filter
-            self.filterMetalPetal.inputColorLookupTable = lutImage
-        }
+        try loadCube(lutEffectConvertCube(data: Data(contentsOf: imageStorage.makePath(id: lut.id))))
     }
 
     private func loadImageLut(image: UIImage) throws {
-        let (dimension, data) = try lutEffectConvertLut(image: image)
+        try loadCube(lutEffectConvertLut(image: image))
+    }
+
+    private func loadCube(_ cube: (Float, Data)) {
+        let (dimension, data) = cube
         nonisolated(unsafe)
         let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data

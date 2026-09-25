@@ -8,6 +8,7 @@ from .suites import macros
 from .suites import mic
 from .suites import record
 from .suites import scenes
+from .suites import settings
 from .suites import stream
 from .suites import talkback
 from .suites import web_remote_control
@@ -22,6 +23,7 @@ def create_suites(moblin, _):
         record.tests(moblin),
         mic.tests(moblin),
         scenes.tests(moblin),
+        settings.tests(moblin),
         stream.tests(moblin),
         browser_widget.tests(moblin),
         chat.tests(moblin),

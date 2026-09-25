@@ -81,7 +81,7 @@ class VideoEncoder: @unchecked Sendable {
             controlDelegate?.videoEncoderControlResolutionChanged(self, resolution: resolution)
         }
         if invalidateSession {
-            session = makeSession(settings: settings)
+            session = makeSession(settings: settings, videoSize: oldBitrateVideoSize)
         }
         updateBitrate(settings: settings)
         let err = session?.encodeFrame(
@@ -175,7 +175,7 @@ class VideoEncoder: @unchecked Sendable {
     }
 
     private func makeSession(settings: VideoEncoderSettings,
-                             videoSize: CMVideoDimensions? = nil) -> VTCompressionSession?
+                             videoSize: CMVideoDimensions) -> VTCompressionSession?
     {
         var session: VTCompressionSession?
         let attributes: [NSString: AnyObject] = [
@@ -187,8 +187,8 @@ class VideoEncoder: @unchecked Sendable {
         ]
         var status = VTCompressionSessionCreate(
             allocator: kCFAllocatorDefault,
-            width: videoSize?.width ?? settings.videoSize.width,
-            height: videoSize?.height ?? settings.videoSize.height,
+            width: videoSize.width,
+            height: videoSize.height,
             codecType: settings.format.codecType,
             encoderSpecification: nil,
             imageBufferAttributes: attributes as CFDictionary?,
