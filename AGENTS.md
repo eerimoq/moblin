@@ -1,42 +1,44 @@
 # Repository guidance
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for architecture, conventions, and
-validation commands. These instructions cover work in this repository.
+Follow [CONTRIBUTING.md](CONTRIBUTING.md). It defines the shared code conventions,
+examples, and validation commands. Read the sections relevant to the task before
+editing; a small change does not require reviewing the whole repository.
 
-## Before editing
+## Scope the change
 
-- Read the closest complete feature path: settings, view, model methods, runtime
-  implementation, callers, and tests. Prefer the established owner and helper.
-- Extend the relevant `Model` feature file. Keep shared setup and adjacent small
-  setters together; a new method does not require a new file or abstraction.
-- Check the actual source, [justfile](justfile), formatter configuration, and
-  [CI workflow](.github/workflows/all.yml) before relying on remembered rules.
+- Identify the expected behavior and a focused way to verify it. Resolve
+  ambiguity that affects stored data, protocol messages, or user-visible behavior
+  before implementing it; state consequential assumptions.
+- Trace the affected callers and existing owner. Reuse its helpers and lifecycle
+  instead of adding a parallel control path or an abstraction for future use.
+- Keep unrelated edits and formatting out of the diff. Remove code made unused
+  by the change; leave unrelated cleanup separate.
 
-## While editing
+## Read for the affected area
 
-- Keep platform operations and capability checks beside related platform
-  extensions. Use the caller's existing configuration lock and execution path.
-- For settings, check defaults, coding keys, encoding, decoding, cloning, and
-  applicable import/export paths. Wire initial setup as well as later changes.
-  Preserve persisted keys and enum raw values.
-- Route controls through existing model operations so local, remote, shortcut,
-  and watch state stays consistent. Preserve each setting's apply/reload timing.
-- Match the existing observable state objects and SwiftUI controls. Include new
-  labels in the appropriate string catalog.
-- Trace queue and actor ownership before changing synchronization. Reuse the
-  existing timer and network helpers. Unsafe isolation annotations do not make
-  shared state safe.
-- Follow both supported rendering paths and scene attachment behavior when
-  changing effects. Check both ends and target membership for shared protocols.
-- Edit frontend source and regenerate its bundled assets. Follow the generation
-  instructions for protobuf files.
+| Change | Contributor guidance |
+| --- | --- |
+| Swift code or feature placement | [Ownership](CONTRIBUTING.md#put-behavior-in-its-existing-owner) and [Swift conventions](CONTRIBUTING.md#swift-conventions). Small setters may stay in `Model.swift`; platform operations belong beside related extensions. |
+| Settings | [Persistence and compatibility](CONTRIBUTING.md#persisted-settings-and-compatibility). Check defaults, keys, encoding, decoding, cloning, applicable import/export, and application at startup and on change. |
+| Capture, effects, or shared state | [Concurrency and media](CONTRIBUTING.md#concurrency-and-media). Trace queue ownership, locks, cleanup, and the supported rendering paths. Unsafe isolation annotations do not synchronize access. |
+| Views or labels | [UI and localization](CONTRIBUTING.md#ui-and-localization). Reuse observable state objects and controls; include labels in the appropriate catalog. |
+| Protocols, companions, or web frontend | [Shared protocols and generated files](CONTRIBUTING.md#protocols-companion-targets-and-generated-files). Check both ends and target membership; edit source and regenerate bundled output. |
 
-## Before finishing
+Match neighboring code and the formatter configuration. Keep shared controls on
+the existing model operations so local, remote, and companion state stays
+consistent.
 
-- Use focused tests of the production behavior and the relevant recipes in
-  `CONTRIBUTING.md`. Run Swift unit tests with Mac Catalyst; CI does not run them.
-- Device suites require a configured test setup and a running application.
-  Their setup and cleanup can change settings and recordings.
-- Review the diff for completeness and local style. Report actual commands,
-  results, and unavailable checks. Distinguish source validation from an Xcode
-  build and device behavior.
+## Verify and report
+
+Use [Build and check a change](CONTRIBUTING.md#build-and-check-a-change) to select
+checks for the changed behavior. The [justfile](justfile), formatter configuration,
+and [CI workflow](.github/workflows/all.yml) are the command references; check them
+when changing tooling or resolving a discrepancy in this guidance.
+
+- Swift unit tests use Mac Catalyst. CI builds the app but does not run them.
+- Device suites require a configured test setup and a running app. Setup and
+  cleanup can change settings, start streams, and delete recordings; do not run
+  them against a live streaming device.
+- Review the final diff against the requested behavior and local conventions.
+  Report actual commands, results, and unavailable checks. Source or syntax
+  checks do not establish an Xcode build or device behavior.

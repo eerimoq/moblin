@@ -1,9 +1,12 @@
 # Contributing
 
-Start with the feature's existing implementation. Follow its settings, view,
-model methods, media or integration code, and tests before choosing where to
-change it. A contribution should fit the surrounding code without introducing
-a second way to configure or control the same behavior.
+Start with the behavior you want to change and the closest existing feature.
+Trace the affected settings, controls, model methods, runtime code, and tests.
+Reuse that path and keep unrelated cleanup out of the change.
+
+For setup and commands, see [Build and check a change](#build-and-check-a-change).
+The sections below explain conventions that are easy to miss when working on
+only one part of the application. Use the sections relevant to your change.
 
 ## How the application fits together
 
@@ -41,8 +44,23 @@ caller retains responsibility for its configuration lock and execution context.
 
 Use the same model operations from local controls, remote requests, shortcuts,
 and companion messages. Check their callers and state notifications before
-changing a shared operation. Updating one view can otherwise leave remote state,
-quick buttons, or watch state behind.
+changing a shared operation.
+
+For example, a control that selects a scene should call the operation in
+[ModelScene.swift](Moblin/Various/Model/ModelScene.swift).
+
+Bad: changing only the selected identifier bypasses the scene switch.
+
+```swift
+model.sceneSelector.selectedSceneId = scene.id
+```
+
+Good: the shared operation also updates the camera, microphone, remote state,
+and local watch state as needed.
+
+```swift
+model.selectScene(id: scene.id)
+```
 
 Read the neighboring code for when a setting takes effect. Some changes apply
 immediately; others require camera attachment, stream reload, or restart. Wire
@@ -50,15 +68,47 @@ both initial setup and subsequent changes through the existing lifecycle.
 Do not introduce polling, observers, or another copy of the setting merely to
 apply it sooner.
 
+### Keep platform details in the existing helper
+
+Bad: repeating a device capability check in capture setup.
+
+```swift
+if device.isLowLightBoostSupported {
+    device.automaticallyEnablesLowLightBoostWhenAvailable = nativeLowLightBoost
+}
+```
+
+Good: use the existing operation beside the other camera configuration calls.
+
+```swift
+device.setLowLightBoost(value: nativeLowLightBoost)
+```
+
+The helper in [CameraUtils.swift](Moblin/Various/Utils/CameraUtils.swift) keeps
+the support check with the platform operation:
+
+```swift
+func setLowLightBoost(value: Bool) {
+    guard isLowLightBoostSupported else {
+        return
+    }
+    automaticallyEnablesLowLightBoostWhenAvailable = value
+}
+```
+
+This method belongs to the existing `AVCaptureDevice` extension. Its caller in
+[VideoCaptureSession.swift](Moblin/Media/HaishinKit/Media/Video/VideoCaptureSession.swift)
+already holds the configuration lock. The helper does not acquire that lock.
+
 ## Swift conventions
 
 - Match nearby names, argument labels, access control, and declaration order.
   Keep the feature's existing type and file naming. Small private types and
   helpers commonly stay in the file that uses them.
 - Prefer direct assignments, early `guard` exits, and ordinary `switch`
-  statements. Add an intermediate value, wrapper, or extra condition when it
-  expresses necessary behavior. A literal used once does not automatically need
-  a named constant; name values when their meaning or reuse warrants it.
+  statements. Reuse existing helpers before adding a wrapper, protocol, manager,
+  or dependency. Introduce an abstraction when the change needs it, not for
+  possible future callers. Name constants when their meaning or reuse warrants it.
 - Keep comments sparse and limited to non-obvious intent, protocol constraints,
   or calculations. Avoid summaries of the code, change history, and boilerplate
   documentation. System test classes use docstrings to describe the scenario.
@@ -69,8 +119,8 @@ apply it sooner.
 - Follow [.config/swiftformat](.config/swiftformat) and
   [.config/swiftlint.yml](.config/swiftlint.yml). The formatter uses 110 columns
   and Swift 5.9 formatting mode; the Xcode targets compile in Swift 6 mode.
-  Disabled lint rules are not an invitation to refactor surrounding code or to
-  introduce avoidable forced casts and unwraps.
+  Match the surrounding style without reformatting unrelated code. A disabled
+  lint rule does not make a forced cast or unwrap safe for untrusted input.
 
 ## Persisted settings and compatibility
 
@@ -80,10 +130,26 @@ entry. Use the keyed container helpers in
 [CommonUtils.swift](Common/Various/CommonUtils.swift). They provide defaults for
 missing or undecodable values and an overload for value validation.
 
-Keep construction and decoding defaults consistent unless compatibility requires
-otherwise. Check the containing type's `clone()` and any import, export, or
-settings-URL representation that should carry the value. Merely adding
-`@Published` does not make a property persist or apply it to running media.
+Bad: requiring a newly added key rejects older settings that lack it.
+
+```swift
+nativeLowLightBoost = try container.decode(Bool.self, forKey: .nativeLowLightBoost)
+```
+
+Good: [SettingsDebug.swift](Moblin/Various/Settings/SettingsDebug.swift) uses the
+same default as a newly constructed settings object.
+
+```swift
+nativeLowLightBoost = container.decode(.nativeLowLightBoost, Bool.self, false)
+```
+
+These are decoder excerpts. The good line still needs the property, coding key,
+and encoder entry; it does not replace the rest of the persistence work.
+
+Check the containing type's `clone()` and any import, export, or settings-URL
+representation that should carry the value. Merely adding `@Published` does not
+make a property persist or apply it to running media. Wire initial setup and
+later changes, preserving when the setting takes effect.
 
 Persisted enum raw values, coding keys, and identifiers are compatibility
 contracts. Localized display names belong in `toString()` or the view. Retain
@@ -105,10 +171,8 @@ reader, callback queue, and start/stop order of any shared state you change.
 Reuse [MainTimer](Moblin/Various/MainTimer.swift),
 [SimpleTimer](Moblin/Various/SimpleTimer.swift), the existing network clients,
 and [Atomic](Moblin/Media/HaishinKit/Util/Atomic.swift) where their ownership model
-fits. Match comparable debug-setting plumbing, but evaluate synchronization
-from actual access patterns. Neither `nonisolated(unsafe)` nor
-`@unchecked Sendable` provides synchronization. Do not add or remove a lock just
-to imitate a nearby declaration.
+fits. Evaluate synchronization from actual access patterns. Neither
+`nonisolated(unsafe)` nor `@unchecked Sendable` provides synchronization.
 
 Keep device configuration within the established locking path. Preserve
 delegate cleanup, timer cancellation, task cancellation, and restart behavior.
@@ -173,6 +237,11 @@ local configuration, and dependencies. Keep `Config/User.xcconfig` local. The
 [justfile](justfile) and [CI workflow](.github/workflows/all.yml) define the
 commands; prefer them over remembered tool invocations.
 
+Choose checks for the changed files and behavior. A documentation edit needs
+link and command checks; it does not require device tests. For a behavior change,
+start with a focused check that would catch the defect, then run the relevant
+repository checks:
+
 ```sh
 just style-check
 just lint
@@ -228,9 +297,10 @@ settings, start streams, and delete recordings, so use a designated test setup.
 
 ## Before submitting
 
-Review the complete diff for feature ownership, settings compatibility,
-localization, affected callers, and generated assets. Keep unrelated cleanup
-and dependency changes separate.
+Keep each pull request focused on one problem. Review the diff for feature
+ownership, compatibility, localization, affected callers, and generated assets
+where applicable. Remove helpers or imports your change made unused, and keep
+unrelated cleanup and dependency changes separate.
 
 Describe the concrete problem and resulting behavior. Report exact validation
 commands and results, plus any unavailable checks. Camera, audio, Bluetooth,
