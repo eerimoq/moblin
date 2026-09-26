@@ -18,6 +18,7 @@ class SampleBufferSender: NSObject {
     private var fd: FileDescriptor?
     private var videoEncoder: VideoEncoder?
     private var appGroup: String?
+    private var sendFailed = false
 
     func start(appGroup: String) {
         self.appGroup = appGroup
@@ -29,6 +30,11 @@ class SampleBufferSender: NSObject {
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
+        if sendFailed {
+            sendFailed = false
+            stop()
+            videoEncoder = nil
+        }
         if !isConnected() {
             if !tryConnect() {
                 return
@@ -107,7 +113,9 @@ extension SampleBufferSender: VideoEncoderDelegate {
         do {
             try sendHeader(header)
             try send(data: hvcC)
-        } catch {}
+        } catch {
+            sendFailed = true
+        }
     }
 
     func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -126,7 +134,9 @@ extension SampleBufferSender: VideoEncoderDelegate {
         do {
             try sendHeader(header)
             try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
-        } catch {}
+        } catch {
+            sendFailed = true
+        }
     }
 }
 
