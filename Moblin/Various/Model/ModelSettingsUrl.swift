@@ -136,18 +136,37 @@ extension Model {
         }
     }
 
+    private func makeSelectedRemoteControlStreamer() -> SettingsRemoteControlAssistant {
+        let remoteControl = database.remoteControl
+        if let streamer = remoteControl.streamers.first(where: { $0.id == remoteControl.selectedStreamer }) {
+            return streamer
+        }
+        let streamer = SettingsRemoteControlAssistant()
+        streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
+                                       existingNames: remoteControl.streamers)
+        remoteControl.streamers.append(streamer)
+        remoteControl.selectedStreamer = streamer.id
+        return streamer
+    }
+
     private func handleSettingsUrlsDefaultRemoteControl(settings: MoblinSettingsUrl) {
         guard let remoteControl = settings.remoteControl else {
             return
         }
         if let assistant = remoteControl.assistant {
-            database.remoteControl.assistant.enabled = assistant.enabled
-            database.remoteControl.assistant.port = assistant.port
+            let streamer = makeSelectedRemoteControlStreamer()
+            streamer.enabled = assistant.enabled
+            streamer.port = assistant.port
             if let relay = assistant.relay {
-                database.remoteControl.assistant.relay.enabled = relay.enabled
-                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl.trim()
-                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId.trim()
+                streamer.relay.enabled = relay.enabled
+                streamer.relay.baseUrl = relay.baseUrl.trim()
+                streamer.relay.bridgeId = relay.bridgeId.trim()
             }
+            database.remoteControl.assistant.enabled = streamer.enabled
+            database.remoteControl.assistant.port = streamer.port
+            database.remoteControl.assistant.relay.enabled = streamer.relay.enabled
+            database.remoteControl.assistant.relay.baseUrl = streamer.relay.baseUrl
+            database.remoteControl.assistant.relay.bridgeId = streamer.relay.bridgeId
         }
         if let streamer = remoteControl.streamer {
             database.remoteControl.streamer.enabled = streamer.enabled
