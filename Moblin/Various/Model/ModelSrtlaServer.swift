@@ -14,7 +14,8 @@ extension Model {
                 settings: database.srtlaServer,
                 delegate: self,
                 timecodesEnabled: isTimecodesEnabled(),
-                softwareDecoding: database.ingestsSoftwareVideoDecoding
+                softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                colorRange: stream.colorRange
             )
             ingests.srtla?.start()
         }

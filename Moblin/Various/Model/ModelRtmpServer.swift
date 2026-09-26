@@ -84,6 +84,7 @@ extension Model {
         if database.rtmpServer.enabled {
             ingests.rtmp = RtmpServer(settings: database.rtmpServer.clone(),
                                       softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      colorRange: stream.colorRange,
                                       delegate: self)
             ingests.rtmp?.start()
         }

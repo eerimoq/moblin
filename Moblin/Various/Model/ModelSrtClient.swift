@@ -33,6 +33,7 @@ extension Model {
             let client = SrtClient(cameraId: stream.id,
                                    url: url,
                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                   colorRange: self.stream.colorRange,
                                    delegate: self)
             client.start()
             ingests.srt.append(client)

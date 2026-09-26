@@ -81,6 +81,7 @@ extension Model {
         if database.whipServer.enabled {
             ingests.whip = WhipServer(settings: database.whipServer.clone(),
                                       softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      colorRange: stream.colorRange,
                                       delegate: self)
             ingests.whip?.start()
         }

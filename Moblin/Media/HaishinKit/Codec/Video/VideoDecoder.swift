@@ -10,6 +10,7 @@ class VideoDecoder: @unchecked Sendable {
     private let name: String
     private let lockQueue: DispatchQueue
     private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
@@ -22,10 +23,15 @@ class VideoDecoder: @unchecked Sendable {
         }
     }
 
-    init(name: String, lockQueue: DispatchQueue, softwareDecoding: Bool) {
+    init(name: String,
+         lockQueue: DispatchQueue,
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange)
+    {
         self.name = name
         self.lockQueue = lockQueue
         self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
@@ -102,7 +108,7 @@ class VideoDecoder: @unchecked Sendable {
             return nil
         }
         let attributes: [NSString: AnyObject] = [
-            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
+            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: colorRange.pixelFormatType()),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
         ]
@@ -121,9 +127,18 @@ class VideoDecoder: @unchecked Sendable {
             outputCallback: nil,
             decompressionSessionOut: &session
         )
-        guard status == noErr else {
+        guard status == noErr, let session else {
             logger.info("video-decoder: \(name): Failed to create session with status \(status)")
             return nil
+        }
+        let pixelTransferProperties = [
+            kVTPixelTransferPropertyKey_DestinationYCbCrMatrix: sdrYCbCrMatrix(colorRange: colorRange),
+        ] as CFDictionary
+        let propertyStatus = VTSessionSetProperty(session,
+                                                  key: kVTDecompressionPropertyKey_PixelTransferProperties,
+                                                  value: pixelTransferProperties)
+        if propertyStatus != noErr {
+            logger.info("video-decoder: \(name): Failed to set pixel transfer properties \(propertyStatus)")
         }
         return session
     }

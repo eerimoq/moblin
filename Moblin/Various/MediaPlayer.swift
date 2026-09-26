@@ -29,11 +29,17 @@ class MediaPlayer: @unchecked Sendable {
     private var outputTimer = SimpleTimer(queue: mediaPlayerQueue)
     private var active = false
     private var filename = ""
+    private var colorRange: SettingsStreamColorRange
     var delegate: (any MediaPlayerDelegate)?
 
-    init(settings: SettingsMediaPlayer, mediaStorage: MediaPlayerStorage) {
+    init(
+        settings: SettingsMediaPlayer,
+        mediaStorage: MediaPlayerStorage,
+        colorRange: SettingsStreamColorRange
+    ) {
         self.settings = settings.clone()
         self.mediaStorage = mediaStorage
+        self.colorRange = colorRange
         mediaPlayerQueue.async {
             self.loadCurrentFile()
         }
@@ -52,6 +58,12 @@ class MediaPlayer: @unchecked Sendable {
     func deactivate() {
         mediaPlayerQueue.async {
             self.active = false
+        }
+    }
+
+    func setPixelFormatType(_ colorRange: SettingsStreamColorRange) {
+        mediaPlayerQueue.async {
+            self.colorRange = colorRange
         }
     }
 
@@ -190,7 +202,7 @@ class MediaPlayer: @unchecked Sendable {
             return
         }
         let videoOutputSettings: [String: Any] = [
-            kCVPixelBufferPixelFormatTypeKey: pixelFormatType,
+            kCVPixelBufferPixelFormatTypeKey: colorRange.pixelFormatType(),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: true,
         ] as [String: Any]

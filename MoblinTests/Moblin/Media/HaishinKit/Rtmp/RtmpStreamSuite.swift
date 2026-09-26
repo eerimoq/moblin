@@ -153,7 +153,10 @@ struct RtmpStreamSuite {
     func basic() async throws {
         let streamKey = "5"
         let modelMock = ModelMock()
-        let processor = Processor(delegate: modelMock)
+        let processor = Processor(
+            delegate: modelMock,
+            colorRange: .full
+        )
         let server = try RtmpServerMock()
         let rtmpStream = RtmpStream(name: "test",
                                     processor: processor,
@@ -260,7 +263,10 @@ struct RtmpStreamSuite {
     func youTube() async throws {
         let streamKey = "5"
         let modelMock = ModelMock()
-        let processor = Processor(delegate: modelMock)
+        let processor = Processor(
+            delegate: modelMock,
+            colorRange: .full
+        )
         let server = try RtmpServerMock()
         let rtmpStream = RtmpStream(name: "test",
                                     processor: processor,
@@ -372,7 +378,10 @@ struct RtmpStreamSuite {
     @Test
     func acknowledgementChunkSplitOverTwoReads() {
         let modelMock = ModelMock()
-        let processor = Processor(delegate: modelMock)
+        let processor = Processor(
+            delegate: modelMock,
+            colorRange: .full
+        )
         let rtmpStream = RtmpStream(name: "test",
                                     processor: processor,
                                     delegate: modelMock,

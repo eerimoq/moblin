@@ -124,13 +124,14 @@ final class Media: NSObject, @unchecked Sendable {
                       attachDefaultAudio: Bool,
                       destinations: [SettingsStreamMultiStreamingDestination],
                       srtImplementation: SettingsStreamSrtImplementation,
-                      limitAdaptiveBitrateByTransportBitrate: Bool)
+                      limitAdaptiveBitrateByTransportBitrate: Bool,
+                      colorRange: SettingsStreamColorRange)
     {
         self.srtImplementation = srtImplementation
         self.limitAdaptiveBitrateByTransportBitrate = limitAdaptiveBitrateByTransportBitrate
         processor?.stop()
         stopAllNetStreams()
-        let processor = Processor(delegate: self)
+        let processor = Processor(delegate: self, colorRange: colorRange)
         switch proto {
         case .rtmp:
             rtmpStreams = [RtmpStream(name: "Main",

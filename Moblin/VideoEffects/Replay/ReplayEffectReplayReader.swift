@@ -18,9 +18,16 @@ class ReplayEffectReplayReader: @unchecked Sendable {
     private var images: Deque<ReplayImage> = []
     private var overlay: CIImage?
     private let size: CGSize
+    private let pixelFormatType: OSType
 
-    init(video: ReplayBufferFile, start: Double, duration: Double, size: CMVideoDimensions) {
+    init(video: ReplayBufferFile,
+         start: Double,
+         duration: Double,
+         size: CMVideoDimensions,
+         pixelFormatType: OSType)
+    {
         self.video = video
+        self.pixelFormatType = pixelFormatType
         self.size = size.toSize()
         startTime = start
         DispatchQueue.main.async { [self] in

@@ -49,6 +49,7 @@ extension Model {
         replayFrameExtractor = ReplayFrameExtractor(
             video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
             offset: video.thumbnailOffset(),
+            pixelFormatType: stream.colorRange.pixelFormatType(),
             delegate: self,
             completion: completion
         )
@@ -164,6 +165,7 @@ extension Model {
             size: stream.dimensions(),
             layout: replay.layout,
             transitionMode: transitionMode,
+            pixelFormatType: stream.colorRange.pixelFormatType(),
             delegate: self
         )
         media.registerEffectBack(replayEffect!)

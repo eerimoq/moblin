@@ -55,11 +55,18 @@ class RtmpServerClient: @unchecked Sendable {
     private var receiveMinimumSize: Int = 0
     private var isProcessing = false
     private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
 
-    init(server: RtmpServer, connection: NWConnection, softwareDecoding: Bool) {
+    init(
+        server: RtmpServer,
+        connection: NWConnection,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange
+    ) {
         self.server = server
         self.connection = connection
         self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
@@ -196,7 +203,8 @@ class RtmpServerClient: @unchecked Sendable {
         if chunkStreams[chunkStreamId] == nil {
             chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self,
                                                                 streamId: chunkStreamId,
-                                                                softwareDecoding: softwareDecoding)
+                                                                softwareDecoding: softwareDecoding,
+                                                                colorRange: colorRange)
         }
         chunkStream = chunkStreams[chunkStreamId]
         // logger.info("rtmp-server: \(chunkStreamId): Chunk message header format: \(format)")

@@ -19,6 +19,7 @@ final class WhipServerClient {
          latency: Double,
          syncTimestamps: Bool,
          softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange,
          iceServers: [String],
          delegate: any WhipServerClientDelegate)
     {
@@ -30,6 +31,7 @@ final class WhipServerClient {
             latency: latency,
             syncTimestamps: syncTimestamps,
             softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             iceServers: iceServers,
             dispatchQueue: whipServerDispatchQueue,
             delegate: self

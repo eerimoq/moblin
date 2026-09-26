@@ -32,19 +32,22 @@ class SrtlaServer: @unchecked Sendable {
     init(settings: SettingsSrtlaServer,
          delegate: any SrtlaServerDelegate,
          timecodesEnabled: Bool,
-         softwareDecoding: Bool)
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange)
     {
         self.settings = settings.clone()
         self.delegate = delegate
         srtServer = SrtServer(
             timecodesEnabled: timecodesEnabled,
             softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             port: settings.srtlaSrtPort(),
             srtlaPatches: true
         )
         srtServerNoSrtlaPatches = SrtServer(
             timecodesEnabled: timecodesEnabled,
             softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             port: settings.srtPort,
             srtlaPatches: false
         )

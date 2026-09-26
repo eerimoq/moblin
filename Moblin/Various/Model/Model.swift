@@ -749,7 +749,7 @@ final class Model: NSObject, ObservableObject {
     var replayVideo: ReplayBufferFile?
     var replayBuffer = ReplayBuffer()
     let replay = ReplayProvider()
-    private let sampleBufferReceiver = SampleBufferReceiver()
+    let sampleBufferReceiver = SampleBufferReceiver()
     let faxReceiver = FaxReceiver()
     var twitchStreamUpdateTime = ContinuousClock.now
     var externalDisplayPreview = false
@@ -934,10 +934,6 @@ final class Model: NSObject, ObservableObject {
         setQuickButton(type: .interactiveBrowserWidgets, isOn: on)
     }
 
-    func setAllowVideoRangePixelFormat() {
-        allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
-    }
-
     func setNativeLowLightBoost() {
         nativeLowLightBoost = database.debug.nativeLowLightBoost
     }
@@ -1078,7 +1074,6 @@ final class Model: NSObject, ObservableObject {
         setupAppIntents()
         faxReceiver.delegate = self
         fixAlertMediasNoUpdate()
-        setAllowVideoRangePixelFormat()
         setNativeLowLightBoost()
         setHighQualityDownsampling()
         setExternalDisplayContent()
@@ -1103,7 +1098,6 @@ final class Model: NSObject, ObservableObject {
         setupLogging()
         updateCameraLists()
         updateBatteryLevel()
-        setPixelFormat()
         setupInputGainObserver()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
@@ -1452,6 +1446,7 @@ final class Model: NSObject, ObservableObject {
 
     private func setupSampleBufferReceiver() {
         sampleBufferReceiver.delegate = self
+        sampleBufferReceiver.setPixelFormatType(stream.colorRange)
         sampleBufferReceiver.start(appGroup: moblinAppGroup)
     }
 

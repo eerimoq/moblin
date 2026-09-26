@@ -33,7 +33,9 @@ extension Model {
     }
 
     func addMediaPlayer(settings: SettingsMediaPlayer) {
-        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
+        let mediaPlayer = MediaPlayer(settings: settings,
+                                      mediaStorage: mediaStorage,
+                                      colorRange: stream.colorRange)
         mediaPlayer.delegate = self
         mediaPlayers[settings.id] = mediaPlayer
         updateMicsListAsync()

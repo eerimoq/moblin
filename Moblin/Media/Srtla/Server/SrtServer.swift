@@ -7,12 +7,20 @@ class SrtServer: @unchecked Sendable {
     var running: Bool = false
     private let timecodesEnabled: Bool
     private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private let port: UInt16
     private let srtlaPatches: Bool
 
-    init(timecodesEnabled: Bool, softwareDecoding: Bool, port: UInt16, srtlaPatches: Bool) {
+    init(
+        timecodesEnabled: Bool,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange,
+        port: UInt16,
+        srtlaPatches: Bool
+    ) {
         self.timecodesEnabled = timecodesEnabled
         self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.port = port
         self.srtlaPatches = srtlaPatches
     }
@@ -67,7 +75,8 @@ class SrtServer: @unchecked Sendable {
                 SrtServerClient(server: self,
                                 cameraId: cameraId,
                                 timecodesEnabled: self.timecodesEnabled,
-                                softwareDecoding: self.softwareDecoding)
+                                softwareDecoding: self.softwareDecoding,
+                                colorRange: self.colorRange)
                     .run(clientSocket: clientSocket)
                 srtlaServer.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
                 srtlaServer.clientDisconnected(cameraId: cameraId, name: name)

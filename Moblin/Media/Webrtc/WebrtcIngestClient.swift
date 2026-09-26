@@ -87,6 +87,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private let latency: Double
     private let syncTimestamps: Bool
     private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private(set) var peerConnectionId: Int32 = -1
     weak let delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
@@ -111,6 +112,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
          latency: Double,
          syncTimestamps: Bool,
          softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
          delegate: any WebrtcIngestClientDelegate)
@@ -120,6 +122,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
         self.latency = latency
         self.syncTimestamps = syncTimestamps
         self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.iceServers = iceServers
         self.dispatchQueue = dispatchQueue
         videoTimestamper = TrackTimestamper(name: "\(name) video",
@@ -399,7 +402,8 @@ final class WebrtcIngestClient: @unchecked Sendable {
         if videoDecoder == nil {
             videoDecoder = VideoDecoder(name: name,
                                         lockQueue: dispatchQueue,
-                                        softwareDecoding: softwareDecoding)
+                                        softwareDecoding: softwareDecoding,
+                                        colorRange: colorRange)
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }

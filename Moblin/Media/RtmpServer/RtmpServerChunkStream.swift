@@ -13,6 +13,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
     private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private var mediaTimestamp: Double = 0
     private var mediaTimestampZero: Double
     private var videoTimestamp: Double
@@ -23,10 +24,16 @@ class RtmpServerChunkStream: @unchecked Sendable {
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
 
-    init(client: RtmpServerClient, streamId: UInt16, softwareDecoding: Bool) {
+    init(
+        client: RtmpServerClient,
+        streamId: UInt16,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange
+    ) {
         self.client = client
         self.streamId = streamId
         self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         messageBody = Data()
         messageLength = 0
         messageTypeId = 0
@@ -517,7 +524,8 @@ class RtmpServerChunkStream: @unchecked Sendable {
         }
         videoDecoder = VideoDecoder(name: "rtmp-server",
                                     lockQueue: rtmpServerDispatchQueue,
-                                    softwareDecoding: softwareDecoding)
+                                    softwareDecoding: softwareDecoding,
+                                    colorRange: colorRange)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }

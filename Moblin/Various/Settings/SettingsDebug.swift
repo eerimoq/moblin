@@ -7,13 +7,6 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     case debug = "Debug"
 }
 
-let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
-let pixelFormatTypes = [
-    kCVPixelFormatType_32BGRA,
-    kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
-    kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-]
-
 class SettingsDebug: Codable, ObservableObject {
     static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
@@ -24,10 +17,8 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
-    var pixelFormat: String = pixelFormats[1]
     // To be removed.
     var faceToBeRemoved: SettingsFace = .init()
-    @Published var allowVideoRangePixelFormat: Bool = false
     @Published var nativeLowLightBoost: Bool = false
     var blurSceneSwitch: Bool = true
     // To be removed.
@@ -62,9 +53,7 @@ class SettingsDebug: Codable, ObservableObject {
         case cameraSwitchRemoveBlackish
         case bluetoothOutputOnly
         case maximumLogLines
-        case pixelFormat
         case beautyFilterSettings
-        case allowVideoRangePixelFormat
         case nativeLowLightBoost
         case blurSceneSwitch
         case preferStereoMic
@@ -107,9 +96,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
-        try container.encode(.pixelFormat, pixelFormat)
         try container.encode(.beautyFilterSettings, faceToBeRemoved)
-        try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
         try container.encode(.nativeLowLightBoost, nativeLowLightBoost)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
         try container.encode(.preferStereoMic, preferStereoMicToBeRemoved)
@@ -151,9 +138,7 @@ class SettingsDebug: Codable, ObservableObject {
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
-        pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
         faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
-        allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         nativeLowLightBoost = container.decode(.nativeLowLightBoost, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
         preferStereoMicToBeRemoved = container.decode(.preferStereoMic, Bool.self, false)

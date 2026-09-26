@@ -25,10 +25,73 @@ protocol VideoCaptureSessionDelegate: AnyObject {
     func videoCaptureSessionWasInterrupted()
 }
 
+func isVideoRangePixelFormat(_ pixelFormat: OSType) -> Bool {
+    guard let description = CVPixelFormatDescriptionCreateWithPixelFormatType(nil,
+                                                                              pixelFormat) as? [String: Any]
+    else {
+        return false
+    }
+    return description[kCVPixelFormatComponentRange as String] as? String
+        == kCVPixelFormatComponentRange_VideoRange as String
+}
+
+func filterFormatsByColorRange<Format: VideoFormat>(_ formats: [Format],
+                                                    _ colorRange: SettingsStreamColorRange) -> [Format]
+{
+    switch colorRange {
+    case .full:
+        return formats.filter { $0.pixelFormat != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange }
+    case .limited:
+        let videoRangeFormats = formats.filter { isVideoRangePixelFormat($0.pixelFormat) }
+        return videoRangeFormats.isEmpty ? formats : videoRangeFormats
+    }
+}
+
+protocol VideoFormat {
+    var pixelFormat: OSType { get }
+}
+
+extension AVCaptureDevice.Format: VideoFormat {
+    var pixelFormat: OSType {
+        formatDescription.mediaSubType.rawValue
+    }
+}
+
+#if targetEnvironment(macCatalyst)
+final class FormatDescriptionMatcher {
+    private var formatDescription: CMVideoFormatDescription?
+
+    func match(_ sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        guard let imageBuffer = sampleBuffer.imageBuffer,
+              let formatDescription = sampleBuffer.formatDescription,
+              !CMVideoFormatDescriptionMatchesImageBuffer(formatDescription, imageBuffer: imageBuffer)
+        else {
+            return sampleBuffer
+        }
+        if self.formatDescription.map({
+            !CMVideoFormatDescriptionMatchesImageBuffer($0, imageBuffer: imageBuffer)
+        }) ?? true {
+            self.formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer)
+        }
+        guard let formatDescription = self.formatDescription else {
+            return nil
+        }
+        return CMSampleBuffer.create(imageBuffer,
+                                     formatDescription,
+                                     sampleBuffer.duration,
+                                     sampleBuffer.presentationTimeStamp,
+                                     sampleBuffer.decodeTimeStamp)
+    }
+}
+#endif
+
 private final class DeviceOutputHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: AVCaptureDevice
     private let cameraId: UUID
     private weak var delegate: (any VideoCaptureSessionDelegate)?
+    #if targetEnvironment(macCatalyst)
+    private let formatDescriptionMatcher = FormatDescriptionMatcher()
+    #endif
 
     init(device: AVCaptureDevice, cameraId: UUID, delegate: (any VideoCaptureSessionDelegate)?) {
         self.device = device
@@ -41,6 +104,11 @@ private final class DeviceOutputHandler: NSObject, AVCaptureVideoDataOutputSampl
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        #if targetEnvironment(macCatalyst)
+        guard let sampleBuffer = formatDescriptionMatcher.match(sampleBuffer) else {
+            return
+        }
+        #endif
         delegate?.videoCaptureSessionDidOutput(device, cameraId, sampleBuffer)
     }
 }
@@ -96,6 +164,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
     private var isLandscapeStreamAndPortraitUi = false
+    private let colorRange: SettingsStreamColorRange
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -131,7 +200,8 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
     }
 
-    override init() {
+    init(colorRange: SettingsStreamColorRange) {
+        self.colorRange = colorRange
         super.init()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleSessionRuntimeError),
@@ -381,11 +451,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         if formats.isEmpty {
             return (nil, useAutoFrameRate, useLandscapeInPortrait, "No unbinned video format found")
         }
-        // 420v does not work with OA4.
-        formats = formats.filter {
-            $0.formatDescription.mediaSubType.rawValue != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-                || allowVideoRangePixelFormat
-        }
+        formats = filterFormatsByColorRange(formats, colorRange)
         if formats.isEmpty {
             return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported pixel format")
         }
@@ -467,7 +533,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
         output.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
+            kCVPixelBufferPixelFormatTypeKey as String: colorRange.pixelFormatType(),
         ]
         var connection: AVCaptureConnection?
         if let port = input.ports.first(where: { $0.mediaType == .video }) {

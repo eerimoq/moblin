@@ -96,6 +96,30 @@ private struct CodecSettingsView: View {
     }
 }
 
+private struct ColorRangeSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var stream: SettingsStream
+
+    var body: some View {
+        Section {
+            Picker("Color range", selection: $stream.colorRange) {
+                ForEach(SettingsStreamColorRange.allCases, id: \.self) {
+                    Text($0.toString())
+                }
+            }
+            .onChange(of: stream.colorRange) { _ in
+                model.reloadStreamIfEnabled(stream: stream)
+            }
+            .disabled(stream.enabled && (model.isLive || model.isRecording))
+        } footer: {
+            Text("""
+            Color range of streams and recordings. Full range uses all levels, while limited \
+            range is the broadcast standard expected by some servers and players.
+            """)
+        }
+    }
+}
+
 private struct RateControlView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -345,6 +369,7 @@ struct StreamVideoSettingsView: View {
                 BitrateSettingsView(database: database, stream: stream)
                 KeyFrameIntervalSettingsView(stream: stream)
                 BFramesSettingsView(stream: stream)
+                ColorRangeSettingsView(stream: stream)
                 AdaptiveResolutionSettingsView(stream: stream)
                 StreamTimecodesSettingsView(stream: stream)
             }

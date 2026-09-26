@@ -358,6 +358,7 @@ extension Model {
         cameraPosition = nil
         stopRecorderIfNeeded(forceStop: true)
         _ = stopStream()
+        setColorRange()
         setNetStream()
         setStreamResolution()
         setStreamFps()
@@ -404,7 +405,8 @@ extension Model {
             attachDefaultAudio: !isChatPhone(),
             destinations: stream.multiStreaming.destinations,
             srtImplementation: stream.srt.implementation,
-            limitAdaptiveBitrateByTransportBitrate: stream.rateControl != .cbr
+            limitAdaptiveBitrateByTransportBitrate: stream.rateControl != .cbr,
+            colorRange: stream.colorRange
         )
         updateTorch()
         updateMute()
@@ -893,13 +895,12 @@ extension Model {
         }
     }
 
-    func setPixelFormat() {
-        for (format, type) in zip(pixelFormats, pixelFormatTypes) where
-            database.debug.pixelFormat == format
-        {
-            logger.info("Setting pixel format \(format)")
-            pixelFormatType = type
+    private func setColorRange() {
+        sampleBufferReceiver.setPixelFormatType(stream.colorRange)
+        for mediaPlayer in mediaPlayers.values {
+            mediaPlayer.setPixelFormatType(stream.colorRange)
         }
+        reloadIngests()
     }
 }
 
