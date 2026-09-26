@@ -81,10 +81,12 @@ private struct StreamDescriptionView: View {
                         }
                         stream.url = ingestsUrl
                         stream.youTubeVideoIds = youTubeStream.id
+                        stream.youTubeChannelId = youTubeStream.snippet.channelId ?? ""
                         model.reloadStreamIfEnabled(stream: stream)
                     }
                     Button("No") {
                         stream.youTubeVideoIds = youTubeStream.id
+                        stream.youTubeChannelId = youTubeStream.snippet.channelId ?? ""
                         model.youTubeVideoIdUpdated()
                     }
                 }

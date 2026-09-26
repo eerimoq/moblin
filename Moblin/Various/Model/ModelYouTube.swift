@@ -142,6 +142,7 @@ extension Model {
                             return
                         }
                         self.stream.youTubeVideoIds = newVideoIds
+                        self.stream.youTubeChannelId = listResponse.items.first?.snippet.channelId ?? ""
                         if self.stream.enabled {
                             self.youTubeVideoIdUpdated()
                         }
@@ -152,12 +153,13 @@ extension Model {
             }
         } else if !stream.youTubeHandle.isEmpty {
             Task {
-                if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
+                if let ids = try? await fetchYouTubeVideoAndChannelId(handle: stream.youTubeHandle) {
                     stopFetchingYouTubeChatVideoId()
-                    guard videoId != stream.youTubeVideoIds else {
+                    guard ids.videoId != stream.youTubeVideoIds else {
                         return
                     }
-                    stream.youTubeVideoIds = videoId
+                    stream.youTubeVideoIds = ids.videoId
+                    stream.youTubeChannelId = ids.channelId
                     if stream.enabled {
                         youTubeVideoIdUpdated()
                     }
@@ -195,7 +197,10 @@ extension Model {
         youTubeLiveChats.removeAll()
         if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
             for videoId in stream.getYouTubeVideoIds() {
-                let chat = YouTubeLiveChat(model: self, videoId: videoId, settings: stream.chat)
+                let chat = YouTubeLiveChat(model: self,
+                                           videoId: videoId,
+                                           channelId: stream.youTubeChannelId,
+                                           settings: stream.chat)
                 youTubeLiveChats[videoId] = chat
                 chat.start()
             }

@@ -2,7 +2,7 @@ import Foundation
 
 private let userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0"
 
-func fetchYouTubeVideoId(handle: String) async throws -> String {
+func fetchYouTubeVideoAndChannelId(handle: String) async throws -> (videoId: String, channelId: String) {
     guard let url = URL(string: "https://www.youtube.com/\(handle)/live") else {
         throw "Cannot create URL"
     }
@@ -21,9 +21,10 @@ func fetchYouTubeVideoId(handle: String) async throws -> String {
         /<link rel='shortlinkUrl' href='https:\/\/youtu\.be\/([^']+)'/,
         /shortlinkUrl[^>]*href=[\"\']https:\/\/youtu\.be\/([^\"\']+)/,
     ]
+    let channelId = try? /"channelId":"(UC[^"]+)"/.firstMatch(in: html).map { String($0.1) }
     for pattern in patterns {
         if let match = try? pattern.firstMatch(in: html) {
-            return String(match.1)
+            return (String(match.1), channelId ?? "")
         }
     }
     throw "Video id not found"
@@ -182,6 +183,7 @@ private struct GetLiveChat: Codable {
 final class YouTubeLiveChat: NSObject {
     private var model: Model
     private var videoId: String
+    private var channelId: String
     private var task: Task<Void, any Error>?
     private var emotes: Emotes
     private var settings: SettingsStreamChat
@@ -189,9 +191,10 @@ final class YouTubeLiveChat: NSObject {
     private var continuation: String = ""
     private var delay = 2000
 
-    init(model: Model, videoId: String, settings: SettingsStreamChat) {
+    init(model: Model, videoId: String, channelId: String, settings: SettingsStreamChat) {
         self.model = model
         self.videoId = videoId
+        self.channelId = channelId
         self.settings = settings.clone()
         emotes = Emotes()
     }
@@ -199,7 +202,7 @@ final class YouTubeLiveChat: NSObject {
     func start() {
         emotes.start(
             platform: .youtube,
-            channelId: videoId,
+            channelId: channelId,
             onError: handleError,
             onOk: handleOk,
             settings: settings
