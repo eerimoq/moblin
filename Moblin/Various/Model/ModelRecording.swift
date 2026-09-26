@@ -34,8 +34,8 @@ extension Model {
         if let toastTitle {
             makeToast(title: toastTitle, subTitle: toastSubTitle)
         }
-        media.setRecordUrl(url: nil)
         suspendRecording()
+        media.setRecordUrl(url: nil)
     }
 
     func resumeRecording() -> Bool {
