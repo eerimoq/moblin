@@ -51,6 +51,7 @@ class VideoEncoder: @unchecked Sendable {
             self.isRunning = true
             self.invalidateSession = true
             self.currentBitrate = 0
+            self.oldBitrateVideoSize = CMVideoDimensions(width: 0, height: 0)
             self.formatDescription = formatDescription
             numberOfFailedEncodings = 0
             logger.info("video-encoder: Starting with codec \(self.settings.value.format)")
