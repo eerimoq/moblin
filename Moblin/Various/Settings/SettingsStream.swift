@@ -1243,6 +1243,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var youTubeNotLoggedInCount: Int = 0
     @Published var youTubeVideoIds: String = ""
     @Published var youTubeHandle: String = ""
+    @Published var youTubeChannelId: String = ""
     @Published var youTubeScheduleStreamTitle: String = ""
     @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
     @Published var youTubeScheduleStreamAutoStop: Bool = true
@@ -1343,6 +1344,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case youTubeWantsToBeLoggedIn
         case youTubeNotLoggedInCount
         case youTubeHandle
+        case youTubeChannelId
         case youTubeScheduleStreamTitle
         case youTubeScheduleStreamVisibility
         case youTubeScheduleStreamAutoStop
@@ -1442,6 +1444,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.youTubeWantsToBeLoggedIn, youTubeWantsToBeLoggedIn)
         try container.encode(.youTubeNotLoggedInCount, youTubeNotLoggedInCount)
         try container.encode(.youTubeHandle, youTubeHandle)
+        try container.encode(.youTubeChannelId, youTubeChannelId)
         try container.encode(.youTubeScheduleStreamTitle, youTubeScheduleStreamTitle)
         try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
         try container.encode(.youTubeScheduleStreamAutoStop, youTubeScheduleStreamAutoStop)
@@ -1552,6 +1555,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                     youTubeAuthState != nil)
         youTubeNotLoggedInCount = container.decode(.youTubeNotLoggedInCount, Int.self, 0)
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
+        youTubeChannelId = container.decode(.youTubeChannelId, String.self, "")
         youTubeScheduleStreamTitle = container.decode(.youTubeScheduleStreamTitle, String.self, "")
         youTubeScheduleStreamVisibility = container.decode(.youTubeScheduleStreamVisibility,
                                                            YouTubeApiLiveBroadcaseVisibility.self,
@@ -1676,6 +1680,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.youTubeNotLoggedInCount = youTubeNotLoggedInCount
         new.youTubeVideoIds = youTubeVideoIds
         new.youTubeHandle = youTubeHandle
+        new.youTubeChannelId = youTubeChannelId
         new.youTubeScheduleStreamTitle = youTubeScheduleStreamTitle
         new.youTubeScheduleStreamVisibility = youTubeScheduleStreamVisibility
         new.youTubeScheduleStreamAutoStop = youTubeScheduleStreamAutoStop
