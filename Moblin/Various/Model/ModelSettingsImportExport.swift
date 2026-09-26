@@ -89,6 +89,13 @@ extension Model {
         loadFaceBackgroundImage()
         reloadDjiDevicesAfterSettingsImport()
         reloadGoProDevicesAfterSettingsImport()
+        reloadCatPrintersAfterSettingsImport()
+        reloadWorkoutDevicesAfterSettingsImport()
+        reloadMediaPlayersAfterSettingsImport()
+        reloadMoblinkRelay()
+        reloadMoblinkStreamer()
+        reloadTeslaVehicle()
+        setSelectedStreamDeck()
         reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
