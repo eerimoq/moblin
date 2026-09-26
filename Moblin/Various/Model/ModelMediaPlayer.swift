@@ -41,6 +41,8 @@ extension Model {
 
     func deleteMediaPlayer(playerId: UUID) {
         mediaPlayers.removeValue(forKey: playerId)
+        media.removeBufferedVideo(cameraId: playerId)
+        media.removeBufferedAudio(cameraId: playerId)
         updateMicsListAsync()
     }
 
