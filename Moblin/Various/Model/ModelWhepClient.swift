@@ -35,6 +35,7 @@ extension Model {
                                     latency: stream.latencySeconds(),
                                     syncTimestamps: stream.syncTimestamps,
                                     softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                    pixelFormatType: self.stream.colorRange.pixelFormatType(),
                                     delegate: self)
             client.start()
             ingests.whep.append(client)

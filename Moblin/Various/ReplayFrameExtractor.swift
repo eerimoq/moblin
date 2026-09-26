@@ -37,14 +37,16 @@ private protocol JobDelegate: AnyObject {
 private class FrameExtractorJob: @unchecked Sendable {
     private let video: ReplayBufferFile
     private let offset: Double
+    private let pixelFormatType: OSType
     weak var delegate: (any JobDelegate)?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private let context = CIContext()
 
-    init(video: ReplayBufferFile, offset: Double, delegate: any JobDelegate) throws {
+    init(video: ReplayBufferFile, offset: Double, pixelFormatType: OSType, delegate: any JobDelegate) throws {
         self.video = video
         self.offset = offset
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
         try createReader(offset: offset)
     }
@@ -98,6 +100,7 @@ private class FrameExtractorJob: @unchecked Sendable {
 
 class ReplayFrameExtractor: @unchecked Sendable {
     private let video: ReplayBufferFile
+    private let pixelFormatType: OSType
     private weak var delegate: (any ReplayDelegate)?
     private var completion: (@MainActor () -> Void)?
     private var job: FrameExtractorJob?
@@ -105,10 +108,12 @@ class ReplayFrameExtractor: @unchecked Sendable {
 
     init(video: ReplayBufferFile,
          offset: Double,
+         pixelFormatType: OSType,
          delegate: any ReplayDelegate,
          completion: (@MainActor () -> Void)?)
     {
         self.video = video
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
         self.completion = completion
         seek(offset: offset)
@@ -128,7 +133,10 @@ class ReplayFrameExtractor: @unchecked Sendable {
         guard job == nil, let pendingOffset else {
             return
         }
-        job = try? FrameExtractorJob(video: video, offset: pendingOffset, delegate: self)
+        job = try? FrameExtractorJob(video: video,
+                                     offset: pendingOffset,
+                                     pixelFormatType: pixelFormatType,
+                                     delegate: self)
         self.pendingOffset = nil
     }
 }

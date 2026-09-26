@@ -17,6 +17,7 @@ class WhepClient: @unchecked Sendable {
     private let latency: Double
     private let syncTimestamps: Bool
     private let softwareDecoding: Bool
+    private let pixelFormatType: OSType
     private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
@@ -30,6 +31,7 @@ class WhepClient: @unchecked Sendable {
          latency: Double,
          syncTimestamps: Bool,
          softwareDecoding: Bool,
+         pixelFormatType: OSType,
          delegate: any WhepClientDelegate)
     {
         self.streamId = streamId
@@ -37,6 +39,7 @@ class WhepClient: @unchecked Sendable {
         self.latency = latency
         self.syncTimestamps = syncTimestamps
         self.softwareDecoding = softwareDecoding
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
     }
 
@@ -79,6 +82,7 @@ class WhepClient: @unchecked Sendable {
             latency: latency,
             syncTimestamps: syncTimestamps,
             softwareDecoding: softwareDecoding,
+            pixelFormatType: pixelFormatType,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self

@@ -1,5 +1,6 @@
 from .suites import browser_widget
 from .suites import chat
+from .suites import colors
 from .suites import dji_camera
 from .suites import gimbal
 from .suites import http_proxy
@@ -23,6 +24,7 @@ def create_suites(moblin, _):
         record.tests(moblin),
         mic.tests(moblin),
         scenes.tests(moblin),
+        colors.tests(moblin),
         settings.tests(moblin),
         stream.tests(moblin),
         browser_widget.tests(moblin),

@@ -18,17 +18,20 @@ class RistServer: @unchecked Sendable {
     let delegate: any RistServerDelegate
     private let streams: [SettingsRistServerStream]
     private let softwareDecoding: Bool
+    private let pixelFormatType: OSType
     private let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
 
     init?(port: UInt16,
           streams: [SettingsRistServerStream],
           softwareDecoding: Bool,
+          pixelFormatType: OSType,
           delegate: any RistServerDelegate)
     {
         self.port = port
         self.streams = streams
         self.softwareDecoding = softwareDecoding
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
     }
 
@@ -79,7 +82,8 @@ class RistServer: @unchecked Sendable {
         }
         let client = RistServerClient(cameraId: stream.id,
                                       latency: stream.latencySeconds(),
-                                      softwareDecoding: softwareDecoding)
+                                      softwareDecoding: softwareDecoding,
+                                      pixelFormatType: pixelFormatType)
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         clientsChanged()

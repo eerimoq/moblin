@@ -16,13 +16,20 @@ class WhipServer: @unchecked Sendable {
     private let delegate: any WhipServerDelegate
     var settings: SettingsWhipServer
     private let softwareDecoding: Bool
+    private let pixelFormatType: OSType
     private let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
     private var connectedStreamIds: Atomic<[UUID]> = .init([])
 
-    init(settings: SettingsWhipServer, softwareDecoding: Bool, delegate: any WhipServerDelegate) {
+    init(
+        settings: SettingsWhipServer,
+        softwareDecoding: Bool,
+        pixelFormatType: OSType,
+        delegate: any WhipServerDelegate
+    ) {
         self.settings = settings
         self.softwareDecoding = softwareDecoding
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
     }
 
@@ -142,6 +149,7 @@ class WhipServer: @unchecked Sendable {
                                       latency: stream.latencySeconds(),
                                       syncTimestamps: stream.syncTimestamps,
                                       softwareDecoding: softwareDecoding,
+                                      pixelFormatType: pixelFormatType,
                                       iceServers: [defaultStunServer],
                                       delegate: self)
         let streamId = client.streamId

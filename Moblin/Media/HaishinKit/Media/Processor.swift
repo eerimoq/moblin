@@ -36,14 +36,15 @@ private class Stream {
 
 final class Processor: @unchecked Sendable {
     let audio = AudioUnit()
-    let video = VideoUnit()
+    let video: VideoUnit
     let recorder = Recorder()
     private var streams: [Stream] = []
     private var driftTrackers: [UUID: DriftTracker] = [:]
     let delegate: any ProcessorDelegate
 
-    init(delegate: any ProcessorDelegate) {
+    init(delegate: any ProcessorDelegate, pixelFormatType: OSType) {
         self.delegate = delegate
+        video = VideoUnit(pixelFormatType: pixelFormatType)
         audio.processor = self
         video.processor = self
         recorder.delegate = self

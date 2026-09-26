@@ -78,6 +78,11 @@ class AudioCodec(StrEnum):
     OPUS = "OPUS"
 
 
+class ColorRange(StrEnum):
+    FULL = "Full"
+    LIMITED = "Limited"
+
+
 class BitrateRateControl(StrEnum):
     ABR = "ABR"
     CBR = "CBR"
@@ -86,6 +91,13 @@ class BitrateRateControl(StrEnum):
 
 class VideoEffectType(StrEnum):
     LUT = "lut"
+
+
+class ColorSpace(StrEnum):
+    SRGB = "Standard RGB"
+    P3_D65 = "P3 D65"
+    HLG_BT2020 = "HLG BT2020"
+    APPLE_LOG = "Apple Log"
 
 
 class ColorLutType(StrEnum):

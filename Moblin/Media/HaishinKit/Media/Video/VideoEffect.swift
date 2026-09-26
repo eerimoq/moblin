@@ -30,7 +30,7 @@ struct VideoEffectInfo {
         else {
             return videoUnit.getCiImage(videoSourceId, presentationTimeStamp)
         }
-        return CIImage(cvPixelBuffer: imageBuffer)
+        return videoUnit.makeCiImage(imageBuffer)
     }
 
     func getMetalPetalImage(_ videoSourceId: UUID) -> MTIImage? {

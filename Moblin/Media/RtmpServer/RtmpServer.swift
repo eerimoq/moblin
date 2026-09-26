@@ -19,14 +19,21 @@ class RtmpServer: @unchecked Sendable {
     let delegate: any RtmpServerDelegate
     var settings: SettingsRtmpServer
     private let softwareDecoding: Bool
+    private let pixelFormatType: OSType
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
     private var connectedStreamKeys: Atomic<[String]> = .init([])
 
-    init(settings: SettingsRtmpServer, softwareDecoding: Bool, delegate: any RtmpServerDelegate) {
+    init(
+        settings: SettingsRtmpServer,
+        softwareDecoding: Bool,
+        pixelFormatType: OSType,
+        delegate: any RtmpServerDelegate
+    ) {
         self.settings = settings
         self.softwareDecoding = softwareDecoding
+        self.pixelFormatType = pixelFormatType
         self.delegate = delegate
         clients = []
     }
@@ -123,7 +130,8 @@ class RtmpServer: @unchecked Sendable {
         logger.info("rtmp-server: Client TCP connected")
         let client = RtmpServerClient(server: self,
                                       connection: connection,
-                                      softwareDecoding: softwareDecoding)
+                                      softwareDecoding: softwareDecoding,
+                                      pixelFormatType: pixelFormatType)
         client.start()
         clients.append(client)
         clientsChanged()

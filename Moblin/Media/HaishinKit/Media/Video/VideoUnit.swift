@@ -74,8 +74,6 @@ enum SceneSwitchTransition {
     case blurAndZoom
 }
 
-nonisolated(unsafe) var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-nonisolated(unsafe) var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
@@ -119,7 +117,8 @@ class DetectionsCompletion: @unchecked Sendable {
 
 final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
-    private let captureSession = VideoCaptureSession()
+    private let pixelFormatType: OSType
+    private let captureSession: VideoCaptureSession
     private let effectsProcessor: VideoEffectsProcessor
     private let snapshots: VideoSnapshots
     private let lowFpsImage: VideoLowFpsImage
@@ -140,7 +139,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
+    let encoder: VideoEncoder
     var previewEncoder: VideoEncoder?
     weak var processor: Processor? {
         didSet {
@@ -179,8 +178,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var currentAttachParams: VideoUnitAttachParams?
     private var macScreenCaptureActive = false
 
-    override init() {
-        let effectsProcessor = VideoEffectsProcessor()
+    init(pixelFormatType: OSType) {
+        self.pixelFormatType = pixelFormatType
+        captureSession = VideoCaptureSession(pixelFormatType: pixelFormatType)
+        encoder = VideoEncoder(lockQueue: processorPipelineQueue, pixelFormatType: pixelFormatType)
+        let effectsProcessor = VideoEffectsProcessor(pixelFormatType: pixelFormatType)
         self.effectsProcessor = effectsProcessor
         snapshots = VideoSnapshots(context: effectsProcessor.context)
         lowFpsImage = VideoLowFpsImage(context: effectsProcessor.context)
@@ -230,6 +232,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     func setColorSpace(colorSpace: AVCaptureColorSpace) {
         captureSession.setColorSpace(colorSpace: colorSpace)
+        processorPipelineQueue.async {
+            self.effectsProcessor.colorSpace = colorSpace
+            self.encoder.outputColorAttachments = self.effectsProcessor.outputColorAttachments
+            self.previewEncoder?.outputColorAttachments = self.effectsProcessor.outputColorAttachments
+            self.effectsProcessor.reset()
+            self.blackImageBuffer = nil
+            self.blackFormatDescription = nil
+        }
     }
 
     func setCameraControl(enabled: Bool) {
@@ -398,11 +408,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     func startPreviewEncoding(_ delegate: any VideoEncoderDelegate, settings: VideoEncoderSettings) {
-        let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
+        let encoder = VideoEncoder(lockQueue: processorPipelineQueue, pixelFormatType: pixelFormatType)
         encoder.settings.mutate { $0 = settings }
         encoder.delegate = delegate
         encoder.startRunning()
         processorPipelineQueue.async {
+            encoder.outputColorAttachments = self.effectsProcessor.outputColorAttachments
             self.previewEncoder = encoder
         }
     }
@@ -439,7 +450,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         else {
             return nil
         }
-        return CIImage(cvPixelBuffer: imageBuffer)
+        return effectsProcessor.makeCiImage(imageBuffer)
+    }
+
+    func makeCiImage(_ imageBuffer: CVImageBuffer) -> CIImage {
+        effectsProcessor.makeCiImage(imageBuffer)
     }
 
     func getMetalPetalImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> MTIImage? {
@@ -740,13 +755,16 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         if blackImageBuffer == nil || blackFormatDescription == nil {
             let width = canvasSize.width
             let height = canvasSize.height
-            let pixelBufferAttributes: [NSString: AnyObject] = [
-                kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
+            var pixelBufferAttributes: [NSString: AnyObject] = [
+                kCVPixelBufferPixelFormatTypeKey: NSNumber(value: effectsProcessor.outputPixelFormatType),
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
                 kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
                 kCVPixelBufferWidthKey: NSNumber(value: Int(width)),
                 kCVPixelBufferHeightKey: NSNumber(value: Int(height)),
             ]
+            if let colorAttachments = effectsProcessor.outputColorAttachments {
+                pixelBufferAttributes[kCVBufferPropagatedAttachmentsKey] = colorAttachments as NSDictionary
+            }
             CVPixelBufferPoolCreate(
                 kCFAllocatorDefault,
                 nil,

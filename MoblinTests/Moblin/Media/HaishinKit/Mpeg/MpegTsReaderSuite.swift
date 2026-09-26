@@ -26,6 +26,7 @@ struct MpegTsReaderSuite {
                                   decoderQueue: .main,
                                   timecodesEnabled: false,
                                   softwareDecoding: false,
+                                  pixelFormatType: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
                                   targetLatency: 1.0)
         reader.delegate = mock
         var packet =

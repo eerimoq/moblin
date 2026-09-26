@@ -6,12 +6,13 @@ class RistServerClient {
     private let reader: MpegTsReader
     private let cameraId: UUID
 
-    init(cameraId: UUID, latency: Double, softwareDecoding: Bool) {
+    init(cameraId: UUID, latency: Double, softwareDecoding: Bool, pixelFormatType: OSType) {
         self.cameraId = cameraId
         reader = MpegTsReader(name: "rist-server",
                               decoderQueue: ristServerQueue,
                               timecodesEnabled: false,
                               softwareDecoding: softwareDecoding,
+                              pixelFormatType: pixelFormatType,
                               targetLatency: latency)
         reader.delegate = self
     }

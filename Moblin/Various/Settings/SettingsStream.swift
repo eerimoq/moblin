@@ -26,6 +26,29 @@ enum SettingsStreamH264Profile: String, Codable, CaseIterable {
     case high = "High"
 }
 
+enum SettingsStreamColorRange: String, Codable, CaseIterable {
+    case full = "Full"
+    case limited = "Limited"
+
+    func toString() -> String {
+        switch self {
+        case .full:
+            String(localized: "Full")
+        case .limited:
+            String(localized: "Limited")
+        }
+    }
+
+    func pixelFormatType() -> OSType {
+        switch self {
+        case .full:
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+        case .limited:
+            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+        }
+    }
+}
+
 enum SettingsStreamRateControl: String, Codable, CaseIterable {
     case abr = "ABR"
     case cbr = "CBR"
@@ -1272,6 +1295,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var rateControl: SettingsStreamRateControl = .abr
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var h264Profile: SettingsStreamH264Profile = .main
+    @Published var colorRange: SettingsStreamColorRange = .full
     @Published var bFrames: Bool = false
     @Published var adaptiveEncoderResolution: Bool = false
     @Published var adaptiveEncoderResolutionThreashold: Double = 1
@@ -1372,6 +1396,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case bitrateRateControl
         case codec
         case h264Profile
+        case colorRange
         case bFrames
         case adaptiveEncoderResolution
         case adaptiveEncoderResolutionThreashold
@@ -1471,6 +1496,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.bitrateRateControl, rateControl)
         try container.encode(.codec, codec)
         try container.encode(.h264Profile, h264Profile)
+        try container.encode(.colorRange, colorRange)
         try container.encode(.bFrames, bFrames)
         try container.encode(.adaptiveEncoderResolution, adaptiveEncoderResolution)
         try container.encode(.adaptiveEncoderResolutionThreashold, adaptiveEncoderResolutionThreashold)
@@ -1589,6 +1615,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         )
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
         h264Profile = container.decode(.h264Profile, SettingsStreamH264Profile.self, .main)
+        colorRange = container.decode(.colorRange, SettingsStreamColorRange.self, .full)
         bFrames = container.decode(.bFrames, Bool.self, false)
         adaptiveEncoderResolution = container.decode(.adaptiveEncoderResolution, Bool.self, false)
         adaptiveEncoderResolutionThreashold = container.decode(.adaptiveEncoderResolutionThreashold,
@@ -1705,6 +1732,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.rateControl = rateControl
         new.codec = codec
         new.h264Profile = h264Profile
+        new.colorRange = colorRange
         new.bFrames = bFrames
         new.adaptiveEncoderResolution = adaptiveEncoderResolution
         new.adaptiveEncoderResolutionThreashold = adaptiveEncoderResolutionThreashold

@@ -8,13 +8,20 @@ class SrtServerClient {
     private let cameraId: UUID
     private let reader: MpegTsReader
 
-    init(server: SrtServer, cameraId: UUID, timecodesEnabled: Bool, softwareDecoding: Bool) {
+    init(
+        server: SrtServer,
+        cameraId: UUID,
+        timecodesEnabled: Bool,
+        softwareDecoding: Bool,
+        pixelFormatType: OSType
+    ) {
         self.server = server
         self.cameraId = cameraId
         reader = MpegTsReader(name: "srt-server",
                               decoderQueue: srtlaServerQueue,
                               timecodesEnabled: timecodesEnabled,
                               softwareDecoding: softwareDecoding,
+                              pixelFormatType: pixelFormatType,
                               targetLatency: srtServerClientLatency)
         reader.delegate = self
     }

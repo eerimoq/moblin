@@ -67,6 +67,7 @@ final class ReplayEffect: VideoEffect, @unchecked Sendable {
         size: CMVideoDimensions,
         layout: SettingsWidgetLayout,
         transitionMode: ReplayEffectTransitionMode,
+        pixelFormatType: OSType,
         delegate: any ReplayEffectDelegate
     ) {
         self.speed = speed
@@ -74,7 +75,11 @@ final class ReplayEffect: VideoEffect, @unchecked Sendable {
         self.transitionMode = transitionMode
         self.delegate = delegate
         duration = stop - start
-        reader = ReplayEffectReplayReader(video: video, start: start, duration: duration, size: size)
+        reader = ReplayEffectReplayReader(video: video,
+                                          start: start,
+                                          duration: duration,
+                                          size: size,
+                                          pixelFormatType: pixelFormatType)
         super.init()
         if case let .stingers(inPath, inTransitionPoint, outPath, outTransitionPoint) = transitionMode {
             stingersInReader = ReplayEffectStingerReader(path: inPath, size: size)

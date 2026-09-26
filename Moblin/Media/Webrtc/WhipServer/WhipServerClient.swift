@@ -19,6 +19,7 @@ final class WhipServerClient {
          latency: Double,
          syncTimestamps: Bool,
          softwareDecoding: Bool,
+         pixelFormatType: OSType,
          iceServers: [String],
          delegate: any WhipServerClientDelegate)
     {
@@ -30,6 +31,7 @@ final class WhipServerClient {
             latency: latency,
             syncTimestamps: syncTimestamps,
             softwareDecoding: softwareDecoding,
+            pixelFormatType: pixelFormatType,
             iceServers: iceServers,
             dispatchQueue: whipServerDispatchQueue,
             delegate: self

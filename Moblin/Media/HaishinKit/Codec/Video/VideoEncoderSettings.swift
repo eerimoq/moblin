@@ -15,6 +15,20 @@ func createDataRateLimits(bitRate: UInt32) -> CFArray {
     return [bytesLimit, secondsLimit] as CFArray
 }
 
+func createColorProperties(_ colorAttachments: [String: String]) -> [VTSessionProperty] {
+    var properties: [VTSessionProperty] = []
+    if let primaries = colorAttachments[kCVImageBufferColorPrimariesKey as String] {
+        properties.append(.init(key: .colorPrimaries, value: primaries as NSString))
+    }
+    if let transferFunction = colorAttachments[kCVImageBufferTransferFunctionKey as String] {
+        properties.append(.init(key: .transferFunction, value: transferFunction as NSString))
+    }
+    if let yCbCrMatrix = colorAttachments[kCVImageBufferYCbCrMatrixKey as String] {
+        properties.append(.init(key: .YCbCrMatrix, value: yCbCrMatrix as NSString))
+    }
+    return properties
+}
+
 struct VideoEncoderSettings {
     enum Format {
         case h264
@@ -97,12 +111,8 @@ struct VideoEncoderSettings {
         ]
         properties += bitrateProperties(bitrate: bitrate)
         if profileLevel.contains("Main10") {
-            properties += [
-                .init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto),
-                .init(key: .colorPrimaries, value: kCVImageBufferColorPrimaries_ITU_R_2020),
-                .init(key: .transferFunction, value: kCVImageBufferTransferFunction_ITU_R_2100_HLG),
-                .init(key: .YCbCrMatrix, value: kCVImageBufferYCbCrMatrix_ITU_R_2020),
-            ]
+            properties.append(.init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto))
+            properties += createColorProperties(hlgColorAttachments)
         }
         if !isBaseline, profileLevel.contains("H264") {
             properties.append(.init(key: .h264EntropyMode, value: kVTH264EntropyMode_CABAC))

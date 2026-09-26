@@ -28,6 +28,7 @@ class VideoEncoder: @unchecked Sendable {
 
     private var isRunning = false
     private let lockQueue: DispatchQueue
+    private let pixelFormatType: OSType
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoEncoderDelegate)?
     weak var controlDelegate: (any VideoEncoderControlDelegate)?
@@ -39,11 +40,15 @@ class VideoEncoder: @unchecked Sendable {
     }
 
     private var invalidateSession = true
+    private var colorAttachments: [String: String] = [:]
+    private var colorAttachmentsFormatDescription: CMVideoFormatDescription?
+    var outputColorAttachments: [String: String]?
     private var currentBitrate: UInt32 = 0
     private var oldBitrateVideoSize = CMVideoDimensions(width: 0, height: 0)
 
-    init(lockQueue: DispatchQueue) {
+    init(lockQueue: DispatchQueue, pixelFormatType: OSType) {
         self.lockQueue = lockQueue
+        self.pixelFormatType = pixelFormatType
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
@@ -72,6 +77,7 @@ class VideoEncoder: @unchecked Sendable {
             return
         }
         let settings = settings.value
+        updateColorAttachments(imageBuffer)
         let newBitrateVideoSize = updateAdaptiveResolution(settings: settings)
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
@@ -132,6 +138,27 @@ class VideoEncoder: @unchecked Sendable {
             return
         }
         delegate?.videoEncoderOutputFormat(self, formatDescription)
+    }
+
+    private func updateColorAttachments(_ imageBuffer: CVImageBuffer) {
+        let colorAttachments: [String: String]
+        if let outputColorAttachments {
+            colorAttachmentsFormatDescription = nil
+            colorAttachments = outputColorAttachments
+        } else {
+            if let colorAttachmentsFormatDescription,
+               CMVideoFormatDescriptionMatchesImageBuffer(colorAttachmentsFormatDescription,
+                                                          imageBuffer: imageBuffer)
+            {
+                return
+            }
+            colorAttachmentsFormatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer)
+            colorAttachments = imageBuffer.colorAttachments
+        }
+        if colorAttachments != self.colorAttachments {
+            self.colorAttachments = colorAttachments
+            invalidateSession = true
+        }
     }
 
     private func updateBitrate(settings: VideoEncoderSettings) {
@@ -200,6 +227,10 @@ class VideoEncoder: @unchecked Sendable {
         guard status == noErr, let session else {
             logger.info("video-encoder: Failed to create session with status \(status)")
             return nil
+        }
+        status = session.setProperties(createColorProperties(colorAttachments))
+        if status != noErr {
+            logger.info("video-encoder: Failed to set color properties with status \(status)")
         }
         status = session.setProperties(settings.properties())
         guard status == noErr else {

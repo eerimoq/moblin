@@ -25,6 +25,7 @@ class MpegTsReader: @unchecked Sendable {
     private var videoDecoder: VideoDecoder?
     private let timecodesEnabled: Bool
     private let softwareDecoding: Bool
+    private let pixelFormatType: OSType
     private let targetLatency: Double
     weak var delegate: (any MpegTsReaderDelegate)?
     private let decoderQueue: DispatchQueue
@@ -37,12 +38,14 @@ class MpegTsReader: @unchecked Sendable {
          decoderQueue: DispatchQueue,
          timecodesEnabled: Bool,
          softwareDecoding: Bool,
+         pixelFormatType: OSType,
          targetLatency: Double)
     {
         self.name = name
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
         self.softwareDecoding = softwareDecoding
+        self.pixelFormatType = pixelFormatType
         self.targetLatency = targetLatency
     }
 
@@ -226,7 +229,8 @@ class MpegTsReader: @unchecked Sendable {
         videoDecoder?.stopRunning()
         videoDecoder = VideoDecoder(name: name,
                                     lockQueue: decoderQueue,
-                                    softwareDecoding: softwareDecoding)
+                                    softwareDecoding: softwareDecoding,
+                                    pixelFormatType: pixelFormatType)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }

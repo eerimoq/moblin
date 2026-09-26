@@ -13,6 +13,7 @@ extension Model {
             ingests.rist = RistServer(port: database.ristServer.port,
                                       streams: database.ristServer.streams.map { $0.clone() },
                                       softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      pixelFormatType: stream.colorRange.pixelFormatType(),
                                       delegate: self)
             ingests.rist?.start()
         }

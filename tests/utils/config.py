@@ -42,6 +42,9 @@ class Capability(StrEnum):
     DUAL_MICS = "dual-mics"
     STEREO_MIC = "stereo-mic"
     GIMBAL = "gimbal"
+    P3_COLOR_SPACE = "p3-color-space"
+    HLG_COLOR_SPACE = "hlg-color-space"
+    APPLE_LOG_COLOR_SPACE = "apple-log-color-space"
 
 
 def srt_listener_url(

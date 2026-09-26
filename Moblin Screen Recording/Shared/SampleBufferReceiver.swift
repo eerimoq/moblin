@@ -43,6 +43,11 @@ class SampleBufferReceiver: @unchecked Sendable {
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
+    private let pixelFormatType: Atomic<OSType> = .init(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
+
+    func setPixelFormatType(_ pixelFormatType: OSType) {
+        self.pixelFormatType.mutate { $0 = pixelFormatType }
+    }
 
     func start(appGroup: String) {
         do {
@@ -91,7 +96,10 @@ class SampleBufferReceiver: @unchecked Sendable {
         let config = MpegTsVideoConfigHevc(hvcC: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
-            videoDecoder = VideoDecoder(name: "", lockQueue: lockQueue, softwareDecoding: false)
+            videoDecoder = VideoDecoder(name: "",
+                                        lockQueue: lockQueue,
+                                        softwareDecoding: false,
+                                        pixelFormatType: pixelFormatType.value)
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         }

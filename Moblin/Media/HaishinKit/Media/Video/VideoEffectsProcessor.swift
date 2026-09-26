@@ -9,6 +9,8 @@ final class VideoEffectsProcessor {
     var canvasSize = CGSize(width: 1920, height: 1080)
     var fillFrame = true
     var sceneSwitchTransition: SceneSwitchTransition = .blur
+    var colorSpace: AVCaptureColorSpace = .sRGB
+    private let pixelFormatType: OSType
     var latestSampleBufferTime: ContinuousClock.Instant?
     private var rotation: Double = 0.0
     private var mirror: Bool = false
@@ -22,11 +24,13 @@ final class VideoEffectsProcessor {
     private var blackImageMetalPetal: MTIImage?
     private var pool: CVPixelBufferPool?
     private var poolColorSpace: CGColorSpace?
+    private let sRGBColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
     private var poolFormatDescriptionExtension: CFDictionary?
     private var previousFaceDetectionTimes: [UUID: Double] = [:]
     private var previousTextDetectionTimes: [UUID: Double] = [:]
 
-    init() {
+    init(pixelFormatType: OSType) {
+        self.pixelFormatType = pixelFormatType
         if let metalDevice = MTLCreateSystemDefaultDevice() {
             metalPetalContext = try? MTIContext(device: metalDevice)
         } else {
@@ -258,6 +262,54 @@ final class VideoEffectsProcessor {
         }
     }
 
+    var outputPixelFormatType: OSType {
+        if colorSpace != .HLG_BT2020 {
+            pixelFormatType
+        } else if isVideoRangePixelFormat(pixelFormatType) {
+            kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
+        } else {
+            kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
+        }
+    }
+
+    var outputColorAttachments: [String: String]? {
+        switch colorSpace {
+        case .sRGB:
+            sdrColorAttachments(pixelFormat: pixelFormatType)
+        case .HLG_BT2020:
+            hlgColorAttachments
+        default:
+            nil
+        }
+    }
+
+    func makeCiImage(_ imageBuffer: CVImageBuffer) -> CIImage {
+        switch colorSpace {
+        case .sRGB:
+            CIImage(cvPixelBuffer: imageBuffer, options: [.colorSpace: sRGBColorSpace])
+        case .HLG_BT2020:
+            if CVBufferCopyAttachment(imageBuffer, kCVImageBufferTransferFunctionKey, nil) as? String
+                == kCVImageBufferTransferFunction_ITU_R_2100_HLG as String
+            {
+                CIImage(cvPixelBuffer: imageBuffer, options: [.colorSpace: NSNull()]).hlgToLinear()
+            } else {
+                CIImage(cvPixelBuffer: imageBuffer, options: [.colorSpace: sRGBColorSpace])
+            }
+        default:
+            CIImage(cvPixelBuffer: imageBuffer)
+        }
+    }
+
+    func renderCoreImage(_ image: CIImage, _ outputImageBuffer: CVPixelBuffer, _ bounds: CGRect) {
+        if colorSpace == .HLG_BT2020 {
+            context.render(image.linearToHlg(), to: outputImageBuffer, bounds: bounds, colorSpace: nil)
+        } else if let poolColorSpace {
+            context.render(image, to: outputImageBuffer, bounds: bounds, colorSpace: poolColorSpace)
+        } else {
+            context.render(image, to: outputImageBuffer)
+        }
+    }
+
     func isAtEndOfSceneSwitchTransition() -> Bool {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
@@ -284,12 +336,8 @@ final class VideoEffectsProcessor {
                 return sampleBuffer
             }
         } else {
-            let image = applySceneSwitchTransition(CIImage(cvPixelBuffer: imageBuffer))
-            if let poolColorSpace {
-                context.render(image, to: outputImageBuffer, bounds: image.extent, colorSpace: poolColorSpace)
-            } else {
-                context.render(image, to: outputImageBuffer)
-            }
+            let image = applySceneSwitchTransition(makeCiImage(imageBuffer))
+            renderCoreImage(image, outputImageBuffer, image.extent)
         }
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
         else {
@@ -307,7 +355,7 @@ final class VideoEffectsProcessor {
     }
 
     private func isMetalPetalGraphicsEnabled() -> Bool {
-        isMetalPetalGraphics || isMetalPetalGraphicsForcedByEffects
+        (isMetalPetalGraphics && colorSpace != .HLG_BT2020) || isMetalPetalGraphicsForcedByEffects
     }
 
     private func getBufferPool(formatDescription: CMFormatDescription) -> CVPixelBufferPool? {
@@ -316,15 +364,18 @@ final class VideoEffectsProcessor {
             return pool
         }
         var pixelBufferAttributes: [NSString: AnyObject] = [
-            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
+            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: outputPixelFormatType),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
             kCVPixelBufferWidthKey: NSNumber(value: canvasSize.width),
             kCVPixelBufferHeightKey: NSNumber(value: canvasSize.height),
         ]
         poolColorSpace = nil
-        // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
-        if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
+        if let outputColorAttachments {
+            pixelBufferAttributes[kCVBufferPropagatedAttachmentsKey] = outputColorAttachments as NSDictionary
+            poolColorSpace = colorSpace == .sRGB ? sRGBColorSpace : nil
+        } else if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
+            // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
             let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
             if let colorPrimaries {
                 var colorSpaceProperties: [NSString: AnyObject] =
@@ -364,7 +415,7 @@ final class VideoEffectsProcessor {
         return pool
     }
 
-    private func createPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
+    func createPixelBuffer(sampleBuffer: CMSampleBuffer) -> CVPixelBuffer? {
         guard let pool = getBufferPool(formatDescription: sampleBuffer.formatDescription!) else {
             return nil
         }
@@ -455,7 +506,7 @@ final class VideoEffectsProcessor {
                                        _ videoOrientation: AVCaptureVideoOrientation,
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
-        var image = CIImage(cvPixelBuffer: imageBuffer)
+        var image = makeCiImage(imageBuffer)
         let originalImage = image
         if videoOrientation != .portrait, imageBuffer.isPortrait() {
             image = image.oriented(.left)
@@ -483,11 +534,7 @@ final class VideoEffectsProcessor {
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }
-        if let poolColorSpace {
-            context.render(image, to: outputImageBuffer, bounds: extent, colorSpace: poolColorSpace)
-        } else {
-            context.render(image, to: outputImageBuffer)
-        }
+        renderCoreImage(image, outputImageBuffer, extent)
         guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
         else {
             return (nil, nil)

@@ -7,6 +7,9 @@ capabilities = [
     "dual-mics",
     "stereo-mic",
     "gimbal",
+    "p3-color-space",
+    "hlg-color-space",
+    "apple-log-color-space",
 ]
 
 [device.macpro]

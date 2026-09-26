@@ -31,6 +31,7 @@ extension Model {
                                     latency: stream.latencySeconds(),
                                     transport: stream.transport,
                                     softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                    pixelFormatType: self.stream.colorRange.pixelFormatType(),
                                     delegate: self)
             client.start()
             ingests.rtsp.append(client)

@@ -4,30 +4,9 @@ struct DebugVideoSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
 
-    private func onPixelFormatChange(format: String) {
-        model.database.debug.pixelFormat = format
-        model.setPixelFormat()
-        model.reloadStream()
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-    }
-
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    InlinePickerView(
-                        title: "Pixel format",
-                        onChange: onPixelFormatChange,
-                        items: InlinePickerItem.fromStrings(values: pixelFormats),
-                        selectedId: model.database.debug.pixelFormat
-                    )
-                } label: {
-                    TextItemLocalizedView(name: "Pixel format", value: model.database.debug.pixelFormat)
-                }
-                Toggle("Allow video range pixel format", isOn: $debug.allowVideoRangePixelFormat)
-                    .onChange(of: debug.allowVideoRangePixelFormat) { _ in
-                        model.setAllowVideoRangePixelFormat()
-                    }
                 Toggle("Native low light boost", isOn: $debug.nativeLowLightBoost)
                     .onChange(of: debug.nativeLowLightBoost) { _ in
                         model.setNativeLowLightBoost()

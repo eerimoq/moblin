@@ -12,10 +12,12 @@ private let startTime = 1000.0
 private final class RecorderTester: RecorderDelegate, @unchecked Sendable {
     private let finished = DispatchSemaphore(value: 0)
     private let toneTime: Double
+    private let pixelFormat: OSType
     let url: URL
 
-    init(toneTime: Double) {
+    init(toneTime: Double, pixelFormat: OSType = kCVPixelFormatType_32BGRA) {
         self.toneTime = toneTime
+        self.pixelFormat = pixelFormat
         url = FileManager.default.temporaryDirectory
             .appendingPathComponent("recorder-suite-\(UUID().uuidString).mp4")
     }
@@ -69,7 +71,10 @@ private final class RecorderTester: RecorderDelegate, @unchecked Sendable {
                 audioFrame += audioFramesPerBuffer
                 audioTime = Double(audioFrame) / audioSampleRate
             } else {
-                recorder.appendVideo(createVideoSampleBuffer(CMTime(seconds: startTime + videoTime)))
+                recorder.appendVideo(createVideoSampleBuffer(
+                    CMTime(seconds: startTime + videoTime),
+                    pixelFormat
+                ))
                 videoTime += videoFrameDuration.seconds
                 Thread.sleep(forTimeInterval: 0.015)
             }
@@ -114,12 +119,14 @@ private func createAudioSampleBuffer(_ firstFrame: Int, _ toneTime: Double) -> C
     return buffer.makeSampleBuffer(CMTime(seconds: 0))!
 }
 
-private func createVideoSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer {
+private func createVideoSampleBuffer(_ presentationTimeStamp: CMTime,
+                                     _ pixelFormat: OSType) -> CMSampleBuffer
+{
     var pixelBuffer: CVPixelBuffer?
     CVPixelBufferCreate(kCFAllocatorDefault,
                         320,
                         180,
-                        kCVPixelFormatType_32BGRA,
+                        pixelFormat,
                         [kCVPixelBufferIOSurfacePropertiesKey: [:] as CFDictionary] as CFDictionary,
                         &pixelBuffer)
     var formatDescription: CMVideoFormatDescription?
@@ -184,6 +191,18 @@ private func loadToneTime(_ url: URL) async throws -> Double? {
     return nil
 }
 
+private func loadVideoFullRange(_ url: URL) async throws -> Bool? {
+    let asset = AVURLAsset(url: url)
+    guard let track = try await asset.loadTracks(withMediaType: .video).first,
+          let formatDescription = try await track.load(.formatDescriptions).first
+    else {
+        return nil
+    }
+    return CMFormatDescriptionGetExtension(formatDescription,
+                                           extensionKey: kCMFormatDescriptionExtension_FullRangeVideo) as? Bool
+        ?? false
+}
+
 @Suite(.serialized)
 struct RecorderSuite {
     @Test
@@ -220,5 +239,14 @@ struct RecorderSuite {
         #expect(tester.record(audioDelay: { _ in -0.5 }))
         let toneTime = try #require(try await loadToneTime(tester.url))
         #expect(isEqual(toneTime, 0.5, epsilon: 0.06), "Tone at \(toneTime)")
+    }
+
+    @Test(arguments: [kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                      kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange])
+    func recordsColorRange(pixelFormat: OSType) async throws {
+        let tester = RecorderTester(toneTime: 1.0, pixelFormat: pixelFormat)
+        #expect(tester.record(audioDelay: { _ in 0 }))
+        let fullRange = try await loadVideoFullRange(tester.url)
+        #expect(fullRange == (pixelFormat == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange))
     }
 }
