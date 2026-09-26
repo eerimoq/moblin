@@ -71,6 +71,7 @@ class RtmpStream: @unchecked Sendable {
     private var url: String = ""
     let name: String
     private let connectTimer: SimpleTimer
+    private let reconnectTimer: SimpleTimer
     private let queue: DispatchQueue
 
     // Outbound
@@ -88,6 +89,7 @@ class RtmpStream: @unchecked Sendable {
         self.delegate = delegate
         self.queue = queue
         connectTimer = SimpleTimer(queue: queue)
+        reconnectTimer = SimpleTimer(queue: queue)
         connection = RtmpConnection(name: name, queue: queue)
         connection.stream = self
     }
@@ -110,7 +112,7 @@ class RtmpStream: @unchecked Sendable {
     }
 
     func reconnectSoon() {
-        queue.asyncAfter(deadline: .now() + 5) { [weak self] in
+        reconnectTimer.startSingleShot(timeout: 5) { [weak self] in
             self?.connectInternal()
         }
     }
@@ -173,6 +175,7 @@ class RtmpStream: @unchecked Sendable {
     }
 
     private func connectInternal() {
+        reconnectTimer.stop()
         startConnectTimer()
         connection.connect(url)
     }
@@ -183,6 +186,7 @@ class RtmpStream: @unchecked Sendable {
             self.processor.stopEncoding(self)
         }
         stopConnectTimer()
+        reconnectTimer.stop()
         connection.disconnect()
     }
 
