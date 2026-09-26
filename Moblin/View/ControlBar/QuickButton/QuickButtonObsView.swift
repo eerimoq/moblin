@@ -277,6 +277,7 @@ private struct ObsAudioSyncView: View {
                 increment: 10,
                 unit: "ms"
             )
+            .id(obsQuickButton.audioDelay)
         } header: {
             Text("\(stream.obsSourceName) source audio sync")
         }
