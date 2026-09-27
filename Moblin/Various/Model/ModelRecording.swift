@@ -71,7 +71,8 @@ extension Model {
             videoCodec: stream.recording.videoCodec,
             videoBitrate: bitrate != 0 ? bitrate : nil,
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
-            audioBitrate: audioBitrate != 0 ? audioBitrate : nil
+            audioBitrate: audioBitrate != 0 ? audioBitrate : nil,
+            hdr: database.color.space == .hlgBt2020
         )
     }
 

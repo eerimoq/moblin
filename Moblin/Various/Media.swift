@@ -1029,7 +1029,8 @@ final class Media: NSObject, @unchecked Sendable {
         videoCodec: SettingsStreamCodec,
         videoBitrate: Int?,
         keyFrameInterval: Int?,
-        audioBitrate: Int?
+        audioBitrate: Int?,
+        hdr: Bool
     ) {
         processor?.startRecording(url: url,
                                   replay: replay,
@@ -1037,7 +1038,8 @@ final class Media: NSObject, @unchecked Sendable {
                                   videoSettings: makeVideoCompressionSettings(
                                       videoCodec: videoCodec,
                                       videoBitrate: videoBitrate,
-                                      keyFrameInterval: keyFrameInterval
+                                      keyFrameInterval: keyFrameInterval,
+                                      hdr: hdr
                                   ))
     }
 
@@ -1051,7 +1053,8 @@ final class Media: NSObject, @unchecked Sendable {
 
     private func makeVideoCompressionSettings(videoCodec: SettingsStreamCodec,
                                               videoBitrate: Int?,
-                                              keyFrameInterval: Int?) -> [String: Any]
+                                              keyFrameInterval: Int?,
+                                              hdr: Bool) -> [String: Any]
     {
         let codec = switch videoCodec {
         case .h264avc:
@@ -1070,6 +1073,9 @@ final class Media: NSObject, @unchecked Sendable {
         }
         if let keyFrameInterval {
             compressionProperties[AVVideoMaxKeyFrameIntervalDurationKey] = keyFrameInterval
+        }
+        if videoCodec == .h265hevc, hdr {
+            compressionProperties[AVVideoProfileLevelKey] = kVTProfileLevel_HEVC_Main10_AutoLevel
         }
         if !compressionProperties.isEmpty {
             settings[AVVideoCompressionPropertiesKey] = compressionProperties

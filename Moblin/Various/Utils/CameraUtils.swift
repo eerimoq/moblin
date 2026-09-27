@@ -175,6 +175,15 @@ func hasAppleLog() -> Bool {
     return false
 }
 
+func hasHlg() -> Bool {
+    for format in bestBackCameraDevice?.formats ?? []
+        where format.supportedColorSpaces.contains(.HLG_BT2020)
+    {
+        return true
+    }
+    return false
+}
+
 func factorToIso(device: AVCaptureDevice, factor: Float) -> Float {
     let minIso = device.activeFormat.minISO
     let maxIso = device.activeFormat.maxISO

@@ -237,6 +237,19 @@ struct CameraSettingsView: View {
     @ObservedObject var stream: SettingsStream
     @ObservedObject var color: SettingsColor
 
+    private func colorSpaces() -> [SettingsColorSpace] {
+        SettingsColorSpace.allCases.filter {
+            switch $0 {
+            case .hlgBt2020:
+                model.supportsHlg
+            case .appleLog:
+                model.supportsAppleLog
+            default:
+                true
+            }
+        }
+    }
+
     var body: some View {
         Form {
             if stream !== fallbackStream {
@@ -282,36 +295,26 @@ struct CameraSettingsView: View {
             if database.showAllSettings {
                 CameraPreviewSettingsView(database: database)
                 PhotoShootSettingsView(database: database)
-                if model.supportsAppleLog {
-                    Section {
-                        Picker("Color space", selection: $color.space) {
-                            ForEach(SettingsColorSpace.allCases, id: \.self) {
-                                Text($0.rawValue)
-                            }
+                Section {
+                    Picker("Color space", selection: $color.space) {
+                        ForEach(colorSpaces(), id: \.self) {
+                            Text($0.rawValue)
                         }
-                        .onChange(of: color.space) { _ in
-                            model.colorSpaceUpdated()
-                        }
-                        .disabled(model.isLive || model.isRecording)
+                    }
+                    .onChange(of: color.space) { _ in
+                        model.colorSpaceUpdated()
+                    }
+                    .disabled(model.isLive || model.isRecording)
+                    if model.supportsAppleLog {
                         NavigationLink {
                             CameraSettingsAppleLogLutView(model: model, color: color)
                         } label: {
                             Text("Apple Log LUT")
                         }
-                    } footer: {
-                        Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                     }
-                } else {
-                    Section {
-                        Picker("Color space", selection: $color.space) {
-                            ForEach(SettingsColorSpace.allCases.filter { $0 != .appleLog }, id: \.self) {
-                                Text($0.rawValue)
-                            }
-                        }
-                        .onChange(of: color.space) { _ in
-                            model.colorSpaceUpdated()
-                        }
-                        .disabled(model.isLive || model.isRecording)
+                } footer: {
+                    if model.supportsAppleLog {
+                        Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                     }
                 }
                 Section {
