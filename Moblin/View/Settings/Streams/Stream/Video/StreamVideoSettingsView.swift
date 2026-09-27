@@ -114,7 +114,8 @@ private struct ColorRangeSettingsView: View {
         } footer: {
             Text("""
             Color range of streams and recordings. Full range uses all levels, while limited \
-            range is the broadcast standard expected by some servers and players.
+            range is the broadcast standard expected by some servers and players. Color space \
+            is configured in Settings → Camera.
             """)
         }
     }
