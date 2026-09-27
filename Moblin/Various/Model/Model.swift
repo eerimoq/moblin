@@ -1514,12 +1514,16 @@ final class Model: NSObject, ObservableObject {
         moblinkIpStatusesUpdated()
     }
 
-    @objc func handleCaptureDeviceWasConnected(_: Notification) {
-        updateCameraLists()
+    @objc nonisolated func handleCaptureDeviceWasConnected(_: Notification) {
+        DispatchQueue.main.async {
+            self.updateCameraLists()
+        }
     }
 
-    @objc func handleCaptureDeviceWasDisconnected(_: Notification) {
-        updateCameraLists()
+    @objc nonisolated func handleCaptureDeviceWasDisconnected(_: Notification) {
+        DispatchQueue.main.async {
+            self.updateCameraLists()
+        }
     }
 
     @objc func handleApplicationDidEnterBackground() {
