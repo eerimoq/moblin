@@ -5075,8 +5075,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "[Moblin website](https://moblin.app/#streamers)"
+            "state" : "translated",
+            "value" : "[Moblin Website](https://moblin.app/#streamers)"
           }
         },
         "eo" : {
@@ -22290,8 +22290,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "a choice"
+            "state" : "translated",
+            "value" : "eine Auswahlmöglichkeit"
           }
         },
         "eo" : {
@@ -24214,8 +24214,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A macro is a sequence of actions that can change settings, filters, etc. with a single button tap. It can also wait for events, for example new followers, before continuing."
+            "state" : "translated",
+            "value" : "Ein Makro ist eine Abfolge von Aktionen, mit der sich Einstellungen, Filter usw. durch einen einzigen Tastendruck ändern lassen. Es kann auch auf Ereignisse warten, beispielsweise auf neue Follower, bevor es fortfährt."
           }
         },
         "eo" : {
@@ -28794,8 +28794,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "A VTuber widget shows a VRM or Live2D model that imitates your facial movements."
+            "state" : "translated",
+            "value" : "Ein VTuber-Widget zeigt ein VRM- oder Live2D Modell an, das Gesichtsbewegungen nachahmt."
           }
         },
         "eo" : {
@@ -35439,8 +35439,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "an outcome"
+            "state" : "translated",
+            "value" : "ein Ergebnis"
           }
         },
         "eo" : {
@@ -38091,8 +38091,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Archive poll"
+            "state" : "translated",
+            "value" : "Umfrage archivieren"
           }
         },
         "eo" : {
@@ -45023,8 +45023,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Background color of the scene button when selected."
+            "state" : "translated",
+            "value" : "Hintergrundfarbe des Szenen-Buttons, wenn er ausgewählt ist."
           }
         },
         "eo" : {
@@ -45167,8 +45167,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Background color of the zoom preset button when selected."
+            "state" : "translated",
+            "value" : "Hintergrundfarbe des Buttons für die Zoom-Voreinstellung, wenn dieser ausgewählt ist."
           }
         },
         "eo" : {
@@ -51381,8 +51381,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bluetooth speaker only"
+            "state" : "translated",
+            "value" : "Nur Bluetooth-Lautsprecher"
           }
         },
         "eo" : {
@@ -57871,8 +57871,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cancel prediction"
+            "state" : "translated",
+            "value" : "Vorhersage abbrechen"
           }
         },
         "eo" : {
@@ -58307,8 +58307,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Cancelling the prediction refunds all channel points."
+            "state" : "translated",
+            "value" : "Durch das Abbrechen der Vorhersage werden alle Kanalpunkte zurückerstattet."
           }
         },
         "eo" : {
@@ -63777,8 +63777,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Choice"
+            "state" : "translated",
+            "value" : "Auswahlmöglichkeit"
           }
         },
         "eo" : {
@@ -63921,8 +63921,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Choices"
+            "state" : "translated",
+            "value" : "Auswahlmöglichkeiten"
           }
         },
         "eo" : {
@@ -72189,8 +72189,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Copied %@ to clipboard"
+            "state" : "translated",
+            "value" : "%@ wurde in die Zwischenablage kopiert"
           }
         },
         "eo" : {
@@ -74699,8 +74699,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Create effect wizard"
+            "state" : "translated",
+            "value" : "Assistenten für Effekte erstellen"
           }
         },
         "eo" : {
@@ -92571,8 +92571,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "End poll"
+            "state" : "translated",
+            "value" : "Umfrage beenden"
           }
         },
         "eo" : {
@@ -93011,8 +93011,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ended"
+            "state" : "translated",
+            "value" : "Beendet"
           }
         },
         "eo" : {
@@ -93743,8 +93743,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ending the poll shows the final results. Archiving it hides them."
+            "state" : "translated",
+            "value" : "Wenn die Umfrage endet, werden die Endergebnisse angezeigt. Wenn sie archiviert wird, werden sie ausgeblendet."
           }
         },
         "eo" : {
@@ -95361,8 +95361,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Event"
+            "state" : "translated",
+            "value" : "Ereignis"
           }
         },
         "eo" : {
@@ -96541,8 +96541,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Expires in %@."
+            "state" : "translated",
+            "value" : "Läuft in %@ ab."
           }
         },
         "eo" : {
@@ -100675,8 +100675,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Failed to load .png file"
+            "state" : "translated",
+            "value" : "Die .png-Datei konnte nicht geladen werden"
           }
         },
         "eo" : {
@@ -100819,8 +100819,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Failed to load bundled file"
+            "state" : "translated",
+            "value" : "Das Laden der gebündelten Datei ist fehlgeschlagen"
           }
         },
         "eo" : {
@@ -102439,8 +102439,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Failed to unzip model"
+            "state" : "translated",
+            "value" : "Das Entpacken des Modells ist fehlgeschlagen"
           }
         },
         "eo" : {
@@ -112063,8 +112063,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "gave a shoutout to %@!"
+            "state" : "translated",
+            "value" : "hat einen Shoutout an %@ gegeben!"
           }
         },
         "eo" : {
@@ -115777,8 +115777,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Go live"
+            "state" : "translated",
+            "value" : "Live gehen"
           }
         },
         "eo" : {
@@ -123445,8 +123445,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Id of the raiding channel"
+            "state" : "translated",
+            "value" : "ID des Raid-Kanals"
           }
         },
         "eo" : {
@@ -130069,8 +130069,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "just resubscribed tier %1$lld for %2$lld months, %3$lld in a row!"
+            "state" : "translated",
+            "value" : "hat gerade auf Stufe %1$lld für %2$lld Monate abonniert, %3$lld Monate in Folge!"
           }
         },
         "en" : {
@@ -130219,8 +130219,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "just resubscribed tier %1$lld for %2$lld months!"
+            "state" : "translated",
+            "value" : "hat gerade auf Stufe %1$lld für %2$lld Monate abonniert!"
           }
         },
         "en" : {
@@ -132131,8 +132131,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick gift subscriptions"
+            "state" : "translated",
+            "value" : "Kick Geschenkabonnements"
           }
         },
         "eo" : {
@@ -132273,8 +132273,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick kicks"
+            "state" : "translated",
+            "value" : "Kick Kicks"
           }
         },
         "eo" : {
@@ -132417,8 +132417,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick raid"
+            "state" : "translated",
+            "value" : "Kick Raid"
           }
         },
         "eo" : {
@@ -132561,8 +132561,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick reward"
+            "state" : "translated",
+            "value" : "Kick Belohnung"
           }
         },
         "eo" : {
@@ -132705,8 +132705,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick subscription"
+            "state" : "translated",
+            "value" : "Kick Abonnement"
           }
         },
         "eo" : {
@@ -137589,8 +137589,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock prediction"
+            "state" : "translated",
+            "value" : "Vorhersage sperren"
           }
         },
         "eo" : {
@@ -149841,8 +149841,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minimum months"
+            "state" : "translated",
+            "value" : "Mindestanzahl an Monaten"
           }
         },
         "eo" : {
@@ -150133,8 +150133,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minimum subscriptions"
+            "state" : "translated",
+            "value" : "Mindestanzahl an Abonnements"
           }
         },
         "eo" : {
@@ -150277,8 +150277,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Minimum viewers"
+            "state" : "translated",
+            "value" : "Mindestanzahl an Zuschauern"
           }
         },
         "eo" : {
@@ -155569,8 +155569,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Most VRM 0.0 files and zipped Live2D Cubism models are supported."
+            "state" : "translated",
+            "value" : "Die meisten VRM 0.0-Dateien und komprimierten Live2D-Cubism-Modelle werden unterstützt."
           }
         },
         "eo" : {
@@ -162081,8 +162081,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the raiding channel"
+            "state" : "translated",
+            "value" : "Name des Raid Kanals"
           }
         },
         "eo" : {
@@ -162225,8 +162225,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who cheered"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der gecheert hat"
           }
         },
         "eo" : {
@@ -162369,8 +162369,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who followed"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der gefolgt hat"
           }
         },
         "eo" : {
@@ -162513,8 +162513,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who gifted subscriptions"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der Abonnements verschenkt hat"
           }
         },
         "eo" : {
@@ -162657,8 +162657,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who redeemed the reward"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der die Belohnung eingelöst hat"
           }
         },
         "eo" : {
@@ -162801,8 +162801,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who resubscribed"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der erneut abonniert hat"
           }
         },
         "eo" : {
@@ -162945,8 +162945,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who shared the watch streak"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der eine Zuschauerserie geteilt hat"
           }
         },
         "eo" : {
@@ -163089,8 +163089,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Name of the user who subscribed"
+            "state" : "translated",
+            "value" : "Name des Nutzers, der abonniert hat"
           }
         },
         "eo" : {
@@ -163529,8 +163529,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Native low light boost"
+            "state" : "translated",
+            "value" : "Nativer Low Light Boost"
           }
         },
         "eo" : {
@@ -165302,7 +165302,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Neu abonniert"
+            "value" : "Neu erneut abonniert"
           }
         },
         "eo" : {
@@ -173881,8 +173881,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Only say messages when a Bluetooth speaker or headset is the audio output."
+            "state" : "translated",
+            "value" : "Nachrichten werden nur dann wiedergegeben, wenn ein Bluetooth-Lautsprecher oder ein Headset als Audioausgang verwendet wird."
           }
         },
         "eo" : {
@@ -185991,8 +185991,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Prediction"
+            "state" : "translated",
+            "value" : "Vorhersage"
           }
         },
         "eo" : {
@@ -193083,8 +193083,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Raided before"
+            "state" : "translated",
+            "value" : "Bisherige Raids"
           }
         },
         "eo" : {
@@ -193375,8 +193375,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Raided you"
+            "state" : "translated",
+            "value" : "Hat dich geraidet"
           }
         },
         "eo" : {
@@ -202261,8 +202261,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolve"
+            "state" : "translated",
+            "value" : "Auflösen"
           }
         },
         "eo" : {
@@ -202405,8 +202405,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Resolve the prediction by selecting the winning outcome."
+            "state" : "translated",
+            "value" : "Löse die Vorhersage auf, indem das Gewinnerergebnis ausgewählt wird."
           }
         },
         "eo" : {
@@ -203142,7 +203142,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abonnement Verlängerung"
+            "value" : "Abonnement Verlängerungen"
           }
         },
         "eo" : {
@@ -203735,8 +203735,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Reward"
+            "state" : "translated",
+            "value" : "Belohnung"
           }
         },
         "eo" : {
@@ -207729,8 +207729,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Run at app start"
+            "state" : "translated",
+            "value" : "Beim Start der App ausführen"
           }
         },
         "eo" : {
@@ -207873,8 +207873,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Run at app start is useful for macros that wait for events, for example to run actions when someone follows. Set repeat to forever to wait again after each event."
+            "state" : "translated",
+            "value" : "Die Option „Beim Start der App ausführen“ ist nützlich für Makros, die auf Ereignisse warten, beispielsweise um Aktionen auszuführen, wenn jemand dem Account folgt. Setze die Wiederholungsoption auf „Unbegrenzt“, damit nach jedem Ereignis erneut gewartet wird."
           }
         },
         "eo" : {
@@ -216447,8 +216447,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Send a Twitch shoutout to the channel in {twitchRaidChannelId}, typically set by an earlier Twitch raid event."
+            "state" : "translated",
+            "value" : "Sende einen Twitch-Shoutout an den Kanal mit der ID {twitchRaidChannelId}, der in der Regel bei einem früheren Twitch Raid Ereignis festgelegt wurde."
           }
         },
         "eo" : {
@@ -217327,8 +217327,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Send Go live notification to [Moblin website](https://moblin.app/#streamers)"
+            "state" : "translated",
+            "value" : "Sende eine Benachrichtigung über den Start des Livestreams an die [Moblin Website](https://moblin.app/#streamers)"
           }
         },
         "eo" : {
@@ -218201,8 +218201,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Send Twitch shoutout"
+            "state" : "translated",
+            "value" : "Twitch Shoutout senden"
           }
         },
         "eo" : {
@@ -218949,8 +218949,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "sent a %@ Super Chat!"
+            "state" : "translated",
+            "value" : "hat einen %@ Super Chat gesendet!"
           }
         },
         "eo" : {
@@ -219093,8 +219093,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "sent a %@ Super Sticker!"
+            "state" : "translated",
+            "value" : "hat einen %@ Super Sticker gesendet!"
           }
         },
         "eo" : {
@@ -219237,8 +219237,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "sent a Super Chat!"
+            "state" : "translated",
+            "value" : "hat einen Super Chat gesendet!"
           }
         },
         "eo" : {
@@ -219381,8 +219381,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "sent a Super Sticker!"
+            "state" : "translated",
+            "value" : "hat einen Super Sticker gesendet!"
           }
         },
         "eo" : {
@@ -221301,8 +221301,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Settings file not found in archive"
+            "state" : "translated",
+            "value" : "Konfigurationsdatei im Archiv nicht gefunden"
           }
         },
         "eo" : {
@@ -222475,8 +222475,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Shoutout sent"
+            "state" : "translated",
+            "value" : "Shoutout gesendet"
           }
         },
         "eo" : {
@@ -226323,8 +226323,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Show cycling speed"
+            "state" : "translated",
+            "value" : "Fahrradgeschwindigkeit anzeigen"
           }
         },
         "eo" : {
@@ -253555,7 +253555,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Super Chat"
           }
         },
@@ -253699,7 +253699,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Super Sticker"
           }
         },
@@ -264625,8 +264625,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "The previous workout is still stopping. Try again."
+            "state" : "translated",
+            "value" : "Das vorherige Training wird immer noch unterbrochen. Versuche es erneut."
           }
         },
         "eo" : {
@@ -276763,8 +276763,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch bits"
+            "state" : "translated",
+            "value" : "Twitch Bits"
           }
         },
         "eo" : {
@@ -276907,8 +276907,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch follow"
+            "state" : "translated",
+            "value" : "Twitch Follow"
           }
         },
         "eo" : {
@@ -277051,8 +277051,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch gift subscription"
+            "state" : "translated",
+            "value" : "Twitch Geschenk-Abonnement"
           }
         },
         "eo" : {
@@ -277195,8 +277195,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch raid"
+            "state" : "translated",
+            "value" : "Twitch Raid"
           }
         },
         "eo" : {
@@ -277339,8 +277339,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch resubscription"
+            "state" : "translated",
+            "value" : "Twitch Abonnement Verlängerung"
           }
         },
         "eo" : {
@@ -277483,8 +277483,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch reward"
+            "state" : "translated",
+            "value" : "Twitch Belohnung"
           }
         },
         "eo" : {
@@ -277775,8 +277775,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch subscription"
+            "state" : "translated",
+            "value" : "Twitch Abonnement"
           }
         },
         "eo" : {
@@ -277919,8 +277919,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch watch streak"
+            "state" : "translated",
+            "value" : "Twitch Zuschauserie"
           }
         },
         "eo" : {
@@ -284569,8 +284569,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Used to calculate speed from wheel revolutions."
+            "state" : "translated",
+            "value" : "Dient zur Berechnung der Geschwindigkeit anhand der Radumdrehungen."
           }
         },
         "eo" : {
@@ -285741,8 +285741,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Variables set by the event. Following actions can use them in text. Tap a variable to copy it to the clipboard."
+            "state" : "translated",
+            "value" : "Vom Ereignis festgelegte Variablen. Die folgenden Aktionen können diese im Text verwenden. Tippe auf eine Variable, um sie in die Zwischenablage zu kopieren."
           }
         },
         "eo" : {
@@ -290321,8 +290321,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wait for event"
+            "state" : "translated",
+            "value" : "Auf ein Ereignis warten"
           }
         },
         "eo" : {
@@ -290463,8 +290463,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wait until a viewer redeems the reward, then continue with the following actions. Leave reward empty to wait for any reward."
+            "state" : "translated",
+            "value" : "Wartet bis ein Zuschauer die Belohnung einlöst und fährt dann mit den darauf folgenden Aktionen fort. Lass das Feld „Belohnung“ leer, um auf eine beliebige Belohnung zu warten."
           }
         },
         "eo" : {
@@ -290605,8 +290605,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wait until the event happens, then continue with the following actions."
+            "state" : "translated",
+            "value" : "Wartet bis das Ereignis eintritt und fährt dann mit den darauf folgenden Aktionen fort."
           }
         },
         "eo" : {
@@ -293547,8 +293547,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wheel circumference"
+            "state" : "translated",
+            "value" : "Radumfang"
           }
         },
         "eo" : {
