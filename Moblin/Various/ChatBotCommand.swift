@@ -50,6 +50,7 @@ enum ChatBotMainArgument: String, ChatBotArgument {
     case macro
     case send
     case music
+    case torch
     case custom
 }
 
@@ -165,6 +166,12 @@ enum ChatBotTeslaMediaArgument: String, ChatBotArgument {
     case next
     case previous
     case togglePlayback = "toggle-playback"
+}
+
+enum ChatBotTorchArgument: String, ChatBotArgument {
+    case on
+    case off
+    case level
 }
 
 struct ChatBotMessage {
