@@ -41,6 +41,7 @@ from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
 
 CHART_WIDGET_ID = uuid()
+APPLE_LOG_LUT_ID = uuid()
 CHART_FILE = FILES_DIR / "color-chart.png"
 INGEST_ID = uuid()
 RECORDING_TIME = 5
@@ -402,7 +403,12 @@ class ColorsColorSpace(ColorsTestCase):
                 }
             ],
             self._graphics_implementation,
-            color={"space": self._case.color_space, "lutEnabled": self._case.lut_enabled},
+            color={
+                "space": self._case.color_space,
+                "lutEnabled": self._case.lut_enabled,
+                "lut": APPLE_LOG_LUT_ID,
+                "bundledLuts": [{"id": APPLE_LOG_LUT_ID, "type": "bundled", "name": "Apple Log To Rec 709"}],
+            },
         )
 
     def run(self):

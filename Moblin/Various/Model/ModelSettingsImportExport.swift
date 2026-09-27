@@ -79,6 +79,7 @@ extension Model {
         show.chatPhone = isChatPhone()
         updateScreenAutoOff()
         reloadStream()
+        lutUpdated()
         chatBotCustomCommandsTextChanged()
         macrosTextFormatChanged()
         resetSelectedScene()
