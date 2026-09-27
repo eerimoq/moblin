@@ -512,6 +512,11 @@ extension Model {
             banTwitchUser(user: user, userId: userId, duration: nil) { _ in }
         case .kick:
             banKickUser(user: user, duration: nil) { _ in }
+        case .youTube:
+            guard let userId = post.userId else {
+                return
+            }
+            banYouTubeUser(user: user, channelId: userId, duration: nil)
         default:
             makeErrorToast(title: "Ban not supported for this platform")
         }
@@ -529,6 +534,11 @@ extension Model {
             banTwitchUser(user: user, userId: userId, duration: duration) { _ in }
         case .kick:
             banKickUser(user: user, duration: duration) { _ in }
+        case .youTube:
+            guard let userId = post.userId else {
+                return
+            }
+            banYouTubeUser(user: user, channelId: userId, duration: duration)
         default:
             makeErrorToast(title: "Timeout not supported for this platform")
         }

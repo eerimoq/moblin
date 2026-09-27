@@ -99,6 +99,7 @@ private struct AuthorBadge: Codable {
 
 private struct ChatDescription: Codable {
     let authorName: Author
+    let authorExternalChannelId: String?
     let message: Message?
     let purchaseAmountText: Amount?
     let headerSubtext: Message?
@@ -107,6 +108,7 @@ private struct ChatDescription: Codable {
 
 private struct SponsorshipsHeaderRenderer: Codable {
     let authorName: Author
+    let authorExternalChannelId: String?
     let primaryText: Message?
     let authorBadges: [AuthorBadge]?
 }
@@ -392,7 +394,7 @@ final class YouTubeLiveChat: NSObject {
                                 messageId: nil,
                                 displayName: chatDescription.authorName.simpleText,
                                 user: chatDescription.authorName.simpleText,
-                                userId: nil,
+                                userId: chatDescription.authorExternalChannelId,
                                 userColor: nil,
                                 userBadges: [],
                                 segments: segments,
@@ -426,7 +428,7 @@ final class YouTubeLiveChat: NSObject {
                                 messageId: nil,
                                 displayName: headerRenderer.authorName.simpleText,
                                 user: headerRenderer.authorName.simpleText,
-                                userId: nil,
+                                userId: headerRenderer.authorExternalChannelId,
                                 userColor: nil,
                                 userBadges: [],
                                 segments: segments,

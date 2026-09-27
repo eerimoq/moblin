@@ -216,6 +216,55 @@ extension Model {
         getVideo()
     }
 
+    func banYouTubeUser(user: String, channelId: String, duration: Int?) {
+        guard stream.isYouTubeAuthorized() else {
+            makeNotLoggedInToToast(platform: .youTube)
+            return
+        }
+        getYouTubeApi(stream: stream) { youTubeApi in
+            guard let youTubeApi else {
+                return
+            }
+            youTubeApi.listVideos(videoIds: self.stream.youTubeVideoIds) { response in
+                guard case let .success(response) = response else {
+                    self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                    return
+                }
+                let liveChatIds = response.items.compactMap(\.liveStreamingDetails.activeLiveChatId)
+                guard !liveChatIds.isEmpty else {
+                    self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                    return
+                }
+                var remaining = liveChatIds.count
+                var failed = false
+                for liveChatId in liveChatIds {
+                    youTubeApi.insertLiveChatBan(liveChatId: liveChatId,
+                                                 channelId: channelId,
+                                                 duration: duration)
+                    { response in
+                        switch response {
+                        case .success:
+                            break
+                        default:
+                            failed = true
+                        }
+                        remaining -= 1
+                        guard remaining == 0 else {
+                            return
+                        }
+                        if failed {
+                            self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                        } else if duration == nil {
+                            self.makeToast(title: String(localized: "Banned \(user)"))
+                        } else {
+                            self.makeToast(title: String(localized: "Timed out \(user)"))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private func getYouTubeAccesssToken(stream: SettingsStream, onCompleted: @escaping (String?) -> Void) {
         guard let authState = stream.youTubeAuthState else {
             onCompleted(nil)

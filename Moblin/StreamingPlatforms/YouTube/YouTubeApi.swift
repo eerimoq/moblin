@@ -78,6 +78,7 @@ struct YouTubeApiListVideoStreamingDetails: Codable {
     let concurrentViewers: String?
     let actualStartTime: String?
     let actualEndTime: String?
+    let activeLiveChatId: String?
 
     func isLive() -> Bool {
         actualStartTime != nil && actualEndTime == nil
@@ -298,6 +299,36 @@ class YouTubeApi {
                 } else {
                     onCompleted(.error)
                 }
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
+    }
+
+    func insertLiveChatBan(liveChatId: String,
+                           channelId: String,
+                           duration: Int?,
+                           onCompleted: @escaping (NetworkResponse<Void>) -> Void)
+    {
+        let subPath = makeUrl("liveChat/bans", [("part", "snippet")])
+        var snippet: [String: Any] = [
+            "liveChatId": liveChatId,
+            "bannedUserDetails": [
+                "channelId": channelId,
+            ],
+        ]
+        if let duration {
+            snippet["type"] = "temporary"
+            snippet["banDurationSeconds"] = duration
+        } else {
+            snippet["type"] = "permanent"
+        }
+        doPost(subPath: subPath, body: serialize(["snippet": snippet])) {
+            switch $0 {
+            case .success:
+                onCompleted(.success(()))
             case .authError:
                 onCompleted(.authError)
             case .error:
