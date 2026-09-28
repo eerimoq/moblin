@@ -28,7 +28,8 @@ def run(description, command):
         except subprocess.CalledProcessError as e:
             spinner.fail(colored("✘", "red"))
             print(e.stdout)
-            raise
+            print(e.stderr, file=sys.stderr)
+            sys.exit(e.returncode)
         spinner.ok(colored("✔", "green"))
     return output
 
