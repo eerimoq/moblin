@@ -490,10 +490,20 @@ final class Recorder: NSObject, @unchecked Sendable {
             reset()
             return
         }
-        writer.finishWriting {
-            self.delegate?.recorderFinished()
+        // mediaplaybackd iOS process leaks threads and uses a lot of CPU when calling
+        // finishWriting when audio and video has not been appended.
+        if hasAudioAndVideoBeenAppended() {
+            writer.finishWriting {
+                self.delegate?.recorderFinished()
+            }
+        } else {
+            writer.cancelWriting()
         }
         reset()
+    }
+
+    private func hasAudioAndVideoBeenAppended() -> Bool {
+        nextAudioPresentationTimeStamp.seconds > 0
     }
 
     private func reset() {
