@@ -151,6 +151,11 @@ private func setOrientation(
     #endif
 }
 
+private enum VideoFormatResult {
+    case found(format: AVCaptureDevice.Format, useAutoFrameRate: Bool, useLandscapeInPortrait: Bool)
+    case notFound(String)
+}
+
 final class VideoCaptureSession: NSObject, @unchecked Sendable {
     weak var delegate: (any VideoCaptureSessionDelegate)?
     weak var processor: Processor?
@@ -410,7 +415,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         fps: Float64,
         preferAutoFrameRate: Bool,
         colorSpace: AVCaptureColorSpace
-    ) -> (AVCaptureDevice.Format?, Bool, Bool, String?) {
+    ) -> VideoFormatResult {
         var useAutoFrameRate = false
         var useLandscapeInPortrait = false
         var formats = device.formats
@@ -440,22 +445,18 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         }
         formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
         if formats.isEmpty {
-            return (
-                nil,
-                useAutoFrameRate,
-                useLandscapeInPortrait,
-                "No format found matching \(height)p\(Int(fps)), \(colorSpace)"
-            )
+            return .notFound("No format found matching \(height)p\(Int(fps)), \(colorSpace)")
         }
         formats = formats.filter { !$0.isVideoBinned }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, useLandscapeInPortrait, "No unbinned video format found")
+            return .notFound("No unbinned video format found")
         }
-        formats = filterFormatsByColorRange(formats, colorRange)
-        if formats.isEmpty {
-            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported pixel format")
+        guard let format = filterFormatsByColorRange(formats, colorRange).first else {
+            return .notFound("Unsupported pixel format")
         }
-        return (formats.first, useAutoFrameRate, useLandscapeInPortrait, nil)
+        return .found(format: format,
+                      useAutoFrameRate: useAutoFrameRate,
+                      useLandscapeInPortrait: useLandscapeInPortrait)
     }
 
     private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
@@ -483,21 +484,33 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         guard let device else {
             return
         }
-        let (format, useAutoFrameRate, useLandscapeInPortrait, error) = findVideoFormat(
+        switch findVideoFormat(
             device: device,
             width: Int32(captureSize.width),
             height: Int32(captureSize.height),
             fps: fps,
             preferAutoFrameRate: preferAutoFrameRate,
             colorSpace: colorSpace
-        )
-        if let error {
+        ) {
+        case let .found(format, useAutoFrameRate, useLandscapeInPortrait):
+            applyDeviceFormat(device: device,
+                              format: format,
+                              fps: fps,
+                              colorSpace: colorSpace,
+                              useAutoFrameRate: useAutoFrameRate,
+                              useLandscapeInPortrait: useLandscapeInPortrait)
+        case let .notFound(error):
             reportFormatNotFound(device, error)
-            return
         }
-        guard let format else {
-            return
-        }
+    }
+
+    private func applyDeviceFormat(device: AVCaptureDevice,
+                                   format: AVCaptureDevice.Format,
+                                   fps: Float64,
+                                   colorSpace: AVCaptureColorSpace,
+                                   useAutoFrameRate: Bool,
+                                   useLandscapeInPortrait: Bool)
+    {
         logger.debug("video-unit: Selected format: \(format)")
         do {
             try device.lockForConfiguration()
