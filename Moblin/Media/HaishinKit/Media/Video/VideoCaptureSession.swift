@@ -2,6 +2,7 @@ import AVFoundation
 import Photos
 
 nonisolated(unsafe) var nativeLowLightBoost = false
+nonisolated(unsafe) var externalCameraVideoRange = false
 
 struct CaptureDevice {
     let device: AVCaptureDevice
@@ -101,18 +102,112 @@ final class FormatDescriptionMatcher {
 }
 #endif
 
+private func isExternalCameraVideoRange(_ device: AVCaptureDevice,
+                                        _ colorRange: SettingsStreamColorRange) -> Bool
+{
+    if #available(iOS 17.0, *) {
+        return externalCameraVideoRange && device.deviceType == .external && colorRange == .limited
+    }
+    return false
+}
+
+private final class VideoRangeRelabeler {
+    private var pool: CVPixelBufferPool?
+    private var poolSize = CGSize.zero
+    private var formatDescription: CMVideoFormatDescription?
+    private var logged = false
+
+    func relabel(_ sampleBuffer: CMSampleBuffer) -> CMSampleBuffer? {
+        guard let imageBuffer = sampleBuffer.imageBuffer,
+              CVPixelBufferGetPixelFormatType(imageBuffer) == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+        else {
+            return sampleBuffer
+        }
+        let width = CVPixelBufferGetWidth(imageBuffer)
+        let height = CVPixelBufferGetHeight(imageBuffer)
+        if pool == nil || poolSize != CGSize(width: width, height: height) {
+            let attributes: [NSString: AnyObject] = [
+                kCVPixelBufferPixelFormatTypeKey: NSNumber(
+                    value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+                ),
+                kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
+                kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
+                kCVPixelBufferWidthKey: NSNumber(value: width),
+                kCVPixelBufferHeightKey: NSNumber(value: height),
+            ]
+            pool = nil
+            CVPixelBufferPoolCreate(nil, nil, attributes as NSDictionary, &pool)
+            poolSize = CGSize(width: width, height: height)
+            formatDescription = nil
+        }
+        guard let pool else {
+            return nil
+        }
+        var outputImageBuffer: CVPixelBuffer?
+        guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &outputImageBuffer) == kCVReturnSuccess,
+              let outputImageBuffer
+        else {
+            return nil
+        }
+        CVPixelBufferLockBaseAddress(imageBuffer, .readOnly)
+        CVPixelBufferLockBaseAddress(outputImageBuffer, [])
+        for plane in 0 ..< 2 {
+            guard let source = CVPixelBufferGetBaseAddressOfPlane(imageBuffer, plane),
+                  let destination = CVPixelBufferGetBaseAddressOfPlane(outputImageBuffer, plane)
+            else {
+                continue
+            }
+            let sourceStride = CVPixelBufferGetBytesPerRowOfPlane(imageBuffer, plane)
+            let destinationStride = CVPixelBufferGetBytesPerRowOfPlane(outputImageBuffer, plane)
+            let rows = CVPixelBufferGetHeightOfPlane(imageBuffer, plane)
+            let bytes = min(sourceStride, destinationStride)
+            for row in 0 ..< rows {
+                memcpy(destination + row * destinationStride, source + row * sourceStride, bytes)
+            }
+        }
+        CVPixelBufferUnlockBaseAddress(outputImageBuffer, [])
+        CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
+        CVBufferPropagateAttachments(imageBuffer, outputImageBuffer)
+        CVBufferSetAttachment(outputImageBuffer,
+                              kCVImageBufferYCbCrMatrixKey,
+                              kCVImageBufferYCbCrMatrix_ITU_R_709_2,
+                              .shouldPropagate)
+        if formatDescription == nil {
+            formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+            if !logged {
+                logged = true
+                logger.info("video-unit: Relabeled 420f to 420v: \(String(describing: formatDescription))")
+            }
+        }
+        guard let formatDescription else {
+            return nil
+        }
+        return CMSampleBuffer.create(outputImageBuffer,
+                                     formatDescription,
+                                     sampleBuffer.duration,
+                                     sampleBuffer.presentationTimeStamp,
+                                     sampleBuffer.decodeTimeStamp)
+    }
+}
+
 private final class DeviceOutputHandler: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private let device: AVCaptureDevice
     private let cameraId: UUID
     private weak var delegate: (any VideoCaptureSessionDelegate)?
+    private let relabeler: VideoRangeRelabeler?
     #if targetEnvironment(macCatalyst)
     private let formatDescriptionMatcher = FormatDescriptionMatcher()
     #endif
 
-    init(device: AVCaptureDevice, cameraId: UUID, delegate: (any VideoCaptureSessionDelegate)?) {
+    init(device: AVCaptureDevice,
+         cameraId: UUID,
+         delegate: (any VideoCaptureSessionDelegate)?,
+         relabelToVideoRange: Bool)
+    {
         self.device = device
         self.cameraId = cameraId
         self.delegate = delegate
+        relabeler = relabelToVideoRange ? VideoRangeRelabeler() : nil
     }
 
     func captureOutput(
@@ -125,7 +220,14 @@ private final class DeviceOutputHandler: NSObject, AVCaptureVideoDataOutputSampl
             return
         }
         #endif
-        delegate?.videoCaptureSessionDidOutput(device, cameraId, sampleBuffer)
+        if let relabeler {
+            guard let sampleBuffer = relabeler.relabel(sampleBuffer) else {
+                return
+            }
+            delegate?.videoCaptureSessionDidOutput(device, cameraId, sampleBuffer)
+        } else {
+            delegate?.videoCaptureSessionDidOutput(device, cameraId, sampleBuffer)
+        }
     }
 }
 
@@ -467,7 +569,8 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         if formats.isEmpty {
             return .notFound("No unbinned video format found")
         }
-        guard let format = filterFormatsByColorRange(formats, colorRange).first else {
+        let formatColorRange = isExternalCameraVideoRange(device, colorRange) ? .full : colorRange
+        guard let format = filterFormatsByColorRange(formats, formatColorRange).first else {
             return .notFound("Unsupported pixel format")
         }
         return .found(format: format,
@@ -561,8 +664,11 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     {
         let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
+        let relabelToVideoRange = isExternalCameraVideoRange(device.device, colorRange)
         output.videoSettings = [
-            kCVPixelBufferPixelFormatTypeKey as String: colorRange.pixelFormatType(),
+            kCVPixelBufferPixelFormatTypeKey as String: relabelToVideoRange
+                ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+                : colorRange.pixelFormatType(),
         ]
         var connection: AVCaptureConnection?
         if let port = input.ports.first(where: { $0.mediaType == .video }) {
@@ -617,7 +723,8 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 outputHandler: DeviceOutputHandler(
                     device: device.device,
                     cameraId: device.id,
-                    delegate: delegate
+                    delegate: delegate,
+                    relabelToVideoRange: relabelToVideoRange
                 )
             ))
         }

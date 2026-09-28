@@ -11,6 +11,10 @@ struct DebugVideoSettingsView: View {
                     .onChange(of: debug.nativeLowLightBoost) { _ in
                         model.setNativeLowLightBoost()
                     }
+                Toggle("External camera video range", isOn: $debug.externalCameraVideoRange)
+                    .onChange(of: debug.externalCameraVideoRange) { _ in
+                        model.setExternalCameraVideoRange()
+                    }
             } footer: {
                 Text("Change camera and restart stream for these to work properly.")
             }
