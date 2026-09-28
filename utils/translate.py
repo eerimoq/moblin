@@ -85,11 +85,7 @@ def main():
                         if translated is None:
                             print(f'Translating "{english}" to {", ".join(xcode_languages)}')
                             translator = GoogleTranslator(source="en", target=google_language)
-
-                            try:
-                                translated = translator.translate(english)
-                            except Exception:
-                                translated = english
+                            translated = translator.translate(english)
 
                         localizations[xcode_language] = {
                             "stringUnit": {"state": "needs_review", "value": translated}
