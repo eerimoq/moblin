@@ -23,8 +23,9 @@ extension Model {
         database.ristServer.enabled
     }
 
-    func ristCameras() -> [Camera] {
-        database.ristServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+    func updateRistVideoSources() {
+        videoSources.rist = database.ristServer.streams
+            .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getRistStream(id: UUID) -> SettingsRistServerStream? {

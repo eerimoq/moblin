@@ -98,6 +98,7 @@ private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
+    @ObservedObject var videoSources: VideoSources
     @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
@@ -128,7 +129,7 @@ private struct VideoSourceView: View {
                         one is used at a time. This allows the phone to quickly change camera when zooming.
                         """),
                     ],
-                    items: model.listCameras().map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(scene: scene)
@@ -364,13 +365,14 @@ struct SceneShortcutView: View {
 }
 
 struct SceneSettingsView: View {
+    @EnvironmentObject var model: Model
     let database: Database
     @ObservedObject var scene: SettingsScene
 
     var body: some View {
         Form {
             NameEditView(name: $scene.name, existingNames: database.scenes)
-            VideoSourceView(database: database, scene: scene)
+            VideoSourceView(database: database, scene: scene, videoSources: model.videoSources)
             QuickSwitchGroupView(database: database, scene: scene)
             SceneMicView(database: database, scene: scene)
             WidgetsView(database: database, scene: scene)

@@ -22,6 +22,7 @@ struct RtmpServerSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         rtmpServer.streams.remove(atOffsets: indexes)
+        model.updateRtmpVideoSources()
         model.reloadRtmpServer()
         model.updateMicsListAsync()
     }
@@ -87,6 +88,7 @@ struct RtmpServerSettingsView: View {
                             }
                         }
                         rtmpServer.streams.append(stream)
+                        model.updateRtmpVideoSources()
                         model.updateMicsListAsync()
                     }
                     .disabled(model.rtmpServerEnabled())

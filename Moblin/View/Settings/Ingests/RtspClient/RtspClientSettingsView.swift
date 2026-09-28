@@ -11,6 +11,7 @@ struct RtspClientSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         rtspClient.streams.remove(atOffsets: indexes)
+        model.updateRtspVideoSources()
         model.reloadRtspClient()
     }
 
@@ -34,6 +35,7 @@ struct RtspClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsRtspClientStream.baseName,
                                                      existingNames: rtspClient.streams)
                         rtspClient.streams.append(stream)
+                        model.updateRtspVideoSources()
                     }
                 } header: {
                     Text("Streams")

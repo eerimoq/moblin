@@ -30,6 +30,7 @@ struct SrtlaServerSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         srtlaServer.streams.remove(atOffsets: indexes)
+        model.updateSrtlaVideoSources()
         model.reloadSrtlaServer()
         model.updateMicsListAsync()
     }
@@ -105,6 +106,7 @@ struct SrtlaServerSettingsView: View {
                             }
                         }
                         srtlaServer.streams.append(stream)
+                        model.updateSrtlaVideoSources()
                         model.updateMicsListAsync()
                     }
                     .disabled(srtlaServer.enabled)

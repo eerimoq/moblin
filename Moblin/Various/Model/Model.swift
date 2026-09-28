@@ -545,6 +545,7 @@ final class Model: NSObject, ObservableObject {
     let twitchPrediction = TwitchPrediction()
     let moblink = Moblink()
     let ingests = Ingests()
+    let videoSources = VideoSources()
     let bitrate = Bitrate()
     let bonding = Bonding()
     var currentFps: Int?
@@ -721,9 +722,6 @@ final class Model: NSObject, ObservableObject {
     var latestDebugLines: [String] = []
     var latestDebugActions: [String] = []
     var streamingHistoryStream: StreamingHistoryStream?
-    var backCameras: [Camera] = []
-    var frontCameras: [Camera] = []
-    var externalCameras: [Camera] = []
     var recordingsStorage = RecordingsStorage()
     var recordingThumbnailsCache: [String: Data] = [:]
     var latestLowBitrateTime = ContinuousClock.now
@@ -1103,7 +1101,7 @@ final class Model: NSObject, ObservableObject {
         SDImageCodersManager.shared.addCoder(webPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
         setupLogging()
-        updateCameraLists()
+        updateVideoSources()
         updateBatteryLevel()
         setupInputGainObserver()
         setupAudioSession()
@@ -1518,13 +1516,13 @@ final class Model: NSObject, ObservableObject {
 
     @objc nonisolated func handleCaptureDeviceWasConnected(_: Notification) {
         DispatchQueue.main.async {
-            self.updateCameraLists()
+            self.updateDeviceVideoSources()
         }
     }
 
     @objc nonisolated func handleCaptureDeviceWasDisconnected(_: Notification) {
         DispatchQueue.main.async {
-            self.updateCameraLists()
+            self.updateDeviceVideoSources()
         }
     }
 

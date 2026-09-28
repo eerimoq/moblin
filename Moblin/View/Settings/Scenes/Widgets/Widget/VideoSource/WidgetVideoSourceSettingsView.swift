@@ -135,6 +135,7 @@ struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var videoSource: SettingsWidgetVideoSource
+    @ObservedObject var videoSources: VideoSources
     @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
@@ -158,7 +159,7 @@ struct WidgetVideoSourceSettingsView: View {
                 InlinePickerView(
                     title: "Video source",
                     onChange: onCameraChange,
-                    items: model.listCameras(excludeBuiltin: false).map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(videoSourceWidget: videoSource)

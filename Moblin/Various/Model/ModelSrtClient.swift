@@ -2,8 +2,8 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func srtClientCameras() -> [Camera] {
-        database.srtClient.streams.map { stream in
+    func updateSrtClientVideoSources() {
+        videoSources.srtClient = database.srtClient.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }

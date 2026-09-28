@@ -9,6 +9,7 @@ struct MediaPlayersSettingsView: View {
             model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
         }
         mediaPlayers.players.remove(atOffsets: offsets)
+        model.updateMediaPlayerVideoSources()
     }
 
     var body: some View {
@@ -40,6 +41,7 @@ struct MediaPlayersSettingsView: View {
                                                       existingNames: mediaPlayers.players)
                     mediaPlayers.players.append(mediaPlayer)
                     model.addMediaPlayer(settings: mediaPlayer)
+                    model.updateMediaPlayerVideoSources()
                 }
             }
         }

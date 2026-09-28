@@ -97,8 +97,8 @@ extension Model {
         }
     }
 
-    func playerCameras() -> [Camera] {
-        database.mediaPlayers.players.map {
+    func updateMediaPlayerVideoSources() {
+        videoSources.mediaPlayer = database.mediaPlayers.players.map {
             Camera(id: $0.id.uuidString, name: $0.camera())
         }
     }

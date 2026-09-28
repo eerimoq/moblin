@@ -10,6 +10,9 @@ struct SrtClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: srtClient.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateSrtClientVideoSources()
+                        }
                 }
                 Section {
                     NavigationLink {

@@ -94,6 +94,9 @@ struct RtspClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: rtspClient.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateRtspVideoSources()
+                        }
                 }
                 Section {
                     NavigationLink {

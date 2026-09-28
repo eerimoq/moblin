@@ -29,7 +29,7 @@ extension Model {
                 return
             }
             let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
-            for camera in listCameras() {
+            for camera in videoSources.all() {
                 if let device = devices.devices.first(where: { $0.device.uniqueID == camera.id }) {
                     appendVideoPreviewIfNeeded(cameraId: device.id,
                                                name: device.device.name(),

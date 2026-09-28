@@ -10,6 +10,9 @@ struct WhepClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: whepClient.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateWhepVideoSources()
+                        }
                         .disabled(stream.enabled)
                 }
                 Section {

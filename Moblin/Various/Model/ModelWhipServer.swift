@@ -6,8 +6,8 @@ extension Model {
         database.whipServer.enabled
     }
 
-    func whipCameras() -> [Camera] {
-        database.whipServer.streams.map { stream in
+    func updateWhipVideoSources() {
+        videoSources.whip = database.whipServer.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }

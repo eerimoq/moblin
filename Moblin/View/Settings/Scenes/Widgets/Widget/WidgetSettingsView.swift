@@ -271,16 +271,24 @@ struct WidgetSettingsView: View {
             case .alerts:
                 WidgetAlertsSettingsView(model: model, widget: widget)
             case .videoSource:
-                WidgetVideoSourceSettingsView(widget: widget, videoSource: widget.videoSource)
+                WidgetVideoSourceSettingsView(widget: widget,
+                                              videoSource: widget.videoSource,
+                                              videoSources: model.videoSources)
             case .scoreboard:
                 WidgetScoreboardSettingsView(model: model,
                                              widget: widget,
                                              scoreboard: widget.scoreboard,
                                              web: database.remoteControl.web)
             case .vTuber:
-                WidgetVTuberSettingsView(model: model, widget: widget, vTuber: widget.vTuber)
+                WidgetVTuberSettingsView(model: model,
+                                         widget: widget,
+                                         vTuber: widget.vTuber,
+                                         videoSources: model.videoSources)
             case .pngTuber:
-                WidgetPngTuberSettingsView(model: model, widget: widget, pngTuber: widget.pngTuber)
+                WidgetPngTuberSettingsView(model: model,
+                                           widget: widget,
+                                           pngTuber: widget.pngTuber,
+                                           videoSources: model.videoSources)
             case .snapshot:
                 WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
             case .chat:

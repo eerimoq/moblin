@@ -11,6 +11,7 @@ struct WhepClientSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         whepClient.streams.remove(atOffsets: indexes)
+        model.updateWhepVideoSources()
         model.reloadWhepClient()
     }
 
@@ -37,6 +38,7 @@ struct WhepClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsWhepClientStream.baseName,
                                                      existingNames: whepClient.streams)
                         whepClient.streams.append(stream)
+                        model.updateWhepVideoSources()
                     }
                 } header: {
                     Text("Streams")

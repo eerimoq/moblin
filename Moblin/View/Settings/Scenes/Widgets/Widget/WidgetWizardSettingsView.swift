@@ -172,6 +172,7 @@ struct WidgetWizardSettingsView: View {
                                                             createWidgetWizard: createWidgetWizard,
                                                             videoSource: createWidgetWizard.widget
                                                                 .videoSource,
+                                                            videoSources: model.videoSources,
                                                             presentingCreateWizard: $presentingCreateWizard)
                     case .image:
                         WidgetWizardImageSettingsView(model: model,

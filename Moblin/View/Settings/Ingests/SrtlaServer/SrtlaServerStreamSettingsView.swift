@@ -42,6 +42,9 @@ struct SrtlaServerStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: srtlaServer.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateSrtlaVideoSources()
+                        }
                         .disabled(srtlaServer.enabled)
                     TextEditNavigationView(
                         title: String(localized: "Stream id"),

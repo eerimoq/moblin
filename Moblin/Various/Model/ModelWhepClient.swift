@@ -2,8 +2,8 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func whepCameras() -> [Camera] {
-        database.whepClient.streams.map { stream in
+    func updateWhepVideoSources() {
+        videoSources.whep = database.whepClient.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }

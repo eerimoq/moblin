@@ -51,6 +51,9 @@ struct RtmpServerStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: rtmpServer.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateRtmpVideoSources()
+                        }
                         .disabled(model.rtmpServerEnabled())
                     TextEditNavigationView(
                         title: String(localized: "Stream key"),

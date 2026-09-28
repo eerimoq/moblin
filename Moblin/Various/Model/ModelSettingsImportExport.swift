@@ -77,6 +77,7 @@ extension Model {
         setCurrentStream()
         updateIconImageFromDatabase()
         updateMicsList()
+        updateVideoSources()
         show.chatPhone = isChatPhone()
         updateScreenAutoOff()
         reloadStream()

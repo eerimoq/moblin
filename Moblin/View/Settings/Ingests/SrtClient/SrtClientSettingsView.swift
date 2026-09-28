@@ -10,6 +10,7 @@ struct SrtClientSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         srtClient.streams.remove(atOffsets: indexes)
+        model.updateSrtClientVideoSources()
         model.reloadSrtClient()
     }
 
@@ -33,6 +34,7 @@ struct SrtClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsSrtClientStream.baseName,
                                                      existingNames: srtClient.streams)
                         srtClient.streams.append(stream)
+                        model.updateSrtClientVideoSources()
                     }
                 } header: {
                     Text("Streams")

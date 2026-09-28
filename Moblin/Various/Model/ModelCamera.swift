@@ -29,6 +29,47 @@ class CameraShow: ObservableObject {
     }
 }
 
+class VideoSources: ObservableObject {
+    @Published var back: [Camera] = []
+    @Published var front: [Camera] = []
+    @Published var external: [Camera] = []
+    @Published var rtmp: [Camera] = []
+    @Published var srtla: [Camera] = []
+    @Published var srtClient: [Camera] = []
+    @Published var rist: [Camera] = []
+    @Published var rtsp: [Camera] = []
+    @Published var whip: [Camera] = []
+    @Published var whep: [Camera] = []
+    @Published var mediaPlayer: [Camera] = []
+
+    func all() -> [Camera] {
+        var cameras: [Camera] = []
+        if hasTripleBackCamera {
+            cameras.append(backTripleLowEnergyCamera)
+        }
+        if hasDualBackCamera {
+            cameras.append(backDualLowEnergyCamera)
+        }
+        if hasWideDualBackCamera {
+            cameras.append(backWideDualLowEnergyCamera)
+        }
+        cameras += back
+        cameras += front
+        cameras += external
+        cameras += rtmp
+        cameras += srtla
+        cameras += srtClient
+        cameras += rist
+        cameras += rtsp
+        cameras += whip
+        cameras += whep
+        cameras += mediaPlayer
+        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
+        cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
+        return cameras
+    }
+}
+
 @MainActor
 class CameraState: ObservableObject {
     let show = CameraShow()
@@ -432,28 +473,6 @@ extension Model {
         camera.whiteBalanceObservation = nil
     }
 
-    func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
-        var deviceTypes: [AVCaptureDevice.DeviceType] = [
-            .builtInTripleCamera,
-            .builtInDualCamera,
-            .builtInDualWideCamera,
-            .builtInUltraWideCamera,
-            .builtInWideAngleCamera,
-            .builtInTelephotoCamera,
-        ]
-        if #available(iOS 17.0, *) {
-            deviceTypes.append(.external)
-        }
-        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: deviceTypes,
-            mediaType: .video,
-            position: position
-        )
-        return deviceDiscovery.devices.map { device in
-            Camera(id: device.uniqueID, name: device.name())
-        }
-    }
-
     func colorSpaceUpdated() {
         setColorSpace()
         resetSelectedScene(changeScene: false)
@@ -548,15 +567,47 @@ extension Model {
         return cameraDevice != nil
     }
 
-    func updateCameraLists() {
+    func updateVideoSources() {
+        updateDeviceVideoSources()
+        updateRtmpVideoSources()
+        updateSrtlaVideoSources()
+        updateSrtClientVideoSources()
+        updateRistVideoSources()
+        updateRtspVideoSources()
+        updateWhipVideoSources()
+        updateWhepVideoSources()
+        updateMediaPlayerVideoSources()
+    }
+
+    func updateDeviceVideoSources() {
+        videoSources.back = listBuiltinCameras(position: .back)
+        videoSources.front = listBuiltinCameras(position: .front)
         if isMac() {
-            externalCameras = []
-            backCameras = listCameras(position: .back)
-            frontCameras = listCameras(position: .front)
+            videoSources.external = []
         } else {
-            externalCameras = listExternalCameras()
-            backCameras = listCameras(position: .back)
-            frontCameras = listCameras(position: .front)
+            videoSources.external = listExternalCameras()
+        }
+    }
+
+    private func listBuiltinCameras(position: AVCaptureDevice.Position) -> [Camera] {
+        var deviceTypes: [AVCaptureDevice.DeviceType] = [
+            .builtInTripleCamera,
+            .builtInDualCamera,
+            .builtInDualWideCamera,
+            .builtInUltraWideCamera,
+            .builtInWideAngleCamera,
+            .builtInTelephotoCamera,
+        ]
+        if #available(iOS 17.0, *) {
+            deviceTypes.append(.external)
+        }
+        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: position
+        )
+        return deviceDiscovery.devices.map { device in
+            Camera(id: device.uniqueID, name: device.name())
         }
     }
 
@@ -573,41 +624,12 @@ extension Model {
         return deviceDiscovery.devices.map { Camera(id: $0.uniqueID, name: $0.name()) }
     }
 
-    func listCameras(excludeBuiltin: Bool = false) -> [Camera] {
-        var cameras: [Camera] = []
-        if !excludeBuiltin {
-            if hasTripleBackCamera {
-                cameras.append(backTripleLowEnergyCamera)
-            }
-            if hasDualBackCamera {
-                cameras.append(backDualLowEnergyCamera)
-            }
-            if hasWideDualBackCamera {
-                cameras.append(backWideDualLowEnergyCamera)
-            }
-            cameras += backCameras
-            cameras += frontCameras
-            cameras += externalCameras
-        }
-        cameras += rtmpCameras()
-        cameras += srtlaCameras()
-        cameras += srtClientCameras()
-        cameras += ristCameras()
-        cameras += rtspCameras()
-        cameras += whipCameras()
-        cameras += whepCameras()
-        cameras += playerCameras()
-        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
-        cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
-        return cameras
-    }
-
     private func isBackCamera(cameraId: CameraId) -> Bool {
-        backCameras.contains(where: { $0.id == cameraId })
+        videoSources.back.contains(where: { $0.id == cameraId })
     }
 
     private func isFrontCamera(cameraId: CameraId) -> Bool {
-        frontCameras.contains(where: { $0.id == cameraId })
+        videoSources.front.contains(where: { $0.id == cameraId })
     }
 
     private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
@@ -786,13 +808,13 @@ extension Model {
                 return unknownSad
             }
         case let .back(id):
-            if let camera = backCameras.first(where: { $0.id == id }) {
+            if let camera = videoSources.back.first(where: { $0.id == id }) {
                 return camera.name
             } else {
                 return unknownSad
             }
         case let .front(id):
-            if let camera = frontCameras.first(where: { $0.id == id }) {
+            if let camera = videoSources.front.first(where: { $0.id == id }) {
                 return camera.name
             } else {
                 return unknownSad
@@ -811,7 +833,7 @@ extension Model {
     }
 
     func getExternalCameraName(cameraId: CameraId) -> String {
-        if let camera = externalCameras.first(where: { $0.id == cameraId }) {
+        if let camera = videoSources.external.first(where: { $0.id == cameraId }) {
             camera.name
         } else {
             unknownSad
@@ -819,7 +841,7 @@ extension Model {
     }
 
     func isExternalCameraConnected(cameraId: String) -> Bool {
-        externalCameras.first { $0.id == cameraId } != nil
+        videoSources.external.first { $0.id == cameraId } != nil
     }
 
     func setColorSpace() {

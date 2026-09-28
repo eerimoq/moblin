@@ -27,6 +27,9 @@ struct RistServerStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: ristServer.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateRistVideoSources()
+                        }
                         .disabled(model.ristServerEnabled())
                 } footer: {
                     Text("The stream name is shown in the list of cameras in scene settings.")

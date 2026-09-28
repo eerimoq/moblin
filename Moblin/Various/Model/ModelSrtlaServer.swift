@@ -25,8 +25,9 @@ extension Model {
         database.srtlaServer.enabled
     }
 
-    func srtlaCameras() -> [Camera] {
-        database.srtlaServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+    func updateSrtlaVideoSources() {
+        videoSources.srtla = database.srtlaServer.streams
+            .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
