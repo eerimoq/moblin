@@ -7,6 +7,7 @@ private let sRGBColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
 
 private let fullRange8Bit = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 private let videoRange8Bit = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+private let mjpeg: OSType = 0x6A70_6567
 private let fullRange10Bit = kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
 private let videoRange10Bit = kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange
 
@@ -210,20 +211,31 @@ struct VideoColorSuite {
         #expect(!isVideoRangePixelFormat(fullRange10Bit))
         #expect(isVideoRangePixelFormat(videoRange10Bit))
         #expect(!isVideoRangePixelFormat(kCVPixelFormatType_32BGRA))
+        #expect(isFullRangePixelFormat(fullRange8Bit))
+        #expect(!isFullRangePixelFormat(videoRange8Bit))
+        #expect(isFullRangePixelFormat(fullRange10Bit))
+        #expect(!isFullRangePixelFormat(videoRange10Bit))
+        #expect(!isFullRangePixelFormat(mjpeg))
+        #expect(!isVideoRangePixelFormat(mjpeg))
     }
 
     @Test
     func cameraFormatsFollowColorRange() {
         let formats = [videoRange8Bit, fullRange8Bit, videoRange10Bit].map(TestVideoFormat.init)
-        #expect(filterFormatsByColorRange(formats, .full).map(\.pixelFormat)
-            == [fullRange8Bit, videoRange10Bit])
+        #expect(filterFormatsByColorRange(formats, .full).map(\.pixelFormat) == [fullRange8Bit])
         #expect(filterFormatsByColorRange(formats, .limited).map(\.pixelFormat)
             == [videoRange8Bit, videoRange10Bit])
         let fullRangeFormats = [TestVideoFormat(pixelFormat: fullRange8Bit)]
         #expect(filterFormatsByColorRange(fullRangeFormats, .limited).map(\.pixelFormat)
             == [fullRange8Bit])
-        let videoRangeFormats = [TestVideoFormat(pixelFormat: videoRange8Bit)]
-        #expect(filterFormatsByColorRange(videoRangeFormats, .full).isEmpty)
+        let videoRangeFormats = [videoRange8Bit, videoRange10Bit].map(TestVideoFormat.init)
+        #expect(filterFormatsByColorRange(videoRangeFormats, .full).map(\.pixelFormat) == [videoRange10Bit])
+        let videoRange8BitFormats = [TestVideoFormat(pixelFormat: videoRange8Bit)]
+        #expect(filterFormatsByColorRange(videoRange8BitFormats, .full)
+            .map(\.pixelFormat) == [videoRange8Bit])
+        let usbCameraFormats = [videoRange8Bit, mjpeg].map(TestVideoFormat.init)
+        #expect(filterFormatsByColorRange(usbCameraFormats, .full).map(\.pixelFormat) == [mjpeg])
+        #expect(filterFormatsByColorRange(usbCameraFormats, .limited).map(\.pixelFormat) == [videoRange8Bit])
     }
 
     @Test

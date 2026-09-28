@@ -25,26 +25,42 @@ protocol VideoCaptureSessionDelegate: AnyObject {
     func videoCaptureSessionWasInterrupted()
 }
 
-func isVideoRangePixelFormat(_ pixelFormat: OSType) -> Bool {
+private func pixelFormatComponentRange(_ pixelFormat: OSType) -> String? {
     guard let description = CVPixelFormatDescriptionCreateWithPixelFormatType(nil,
                                                                               pixelFormat) as? [String: Any]
     else {
-        return false
+        return nil
     }
     return description[kCVPixelFormatComponentRange as String] as? String
-        == kCVPixelFormatComponentRange_VideoRange as String
+}
+
+func isVideoRangePixelFormat(_ pixelFormat: OSType) -> Bool {
+    pixelFormatComponentRange(pixelFormat) == kCVPixelFormatComponentRange_VideoRange as String
+}
+
+func isFullRangePixelFormat(_ pixelFormat: OSType) -> Bool {
+    pixelFormatComponentRange(pixelFormat) == kCVPixelFormatComponentRange_FullRange as String
 }
 
 func filterFormatsByColorRange<Format: VideoFormat>(_ formats: [Format],
                                                     _ colorRange: SettingsStreamColorRange) -> [Format]
 {
-    switch colorRange {
+    let preferences: [(Format) -> Bool] = switch colorRange {
     case .full:
-        return formats.filter { $0.pixelFormat != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange }
+        [
+            { isFullRangePixelFormat($0.pixelFormat) },
+            { $0.pixelFormat != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange },
+        ]
     case .limited:
-        let videoRangeFormats = formats.filter { isVideoRangePixelFormat($0.pixelFormat) }
-        return videoRangeFormats.isEmpty ? formats : videoRangeFormats
+        [{ isVideoRangePixelFormat($0.pixelFormat) }]
     }
+    for isPreferred in preferences {
+        let preferredFormats = formats.filter(isPreferred)
+        if !preferredFormats.isEmpty {
+            return preferredFormats
+        }
+    }
+    return formats
 }
 
 protocol VideoFormat {
