@@ -2,7 +2,6 @@ systest
 systest_moblin
 ruff
 pylint
-deep_translator
 moblin_assistant
 requests
 av
