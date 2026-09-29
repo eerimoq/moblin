@@ -372,7 +372,7 @@ class IngestWhipServer(IngestTestCase):
     def run(self):
         with FfmpegWhipTestStream(url=self.moblin.ingest_whip_url(), files_dir=FILES_DIR):
             recording = self.record_ingest(startup_delay=4)
-        self.assert_recording(recording, FILES_DIR)
+        self.assert_recording(recording, FILES_DIR, channels=2)
 
 
 class IngestWhepClient(IngestTestCase):
@@ -403,7 +403,7 @@ class IngestWhepClient(IngestTestCase):
             with FfmpegRtspTestStream(url=rtsp_reader_url("1"), files_dir=FILES_DIR):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 recording = self.record_ingest(startup_delay=4)
-        self.assert_recording(recording, FILES_DIR)
+        self.assert_recording(recording, FILES_DIR, channels=2)
 
 
 class ParallelIngestTestCase(IngestTestCase):
@@ -443,8 +443,8 @@ class ParallelIngestTestCase(IngestTestCase):
     def record_parallel_ingests(self, startup_delay: int = 1) -> Path:
         return self.record_ingest(startup_delay=startup_delay, number_of_ingests=2)
 
-    def assert_parallel_recording(self, recording: Path):
-        self.assert_recording(recording, FILES_DIR, has_qr_codes=False)
+    def assert_parallel_recording(self, recording: Path, channels: int = 1):
+        self.assert_recording(recording, FILES_DIR, has_qr_codes=False, channels=channels)
 
 
 class IngestParallelRtmpServer(ParallelIngestTestCase):
@@ -652,7 +652,7 @@ class IngestParallelWhipServer(ParallelIngestTestCase):
         stream_2 = FfmpegWhipTestStream(url=self.moblin.ingest_whip_url("2"), files_dir=FILES_DIR)
         with stream_1, stream_2:
             recording = self.record_parallel_ingests(startup_delay=3)
-        self.assert_parallel_recording(recording)
+        self.assert_parallel_recording(recording, channels=2)
 
 
 class IngestParallelWhepClient(ParallelIngestTestCase):
@@ -692,7 +692,7 @@ class IngestParallelWhepClient(ParallelIngestTestCase):
                 mediamtx.wait_for_rtsp_publisher("1", 2_000_000)
                 mediamtx.wait_for_rtsp_publisher("2", 2_000_000)
                 recording = self.record_parallel_ingests(startup_delay=3)
-        self.assert_parallel_recording(recording)
+        self.assert_parallel_recording(recording, channels=2)
 
 
 def tests(moblin: Moblin):
