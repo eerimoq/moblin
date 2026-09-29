@@ -719,9 +719,15 @@ extension Model {
             isNetwork = true
         } else if getSrtlaStream(id: cameraId) != nil {
             isNetwork = true
+        } else if getSrtClientStream(id: cameraId) != nil {
+            isNetwork = true
         } else if let stream = getRistStream(id: cameraId) {
             isNetwork = true
             stream.connected = true
+        } else if getWhipStream(id: cameraId) != nil {
+            isNetwork = true
+        } else if getWhepStream(id: cameraId) != nil {
+            isNetwork = true
         }
         if isNetwork {
             markMicAsConnected(id: "\(cameraId) 0")
@@ -738,16 +744,22 @@ extension Model {
             isNetwork = true
         } else if getSrtlaStream(id: cameraId) != nil {
             isNetwork = true
+        } else if getSrtClientStream(id: cameraId) != nil {
+            isNetwork = true
         } else if let stream = getRistStream(id: cameraId) {
             isNetwork = true
             stream.connected = false
+        } else if getWhipStream(id: cameraId) != nil {
+            isNetwork = true
+        } else if getWhepStream(id: cameraId) != nil {
+            isNetwork = true
         }
         if isNetwork {
             markMicAsDisconnected(id: "\(cameraId) 0")
             switchMicIfNeededAfterNetworkCameraChange()
-            if isCurrentScenesVideoSourceNetwork(cameraId: cameraId) {
-                updateAutoSceneSwitcherVideoSourceDisconnected()
-            }
+        }
+        if isCurrentScenesVideoSourceNetwork(cameraId: cameraId) {
+            updateAutoSceneSwitcherVideoSourceDisconnected()
         }
         updateDisconnectProtectionVideoSourceDisconnected()
         updateVideoPreviews()

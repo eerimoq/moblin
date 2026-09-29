@@ -45,7 +45,7 @@ struct MediaPlayerSettingsView: View {
                     NameEditView(name: $player.name, existingNames: mediaPlayers.players)
                         .onChange(of: player.name) { _ in
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-                            model.updateMediaPlayerVideoSources()
+                            model.updateMediaPlayerVideoSourcesAndMics()
                         }
                 }
                 if false {
@@ -66,7 +66,7 @@ struct MediaPlayerSettingsView: View {
                         .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-                            model.updateMediaPlayerVideoSources()
+                            model.updateMediaPlayerVideoSourcesAndMics()
                         }
                         .onDelete(perform: deletePlaylistFile)
                     }

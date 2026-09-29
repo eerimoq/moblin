@@ -30,6 +30,11 @@ extension Model {
             .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
+    func updateSrtlaVideoSourcesAndMics() {
+        updateSrtlaVideoSources()
+        updateSrtlaMics()
+    }
+
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
         database.srtlaServer.streams.first { $0.id == id }
     }

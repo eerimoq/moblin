@@ -11,7 +11,7 @@ struct WhepClientStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: whepClient.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateWhepVideoSources()
+                            model.updateWhepVideoSourcesAndMics()
                         }
                         .disabled(stream.enabled)
                 }

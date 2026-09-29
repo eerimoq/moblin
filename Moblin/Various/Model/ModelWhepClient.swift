@@ -8,6 +8,11 @@ extension Model {
         }
     }
 
+    func updateWhepVideoSourcesAndMics() {
+        updateWhepVideoSources()
+        updateWhepMics()
+    }
+
     func getWhepStream(id: UUID) -> SettingsWhepClientStream? {
         database.whepClient.streams.first { stream in
             stream.id == id
@@ -18,10 +23,6 @@ extension Model {
         database.whepClient.streams.first { stream in
             idString == stream.id.uuidString
         }
-    }
-
-    func isWhepStreamConnected(streamId: UUID) -> Bool {
-        ingests.whep.first(where: { $0.streamId == streamId })?.isConnected() ?? false
     }
 
     func reloadWhepClient() {

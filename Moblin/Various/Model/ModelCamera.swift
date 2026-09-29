@@ -29,6 +29,7 @@ class CameraShow: ObservableObject {
     }
 }
 
+@MainActor
 class VideoSources: ObservableObject {
     @Published var back: [Camera] = []
     @Published var front: [Camera] = []

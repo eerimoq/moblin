@@ -76,7 +76,7 @@ extension Model {
         setExternalCameraVideoRange()
         setCurrentStream()
         updateIconImageFromDatabase()
-        updateMicsList()
+        updateMics()
         updateVideoSources()
         show.chatPhone = isChatPhone()
         updateScreenAutoOff()

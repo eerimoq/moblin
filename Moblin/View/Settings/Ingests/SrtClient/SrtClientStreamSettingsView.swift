@@ -11,7 +11,7 @@ struct SrtClientStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: srtClient.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateSrtClientVideoSources()
+                            model.updateSrtClientVideoSourcesAndMics()
                         }
                 }
                 Section {

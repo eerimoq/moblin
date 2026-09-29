@@ -8,6 +8,11 @@ extension Model {
         }
     }
 
+    func updateSrtClientVideoSourcesAndMics() {
+        updateSrtClientVideoSources()
+        updateSrtClientMics()
+    }
+
     func getSrtClientStream(id: UUID) -> SettingsSrtClientStream? {
         database.srtClient.streams.first { stream in
             stream.id == id
@@ -18,10 +23,6 @@ extension Model {
         database.srtClient.streams.first { stream in
             stream.id.uuidString == idString
         }
-    }
-
-    func isSrtClientStreamConnected(id _: UUID) -> Bool {
-        true
     }
 
     func reloadSrtClient() {

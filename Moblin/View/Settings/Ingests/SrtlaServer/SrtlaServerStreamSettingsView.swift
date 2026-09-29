@@ -43,7 +43,7 @@ struct SrtlaServerStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: srtlaServer.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateSrtlaVideoSources()
+                            model.updateSrtlaVideoSourcesAndMics()
                         }
                         .disabled(srtlaServer.enabled)
                     TextEditNavigationView(

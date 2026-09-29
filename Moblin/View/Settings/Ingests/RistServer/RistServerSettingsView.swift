@@ -22,9 +22,8 @@ struct RistServerSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         ristServer.streams.remove(atOffsets: indexes)
-        model.updateRistVideoSources()
         model.reloadRistServer()
-        model.updateMicsListAsync()
+        model.updateRistVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -80,8 +79,7 @@ struct RistServerSettingsView: View {
                                                      existingNames: ristServer.streams)
                         stream.virtualDestinationPort = ristServer.makeUniqueVirtualDestinationPort()
                         ristServer.streams.append(stream)
-                        model.updateRistVideoSources()
-                        model.updateMicsListAsync()
+                        model.updateRistVideoSourcesAndMics()
                     }
                     .disabled(model.ristServerEnabled())
                 } header: {

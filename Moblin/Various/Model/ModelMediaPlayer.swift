@@ -38,12 +38,10 @@ extension Model {
                                       colorRange: stream.colorRange)
         mediaPlayer.delegate = self
         mediaPlayers[settings.id] = mediaPlayer
-        updateMicsListAsync()
     }
 
     func deleteMediaPlayer(playerId: UUID) {
         mediaPlayers.removeValue(forKey: playerId)
-        updateMicsListAsync()
     }
 
     func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
@@ -101,6 +99,11 @@ extension Model {
         videoSources.mediaPlayer = database.mediaPlayers.players.map {
             Camera(id: $0.id.uuidString, name: $0.camera())
         }
+    }
+
+    func updateMediaPlayerVideoSourcesAndMics() {
+        updateMediaPlayerVideoSources()
+        updateMediaPlayerMics()
     }
 
     func getMediaPlayer(idString: String) -> SettingsMediaPlayer? {

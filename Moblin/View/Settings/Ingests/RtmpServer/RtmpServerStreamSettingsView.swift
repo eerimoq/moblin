@@ -52,7 +52,7 @@ struct RtmpServerStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: rtmpServer.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateRtmpVideoSources()
+                            model.updateRtmpVideoSourcesAndMics()
                         }
                         .disabled(model.rtmpServerEnabled())
                     TextEditNavigationView(

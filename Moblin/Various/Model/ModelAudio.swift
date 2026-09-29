@@ -34,13 +34,13 @@ extension Model {
     }
 
     func setupAudio() {
-        updateMicsList()
+        updateMics()
         if database.mics.defaultMic.isEmpty {
             database.mics.defaultMic = database.mics.mics
                 .first(where: { $0.builtInOrientation == database.mic })?
                 .id ?? ""
         }
-        if let mic = getMicById(id: database.mics.defaultMic), mic.connected {
+        if let mic = getConnectedMicById(id: database.mics.defaultMic) {
             defaultMic = mic
         } else {
             defaultMic = getHighestPriorityConnectedMic() ?? noMic
@@ -131,7 +131,7 @@ extension Model {
     }
 
     func switchMicIfNeededAfterSceneSwitch() {
-        updateMicsList()
+        updateMics()
         if database.mics.autoSwitch {
             if let scene = getSelectedScene(), scene.overrideMic,
                let mic = getConnectedMicById(id: scene.micId)
@@ -149,7 +149,7 @@ extension Model {
 
     func switchMicIfNeededAfterNetworkCameraChange() {
         if database.mics.autoSwitch {
-            updateMicsList()
+            updateMics()
             if let scene = getSelectedScene(), scene.overrideMic,
                let mic = getConnectedMicById(id: scene.micId)
             {
@@ -165,55 +165,86 @@ extension Model {
     }
 
     func markMicAsConnected(id: String) {
-        database.mics.mics.first(where: { $0.id == id })?.connected = true
+        getMicById(id: id)?.connected = true
     }
 
     func markMicAsDisconnected(id: String) {
-        database.mics.mics.first(where: { $0.id == id })?.connected = false
+        getMicById(id: id)?.connected = false
     }
 
-    func updateMicsList() {
-        updateMicsListDatabase(foundMics: listMics())
+    func updateMics() {
+        updateMics(audioSession: listAudioSessionMics())
     }
 
-    func updateMicsListAsync(onCompleted: (@MainActor () -> Void)? = nil) {
-        listMicsAsync {
-            self.updateMicsListDatabase(foundMics: $0)
-            onCompleted?()
+    private func updateMics(audioSession: [SettingsMicsMic]) {
+        updateMediaPlayerMics()
+        updateRistMics()
+        updateSrtlaMics()
+        updateSrtClientMics()
+        updateRtmpMics()
+        updateWhipMics()
+        updateWhepMics()
+        syncMics(found: audioSession, isKind: { $0.isAudioSession() }, removeMissing: false)
+    }
+
+    func updateRtmpMics() {
+        syncMics(found: listRtmpMics(), isKind: { $0.isRtmp() }, removeMissing: true)
+    }
+
+    func updateSrtlaMics() {
+        syncMics(found: listSrtlaMics(), isKind: { $0.isSrtla() }, removeMissing: true)
+    }
+
+    func updateSrtClientMics() {
+        syncMics(found: listSrtClientMics(), isKind: { $0.isSrtClient() }, removeMissing: true)
+    }
+
+    func updateRistMics() {
+        syncMics(found: listRistMics(), isKind: { $0.isRist() }, removeMissing: true)
+    }
+
+    func updateWhipMics() {
+        syncMics(found: listWhipMics(), isKind: { $0.isWhip() }, removeMissing: true)
+    }
+
+    func updateWhepMics() {
+        syncMics(found: listWhepMics(), isKind: { $0.isWhep() }, removeMissing: true)
+    }
+
+    func updateMediaPlayerMics() {
+        syncMics(found: listMediaPlayerMics(), isKind: { $0.isMediaPlayer() }, removeMissing: true)
+    }
+
+    func updateAudioSessionMicsAsync(onCompleted: (@MainActor () -> Void)? = nil) {
+        processorControlQueue.async {
+            let audioSessionMics = listAudioSessionMics()
+            DispatchQueue.main.async {
+                self.syncMics(found: audioSessionMics, isKind: { $0.isAudioSession() }, removeMissing: false)
+                onCompleted?()
+            }
         }
     }
 
-    private func updateMicsListDatabase(foundMics: [SettingsMicsMic]) {
-        var databaseMics: [SettingsMicsMic] = []
-        for mic in database.mics.mics {
-            if mic.isRtmp()
-                || mic.isSrtla()
-                || mic.isSrtClient()
-                || mic.isRist()
-                || mic.isRtsp()
-                || mic.isWhip()
-                || mic.isWhep()
-                || mic.isMediaPlayer(), !foundMics.contains(mic)
-            {
-                continue
-            }
-            if mic.isExternal() {
-                mic.connected = foundMics.contains(where: { $0 == mic })
-                databaseMics.append(mic)
-            } else if let foundMic = foundMics.first(where: { $0 == mic }) {
+    private func syncMics(found: [SettingsMicsMic],
+                          isKind: (SettingsMicsMic) -> Bool,
+                          removeMissing: Bool)
+    {
+        var mics = database.mics.mics
+        if removeMissing {
+            mics.removeAll { isKind($0) && !found.contains($0) }
+        }
+        for mic in mics where isKind(mic) {
+            if let foundMic = found.first(where: { $0 == mic }) {
+                mic.name = foundMic.name
                 mic.connected = foundMic.connected
-                databaseMics.append(mic)
             } else {
-                databaseMics.append(mic)
-            }
-            if let connectedMic = foundMics.first(where: { $0 == mic }) {
-                mic.name = connectedMic.name
+                mic.connected = false
             }
         }
-        for mic in foundMics where !databaseMics.contains(mic) {
-            databaseMics.insert(mic, at: 0)
+        for mic in found where !mics.contains(mic) {
+            mics.insert(mic, at: 0)
         }
-        database.mics.mics = databaseMics
+        database.mics.mics = mics
     }
 
     func getMicById(id: String) -> SettingsMicsMic? {
@@ -314,6 +345,7 @@ extension Model {
         stopTextToSpeechIfOutputNotAllowed()
         // Not sure about this...
         if isMac() {
+            updateAudioSessionMicsAsync()
             return
         }
         switchMicIfNeededAfterRouteChange()
@@ -375,7 +407,7 @@ extension Model {
     }
 
     private func switchMicIfNeededAfterRouteChange() {
-        updateMicsListAsync {
+        updateAudioSessionMicsAsync {
             if self.database.mics.autoSwitch {
                 self.autoSwitchMicIfNeededAfterRouteChange()
             } else {
@@ -388,27 +420,7 @@ extension Model {
         guard let inputPort = AVAudioSession.sharedInstance().currentRoute.inputs.first else {
             return nil
         }
-        var newMic: SettingsMicsMic
-        if let dataSource = inputPort.preferredDataSource {
-            var name: String
-            var builtInMicOrientation: SettingsMic?
-            if inputPort.portType == .builtInMic {
-                name = dataSource.dataSourceName
-                builtInMicOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-            } else {
-                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-            }
-            newMic = SettingsMicsMic()
-            newMic.name = name
-            newMic.inputUid = inputPort.uid
-            newMic.dataSourceId = dataSource.dataSourceID.intValue
-            newMic.builtInOrientation = builtInMicOrientation
-        } else {
-            newMic = SettingsMicsMic()
-            newMic.name = inputPort.portName
-            newMic.inputUid = inputPort.uid
-        }
-        return newMic
+        return makeAudioSessionMic(inputPort: inputPort, dataSource: inputPort.preferredDataSource)
     }
 
     private func autoSwitchMicIfNeededAfterRouteChange() {
@@ -467,98 +479,62 @@ extension Model {
         makeToast(title: String(localized: "Switched mic to '\(name)'"))
     }
 
-    private func listMics() -> [SettingsMicsMic] {
-        var mics: [SettingsMicsMic] = []
-        listMediaPlayerMics(&mics)
-        listRistMics(&mics)
-        listSrtlaMics(&mics)
-        listSrtClientMics(&mics)
-        listRtmpMics(&mics)
-        listWhipMics(&mics)
-        listWhepMics(&mics)
-        listAudioSessionMics(&mics)
-        return mics
-    }
-
-    private func listMicsAsync(onCompleted: @MainActor @escaping ([SettingsMicsMic]) -> Void) {
-        var mics: [SettingsMicsMic] = []
-        listMediaPlayerMics(&mics)
-        listRistMics(&mics)
-        listSrtlaMics(&mics)
-        listSrtClientMics(&mics)
-        listRtmpMics(&mics)
-        listWhipMics(&mics)
-        listWhepMics(&mics)
-        processorControlQueue.async { [mics] in
-            var mics = mics
-            listAudioSessionMics(&mics)
-            DispatchQueue.main.async { [mics] in
-                onCompleted(mics)
-            }
+    private func listRtmpMics() -> [SettingsMicsMic] {
+        database.rtmpServer.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listRtmpMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.rtmpServer.streams {
-            mics.append(SettingsMicsMic(name: stream.camera(),
-                                        inputUid: stream.id.uuidString,
-                                        connected: isRtmpStreamConnected(streamKey: stream.streamKey)))
+    private func listSrtlaMics() -> [SettingsMicsMic] {
+        database.srtlaServer.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listSrtlaMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.srtlaServer.streams {
-            mics.append(SettingsMicsMic(name: stream.camera(),
-                                        inputUid: stream.id.uuidString,
-                                        connected: isSrtlaStreamConnected(streamId: stream.streamId)))
+    private func listSrtClientMics() -> [SettingsMicsMic] {
+        database.srtClient.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listSrtClientMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.srtClient.streams {
-            mics.append(SettingsMicsMic(name: stream.camera(),
-                                        inputUid: stream.id.uuidString,
-                                        connected: isSrtClientStreamConnected(id: stream.id)))
+    private func listRistMics() -> [SettingsMicsMic] {
+        database.ristServer.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listRistMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.ristServer.streams {
-            let connected = isRistStreamConnected(port: stream.virtualDestinationPort)
-            mics.append(SettingsMicsMic(
-                name: stream.camera(),
-                inputUid: stream.id.uuidString,
-                connected: connected
-            ))
+    private func listWhipMics() -> [SettingsMicsMic] {
+        database.whipServer.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listWhipMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.whipServer.streams {
-            mics.append(SettingsMicsMic(name: stream.camera(),
-                                        inputUid: stream.id.uuidString,
-                                        connected: isWhipStreamConnected(streamId: stream.id)))
+    private func listWhepMics() -> [SettingsMicsMic] {
+        database.whepClient.streams.map {
+            SettingsMicsMic(name: $0.camera(),
+                            inputUid: $0.id.uuidString,
+                            connected: activeBufferedVideoIds.contains($0.id))
         }
     }
 
-    private func listWhepMics(_ mics: inout [SettingsMicsMic]) {
-        for stream in database.whepClient.streams {
-            mics.append(SettingsMicsMic(name: stream.camera(),
-                                        inputUid: stream.id.uuidString,
-                                        connected: isWhepStreamConnected(streamId: stream.id)))
-        }
-    }
-
-    private func listMediaPlayerMics(_ mics: inout [SettingsMicsMic]) {
-        for mediaPlayer in database.mediaPlayers.players {
-            mics.append(SettingsMicsMic(name: mediaPlayer.camera(),
-                                        inputUid: mediaPlayer.id.uuidString,
-                                        connected: true))
+    private func listMediaPlayerMics() -> [SettingsMicsMic] {
+        database.mediaPlayers.players.map {
+            SettingsMicsMic(name: $0.camera(), inputUid: $0.id.uuidString, connected: true)
         }
     }
 
     private func getConnectedMicById(id: String) -> SettingsMicsMic? {
-        guard let mic = database.mics.mics.first(where: { $0.id == id }), mic.connected else {
+        guard let mic = getMicById(id: id), mic.connected else {
             return nil
         }
         return mic
@@ -750,55 +726,46 @@ private func setBuiltInMicAudioMode(
     }
 }
 
-private func listAudioSessionMics(_ mics: inout [SettingsMicsMic]) {
+private func listAudioSessionMics() -> [SettingsMicsMic] {
+    var mics: [SettingsMicsMic] = []
     for inputPort in AVAudioSession.sharedInstance().availableInputs ?? [] {
         if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-            addAudioSessionBuiltinMics(&mics, inputPort, dataSources)
+            var builtInMics: [SettingsMicsMic] = []
+            for dataSource in dataSources {
+                let mic = makeAudioSessionMic(inputPort: inputPort, dataSource: dataSource)
+                switch mic.builtInOrientation {
+                case .bottom, .top:
+                    builtInMics.append(mic)
+                default:
+                    builtInMics.insert(mic, at: 0)
+                }
+            }
+            mics += builtInMics
         } else {
-            addAudioSessionExternalMics(&mics, inputPort)
+            mics.append(makeAudioSessionMic(inputPort: inputPort, dataSource: nil))
         }
     }
+    return mics
 }
 
-private func addAudioSessionBuiltinMics(_ mics: inout [SettingsMicsMic],
-                                        _ inputPort: AVAudioSessionPortDescription,
-                                        _ dataSources: [AVAudioSessionDataSourceDescription])
+private func makeAudioSessionMic(inputPort: AVAudioSessionPortDescription,
+                                 dataSource: AVAudioSessionDataSourceDescription?) -> SettingsMicsMic
 {
-    var builtInMics: [SettingsMicsMic] = []
-    for dataSource in dataSources {
-        var name: String
-        var builtInOrientation: SettingsMic?
-        if inputPort.portType == .builtInMic {
-            name = dataSource.dataSourceName
-            builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-        } else {
-            name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-        }
-        let mic = SettingsMicsMic()
-        mic.name = name
-        mic.inputUid = inputPort.uid
-        mic.dataSourceId = dataSource.dataSourceID.intValue
-        mic.builtInOrientation = builtInOrientation
-        mic.connected = true
-        switch mic.builtInOrientation {
-        case .bottom, .top:
-            builtInMics.append(mic)
-        default:
-            builtInMics.insert(mic, at: 0)
-        }
-    }
-    mics += builtInMics
-}
-
-private func addAudioSessionExternalMics(
-    _ mics: inout [SettingsMicsMic],
-    _ inputPort: AVAudioSessionPortDescription
-) {
     let mic = SettingsMicsMic()
-    mic.name = inputPort.portName
     mic.inputUid = inputPort.uid
     mic.connected = true
-    mics.append(mic)
+    if let dataSource {
+        if inputPort.portType == .builtInMic {
+            mic.name = dataSource.dataSourceName
+            mic.builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+        } else {
+            mic.name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+        }
+        mic.dataSourceId = dataSource.dataSourceID.intValue
+    } else {
+        mic.name = inputPort.portName
+    }
+    return mic
 }
 
 private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {

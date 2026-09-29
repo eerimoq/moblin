@@ -7,6 +7,11 @@ extension Model {
             .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
+    func updateRtmpVideoSourcesAndMics() {
+        updateRtmpVideoSources()
+        updateRtmpMics()
+    }
+
     func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {
         database.rtmpServer.streams.first { $0.id == id }
     }

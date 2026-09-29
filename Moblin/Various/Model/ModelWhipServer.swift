@@ -12,6 +12,11 @@ extension Model {
         }
     }
 
+    func updateWhipVideoSourcesAndMics() {
+        updateWhipVideoSources()
+        updateWhipMics()
+    }
+
     func getWhipStream(id: UUID) -> SettingsWhipServerStream? {
         database.whipServer.streams.first { stream in
             stream.id == id

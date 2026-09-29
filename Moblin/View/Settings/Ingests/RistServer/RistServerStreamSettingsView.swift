@@ -28,7 +28,7 @@ struct RistServerStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: ristServer.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateRistVideoSources()
+                            model.updateRistVideoSourcesAndMics()
                         }
                         .disabled(model.ristServerEnabled())
                 } footer: {

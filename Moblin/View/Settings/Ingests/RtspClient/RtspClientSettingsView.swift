@@ -11,8 +11,8 @@ struct RtspClientSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         rtspClient.streams.remove(atOffsets: indexes)
-        model.updateRtspVideoSources()
         model.reloadRtspClient()
+        model.updateRtspVideoSources()
     }
 
     var body: some View {

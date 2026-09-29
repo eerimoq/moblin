@@ -22,9 +22,8 @@ struct WhipServerSettingsView: View {
 
     private func deleteStream(at indexes: IndexSet) {
         whipServer.streams.remove(atOffsets: indexes)
-        model.updateWhipVideoSources()
         model.reloadWhipServer()
-        model.updateMicsListAsync()
+        model.updateWhipVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -85,8 +84,7 @@ struct WhipServerSettingsView: View {
                             }
                         }
                         whipServer.streams.append(stream)
-                        model.updateWhipVideoSources()
-                        model.updateMicsListAsync()
+                        model.updateWhipVideoSourcesAndMics()
                     }
                     .disabled(whipServer.enabled)
                 } header: {

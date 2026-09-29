@@ -28,6 +28,11 @@ extension Model {
             .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
+    func updateRistVideoSourcesAndMics() {
+        updateRistVideoSources()
+        updateRistMics()
+    }
+
     func getRistStream(id: UUID) -> SettingsRistServerStream? {
         database.ristServer.streams.first { $0.id == id }
     }

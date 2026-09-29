@@ -5,11 +5,12 @@ struct MediaPlayersSettingsView: View {
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
 
     private func deletePlayer(at offsets: IndexSet) {
-        for index in offsets {
-            model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
-        }
+        let playerIds = offsets.map { mediaPlayers.players[$0].id }
         mediaPlayers.players.remove(atOffsets: offsets)
-        model.updateMediaPlayerVideoSources()
+        for playerId in playerIds {
+            model.deleteMediaPlayer(playerId: playerId)
+        }
+        model.updateMediaPlayerVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -41,7 +42,7 @@ struct MediaPlayersSettingsView: View {
                                                       existingNames: mediaPlayers.players)
                     mediaPlayers.players.append(mediaPlayer)
                     model.addMediaPlayer(settings: mediaPlayer)
-                    model.updateMediaPlayerVideoSources()
+                    model.updateMediaPlayerVideoSourcesAndMics()
                 }
             }
         }

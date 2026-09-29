@@ -35,7 +35,7 @@ struct WhipServerStreamSettingsView: View {
                 Section {
                     NameEditView(name: $stream.name, existingNames: whipServer.streams)
                         .onChange(of: stream.name) { _ in
-                            model.updateWhipVideoSources()
+                            model.updateWhipVideoSourcesAndMics()
                         }
                         .disabled(whipServer.enabled)
                     TextEditNavigationView(
