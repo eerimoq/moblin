@@ -37,7 +37,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
     private let trackFaceRight = PositionInterpolator()
     private let trackFaceTop = PositionInterpolator()
     private let trackFaceBottom = PositionInterpolator()
-    private var trackFacePresentationTimeStamp = 0.0
+    private var trackFacePresentationTimeStamp: Double?
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if settings.trackFaceEnabled {
@@ -61,6 +61,9 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
 
     func setSettings(settings: VideoSourceEffectSettings) {
         processorPipelineQueue.async {
+            if settings.trackFaceEnabled != self.settings.trackFaceEnabled {
+                self.trackFacePresentationTimeStamp = nil
+            }
             self.settings = settings
         }
     }
@@ -119,7 +122,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
             trackFaceTop.target = videoSourceImageSize.height * 0.67
             trackFaceBottom.target = videoSourceImageSize.height * 0.33
         }
-        let timeElapsed = presentationTimeStamp - trackFacePresentationTimeStamp
+        let timeElapsed = presentationTimeStamp - (trackFacePresentationTimeStamp ?? presentationTimeStamp)
         trackFacePresentationTimeStamp = presentationTimeStamp
         left = trackFaceLeft.update(timeElapsed: timeElapsed)
         right = trackFaceRight.update(timeElapsed: timeElapsed)
