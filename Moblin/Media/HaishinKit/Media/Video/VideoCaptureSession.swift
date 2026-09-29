@@ -665,6 +665,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
         let relabelToVideoRange = isExternalCameraVideoRange(device.device, colorRange)
+        // Should be removed? Forces extra conversion of HLG and AppleLog formats?
         output.videoSettings = [
             kCVPixelBufferPixelFormatTypeKey as String: relabelToVideoRange
                 ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
