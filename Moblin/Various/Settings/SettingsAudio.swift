@@ -122,6 +122,12 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
 
     init() {}
 
+    init(name: String, inputUid: String, connected: Bool) {
+        self.name = name
+        self.inputUid = inputUid
+        self.connected = connected
+    }
+
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")

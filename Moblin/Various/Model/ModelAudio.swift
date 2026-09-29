@@ -500,71 +500,60 @@ extension Model {
 
     private func listRtmpMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.rtmpServer.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isRtmpStreamConnected(streamKey: stream.streamKey)
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: stream.camera(),
+                                        inputUid: stream.id.uuidString,
+                                        connected: isRtmpStreamConnected(streamKey: stream.streamKey)))
         }
     }
 
     private func listSrtlaMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.srtlaServer.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isSrtlaStreamConnected(streamId: stream.streamId)
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: stream.camera(),
+                                        inputUid: stream.id.uuidString,
+                                        connected: isSrtlaStreamConnected(streamId: stream.streamId)))
         }
     }
 
     private func listSrtClientMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.srtClient.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isSrtClientStreamConnected(id: stream.id)
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: stream.camera(),
+                                        inputUid: stream.id.uuidString,
+                                        connected: isSrtClientStreamConnected(id: stream.id)))
         }
     }
 
     private func listRistMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.ristServer.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isRistStreamConnected(port: stream.virtualDestinationPort)
-            mics.append(mic)
+            let connected = isRistStreamConnected(port: stream.virtualDestinationPort)
+            mics.append(SettingsMicsMic(
+                name: stream.camera(),
+                inputUid: stream.id.uuidString,
+                connected: connected
+            ))
         }
     }
 
     private func listWhipMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.whipServer.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isWhipStreamConnected(streamId: stream.id)
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: stream.camera(),
+                                        inputUid: stream.id.uuidString,
+                                        connected: isWhipStreamConnected(streamId: stream.id)))
         }
     }
 
     private func listWhepMics(_ mics: inout [SettingsMicsMic]) {
         for stream in database.whepClient.streams {
-            let mic = SettingsMicsMic()
-            mic.name = stream.camera()
-            mic.inputUid = stream.id.uuidString
-            mic.connected = isWhepStreamConnected(streamId: stream.id)
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: stream.camera(),
+                                        inputUid: stream.id.uuidString,
+                                        connected: isWhepStreamConnected(streamId: stream.id)))
         }
     }
 
     private func listMediaPlayerMics(_ mics: inout [SettingsMicsMic]) {
         for mediaPlayer in database.mediaPlayers.players {
-            let mic = SettingsMicsMic()
-            mic.name = mediaPlayer.camera()
-            mic.inputUid = mediaPlayer.id.uuidString
-            mic.connected = true
-            mics.append(mic)
+            mics.append(SettingsMicsMic(name: mediaPlayer.camera(),
+                                        inputUid: mediaPlayer.id.uuidString,
+                                        connected: true))
         }
     }
 
