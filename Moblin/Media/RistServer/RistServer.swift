@@ -3,8 +3,8 @@ import Foundation
 import Rist
 
 protocol RistServerDelegate: AnyObject {
-    func ristServerOnConnected(port: UInt16)
-    func ristServerOnDisconnected(port: UInt16, reason: String)
+    func ristServerOnConnected(cameraId: UUID, name: String, latency: Double)
+    func ristServerOnDisconnected(cameraId: UUID, name: String)
     func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
@@ -67,7 +67,7 @@ class RistServer: @unchecked Sendable {
         context?.stop()
         context = nil
         for virtualDestinationPort in clientsByVirtualDestinationPort.keys {
-            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            notifyDisconnected(virtualDestinationPort)
         }
         clientsByVirtualDestinationPort.removeAll()
         clientsChanged()
@@ -87,15 +87,25 @@ class RistServer: @unchecked Sendable {
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         clientsChanged()
-        delegate.ristServerOnConnected(port: virtualDestinationPort)
+        delegate.ristServerOnConnected(cameraId: stream.id,
+                                       name: stream.camera(),
+                                       latency: stream.latencySeconds())
     }
 
     private func peerDisconnected(_ virtualDestinationPort: UInt16) {
         logger.info("rist-server: Disconnected virtual destination port \(virtualDestinationPort)")
         if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
             clientsChanged()
-            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            notifyDisconnected(virtualDestinationPort)
         }
+    }
+
+    private func notifyDisconnected(_ virtualDestinationPort: UInt16) {
+        guard let stream = streams.first(where: { $0.virtualDestinationPort == virtualDestinationPort })
+        else {
+            return
+        }
+        delegate.ristServerOnDisconnected(cameraId: stream.id, name: stream.camera())
     }
 
     private func clientsChanged() {

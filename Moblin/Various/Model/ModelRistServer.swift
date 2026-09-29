@@ -41,25 +41,25 @@ extension Model {
         database.ristServer.streams.first { $0.id.uuidString == idString }
     }
 
-    func getRistStream(virtualDestinationPort: UInt16) -> SettingsRistServerStream? {
-        database.ristServer.streams.first { $0.virtualDestinationPort == virtualDestinationPort }
-    }
-
     func isRistStreamConnected(port: UInt16) -> Bool {
         database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
     }
 }
 
 extension Model: RistServerDelegate {
-    nonisolated func ristServerOnConnected(port: UInt16) {
+    nonisolated func ristServerOnConnected(cameraId: UUID, name: String, latency: Double) {
         DispatchQueue.main.async {
-            self.ristServerOnConnectedInternal(virtualDestinationPort: port)
+            self.makeToast(title: String(localized: "\(name) connected"))
+            self.media.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+            self.media.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
-    nonisolated func ristServerOnDisconnected(port: UInt16, reason: String) {
+    nonisolated func ristServerOnDisconnected(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
-            self.ristServerOnDisconnectedInternal(virtualDestinationPort: port, reason: reason)
+            self.makeToast(title: String(localized: "\(name) disconnected"))
+            self.media.removeBufferedVideo(cameraId: cameraId)
+            self.media.removeBufferedAudio(cameraId: cameraId)
         }
     }
 
@@ -69,25 +69,5 @@ extension Model: RistServerDelegate {
 
     nonisolated func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-    }
-
-    private func ristServerOnConnectedInternal(virtualDestinationPort: UInt16) {
-        guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
-            return
-        }
-        let camera = stream.camera()
-        makeToast(title: String(localized: "\(camera) connected"))
-        let latency = stream.latencySeconds()
-        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
-    }
-
-    private func ristServerOnDisconnectedInternal(virtualDestinationPort: UInt16, reason _: String) {
-        guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
-            return
-        }
-        makeToast(title: String(localized: "\(stream.camera()) disconnected"))
-        media.removeBufferedVideo(cameraId: stream.id)
-        media.removeBufferedAudio(cameraId: stream.id)
     }
 }
