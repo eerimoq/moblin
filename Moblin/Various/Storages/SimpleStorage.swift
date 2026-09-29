@@ -13,12 +13,12 @@ private func setup() -> URL {
     return url
 }
 
-private let directory = setup()
+private let defaultDirectory = setup()
 
 final class SimpleStringStorage: Sendable {
     private let file: URL
 
-    init(key: String) {
+    init(key: String, directory: URL = defaultDirectory) {
         file = directory.appending(component: key)
         if !file.exists() {
             set(UserDefaults.standard.string(forKey: key) ?? "")
@@ -37,7 +37,7 @@ final class SimpleStringStorage: Sendable {
 final class SimpleIntStorage: Sendable {
     private let file: URL
 
-    init(key: String) {
+    init(key: String, directory: URL = defaultDirectory) {
         file = directory.appending(component: key)
         if !file.exists() {
             set(UserDefaults.standard.integer(forKey: key))

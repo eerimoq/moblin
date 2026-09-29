@@ -245,7 +245,9 @@ private struct ReplayHistoryItem: View {
             }
         }
         .onAppear {
-            createThumbnail(path: video.url(), offset: video.thumbnailOffset()) { image in
+            createThumbnail(path: model.replaysStorage.url(replay: video),
+                            offset: video.thumbnailOffset())
+            { image in
                 self.image = image
             }
         }

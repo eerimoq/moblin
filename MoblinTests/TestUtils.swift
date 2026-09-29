@@ -40,6 +40,30 @@ class MessageQueue<Message: Sendable>: @unchecked Sendable {
     }
 }
 
+func waitUntil(timeout: Duration, _ condition: () -> Bool) -> Bool {
+    let startTime = ContinuousClock.now
+    while !condition() {
+        if startTime.duration(to: .now) > timeout {
+            return false
+        }
+        Thread.sleep(forTimeInterval: 0.02)
+    }
+    return true
+}
+
+struct TemporaryDirectory: ~Copyable {
+    let url: URL
+
+    init() throws {
+        url = FileManager.default.temporaryDirectory.appending(component: UUID().uuidString)
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+    }
+
+    deinit {
+        url.remove()
+    }
+}
+
 func readMainFile(name: String, suffix: String) throws -> Data {
     let url = Bundle.main.url(forResource: name, withExtension: suffix)!
     return try Data(contentsOf: url)

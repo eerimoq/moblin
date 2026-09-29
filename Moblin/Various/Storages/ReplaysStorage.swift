@@ -1,10 +1,6 @@
 import Foundation
 import SwiftUI
 
-private func getReplaysDirectory() -> URL {
-    createAndGetDirectory(name: "Replays")
-}
-
 class ReplaySettings: Identifiable, Codable {
     var id: UUID = .init()
     var duration: Double = 0.0
@@ -13,10 +9,6 @@ class ReplaySettings: Identifiable, Codable {
 
     func name() -> String {
         "\(id).mp4"
-    }
-
-    func url() -> URL {
-        getReplaysDirectory().appending(component: name())
     }
 
     func thumbnailOffset() -> Double {
@@ -71,12 +63,27 @@ class ReplaysDatabase: Codable, ObservableObject {
     }
 }
 
-private let storage = SimpleStringStorage(key: "replays")
+private let defaultStorage = SimpleStringStorage(key: "replays")
 
 final class ReplaysStorage {
+    private let storage: SimpleStringStorage
+    private let directory: URL
     private var realDatabase = ReplaysDatabase()
     var database: ReplaysDatabase {
         realDatabase
+    }
+
+    init(directory: URL? = nil) {
+        if let directory {
+            storage = SimpleStringStorage(
+                key: "replays",
+                directory: createAndGetDirectory(root: directory, name: "Database")
+            )
+            self.directory = createAndGetDirectory(root: directory, name: "Replays")
+        } else {
+            storage = defaultStorage
+            self.directory = createAndGetDirectory(name: "Replays")
+        }
     }
 
     func load() {
@@ -93,29 +100,6 @@ final class ReplaysStorage {
         database.replays.removeAll { $0.id == id }
     }
 
-    private func cleanup() {
-        database.replays = database.replays.filter { $0.url().exists() }
-        guard let enumerator = FileManager.default.enumerator(
-            at: getReplaysDirectory(),
-            includingPropertiesForKeys: nil
-        )
-        else {
-            return
-        }
-        for case let fileUrl as URL in enumerator
-            where !database.replays
-            .contains(where: { fileUrl.resolvingSymlinksInPath() == $0.url().resolvingSymlinksInPath() })
-        {
-            logger.debug("replays-storage: Removing unused file \(fileUrl)")
-            fileUrl.remove()
-        }
-    }
-
-    private func tryLoadAndMigrate(settings: String) throws {
-        realDatabase = try ReplaysDatabase.fromString(settings: settings)
-        migrateFromOlderVersions()
-    }
-
     func store() {
         do {
             try storage.set(realDatabase.toString())
@@ -124,15 +108,13 @@ final class ReplaysStorage {
         }
     }
 
-    private func migrateFromOlderVersions() {}
-
     func createReplay() -> ReplaySettings {
         ReplaySettings()
     }
 
     func append(replay: ReplaySettings) {
         while isFull() {
-            database.replays.popLast()?.url().remove()
+            url(replay: database.replays.removeLast()).remove()
         }
         database.replays.insert(replay, at: 0)
     }
@@ -142,6 +124,35 @@ final class ReplaysStorage {
     }
 
     func defaultStorageDirectory() -> URL {
-        getReplaysDirectory()
+        directory
     }
+
+    func url(replay: ReplaySettings) -> URL {
+        directory.appending(component: replay.name())
+    }
+    
+    private func cleanup() {
+        database.replays = database.replays.filter { url(replay: $0).exists() }
+        let knownNames = Set(database.replays.map { $0.name() })
+        let directory = directory
+        DispatchQueue.global(qos: .utility).async {
+            guard let enumerator = FileManager.default.enumerator(
+                at: directory,
+                includingPropertiesForKeys: nil
+            ) else {
+                return
+            }
+            for case let fileUrl as URL in enumerator where !knownNames.contains(fileUrl.lastPathComponent) {
+                logger.debug("replays-storage: Removing unused file \(fileUrl)")
+                fileUrl.remove()
+            }
+        }
+    }
+
+    private func tryLoadAndMigrate(settings: String) throws {
+        realDatabase = try ReplaysDatabase.fromString(settings: settings)
+        migrateFromOlderVersions()
+    }
+    
+    private func migrateFromOlderVersions() {}
 }

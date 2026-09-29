@@ -33,7 +33,10 @@ extension Model {
                     replaySettings.start = start ?? self.database.replay.start
                     replaySettings.stop = self.database.replay.stop
                     replaySettings.duration = file.duration
-                    try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
+                    try? FileManager.default.copyItem(
+                        at: file.url,
+                        to: self.replaysStorage.url(replay: replaySettings)
+                    )
                     self.replaysStorage.append(replay: replaySettings)
                     completion?(replaySettings)
                 }
@@ -47,7 +50,11 @@ extension Model {
         replay.startFromEnd = video.startFromEnd()
         replay.selectedId = video.id
         replayFrameExtractor = ReplayFrameExtractor(
-            video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
+            video: ReplayBufferFile(
+                url: replaysStorage.url(replay: video),
+                duration: video.duration,
+                remove: false
+            ),
             offset: video.thumbnailOffset(),
             pixelFormatType: stream.colorRange.pixelFormatType(),
             delegate: self,
