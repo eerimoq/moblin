@@ -86,28 +86,28 @@ final class ReplaysStorage {
             logger.info("replays-storage: Failed to load with error \(error). Using default.")
             realDatabase = ReplaysDatabase()
         }
-        cleanup()
+        database.replays = database.replays.filter { $0.url().exists() }
+        cleanupOrphanedFilesInBackground()
     }
 
     func delete(id: UUID) {
         database.replays.removeAll { $0.id == id }
     }
 
-    private func cleanup() {
-        database.replays = database.replays.filter { $0.url().exists() }
-        guard let enumerator = FileManager.default.enumerator(
-            at: getReplaysDirectory(),
-            includingPropertiesForKeys: nil
-        )
-        else {
-            return
-        }
-        for case let fileUrl as URL in enumerator
-            where !database.replays
-            .contains(where: { fileUrl.resolvingSymlinksInPath() == $0.url().resolvingSymlinksInPath() })
-        {
-            logger.debug("replays-storage: Removing unused file \(fileUrl)")
-            fileUrl.remove()
+    private func cleanupOrphanedFilesInBackground() {
+        let knownNames = Set(database.replays.map { $0.name() })
+        let directory = getReplaysDirectory()
+        DispatchQueue.global(qos: .utility).async {
+            guard let enumerator = FileManager.default.enumerator(
+                at: directory,
+                includingPropertiesForKeys: nil
+            ) else {
+                return
+            }
+            for case let fileUrl as URL in enumerator where !knownNames.contains(fileUrl.lastPathComponent) {
+                logger.debug("replays-storage: Removing unused file \(fileUrl)")
+                fileUrl.remove()
+            }
         }
     }
 
