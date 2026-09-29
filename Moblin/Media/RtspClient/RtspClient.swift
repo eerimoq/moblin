@@ -728,6 +728,8 @@ class RtspClient: @unchecked Sendable {
         reconnectTimer.stop()
         transport?.stop()
         transport = nil
+        requests = [:]
+        rtpVideo = Rtp()
         setState(newState: .disconnected)
     }
 
