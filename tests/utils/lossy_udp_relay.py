@@ -3,17 +3,23 @@ import random
 import select
 import socket
 import threading
+from urllib.parse import urlsplit
 
 LOGGER = logging.getLogger(__name__)
 
 
 class LossyUdpRelay:
-    def __init__(self, destination: tuple[str, int], loss_percent: float, seed: int = 0) -> None:
-        self._destination = destination
+    def __init__(
+        self,
+        destination: tuple[str, int],
+        address: tuple[str, int] = ("127.0.0.1", 0),
+        loss_percent: float = 2,
+        seed: int = 0,
+    ) -> None:
         self._loss_probability = loss_percent / 100
         self._random = random.Random(seed)
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._client_socket.bind(("127.0.0.1", 0))
+        self._client_socket.bind(address)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._server_socket.connect(destination)
         self._client_address: tuple[str, int] | None = None
@@ -23,9 +29,15 @@ class LossyUdpRelay:
         self.dropped = 0
         self.returned = 0
 
-    @property
-    def port(self) -> int:
-        return self._client_socket.getsockname()[1]
+    @classmethod
+    def from_url(cls, url: str) -> "LossyUdpRelay":
+        parts = urlsplit(url)
+        assert parts.hostname is not None and parts.port is not None
+        return cls((socket.gethostbyname(parts.hostname), parts.port))
+
+    def relayed_url(self, url: str) -> str:
+        host, port = self._client_socket.getsockname()
+        return urlsplit(url)._replace(netloc=f"{host}:{port}").geturl()
 
     def __enter__(self) -> "LossyUdpRelay":
         self._thread.start()
@@ -37,10 +49,10 @@ class LossyUdpRelay:
         self._client_socket.close()
         self._server_socket.close()
         LOGGER.debug(
-            "Relay: %d forwarded, %d dropped, %d returned",
+            "Relay: %d forwarded, %d returned, %d dropped",
             self.forwarded,
-            self.dropped,
             self.returned,
+            self.dropped,
         )
 
     def _run(self) -> None:
@@ -50,16 +62,25 @@ class LossyUdpRelay:
             for sock in readable:
                 if sock is self._client_socket:
                     data, self._client_address = sock.recvfrom(65535)
-                    if self._random.random() < self._loss_probability:
-                        self.dropped += 1
-                    else:
+                    if self._drop():
+                        continue
+                    try:
                         self._server_socket.send(data)
-                        self.forwarded += 1
+                    except ConnectionRefusedError:
+                        continue
+                    self.forwarded += 1
                 else:
                     try:
                         data = sock.recv(65535)
                     except ConnectionRefusedError:
                         continue
-                    if self._client_address is not None:
-                        self._client_socket.sendto(data, self._client_address)
-                        self.returned += 1
+                    if self._client_address is None or self._drop():
+                        continue
+                    self._client_socket.sendto(data, self._client_address)
+                    self.returned += 1
+
+    def _drop(self) -> bool:
+        if self._random.random() < self._loss_probability:
+            self.dropped += 1
+            return True
+        return False

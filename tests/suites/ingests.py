@@ -1,9 +1,7 @@
 import logging
-import socket
 import subprocess
 from array import array
 from pathlib import Path
-from urllib.parse import urlsplit
 
 from systest_moblin.ffmpeg import FFMPEG_COMMAND
 from systest_moblin.ffmpeg import FfmpegCommand
@@ -18,6 +16,7 @@ from systest_moblin.ffmpeg import video_encoder_args
 
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
+from ..utils.config import SRT_CLIENT_1_RELAYED_SERVER_PORT
 from ..utils.config import SRT_CLIENT_1_SERVER_PORT
 from ..utils.config import SRT_CLIENT_2_SERVER_PORT
 from ..utils.config import SRT_SERVER_PORT
@@ -221,7 +220,7 @@ def _find_silence_start(samples: array) -> float:
 
 
 class IngestSrtServer(IngestTestCase):
-    """Stream to an SRT server ingest."""
+    """Stream to an SRT server ingest with packet loss."""
 
     def setup(self):
         self.import_settings(
@@ -238,18 +237,20 @@ class IngestSrtServer(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegTestStream(
-            url=self.moblin.ingest_srt_url(),
-            files_dir=FILES_DIR,
-            transport_format=TransportFormat.MPEGTS,
-        )
-        with stream:
-            recording = self.record_ingest()
+        url = self.moblin.ingest_srt_url()
+        with LossyUdpRelay.from_url(url) as relay:
+            stream = FfmpegTestStream(
+                url=relay.relayed_url(url),
+                files_dir=FILES_DIR,
+                transport_format=TransportFormat.MPEGTS,
+            )
+            with stream:
+                recording = self.record_ingest()
         self.assert_recording(recording, FILES_DIR)
 
 
 class IngestSrtClient(IngestTestCase):
-    """Stream to an SRT client ingest."""
+    """Stream to an SRT client ingest with packet loss."""
 
     def setup(self):
         self.import_settings(
@@ -271,13 +272,16 @@ class IngestSrtClient(IngestTestCase):
         )
 
     def run(self):
-        stream = FfmpegTestStream(
-            url=srt_listener_url(SRT_CLIENT_1_SERVER_PORT, stream_id="1"),
-            files_dir=FILES_DIR,
-            transport_format=TransportFormat.MPEGTS,
-        )
-        with stream:
-            recording = self.record_ingest()
+        with LossyUdpRelay(
+            ("127.0.0.1", SRT_CLIENT_1_RELAYED_SERVER_PORT), ("0.0.0.0", SRT_CLIENT_1_SERVER_PORT)
+        ):
+            stream = FfmpegTestStream(
+                url=srt_listener_url(SRT_CLIENT_1_RELAYED_SERVER_PORT, stream_id="1"),
+                files_dir=FILES_DIR,
+                transport_format=TransportFormat.MPEGTS,
+            )
+            with stream:
+                recording = self.record_ingest()
         self.assert_recording(recording, FILES_DIR)
 
 
@@ -338,11 +342,10 @@ class IngestRistServer(IngestTestCase):
         )
 
     def run(self):
-        url = urlsplit(self.moblin.ingest_rist_url())
-        assert url.hostname is not None and url.port is not None
-        with LossyUdpRelay((socket.gethostbyname(url.hostname), url.port), 2) as relay:
+        url = self.moblin.ingest_rist_url()
+        with LossyUdpRelay.from_url(url) as relay:
             stream = FfmpegTestStream(
-                url=url._replace(netloc=f"127.0.0.1:{relay.port}").geturl(),
+                url=relay.relayed_url(url),
                 files_dir=FILES_DIR,
                 transport_format=TransportFormat.MPEGTS,
             )
