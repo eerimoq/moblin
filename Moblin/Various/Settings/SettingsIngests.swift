@@ -239,7 +239,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
     var id: UUID = .init()
     @Published var name: String = baseName
-    @Published var virtualDestinationPort: UInt16 = 1
+    @Published var virtualDestinationPort: UInt16 = 2
     @Published var latency: Int32 = 2000
     var connected: Bool = false
 
@@ -264,7 +264,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
-        virtualDestinationPort = container.decode(.virtualDestinationPort, UInt16.self, 1)
+        virtualDestinationPort = container.decode(.virtualDestinationPort, UInt16.self, 2)
         latency = container.decode(.latency, Int32.self, 2000)
     }
 
@@ -314,9 +314,9 @@ class SettingsRistServer: Codable, ObservableObject {
     }
 
     func makeUniqueVirtualDestinationPort() -> UInt16 {
-        var port: UInt16 = 1
+        var port: UInt16 = 2
         while streams.contains(where: { $0.virtualDestinationPort == port }) {
-            port += 1
+            port += 2
         }
         return port
     }

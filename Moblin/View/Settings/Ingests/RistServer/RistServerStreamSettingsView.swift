@@ -7,8 +7,22 @@ struct RistServerStreamSettingsView: View {
     @ObservedObject var ristServer: SettingsRistServer
     @ObservedObject var stream: SettingsRistServerStream
 
+    private func isPortInUse(port: UInt16) -> Bool {
+        ristServer.streams.contains { $0.id != stream.id && $0.virtualDestinationPort == port }
+    }
+
+    private func changePort(value: String) -> String? {
+        if let error = isValidRistVirtualPort(value: value) {
+            return error
+        }
+        if isPortInUse(port: UInt16(value)!) {
+            return String(localized: "Already in use")
+        }
+        return nil
+    }
+
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()) else {
+        guard let port = UInt16(value.trim()), port % 2 == 0, !isPortInUse(port: port) else {
             return
         }
         stream.virtualDestinationPort = port
@@ -38,7 +52,7 @@ struct RistServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Virtual port"),
                         value: String(stream.virtualDestinationPort),
-                        onChange: isValidPort,
+                        onChange: changePort,
                         onSubmit: submitPort,
                         keyboardType: .numbersAndPunctuation
                     )

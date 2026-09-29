@@ -1,7 +1,9 @@
 import logging
+import socket
 import subprocess
 from array import array
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from systest_moblin.ffmpeg import FFMPEG_COMMAND
 from systest_moblin.ffmpeg import FfmpegCommand
@@ -31,6 +33,7 @@ from ..utils.generate_device_settings import mic_id
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.generate_device_settings import video_source_widget_settings
+from ..utils.lossy_udp_relay import LossyUdpRelay
 from ..utils.mediamtx import MediaMtx
 from ..utils.moblin import Moblin
 from ..utils.moblin import Recorder
@@ -318,7 +321,7 @@ class IngestRtspClient(IngestTestCase):
 
 
 class IngestRistServer(IngestTestCase):
-    """Stream to an RIST server ingest."""
+    """Stream to an RIST server ingest with packet loss."""
 
     def setup(self):
         self.import_settings(
@@ -330,18 +333,21 @@ class IngestRistServer(IngestTestCase):
             ristServer={
                 "enabled": True,
                 "port": RIST_SERVER_PORT,
-                "streams": [{"id": STREAM_ID, "name": "1", "virtualDestinationPort": 1}],
+                "streams": [{"id": STREAM_ID, "name": "1", "virtualDestinationPort": 2}],
             },
         )
 
     def run(self):
-        stream = FfmpegTestStream(
-            url=self.moblin.ingest_rist_url(),
-            files_dir=FILES_DIR,
-            transport_format=TransportFormat.MPEGTS,
-        )
-        with stream:
-            recording = self.record_ingest()
+        url = urlsplit(self.moblin.ingest_rist_url())
+        assert url.hostname is not None and url.port is not None
+        with LossyUdpRelay((socket.gethostbyname(url.hostname), url.port), 2) as relay:
+            stream = FfmpegTestStream(
+                url=url._replace(netloc=f"127.0.0.1:{relay.port}").geturl(),
+                files_dir=FILES_DIR,
+                transport_format=TransportFormat.MPEGTS,
+            )
+            with stream:
+                recording = self.record_ingest()
         self.assert_recording(recording, FILES_DIR)
 
 
@@ -600,18 +606,18 @@ class IngestParallelRistServer(ParallelIngestTestCase):
                 "enabled": True,
                 "port": RIST_SERVER_PORT,
                 "streams": [
-                    {"id": STREAM_ID, "name": "1", "virtualDestinationPort": 1},
-                    {"id": STREAM_2_ID, "name": "2", "virtualDestinationPort": 2},
+                    {"id": STREAM_ID, "name": "1", "virtualDestinationPort": 2},
+                    {"id": STREAM_2_ID, "name": "2", "virtualDestinationPort": 4},
                 ],
             },
         )
 
     def run(self):
         stream_1 = FfmpegTestStream(
-            url=self.moblin.ingest_rist_url(1), files_dir=FILES_DIR, transport_format=TransportFormat.MPEGTS
+            url=self.moblin.ingest_rist_url(2), files_dir=FILES_DIR, transport_format=TransportFormat.MPEGTS
         )
         stream_2 = FfmpegTestStream(
-            url=self.moblin.ingest_rist_url(2), files_dir=FILES_DIR, transport_format=TransportFormat.MPEGTS
+            url=self.moblin.ingest_rist_url(4), files_dir=FILES_DIR, transport_format=TransportFormat.MPEGTS
         )
         with stream_1, stream_2:
             recording = self.record_parallel_ingests(startup_delay=3)

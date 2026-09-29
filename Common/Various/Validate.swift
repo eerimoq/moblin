@@ -13,6 +13,16 @@ func isValidIngestLatency(value: String) -> String? {
     return nil
 }
 
+func isValidRistVirtualPort(value: String) -> String? {
+    if let error = isValidPort(value: value) {
+        return error
+    }
+    guard UInt(value)! % 2 == 0 else {
+        return String(localized: "Must be even")
+    }
+    return nil
+}
+
 func isValidPort(value: String) -> String? {
     guard let port = UInt(value) else {
         return String(localized: "Not a number")

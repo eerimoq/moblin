@@ -416,7 +416,7 @@ class Moblin:
     def ingest_whip_url(self, stream_key: str = "1") -> str:
         return f"http://{self._device_media_ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"
 
-    def ingest_rist_url(self, virtual_destination_port: int = 1) -> str:
+    def ingest_rist_url(self, virtual_destination_port: int = 2) -> str:
         return (
             f"rist://{self._device_media_ip_address}:{RIST_SERVER_PORT}"
             f"?virt-dst-port={virtual_destination_port}"

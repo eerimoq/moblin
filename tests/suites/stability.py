@@ -250,7 +250,7 @@ class StabilityIngestsOneStream(TestCase):
                 "ristServer": {
                     "enabled": Ingest.RIST in self._ingests,
                     "port": RIST_SERVER_PORT,
-                    "streams": [{"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 1}],
+                    "streams": [{"id": RIST_STREAM_ID, "name": "1", "virtualDestinationPort": 2}],
                 },
                 "whepClient": {
                     "streams": [
