@@ -130,7 +130,7 @@ final class ReplaysStorage {
     func url(replay: ReplaySettings) -> URL {
         directory.appending(component: replay.name())
     }
-    
+
     private func cleanup() {
         database.replays = database.replays.filter { url(replay: $0).exists() }
         let knownNames = Set(database.replays.map { $0.name() })
@@ -153,6 +153,6 @@ final class ReplaysStorage {
         realDatabase = try ReplaysDatabase.fromString(settings: settings)
         migrateFromOlderVersions()
     }
-    
+
     private func migrateFromOlderVersions() {}
 }
