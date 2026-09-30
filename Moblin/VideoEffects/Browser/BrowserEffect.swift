@@ -59,7 +59,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private let server: BrowserEffectServer
     private let speechToText: Bool
     private var stopped = false
-    private var suspended = false
+    private var suspended: Bool
     private let snapshotConfiguration: WKSnapshotConfiguration
     private let userContentController: WKUserContentController
 
@@ -81,6 +81,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         } else {
             mode = widget.mode
         }
+        suspended = mode != .periodicAudioAndVideo
         speechToText = widget.speechToText
         width = Double(widget.width)
         height = Double(widget.height)
@@ -255,7 +256,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
 
     @MainActor
     private func startTakeSnapshots() {
-        guard !stopped, mode == .periodicAudioAndVideo else {
+        guard !suspended else {
             return
         }
         resumeTakeSnapshots()
@@ -279,6 +280,9 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     @MainActor
     private func resumeTakeSnapshots() {
         suspended = false
+        guard !stopped else {
+            return
+        }
         takeSnapshots(takeSnapshotTime: 0)
     }
 
