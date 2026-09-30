@@ -205,6 +205,7 @@ class Moblin:
         self._moving_picture = moving_picture
         self._dji_camera = dji_camera
         self._chat_message_id = 0
+        self._log_entry_observers: list[Callable[[str], None]] = []
 
     def __enter__(self):
         self._server.start()
@@ -219,6 +220,14 @@ class Moblin:
         self.video_decode_errors.handle_log_entry(entry)
         self.buffered_video_buffers.handle_log_entry(entry)
         self.buffered_audio_buffers.handle_log_entry(entry)
+        for observer in list(self._log_entry_observers):
+            observer(entry)
+
+    def add_log_entry_observer(self, observer: Callable[[str], None]):
+        self._log_entry_observers.append(observer)
+
+    def remove_log_entry_observer(self, observer: Callable[[str], None]):
+        self._log_entry_observers.remove(observer)
 
     def import_settings(self, overrides, files: dict[str, Path] | None = None):
         settings = base_settings(self.config, self._remote_control_port)

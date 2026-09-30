@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="AudioElement"></script>
+  </head>
+  <body>
+    <audio src="BrowserWidgetBeeps.mp4" autoplay></audio>
+    <script>
+      document.querySelector("audio").addEventListener("playing", () => browserWidgetReport("ok"));
+    </script>
+  </body>
+</html>

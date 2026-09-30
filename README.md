@@ -471,6 +471,12 @@ moblin.onmessage = (message) => {
 };
 ```
 
+Add this code to your website to write a message to Moblin's log.
+
+```js
+moblin.log("Hello from my browser widget!");
+```
+
 ## Specification
 
 Topics to subscribe to are defined by `SubscribeTopic` in

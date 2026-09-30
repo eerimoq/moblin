@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="GlobalNames"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 400px;
+        height: 400px;
+      }
+    </style>
+    <script>
+      const log = (message) => console.log(`[overlay] ${message}`);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        log("Showing image");
+        const image = document.createElement("img");
+        image.src = "BrowserWidgetHighFpsVideo.jpg";
+        document.body.appendChild(image);
+        browserWidgetReport("ok");
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

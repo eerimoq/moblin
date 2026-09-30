@@ -1,4 +1,6 @@
 import logging
+import socket
+import sys
 import threading
 from collections import Counter
 from functools import partial
@@ -19,6 +21,37 @@ class RequestHandler(SimpleHTTPRequestHandler):
 
 class ThreadingServer(ThreadingHTTPServer):
     request_queue_size = 128
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._open_requests: set[socket.socket] = set()
+        self._open_requests_lock = threading.Lock()
+
+    def process_request(self, request, client_address):
+        with self._open_requests_lock:
+            self._open_requests.add(request)
+        super().process_request(request, client_address)
+
+    def shutdown_request(self, request):
+        with self._open_requests_lock:
+            self._open_requests.discard(request)
+        super().shutdown_request(request)
+
+    def handle_error(self, request, client_address):
+        if isinstance(sys.exception(), OSError):
+            LOGGER.debug("%s - %s", client_address[0], sys.exception())
+        else:
+            super().handle_error(request, client_address)
+
+    def shutdown(self):
+        super().shutdown()
+        with self._open_requests_lock:
+            open_requests = list(self._open_requests)
+        for request in open_requests:
+            try:
+                request.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
 
 
 class CountingRequestHandler(RequestHandler):

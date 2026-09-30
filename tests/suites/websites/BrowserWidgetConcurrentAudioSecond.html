@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="ConcurrentAudioSecond"></script>
+  </head>
+  <body>
+    <script>
+      setTimeout(() => {
+        const video = document.createElement("video");
+        video.src = "BrowserWidgetLowBeepsVideo.mp4";
+        video.autoplay = true;
+        video.playsInline = true;
+        for (const name of ["playing", "pause", "ended"]) {
+          video.addEventListener(name, () => {
+            browserWidgetReport(`${name} ${video.currentTime.toFixed(1)}`);
+          });
+        }
+        document.body.appendChild(video);
+      }, 5000);
+    </script>
+  </body>
+</html>

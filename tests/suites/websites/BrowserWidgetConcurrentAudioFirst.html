@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="ConcurrentAudioFirst"></script>
+  </head>
+  <body>
+    <script>
+      function addVideo(name, src) {
+        const video = document.createElement("video");
+        video.src = src;
+        video.autoplay = true;
+        video.playsInline = true;
+        for (const event of ["playing", "pause", "ended"]) {
+          video.addEventListener(event, () => {
+            browserWidgetReport(`${name} ${event} ${video.currentTime.toFixed(1)}`);
+          });
+        }
+        document.body.appendChild(video);
+      }
+
+      addVideo("interrupted", "BrowserWidgetLongBeepsVideo.mp4");
+      setTimeout(() => addVideo("later", "BrowserWidgetShortBeepsVideo.mp4"), 12000);
+    </script>
+  </body>
+</html>

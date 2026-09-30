@@ -2,6 +2,11 @@ class MoblinCanvasDrawer {
   constructor(video) {
     this.video = video;
     this.canvas = document.createElement("canvas");
+    this.canvas.width = 0;
+    this.canvas.height = 0;
+    this.canvas.style.position = "absolute";
+    this.canvas.style.zIndex = -9999;
+    this.canvas.style.pointerEvents = "none";
     this.canvasContext = this.canvas.getContext("2d");
     this.videoFrameCallbackId = null;
     this.isPlaying = false;
@@ -12,7 +17,7 @@ class MoblinCanvasDrawer {
   }
 
   tearDown = () => {
-    document.body.removeChild(this.canvas);
+    this.canvas.remove();
     this.clearVideoFrameCallback();
     this.video = null;
     this.canvas = null;
@@ -47,12 +52,10 @@ class MoblinCanvasDrawer {
     const rect = this.video.getBoundingClientRect();
     this.canvas.width = this.video.videoWidth;
     this.canvas.height = this.video.videoHeight;
-    this.canvas.style.position = "absolute";
     this.canvas.style.left = rect.left + window.scrollX + "px";
     this.canvas.style.top = rect.top + window.scrollY + "px";
     this.canvas.style.width = rect.width + "px";
     this.canvas.style.height = rect.height + "px";
-    this.canvas.style.zIndex = -9999;
   };
 
   handleVideoFrame = () => {
@@ -97,18 +100,12 @@ function moblinVideoPlayingUpdated() {
     return;
   }
   moblinPublishedVideoPlaying = videoPlaying;
-  publishVideoPlaying(videoPlaying);
+  moblinPublishVideoPlaying(videoPlaying);
 }
 
-function publishVideoPlaying(value) {
+function moblinPublishVideoPlaying(value) {
   moblin.publish({
     videoPlaying: { value: value },
-  });
-}
-
-function log(message) {
-  moblin.publish({
-    log: { message: message },
   });
 }
 
@@ -146,6 +143,6 @@ const moblinObserver = new MutationObserver(() => {
 moblinObserver.observe(document, { childList: true, subtree: true });
 
 document.addEventListener("DOMContentLoaded", () => {
-  publishVideoPlaying(false);
+  moblinPublishVideoPlaying(false);
   moblinUpdateVideosConfigured();
 });

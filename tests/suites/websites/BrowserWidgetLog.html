@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="Log"></script>
+    <script>
+      const log = (message) => console.log(message);
+
+      setInterval(() => {
+        log("Logging to Moblin");
+        moblin.log("Hello from a browser widget!");
+      }, 1000);
+      browserWidgetReport("ok");
+    </script>
+  </head>
+  <body></body>
+</html>
