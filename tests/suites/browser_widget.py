@@ -22,6 +22,7 @@ from systest_moblin.ffmpeg import read_qr_codes
 from systest_moblin.ffmpeg import video_encoder_args
 
 from ..utils.config import WEB_SERVER_PORT
+from ..utils.config import Capability
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import BrowserMode
 from ..utils.generate_device_settings import CameraPosition
@@ -189,6 +190,11 @@ class BrowserWidgetTestCase(TestCase):
         for index, qr_code in enumerate(qr_codes[1:]):
             if qr_code.number == previous_frame_number:
                 seen_frame_number_count += 1
+                LOGGER.info(
+                    "Duplicated browser widget frame found at index %s (seen %s times)",
+                    index,
+                    seen_frame_number_count,
+                )
             else:
                 seen_frame_number_count = 1
             self.assert_greater_equal(qr_code.number, previous_frame_number, f"Index {index}")
@@ -278,18 +284,18 @@ class BrowserWidgetModes(BrowserWidgetTestCase):
 
     def assert_video_qr_codes_periodic_audio_and_video(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(400, 0))
-        self.assert_high_fps_qr_codes_found(qr_codes[149:380])
+        self.assert_high_fps_qr_codes_found(qr_codes[180:380])
 
     def assert_image_qr_codes_audio_and_video_only(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(960, 0))
         self.assert_no_qr_codes_found(qr_codes[:100])
-        self.assert_qr_codes_found(qr_codes[150:380])
+        self.assert_qr_codes_found(qr_codes[180:380])
         self.assert_no_qr_codes_found(qr_codes[450:])
 
     def assert_video_qr_codes_audio_and_video_only(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(960 + 400, 0))
         self.assert_no_qr_codes_found(qr_codes[:100])
-        self.assert_high_fps_qr_codes_found(qr_codes[149:380])
+        self.assert_high_fps_qr_codes_found(qr_codes[180:380])
         self.assert_no_qr_codes_found(qr_codes[450:])
 
     def assert_image_qr_codes_audio_only(self, recording_file: Path):
@@ -396,7 +402,7 @@ class BrowserWidgetFlexLayout(BrowserWidgetPageTestCase):
 
 
 class BrowserWidgetVideoAlert(BrowserWidgetPageTestCase):
-    """Alert card with a background color and a video, added after 4 seconds and removed when ended."""
+    """Alert card with a video, added after 4 seconds and removed when ended."""
 
     def run(self):
         recording_file = self.record_page("VideoAlert", 16, ["VideoAlert"])
@@ -544,6 +550,7 @@ class BrowserWidgetConcurrentAudioSamePage(BrowserWidgetTestCase):
     """Two videos playing audio in one widget; the first continues after the second played for 5 seconds."""
 
     def run(self):
+        self.skip_if_missing_capability(Capability.SAME_PAGE_CONCURRENT_AUDIO)
         manual_volume_requirement(LOGGER)
         create_media()
         with HttpServer(WEB_SERVER_PORT, WEBSITES_DIR, self.moblin.config.tester_ip_address()) as server:

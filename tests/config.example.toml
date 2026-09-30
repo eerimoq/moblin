@@ -15,7 +15,7 @@ capabilities = [
 [device.macpro]
 moblin-ip-address = "macpro.home"
 moblin-secondary-ip-address = "macpro-2.home"
-capabilities = []
+capabilities = ["same-page-concurrent-audio"]
 
 [general]
 tester-ip-address = "macpro.home"
