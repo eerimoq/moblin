@@ -49,6 +49,9 @@ final class RtmpSocket: @unchecked Sendable {
     }
 
     func close(isDisconnected: Bool) {
+        guard readyState != .closed else {
+            return
+        }
         if let connection {
             connection.viabilityUpdateHandler = nil
             connection.stateUpdateHandler = nil
