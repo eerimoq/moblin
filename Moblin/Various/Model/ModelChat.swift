@@ -29,22 +29,11 @@ extension Model {
     }
 
     func pauseQuickButtonChatAlerts() {
-        quickButtonChatState.chatAlertsPaused = true
-        quickButtonChatState.pausedChatAlertsPostsCount = 0
-        pausedQuickButtonChatAlertsPosts = []
-        while let post = newQuickButtonChatAlertsPosts.popFirst() {
-            pausedQuickButtonChatAlertsPosts.append(post)
-        }
+        quickButtonChatAlerts.pause()
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
-        while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
-            if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                quickButtonChatState.chatAlertsPosts.removeLast()
-            }
-            quickButtonChatState.chatAlertsPosts.prepend(post)
-        }
-        quickButtonChatState.chatAlertsPaused = false
+        quickButtonChatAlerts.endReachedWhenPaused()
     }
 
     func removeOldChatMessages(now: ContinuousClock.Instant) {
@@ -71,18 +60,9 @@ extension Model {
         chat.update()
         chatActivityFeed.update()
         quickButtonChat.update()
+        quickButtonChatAlerts.update()
         if externalDisplay.chatEnabled {
             externalDisplayChat.update()
-        }
-        if quickButtonChatState.chatAlertsPaused {
-            quickButtonChatState.pausedChatAlertsPostsCount = pausedQuickButtonChatAlertsPosts.count
-        } else {
-            while let post = newQuickButtonChatAlertsPosts.popFirst() {
-                if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                    quickButtonChatState.chatAlertsPosts.removeLast()
-                }
-                quickButtonChatState.chatAlertsPosts.prepend(post)
-            }
         }
         chatWidgetChat.update()
     }
@@ -111,6 +91,7 @@ extension Model {
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatActivityFeed.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        quickButtonChatAlerts.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
@@ -297,6 +278,7 @@ extension Model {
             let isAlert = highlight?.isAlert() == true
             if isAlert {
                 chatActivityFeed.appendMessage(post: post)
+                quickButtonChatAlerts.appendMessage(post: post)
             }
             chat.appendMessage(post: post)
             quickButtonChat.appendMessage(post: post)
@@ -308,15 +290,6 @@ extension Model {
             }
             if externalDisplay.chatEnabled {
                 externalDisplayChat.appendMessage(post: post)
-            }
-            if isAlert {
-                if quickButtonChatState.chatAlertsPaused {
-                    if pausedQuickButtonChatAlertsPosts.count < 2 * maximumNumberOfInteractiveChatMessages {
-                        pausedQuickButtonChatAlertsPosts.append(post)
-                    }
-                } else {
-                    newQuickButtonChatAlertsPosts.append(post)
-                }
             }
             if !enabledChatEffects.isEmpty {
                 chatWidgetChat.appendMessage(post: post)
@@ -338,9 +311,9 @@ extension Model {
         chat.posts = newPostIds(posts: chat.posts)
         chatActivityFeed.posts = newPostIds(posts: chatActivityFeed.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
+        quickButtonChatAlerts.posts = newPostIds(posts: quickButtonChatAlerts.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
         chatWidgetChat.posts = newPostIds(posts: chatWidgetChat.posts)
-        quickButtonChatState.chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
 
     private func newPostIds(posts: Deque<ChatPost>) -> Deque<ChatPost> {
@@ -529,6 +502,7 @@ extension Model {
         chat.deleteMessage(messageId: messageId)
         chatActivityFeed.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
+        quickButtonChatAlerts.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
         chatWidgetChat.deleteMessage(messageId: messageId)
         chatTextToSpeech.delete(messageId: messageId)
@@ -538,6 +512,7 @@ extension Model {
         chat.deleteUser(userId: userId)
         chatActivityFeed.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
+        quickButtonChatAlerts.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
         chatWidgetChat.deleteUser(userId: userId)
         chatTextToSpeech.delete(userId: userId)

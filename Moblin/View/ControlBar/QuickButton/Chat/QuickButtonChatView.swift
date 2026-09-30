@@ -288,7 +288,7 @@ private struct AlertsMessagesView: View {
                             model.pauseQuickButtonChatAlerts()
                         }
                         .frame(height: 1)
-                    ForEach(quickButtonChat.chatAlertsPosts) { post in
+                    ForEach(chat.posts) { post in
                         AlertsPostView(
                             chatSettings: chatSettings,
                             style: style,
@@ -315,7 +315,8 @@ private struct AlertsMessagesView: View {
 
 private struct ChatAlertsView: View {
     let model: Model
-    @ObservedObject var quickButtonChat: QuickButtonChat
+    @ObservedObject var chat: ChatProvider
+    let quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
     @Binding var linkUrl: URL?
 
@@ -323,17 +324,13 @@ private struct ChatAlertsView: View {
         ZStack {
             AlertsMessagesView(model: model,
                                chatSettings: model.database.chat,
-                               chat: model.quickButtonChat,
+                               chat: chat,
                                quickButtonChat: quickButtonChat,
                                selectedPost: $selectedPost,
                                linkUrl: $linkUrl)
-            if quickButtonChat.chatAlertsPaused {
-                ChatInfo(
-                    message: String(
-                        localized: "Chat paused: \(quickButtonChat.pausedChatAlertsPostsCount) new alerts"
-                    )
-                )
-                .padding(2)
+            if chat.paused {
+                ChatInfo(message: String(localized: "Chat paused: \(chat.pausedPostsCount) new alerts"))
+                    .padding(2)
             }
             BannersView(model: model, banners: model.banners)
         }
@@ -740,6 +737,7 @@ struct QuickButtonChatView: View {
                 } else {
                     ChatAlertsView(
                         model: model,
+                        chat: model.quickButtonChatAlerts,
                         quickButtonChat: quickButtonChat,
                         selectedPost: $selectedPost,
                         linkUrl: $linkUrl
