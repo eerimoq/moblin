@@ -184,9 +184,6 @@ extension Model {
         guard WCSession.default.isWatchAppInstalled else {
             return
         }
-        guard !post.isRedLine() else {
-            return
-        }
         let displayName = post.displayName(nicknames: database.chat.nicknames,
                                            displayStyle: database.chat.displayStyle)
         let userColor = WatchProtocolColor(

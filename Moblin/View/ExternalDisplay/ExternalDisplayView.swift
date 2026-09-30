@@ -62,48 +62,38 @@ private struct PostView: View {
     @ObservedObject var state: ChatPostState
     let rotation: Double
     let scaleX: Double
-    let size: CGSize
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .frame(width: 3)
-                            .foregroundStyle(highlight.barColor)
-                        if chatSettings.compactEvents, highlight.titleSegments != nil {
-                            HighlightImageView(style: style, highlight: highlight)
-                        }
-                        VStack(alignment: .leading, spacing: 1) {
-                            if !chatSettings.compactEvents {
-                                HighlightMessageView(style: style, highlight: highlight)
-                            }
-                            LineView(deleted: state.deleted,
-                                     post: post,
-                                     style: style,
-                                     platform: moreThanOneStreamingPlatform)
-                        }
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 3)
+                        .foregroundStyle(highlight.barColor)
+                    if chatSettings.compactEvents, highlight.titleSegments != nil {
+                        HighlightImageView(style: style, highlight: highlight)
                     }
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                } else {
-                    LineView(deleted: state.deleted,
-                             post: post,
-                             style: style,
-                             platform: moreThanOneStreamingPlatform)
-                        .padding(.leading, 3)
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                    VStack(alignment: .leading, spacing: 1) {
+                        if !chatSettings.compactEvents {
+                            HighlightMessageView(style: style, highlight: highlight)
+                        }
+                        LineView(deleted: state.deleted,
+                                 post: post,
+                                 style: style,
+                                 platform: moreThanOneStreamingPlatform)
+                    }
                 }
-            }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: size.width, height: 1.5)
-                .padding(2)
                 .rotationEffect(Angle(degrees: rotation))
                 .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+            } else {
+                LineView(deleted: state.deleted,
+                         post: post,
+                         style: style,
+                         platform: moreThanOneStreamingPlatform)
+                    .padding(.leading, 3)
+                    .rotationEffect(Angle(degrees: rotation))
+                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+            }
         }
     }
 }
@@ -127,8 +117,7 @@ private struct MessagesView: View {
                                      post: post,
                                      state: post.state,
                                      rotation: rotation,
-                                     scaleX: scaleX,
-                                     size: metrics.size)
+                                     scaleX: scaleX)
                         }
                     }
                     Spacer(minLength: 0)
