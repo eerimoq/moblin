@@ -377,6 +377,30 @@ private struct MuteUnmutePermissionsSettingsView: View {
     }
 }
 
+private struct TorchPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin torch ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin torch on"))
+                Text("Turn the torch on.")
+                Text("")
+                Text(String("!moblin torch off"))
+                Text("Turn the torch off.")
+                Text("")
+                Text(String("!moblin torch level <level>"))
+                Text("Set torch level, from 1 to 100.")
+            }
+        }
+    }
+}
+
 private struct TeslaPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -504,6 +528,7 @@ private struct ChatBotCommandsSettingsView: View {
             SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
+            TorchPermissionsSettingsView(permissions: permissions.torch)
             SendPermissionsSettingsView(permissions: permissions.send)
             AppleMusicPermissionsSettingsView(permissions: permissions.music)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)

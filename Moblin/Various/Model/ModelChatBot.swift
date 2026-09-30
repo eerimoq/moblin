@@ -77,6 +77,8 @@ extension Model {
             handleChatBotMessageSend(command: command)
         case .music:
             handleChatBotMessageMusic(command: command)
+        case .torch:
+            handleChatBotMessageTorch(command: command)
         case .custom:
             handleChatBotMessageCustom(command: command)
         }
@@ -305,6 +307,42 @@ extension Model {
             self.setMuted(value: false)
             self.setQuickButton(type: .mute, isOn: false)
         }
+    }
+
+    private func handleChatBotMessageTorch(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.torch,
+            command: command
+        ) {
+            switch command.popFirstArgument(ChatBotTorchArgument.self) {
+            case .on:
+                self.handleChatBotMessageTorchOn()
+            case .off:
+                self.handleChatBotMessageTorchOff()
+            case .level:
+                self.handleChatBotMessageTorchLevel(command: command)
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageTorchOn() {
+        setTorch(on: true)
+        setQuickButton(type: .torch, isOn: true)
+    }
+
+    private func handleChatBotMessageTorchOff() {
+        setTorch(on: false)
+        setQuickButton(type: .torch, isOn: false)
+    }
+
+    private func handleChatBotMessageTorchLevel(command: ChatBotCommand) {
+        guard let level = command.popFirstInt(in: 1 ... 100) else {
+            return
+        }
+        database.torchLevel = Float(level) / 100
+        updateTorch()
     }
 
     private func handleChatBotMessageAi(command: ChatBotCommand) {

@@ -221401,6 +221401,9 @@
         }
       }
     },
+    "Set torch level, from 1 to 100." : {
+      "comment" : "A description of the chat bot torch level command."
+    },
     "Set zoom for the current camera." : {
       "localizations" : {
         "de" : {
@@ -276854,6 +276857,12 @@
           }
         }
       }
+    },
+    "Turn the torch off." : {
+      "comment" : "A description of the chat bot torch off command."
+    },
+    "Turn the torch on." : {
+      "comment" : "A description of the chat bot torch on command."
     },
     "Turning off chat text to speech" : {
       "localizations" : {

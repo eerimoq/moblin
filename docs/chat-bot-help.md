@@ -20,6 +20,9 @@
 | !moblin custom \<name> | Send the text of given custom command to chat. Configure custom commands in Moblin. |
 | !moblin mute | Mute audio. |
 | !moblin unmute | Unmute audio. |
+| !moblin torch on | Turn the torch on. |
+| !moblin torch off | Turn the torch off. |
+| !moblin torch level \<level> | Set torch level, from 1 to 100. |
 | !moblin music add <song> | Add a song. Free text search or share link. |
 | !moblin music play | Play. |
 | !moblin music pause | Pause. |
