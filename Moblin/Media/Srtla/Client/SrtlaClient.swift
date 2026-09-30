@@ -304,6 +304,9 @@ class SrtlaClient: NSObject, @unchecked Sendable {
     }
 
     private func handleNetworkPathUpdate(path: NWPath) {
+        guard state != .idle else {
+            return
+        }
         var newRemoteConnections: [RemoteConnection] = []
         for connection in remoteConnections {
             if let interface = connection.interface {
