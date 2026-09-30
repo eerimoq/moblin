@@ -23,9 +23,10 @@ class ChatProvider: ObservableObject {
 
     func appendMessage(post: ChatPost) {
         if paused {
-            if pausedPosts.count < 2 * maximumNumberOfChatMessages {
-                pausedPosts.append(post)
+            if pausedPosts.count > 2 * maximumNumberOfChatMessages - 1 {
+                pausedPosts.removeFirst()
             }
+            pausedPosts.append(post)
         } else {
             newPosts.append(post)
         }
