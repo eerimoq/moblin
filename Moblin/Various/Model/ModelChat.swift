@@ -4,7 +4,6 @@ import SwiftUI
 import WrappingHStack
 
 let maximumNumberOfChatMessages = 50
-let maximumNumberOfInteractiveChatMessages = 100
 
 extension Model {
     func pauseChat(chat: ChatProvider) {

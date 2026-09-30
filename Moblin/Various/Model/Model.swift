@@ -581,12 +581,12 @@ final class Model: NSObject, ObservableObject {
     var youTubeStreamUpdateTime = ContinuousClock.now
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
-    let chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
-    let chatActivityFeed = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
-    let quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
-    let quickButtonChatAlerts = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
-    let externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
-    let chatWidgetChat = ChatProvider(maximumNumberOfMessages: 5)
+    let chat = ChatProvider()
+    let chatActivityFeed = ChatProvider()
+    let quickButtonChat = ChatProvider()
+    let quickButtonChatAlerts = ChatProvider()
+    let externalDisplayChat = ChatProvider()
+    let chatWidgetChat = ChatProvider()
     private var externalDisplayWindow: UIWindow?
     var chatBotMessages: Deque<ChatBotMessage> = []
     var watchChatPosts: Deque<WatchProtocolChatMessage> = []

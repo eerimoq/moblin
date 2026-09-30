@@ -8,16 +8,11 @@ class ChatProvider: ObservableObject {
     @Published var posts: Deque<ChatPost> = []
     @Published var pausedPostsCount: Int = 0
     @Published var paused = false
-    private let maximumNumberOfMessages: Int
     @Published var moreThanOneStreamingPlatform = false
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
     @Published var showLabel = false
     private let hideLabelTimer = MainTimer()
-
-    init(maximumNumberOfMessages: Int) {
-        self.maximumNumberOfMessages = maximumNumberOfMessages
-    }
 
     func showLabelForAWhile() {
         showLabel = true
@@ -28,7 +23,7 @@ class ChatProvider: ObservableObject {
 
     func appendMessage(post: ChatPost) {
         if paused {
-            if pausedPosts.count < 2 * maximumNumberOfMessages {
+            if pausedPosts.count < 2 * maximumNumberOfChatMessages {
                 pausedPosts.append(post)
             }
         } else {
@@ -67,7 +62,7 @@ class ChatProvider: ObservableObject {
             }
         } else {
             while let post = newPosts.popFirst() {
-                if posts.count > maximumNumberOfMessages - 1 {
+                if posts.count > maximumNumberOfChatMessages - 1 {
                     posts.removeLast()
                 }
                 posts.prepend(post)
@@ -86,7 +81,7 @@ class ChatProvider: ObservableObject {
 
     func endReachedWhenPaused() {
         while let post = pausedPosts.popFirst() {
-            if posts.count > maximumNumberOfMessages - 1 {
+            if posts.count > maximumNumberOfChatMessages - 1 {
                 posts.removeLast()
             }
             posts.prepend(post)
