@@ -410,7 +410,6 @@ struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
     let streamView: StreamView
-    @FocusState private var focused: Bool
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
     @ObservedObject var orientation: Orientation
@@ -691,47 +690,16 @@ struct MainView: View {
             #if targetEnvironment(macCatalyst)
             all
             #else
-            if #available(iOS 17.0, *) {
-                let all = all
-                    .focusable()
-                    .focused($focused)
-                    .onKeyPress { press in
-                        model.handleKeyPress(press: press)
-                    }
-                    .onChange(of: model.showingPanel) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: model.showBrowser) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: model.showTwitchAuth) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.presenting) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.presentingSetup) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.showTwitchAuth) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onAppear {
-                        focused = true
-                    }
-                if #available(iOS 18.0, *) {
-                    all
-                        .background {
-                            Color.black
-                                .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
-                                    if event.phase == .ended {
-                                        // model.takeSnapshot()
-                                    }
+            if #available(iOS 18.0, *) {
+                all
+                    .background {
+                        Color.black
+                            .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
+                                if event.phase == .ended {
+                                    // model.takeSnapshot()
                                 }
-                        }
-                } else {
-                    all
-                }
+                            }
+                    }
             } else {
                 all
             }
@@ -740,12 +708,10 @@ struct MainView: View {
                 .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
-        #if targetEnvironment(macCatalyst)
         .background {
-            MacKeyPressView(model: model, shouldClaimFocus: model.isKeyboardActive())
+            KeyPressView(model: model)
                 .frame(width: 0, height: 0)
         }
-        #endif
         .ignoresSafeArea(.container, edges: edgesToIgnore())
     }
 }
