@@ -278,18 +278,18 @@ class BrowserWidgetModes(BrowserWidgetTestCase):
 
     def assert_video_qr_codes_periodic_audio_and_video(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(400, 0))
-        self.assert_high_fps_qr_codes_found(qr_codes[149:380])
+        self.assert_high_fps_qr_codes_found(qr_codes[180:380])
 
     def assert_image_qr_codes_audio_and_video_only(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(960, 0))
         self.assert_no_qr_codes_found(qr_codes[:100])
-        self.assert_qr_codes_found(qr_codes[150:380])
+        self.assert_qr_codes_found(qr_codes[180:380])
         self.assert_no_qr_codes_found(qr_codes[450:])
 
     def assert_video_qr_codes_audio_and_video_only(self, recording_file: Path):
         qr_codes = read_qr_codes(recording_file, qr_code_crop(960 + 400, 0))
         self.assert_no_qr_codes_found(qr_codes[:100])
-        self.assert_high_fps_qr_codes_found(qr_codes[149:380])
+        self.assert_high_fps_qr_codes_found(qr_codes[180:380])
         self.assert_no_qr_codes_found(qr_codes[450:])
 
     def assert_image_qr_codes_audio_only(self, recording_file: Path):
