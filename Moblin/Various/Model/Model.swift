@@ -376,9 +376,6 @@ class QuickButtonChat: ObservableObject {
     @Published var showAllChatMessages = true
     @Published var showFirstTimeChatterMessage = true
     @Published var showNewFollowerMessage = true
-    @Published var chatAlertsPosts: Deque<ChatPost> = []
-    @Published var pausedChatAlertsPostsCount: Int = 0
-    @Published var chatAlertsPaused = false
 }
 
 @MainActor
@@ -587,12 +584,11 @@ final class Model: NSObject, ObservableObject {
     let chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     let chatActivityFeed = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
     let quickButtonChat = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
+    let quickButtonChatAlerts = ChatProvider(maximumNumberOfMessages: maximumNumberOfInteractiveChatMessages)
     let externalDisplayChat = ChatProvider(maximumNumberOfMessages: 50)
     let chatWidgetChat = ChatProvider(maximumNumberOfMessages: 5)
     private var externalDisplayWindow: UIWindow?
     var chatBotMessages: Deque<ChatBotMessage> = []
-    var newQuickButtonChatAlertsPosts: Deque<ChatPost> = []
-    var pausedQuickButtonChatAlertsPosts: Deque<ChatPost> = []
     var watchChatPosts: Deque<WatchProtocolChatMessage> = []
     var nextWatchChatPostId = 1
     var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
