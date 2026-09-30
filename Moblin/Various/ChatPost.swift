@@ -276,10 +276,6 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
         segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
     }
 
-    func isRedLine() -> Bool {
-        user == nil
-    }
-
     func displayName(nicknames: SettingsChatNicknames, displayStyle: SettingsChatDisplayStyle) -> String {
         guard let displayName, let user else {
             return String(localized: "Unknown")

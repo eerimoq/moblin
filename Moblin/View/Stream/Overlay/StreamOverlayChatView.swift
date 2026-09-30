@@ -101,55 +101,47 @@ private struct PostView: View {
     let moreThanOneStreamingPlatform: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let width: CGFloat
     let interactive: Bool
     @Binding var selectedPost: ChatPost?
     @Binding var linkUrl: URL?
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .frame(width: 3)
-                            .foregroundStyle(highlight.barColor)
-                        if chatSettings.compactEvents, highlight.titleSegments != nil {
-                            HighlightImageView(style: style, highlight: highlight)
-                        }
-                        VStack(alignment: .leading, spacing: 1) {
-                            if !chatSettings.compactEvents {
-                                HighlightMessageView(deleted: state.deleted,
-                                                     style: style,
-                                                     highlight: highlight,
-                                                     interactive: interactive,
-                                                     linkUrl: $linkUrl)
-                            }
-                            LineView(deleted: state.deleted,
-                                     post: post,
-                                     style: style,
-                                     platform: moreThanOneStreamingPlatform,
-                                     interactive: interactive,
-                                     selectedPost: $selectedPost,
-                                     linkUrl: $linkUrl)
-                        }
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 3)
+                        .foregroundStyle(highlight.barColor)
+                    if chatSettings.compactEvents, highlight.titleSegments != nil {
+                        HighlightImageView(style: style, highlight: highlight)
                     }
-                } else {
-                    LineView(deleted: state.deleted,
-                             post: post,
-                             style: style,
-                             platform: moreThanOneStreamingPlatform,
-                             interactive: interactive,
-                             selectedPost: $selectedPost,
-                             linkUrl: $linkUrl)
-                        .padding(.leading, 3)
+                    VStack(alignment: .leading, spacing: 1) {
+                        if !chatSettings.compactEvents {
+                            HighlightMessageView(deleted: state.deleted,
+                                                 style: style,
+                                                 highlight: highlight,
+                                                 interactive: interactive,
+                                                 linkUrl: $linkUrl)
+                        }
+                        LineView(deleted: state.deleted,
+                                 post: post,
+                                 style: style,
+                                 platform: moreThanOneStreamingPlatform,
+                                 interactive: interactive,
+                                 selectedPost: $selectedPost,
+                                 linkUrl: $linkUrl)
+                    }
                 }
+            } else {
+                LineView(deleted: state.deleted,
+                         post: post,
+                         style: style,
+                         platform: moreThanOneStreamingPlatform,
+                         interactive: interactive,
+                         selectedPost: $selectedPost,
+                         linkUrl: $linkUrl)
+                    .padding(.leading, 3)
             }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: width, height: 1.5)
-                .padding(2)
         }
     }
 }
@@ -208,7 +200,6 @@ private struct MessagesView: View {
                                  moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
                                  post: post,
                                  state: post.state,
-                                 width: width,
                                  interactive: interactive,
                                  selectedPost: $selectedPost,
                                  linkUrl: $linkUrl)

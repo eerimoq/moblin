@@ -8,7 +8,7 @@ let maximumNumberOfInteractiveChatMessages = 100
 
 extension Model {
     func pauseChat(chat: ChatProvider) {
-        chat.pause(redLine: createRedLineChatPost())
+        chat.pause()
     }
 
     func endOfChatReachedWhenPaused(chat: ChatProvider) {
@@ -21,7 +21,7 @@ extension Model {
     }
 
     func pauseQuickButtonChat() {
-        quickButtonChat.pause(redLine: createRedLineChatPost())
+        quickButtonChat.pause()
     }
 
     func endOfQuickButtonChatReachedWhenPaused() {
@@ -31,7 +31,7 @@ extension Model {
     func pauseQuickButtonChatAlerts() {
         quickButtonChatState.chatAlertsPaused = true
         quickButtonChatState.pausedChatAlertsPostsCount = 0
-        pausedQuickButtonChatAlertsPosts = [createRedLineChatPost()]
+        pausedQuickButtonChatAlertsPosts = []
         while let post = newQuickButtonChatAlertsPosts.popFirst() {
             pausedQuickButtonChatAlertsPosts.append(post)
         }
@@ -39,14 +39,6 @@ extension Model {
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
         while let post = pausedQuickButtonChatAlertsPosts.popFirst() {
-            if post.isRedLine() {
-                if quickButtonChatState.chatAlertsPosts.first?.isRedLine() == true {
-                    continue
-                }
-                if pausedQuickButtonChatAlertsPosts.isEmpty {
-                    continue
-                }
-            }
             if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
                 quickButtonChatState.chatAlertsPosts.removeLast()
             }
@@ -83,10 +75,7 @@ extension Model {
             externalDisplayChat.update()
         }
         if quickButtonChatState.chatAlertsPaused {
-            quickButtonChatState.pausedChatAlertsPostsCount = max(
-                pausedQuickButtonChatAlertsPosts.count - 1,
-                0
-            )
+            quickButtonChatState.pausedChatAlertsPostsCount = pausedQuickButtonChatAlertsPosts.count
         } else {
             while let post = newQuickButtonChatAlertsPosts.popFirst() {
                 if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
@@ -124,32 +113,6 @@ extension Model {
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
-    }
-
-    private func createRedLineChatPost() -> ChatPost {
-        defer {
-            chatPostId += 1
-        }
-        return ChatPost(
-            id: chatPostId,
-            messageId: nil,
-            displayName: nil,
-            user: nil,
-            userColor: .init(red: 0, green: 0, blue: 0),
-            userBadges: [],
-            segments: [],
-            timestamp: "",
-            timestampTime: .now,
-            isAction: false,
-            isSubscriber: false,
-            bits: nil,
-            highlight: nil,
-            live: true,
-            filter: nil,
-            platform: nil,
-            sourceChannelIcon: nil,
-            state: ChatPostState()
-        )
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {

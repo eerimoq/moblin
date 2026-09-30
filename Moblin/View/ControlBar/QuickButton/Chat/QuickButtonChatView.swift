@@ -74,61 +74,51 @@ private struct PostView: View {
     @ObservedObject var state: ChatPostState
     let rotation: Double
     let scaleX: Double
-    let size: CGSize
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .frame(width: 3)
-                            .foregroundStyle(highlight.barColor)
-                        if chatSettings.compactEvents, highlight.titleSegments != nil {
-                            HighlightImageView(style: style, highlight: highlight)
-                        }
-                        VStack(alignment: .leading, spacing: 1) {
-                            if !chatSettings.compactEvents {
-                                HighlightMessageView(
-                                    deleted: state.deleted,
-                                    style: style,
-                                    highlight: highlight,
-                                    linkUrl: $linkUrl
-                                )
-                            }
-                            LineView(
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 3)
+                        .foregroundStyle(highlight.barColor)
+                    if chatSettings.compactEvents, highlight.titleSegments != nil {
+                        HighlightImageView(style: style, highlight: highlight)
+                    }
+                    VStack(alignment: .leading, spacing: 1) {
+                        if !chatSettings.compactEvents {
+                            HighlightMessageView(
                                 deleted: state.deleted,
-                                post: post,
                                 style: style,
-                                platform: moreThanOneStreamingPlatform,
-                                selectedPost: $selectedPost,
+                                highlight: highlight,
                                 linkUrl: $linkUrl
                             )
                         }
+                        LineView(
+                            deleted: state.deleted,
+                            post: post,
+                            style: style,
+                            platform: moreThanOneStreamingPlatform,
+                            selectedPost: $selectedPost,
+                            linkUrl: $linkUrl
+                        )
                     }
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                } else {
-                    LineView(
-                        deleted: state.deleted,
-                        post: post,
-                        style: style,
-                        platform: moreThanOneStreamingPlatform,
-                        selectedPost: $selectedPost,
-                        linkUrl: $linkUrl
-                    )
-                    .padding(.leading, 3)
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
-            }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: size.width, height: 1.5)
-                .padding(2)
                 .rotationEffect(Angle(degrees: rotation))
                 .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+            } else {
+                LineView(
+                    deleted: state.deleted,
+                    post: post,
+                    style: style,
+                    platform: moreThanOneStreamingPlatform,
+                    selectedPost: $selectedPost,
+                    linkUrl: $linkUrl
+                )
+                .padding(.leading, 3)
+                .rotationEffect(Angle(degrees: rotation))
+                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+            }
         }
     }
 }
@@ -166,8 +156,7 @@ private struct MessagesView: View {
                                  post: post,
                                  state: post.state,
                                  rotation: rotation,
-                                 scaleX: scaleX,
-                                 size: metrics.size)
+                                 scaleX: scaleX)
                     }
                     Spacer(minLength: 0)
                 }
@@ -213,7 +202,6 @@ private struct AlertsPostView: View {
     @ObservedObject var state: ChatPostState
     let rotation: Double
     let scaleX: Double
-    let size: CGSize
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage, !showFirstTimeChatterMessage {
@@ -226,60 +214,51 @@ private struct AlertsPostView: View {
     }
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    if shouldShowMessage(highlight: highlight) {
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .frame(width: 3)
-                                .foregroundStyle(highlight.barColor)
-                            if chatSettings.compactEvents, highlight.titleSegments != nil {
-                                HighlightImageView(style: style, highlight: highlight)
-                            }
-                            VStack(alignment: .leading, spacing: 1) {
-                                if !chatSettings.compactEvents {
-                                    HighlightMessageView(
-                                        deleted: state.deleted,
-                                        style: style,
-                                        highlight: highlight,
-                                        linkUrl: $linkUrl
-                                    )
-                                }
-                                LineView(
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                if shouldShowMessage(highlight: highlight) {
+                    HStack(spacing: 0) {
+                        Rectangle()
+                            .frame(width: 3)
+                            .foregroundStyle(highlight.barColor)
+                        if chatSettings.compactEvents, highlight.titleSegments != nil {
+                            HighlightImageView(style: style, highlight: highlight)
+                        }
+                        VStack(alignment: .leading, spacing: 1) {
+                            if !chatSettings.compactEvents {
+                                HighlightMessageView(
                                     deleted: state.deleted,
-                                    post: post,
                                     style: style,
-                                    platform: moreThanOneStreamingPlatform,
-                                    selectedPost: $selectedPost,
+                                    highlight: highlight,
                                     linkUrl: $linkUrl
                                 )
                             }
+                            LineView(
+                                deleted: state.deleted,
+                                post: post,
+                                style: style,
+                                platform: moreThanOneStreamingPlatform,
+                                selectedPost: $selectedPost,
+                                linkUrl: $linkUrl
+                            )
                         }
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                     }
-                } else {
-                    LineView(
-                        deleted: state.deleted,
-                        post: post,
-                        style: style,
-                        platform: moreThanOneStreamingPlatform,
-                        selectedPost: $selectedPost,
-                        linkUrl: $linkUrl
-                    )
-                    .padding(.leading, 3)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
-            }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: size.width, height: 1.5)
-                .padding(2)
+            } else {
+                LineView(
+                    deleted: state.deleted,
+                    post: post,
+                    style: style,
+                    platform: moreThanOneStreamingPlatform,
+                    selectedPost: $selectedPost,
+                    linkUrl: $linkUrl
+                )
+                .padding(.leading, 3)
                 .rotationEffect(Angle(degrees: rotation))
                 .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+            }
         }
     }
 }
@@ -321,8 +300,7 @@ private struct AlertsMessagesView: View {
                             post: post,
                             state: post.state,
                             rotation: rotation,
-                            scaleX: scaleX,
-                            size: metrics.size
+                            scaleX: scaleX
                         )
                     }
                     Spacer(minLength: 0)

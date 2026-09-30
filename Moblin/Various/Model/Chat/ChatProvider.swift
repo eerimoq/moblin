@@ -62,9 +62,8 @@ class ChatProvider: ObservableObject {
 
     func update() {
         if paused {
-            let count = max(pausedPosts.count - 1, 0)
-            if count != pausedPostsCount {
-                pausedPostsCount = count
+            if pausedPosts.count != pausedPostsCount {
+                pausedPostsCount = pausedPosts.count
             }
         } else {
             while let post = newPosts.popFirst() {
@@ -76,10 +75,10 @@ class ChatProvider: ObservableObject {
         }
     }
 
-    func pause(redLine: ChatPost) {
+    func pause() {
         paused = true
         pausedPostsCount = 0
-        pausedPosts = [redLine]
+        pausedPosts = []
         while let post = newPosts.popFirst() {
             appendMessage(post: post)
         }
@@ -87,14 +86,6 @@ class ChatProvider: ObservableObject {
 
     func endReachedWhenPaused() {
         while let post = pausedPosts.popFirst() {
-            if post.isRedLine() {
-                if posts.first?.isRedLine() == true {
-                    continue
-                }
-                if pausedPosts.isEmpty {
-                    continue
-                }
-            }
             if posts.count > maximumNumberOfMessages - 1 {
                 posts.removeLast()
             }
