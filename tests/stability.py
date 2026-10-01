@@ -46,7 +46,6 @@ def create_suites(moblin, args):
             args.ingests,
             not args.no_stream,
             args.stream_protocol,
-            not args.no_record,
             3600 * args.duration,
             args.video_bitrate_control,
             args.network_capture,
@@ -82,11 +81,6 @@ def main():
         choices=list(StreamProtocol),
         default=StreamProtocol.SRT,
         help="Outgoing stream protocol (default: %(default)s).",
-    )
-    parser.add_argument(
-        "--no-record",
-        action="store_true",
-        help="Do not record to disk in the app.",
     )
     parser.add_argument(
         "--video-bitrate-control",

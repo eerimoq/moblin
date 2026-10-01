@@ -148,7 +148,6 @@ class StabilityIngestsOneStream(TestCase):
         ingests: list[Ingest],
         stream: bool,
         stream_protocol: StreamProtocol,
-        record: bool,
         duration: float,
         video_bitrate_control: BitrateRateControl,
         network_capture: bool,
@@ -157,7 +156,6 @@ class StabilityIngestsOneStream(TestCase):
         self._ingests = ingests
         self._stream = stream
         self._stream_protocol = stream_protocol
-        self._record = record
         self._duration = duration
         self._video_bitrate_control = video_bitrate_control
         self._network_capture = network_capture
@@ -293,17 +291,13 @@ class StabilityIngestsOneStream(TestCase):
             self._wait_for_ingests()
             if stream_recorder is not None:
                 self._go_live(stream_recorder)
-            if self._record:
-                self.moblin.start_recording()
+            self.moblin.start_recording()
             self._monitor = self._create_monitor(stream_recorder, sources)
             self._monitor_until_done(self._monitor, stream_recorder, sources, capture)
             if stream_recorder is not None:
                 self.moblin.end()
-            if self._record:
-                self.moblin.stop_recording()
-                recording = self._download_recording()
-            else:
-                recording = None
+            self.moblin.stop_recording()
+            recording = self._download_recording()
         self._validate(stream_recorder, recording)
 
     def teardown(self):
@@ -706,7 +700,6 @@ def tests(
     ingests: list[Ingest],
     stream: bool,
     stream_protocol: StreamProtocol,
-    record: bool,
     duration: float,
     video_bitrate_control: BitrateRateControl,
     network_capture: bool,
@@ -717,7 +710,6 @@ def tests(
             ingests,
             stream,
             stream_protocol,
-            record,
             duration,
             video_bitrate_control,
             network_capture,
