@@ -16,6 +16,7 @@ class LossyUdpRelay:
         loss_percent: float = 2,
         seed: int = 0,
     ) -> None:
+        self.loss_percent = loss_percent
         self._loss_probability = loss_percent / 100
         self._random = random.Random(seed)
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -30,10 +31,10 @@ class LossyUdpRelay:
         self.returned = 0
 
     @classmethod
-    def from_url(cls, url: str) -> "LossyUdpRelay":
+    def from_url(cls, url: str, loss_percent: float = 2) -> "LossyUdpRelay":
         parts = urlsplit(url)
         assert parts.hostname is not None and parts.port is not None
-        return cls((socket.gethostbyname(parts.hostname), parts.port))
+        return cls((socket.gethostbyname(parts.hostname), parts.port), loss_percent=loss_percent)
 
     def relayed_url(self, url: str) -> str:
         host, port = self._client_socket.getsockname()

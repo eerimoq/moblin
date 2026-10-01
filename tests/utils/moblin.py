@@ -199,8 +199,6 @@ class Moblin:
         self._events = AssistantEvents(self._remote_control_port, self._handle_log_entry)
         self.ip_address = ip_address if ip_address is not None else config.moblin_ip_address(device_name)
         self._tester_ip_address = config.tester_ip_address()
-        self._tester_media_ip_address = self._tester_ip_address
-        self._device_media_ip_address = self.ip_address
         self._interactive = interactive
         self._moving_picture = moving_picture
         self._dji_camera = dji_camera
@@ -385,21 +383,17 @@ class Moblin:
     def ping(self):
         self._get_settings()
 
-    def use_media_relay(self, ip_address: str):
-        self._tester_media_ip_address = ip_address
-        self._device_media_ip_address = ip_address
-
     def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:
-        return f"rist://{self._tester_media_ip_address}:{port}"
+        return f"rist://{self._tester_ip_address}:{port}"
 
     def tester_rtmp_url(self, path: str, port: int = TESTER_RTMP_PORT) -> str:
-        return f"rtmp://{self._tester_media_ip_address}:{port}/{path}"
+        return f"rtmp://{self._tester_ip_address}:{port}/{path}"
 
     def tester_rtsp_url(self, path: str) -> str:
-        return f"rtsp://{self._tester_media_ip_address}:{TESTER_RTSP_PORT}/{path}"
+        return f"rtsp://{self._tester_ip_address}:{TESTER_RTSP_PORT}/{path}"
 
     def tester_srt_url(self, port: int) -> str:
-        return f"srt://{self._tester_media_ip_address}:{port}"
+        return f"srt://{self._tester_ip_address}:{port}"
 
     def tester_srt_publish_url(self, name: str, passphrase: str | None = None) -> str:
         url = f"{self.tester_srt_url(TESTER_SRT_PORT)}?streamid=publish:{name}"
@@ -408,31 +402,28 @@ class Moblin:
         return url
 
     def tester_srtla_url(self, stream_id: str) -> str:
-        return f"srtla://{self._tester_media_ip_address}:{TESTER_SRTLA_PORT}?streamid={stream_id}"
+        return f"srtla://{self._tester_ip_address}:{TESTER_SRTLA_PORT}?streamid={stream_id}"
 
     def tester_whip_url(self, path: str) -> str:
-        return f"whip://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
+        return f"whip://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whip"
 
     def tester_whep_url(self, path: str) -> str:
-        return f"http://{self._tester_media_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
+        return f"http://{self._tester_ip_address}:{TESTER_WEBRTC_PORT}/{path}/whep"
 
     def ingest_rtmp_url(self, stream_key: str = "1") -> str:
-        return f"rtmp://{self._device_media_ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
+        return f"rtmp://{self.ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
 
     def ingest_srt_url(self, stream_id: str = "1") -> str:
-        return f"srt://{self._device_media_ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
+        return f"srt://{self.ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
 
     def ingest_whip_url(self, stream_key: str = "1") -> str:
-        return f"http://{self._device_media_ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"
+        return f"http://{self.ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"
 
     def ingest_rist_url(self, virtual_destination_port: int = 2) -> str:
-        return (
-            f"rist://{self._device_media_ip_address}:{RIST_SERVER_PORT}"
-            f"?virt-dst-port={virtual_destination_port}"
-        )
+        return f"rist://{self.ip_address}:{RIST_SERVER_PORT}?virt-dst-port={virtual_destination_port}"
 
     def wait_for_tcp_ports(self, *ports: int, ip_address: str | None = None):
-        address = ip_address if ip_address is not None else self._device_media_ip_address
+        address = ip_address if ip_address is not None else self.ip_address
         for port in ports:
 
             def check(port=port) -> bool:

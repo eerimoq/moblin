@@ -7,6 +7,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
+from enum import StrEnum
 from pathlib import Path
 
 from humanfriendly import format_size
@@ -16,11 +17,16 @@ from systest import wait_until
 from systest_moblin.ffmpeg import file_size
 
 from .monitor import log_table
-from .traffic_shaper import PROTOCOL_NUMBERS
-from .traffic_shaper import Protocol
 
 LOGGER = logging.getLogger(__name__)
 
+
+class Protocol(StrEnum):
+    TCP = "tcp"
+    UDP = "udp"
+
+
+PROTOCOL_NUMBERS = {Protocol.TCP: 6, Protocol.UDP: 17}
 SNAPSHOT_LENGTH = 128
 READ_SIZE = 4 * 1024 * 1024
 OTHER_NAME = "Other"

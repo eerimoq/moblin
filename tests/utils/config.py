@@ -26,6 +26,8 @@ TESTER_SRT_PORT = 8890
 TESTER_SRTLA_PORT = 5000
 TESTER_SRTLA_SRT_PORT = 4008
 SRT_CLIENT_1_RELAYED_SERVER_PORT = 4009
+SRT_CLIENT_STABILITY_RELAYED_SERVER_PORT = 4010
+TESTER_RIST_RELAYED_PORT = 6602
 TESTER_WEBRTC_PORT = 8889
 TESTER_WEBRTC_UDP_PORT = 8189
 MEDIAMTX_API_PORT = 9997
@@ -125,12 +127,6 @@ class Config:
         if dji_camera is None:
             raise Exception(f"No [dji-camera] section found in '{self.config_toml.absolute()}'.")
         return dji_camera
-
-    def shaper(self):
-        shaper = self._config.get("shaper")
-        if shaper is None:
-            raise Exception(f"No [shaper] section found in '{self.config_toml.absolute()}'.")
-        return shaper
 
     def _device(self, device_name: str):
         device = self._config["device"].get(device_name)

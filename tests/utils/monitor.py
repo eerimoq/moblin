@@ -9,14 +9,12 @@ from humanfriendly import format_size
 from humanfriendly import format_timespan
 from systest_moblin.ffmpeg import StreamRecorder
 
+from .lossy_udp_relay import LossyUdpRelay
 from .moblin import BufferedBuffers
 from .moblin import Moblin
 from .moblin import parse_bitrate_status
 from .moblin import parse_ingests_status
 from .moblin import parse_uptime
-from .traffic_shaper import Side
-from .traffic_shaper import StreamStatistics
-from .traffic_shaper import TrafficShaper
 from .utils import Range
 
 LOGGER = logging.getLogger(__name__)
@@ -137,98 +135,6 @@ class Counters:
     thermal_states: defaultdict[str, float] = field(default_factory=lambda: defaultdict(float))
 
 
-class ShaperMonitor:
-    def __init__(self, shaper: TrafficShaper):
-        self._shaper = shaper
-        self._latest: list[StreamStatistics] = []
-        self._latest_time: float | None = None
-        self._bitrates: defaultdict[tuple[str, Side], Statistics] = defaultdict(Statistics)
-        self._latest_bitrates: dict[tuple[str, Side], float] = {}
-        self._maximum_queued: defaultdict[str, float] = defaultdict(float)
-        self._has_warned = False
-
-    def poll(self):
-        now = time.monotonic()
-        try:
-            statistics = self._shaper.statistics()
-        except Exception as error:
-            if not self._has_warned:
-                LOGGER.warning("Failed to read the traffic shaper statistics. %s", error)
-                self._has_warned = True
-            return
-        self._update(now, statistics)
-        self._latest = statistics
-        self._latest_time = now
-
-    def log_status(self):
-        if len(self._latest) == 0:
-            return
-        LOGGER.info("  Shaped streams in Mbps to device/tester: %s.", self._format_bitrates())
-        LOGGER.info("  Shaped streams dropped/queued: %s.", self._format_queues())
-
-    def queue_rows(self) -> list[list[str]]:
-        return [
-            [
-                stream.name,
-                format_value(stream.queue.dropped),
-                format_value(stream.queue.overlimits),
-                format_value(self._maximum_queued[stream.name]),
-            ]
-            for stream in self._latest
-        ]
-
-    def bitrate_rows(self) -> list[list[str]]:
-        rows = []
-        for stream in self._latest:
-            for side, traffic in stream.sent.items():
-                rows.append(
-                    [
-                        f"{stream.name} to {side}",
-                        *self._bitrates[(stream.name, side)].columns(1e6),
-                        format_size(traffic.total_bytes),
-                    ]
-                )
-        return rows
-
-    def _format_bitrates(self) -> str:
-        parts = []
-        for stream in self._latest:
-            to_device = self._latest_bitrates.get((stream.name, Side.DEVICE))
-            to_tester = self._latest_bitrates.get((stream.name, Side.TESTER))
-            parts.append(f"{stream.name}: {format_mbps(to_device)}/{format_mbps(to_tester)}")
-        return ", ".join(parts)
-
-    def _format_queues(self) -> str:
-        return ", ".join(
-            f"{stream.name}: {stream.queue.dropped:.0f}/{stream.queue.backlog_packets:.0f}"
-            for stream in self._latest
-        )
-
-    def _update(self, now: float, statistics: list[StreamStatistics]):
-        for stream in statistics:
-            self._maximum_queued[stream.name] = max(
-                self._maximum_queued[stream.name], stream.queue.backlog_packets
-            )
-        elapsed = now - (self._latest_time or now)
-        if elapsed <= 0:
-            return
-        previous_streams = {stream.name: stream for stream in self._latest}
-        for stream in statistics:
-            previous_stream = previous_streams.get(stream.name)
-            if previous_stream is None:
-                continue
-            self._update_bitrates(stream, previous_stream, elapsed)
-
-    def _update_bitrates(self, stream: StreamStatistics, previous: StreamStatistics, elapsed: float):
-        for side, traffic in stream.sent.items():
-            previous_traffic = previous.sent.get(side)
-            if previous_traffic is None:
-                continue
-            bitrate = bits_per_second(traffic.total_bytes - previous_traffic.total_bytes, elapsed)
-            self._bitrates[(stream.name, side)].add(bitrate)
-            self._latest_bitrates[(stream.name, side)] = bitrate
-
-
 class Monitor:
     def __init__(
         self,
@@ -239,7 +145,7 @@ class Monitor:
         stream_bitrate_range: Range,
         ingests_bitrate_range: Range,
         duration: float,
-        shaper: TrafficShaper | None,
+        relays: dict[str, LossyUdpRelay],
     ):
         self._moblin = moblin
         self._stream_recorder = stream_recorder
@@ -247,8 +153,7 @@ class Monitor:
         self._stream_bitrate_range = stream_bitrate_range
         self._ingests_bitrate_range = ingests_bitrate_range
         self._duration = duration
-        self._traffic_shaping = "none" if shaper is None else shaper.description()
-        self._shaper_monitor = None if shaper is None else ShaperMonitor(shaper)
+        self._relays = relays
         self._start_time = time.monotonic()
         self._next_log_time = time.monotonic()
         self._previous_poll_time: float | None = None
@@ -276,8 +181,6 @@ class Monitor:
         now = time.monotonic()
         self._update_video_decode_errors()
         self._update_buffered_buffers()
-        if self._shaper_monitor is not None:
-            self._shaper_monitor.poll()
         try:
             status = self._moblin.get_status()
         except Exception as error:
@@ -338,6 +241,14 @@ class Monitor:
         counters.duplicated = dict(counts.duplicated)
         counters.dropped = dict(counts.dropped)
 
+    def _format_packet_loss(self) -> str:
+        if len(self._relays) == 0:
+            return "none"
+        return ", ".join(f"{name} {relay.loss_percent:g} %" for name, relay in self._relays.items())
+
+    def _relay_drops(self) -> dict[str, float]:
+        return {name: relay.dropped for name, relay in self._relays.items()}
+
     def source_restarted(self, name: str):
         self.counters.source_restarts[name] += 1
         LOGGER.warning("Ingest source '%s' died and was restarted.", name)
@@ -391,8 +302,8 @@ class Monitor:
             "  Dropped audio buffers: %s.",
             format_counts(self.counters.buffered_audio.dropped),
         )
-        if self._shaper_monitor is not None:
-            self._shaper_monitor.log_status()
+        if len(self._relays) > 0:
+            LOGGER.info("  Relays dropped packets: %s.", format_counts(self._relay_drops()))
 
     def report(self):
         now = time.monotonic()
@@ -406,7 +317,7 @@ class Monitor:
         log_items(
             [
                 ("Duration", format_timespan(round(self.elapsed()))),
-                ("Traffic shaping", self._traffic_shaping),
+                ("Packet loss", self._format_packet_loss()),
                 ("Stream reconnects", str(counters.stream_reconnects)),
                 ("Failed status requests", str(counters.failed_status_requests)),
                 ("RAM growth in MB", self._format_ram_growth()),
@@ -435,16 +346,14 @@ class Monitor:
                 ["RAM in MB", *self.ram_mb.columns()],
             ],
         )
-        if self._shaper_monitor is not None:
+        if len(self._relays) > 0:
             log_table(
-                "Shaped stream queues",
-                ["Dropped", "Overlimits", "Queued"],
-                self._shaper_monitor.queue_rows(),
-            )
-            log_table(
-                "Shaped streams in Mbps",
-                ["Minimum", "Average", "Maximum", "Total"],
-                self._shaper_monitor.bitrate_rows(),
+                "Lossy relays",
+                ["Forwarded", "Returned", "Dropped"],
+                [
+                    [name, str(relay.forwarded), str(relay.returned), str(relay.dropped)]
+                    for name, relay in self._relays.items()
+                ],
             )
         log_table("Ingest sources", ["Restarts"], count_rows(counters.source_restarts))
         log_table("Video decoders", ["Errors"], count_rows(counters.video_decode_errors))
@@ -662,10 +571,6 @@ def is_within(value: float | None, minimum: float, maximum: float) -> bool:
     if value is None:
         return False
     return minimum <= value <= maximum
-
-
-def bits_per_second(total_bytes: float, elapsed: float) -> float:
-    return 8 * total_bytes / elapsed
 
 
 def format_value(value: float | None, scale: float = 1, decimals: int = 0) -> str:

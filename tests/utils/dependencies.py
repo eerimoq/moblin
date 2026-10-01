@@ -17,7 +17,6 @@ def check_dependencies():
         "ltcgen",
         "ltcdump",
         "openssl",
-        "ssh",
         "lsof",
         "tcpdump",
     ]:

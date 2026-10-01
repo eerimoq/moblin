@@ -26,9 +26,11 @@ from ..utils.audio_video_sync import measure_alert_synchronization
 from ..utils.config import RIST_SERVER_PORT
 from ..utils.config import RTMP_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
+from ..utils.config import SRT_CLIENT_STABILITY_RELAYED_SERVER_PORT
 from ..utils.config import SRT_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import SRT_SERVER_PORT
 from ..utils.config import TESTER_RIST_PORT
+from ..utils.config import TESTER_RIST_RELAYED_PORT
 from ..utils.config import TESTER_WEBRTC_PORT
 from ..utils.config import TESTER_WEBRTC_UDP_PORT
 from ..utils.config import rist_listener_url
@@ -44,21 +46,17 @@ from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import text_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.generate_device_settings import video_source_widget_settings
+from ..utils.lossy_udp_relay import LossyUdpRelay
 from ..utils.mediamtx import MediaMtx
 from ..utils.moblin import Moblin
 from ..utils.monitor import Monitor
 from ..utils.network_capture import CaptureStream
 from ..utils.network_capture import NetworkCapture
+from ..utils.network_capture import Protocol
 from ..utils.test_case import TestCase
 from ..utils.timecodes import TimecodeReport
 from ..utils.timecodes import measure_timecodes
 from ..utils.timecodes import write_timecodes_html
-from ..utils.traffic_shaper import Group
-from ..utils.traffic_shaper import Profile
-from ..utils.traffic_shaper import Protocol
-from ..utils.traffic_shaper import Relay
-from ..utils.traffic_shaper import Side
-from ..utils.traffic_shaper import TrafficShaper
 from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
 from ..utils.utils import manual_requirement
@@ -88,6 +86,7 @@ STREAM_PATH = "stability"
 INGEST_BITRATE = 5_000_000
 STREAM_BITRATE = 5_000_000
 STREAM_BITRATE_RANGE = Range(4_000_000, 6_500_000)
+RELAYED_STREAM_BITRATE_RANGE = Range(1_000_000, 6_500_000)
 INGEST_BITRATE_RANGE = Range(4_250_000, 6_500_000)
 STREAM_FPS = 30
 STREAM_RESOLUTION = Resolution.FULL_HD
@@ -99,12 +98,12 @@ NAME_WIDGET_WIDTH = 150
 NAME_WIDGET_FONT_SIZE = 40
 NAME_WIDGET_X = INGEST_WIDGET_SIZE / 2 - 100 * (NAME_WIDGET_WIDTH / 2) / STREAM_WIDTH
 NAME_WIDGET_BOTTOM_ROW_Y = 100 - INGEST_WIDGET_SIZE
-INGEST_RELAYS = [
-    Relay("RTMP", Group.INGESTS, Protocol.TCP, RTMP_SERVER_PORT, Side.DEVICE),
-    Relay("SRT", Group.INGESTS, Protocol.UDP, SRT_SERVER_PORT, Side.DEVICE),
-    Relay("RIST", Group.INGESTS, Protocol.UDP, RIST_SERVER_PORT, Side.DEVICE),
-    Relay("WHEP", Group.INGESTS, Protocol.TCP, TESTER_WEBRTC_PORT, Side.TESTER),
-    Relay("WHEP", Group.INGESTS, Protocol.UDP, TESTER_WEBRTC_UDP_PORT, Side.TESTER),
+INGEST_CAPTURE_STREAMS = [
+    CaptureStream("RTMP", Protocol.TCP, RTMP_SERVER_PORT),
+    CaptureStream("SRT", Protocol.UDP, SRT_SERVER_PORT),
+    CaptureStream("RIST", Protocol.UDP, RIST_SERVER_PORT),
+    CaptureStream("WHEP", Protocol.TCP, TESTER_WEBRTC_PORT),
+    CaptureStream("WHEP", Protocol.UDP, TESTER_WEBRTC_UDP_PORT),
 ]
 RTMP_STREAM_ID = uuid()
 SRT_STREAM_ID = uuid()
@@ -122,6 +121,8 @@ FIRST_ALERT_DELAY = 60
 MAXIMUM_ALERT_OFFSET_SPREAD = 0.25
 MAXIMUM_ALERT_OFFSET_DRIFT = 0.1
 TIMECODE_STREAM_PROTOCOLS = [StreamProtocol.SRT, StreamProtocol.RIST]
+RELAYED_STREAM_PROTOCOLS = [StreamProtocol.SRT, StreamProtocol.RIST]
+PACKET_LOSS_PERCENT = 1
 TIMECODE_WINDOWS = 12
 MAXIMUM_TIMECODE_SPREAD = 0.25
 MAXIMUM_TIMECODE_DRIFT = 0.5
@@ -149,7 +150,6 @@ class StabilityIngestsOneStream(TestCase):
         stream_protocol: StreamProtocol,
         record: bool,
         duration: float,
-        shaper: TrafficShaper | None,
         video_bitrate_control: BitrateRateControl,
         network_capture: bool,
     ):
@@ -159,22 +159,20 @@ class StabilityIngestsOneStream(TestCase):
         self._stream_protocol = stream_protocol
         self._record = record
         self._duration = duration
-        self._shaper = shaper
         self._video_bitrate_control = video_bitrate_control
         self._network_capture = network_capture
         self._capture: NetworkCapture | None = None
         self._monitor: Monitor | None = None
-        self._stream_profile: Profile | None = None
-        self._ingests_profile: Profile | None = None
-        self._stream_bitrate_range = STREAM_BITRATE_RANGE
+        self._relays: dict[str, LossyUdpRelay] = {}
+        self._stream_relayed = stream_protocol in RELAYED_STREAM_PROTOCOLS
+        self._stream_bitrate_range = (
+            RELAYED_STREAM_BITRATE_RANGE if self._stream_relayed else STREAM_BITRATE_RANGE
+        )
         self._ingests_bitrate_range = ingests_bitrate_range(len(ingests))
         self._alert_times: list[float] = []
         self._stream_started: datetime | None = None
 
     def setup(self):
-        if self._shaper is not None:
-            self.moblin.use_media_relay(self._shaper.ip_address)
-            self._update_expectations(self._shaper)
         self.moblin.import_settings(
             overrides={
                 "streams": [
@@ -276,14 +274,14 @@ class StabilityIngestsOneStream(TestCase):
         manual_volume_requirement(LOGGER)
         with ExitStack() as stack:
             capture = self._enter_network_capture(stack)
-            webrtc_host = None
-            if self._shaper is not None:
-                stack.enter_context(self._shaper)
-                webrtc_host = self._shaper.ip_address
-            mediamtx = stack.enter_context(MediaMtx(log_level="warn", webrtc_host=webrtc_host))
+            self._enter_relays(stack)
+            mediamtx = stack.enter_context(MediaMtx(log_level="warn"))
             if self._stream:
                 stream_recorder = stack.enter_context(
-                    StreamRecorder(stream_recorder_url(self._stream_protocol), STREAM_FILE)
+                    StreamRecorder(
+                        stream_recorder_url(self._stream_protocol),
+                        STREAM_FILE,
+                    )
                 )
             else:
                 stream_recorder = None
@@ -318,7 +316,7 @@ class StabilityIngestsOneStream(TestCase):
             LOGGER.warning("Failed to stop the app. Did it crash? %s", error)
 
     def _stream_protocol_settings(self) -> dict:
-        adaptive_bitrate = {"adaptiveBitrateEnabled": self._stream_profile is not None}
+        adaptive_bitrate = {"adaptiveBitrateEnabled": self._stream_relayed}
         match self._stream_protocol:
             case StreamProtocol.SRT:
                 return {
@@ -450,7 +448,7 @@ class StabilityIngestsOneStream(TestCase):
                 )
             case Ingest.SRT:
                 return FfmpegTestStream(
-                    url=self.moblin.ingest_srt_url(),
+                    url=self._ingest_url(ingest, self.moblin.ingest_srt_url()),
                     files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
@@ -459,7 +457,7 @@ class StabilityIngestsOneStream(TestCase):
                 )
             case Ingest.RIST:
                 return FfmpegTestStream(
-                    url=self.moblin.ingest_rist_url(),
+                    url=self._ingest_url(ingest, self.moblin.ingest_rist_url()),
                     files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,
@@ -475,18 +473,23 @@ class StabilityIngestsOneStream(TestCase):
                     quiet=True,
                 )
 
-    def _update_expectations(self, shaper: TrafficShaper):
-        self._stream_profile = shaper.profile(Group.STREAM)
-        self._ingests_profile = shaper.profile(Group.INGESTS)
-        self._stream_bitrate_range = shaped_bitrate_range(
-            STREAM_BITRATE, 1, self._stream_profile, STREAM_BITRATE_RANGE
-        )
-        self._ingests_bitrate_range = shaped_bitrate_range(
-            INGEST_BITRATE,
-            len(self._ingests),
-            self._ingests_profile,
-            ingests_bitrate_range(len(self._ingests)),
-        )
+    def _enter_relays(self, stack: ExitStack):
+        if self._stream and self._stream_relayed:
+            self._relays["Stream"] = stack.enter_context(stream_relay(self._stream_protocol))
+        for ingest, url in [
+            (Ingest.SRT, self.moblin.ingest_srt_url()),
+            (Ingest.RIST, self.moblin.ingest_rist_url()),
+        ]:
+            if ingest in self._ingests:
+                self._relays[ingest.label()] = stack.enter_context(
+                    LossyUdpRelay.from_url(url, PACKET_LOSS_PERCENT)
+                )
+
+    def _ingest_url(self, ingest: Ingest, url: str) -> str:
+        relay = self._relays.get(ingest.label())
+        if relay is None:
+            return url
+        return relay.relayed_url(url)
 
     def _wait_for_ingests(self):
         if len(self._ingests) == 0:
@@ -517,20 +520,15 @@ class StabilityIngestsOneStream(TestCase):
             stream_bitrate_range=self._stream_bitrate_range,
             ingests_bitrate_range=self._ingests_bitrate_range,
             duration=self._duration,
-            shaper=self._shaper,
+            relays=self._relays,
         )
 
     def _enter_network_capture(self, stack: ExitStack) -> NetworkCapture | None:
         if not self._network_capture:
             return None
-        hosts = [self.moblin.ip_address]
-        if self._shaper is not None:
-            hosts.append(self._shaper.ip_address)
-        streams = [
-            CaptureStream(relay.name, relay.protocol, relay.port) for relay in relays(self._stream_protocol)
-        ]
+        streams = [stream_capture_stream(self._stream_protocol)] + INGEST_CAPTURE_STREAMS
         self._capture = stack.enter_context(
-            NetworkCapture(hosts, FILES_DIR, STREAM_PATH, streams, self._settings())
+            NetworkCapture([self.moblin.ip_address], FILES_DIR, STREAM_PATH, streams, self._settings())
         )
         return self._capture
 
@@ -540,9 +538,8 @@ class StabilityIngestsOneStream(TestCase):
             "Stream protocol": self._stream_protocol.name,
             "Video bitrate control": str(self._video_bitrate_control),
             "Video bitrate": f"{STREAM_BITRATE / 1e6:.1f} Mbps",
-            "Adaptive bitrate": "enabled" if self._stream_profile is not None else "disabled",
-            "Stream traffic shaping": profile_description(self._stream_profile),
-            "Ingests traffic shaping": profile_description(self._ingests_profile),
+            "Adaptive bitrate": "enabled" if self._stream_relayed else "disabled",
+            "Packet loss": f"{PACKET_LOSS_PERCENT} % on SRT and RIST",
         }
 
     def _report_network_capture(self):
@@ -570,8 +567,6 @@ class StabilityIngestsOneStream(TestCase):
             if time.monotonic() >= alert_time:
                 self._trigger_alert()
                 alert_time += ALERT_INTERVAL
-            if self._shaper is not None:
-                self._shaper.poll()
             monitor.poll()
             restart_dead_sources(monitor, sources)
             if recorder is not None:
@@ -580,35 +575,35 @@ class StabilityIngestsOneStream(TestCase):
                 capture.poll()
 
 
-def stream_relay(stream_protocol: StreamProtocol) -> Relay:
+def stream_capture_stream(stream_protocol: StreamProtocol) -> CaptureStream:
     match stream_protocol:
         case StreamProtocol.SRT:
-            port, protocol = SRT_CLIENT_STABILITY_SERVER_PORT, Protocol.UDP
+            return CaptureStream("Stream", Protocol.UDP, SRT_CLIENT_STABILITY_SERVER_PORT)
         case StreamProtocol.RTMP:
-            port, protocol = RTMP_CLIENT_STABILITY_SERVER_PORT, Protocol.TCP
+            return CaptureStream("Stream", Protocol.TCP, RTMP_CLIENT_STABILITY_SERVER_PORT)
         case StreamProtocol.RIST:
-            port, protocol = TESTER_RIST_PORT, Protocol.UDP
-    return Relay("Stream", Group.STREAM, protocol, port, Side.TESTER)
+            return CaptureStream("Stream", Protocol.UDP, TESTER_RIST_PORT)
 
 
-def relays(stream_protocol: StreamProtocol) -> list[Relay]:
-    return [stream_relay(stream_protocol)] + INGEST_RELAYS
+def stream_relay(stream_protocol: StreamProtocol) -> LossyUdpRelay:
+    match stream_protocol:
+        case StreamProtocol.SRT:
+            port, relayed_port = SRT_CLIENT_STABILITY_SERVER_PORT, SRT_CLIENT_STABILITY_RELAYED_SERVER_PORT
+        case StreamProtocol.RIST:
+            port, relayed_port = TESTER_RIST_PORT, TESTER_RIST_RELAYED_PORT
+        case StreamProtocol.RTMP:
+            raise Exception("RTMP streams cannot be relayed.")
+    return LossyUdpRelay(("127.0.0.1", relayed_port), ("0.0.0.0", port), PACKET_LOSS_PERCENT)
 
 
 def stream_recorder_url(stream_protocol: StreamProtocol) -> str:
     match stream_protocol:
         case StreamProtocol.SRT:
-            return srt_listener_url(SRT_CLIENT_STABILITY_SERVER_PORT)
+            return srt_listener_url(SRT_CLIENT_STABILITY_RELAYED_SERVER_PORT)
         case StreamProtocol.RTMP:
             return rtmp_listener_url(STREAM_PATH, RTMP_CLIENT_STABILITY_SERVER_PORT)
         case StreamProtocol.RIST:
-            return rist_listener_url()
-
-
-def profile_description(profile: Profile | None) -> str:
-    if profile is None:
-        return "none"
-    return str(profile)
+            return rist_listener_url(TESTER_RIST_RELAYED_PORT)
 
 
 def ingests_bitrate_range(number_of_ingests: int) -> Range:
@@ -706,40 +701,6 @@ def restart_dead_sources(monitor: Monitor, sources: list[Source]):
             source.command.restart()
 
 
-def shaped_bitrate_range(
-    nominal_bitrate: float,
-    count: int,
-    profile: Profile | None,
-    default_range: Range,
-) -> Range:
-    if profile is None:
-        return default_range
-    minimum_rate = profile.minimum_rate()
-    maximum_rate = profile.maximum_rate()
-    if minimum_rate is None or maximum_rate is None:
-        return default_range
-    return Range(
-        0.2 * count * min(nominal_bitrate, minimum_rate),
-        1.3 * count * min(nominal_bitrate, maximum_rate),
-    )
-
-
-def create_traffic_shaper(
-    moblin: Moblin,
-    stream_protocol: StreamProtocol,
-    stream_profile: Profile | None,
-    ingests_profile: Profile | None,
-) -> TrafficShaper | None:
-    profiles: dict[Group, Profile] = {}
-    if stream_profile is not None:
-        profiles[Group.STREAM] = stream_profile
-    if ingests_profile is not None:
-        profiles[Group.INGESTS] = ingests_profile
-    if len(profiles) == 0:
-        return None
-    return TrafficShaper(moblin.config, moblin.ip_address, relays(stream_protocol), profiles)
-
-
 def tests(
     moblin: Moblin,
     ingests: list[Ingest],
@@ -747,7 +708,6 @@ def tests(
     stream_protocol: StreamProtocol,
     record: bool,
     duration: float,
-    shaper: TrafficShaper | None,
     video_bitrate_control: BitrateRateControl,
     network_capture: bool,
 ):
@@ -759,7 +719,6 @@ def tests(
             stream_protocol,
             record,
             duration,
-            shaper,
             video_bitrate_control,
             network_capture,
         ),
