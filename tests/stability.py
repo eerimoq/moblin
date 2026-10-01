@@ -44,7 +44,6 @@ def create_suites(moblin, args):
         stability.tests(
             moblin,
             args.ingests,
-            not args.no_stream,
             args.stream_protocol,
             3600 * args.duration,
             args.video_bitrate_control,
@@ -68,11 +67,6 @@ def main():
         default=list(Ingest),
         help="Comma separated list of ingests to stream to, for example 'rtmp,whep'.\n\n"
         "Give an empty list to disable all ingests (default: all).",
-    )
-    parser.add_argument(
-        "--no-stream",
-        action="store_true",
-        help="Do not start the outgoing stream, only run the ingests.",
     )
     parser.add_argument(
         "-p",

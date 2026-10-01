@@ -139,7 +139,7 @@ class Monitor:
     def __init__(
         self,
         moblin: Moblin,
-        stream_recorder: StreamRecorder | None,
+        stream_recorder: StreamRecorder,
         source_names: list[str],
         number_of_ingests: int,
         stream_bitrate_range: Range,
@@ -331,7 +331,7 @@ class Monitor:
                 ["Ingests", format_total_bytes(last.ingests_total_bytes if last else None)],
                 [
                     "Recorded stream",
-                    format_total_bytes(last.received_total_bytes if last and self._stream_recorder else None),
+                    format_total_bytes(last.received_total_bytes if last else None),
                 ],
             ],
         )
@@ -380,8 +380,6 @@ class Monitor:
         return deviation
 
     def _format_recorded_file(self) -> str:
-        if self._stream_recorder is None:
-            return "-"
         return str(self._stream_recorder.file)
 
     def _format_ram_growth(self) -> str:
@@ -411,14 +409,11 @@ class Monitor:
         sample.ingests_bitrate = ingests.bitrate
         sample.ingests_total_bytes = ingests.total_bytes
         sample.number_of_ingests = ingests.number_of_ingests
-        if self._stream_recorder is not None:
-            self._read_recorder(sample)
+        self._read_recorder(sample)
         return sample
 
     def _read_recorder(self, sample: Sample):
         recorder = self._stream_recorder
-        if recorder is None:
-            return
         sample.receiver_connected = recorder.is_running()
         sample.received_total_bytes = recorder.total_bytes()
         previous = self._previous_sample
@@ -455,9 +450,7 @@ class Monitor:
             LOGGER.warning("The device is no longer charging.")
 
     def _check(self, now: float, sample: Sample):
-        self._not_live.update(
-            now, self._stream_recorder is not None and not sample.is_live, "The app is not streaming"
-        )
+        self._not_live.update(now, not sample.is_live, "The app is not streaming")
         self._stream_bitrate_deviation.update(
             now,
             sample.is_live

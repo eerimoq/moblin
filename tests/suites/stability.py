@@ -146,7 +146,6 @@ class StabilityIngestsOneStream(TestCase):
         self,
         moblin: Moblin,
         ingests: list[Ingest],
-        stream: bool,
         stream_protocol: StreamProtocol,
         duration: float,
         video_bitrate_control: BitrateRateControl,
@@ -154,7 +153,6 @@ class StabilityIngestsOneStream(TestCase):
     ):
         super().__init__(moblin)
         self._ingests = ingests
-        self._stream = stream
         self._stream_protocol = stream_protocol
         self._duration = duration
         self._video_bitrate_control = video_bitrate_control
@@ -274,28 +272,23 @@ class StabilityIngestsOneStream(TestCase):
             capture = self._enter_network_capture(stack)
             self._enter_relays(stack)
             mediamtx = stack.enter_context(MediaMtx(log_level="warn"))
-            if self._stream:
-                stream_recorder = stack.enter_context(
-                    StreamRecorder(
-                        stream_recorder_url(self._stream_protocol),
-                        STREAM_FILE,
-                    )
+            stream_recorder = stack.enter_context(
+                StreamRecorder(
+                    stream_recorder_url(self._stream_protocol),
+                    STREAM_FILE,
                 )
-            else:
-                stream_recorder = None
+            )
             sources = self._create_sources()
             for source in sources:
                 stack.enter_context(source.command)
             if Ingest.WHEP in self._ingests:
                 mediamtx.wait_for_rtsp_publisher(WHEP_PATH, 1_000_000)
             self._wait_for_ingests()
-            if stream_recorder is not None:
-                self._go_live(stream_recorder)
+            self._go_live(stream_recorder)
             self.moblin.start_recording()
             self._monitor = self._create_monitor(stream_recorder, sources)
             self._monitor_until_done(self._monitor, stream_recorder, sources, capture)
-            if stream_recorder is not None:
-                self.moblin.end()
+            self.moblin.end()
             self.moblin.stop_recording()
             recording = self._download_recording()
         self._validate(stream_recorder, recording)
@@ -342,12 +335,10 @@ class StabilityIngestsOneStream(TestCase):
         )
         return recording
 
-    def _validate(self, recorder: StreamRecorder | None, recording: Path | None):
-        files = []
+    def _validate(self, recorder: StreamRecorder, recording: Path | None):
+        files = [recorder.file]
         if recording is not None:
-            files.append(recording)
-        if recorder is not None:
-            files.append(recorder.file)
+            files.insert(0, recording)
         reports = []
         with ThreadPoolExecutor() as executor:
             audio_futures = [executor.submit(ffprobe_audio, file) for file in files]
@@ -396,8 +387,8 @@ class StabilityIngestsOneStream(TestCase):
         if report.span() > MINIMUM_TIMECODE_DRIFT_SPAN:
             self.assert_less(abs(report.drift()), MAXIMUM_TIMECODE_DRIFT)
 
-    def _measure_timecodes(self, recorder: StreamRecorder | None) -> TimecodeReport | None:
-        if recorder is None or self._stream_started is None:
+    def _measure_timecodes(self, recorder: StreamRecorder) -> TimecodeReport | None:
+        if self._stream_started is None:
             return None
         if self._stream_protocol not in TIMECODE_STREAM_PROTOCOLS:
             return None
@@ -468,7 +459,7 @@ class StabilityIngestsOneStream(TestCase):
                 )
 
     def _enter_relays(self, stack: ExitStack):
-        if self._stream and self._stream_relayed:
+        if self._stream_relayed:
             self._relays["Stream"] = stack.enter_context(stream_relay(self._stream_protocol))
         for ingest, url in [
             (Ingest.SRT, self.moblin.ingest_srt_url()),
@@ -505,7 +496,7 @@ class StabilityIngestsOneStream(TestCase):
         )
         wait_until(lambda: stream_recorder.total_bytes() > 3_000_000, "the stream to be recorded to disk")
 
-    def _create_monitor(self, stream_recorder: StreamRecorder | None, sources: list[Source]) -> Monitor:
+    def _create_monitor(self, stream_recorder: StreamRecorder, sources: list[Source]) -> Monitor:
         return Monitor(
             moblin=self.moblin,
             stream_recorder=stream_recorder,
@@ -547,7 +538,7 @@ class StabilityIngestsOneStream(TestCase):
     def _monitor_until_done(
         self,
         monitor: Monitor,
-        recorder: StreamRecorder | None,
+        recorder: StreamRecorder,
         sources: list[Source],
         capture: NetworkCapture | None,
     ):
@@ -563,8 +554,7 @@ class StabilityIngestsOneStream(TestCase):
                 alert_time += ALERT_INTERVAL
             monitor.poll()
             restart_dead_sources(monitor, sources)
-            if recorder is not None:
-                recorder.poll()
+            recorder.poll()
             if capture is not None:
                 capture.poll()
 
@@ -698,7 +688,6 @@ def restart_dead_sources(monitor: Monitor, sources: list[Source]):
 def tests(
     moblin: Moblin,
     ingests: list[Ingest],
-    stream: bool,
     stream_protocol: StreamProtocol,
     duration: float,
     video_bitrate_control: BitrateRateControl,
@@ -708,7 +697,6 @@ def tests(
         StabilityIngestsOneStream(
             moblin,
             ingests,
-            stream,
             stream_protocol,
             duration,
             video_bitrate_control,
