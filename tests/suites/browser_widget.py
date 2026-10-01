@@ -190,7 +190,7 @@ class BrowserWidgetTestCase(TestCase):
         for index, qr_code in enumerate(qr_codes[1:]):
             if qr_code.number == previous_frame_number:
                 seen_frame_number_count += 1
-                LOGGER.info(
+                LOGGER.debug(
                     "Duplicated browser widget frame found at index %s (seen %s times)",
                     index,
                     seen_frame_number_count,
