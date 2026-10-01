@@ -18,10 +18,23 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
         return nil
     }
     return """
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = window.atob('\(styleSheetData.base64EncodedString())');
-    document.head.appendChild(style);
+    (() => {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = window.atob('\(styleSheetData.base64EncodedString())');
+        document.head.appendChild(style);
+    })();
+    """
+}
+
+private func viewportScript(width: Int) -> String {
+    """
+    (() => {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=\(width), initial-scale=1';
+        (document.head ?? document.documentElement).appendChild(meta);
+    })();
     """
 }
 
@@ -98,6 +111,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         if let source = createStyleSheetSource(styleSheet: styleSheet) {
             addScript(configuration, source, .atDocumentEnd)
         }
+        configuration.userContentController.addUserScript(.init(
+            source: viewportScript(width: widget.width),
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        ))
         addScript(configuration, videoScript(), .atDocumentStart)
         configuration.setHttpProxy(endpoint: proxyServer)
         userContentController = configuration.userContentController
@@ -107,6 +125,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
         super.init()
