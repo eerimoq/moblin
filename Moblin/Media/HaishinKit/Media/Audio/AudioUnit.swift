@@ -166,6 +166,23 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var latestSampleBufferAppendTime: CMTime = .zero
     private var numberOfDiscardedSampleBuffers = 0
     private var measurement = AudioMeasurement()
+    private let silenceTimer = SimpleTimer(queue: processorPipelineQueue)
+    private var latestBuiltinSampleBuffer: CMSampleBuffer?
+    private var latestBuiltinPresentationTimeStamp: CMTime = .invalid
+    private var nextBuiltinPresentationTimeStamp: CMTime = .invalid
+    private var isOutputtingSilence = false
+
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sessionWasInterrupted),
+                                               name: .AVCaptureSessionWasInterrupted,
+                                               object: session)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sessionInterruptionEnded),
+                                               name: .AVCaptureSessionInterruptionEnded,
+                                               object: session)
+    }
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -179,10 +196,103 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     func startRunning() {
         session.startRunning()
+        processorPipelineQueue.async {
+            self.isOutputtingSilence = false
+        }
     }
 
     func stopRunning() {
         session.stopRunning()
+        processorPipelineQueue.async {
+            self.silenceTimer.stop()
+            self.latestBuiltinSampleBuffer = nil
+        }
+    }
+
+    @objc
+    private func sessionWasInterrupted(_ notification: NSNotification) {
+        let reason = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as? Int
+        logger.info("audio-unit: Capture session interrupted with reason \(reason ?? -1)")
+        processorPipelineQueue.async {
+            self.silenceTimer.startPeriodic(interval: 0.1, initial: 0) { [weak self] in
+                self?.outputSilenceWhileInterrupted()
+            }
+        }
+    }
+
+    @objc
+    private func sessionInterruptionEnded(_: NSNotification) {
+        logger.info("audio-unit: Capture session interruption ended")
+        processorPipelineQueue.async {
+            self.silenceTimer.stop()
+        }
+    }
+
+    private func outputSilenceWhileInterrupted() {
+        if !isOutputtingSilence {
+            guard let latestBuiltinSampleBuffer,
+                  let sampleRate = latestBuiltinSampleBuffer.formatDescription?.audioStreamBasicDescription?
+                  .mSampleRate
+            else {
+                return
+            }
+            nextBuiltinPresentationTimeStamp = latestBuiltinPresentationTimeStamp + CMTime(
+                value: CMTimeValue(latestBuiltinSampleBuffer.numSamples),
+                timescale: CMTimeScale(sampleRate)
+            )
+        }
+        let end = currentPresentationTimeStamp() - CMTime(seconds: 0.1)
+        guard end > nextBuiltinPresentationTimeStamp else {
+            return
+        }
+        isOutputtingSilence = true
+        outputBuiltinSilence(until: end)
+    }
+
+    private func outputBuiltinSilence(until end: CMTime) {
+        guard selectedBufferedAudioId == nil,
+              let processor,
+              let formatDescription = latestBuiltinSampleBuffer?.formatDescription
+        else {
+            return
+        }
+        let builtinFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
+        let sampleRate = builtinFormat.sampleRate
+        let frames = ((end - nextBuiltinPresentationTimeStamp).seconds * sampleRate).rounded()
+        guard frames > 0 else {
+            return
+        }
+        let numberOfFrames = AVAudioFrameCount(frames)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: builtinFormat, frameCapacity: numberOfFrames)
+        else {
+            return
+        }
+        buffer.frameLength = numberOfFrames
+        for audioBuffer in UnsafeMutableAudioBufferListPointer(buffer.mutableAudioBufferList) {
+            guard let data = audioBuffer.mData else {
+                continue
+            }
+            memset(data, 0, Int(audioBuffer.mDataByteSize))
+        }
+        let presentationTimeStamp = nextBuiltinPresentationTimeStamp
+        nextBuiltinPresentationTimeStamp = presentationTimeStamp + CMTime(
+            value: CMTimeValue(numberOfFrames),
+            timescale: CMTimeScale(sampleRate)
+        )
+        guard let sampleBuffer = buffer.makeSampleBuffer(presentationTimeStamp) else {
+            return
+        }
+        appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
+    }
+
+    private func updateBuiltinAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        if isOutputtingSilence {
+            logger.info("audio-unit: Microphone audio resumed.")
+            isOutputtingSilence = false
+            outputBuiltinSilence(until: presentationTimeStamp)
+        }
+        latestBuiltinSampleBuffer = sampleBuffer
+        latestBuiltinPresentationTimeStamp = presentationTimeStamp
     }
 
     func attach(params: AudioUnitAttachParams) throws {
@@ -428,6 +538,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToHost(processor: processor, sampleBuffer: sampleBuffer)
+        updateBuiltinAudio(sampleBuffer, presentationTimeStamp)
         // if baseTimestamp.isNaN {
         //     baseTimestamp = sampleBuffer.presentationTimeStamp.seconds
         // }
