@@ -259,7 +259,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         let builtinFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
         let sampleRate = builtinFormat.sampleRate
         let frames = ((end - nextBuiltinPresentationTimeStamp).seconds * sampleRate).rounded()
-        guard frames > 0 else {
+        guard frames > 0, frames < 10 * sampleRate else {
             return
         }
         let numberOfFrames = AVAudioFrameCount(frames)
