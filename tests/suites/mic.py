@@ -3,6 +3,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from systest import wait_until
 from systest_moblin.ffmpeg import FfmpegServer
 from systest_moblin.ffmpeg import ffprobe_audio
 from systest_moblin.ffmpeg import ffprobe_video
@@ -25,6 +26,7 @@ from ..utils.moblin import Moblin
 from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
+from ..utils.utils import manual_confirmation
 from ..utils.utils import manual_volume_requirement
 
 LOGGER = logging.getLogger(__name__)
@@ -270,9 +272,92 @@ class MicStereo(TestCase):
         )
 
 
+class MicInterruption(TestCase):
+    """Record and stream over SRT to the test runner computer while a timer alarm in the Clock
+    app interrupts the audio session. Trigger one alert before and one after the interruption,
+    and validate that no video frames are missing, that the audio has no gaps and that the
+    alert audio and video are in sync in both the recording and the stream.
+
+    """
+
+    def __init__(self, moblin: Moblin):
+        super().__init__(moblin)
+        self._alert_times: list[float] = []
+
+    def setup(self):
+        self.skip_if_not_interactive()
+        self.moblin.import_settings(
+            overrides=settings_overrides(self.moblin),
+            files=alert_media_files(),
+        )
+
+    def run(self):
+        manual_volume_requirement(LOGGER)
+        manual_confirmation(
+            "Set a timer for 30 seconds in the Clock app and move Moblin back to the foreground."
+        )
+        wait_until(self._is_streamer_connected, "streamer to connect", ignore_errors=True)
+        self.moblin.set_scene(SceneName.FRONT)
+        self.moblin.set_main_mic()
+        stream_file = FILES_DIR / f"{self.name}.ts"
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        with FfmpegServer(url=srt_listener_url(), filename=stream_file):
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 2_000_000)
+            with recorder:
+                self._trigger_alert()
+                manual_confirmation("Stop the timer alarm 5 to 10 seconds after it starts ringing.")
+                self._trigger_alert()
+            self.moblin.end()
+        self._assert_media(recorder.recording)
+        self._assert_media(stream_file)
+
+    def _is_streamer_connected(self) -> bool:
+        self.moblin.ping()
+        return True
+
+    def _trigger_alert(self):
+        time.sleep(ALERT_DELAY)
+        self.moblin.send_chat_message(alert_chat_message())
+        self._alert_times.append(time.monotonic())
+        time.sleep(ALERT_DURATION)
+
+    def _find_gaps(
+        self, path: Path, name: str, presentation_time_stamps: list[float], maximum_delta: float
+    ) -> list[float]:
+        self.assert_greater(len(presentation_time_stamps), 0)
+        gaps = []
+        for previous, current in zip(presentation_time_stamps, presentation_time_stamps[1:]):
+            if current - previous > maximum_delta:
+                LOGGER.info("%s gap from %.3f to %.3f seconds in %s", name, previous, current, path.name)
+                gaps.append(current - previous)
+        return gaps
+
+    def _assert_media(self, path: Path):
+        video = ffprobe_video(path)
+        video_gaps = self._find_gaps(path, "Video", [frame.pts for frame in video.frames], 1.5 / STREAM_FPS)
+        self.assert_less_equal(len(video_gaps), 1, "Video gaps.")
+        for gap in video_gaps:
+            self.assert_less(gap, 0.5, "Video gap.")
+        audio = ffprobe_audio(path)
+        self.assert_equal(audio.sample_rate, 48000)
+        audio_presentation_time_stamps = [frame.pts for frame in audio.frames]
+        self.assert_equal(len(self._find_gaps(path, "Audio", audio_presentation_time_stamps, 0.1)), 0)
+        self.assert_greater(
+            audio_presentation_time_stamps[-1] + 0.5,
+            video.frames[-1].pts,
+            "Audio ends before video.",
+        )
+        report = measure_alert_synchronization(path, self._alert_times, ALERT_WIDGET_X, ALERT_WIDGET_Y)
+        report.log()
+        self.assert_equal(len(report.missing), 0)
+        self.assert_less(report.spread(), MAXIMUM_OFFSET_SPREAD)
+
+
 def tests(moblin: Moblin):
     return [
         MicDelay(moblin),
         MicSwitch(moblin),
         MicStereo(moblin),
+        MicInterruption(moblin),
     ]
