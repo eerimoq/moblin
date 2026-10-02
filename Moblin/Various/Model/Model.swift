@@ -2762,14 +2762,6 @@ final class Model: NSObject, ObservableObject {
         attachSingleLayout(scene: scene)
     }
 
-    func updateCameraPreviewWidgets() {
-        guard let scene = getSelectedScene() else {
-            return
-        }
-        cameraPreviewView.setWidgets(widgets: getCameraPreviewWidgets(scene: scene),
-                                     canvasSize: media.getCanvasSize())
-    }
-
     private func updateCameraPreviewRotation() {
         if useLandscapeStreamAndPortraitUi(cameraDevice, isLandscapeStreamAndPortraitUi()) {
             cameraPreviewView.setVideoOrientation(.portrait)

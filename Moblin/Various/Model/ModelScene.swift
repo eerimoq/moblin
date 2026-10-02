@@ -584,6 +584,14 @@ extension Model {
         return deviceIds
     }
 
+    func updateCameraPreviewWidgets() {
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        cameraPreviewView.setWidgets(widgets: getCameraPreviewWidgets(scene: scene),
+                                     canvasSize: media.getCanvasSize())
+    }
+
     private func createGlobalVideoEffects() {
         faceEffect = FaceEffect()
         updateFaceFilterSettings()
