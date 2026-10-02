@@ -37,7 +37,7 @@ def manual_confirmation(message: str):
     input(f"🧑‍🔧: {message} Press ENTER to continue.")
 
 
-def sleep_unless_quit(duration: float) -> bool:
+def sleep_unless_quit(logger: Logger, duration: float) -> bool:
     fd = sys.stdin.fileno()
     if not os.isatty(fd) or os.tcgetpgrp(fd) != os.getpgrp():
         time.sleep(duration)
@@ -46,6 +46,7 @@ def sleep_unless_quit(duration: float) -> bool:
     while (remaining := end_time - time.monotonic()) > 0:
         readable, _, _ = select.select([fd], [], [], remaining)
         if readable and os.read(fd, 1024).strip() == b"q":
+            logger.info("Test stopped by the tester. Ending it early.")
             return True
     return False
 

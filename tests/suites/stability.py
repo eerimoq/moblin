@@ -548,10 +548,10 @@ class StabilityIngestsOneStream(TestCase):
         alert_time = time.monotonic() + FIRST_ALERT_DELAY
         LOGGER.info("Type q and press ENTER to end the test early.")
         while time.monotonic() < end_time:
-            if sleep_unless_quit(5):
+            if sleep_unless_quit(LOGGER, 5):
                 break
             self.moblin.set_scene(SceneName.BACK)
-            if sleep_unless_quit(5):
+            if sleep_unless_quit(LOGGER, 5):
                 break
             self.moblin.set_scene(SceneName.FRONT)
             if time.monotonic() >= alert_time:
