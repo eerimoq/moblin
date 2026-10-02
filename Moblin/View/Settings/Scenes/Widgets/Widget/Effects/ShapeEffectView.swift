@@ -145,6 +145,7 @@ struct ShapeEffectView: View {
 
     private func updateWidget() {
         model.getWidgetShapeEffect(widget, effect)?.setSettings(settings: shape.toSettings())
+        model.updateCameraPreviewWidgets()
     }
 
     var body: some View {

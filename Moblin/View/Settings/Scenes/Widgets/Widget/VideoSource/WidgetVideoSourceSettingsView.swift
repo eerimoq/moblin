@@ -151,6 +151,7 @@ struct WidgetVideoSourceSettingsView: View {
     private func setEffectSettings() {
         model.getVideoSourceEffect(id: widget.id)?
             .setSettings(settings: videoSource.toEffectSettings())
+        model.updateCameraPreviewWidgets()
     }
 
     var body: some View {

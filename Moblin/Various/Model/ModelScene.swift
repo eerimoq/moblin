@@ -543,6 +543,47 @@ extension Model {
         return devices.map(\.id)
     }
 
+    func getCameraPreviewWidgets(scene: SettingsScene) -> [CameraPreviewWidget] {
+        var widgets: [CameraPreviewWidget] = []
+        for widget in removeDuplicatedWidgets(widgets: getSceneWidgets(scene: scene, onlyEnabled: true))
+            where widget.widget.type == .videoSource
+        {
+            let videoSource = widget.widget.videoSource
+            guard let cameraId = videoSource.videoSource.getCaptureDeviceCameraId(),
+                  let device = AVCaptureDevice(uniqueID: cameraId)
+            else {
+                continue
+            }
+            var previewWidget = CameraPreviewWidget(
+                id: widget.widget.id,
+                deviceId: makeCaptureDevice(device: device).id,
+                layout: widget.sceneWidget.layout,
+                mirror: videoSource.mirror,
+                rotation: videoSource.rotation,
+                contentRegion: CGRect(origin: .zero, size: media.getCanvasSize())
+            )
+            for effect in widget.widget.effects where effect.enabled && effect.type == .shape {
+                previewWidget.applyShape(shape: effect.shape)
+            }
+            widgets.append(previewWidget)
+        }
+        return widgets
+    }
+
+    func getCameraPreviewWidgetDeviceIds(scene: SettingsScene) -> [UUID: UUID] {
+        var scenes = [scene]
+        if let quickSwitchGroup = scene.quickSwitchGroup {
+            scenes += enabledScenes.filter { $0.quickSwitchGroup == quickSwitchGroup }
+        }
+        var deviceIds: [UUID: UUID] = [:]
+        for scene in scenes {
+            for widget in getCameraPreviewWidgets(scene: scene) {
+                deviceIds[widget.id] = widget.deviceId
+            }
+        }
+        return deviceIds
+    }
+
     private func createGlobalVideoEffects() {
         faceEffect = FaceEffect()
         updateFaceFilterSettings()
@@ -1056,6 +1097,7 @@ extension Model {
             attachSingleLayout(scene: scene)
         } else {
             media.usePendingAfterAttachEffects()
+            updateCameraPreviewWidgets()
         }
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStream.lines.isEmpty {

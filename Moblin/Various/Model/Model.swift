@@ -2762,6 +2762,14 @@ final class Model: NSObject, ObservableObject {
         attachSingleLayout(scene: scene)
     }
 
+    func updateCameraPreviewWidgets() {
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        cameraPreviewView.setWidgets(widgets: getCameraPreviewWidgets(scene: scene),
+                                     canvasSize: media.getCanvasSize())
+    }
+
     private func updateCameraPreviewRotation() {
         if useLandscapeStreamAndPortraitUi(cameraDevice, isLandscapeStreamAndPortraitUi()) {
             cameraPreviewView.setVideoOrientation(.portrait)
@@ -2909,9 +2917,14 @@ final class Model: NSObject, ObservableObject {
         let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
         let showCameraPreview = updateShowCameraPreview()
         let attachCameraPreview = showCameraPreview || database.alwaysAttachCameraPreview
-        cameraPreviewView.setDevices(ids: attachCameraPreview
-            ? getCameraPreviewDeviceIds(scene: scene, sceneDevice: cameraDevice)
-            : [])
+        if attachCameraPreview {
+            cameraPreviewView.setDevices(
+                ids: getCameraPreviewDeviceIds(scene: scene, sceneDevice: cameraDevice),
+                widgets: getCameraPreviewWidgetDeviceIds(scene: scene)
+            )
+        } else {
+            cameraPreviewView.setDevices(ids: [], widgets: [:])
+        }
         let params = VideoUnitAttachParams(
             devices: devices,
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
@@ -2944,7 +2957,8 @@ final class Model: NSObject, ObservableObject {
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
-                self.cameraPreviewView.select(id: devices.getSceneDevice()?.id)
+                self.cameraPreviewView.select(id: devices.getSceneDevice()?.id, isMirrored: isMirrored)
+                self.updateCameraPreviewWidgets()
                 self.updateCameraPreviewRotation()
                 self.updateVideoPreviews()
             }
@@ -2973,7 +2987,7 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
         zoom.hasZoom = false
-        cameraPreviewView.setDevices(ids: [])
+        cameraPreviewView.setDevices(ids: [], widgets: [:])
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
