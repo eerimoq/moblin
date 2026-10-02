@@ -92,6 +92,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case djiDevices = "DJI devices"
     case gimbalPreset = "Move to gimbal preset"
     case sendChatMessage = "Send chat message"
+    case notification = "Notification"
     case sendTwitchShoutout = "Send Twitch shoutout"
     case delay = "Delay"
     case waitForEvent = "Wait for event"
@@ -126,6 +127,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             String(localized: "Move to gimbal preset")
         case .sendChatMessage:
             String(localized: "Send chat message")
+        case .notification:
+            String(localized: "Notification")
         case .sendTwitchShoutout:
             String(localized: "Send Twitch shoutout")
         case .delay:
@@ -387,6 +390,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var zoomX: Float = 1
     @Published var gimbalPresetId: UUID?
     @Published var chatMessage: String = ""
+    @Published var notificationMessage: String = ""
     @Published var delay: Double = 3
     @Published var macroId: UUID?
     @Published var djiDevices: Set<UUID> = []
@@ -418,6 +422,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case zoomX
         case gimbalPresetId
         case chatMessage
+        case notificationMessage
         case delay
         case macroId
         case djiDevices
@@ -446,6 +451,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.zoomX, zoomX)
         try container.encode(.gimbalPresetId, gimbalPresetId)
         try container.encode(.chatMessage, chatMessage)
+        try container.encode(.notificationMessage, notificationMessage)
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
         try container.encode(.djiDevices, djiDevices)
@@ -474,6 +480,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         zoomX = container.decode(.zoomX, Float.self, 1)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         chatMessage = container.decode(.chatMessage, String.self, "")
+        notificationMessage = container.decode(.notificationMessage, String.self, "")
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
         djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])

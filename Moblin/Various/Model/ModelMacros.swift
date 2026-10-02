@@ -148,7 +148,14 @@ extension Model {
 
     private func macrosTextFormatActions() -> [SettingsMacrosAction] {
         database.macros.macros.flatMap {
-            $0.actions.filter { $0.function == .sendChatMessage || $0.function == .ifCondition }
+            $0.actions.filter {
+                switch $0.function {
+                case .sendChatMessage, .notification, .ifCondition:
+                    true
+                default:
+                    false
+                }
+            }
         }
     }
 
@@ -156,6 +163,8 @@ extension Model {
         switch action.function {
         case .ifCondition:
             "\(action.ifValue) \(action.ifOtherValue)"
+        case .notification:
+            action.notificationMessage
         default:
             action.chatMessage
         }
@@ -230,6 +239,8 @@ extension Model {
             executeGimbalPreset(action: action)
         case .sendChatMessage:
             executeSendChatMessage(action: action, variables: macro.variables)
+        case .notification:
+            executeNotification(currentMacro: currentMacro, action: action, variables: macro.variables)
         case .sendTwitchShoutout:
             executeSendTwitchShoutout(variables: macro.variables)
         case .delay:
@@ -298,6 +309,36 @@ extension Model {
 
     private func executeSendChatMessage(action: SettingsMacrosAction, variables: MacroVariables) -> Bool {
         sendChatMessage(message: formatPlainText(formatString: variables.substitute(action.chatMessage)))
+        return true
+    }
+
+    private func executeNotification(currentMacro: SettingsMacrosMacro,
+                                     action: SettingsMacrosAction,
+                                     variables: MacroVariables) -> Bool
+    {
+        let text = formatPlainText(formatString: variables.substitute(action.notificationMessage))
+        let post = ChatPost(id: chatPostId,
+                            messageId: nil,
+                            displayName: currentMacro.name,
+                            user: currentMacro.name,
+                            userId: nil,
+                            userColor: database.chat.usernameColor,
+                            userBadges: [],
+                            segments: makeChatPostTextSegments(text: text),
+                            timestamp: statusOther.digitalClock,
+                            timestampTime: .now,
+                            isAction: false,
+                            isSubscriber: false,
+                            bits: nil,
+                            highlight: ChatHighlight.makeMacroNotification(),
+                            live: true,
+                            filter: nil,
+                            platform: nil,
+                            sourceChannelIcon: nil,
+                            state: ChatPostState())
+        chatPostId += 1
+        chatActivityFeed.appendMessage(post: post)
+        quickButtonChatAlerts.appendMessage(post: post)
         return true
     }
 

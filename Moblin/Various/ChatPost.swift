@@ -51,6 +51,7 @@ enum ChatHighlightKind: Codable {
     case moderator
     case remoteControlAssistant
     case gigantifiedEmote
+    case macroNotification
 }
 
 struct ChatHighlight {
@@ -176,6 +177,15 @@ struct ChatHighlight {
         )
     }
 
+    static func makeMacroNotification() -> ChatHighlight {
+        ChatHighlight(
+            kind: .macroNotification,
+            barColor: .cyan,
+            image: "increase.indent",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Notification"))
+        )
+    }
+
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind = switch kind {
         case .redemption:
@@ -193,6 +203,8 @@ struct ChatHighlight {
         case .remoteControlAssistant:
             .other
         case .gigantifiedEmote:
+            .other
+        case .macroNotification:
             .other
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)

@@ -55,6 +55,23 @@ struct SettingsMacrosSuite {
     }
 
     @Test
+    func notificationActionSurvivesEncodeAndDecode() throws {
+        let action = SettingsMacrosAction()
+        action.function = .notification
+        action.notificationMessage = "Thanks {twitchFollowUser}!"
+        let decoded = try JSONDecoder().decode(SettingsMacrosAction.self,
+                                               from: JSONEncoder().encode(action))
+        #expect(decoded.function == .notification)
+        #expect(decoded.notificationMessage == "Thanks {twitchFollowUser}!")
+    }
+
+    @Test
+    func notificationActionDefaultsWhenMissingFromSettings() throws {
+        let action = try JSONDecoder().decode(SettingsMacrosAction.self, from: Data("{}".utf8))
+        #expect(action.notificationMessage == "")
+    }
+
+    @Test
     func waitForEventMatchesOnlyItsEvent() {
         let action = makeWaitForEventAction(event: .twitchFollow)
         #expect(action.matches(event: MacroEvent(event: .twitchFollow)))

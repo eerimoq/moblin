@@ -198,6 +198,15 @@ private struct ActionView: View {
                         } label: {
                             TextItemLocalizedView(name: "Message", value: action.chatMessage)
                         }
+                    case .notification:
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Message"),
+                                           suggestions: true,
+                                           text: $action.notificationMessage,
+                                           value: action.notificationMessage)
+                        } label: {
+                            TextItemLocalizedView(name: "Message", value: action.notificationMessage)
+                        }
                     case .sendTwitchShoutout:
                         EmptyView()
                     case .delay:
@@ -415,6 +424,9 @@ private struct ActionView: View {
                 case .sendChatMessage:
                     Spacer()
                     GrayTextView(text: action.chatMessage)
+                case .notification:
+                    Spacer()
+                    GrayTextView(text: action.notificationMessage)
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")
