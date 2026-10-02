@@ -1,5 +1,9 @@
+import os
+import select
 import struct
 import subprocess
+import sys
+import time
 import zlib
 from dataclasses import dataclass
 from logging import Logger
@@ -31,6 +35,19 @@ def manual_volume_requirement(logger: Logger):
 
 def manual_confirmation(message: str):
     input(f"🧑‍🔧: {message} Press ENTER to continue.")
+
+
+def sleep_unless_quit(duration: float) -> bool:
+    fd = sys.stdin.fileno()
+    if not os.isatty(fd) or os.tcgetpgrp(fd) != os.getpgrp():
+        time.sleep(duration)
+        return False
+    end_time = time.monotonic() + duration
+    while (remaining := end_time - time.monotonic()) > 0:
+        readable, _, _ = select.select([fd], [], [], remaining)
+        if readable and os.read(fd, 1024).strip() == b"q":
+            return True
+    return False
 
 
 def create_qr_code_image(text: str, output_image: Path):

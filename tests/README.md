@@ -52,6 +52,9 @@ just test-stability --device macpro
 just test-stability --device macpro --duration 0.5
 ```
 
+Type `q` and press ENTER while the test is monitoring the app to end it early. The final checks
+and the report are still done, and the exit code tells if the test passed.
+
 # Watch the stability test
 
 ```bash
