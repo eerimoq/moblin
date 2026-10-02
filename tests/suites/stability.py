@@ -28,6 +28,7 @@ from ..utils.config import RTMP_CLIENT_STABILITY_SERVER_PORT
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import SRT_CLIENT_STABILITY_RELAYED_SERVER_PORT
 from ..utils.config import SRT_CLIENT_STABILITY_SERVER_PORT
+from ..utils.config import SRT_HIGH_LATENCY
 from ..utils.config import SRT_SERVER_PORT
 from ..utils.config import TESTER_RIST_PORT
 from ..utils.config import TESTER_RIST_RELAYED_PORT
@@ -433,7 +434,7 @@ class StabilityIngestsOneStream(TestCase):
                 )
             case Ingest.SRT:
                 return FfmpegTestStream(
-                    url=self._ingest_url(ingest, self.moblin.ingest_srt_url()),
+                    url=self._ingest_url(ingest, self.moblin.ingest_srt_url(latency=SRT_HIGH_LATENCY)),
                     files_dir=FILES_DIR,
                     video_bitrate=INGEST_BITRATE,
                     loop_audio=True,

@@ -19,6 +19,7 @@ from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import SRT_CLIENT_1_RELAYED_SERVER_PORT
 from ..utils.config import SRT_CLIENT_1_SERVER_PORT
 from ..utils.config import SRT_CLIENT_2_SERVER_PORT
+from ..utils.config import SRT_HIGH_LATENCY
 from ..utils.config import SRT_SERVER_PORT
 from ..utils.config import TESTER_RTMP_PORT
 from ..utils.config import WHIP_SERVER_PORT
@@ -237,7 +238,7 @@ class IngestSrtServer(IngestTestCase):
         )
 
     def run(self):
-        url = self.moblin.ingest_srt_url()
+        url = self.moblin.ingest_srt_url(latency=SRT_HIGH_LATENCY)
         with LossyUdpRelay.from_url(url) as relay:
             stream = FfmpegTestStream(
                 url=relay.relayed_url(url),
@@ -276,7 +277,9 @@ class IngestSrtClient(IngestTestCase):
             ("127.0.0.1", SRT_CLIENT_1_RELAYED_SERVER_PORT), ("0.0.0.0", SRT_CLIENT_1_SERVER_PORT)
         ):
             stream = FfmpegTestStream(
-                url=srt_listener_url(SRT_CLIENT_1_RELAYED_SERVER_PORT, stream_id="1"),
+                url=srt_listener_url(
+                    SRT_CLIENT_1_RELAYED_SERVER_PORT, stream_id="1", latency=SRT_HIGH_LATENCY
+                ),
                 files_dir=FILES_DIR,
                 transport_format=TransportFormat.MPEGTS,
             )

@@ -413,8 +413,11 @@ class Moblin:
     def ingest_rtmp_url(self, stream_key: str = "1") -> str:
         return f"rtmp://{self.ip_address}:{RTMP_SERVER_PORT}/live/{stream_key}"
 
-    def ingest_srt_url(self, stream_id: str = "1") -> str:
-        return f"srt://{self.ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
+    def ingest_srt_url(self, stream_id: str = "1", latency: int | None = None) -> str:
+        url = f"srt://{self.ip_address}:{SRT_SERVER_PORT}?streamid={stream_id}"
+        if latency is not None:
+            url += f"&latency={latency}"
+        return url
 
     def ingest_whip_url(self, stream_key: str = "1") -> str:
         return f"http://{self.ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"

@@ -36,6 +36,7 @@ HTTPS_SERVER_PORT = 6968
 WEBSOCKET_SERVER_PORT = 6969
 
 REMOTE_CONTROL_PASSWORD = "1234"
+SRT_HIGH_LATENCY = 1_000_000
 
 
 class Capability(StrEnum):
@@ -55,12 +56,15 @@ def srt_listener_url(
     port: int = TESTER_SRT_PORT,
     stream_id: str | None = None,
     passphrase: str | None = None,
+    latency: int | None = None,
 ) -> str:
     url = f"srt://0.0.0.0:{port}?mode=listener"
     if stream_id is not None:
         url += f"&streamid={stream_id}"
     if passphrase is not None:
         url += f"&passphrase={passphrase}"
+    if latency is not None:
+        url += f"&latency={latency}"
     return url
 
 
