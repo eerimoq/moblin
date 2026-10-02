@@ -276,7 +276,9 @@ extension Model {
         if filter?.showOnScreen != false {
             let isAlert = highlight?.isAlert() == true
             if isAlert {
-                chatActivityFeed.appendMessage(post: post)
+                if highlight?.kind != .firstMessage {
+                    chatActivityFeed.appendMessage(post: post)
+                }
                 quickButtonChatAlerts.appendMessage(post: post)
             }
             chat.appendMessage(post: post)
