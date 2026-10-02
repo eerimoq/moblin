@@ -213,8 +213,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private func sessionWasInterrupted(_ notification: NSNotification) {
         let reason = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as? Int
         logger.info("audio-unit: Capture session interrupted with reason \(reason ?? -1)")
-        processorPipelineQueue.async {
-            self.silenceTimer.startPeriodic(interval: 0.1, initial: 0) { [weak self] in
+        processorPipelineQueue.async { [weak self] in
+            self?.silenceTimer.startPeriodic(interval: 0.1, initial: 0) { [weak self] in
                 self?.outputSilenceWhileInterrupted()
             }
         }
