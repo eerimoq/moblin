@@ -107,17 +107,17 @@ class VideoEffect: NSObject, @unchecked Sendable {
                                                 _ mirror: Bool,
                                                 _ backgroundImage: MTIImage,
                                                 _ info: VideoEffectInfo,
-                                                _ widgetShape: MetalPetalWidgetShape? = nil) -> MTIImage
+                                                _ widgetShape: WidgetShape? = nil) -> MTIImage
     {
-        var shape = widgetShape ?? MetalPetalWidgetShape(contentRegion: image.extent)
+        var shape = widgetShape ?? WidgetShape(contentRegion: image.extent)
         let image = applyEffectsMetalPetal(image, info)
         for effect in effects {
-            effect.modifyMetalPetalWidgetShape(&shape)
+            effect.modifyWidgetShape(&shape)
         }
         return image.resizeMirrorMoveComposited(sceneWidget.layout, mirror, backgroundImage, shape)
     }
 
-    func modifyMetalPetalWidgetShape(_: inout MetalPetalWidgetShape) {}
+    func modifyWidgetShape(_: inout WidgetShape) {}
 
     private func applyEarlyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         var image = image

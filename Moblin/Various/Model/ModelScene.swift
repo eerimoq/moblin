@@ -559,11 +559,11 @@ extension Model {
                 deviceId: makeCaptureDevice(device: device).id,
                 layout: widget.sceneWidget.layout,
                 mirror: videoSource.mirror,
-                rotation: videoSource.rotation,
-                contentRegion: CGRect(origin: .zero, size: media.getCanvasSize())
+                shape: WidgetShape(contentRegion: CGRect(origin: .zero, size: media.getCanvasSize()),
+                                   rotation: videoSource.rotation)
             )
             for effect in widget.widget.effects where effect.enabled && effect.type == .shape {
-                previewWidget.applyShape(shape: effect.shape)
+                previewWidget.shape.apply(effect.shape.toSettings())
             }
             widgets.append(previewWidget)
         }

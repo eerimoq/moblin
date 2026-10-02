@@ -51,31 +51,7 @@ struct CameraPreviewWidget {
     let deviceId: UUID
     let layout: SettingsWidgetLayout
     let mirror: Bool
-    let rotation: Double
-    var contentRegion: CGRect
-    var cornerRadius: Double = 0
-    var borderWidth: Double = 0
-    var borderColor: CGColor?
-
-    mutating func applyShape(shape: SettingsVideoEffectShape) {
-        if shape.cropEnabled {
-            contentRegion = CGRect(x: contentRegion.minX + shape.cropX * contentRegion.width,
-                                   y: contentRegion.minY + shape.cropY * contentRegion.height,
-                                   width: shape.cropWidth * contentRegion.width,
-                                   height: shape.cropHeight * contentRegion.height)
-        }
-        cornerRadius = Double(shape.cornerRadius)
-        borderWidth = shape.borderWidth
-        borderColor = shape.borderColor.uiColor().cgColor
-    }
-
-    func rotated(_ size: CGSize) -> CGSize {
-        if rotation == 90 || rotation == 270 {
-            CGSize(width: size.height, height: size.width)
-        } else {
-            size
-        }
-    }
+    var shape: WidgetShape
 }
 
 private class CameraPreviewWidgetLayer {
@@ -94,32 +70,31 @@ private class CameraPreviewWidgetLayer {
     }
 
     func layout(widget: CameraPreviewWidget, index: Int, canvasSize: CGSize, streamSize: CGSize) {
-        let contentRegion = widget.contentRegion
+        let shape = widget.shape
+        let contentRegion = shape.contentRegion
         guard !contentRegion.isEmpty else {
             return
         }
-        let rotatedSize = widget.rotated(contentRegion.size)
-        let scale = min(toPixels(widget.layout.size, streamSize.width) / rotatedSize.width,
-                        toPixels(widget.layout.size, streamSize.height) / rotatedSize.height)
-        let size = CGSize(width: contentRegion.width * scale, height: contentRegion.height * scale)
-        let borderWidth = 0.025 * widget.borderWidth * min(size.width, size.height)
-        let borderSize = CGSize(width: size.width + 2 * borderWidth, height: size.height + 2 * borderWidth)
-        let rotatedBorderSize = widget.rotated(borderSize)
-        let frame = CGRect(origin: layoutPosition(widget.layout, rotatedBorderSize, streamSize),
-                           size: rotatedBorderSize)
-        var transform = CATransform3DMakeRotation(widget.rotation * .pi / 180, 0, 0, 1)
+        let placement = shape.placement(widget.layout, streamSize)
+        let scale = placement.scale
+        let borderWidth = placement.borderWidth
+        let borderColor = UIColor(red: shape.borderColor.red,
+                                  green: shape.borderColor.green,
+                                  blue: shape.borderColor.blue,
+                                  alpha: shape.borderColor.alpha)
+        var transform = CATransform3DMakeRotation(shape.rotationRadians(), 0, 0, 1)
         if widget.mirror {
             transform = CATransform3DConcat(transform, CATransform3DMakeScale(-1, 1, 1))
         }
         borderLayer.isHidden = false
         borderLayer.zPosition = CGFloat(index)
         borderLayer.transform = transform
-        borderLayer.bounds = CGRect(origin: .zero, size: borderSize)
-        borderLayer.position = CGPoint(x: frame.midX, y: frame.midY)
-        borderLayer.cornerRadius = min(borderSize.width, borderSize.height) / 2 * widget.cornerRadius
-        borderLayer.backgroundColor = borderWidth > 0 ? widget.borderColor : nil
-        contentLayer.frame = CGRect(x: borderWidth, y: borderWidth, width: size.width, height: size.height)
-        contentLayer.cornerRadius = min(size.width, size.height) / 2 * widget.cornerRadius
+        borderLayer.bounds = CGRect(origin: .zero, size: placement.borderSize)
+        borderLayer.position = placement.center
+        borderLayer.cornerRadius = CGFloat(shape.cornerRadiusPixels(placement.borderSize))
+        borderLayer.backgroundColor = borderWidth > 0 ? borderColor.cgColor : nil
+        contentLayer.frame = CGRect(origin: CGPoint(x: borderWidth, y: borderWidth), size: placement.size)
+        contentLayer.cornerRadius = CGFloat(shape.cornerRadiusPixels(placement.size))
         previewLayer.frame = CGRect(x: -contentRegion.minX * scale,
                                     y: -contentRegion.minY * scale,
                                     width: canvasSize.width * scale,

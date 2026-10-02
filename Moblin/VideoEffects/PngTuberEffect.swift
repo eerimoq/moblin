@@ -163,10 +163,9 @@ final class PngTuberEffect: VideoEffect, @unchecked Sendable {
         let contentSize = layerImages.reduce(CGSize.zero) {
             CGSize(width: max($0.width, $1.extent.width), height: max($0.height, $1.extent.height))
         }
-        let scale = min(toPixels(sceneWidget.layout.size, backgroundSize.width) / contentSize.width,
-                        toPixels(sceneWidget.layout.size, backgroundSize.height) / contentSize.height)
+        let scale = layoutScale(sceneWidget.layout, contentSize, backgroundSize)
         let size = CGSize(width: contentSize.width * scale, height: contentSize.height * scale)
-        let position = metalPetalLayerPosition(sceneWidget.layout, size, backgroundSize)
+        let position = layoutCenter(sceneWidget.layout, size, backgroundSize)
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = layerImages.map { layerImage in

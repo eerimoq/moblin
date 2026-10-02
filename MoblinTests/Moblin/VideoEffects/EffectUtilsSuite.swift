@@ -15,11 +15,11 @@ struct EffectUtilsSuite {
     }
 
     private func position(_ alignment: SettingsAlignment) -> CGPoint {
-        metalPetalLayerPosition(layout(alignment), size, streamSize)
+        layoutCenter(layout(alignment), size, streamSize)
     }
 
     @Test
-    func metalPetalLayerPositionCorners() {
+    func layoutCenterCorners() {
         #expect(position(.topLeft) == CGPoint(x: 292, y: 266))
         #expect(position(.topRight) == CGPoint(x: 1628, y: 266))
         #expect(position(.bottomLeft) == CGPoint(x: 292, y: 814))
@@ -27,7 +27,7 @@ struct EffectUtilsSuite {
     }
 
     @Test
-    func metalPetalLayerPositionCenters() {
+    func layoutCenterCenters() {
         #expect(position(.topCenter) == CGPoint(x: 960, y: 266))
         #expect(position(.bottomCenter) == CGPoint(x: 960, y: 814))
         #expect(position(.leftCenter) == CGPoint(x: 292, y: 540))
@@ -37,7 +37,7 @@ struct EffectUtilsSuite {
 
     /// Same position as Core Image's move(), just in the upper left corner origin coordinate system.
     @Test
-    func metalPetalLayerPositionMatchesCoreImage() {
+    func layoutCenterMatchesCoreImage() {
         for alignment in SettingsAlignment.allCases {
             let layout = layout(alignment)
             let extent = CIImage.black
@@ -50,5 +50,66 @@ struct EffectUtilsSuite {
             #expect(abs(position.x - expected.x) <= 1)
             #expect(abs(position.y - expected.y) <= 1)
         }
+    }
+
+    @Test
+    func layoutScaleFitsInsideLayoutSize() {
+        var layout = SettingsWidgetLayout()
+        layout.size = 50
+        #expect(layoutScale(layout, CGSize(width: 1920, height: 1080), streamSize) == 0.5)
+        #expect(layoutScale(layout, CGSize(width: 480, height: 1080), streamSize) == 0.5)
+        #expect(layoutScale(layout, CGSize(width: 1920, height: 270), streamSize) == 0.5)
+    }
+
+    @Test
+    func widgetShapePlacement() {
+        var layout = layout(.bottomRight)
+        layout.size = 50
+        let shape = WidgetShape(contentRegion: CGRect(x: 100, y: 50, width: 400, height: 200))
+        let placement = shape.placement(layout, streamSize)
+        #expect(placement.scale == 2.4)
+        #expect(placement.size == CGSize(width: 960, height: 480))
+        #expect(placement.borderWidth == 0)
+        #expect(placement.borderSize == placement.size)
+        #expect(placement.center == CGPoint(x: 1248, y: 624))
+    }
+
+    @Test
+    func widgetShapePlacementNoResize() {
+        let shape = WidgetShape(contentRegion: CGRect(origin: .zero, size: size))
+        let placement = shape.placement(layout(.topLeft), streamSize, false)
+        #expect(placement.scale == 1)
+        #expect(placement.size == size)
+        #expect(placement.center == position(.topLeft))
+    }
+
+    @Test
+    func widgetShapePlacementRotatedWithBorder() {
+        var layout = layout(.topLeft)
+        layout.size = 50
+        var shape = WidgetShape(contentRegion: CGRect(x: 0, y: 0, width: 400, height: 200), rotation: 90)
+        shape.borderWidth = 2
+        let placement = shape.placement(layout, streamSize)
+        #expect(placement.scale == 1.35)
+        #expect(placement.size == CGSize(width: 540, height: 270))
+        #expect(placement.borderWidth == 13.5)
+        #expect(placement.borderSize == CGSize(width: 567, height: 297))
+        #expect(placement.center == CGPoint(x: 340.5, y: 499.5))
+        #expect(shape.cornerRadiusPixels(placement.size) == 0)
+    }
+
+    @Test
+    func widgetShapeApplySettings() {
+        var shape = WidgetShape(contentRegion: CGRect(x: 100, y: 50, width: 400, height: 200))
+        shape.apply(ShapeEffectSettings(cornerRadius: 0.5,
+                                        borderWidth: 2,
+                                        cropEnabled: true,
+                                        cropX: 0.25,
+                                        cropY: 0.5,
+                                        cropWidth: 0.5,
+                                        cropHeight: 0.25))
+        #expect(shape.contentRegion == CGRect(x: 200, y: 150, width: 200, height: 50))
+        #expect(shape.borderWidth == 2)
+        #expect(shape.cornerRadiusPixels(CGSize(width: 200, height: 50)) == 12.5)
     }
 }

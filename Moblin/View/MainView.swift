@@ -348,60 +348,19 @@ private struct InteractiveBrowserView: View {
     @ObservedObject var browserEffect: BrowserEffect
     let streamSize: CGSize
 
-    private func browserWidgetScale(
-        layout: SettingsWidgetLayout,
-        browserSize: CGSize,
-        streamSize: CGSize
-    ) -> Double {
-        let scaleX = toPixels(layout.size, streamSize.width) / browserSize.width
-        let scaleY = toPixels(layout.size, streamSize.height) / browserSize.height
-        return min(scaleX, scaleY)
-    }
-
-    private func browserWidgetOffset(
-        layout: SettingsWidgetLayout,
-        displaySize: CGSize,
-        streamSize: CGSize
-    ) -> CGPoint {
-        let x: Double = if layout.alignment.isHorizontalCenter() {
-            (streamSize.width - displaySize.width) / 2
-        } else if layout.alignment.isLeft() {
-            toPixels(layout.x, streamSize.width)
-        } else {
-            streamSize.width - toPixels(layout.x, streamSize.width) - displaySize.width
-        }
-        let y: Double = if layout.alignment.isVerticalCenter() {
-            (streamSize.height - displaySize.height) / 2
-        } else if layout.alignment.isTop() {
-            toPixels(layout.y, streamSize.height)
-        } else {
-            streamSize.height - toPixels(layout.y, streamSize.height) - displaySize.height
-        }
-        return CGPoint(x: x, y: y)
-    }
-
     var body: some View {
         if let layout = browserEffect.layout {
             let browserSize = CGSize(width: browserEffect.width, height: browserEffect.height)
-            let scale = browserWidgetScale(
-                layout: layout,
-                browserSize: browserSize,
-                streamSize: streamSize
-            )
+            let scale = layoutScale(layout, browserSize, streamSize)
             let displaySize = CGSize(
                 width: scale * browserSize.width,
                 height: scale * browserSize.height
-            )
-            let offset = browserWidgetOffset(
-                layout: layout,
-                displaySize: displaySize,
-                streamSize: streamSize
             )
             BrowserWidgetView(browser: browser)
                 .frame(width: browserSize.width, height: browserSize.height)
                 .scaleEffect(scale)
                 .frame(width: displaySize.width, height: displaySize.height)
-                .position(x: offset.x + displaySize.width / 2, y: offset.y + displaySize.height / 2)
+                .position(layoutCenter(layout, displaySize, streamSize))
         }
     }
 }

@@ -204,7 +204,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
         guard let widgetImage = info.getMetalPetalImage(videoSourceId) else {
             return backgroundImage
         }
-        var shape = MetalPetalWidgetShape(contentRegion: widgetImage.extent)
+        var shape = WidgetShape(contentRegion: widgetImage.extent)
         if settings.trackFaceEnabled {
             shape.contentRegion = calcFaceCropRegion(widgetImage.extent.size,
                                                      info.faceDetections(videoSourceId),

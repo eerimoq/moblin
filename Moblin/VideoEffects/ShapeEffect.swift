@@ -25,21 +25,56 @@ struct ShapeEffectSettings {
         let scaleY = (image.height + 2 * borderWidth) / image.height
         return (borderWidth, scaleX, scaleY)
     }
+
+    func cropRegion(_ region: CGRect) -> CGRect {
+        CGRect(x: region.minX + cropX * region.width,
+               y: region.minY + cropY * region.height,
+               width: cropWidth * region.width,
+               height: cropHeight * region.height)
+    }
 }
 
-struct MetalPetalWidgetShape {
+struct WidgetShapePlacement {
+    let scale: Double
+    let size: CGSize
+    let borderWidth: Double
+    let borderSize: CGSize
+    let center: CGPoint
+}
+
+struct WidgetShape {
     var contentRegion: CGRect
     var cornerRadius: Float = 0
     var borderWidth: Double = 0
-    var borderColor: MTIColor = .black
+    var borderColor: CIColor = .black
     var rotation: Double = 0
 
-    func borderWidthPixels(_ size: CGSize) -> Double {
-        shapeBorderWidthPixels(borderWidth, size)
+    mutating func apply(_ settings: ShapeEffectSettings) {
+        if settings.cropEnabled {
+            contentRegion = settings.cropRegion(contentRegion)
+        }
+        cornerRadius = settings.cornerRadius
+        borderWidth = settings.borderWidth
+        borderColor = settings.borderColor
     }
 
-    func cornerRadius(_ size: CGSize) -> MTICornerRadius {
-        MTICornerRadius(shapeCornerRadiusPixels(cornerRadius, size))
+    func placement(_ layout: SettingsWidgetLayout,
+                   _ streamSize: CGSize,
+                   _ resize: Bool = true) -> WidgetShapePlacement
+    {
+        let scale = resize ? layoutScale(layout, rotated(contentRegion.size), streamSize) : 1
+        let size = CGSize(width: contentRegion.width * scale, height: contentRegion.height * scale)
+        let borderWidth = shapeBorderWidthPixels(borderWidth, size)
+        let borderSize = CGSize(width: size.width + 2 * borderWidth, height: size.height + 2 * borderWidth)
+        return WidgetShapePlacement(scale: scale,
+                                    size: size,
+                                    borderWidth: borderWidth,
+                                    borderSize: borderSize,
+                                    center: layoutCenter(layout, rotated(borderSize), streamSize))
+    }
+
+    func cornerRadiusPixels(_ size: CGSize) -> Float {
+        shapeCornerRadiusPixels(cornerRadius, size)
     }
 
     func rotated(_ size: CGSize) -> CGSize {
@@ -50,8 +85,8 @@ struct MetalPetalWidgetShape {
         }
     }
 
-    func rotationRadians() -> Float {
-        Float(rotation * .pi / 180)
+    func rotationRadians() -> Double {
+        rotation * .pi / 180
     }
 
     func mirrorFlipOptions() -> MTILayer.FlipOptions {
@@ -116,10 +151,7 @@ final class ShapeEffect: VideoEffect, @unchecked Sendable {
         maskExtent.size.width -= 2
         maskExtent.size.height -= 2
         roundedRectangleGenerator.extent = maskExtent
-        var radiusPixels = Float(min(extent.height, extent.width))
-        radiusPixels /= 2
-        radiusPixels *= settings.cornerRadius
-        roundedRectangleGenerator.radius = radiusPixels
+        roundedRectangleGenerator.radius = shapeCornerRadiusPixels(settings.cornerRadius, extent.size)
         cache.set(extent: extent, settings: settings, image: roundedRectangleGenerator.outputImage)
         return cache.get(extent: extent, settings: settings)
     }
@@ -165,18 +197,11 @@ final class ShapeEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func crop(_ image: CIImage) -> CIImage {
-        let cropX = toPixels(100 * settings.cropX, image.extent.width)
-        let cropY = toPixels(100 * settings.cropY, image.extent.height)
-        let cropWidth = toPixels(100 * settings.cropWidth, image.extent.width)
-        let cropHeight = toPixels(100 * settings.cropHeight, image.extent.height)
+        let region = settings.cropRegion(CGRect(origin: .zero, size: image.extent.size))
+        let cropY = image.extent.height - region.maxY
         return image
-            .cropped(to: .init(
-                x: cropX,
-                y: image.extent.height - cropY - cropHeight,
-                width: cropWidth,
-                height: cropHeight
-            ))
-            .translated(x: -cropX, y: -(image.extent.height - cropY - cropHeight))
+            .cropped(to: .init(x: region.minX, y: cropY, width: region.width, height: region.height))
+            .translated(x: -region.minX, y: -cropY)
     }
 
     override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -195,19 +220,7 @@ final class ShapeEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    override func modifyMetalPetalWidgetShape(_ shape: inout MetalPetalWidgetShape) {
-        if settings.cropEnabled {
-            let region = shape.contentRegion
-            shape.contentRegion = CGRect(x: region.minX + settings.cropX * region.width,
-                                         y: region.minY + settings.cropY * region.height,
-                                         width: settings.cropWidth * region.width,
-                                         height: settings.cropHeight * region.height)
-        }
-        shape.cornerRadius = settings.cornerRadius
-        shape.borderWidth = settings.borderWidth
-        shape.borderColor = MTIColor(red: Float(settings.borderColor.red),
-                                     green: Float(settings.borderColor.green),
-                                     blue: Float(settings.borderColor.blue),
-                                     alpha: Float(settings.borderColor.alpha))
+    override func modifyWidgetShape(_ shape: inout WidgetShape) {
+        shape.apply(settings)
     }
 }

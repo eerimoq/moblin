@@ -468,7 +468,7 @@ final class VideoEffectsProcessor {
     }
 
     private func scaleImageMetalPetal(_ image: MTIImage, _ rotation: Double) -> MTIImage {
-        var shape = MetalPetalWidgetShape(contentRegion: image.extent)
+        var shape = WidgetShape(contentRegion: image.extent)
         shape.rotation = rotation
         let scaleFactor = calcScaleFactor(shape.rotated(image.size))
         let size = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
@@ -480,7 +480,7 @@ final class VideoEffectsProcessor {
                   contentFlipOptions: mirror ? shape.mirrorFlipOptions() : [],
                   position: position,
                   size: size,
-                  rotation: shape.rotationRadians()),
+                  rotation: Float(shape.rotationRadians())),
         ]
         return filter.outputImage ?? image
     }

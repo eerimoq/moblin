@@ -125,7 +125,7 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
         let size = wheel.extent.width
         let arrowSize = arrow.extent.size
         let contentSize = CGSize(width: size + 0.3 * arrowSize.width, height: size)
-        let position = metalPetalLayerPosition(sceneWidget.layout, contentSize, image.extent.size)
+        let position = layoutCenter(sceneWidget.layout, contentSize, image.extent.size)
         let rotation = Float(-angle)
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
