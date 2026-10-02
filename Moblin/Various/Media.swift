@@ -948,7 +948,7 @@ final class Media: NSObject, @unchecked Sendable {
     func attachBufferedCamera(
         devices: CaptureDevices,
         builtinDelay: Double,
-        cameraPreviewLayers: [UUID: AVCaptureVideoPreviewLayer],
+        cameraPreviewLayers: [AVCaptureVideoPreviewLayer: UUID],
         attachCameraPreview: Bool,
         showCameraPreview: Bool,
         externalDisplayPreview: Bool,

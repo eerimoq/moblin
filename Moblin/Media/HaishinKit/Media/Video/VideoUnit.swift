@@ -17,7 +17,7 @@ struct DetectionJob {
 struct VideoUnitAttachParams: @unchecked Sendable {
     let devices: CaptureDevices
     let builtinDelay: Double
-    let cameraPreviewLayers: [UUID: AVCaptureVideoPreviewLayer]
+    let cameraPreviewLayers: [AVCaptureVideoPreviewLayer: UUID]
     let attachCameraPreview: Bool
     let showCameraPreview: Bool
     let externalDisplayPreview: Bool
@@ -44,6 +44,9 @@ struct VideoUnitAttachParams: @unchecked Sendable {
             }
         }
         if attachCameraPreview != other.attachCameraPreview {
+            return false
+        }
+        if cameraPreviewLayers != other.cameraPreviewLayers {
             return false
         }
         if builtinDelay != other.builtinDelay {

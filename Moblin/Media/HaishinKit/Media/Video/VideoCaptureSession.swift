@@ -441,9 +441,9 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     private func attachCameraPreviewLayers(params: VideoUnitAttachParams) {
-        for (id, previewLayer) in params.cameraPreviewLayers {
+        for (previewLayer, deviceId) in params.cameraPreviewLayers {
             guard params.attachCameraPreview,
-                  let device = devices.first(where: { $0.device.id == id }),
+                  let device = devices.first(where: { $0.device.id == deviceId }),
                   let port = device.input.ports.first(where: { $0.mediaType == .video })
             else {
                 if previewLayer.session != nil {
@@ -459,6 +459,10 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 continue
             }
             session.addConnection(connection)
+            if connection.isVideoMirroringSupported {
+                connection.automaticallyAdjustsVideoMirroring = false
+                connection.isVideoMirrored = device.device.isVideoMirrored
+            }
         }
     }
 
