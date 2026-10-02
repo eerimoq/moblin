@@ -53,8 +53,11 @@ private struct ChatFilterActionsSettingsView: View {
 
     var body: some View {
         Section {
-            Toggle(isOn: $filter.showOnScreen) {
-                Text("Show on screen")
+            Toggle(isOn: $filter.showInChat) {
+                Text("Show in chat")
+            }
+            Toggle(isOn: $filter.showInActivityFeed) {
+                Text("Show in activity feed")
             }
             Toggle(isOn: $filter.textToSpeech) {
                 Text("Text to speech")

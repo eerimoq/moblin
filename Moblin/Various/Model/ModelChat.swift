@@ -273,13 +273,16 @@ extension Model {
         if filter?.print != false, isAnyConnectedCatPrinterPrintingChat() {
             printChatMessage(post: post)
         }
-        if filter?.showOnScreen != false {
-            if let highlight, highlight.isAlert() {
-                if highlight.kind != .firstMessage {
-                    chatActivityFeed.appendMessage(post: post)
-                }
-                quickButtonChatAlerts.appendMessage(post: post)
+        if filter?.showInActivityFeed == true {
+            chatActivityFeed.appendMessage(post: post)
+            quickButtonChatAlerts.appendMessage(post: post)
+        } else if let highlight, highlight.isAlert() {
+            if highlight.kind != .firstMessage {
+                chatActivityFeed.appendMessage(post: post)
             }
+            quickButtonChatAlerts.appendMessage(post: post)
+        }
+        if filter?.showInChat != false {
             chat.appendMessage(post: post)
             quickButtonChat.appendMessage(post: post)
             for browserEffect in browserEffects.values {

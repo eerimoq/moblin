@@ -7,7 +7,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var user: String = ""
     @Published var messageStart: String = ""
     var messageStartWords: [String] = []
-    @Published var showOnScreen: Bool = false
+    @Published var showInChat: Bool = false
+    @Published var showInActivityFeed: Bool = false
     @Published var textToSpeech: Bool = false
     @Published var chatBot: Bool = false
     @Published var poll: Bool = false
@@ -70,6 +71,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         case value
         case messageWords
         case showOnScreen
+        case showInActivityFeed
         case textToSpeech
         case chatBot
         case poll
@@ -82,7 +84,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.value, user)
         try container.encode(.messageWords, messageStartWords)
-        try container.encode(.showOnScreen, showOnScreen)
+        try container.encode(.showOnScreen, showInChat)
+        try container.encode(.showInActivityFeed, showInActivityFeed)
         try container.encode(.textToSpeech, textToSpeech)
         try container.encode(.chatBot, chatBot)
         try container.encode(.poll, poll)
@@ -98,7 +101,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         user = container.decode(.value, String.self, "")
         messageStartWords = container.decode(.messageWords, [String].self, [])
         messageStart = messageStartWords.joined(separator: " ")
-        showOnScreen = container.decode(.showOnScreen, Bool.self, false)
+        showInChat = container.decode(.showOnScreen, Bool.self, false)
+        showInActivityFeed = container.decode(.showInActivityFeed, Bool.self, false)
         textToSpeech = container.decode(.textToSpeech, Bool.self, false)
         chatBot = container.decode(.chatBot, Bool.self, false)
         poll = container.decode(.poll, Bool.self, false)
