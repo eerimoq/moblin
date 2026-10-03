@@ -128,6 +128,16 @@ private func getBestBackCameraDevice() -> AVCaptureDevice? {
 
 nonisolated(unsafe) let bestBackCameraDevice = getBestBackCameraDevice()
 
+private func getWidestBackCameraDevice() -> AVCaptureDevice? {
+    var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+    if device == nil {
+        device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+    }
+    return device
+}
+
+let widestBackCameraId = getWidestBackCameraDevice()?.uniqueID ?? ""
+
 private func getBestFrontCameraDevice() -> AVCaptureDevice? {
     var device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front)
     if device == nil {

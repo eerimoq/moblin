@@ -2745,6 +2745,60 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         self.widgetId = widgetId
     }
 
+    convenience init(widget: SettingsWidget) {
+        self.init(widgetId: widget.id)
+        switch widget.type {
+        case .image, .slideshow:
+            layout.size = 30
+        case .map, .qrCode:
+            layout.size = 23
+        case .videoSource, .vTuber, .pngTuber:
+            layout.size = 28
+            layout.alignment = .bottomRight
+        case .snapshot:
+            layout.size = 40
+            layout.alignment = .topRight
+        case .chat:
+            layout.alignment = .bottomLeft
+        case .chatEmoteCombo:
+            layout.x = 2
+            layout.y = 25
+            layout.size = 10
+        case .alerts:
+            layout.x = 20
+            layout.y = 5
+        case .scoreboard:
+            layout.size = defaultScoreboardSize
+            layout.x = 0.78
+            layout.y = 1.388
+            switch widget.scoreboard.sport {
+            case .golfFullScorecard:
+                layout.alignment = .bottomRight
+            default:
+                break
+            }
+        case .wheelOfLuck:
+            layout.alignment = .topRight
+            layout.x = 1.3
+            layout.y = 31
+        case .bingoCard:
+            layout.alignment = .topRight
+            layout.x = 1.3
+            layout.y = 33
+            layout.size = 33
+        case .pomodoroTimer:
+            layout.alignment = .topRight
+            layout.x = 0.78
+            layout.y = 1.388
+            layout.size = 20
+        default:
+            break
+        }
+        layout.updateXString()
+        layout.updateYString()
+        layout.updateSizeString()
+    }
+
     enum CodingKeys: CodingKey {
         case widgetId
         case id

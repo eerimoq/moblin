@@ -393,7 +393,7 @@ extension Model {
     }
 
     func appendWidgetToScene(scene: SettingsScene, widget: SettingsWidget) {
-        scene.widgets.append(createSceneWidget(widget: widget))
+        scene.widgets.append(SettingsSceneWidget(widget: widget))
         var attachCamera = false
         if scene.id == getSelectedScene()?.id {
             attachCamera = isCaptureDeviceWidget(widget: widget)
@@ -1658,61 +1658,6 @@ extension Model {
                                            devices: &devices,
                                            addedSceneIds: &addedSceneIds)
         }
-    }
-
-    private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
-        let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
-        switch widget.type {
-        case .image, .slideshow:
-            sceneWidget.layout.size = 30
-        case .map, .qrCode:
-            sceneWidget.layout.size = 23
-        case .videoSource, .vTuber, .pngTuber:
-            sceneWidget.layout.size = 28
-            sceneWidget.layout.alignment = .bottomRight
-        case .snapshot:
-            sceneWidget.layout.size = 40
-            sceneWidget.layout.alignment = .topRight
-        case .chat:
-            sceneWidget.layout.alignment = .bottomLeft
-        case .chatEmoteCombo:
-            sceneWidget.layout.x = 2
-            sceneWidget.layout.y = 25
-            sceneWidget.layout.size = 10
-        case .alerts:
-            sceneWidget.layout.x = 20
-            sceneWidget.layout.y = 5
-        case .scoreboard:
-            sceneWidget.layout.size = defaultScoreboardSize
-            sceneWidget.layout.x = 0.78
-            sceneWidget.layout.y = 1.388
-            switch widget.scoreboard.sport {
-            case .golfFullScorecard:
-                sceneWidget.layout.alignment = .bottomRight
-            default:
-                break
-            }
-        case .wheelOfLuck:
-            sceneWidget.layout.alignment = .topRight
-            sceneWidget.layout.x = 1.3
-            sceneWidget.layout.y = 31
-        case .bingoCard:
-            sceneWidget.layout.alignment = .topRight
-            sceneWidget.layout.x = 1.3
-            sceneWidget.layout.y = 33
-            sceneWidget.layout.size = 33
-        case .pomodoroTimer:
-            sceneWidget.layout.alignment = .topRight
-            sceneWidget.layout.x = 0.78
-            sceneWidget.layout.y = 1.388
-            sceneWidget.layout.size = 20
-        default:
-            break
-        }
-        sceneWidget.layout.updateXString()
-        sceneWidget.layout.updateYString()
-        sceneWidget.layout.updateSizeString()
-        return sceneWidget
     }
 
     private func updateTimers(

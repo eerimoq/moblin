@@ -1707,6 +1707,16 @@ private func addDefaultScenes(database: Database) {
     scene.videoSource.cameraPosition = .front
     scene.videoSource.frontCameraId = bestFrontCameraId
     database.scenes.append(scene)
+    let widget = SettingsWidget(name: String(localized: "Front"))
+    widget.type = .videoSource
+    widget.videoSource.videoSource.cameraPosition = .front
+    widget.videoSource.videoSource.frontCameraId = bestFrontCameraId
+    database.widgets.append(widget)
+    scene = SettingsScene(name: String(localized: "PiP"))
+    scene.videoSource.cameraPosition = .back
+    scene.videoSource.backCameraId = widestBackCameraId
+    scene.widgets.append(SettingsSceneWidget(widget: widget))
+    database.scenes.append(scene)
     #endif
 }
 
