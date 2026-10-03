@@ -176,7 +176,7 @@ def main():
         if item is None or needs_translation(item):
             localizations[LEETSPEAK_LANGUAGE] = {
                 "stringUnit": {
-                    "state": "needs_review",
+                    "state": "translated",
                     "value": to_leetspeak(leet_speaker, english),
                 }
             }
