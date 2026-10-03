@@ -1,9 +1,10 @@
 import argparse
 import itertools
-import json
 import re
 import sys
 from pathlib import Path
+
+import xcstrings
 
 # Matches iOS/Swift format specifiers with an optional positional prefix.
 # Handles: %@, %lld, %llu, %d, %f, %u and positional forms like %1$@, %2$lld.
@@ -81,7 +82,7 @@ def main():
     args = parser.parse_args()
 
     xcstrings_path = Path(args.xcstrings_path)
-    localizable = json.loads(xcstrings_path.read_text(encoding="utf-8"))
+    localizable = xcstrings.load(xcstrings_path)
 
     errors_found = False
     modified = False
@@ -121,10 +122,7 @@ def main():
                 print(error)
 
     if args.fix and modified:
-        xcstrings_path.write_text(
-            json.dumps(localizable, indent=2, ensure_ascii=False, separators=(",", " : ")),
-            encoding="utf-8",
-        )
+        xcstrings.store(xcstrings_path, localizable)
 
     if errors_found and not args.fix:
         sys.exit(1)
