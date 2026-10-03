@@ -202,7 +202,7 @@ private struct BannerView<Content: View>: View {
 }
 
 private func formatPercentage(_ fraction: Double) -> String {
-    return fraction.formatted(.percent.precision(.fractionLength(0)).rounded(rule: .towardZero))
+    fraction.formatted(.percent.precision(.fractionLength(0)).rounded(rule: .towardZero))
 }
 
 private struct TwitchPollView: View {
