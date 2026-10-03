@@ -96,7 +96,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " "
+            "value" : ""
           }
         },
         "zh-Hant" : {
@@ -178,7 +178,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(Anmeldung erforderlich)."
+            "value" : " (Anmeldung erforderlich)."
           }
         },
         "eo" : {
@@ -190,13 +190,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(requiere iniciar sesión)."
+            "value" : " (requiere iniciar sesión)."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(vaatii kirjautumisen)."
+            "value" : " (vaatii kirjautumisen)."
           }
         },
         "fr" : {
@@ -226,7 +226,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(ログインが必要です)"
+            "value" : " (ログインが必要です)"
           }
         },
         "ko" : {
@@ -244,13 +244,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(wymaga logowania)."
+            "value" : " (wymaga logowania)."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(requer login)."
+            "value" : " (requer login)."
           }
         },
         "pt-PT" : {
@@ -274,31 +274,31 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(kräver inloggning)."
+            "value" : " (kräver inloggning)."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(giriş gerektirir)."
+            "value" : " (giriş gerektirir)."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(потрібно авторизуватися)."
+            "value" : " (потрібно авторизуватися)."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(yêu cầu đăng nhập)."
+            "value" : " (yêu cầu đăng nhập)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "（需要登录）。"
+            "value" : " （需要登录）。"
           }
         },
         "zh-Hant" : {
@@ -316,7 +316,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(需要登入。)"
+            "value" : " (需要登入。)"
           }
         }
       }
@@ -326,7 +326,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, du darfst keine Schnappschüsse machen, sorry. 😢"
+            "value" : " %@, du darfst keine Schnappschüsse machen, sorry. 😢"
           }
         },
         "eo" : {
@@ -344,13 +344,13 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, sinulla ei ole oikeutta ottaa kuvankaappauksia, anteeksi. 😢"
+            "value" : " %@, sinulla ei ole oikeutta ottaa kuvankaappauksia, anteeksi. 😢"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, vous n'êtes pas autorisé à prendre de capture d’écran, désolé. 😢"
+            "value" : " %@, vous n'êtes pas autorisé à prendre de capture d’écran, désolé. 😢"
           }
         },
         "hi" : {
@@ -380,7 +380,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "죄송합니다, %@님 스냅샷을 촬영할 권한이 없습니다. 😢"
+            "value" : " 죄송합니다, %@님 스냅샷을 촬영할 권한이 없습니다. 😢"
           }
         },
         "nl" : {
@@ -392,13 +392,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, nie możesz zrobić zrzutu, przepraszam. 😢"
+            "value" : " %@, nie możesz zrobić zrzutu, przepraszam. 😢"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, você não tem permissão para fazer capturas de tela, desculpe. 😢"
+            "value" : " %@, você não tem permissão para fazer capturas de tela, desculpe. 😢"
           }
         },
         "pt-PT" : {
@@ -410,7 +410,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, ты не можешь сделать снимок 😢"
+            "value" : " %@, ты не можешь сделать снимок 😢"
           }
         },
         "sk" : {
@@ -422,13 +422,13 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, du får inte ta foton, förlåt. 😢"
+            "value" : " %@, du får inte ta foton, förlåt. 😢"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@, anlık görüntü almanıza izin verilmiyor, üzgünüm. 😢"
+            "value" : " %@, anlık görüntü almanıza izin verilmiyor, üzgünüm. 😢"
           }
         },
         "uk" : {
@@ -446,7 +446,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@，不允许您拍​​摄快照，对不起。 😢"
+            "value" : " %@，不允许您拍​​摄快照，对不起。 😢"
           }
         },
         "zh-Hant" : {
@@ -458,13 +458,13 @@
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@，不允許您截圖，對不起。 😢"
+            "value" : " %@，不允許您截圖，對不起。 😢"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 對不起，你沒有權限截圖"
+            "value" : " %@ 對不起，你沒有權限截圖"
           }
         }
       }
@@ -474,7 +474,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Kanal"
+            "value" : " %lld Kanal"
           }
         },
         "eo" : {
@@ -486,13 +486,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "fr" : {
@@ -522,13 +522,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 채널"
+            "value" : " %lld 채널"
           }
         },
         "nl" : {
@@ -540,13 +540,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld pc"
+            "value" : " %lld pc"
           }
         },
         "pt-PT" : {
@@ -558,7 +558,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld кан."
+            "value" : " %lld кан."
           }
         },
         "sk" : {
@@ -576,13 +576,13 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "vi" : {
@@ -594,19 +594,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld 通道"
+            "value" : " %lld 通道"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld ch"
+            "value" : " %lld ch"
           }
         },
         "zh-HK" : {
@@ -640,7 +640,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld kHz"
+            "value" : " %lld kHz"
           }
         },
         "fr" : {
@@ -1244,7 +1244,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : " : "
+            "value" : ": "
           }
         },
         "hi" : {
@@ -1286,7 +1286,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ":"
+            "value" : ": "
           }
         },
         "pt-BR" : {
@@ -1340,13 +1340,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "："
+            "value" : "： "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : ":"
+            "value" : ": "
           }
         },
         "zh-Hant-TW" : {
@@ -8222,7 +8222,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 對不起，指令正在冷卻，還有%2$lld秒 "
+            "value" : "%1$@ 對不起，指令正在冷卻，還有%2$lld秒"
           }
         }
       }
@@ -9230,7 +9230,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fotoğraf albümünü canlandırdığınız için teşekkürler. %@ 🎉 "
+            "value" : "Fotoğraf albümünü canlandırdığınız için teşekkürler. %@ 🎉"
           }
         },
         "uk" : {
@@ -15726,7 +15726,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ RTMP-сервер не включен "
+            "value" : "⚠️ RTMP-сервер не включен"
           }
         },
         "sk" : {
@@ -18593,7 +18593,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預設0.0db，讓輸入水平不變 "
+            "value" : "預設0.0db，讓輸入水平不變"
           }
         }
       }
@@ -20797,7 +20797,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "建議 128 Kbps或更高。設定0為自動。 "
+            "value" : "建議 128 Kbps或更高。設定0為自動。"
           }
         }
       }
@@ -21347,7 +21347,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "908123903 "
+            "value" : "908123903"
           }
         },
         "tr" : {
@@ -22077,7 +22077,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Виджет \"Комбо смайлов\" отображает уровень комбо когда чаттерсы спамят одинаковыми смайлами. "
+            "value" : "Виджет \"Комбо смайлов\" отображает уровень комбо когда чаттерсы спамят одинаковыми смайлами."
           }
         },
         "sk" : {
@@ -22877,7 +22877,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ein Controller "
+            "value" : "ein Controller"
           }
         },
         "eo" : {
@@ -23719,7 +23719,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " filtreyi"
+            "value" : "filtreyi"
           }
         },
         "uk" : {
@@ -29251,7 +29251,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget voi olla käytössä useammassa näkymässä tai ei yhdessäkään. "
+            "value" : "Widget voi olla käytössä useammassa näkymässä tai ei yhdessäkään."
           }
         },
         "fr" : {
@@ -34491,7 +34491,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " automatický prepínač scén"
+            "value" : "automatický prepínač scén"
           }
         },
         "sv" : {
@@ -47293,7 +47293,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Podstawowe ustawienia widżetu %@ "
+            "value" : "Podstawowe ustawienia widżetu %@"
           }
         },
         "pt-BR" : {
@@ -72611,7 +72611,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopie von"
+            "value" : "Kopie von "
           }
         },
         "eo" : {
@@ -72623,13 +72623,13 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiado de"
+            "value" : "Copiado de "
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopioi kohteesta"
+            "value" : "Kopioi kohteesta "
           }
         },
         "fr" : {
@@ -72659,7 +72659,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コピー元"
+            "value" : "コピー元 "
           }
         },
         "ko" : {
@@ -72677,13 +72677,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skopiuj z"
+            "value" : "Skopiuj z "
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiar de"
+            "value" : "Copiar de "
           }
         },
         "pt-PT" : {
@@ -72707,19 +72707,19 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopiera från"
+            "value" : "Kopiera från "
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Şuradan kopyala"
+            "value" : "Şuradan kopyala "
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Копіювати з"
+            "value" : "Копіювати з "
           }
         },
         "vi" : {
@@ -72731,25 +72731,25 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制自"
+            "value" : "复制自 "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "從以下位置拷貝："
+            "value" : "從以下位置拷貝： "
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "複製自"
+            "value" : "複製自 "
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "複製自"
+            "value" : "複製自 "
           }
         }
       }
@@ -73193,7 +73193,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "從 https://kick.com/dashboard/settings/stream 中複製。(需要登入) "
+            "value" : "從 https://kick.com/dashboard/settings/stream 中複製。(需要登入)"
           }
         }
       }
@@ -73341,7 +73341,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "從 https://youtube.com 中複製。(需要登入) "
+            "value" : "從 https://youtube.com 中複製。(需要登入)"
           }
         }
       }
@@ -82593,7 +82593,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zariadenia pre zdravie "
+            "value" : "Zariadenia pre zdravie"
           }
         },
         "sv" : {
@@ -82943,7 +82943,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Direkt "
+            "value" : "Direkt"
           }
         },
         "eo" : {
@@ -99403,7 +99403,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nepodarilo sa vytvoriť stream značku "
+            "value" : "Nepodarilo sa vytvoriť stream značku"
           }
         },
         "sv" : {
@@ -104333,7 +104333,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanalinformationen werden abgerufen… "
+            "value" : "Kanalinformationen werden abgerufen…"
           }
         },
         "eo" : {
@@ -130275,7 +130275,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " takip etti!"
+            "value" : "takip etti!"
           }
         },
         "uk" : {
@@ -131351,7 +131351,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "剛訂閱了! 他/她已經訂閱了 %lld 個月! "
+            "value" : "剛訂閱了! 他/她已經訂閱了 %lld 個月!"
           }
         }
       }
@@ -145455,7 +145455,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Markdown kullanabilirsiniz. Emojileri <:emojismi:8912739817498174> gibi ekleyebilirsiniz. "
+            "value" : "Markdown kullanabilirsiniz. Emojileri <:emojismi:8912739817498174> gibi ekleyebilirsiniz."
           }
         },
         "uk" : {
@@ -159321,7 +159321,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " BRB sahnem"
+            "value" : "BRB sahnem"
           }
         },
         "uk" : {
@@ -169043,7 +169043,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nebolo uložené žiadne prehratie "
+            "value" : "Nebolo uložené žiadne prehratie"
           }
         },
         "sv" : {
@@ -183886,7 +183886,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Näytetään uusinta "
+            "value" : "Näytetään uusinta"
           }
         },
         "fr" : {
@@ -203774,7 +203774,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Återställ köp "
+            "value" : "Återställ köp"
           }
         },
         "tr" : {
@@ -205748,7 +205748,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RIST Server "
+            "value" : "RIST Server"
           }
         },
         "eo" : {
@@ -213370,7 +213370,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Obrazovka zamknutá "
+            "value" : "Obrazovka zamknutá"
           }
         },
         "sv" : {
@@ -216986,7 +216986,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selfiestick "
+            "value" : "Selfiestick"
           }
         },
         "eo" : {
@@ -231853,7 +231853,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " 显示坡度"
+            "value" : "显示坡度"
           }
         },
         "zh-Hant" : {
@@ -238545,7 +238545,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "對不起，縮放 x 一定要是數字 "
+            "value" : "對不起，縮放 x 一定要是數字"
           }
         }
       }
@@ -241063,7 +241063,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 的SRT連接失敗 "
+            "value" : "%@ 的SRT連接失敗"
           }
         }
       }
@@ -242651,7 +242651,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " SRTLA Port"
+            "value" : "SRTLA Port"
           }
         },
         "sv" : {
@@ -242799,7 +242799,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SRTLA Server "
+            "value" : "SRTLA Server"
           }
         },
         "sv" : {
@@ -244771,7 +244771,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Training starten "
+            "value" : "Training starten"
           }
         },
         "eo" : {
@@ -255537,7 +255537,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 %@ 向左滑動 以複製或刪除 "
+            "value" : "在 %@ 向左滑動 以複製或刪除"
           }
         }
       }
@@ -264263,7 +264263,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "降低碼率之前允許的RTT峰值上限 "
+            "value" : "降低碼率之前允許的RTT峰值上限"
           }
         }
       }
@@ -272051,7 +272051,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Medyayı "
+            "value" : "Medyayı"
           }
         },
         "uk" : {
@@ -275457,7 +275457,7 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : " Uyarıları tetikleyin. Uyarı widget'larında uyarı adlarını yapılandırın."
+            "value" : "Uyarıları tetikleyin. Uyarı widget'larında uyarı adlarını yapılandırın."
           }
         },
         "uk" : {
@@ -275789,7 +275789,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在聊天室輸入指令觸發 '!moblin alert %@' "
+            "value" : "在聊天室輸入指令觸發 '!moblin alert %@'"
           }
         }
       }
@@ -299317,7 +299317,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nesprávne RTSP používateľské meno alebo heslo "
+            "value" : "Nesprávne RTSP používateľské meno alebo heslo"
           }
         },
         "sv" : {
