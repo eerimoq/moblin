@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-import xcstrings
+from xcstrings import Catalog
 
 # Matches iOS/Swift format specifiers with an optional positional prefix.
 # Handles: %@, %lld, %llu, %d, %f, %u and positional forms like %1$@, %2$lld.
@@ -81,13 +81,12 @@ def main():
     )
     args = parser.parse_args()
 
-    xcstrings_path = Path(args.xcstrings_path)
-    localizable = xcstrings.load(xcstrings_path)
+    catalog = Catalog.load(Path(args.xcstrings_path))
 
     errors_found = False
     modified = False
 
-    for string_in_code, value in localizable["strings"].items():
+    for string_in_code, value in catalog.strings.items():
         localizations = value.get("localizations")
 
         if not localizations:
@@ -122,7 +121,7 @@ def main():
                 print(error)
 
     if args.fix and modified:
-        xcstrings.store(xcstrings_path, localizable)
+        catalog.store()
 
     if errors_found and not args.fix:
         sys.exit(1)

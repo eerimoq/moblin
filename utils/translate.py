@@ -9,10 +9,9 @@ from pathlib import Path
 from typing import Any
 
 from pyleetspeak2.LeetSpeaker import LeetSpeaker
+from xcstrings import Catalog
 from xcstrings import Localization
 from xcstrings import Localizations
-from xcstrings import load
-from xcstrings import store
 
 
 @dataclass
@@ -185,11 +184,10 @@ def translate_batch(batch: Batch) -> dict[int, dict[str, Any]]:
 
 
 def main() -> None:
-    localizable_xcstrings_path = Path(sys.argv[1])
-    localizable = load(localizable_xcstrings_path)
+    catalog = Catalog.load(Path(sys.argv[1]))
     leet_speaker = LeetSpeaker(mode="basic", change_prb=1, change_frq=1, uniform_change=True)
     pending: list[String] = []
-    for english, value in localizable["strings"].items():
+    for english, value in catalog.strings.items():
         localizations = value.setdefault("localizations", {})
         if not english.strip():
             continue
@@ -204,7 +202,7 @@ def main() -> None:
                     "value": to_leetspeak(leet_speaker, english),
                 }
             }
-    store(localizable_xcstrings_path, localizable)
+    catalog.store()
     batches = [Batch(pending[i : i + BATCH_SIZE]) for i in range(0, len(pending), BATCH_SIZE)]
     print(f"Translating {len(pending)} strings in {len(batches)} batches")
     with ThreadPoolExecutor(max_workers=WORKERS) as executor:
@@ -216,7 +214,7 @@ def main() -> None:
             except Exception as error:
                 print(f'Batch starting with "{batch.strings[0].english}" failed: {error}')
                 continue
-            store(localizable_xcstrings_path, localizable)
+            catalog.store()
             print(f"Batch {number}/{len(batches)} done")
 
 
