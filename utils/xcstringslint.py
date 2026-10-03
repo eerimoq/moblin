@@ -19,10 +19,8 @@ def check_format_specifiers(string_in_code, localized_string, language_code):
     errors = []
     code_specs = extract_specifiers(string_in_code)
     loc_specs = extract_specifiers(localized_string)
-
     code_types = sorted(t for _, t in code_specs)
     loc_types = sorted(t for _, t in loc_specs)
-
     if code_types != loc_types:
         errors.append(
             f"  [{language_code}] Format specifier mismatch: "
@@ -43,26 +41,20 @@ def check_format_specifiers(string_in_code, localized_string, language_code):
                     f"(expected 1..{n}, got {sorted(actual)}): "
                     f"{localized_string}"
                 )
-
     return errors
 
 
 def fix_localized_string(string_in_code, localized_string):
     code_specs = extract_specifiers(string_in_code)
     loc_specs = extract_specifiers(localized_string)
-
     code_types = sorted(t for _, t in code_specs)
     loc_types = sorted(t for _, t in loc_specs)
-
     if code_types != loc_types or len(code_specs) != len(loc_specs):
         return None
-
     if len(code_specs) <= 1:
         return localized_string
-
     if all(pos is not None for pos, _ in loc_specs):
         return localized_string
-
     idx = itertools.count(1)
 
     def replacer(m):
@@ -80,49 +72,34 @@ def main():
         help="Fix found problems and write the result back to the file",
     )
     args = parser.parse_args()
-
     catalog = Catalog.load(Path(args.xcstrings_path))
-
     errors_found = False
     modified = False
-
     for string_in_code, value in catalog.strings.items():
         localizations = value.get("localizations")
-
         if not localizations:
             continue
-
         string_errors = []
-
         for language_code, localization_value in localizations.items():
             string_unit = localization_value.get("stringUnit")
-
             if not string_unit:
                 continue
-
             localized_string = string_unit.get("value", "")
             errors = check_format_specifiers(string_in_code, localized_string, language_code)
-
             if errors:
                 string_errors.extend(errors)
-
                 if args.fix:
                     fixed = fix_localized_string(string_in_code, localized_string)
-
                     if fixed is not None and fixed != localized_string:
                         string_unit["value"] = fixed
                         modified = True
-
         if string_errors:
             errors_found = True
             print(f"Error in {repr(string_in_code)}:")
-
             for error in string_errors:
                 print(error)
-
     if args.fix and modified:
         catalog.store()
-
     if errors_found and not args.fix:
         sys.exit(1)
 
