@@ -2734,12 +2734,6 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
     var id: UUID = .init()
     @Published var widgetId: UUID
     @Published var layout: SettingsWidgetLayout = .init()
-    // To be removed.
-    @Published var width2: Double = 100.0
-    // To be removed.
-    @Published var height2: Double = 100.0
-    var migrated: Bool = true
-    var migrated2: Bool = true
 
     init(widgetId: UUID) {
         self.widgetId = widgetId
@@ -2804,13 +2798,9 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         case id
         case x
         case y
-        case width
-        case height
         case size
         case alignment
         case positioningLock
-        case migrated
-        case migrated2
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2819,13 +2809,9 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         try container.encode(.id, id)
         try container.encode(.x, layout.x)
         try container.encode(.y, layout.y)
-        try container.encode(.width, width2)
-        try container.encode(.height, height2)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
         try container.encode(.positioningLock, layout.positioningLock)
-        try container.encode(.migrated, migrated)
-        try container.encode(.migrated2, migrated2)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2836,25 +2822,15 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         layout.updateXString()
         layout.y = container.decode(.y, Double.self, 0.0)
         layout.updateYString()
-        width2 = container.decode(.width, Double.self, 100.0)
-        height2 = container.decode(.height, Double.self, 100.0)
-        if let size = container.decode(.size, Double?.self, nil) {
-            layout.size = size
-        } else {
-            layout.size = container.decode(.size, Double.self, min(width2, height2))
-        }
+        layout.size = container.decode(.size, Double.self, 100.0)
         layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
-        migrated = container.decode(.migrated, Bool.self, false)
-        migrated2 = container.decode(.migrated2, Bool.self, false)
     }
 
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
         new.layout = layout
-        new.migrated = migrated
-        new.migrated2 = migrated2
         return new
     }
 }

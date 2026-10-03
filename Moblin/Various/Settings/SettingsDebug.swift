@@ -17,12 +17,8 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
-    // To be removed.
-    var faceToBeRemoved: SettingsFace = .init()
     @Published var nativeLowLightBoost: Bool = false
     var blurSceneSwitch: Bool = true
-    // To be removed.
-    var preferStereoMicToBeRemoved: Bool = false
     @Published var twitchRewards: Bool = false
     var tesla: SettingsTesla = .init()
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
@@ -54,10 +50,8 @@ class SettingsDebug: Codable, ObservableObject {
         case cameraSwitchRemoveBlackish
         case bluetoothOutputOnly
         case maximumLogLines
-        case beautyFilterSettings
         case nativeLowLightBoost
         case blurSceneSwitch
-        case preferStereoMic
         case twitchRewards
         case removeWindNoise
         case tesla
@@ -98,10 +92,8 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
-        try container.encode(.beautyFilterSettings, faceToBeRemoved)
         try container.encode(.nativeLowLightBoost, nativeLowLightBoost)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
-        try container.encode(.preferStereoMic, preferStereoMicToBeRemoved)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.tesla, tesla)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
@@ -141,10 +133,8 @@ class SettingsDebug: Codable, ObservableObject {
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
-        faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
         nativeLowLightBoost = container.decode(.nativeLowLightBoost, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
-        preferStereoMicToBeRemoved = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)

@@ -1288,7 +1288,6 @@ class Database: Codable, ObservableObject {
     var beauty: SettingsBeauty = .init()
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
-    var scoreboardSizeMigrated: Bool = false
     var streamDecks: SettingsStreamDecks = .init()
     @Published var graphicsImplementation: SettingsGraphicsImplementation = .coreImage
     @Published var graphicsHighQualityDownsampling: Bool = false
@@ -1419,7 +1418,6 @@ class Database: Codable, ObservableObject {
         case beauty
         case talkBack
         case gimbal
-        case scoreboardSizeMigrated
         case savedWifiNetworks
         case streamDecks
         case graphicsImplementation
@@ -1512,7 +1510,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.beauty, beauty)
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
-        try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
         try container.encode(.savedWifiNetworks, savedWifiNetworks)
         try container.encode(.streamDecks, streamDecks)
         try container.encode(.graphicsImplementation, graphicsImplementation)
@@ -1564,10 +1561,6 @@ class Database: Codable, ObservableObject {
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, SettingsAudio.self, .init())
-        if debug.preferStereoMicToBeRemoved {
-            audio.preferStereoMic = true
-            debug.preferStereoMicToBeRemoved = false
-        }
         macros = container.decode(.macros, SettingsMacros.self, .init())
         webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
         deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
@@ -1655,22 +1648,11 @@ class Database: Codable, ObservableObject {
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
-        face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
+        face = container.decode(.face, SettingsFace.self, .init())
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
-        scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
         savedWifiNetworks = container.decode(.savedWifiNetworks, [SettingsWiFi].self, [])
-        if !scoreboardSizeMigrated {
-            for widget in widgets where widget.type == .scoreboard {
-                for scene in scenes {
-                    for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
-                        sceneWidget.layout.size = defaultScoreboardSize
-                    }
-                }
-            }
-            scoreboardSizeMigrated = true
-        }
         streamDecks = container.decode(.streamDecks, SettingsStreamDecks.self, .init())
         graphicsImplementation = container.decode(.graphicsImplementation,
                                                   SettingsGraphicsImplementation.self,
@@ -2451,75 +2433,6 @@ final class Settings {
         if realDatabase.quickButtons.count != newButtons.count {
             realDatabase.quickButtons = newButtons
             store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
-            widget.videoSource.cropX = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropY > 1.0 {
-            widget.videoSource.cropY = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth > 1.0 {
-            widget.videoSource.cropWidth = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
-            widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for scene in realDatabase.scenes {
-            for sceneWidget in scene.widgets where !sceneWidget.migrated {
-                sceneWidget.migrated = true
-                store()
-                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
-                    continue
-                }
-                guard widget.type == .text else {
-                    continue
-                }
-                if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .trailing {
-                    sceneWidget.layout.alignment = .bottomRight
-                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
-                    sceneWidget.layout.updateXString()
-                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
-                    sceneWidget.layout.updateYString()
-                } else if widget.text.verticalAlignment == .top,
-                          widget.text.horizontalAlignment == .trailing
-                {
-                    sceneWidget.layout.alignment = .topRight
-                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
-                    sceneWidget.layout.updateXString()
-                } else if widget.text.verticalAlignment == .bottom,
-                          widget.text.horizontalAlignment == .leading
-                {
-                    sceneWidget.layout.alignment = .bottomLeft
-                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
-                    sceneWidget.layout.updateYString()
-                }
-            }
-        }
-        for scene in realDatabase.scenes {
-            for sceneWidget in scene.widgets where !sceneWidget.migrated2 {
-                sceneWidget.migrated2 = true
-                store()
-                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
-                    continue
-                }
-                guard widget.type == .browser else {
-                    continue
-                }
-                guard let stream = database.streams.first(where: { $0.enabled }) else {
-                    continue
-                }
-                let resolution = stream.resolution.dimensions(portrait: stream.portrait)
-                let width = (100 * Double(widget.browser.width) / Double(resolution.width))
-                    .clamped(to: 1 ... 100)
-                let height = (100 * Double(widget.browser.height) / Double(resolution.height))
-                    .clamped(to: 1 ... 100)
-                sceneWidget.layout.size = max(width, height)
-                sceneWidget.layout.updateSizeString()
-            }
         }
     }
 }
