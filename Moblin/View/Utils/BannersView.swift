@@ -201,6 +201,10 @@ private struct BannerView<Content: View>: View {
     }
 }
 
+private func formatPercentage(_ fraction: Double) -> String {
+    return fraction.formatted(.percent.precision(.fractionLength(0)).rounded(rule: .towardZero))
+}
+
 private struct TwitchPollView: View {
     let model: Model
     @ObservedObject var poll: TwitchPoll
@@ -219,9 +223,9 @@ private struct TwitchPollView: View {
             } content: {
                 ForEach(poll.choices) { choice in
                     let fraction = fraction(votes: choice.votes)
-                    let percentage = Int(100 * fraction)
+                    let percentage = formatPercentage(fraction)
                     OptionBarView(title: choice.title,
-                                  detail: String(localized: "\(percentage)% (\(choice.votes) votes)"),
+                                  detail: String(localized: "\(percentage) (\(choice.votes) votes)"),
                                   fraction: fraction,
                                   color: .white,
                                   bold: false)
@@ -257,11 +261,11 @@ private struct TwitchPredictionView: View {
             } content: {
                 ForEach(prediction.outcomes) { outcome in
                     let fraction = fraction(channelPoints: outcome.channelPoints)
-                    let percentage = Int(100 * fraction)
+                    let percentage = formatPercentage(fraction)
                     OptionBarView(
                         title: outcome.title,
                         detail: String(
-                            localized: "\(percentage)% (\(outcome.channelPoints) points, \(outcome.users) users)"
+                            localized: "\(percentage) (\(outcome.channelPoints) points, \(outcome.users) users)"
                         ),
                         fraction: fraction,
                         color: color(outcome: outcome),
