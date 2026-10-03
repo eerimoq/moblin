@@ -19671,7 +19671,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "4. Premi Go live in Moblin per avviare lo stream verso OBS."
+            "value" : "4. Premi Vai in diretta in Moblin per avviare lo stream verso OBS."
           }
         },
         "ja" : {
@@ -218346,7 +218346,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Invia notifica Go live al [sito web di Moblin](https://moblin.app/#streamers)"
+            "value" : "Invia notifica di inizio diretta al [sito web di Moblin](https://moblin.app/#streamers)"
           }
         },
         "ja" : {
