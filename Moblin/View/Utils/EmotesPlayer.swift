@@ -1,3 +1,4 @@
+import Network
 import SDWebImage
 import SwiftUI
 
@@ -223,6 +224,27 @@ class EmotesPlayer: NSObject, ObservableObject {
     private var loadingHandlers: [URL: [(UIImage) -> Void]] = [:]
     private var failedUrls: [URL: ContinuousClock.Instant] = [:]
     private var displayLink: CADisplayLink?
+    private var imageManager = SDWebImageManager.shared
+    private var proxyDownloader: SDWebImageDownloader?
+    private var proxyEndpoint: NWEndpoint?
+
+    func setProxyServer(endpoint: NWEndpoint?) {
+        guard endpoint != proxyEndpoint else {
+            return
+        }
+        proxyEndpoint = endpoint
+        proxyDownloader?.invalidateSessionAndCancel(false)
+        proxyDownloader = nil
+        guard let configuration = URLSessionConfiguration.proxied(endpoint: endpoint) else {
+            imageManager = SDWebImageManager.shared
+            return
+        }
+        let downloaderConfig = SDWebImageDownloaderConfig()
+        downloaderConfig.sessionConfiguration = configuration
+        let downloader = SDWebImageDownloader(config: downloaderConfig)
+        proxyDownloader = downloader
+        imageManager = SDWebImageManager(cache: SDImageCache.shared, loader: downloader)
+    }
 
     func size(source: ChatImageSource) -> CGSize? {
         if let size = sizes[source] {
@@ -341,10 +363,10 @@ class EmotesPlayer: NSObject, ObservableObject {
             return
         }
         loadingHandlers[url] = [onLoaded]
-        SDWebImageManager.shared.loadImage(with: url,
-                                           options: [.retryFailed],
-                                           context: [.animatedImageClass: SDAnimatedImage.self],
-                                           progress: nil)
+        imageManager.loadImage(with: url,
+                               options: [.retryFailed],
+                               context: [.animatedImageClass: SDAnimatedImage.self],
+                               progress: nil)
         { [weak self] image, _, _, _, _, _ in
             guard let self else {
                 return

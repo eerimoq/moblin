@@ -78,12 +78,29 @@ func httpRequest(request: URLRequest,
                  completion: ((Data?, URLResponse?, (any Error)?) -> Void)? = nil)
 {
     nonisolated(unsafe) let completion = completion
-    URLSession.shared.dataTask(with: request) { data, response, error in
+    httpUrlSession().dataTask(with: request) { data, response, error in
         queue.async {
             completion?(data, response, error)
         }
+    }.resume()
+}
+
+func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(from: from)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
     }
-    .resume()
+}
+
+func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(for: request)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
+    }
 }
 
 func getHttpsUrl(text: String) -> URL? {
@@ -123,5 +140,41 @@ extension URL {
             return address.isLoopback
         }
         return false
+    }
+}
+
+extension NWEndpoint {
+    func isLocalNetwork() -> Bool {
+        guard case let .hostPort(host, _) = self else {
+            return false
+        }
+        return host.isLocalNetwork()
+    }
+}
+
+extension NWEndpoint.Host {
+    func isLocalNetwork() -> Bool {
+        switch self {
+        case let .ipv4(address):
+            address.isLoopback || address.isLinkLocal || address.isPrivate()
+        case let .ipv6(address):
+            address.isLoopback || address.isLinkLocal || address.isUniqueLocal
+        case let .name(name, _):
+            name == "localhost" || name.hasSuffix(".local")
+        @unknown default:
+            false
+        }
+    }
+}
+
+extension IPv4Address {
+    func isPrivate() -> Bool {
+        let bytes = [UInt8](rawValue)
+        guard bytes.count == 4 else {
+            return false
+        }
+        return bytes[0] == 10
+            || (bytes[0] == 172 && (16 ... 31).contains(bytes[1]))
+            || (bytes[0] == 192 && bytes[1] == 168)
     }
 }

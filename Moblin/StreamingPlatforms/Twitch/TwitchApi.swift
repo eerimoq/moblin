@@ -227,14 +227,14 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
         return nil
     }
     let request = URLRequest(url: url, timeoutInterval: 10)
-    guard let (data, _) = try? await URLSession.shared.data(for: request),
+    guard let (data, _) = try? await httpUrlSession().data(for: request),
           let imageUrlString = String(data: data, encoding: .utf8),
           let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
     else {
         return nil
     }
     let imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
-    guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
+    guard let (imageData, _) = try? await httpUrlSession().data(for: imageRequest) else {
         return nil
     }
     return UIImage(data: imageData)

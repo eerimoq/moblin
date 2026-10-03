@@ -135,7 +135,7 @@ private class Connection: @unchecked Sendable {
     private func connectToDestination(destination: NWEndpoint, version: String) {
         let parameters: NWParameters = .tcp
         parameters.prohibitExpensivePaths = false
-        let interfaceType = networkInterfaceTypeSelector.getType()
+        let interfaceType = destination.isLocalNetwork() ? nil : networkInterfaceTypeSelector.getType()
         if let interfaceType {
             parameters.requiredInterfaceType = interfaceType
         }

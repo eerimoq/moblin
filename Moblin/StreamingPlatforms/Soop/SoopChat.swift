@@ -274,7 +274,7 @@ final class SoopChat: NSObject {
         &player_type=html5&mode=landing&from_api=0&pwd=&stream_type=common&quality=HD
         """.utf8)
         request.setContentType("application/x-www-form-urlencoded")
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await httpUrlSession().data(for: request)
         guard let response = response.http else {
             throw "Not an HTTP response"
         }

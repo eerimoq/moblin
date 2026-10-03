@@ -143,7 +143,7 @@ class WhepClient: @unchecked Sendable {
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
         request.httpBody = offer.utf8Data
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        httpUrlSession().dataTask(with: request) { [weak self] data, response, error in
             let self2 = self
             dispatchQueue.async {
                 self2?.handleOfferResponse(data: data, response: response, error: error)
@@ -177,7 +177,7 @@ class WhepClient: @unchecked Sendable {
     private func sendDeleteRequest(url: URL) {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+        httpUrlSession().dataTask(with: request).resume()
     }
 }
 

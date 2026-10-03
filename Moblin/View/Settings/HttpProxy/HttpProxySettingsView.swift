@@ -40,7 +40,10 @@ struct HttpProxySettingsView: View {
             } header: {
                 Text("This device")
             } footer: {
-                Text("Moblin's web browser and browser widgets use the proxy.")
+                Text("""
+                Moblin's web browser, browser widgets, chat emotes and HTTP requests, for example Twitch, \
+                Kick and YouTube API calls, use the proxy.
+                """)
             }
             Section {
                 Toggle("Enabled", isOn: $httpProxy.localNetwork)

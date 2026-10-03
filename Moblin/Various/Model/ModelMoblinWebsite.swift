@@ -84,7 +84,7 @@ private func attestedKey() async throws -> MoblinWebsiteAppAttest {
 private func fetchChallenge() async throws -> String {
     var request = URLRequest(url: challengeUrl, timeoutInterval: 30)
     request.httpMethod = "POST"
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await httpUrlSession().data(for: request)
     guard response.http?.isSuccessful == true else {
         throw MoblinWebsiteError.badResponse("challenge: \(describe(response, data))")
     }
@@ -116,7 +116,7 @@ private func postLive(channels: [MoblinWebsiteChannel], appAttest: MoblinWebsite
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue(assertion.base64EncodedString(), forHTTPHeaderField: "Moblin-Assertion")
     request.httpBody = body
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await httpUrlSession().data(for: request)
     if response.http?.isUnauthorized == true {
         throw MoblinWebsiteError.keyRejected("live: \(describe(response, data))")
     }

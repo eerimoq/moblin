@@ -24,8 +24,11 @@ extension Model {
     }
 
     private func proxyServerPortUpdated() {
+        let endpoint = getHttpProxyServerEndpoint()
         setWebBrowserProxy()
         setBrowserEffectsProxyServer()
+        EmotesPlayer.shared.setProxyServer(endpoint: endpoint)
+        setHttpUrlSessionProxyServer(endpoint: endpoint)
     }
 
     private func startHttpProxyServer() {

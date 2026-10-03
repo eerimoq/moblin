@@ -214,11 +214,15 @@ private class InterfaceTypeHttpClient {
 
 @MainActor
 func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor (Data?) -> Void) {
-    InterfaceTypeHttpClient().call(request: request, body: body) { data in
-        if let data {
-            completion(data)
-        } else {
-            httpCallUrlSession(request: request, body: body, completion: completion)
+    if isHttpUrlSessionProxied() {
+        httpCallUrlSession(request: request, body: body, completion: completion)
+    } else {
+        InterfaceTypeHttpClient().call(request: request, body: body) { data in
+            if let data {
+                completion(data)
+            } else {
+                httpCallUrlSession(request: request, body: body, completion: completion)
+            }
         }
     }
 }
@@ -229,7 +233,7 @@ private func httpCallUrlSession(request: URLRequest,
                                 completion: @escaping @MainActor (Data?) -> Void)
 {
     if let body {
-        URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
+        httpUrlSession().uploadTask(with: request, from: body) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
                 DispatchQueue.main.async {
                     completion(nil)
