@@ -56,4 +56,17 @@ struct DjiDeviceSuite {
             "watermark": 0,
         ])
     }
+
+    @Test
+    func startStreamingOsmoAction4() {
+        let payload = DjiStartStreamingMessagePayload(
+            rtmpUrl: "rtmp://110.144.9.240:1935/publish/live",
+            resolution: .r1080p,
+            fps: 30,
+            bitrateKbps: 6000
+        )
+        #expect(payload.encode().hexString() == """
+        0031000a7017020003000000260072746d703a2f2f3131302e3134342e392e3234303a313933352f7075626c6973682f6c697665
+        """)
+    }
 }
