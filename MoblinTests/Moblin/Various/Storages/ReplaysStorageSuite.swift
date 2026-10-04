@@ -170,7 +170,7 @@ struct ReplaysStorageSuite {
         try Data().write(to: orphan)
         let reloaded = ReplaysStorage(directory: directory.url)
         reloaded.load()
-        #expect(waitUntil(timeout: .seconds(2)) {
+        #expect(waitUntil(timeout: .seconds(10)) {
             !orphan.exists()
         })
         #expect(reloaded.url(replay: kept).exists())

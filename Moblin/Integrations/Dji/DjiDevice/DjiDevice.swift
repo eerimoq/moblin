@@ -377,7 +377,6 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
                 enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                header: DjiStartStreamingMessagePayload2.osmoPocket4Header,
                 middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
@@ -392,7 +391,6 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
                 enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                header: DjiStartStreamingMessagePayload2.osmoAction6Header,
                 middle: DjiStartStreamingMessagePayload2.osmoAction6Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,

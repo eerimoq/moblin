@@ -95,9 +95,7 @@ private struct StartStreamingPayload: Codable {
 }
 
 struct DjiStartStreamingMessagePayload2 {
-    static let osmoAction6Header = Data([0x01, 0x9C, 0x00])
     static let osmoAction6Middle = Data([0xFE, 0x00])
-    static let osmoPocket4Header = Data([0x01, 0xB5, 0x00])
     static let osmoPocket4Middle = Data([0x02, 0x01])
     private static let padding = Data([0x00, 0x00, 0x00])
     var rtmpUrl: String
@@ -106,7 +104,6 @@ struct DjiStartStreamingMessagePayload2 {
     var fps: Int
     var codec: String
     var enhancedRtmp: Bool
-    let header: Data
     let middle: Data
 
     init(
@@ -116,7 +113,6 @@ struct DjiStartStreamingMessagePayload2 {
         bitrateKbps: UInt16,
         codec: String,
         enhancedRtmp: Bool,
-        header: Data,
         middle: Data
     ) {
         self.rtmpUrl = rtmpUrl
@@ -125,7 +121,6 @@ struct DjiStartStreamingMessagePayload2 {
         self.bitrateKbps = bitrateKbps
         self.codec = codec
         self.enhancedRtmp = enhancedRtmp
-        self.header = header
         self.middle = middle
     }
 
@@ -137,15 +132,18 @@ struct DjiStartStreamingMessagePayload2 {
                                             rtmpAddress: rtmpUrl,
                                             orientation: "landscape")
         let data = (try? JSONEncoder().encode(payload)) ?? Data()
+        let body = ByteWriter()
+        body.writeUInt8(toDjiResolution(resolution: resolution))
+        body.writeUInt16Le(bitrateKbps)
+        body.writeBytes(middle)
+        body.writeUInt8(toDjiFps(fps: fps))
+        body.writeBytes(Self.padding)
+        body.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
+        body.writeBytes(data)
         let writer = ByteWriter()
-        writer.writeBytes(header)
-        writer.writeUInt8(toDjiResolution(resolution: resolution))
-        writer.writeUInt16Le(bitrateKbps)
-        writer.writeBytes(middle)
-        writer.writeUInt8(toDjiFps(fps: fps))
-        writer.writeBytes(Self.padding)
-        writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
-        writer.writeBytes(data)
+        writer.writeUInt8(0x01)
+        writer.writeUInt16Le(UInt16(truncatingIfNeeded: body.data.count))
+        writer.writeBytes(body.data)
         return writer.data
     }
 }
