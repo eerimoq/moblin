@@ -48,6 +48,7 @@ enum DjiDeviceState {
 @MainActor
 protocol DjiDeviceDelegate: AnyObject {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState)
+    func djiDeviceModel(_ device: DjiDevice, model: SettingsDjiDeviceModel)
 }
 
 @MainActor
@@ -171,10 +172,33 @@ extension DjiDevice: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            connect(central)
+            if model == .unknown {
+                central.scanForPeripherals(withServices: nil)
+            } else {
+                connect(central)
+            }
         default:
             break
         }
+    }
+
+    func centralManager(
+        _ central: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData: [String: Any],
+        rssi _: NSNumber
+    ) {
+        guard state == .discovering,
+              peripheral.identifier == deviceId,
+              let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data
+        else {
+            return
+        }
+        central.stopScan()
+        model = djiModelFromManufacturerData(data: manufacturerData)
+        logger.info("dji-device: Manufacturer data \(manufacturerData.hexString()) and model \(model)")
+        delegate?.djiDeviceModel(self, model: model)
+        connect(central)
     }
 
     private func connect(_ central: CBCentralManager) {
