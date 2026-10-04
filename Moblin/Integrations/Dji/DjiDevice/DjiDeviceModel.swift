@@ -10,6 +10,8 @@ private let djiDeviceModelOsmo360 = Data([0x17, 0x00])
 private let djiDeviceModelOsmoAction6 = Data([0x18, 0x00])
 private let djiDeviceModelOsmoPocket3 = Data([0x20, 0x00])
 private let djiDeviceModelOsmoPocket4 = Data([0x21, 0x00])
+private let djiDeviceModelNone = Data([0x00, 0x00])
+private let djiProductTypeOsmoPocket4Pro = Data([0xDA, 0x00])
 
 func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
     guard data.count >= 4 else {
@@ -32,6 +34,8 @@ func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
         return .osmo360
     case djiDeviceModelOsmoAction6:
         return .osmoAction6
+    case djiDeviceModelNone where data.count >= 14 && data[12 ... 13] == djiProductTypeOsmoPocket4Pro:
+        return .osmoPocket4Pro
     default:
         return .unknown
     }
