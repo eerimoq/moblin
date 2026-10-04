@@ -402,8 +402,7 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
-                bitrateKbps: bitrateKbps,
-                oa5: model.hasNewProtocol()
+                bitrateKbps: bitrateKbps
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,

@@ -39,40 +39,25 @@ struct DjiSetupWifiMessagePayload {
 }
 
 struct DjiStartStreamingMessagePayload {
-    static let payload1 = Data([0x00])
-    static let payload2 = Data([0x00])
     static let payload3 = Data([0x02, 0x00])
     static let payload4 = Data([0x00, 0x00, 0x00])
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
-    var bitrateKbps: UInt16
     var fps: Int
-    var oa5: Bool
-
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16, oa5: Bool) {
-        self.rtmpUrl = rtmpUrl
-        self.resolution = resolution
-        self.fps = fps
-        self.bitrateKbps = bitrateKbps
-        self.oa5 = oa5
-    }
+    var bitrateKbps: UInt16
 
     func encode() -> Data {
-        let oa5Byte: UInt8 = if oa5 {
-            0x2A
-        } else {
-            0x2E
-        }
+        let body = ByteWriter()
+        body.writeUInt8(toDjiResolution(resolution: resolution))
+        body.writeUInt16Le(bitrateKbps)
+        body.writeBytes(DjiStartStreamingMessagePayload.payload3)
+        body.writeUInt8(toDjiFps(fps: fps))
+        body.writeBytes(DjiStartStreamingMessagePayload.payload4)
+        body.writeBytes(djiPackUrl(url: rtmpUrl))
         let writer = ByteWriter()
-        writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
-        writer.writeUInt8(oa5Byte)
-        writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
-        writer.writeUInt8(toDjiResolution(resolution: resolution))
-        writer.writeUInt16Le(bitrateKbps)
-        writer.writeBytes(DjiStartStreamingMessagePayload.payload3)
-        writer.writeUInt8(toDjiFps(fps: fps))
-        writer.writeBytes(DjiStartStreamingMessagePayload.payload4)
-        writer.writeBytes(djiPackUrl(url: rtmpUrl))
+        writer.writeUInt8(0x00)
+        writer.writeUInt16Le(UInt16(truncatingIfNeeded: body.data.count))
+        writer.writeBytes(body.data)
         return writer.data
     }
 }
