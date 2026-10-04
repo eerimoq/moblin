@@ -122,6 +122,29 @@ enum SettingsDjiDeviceModel: String, Codable {
             false
         }
     }
+
+    func hasFps() -> Bool {
+        switch self {
+        case .osmoAction2:
+            false
+        case .osmoAction3:
+            false
+        case .osmoAction4:
+            false
+        case .osmoAction5Pro:
+            false
+        case .osmoAction6:
+            false
+        case .osmoPocket3:
+            true
+        case .osmoPocket4:
+            true
+        case .osmo360:
+            false
+        case .unknown:
+            false
+        }
+    }
 }
 
 enum SettingsDjiDeviceVideoCodec: String, Codable, CaseIterable {
