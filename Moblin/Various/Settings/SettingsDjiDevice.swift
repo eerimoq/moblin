@@ -51,6 +51,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction6
     case osmoPocket3
     case osmoPocket4
+    case osmoPocket4Pro
     case osmo360
     case unknown
 
@@ -69,6 +70,8 @@ enum SettingsDjiDeviceModel: String, Codable {
         case .osmoPocket3:
             false
         case .osmoPocket4:
+            false
+        case .osmoPocket4Pro:
             false
         case .osmo360:
             true
@@ -93,6 +96,8 @@ enum SettingsDjiDeviceModel: String, Codable {
             false
         case .osmoPocket4:
             true
+        case .osmoPocket4Pro:
+            true
         case .osmo360:
             true
         case .unknown:
@@ -116,6 +121,8 @@ enum SettingsDjiDeviceModel: String, Codable {
             false
         case .osmoPocket4:
             true
+        case .osmoPocket4Pro:
+            true
         case .osmo360:
             false
         case .unknown:
@@ -138,6 +145,8 @@ enum SettingsDjiDeviceModel: String, Codable {
         case .osmoPocket3:
             true
         case .osmoPocket4:
+            true
+        case .osmoPocket4Pro:
             true
         case .osmo360:
             false

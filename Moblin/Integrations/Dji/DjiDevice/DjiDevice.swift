@@ -349,7 +349,7 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
             setState(state: .configuring)
         case .osmoPocket3:
             sendStartStreaming()
-        case .osmoPocket4:
+        case .osmoPocket4, .osmoPocket4Pro:
             sendStartStreaming()
         case .unknown:
             sendStartStreaming()
@@ -369,7 +369,7 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
         }
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
         switch model {
-        case .osmoPocket4:
+        case .osmoPocket4, .osmoPocket4Pro:
             let payload = DjiStartStreamingMessagePayload2(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,

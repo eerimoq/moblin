@@ -69,4 +69,13 @@ struct DjiDeviceSuite {
         0031000a7017020003000000260072746d703a2f2f3131302e3134342e392e3234303a313933352f7075626c6973682f6c697665
         """)
     }
+
+    @Test
+    func modelOsmoPocket4Pro() {
+        let data = Data([
+            0xAA, 0x08, 0x00, 0x00, 0x00, 0xCF, 0x00, 0x04,
+            0x76, 0xEA, 0x8B, 0x20, 0xDA, 0x00, 0x00, 0x10,
+        ])
+        #expect(djiModelFromManufacturerData(data: data) == .osmoPocket4Pro)
+    }
 }
