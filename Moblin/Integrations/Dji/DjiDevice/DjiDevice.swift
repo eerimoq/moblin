@@ -322,38 +322,28 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
             return
         }
         switch model {
-        case .osmoAction2, .osmoAction3:
+        case .osmoAction2, .osmoAction3, .osmoPocket3, .osmoPocket4, .unknown:
             sendStartStreaming()
         case .osmoAction4, .osmoAction6:
             // The Osmo Action 6 uses the same configure byte (0x08) as the OA4,
             // not the 0x1A value used by the OA5 Pro / Osmo 360. Confirmed
             // against a BTSnoop capture of the official DJI app.
-            guard let imageStabilization else {
-                return
-            }
-            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: false)
-            writeMessage(message: DjiMessage(target: configureTarget,
-                                             id: configureTransactionId,
-                                             type: configureType,
-                                             payload: payload.encode()))
-            setState(state: .configuring)
+            sendConfigure(oa5: false)
         case .osmoAction5Pro, .osmo360:
-            guard let imageStabilization else {
-                return
-            }
-            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: true)
-            writeMessage(message: DjiMessage(target: configureTarget,
-                                             id: configureTransactionId,
-                                             type: configureType,
-                                             payload: payload.encode()))
-            setState(state: .configuring)
-        case .osmoPocket3:
-            sendStartStreaming()
-        case .osmoPocket4:
-            sendStartStreaming()
-        case .unknown:
-            sendStartStreaming()
+            sendConfigure(oa5: true)
         }
+    }
+
+    private func sendConfigure(oa5: Bool) {
+        guard let imageStabilization else {
+            return
+        }
+        let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: oa5)
+        writeMessage(message: DjiMessage(target: configureTarget,
+                                         id: configureTransactionId,
+                                         type: configureType,
+                                         payload: payload.encode()))
+        setState(state: .configuring)
     }
 
     private func processConfiguring(response: DjiMessage) {
@@ -368,47 +358,29 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
             return
         }
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
-        switch model {
+        let payload: Data = switch model {
         case .osmoPocket4:
-            let payload = DjiStartStreamingMessagePayload2(
-                rtmpUrl: rtmpUrl,
-                resolution: resolution,
-                fps: fps,
-                bitrateKbps: bitrateKbps,
-                codec: videoCodec.toDjiCodec(),
-                enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle
-            )
-            writeMessage(message: DjiMessage(target: startStreamingTarget,
-                                             id: startStreamingTransactionId,
-                                             type: startStreamingType,
-                                             payload: payload.encode()))
+            encodeStartStreamingPayload2(rtmpUrl: rtmpUrl,
+                                         resolution: resolution,
+                                         bitrateKbps: bitrateKbps,
+                                         middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle)
         case .osmoAction6:
-            let payload = DjiStartStreamingMessagePayload2(
-                rtmpUrl: rtmpUrl,
-                resolution: resolution,
-                fps: fps,
-                bitrateKbps: bitrateKbps,
-                codec: videoCodec.toDjiCodec(),
-                enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                middle: DjiStartStreamingMessagePayload2.osmoAction6Middle
-            )
-            writeMessage(message: DjiMessage(target: startStreamingTarget,
-                                             id: startStreamingTransactionId,
-                                             type: startStreamingType,
-                                             payload: payload.encode()))
+            encodeStartStreamingPayload2(rtmpUrl: rtmpUrl,
+                                         resolution: resolution,
+                                         bitrateKbps: bitrateKbps,
+                                         middle: DjiStartStreamingMessagePayload2.osmoAction6Middle)
         default:
-            let payload = DjiStartStreamingMessagePayload(
+            DjiStartStreamingMessagePayload(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
                 bitrateKbps: bitrateKbps
-            )
-            writeMessage(message: DjiMessage(target: startStreamingTarget,
-                                             id: startStreamingTransactionId,
-                                             type: startStreamingType,
-                                             payload: payload.encode()))
+            ).encode()
         }
+        writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                         id: startStreamingTransactionId,
+                                         type: startStreamingType,
+                                         payload: payload))
         // Patch for OA5P: Send the confirmation payload to actually start the stream.
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.
@@ -421,6 +393,22 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
                                              payload: confirmStartStreamPayload.encode()))
         }
         setState(state: .startingStream)
+    }
+
+    private func encodeStartStreamingPayload2(rtmpUrl: String,
+                                              resolution: SettingsDjiDeviceResolution,
+                                              bitrateKbps: UInt16,
+                                              middle: Data) -> Data
+    {
+        DjiStartStreamingMessagePayload2(
+            rtmpUrl: rtmpUrl,
+            resolution: resolution,
+            fps: fps,
+            bitrateKbps: bitrateKbps,
+            codec: videoCodec.toDjiCodec(),
+            enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
+            middle: middle
+        ).encode()
     }
 
     private func processStartingStream(response: DjiMessage) {
