@@ -283,6 +283,16 @@ struct StreamKickSettingsView: View {
                         .foregroundStyle(.red)
                 }
             }
+            Section {
+                Toggle("Enabled", isOn: $stream.kickChatEnabled)
+                    .onChange(of: stream.kickChatEnabled) { _ in
+                        if stream.enabled {
+                            model.kickChatEnabledUpdated()
+                        }
+                    }
+            } header: {
+                Text("Chat")
+            }
             if stream.kickLoggedIn {
                 Section {
                     KickStreamLiveSettingsView(model: model,
