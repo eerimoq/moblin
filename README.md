@@ -152,6 +152,7 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Ingests.
   - RTMP, SRT(LA), RIST and WHIP (WebRTC) servers.
   - SRT, RTSP and WHEP (WebRTC) clients, pulling streams from a server.
+  - Experimental [Insta360 GO Ultra Wi-Fi video input](docs/insta360-go-ultra.md).
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
 - Tap screen for manual focus.

@@ -18,6 +18,7 @@ enum SettingsCameraId {
     case srt(id: UUID)
     case rist(id: UUID)
     case rtsp(id: UUID)
+    case insta360(id: UUID)
     case whip(id: UUID)
     case whep(id: UUID)
     case mediaPlayer(id: UUID)
@@ -1279,6 +1280,7 @@ class Database: Codable, ObservableObject {
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
+    var insta360: SettingsInsta360 = .init()
     var srtClient: SettingsSrtClient = .init()
     var whipServer: SettingsWhipServer = .init()
     var whepClient: SettingsWhepClient = .init()
@@ -1409,6 +1411,7 @@ class Database: Codable, ObservableObject {
         case ristServer
         case disconnectProtection
         case rtspClient
+        case insta360
         case srtClient
         case whipServer
         case whepClient
@@ -1501,6 +1504,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.insta360, insta360)
         try container.encode(.srtClient, srtClient)
         try container.encode(.whipServer, whipServer)
         try container.encode(.whepClient, whepClient)
@@ -1643,6 +1647,7 @@ class Database: Codable, ObservableObject {
             .init()
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
+        insta360 = container.decode(.insta360, SettingsInsta360.self, .init())
         srtClient = container.decode(.srtClient, SettingsSrtClient.self, .init())
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())

@@ -12,6 +12,7 @@ struct IngestsSettingsView: View {
                 SrtClientSettingsView(srtClient: database.srtClient)
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
+                Insta360SettingsView(settings: database.insta360, ingests: model.ingests)
                 WhipServerSettingsView(whipServer: database.whipServer)
                 WhepClientSettingsView(whepClient: database.whepClient)
                 if #available(iOS 26, *), false {
