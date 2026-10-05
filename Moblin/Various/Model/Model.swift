@@ -200,6 +200,8 @@ class Ingests: ObservableObject {
     var srt: [SrtClient] = []
     var rist: RistServer?
     var rtsp: [RtspClient] = []
+    var insta360: Insta360Client?
+    @Published var insta360State: Insta360ClientState = .disconnected
     var whip: WhipServer?
     var whep: [WhepClient] = []
     @Published var speedAndTotal = noValue
@@ -1264,6 +1266,7 @@ final class Model: NSObject, ObservableObject {
         reloadSrtClient()
         reloadRistServer()
         reloadRtspClient()
+        reloadInsta360Client()
         reloadWhipServer()
         reloadWhepClient()
     }
@@ -1634,6 +1637,7 @@ final class Model: NSObject, ObservableObject {
         stopSrtlaServer()
         stopSrtClient()
         stopRtspClient()
+        stopInsta360Client()
         stopWhepClient()
         stopWhipServer()
         teardownAudioSession()
@@ -2559,6 +2563,7 @@ final class Model: NSObject, ObservableObject {
         updateSrtClientIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateInsta360IngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateWhipIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateWhepIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         let message: String
@@ -3221,6 +3226,7 @@ final class Model: NSObject, ObservableObject {
             || srtlaServerEnabled()
             || ristServerEnabled()
             || !ingests.rtsp.isEmpty
+            || ingests.insta360 != nil
             || whipServerEnabled()
             || !ingests.whep.isEmpty
             || !ingests.srt.isEmpty

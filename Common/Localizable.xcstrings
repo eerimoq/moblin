@@ -1,6 +1,149 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "192.168.42.1 by default." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "192.168.42.1 by default."
+          }
+        }
+      }
+    },
+    "5 or more milliseconds. 300 ms by default." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 or more milliseconds. 300 ms by default."
+          }
+        }
+      }
+    },
+    "Camera IP address" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera IP address"
+          }
+        }
+      }
+    },
+    "Connect this phone to the GO Ultra's Wi-Fi in Settings and close the Insta360 app. Enable the connection here, then select Insta360 GO Ultra as your scene's camera." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect this phone to the GO Ultra's Wi-Fi in Settings and close the Insta360 app. Enable the connection here, then select Insta360 GO Ultra as your scene's camera."
+          }
+        }
+      }
+    },
+    "Experimental GO Ultra support. Camera compatibility is not yet verified on hardware." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experimental GO Ultra support. Camera compatibility is not yet verified on hardware."
+          }
+        }
+      }
+    },
+    "Insta360 GO Ultra" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insta360 GO Ultra"
+          }
+        }
+      }
+    },
+    "Invalid IP address" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid IP address"
+          }
+        }
+      }
+    },
+    "Receiving video" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiving video"
+          }
+        }
+      }
+    },
+    "Reconnect" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnect"
+          }
+        }
+      }
+    },
+    "Reconnecting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnecting"
+          }
+        }
+      }
+    },
+    "Use cellular data or another network connection to send your live stream." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use cellular data or another network connection to send your live stream."
+          }
+        }
+      }
+    },
+    "Video only. Select the phone or an external microphone for audio in Moblin." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video only. Select the phone or an external microphone for audio in Moblin."
+          }
+        }
+      }
+    },
+    "Waiting for video" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for video"
+          }
+        }
+      }
+    },
     "" : {
       "localizations" : {
         "de" : {

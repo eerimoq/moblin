@@ -280,6 +280,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
         case .rtsp:
             attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene)
+        case .insta360:
+            attachBufferedCamera(cameraId: scene.videoSource.insta360CameraId, scene: scene)
         case .whip:
             attachBufferedCamera(cameraId: scene.videoSource.whipCameraId, scene: scene)
         case .whep:
@@ -484,6 +486,8 @@ extension Model {
             activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
             activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+        case .insta360:
+            activeBufferedVideoIds.contains(scene.videoSource.insta360CameraId)
         case .whip:
             activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
         case .whep:

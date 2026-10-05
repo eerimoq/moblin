@@ -39,6 +39,7 @@ class VideoSources: ObservableObject {
     @Published var srtClient: [Camera] = []
     @Published var rist: [Camera] = []
     @Published var rtsp: [Camera] = []
+    @Published var insta360: [Camera] = []
     @Published var whip: [Camera] = []
     @Published var whep: [Camera] = []
     @Published var mediaPlayer: [Camera] = []
@@ -62,6 +63,7 @@ class VideoSources: ObservableObject {
         cameras += srtClient
         cameras += rist
         cameras += rtsp
+        cameras += insta360
         cameras += whip
         cameras += whep
         cameras += mediaPlayer
@@ -575,6 +577,7 @@ extension Model {
         updateSrtClientVideoSources()
         updateRistVideoSources()
         updateRtspVideoSources()
+        updateInsta360VideoSources()
         updateWhipVideoSources()
         updateWhepVideoSources()
         updateMediaPlayerVideoSources()
@@ -672,6 +675,8 @@ extension Model {
             .rist(id: id)
         } else if let id = getRtspStream(idString: cameraId)?.id {
             .rtsp(id: id)
+        } else if let id = getInsta360Camera(idString: cameraId)?.id {
+            .insta360(id: id)
         } else if let id = getWhipStream(idString: cameraId)?.id {
             .whip(id: id)
         } else if let id = getWhepStream(idString: cameraId)?.id {
@@ -708,6 +713,8 @@ extension Model {
             .rist(id: id)
         } else if let id = getRtspStream(id: cameraId)?.id {
             .rtsp(id: id)
+        } else if let id = getInsta360Camera(id: cameraId)?.id {
+            .insta360(id: id)
         } else if let id = getWhipStream(id: cameraId)?.id {
             .whip(id: id)
         } else if let id = getWhepStream(id: cameraId)?.id {
@@ -739,6 +746,8 @@ extension Model {
         case let .rist(id: id):
             return id.uuidString
         case let .rtsp(id: id):
+            return id.uuidString
+        case let .insta360(id: id):
             return id.uuidString
         case let .whip(id: id):
             return id.uuidString
@@ -796,6 +805,8 @@ extension Model {
             return getRistStream(id: id)?.camera() ?? unknownSad
         case let .rtsp(id):
             return getRtspStream(id: id)?.camera() ?? unknownSad
+        case let .insta360(id):
+            return getInsta360Camera(id: id)?.camera() ?? unknownSad
         case let .whip(id):
             return getWhipStream(id: id)?.camera() ?? unknownSad
         case let .whep(id):
@@ -911,6 +922,8 @@ extension Model {
         case let .rist(id: id):
             id
         case let .rtsp(id: id):
+            id
+        case let .insta360(id: id):
             id
         case let .whip(id: id):
             id

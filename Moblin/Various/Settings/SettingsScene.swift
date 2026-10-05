@@ -1734,6 +1734,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         case srtClientCameraId
         case ristCameraId
         case rtspCameraId
+        case insta360CameraId
         case whipCameraId
         case whepCameraId
         case mediaPlayerCameraId
@@ -1761,6 +1762,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.insta360CameraId, videoSource.insta360CameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
         try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
@@ -1786,6 +1788,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.insta360CameraId = container.decode(.insta360CameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
         videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
@@ -1825,6 +1828,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         case srtClientCameraId
         case ristCameraId
         case rtspCameraId
+        case insta360CameraId
         case whipCameraId
         case whepCameraId
         case mediaPlayerCameraId
@@ -1848,6 +1852,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.insta360CameraId, videoSource.insta360CameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
         try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
@@ -1869,6 +1874,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.insta360CameraId = container.decode(.insta360CameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
         videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
@@ -2844,6 +2850,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case srtClient = "SRT client"
     case rist = "RIST"
     case rtsp = "RTSP"
+    case insta360 = "Insta360"
     case whip = "WHIP"
     case whep = "WHEP"
     case mediaPlayer = "Media player"
@@ -2880,6 +2887,7 @@ struct SettingsVideoSource {
     var srtClientCameraId: UUID = .init()
     var ristCameraId: UUID = .init()
     var rtspCameraId: UUID = .init()
+    var insta360CameraId: UUID = .init()
     var whipCameraId: UUID = .init()
     var whepCameraId: UUID = .init()
     var mediaPlayerCameraId: UUID = .init()
@@ -2904,6 +2912,8 @@ struct SettingsVideoSource {
             .rist(id: ristCameraId)
         case .rtsp:
             .rtsp(id: rtspCameraId)
+        case .insta360:
+            .insta360(id: insta360CameraId)
         case .whip:
             .whip(id: whipCameraId)
         case .whep:
@@ -2946,6 +2956,9 @@ struct SettingsVideoSource {
         case let .rtsp(id: id):
             cameraPosition = .rtsp
             rtspCameraId = id
+        case let .insta360(id: id):
+            cameraPosition = .insta360
+            insta360CameraId = id
         case let .whip(id: id):
             cameraPosition = .whip
             whipCameraId = id
@@ -3016,6 +3029,8 @@ struct SettingsVideoSource {
             cameraId == ristCameraId
         case .rtsp:
             cameraId == rtspCameraId
+        case .insta360:
+            cameraId == insta360CameraId
         case .whip:
             cameraId == whipCameraId
         case .whep:
@@ -3052,6 +3067,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         case srtClientCameraId
         case ristCameraId
         case rtspCameraId
+        case insta360CameraId
         case whipCameraId
         case whepCameraId
         case mediaPlayerCameraId
@@ -3085,6 +3101,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.insta360CameraId, videoSource.insta360CameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
         try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
@@ -3114,6 +3131,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.insta360CameraId = container.decode(.insta360CameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
         videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
@@ -4012,6 +4030,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         case srtClientCameraId
         case ristCameraId
         case rtspCameraId
+        case insta360CameraId
         case whipCameraId
         case whepCameraId
         case mediaPlayerCameraId
@@ -4042,6 +4061,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.insta360CameraId, videoSource.insta360CameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
         try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
@@ -4076,6 +4096,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        videoSource.insta360CameraId = container.decode(.insta360CameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
         videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
