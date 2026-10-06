@@ -181,7 +181,11 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
 
     @MainActor
     func reload() {
-        webView.reload()
+        guard isLoaded else {
+            return
+        }
+        startLoadingTime = .now
+        webView.load(URLRequest(url: url))
     }
 
     @MainActor
