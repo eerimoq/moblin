@@ -337,6 +337,9 @@ class Moblin:
             f"macro to be {'running' if running else 'stopped'}",
         )
 
+    def reload_browser_widgets(self):
+        self._request({"reloadBrowserWidgets": {}})
+
     def go_live(self):
         self._request({"setLive": {"on": True}})
 

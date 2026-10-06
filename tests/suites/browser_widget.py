@@ -1,6 +1,7 @@
 import functools
 import logging
 import math
+import time
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -454,6 +455,24 @@ class BrowserWidgetLog(BrowserWidgetPageTestCase):
         self.assert_true(any(expected in entry for entry in log_entries), expected)
 
 
+class BrowserWidgetReloadAfterFailedLoad(BrowserWidgetPageTestCase):
+    """Reload browser widgets loads a page whose first load failed as its web server was down."""
+
+    def run(self):
+        create_media()
+        ip_address = self.moblin.config.tester_ip_address()
+        self.import_settings(f"http://{ip_address}:{WEB_SERVER_PORT}/BrowserWidgetStatic.html?{uuid()}")
+        time.sleep(5)
+        with HttpServer(WEB_SERVER_PORT, WEBSITES_DIR, ip_address) as server:
+            time.sleep(5)
+            self.assert_equal(page_reports(server.request_counts(), "Static"), [])
+            self.moblin.reload_browser_widgets()
+            recording_file = self.moblin.record(10, "BrowserWidgetReloadAfterFailedLoad.mp4")
+            request_counts = server.request_counts()
+        self.assert_reported_ok(request_counts, "Static")
+        self.assert_qr_codes_found(read_qr_codes(recording_file, qr_code_crop(0, 0))[90:])
+
+
 class BrowserWidgetAudioElement(BrowserWidgetPageTestCase):
     """Beeps played by an audio element through the speaker."""
 
@@ -593,6 +612,7 @@ def tests(moblin: Moblin):
         BrowserWidgetHiddenVideo(moblin),
         BrowserWidgetIframe(moblin),
         BrowserWidgetLog(moblin),
+        BrowserWidgetReloadAfterFailedLoad(moblin),
         BrowserWidgetAudioElement(moblin),
         BrowserWidgetAudioLate(moblin),
         BrowserWidgetVideoSound(moblin),
