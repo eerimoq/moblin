@@ -496,7 +496,7 @@ final class YouTubeLiveChat: NSObject {
     private func fetch(from: URL) async throws -> (Data, HTTPURLResponse) {
         var request = URLRequest(url: from)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await httpUrlSession().data(for: request)
         if let response = response.http {
             return (data, response)
         } else {
@@ -509,7 +509,7 @@ final class YouTubeLiveChat: NSObject {
         request.httpMethod = "POST"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.setContentType("application/json")
-        let (data, response) = try await URLSession.shared.upload(for: request, from: data)
+        let (data, response) = try await httpUrlSession().upload(for: request, from: data)
         if let response = response.http {
             return (data, response)
         } else {

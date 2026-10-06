@@ -78,12 +78,29 @@ func httpRequest(request: URLRequest,
                  completion: ((Data?, URLResponse?, (any Error)?) -> Void)? = nil)
 {
     nonisolated(unsafe) let completion = completion
-    URLSession.shared.dataTask(with: request) { data, response, error in
+    httpUrlSession().dataTask(with: request) { data, response, error in
         queue.async {
             completion?(data, response, error)
         }
+    }.resume()
+}
+
+func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(from: from)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
     }
-    .resume()
+}
+
+func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(for: request)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
+    }
 }
 
 func getHttpsUrl(text: String) -> URL? {

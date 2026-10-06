@@ -229,7 +229,7 @@ private func httpCallUrlSession(request: URLRequest,
                                 completion: @escaping @MainActor (Data?) -> Void)
 {
     if let body {
-        URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
+        httpUrlSession().uploadTask(with: request, from: body) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
                 DispatchQueue.main.async {
                     completion(nil)

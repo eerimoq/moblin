@@ -346,24 +346,6 @@ extension HTTPURLResponse {
     }
 }
 
-func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
-    let (data, response) = try await URLSession.shared.data(from: from)
-    if let response = response.http {
-        return (data, response)
-    } else {
-        throw "Not an HTTP response"
-    }
-}
-
-func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-    let (data, response) = try await URLSession.shared.data(for: request)
-    if let response = response.http {
-        return (data, response)
-    } else {
-        throw "Not an HTTP response"
-    }
-}
-
 extension URLRequest {
     mutating func setAuthorization(_ value: String) {
         setValue(value, forHTTPHeaderField: "Authorization")
