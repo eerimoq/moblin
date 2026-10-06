@@ -83,7 +83,7 @@ struct LocationSettingsView: View {
             if database.showAllSettings, stream !== fallbackStream {
                 ShortcutSectionView {
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: stream)
+                        StreamRealtimeIrlSettingsView(model: model, stream: stream)
                     } label: {
                         Toggle(isOn: $stream.realtimeIrlEnabled) {
                             Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")

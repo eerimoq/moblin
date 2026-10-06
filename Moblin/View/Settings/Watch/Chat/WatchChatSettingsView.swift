@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WatchChatSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chat: WatchSettingsChat
 
     var body: some View {

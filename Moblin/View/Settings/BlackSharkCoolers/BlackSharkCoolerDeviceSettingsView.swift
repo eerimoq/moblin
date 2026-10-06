@@ -22,7 +22,7 @@ private func formatBlackSharkCoolerDeviceState(state: BlackSharkCoolerDeviceStat
 }
 
 struct BlackSharkCoolerDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject private var scanner = blackSharkCoolerScanner
     @ObservedObject var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices
     @ObservedObject var device: SettingsBlackSharkCoolerDevice

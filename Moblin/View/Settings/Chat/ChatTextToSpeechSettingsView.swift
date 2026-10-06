@@ -47,7 +47,7 @@ func textToSpeechLanguages(appleVoices: [AVSpeechSynthesisVoice]) -> [TextToSpee
 }
 
 struct ChatTextToSpeechSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var ttsMonster: SettingsTtsMonster
     @State private var appleVoices: [AVSpeechSynthesisVoice] = []

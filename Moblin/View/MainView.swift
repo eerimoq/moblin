@@ -74,7 +74,7 @@ private struct HideShowButtonPanelView: View {
 }
 
 private struct PanelButtonsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let backgroundColor: Color
 
     private func onClose() {
@@ -296,7 +296,7 @@ private struct PhotoShootView: View {
 }
 
 private struct WebBrowserAlertsView: UIViewControllerRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIViewController(context _: Context) -> WebBrowserController {
         model.webBrowserController
@@ -477,7 +477,7 @@ struct MainView: View {
                         .opacity(model.panelHidden ? 0 : 1)
                     let backgroundColor = model.panelHidden ? model.showingPanel
                         .buttonsBackgroundColor() : .clear
-                    PanelButtonsView(backgroundColor: backgroundColor)
+                    PanelButtonsView(model: model, backgroundColor: backgroundColor)
                         .padding(.trailing, 10)
                         .padding(.top, -7)
                 }
@@ -529,8 +529,11 @@ struct MainView: View {
                                                          remoteControlSettings: model.database.remoteControl)
                 }
                 if model.showingPanel != .none, model.panelHidden {
-                    PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
-                        .padding(.trailing, -1)
+                    PanelButtonsView(
+                        model: model,
+                        backgroundColor: model.showingPanel.buttonsBackgroundColor()
+                    )
+                    .padding(.trailing, -1)
                 }
             }
             .gesture(
@@ -548,7 +551,7 @@ struct MainView: View {
                         .opacity(model.panelHidden ? 0 : 1)
                         .background(.black)
                     if !model.panelHidden {
-                        PanelButtonsView(backgroundColor: .clear)
+                        PanelButtonsView(model: model, backgroundColor: .clear)
                     }
                 }
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
@@ -583,7 +586,7 @@ struct MainView: View {
                 } else {
                     landscape()
                 }
-                WebBrowserAlertsView()
+                WebBrowserAlertsView(model: model)
                     .opacity(webBrowserController.showAlert ? 1 : 0)
                 if model.showStealthMode {
                     StealthModeView(

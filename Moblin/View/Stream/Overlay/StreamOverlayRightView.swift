@@ -676,7 +676,7 @@ private struct RightOverlayBottomVerticalView: View {
         HStack(alignment: .bottom) {
             Spacer()
             if streamOverlay.showMediaPlayerControls {
-                StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model
+                StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model
                     .mediaPlayerPlayer)
             } else {
                 VStack(alignment: .trailing) {
@@ -722,7 +722,7 @@ private struct RightOverlayBottomHorizontalView: View {
 
     var body: some View {
         if streamOverlay.showMediaPlayerControls {
-            StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
+            StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model.mediaPlayerPlayer)
         } else {
             StreamOverlayRightFaceView(model: model, face: database.face)
             if streamOverlay.showingPixellate {

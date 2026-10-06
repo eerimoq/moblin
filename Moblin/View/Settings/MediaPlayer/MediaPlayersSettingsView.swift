@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MediaPlayersSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
 
     private func deletePlayer(at offsets: IndexSet) {
@@ -27,7 +27,7 @@ struct MediaPlayersSettingsView: View {
             Section {
                 List {
                     ForEach(mediaPlayers.players) { player in
-                        MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
+                        MediaPlayerSettingsView(model: model, mediaPlayers: mediaPlayers, player: player)
                             .contextMenuDeleteButton {
                                 if let offsets = makeOffsets(mediaPlayers.players, player.id) {
                                     deletePlayer(at: offsets)

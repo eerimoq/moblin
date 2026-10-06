@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RistServerSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var ristServer: SettingsRistServer
 
     private func submitPort(value: String) {

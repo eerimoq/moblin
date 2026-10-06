@@ -20,7 +20,7 @@ struct SrtClientSettingsView: View {
                 Section {
                     List {
                         ForEach(srtClient.streams) { stream in
-                            SrtClientStreamSettingsView(srtClient: srtClient, stream: stream)
+                            SrtClientStreamSettingsView(model: model, srtClient: srtClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(srtClient.streams, stream.id) {
                                         deleteStream(at: offsets)

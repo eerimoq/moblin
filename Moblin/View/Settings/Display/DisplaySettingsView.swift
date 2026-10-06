@@ -142,7 +142,7 @@ private struct BackgroundImageSettingsView: View {
 }
 
 private struct ExternalDisplayContentView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
@@ -195,9 +195,9 @@ struct DisplaySettingsView: View {
                     } label: {
                         Text("Local overlays")
                     }
-                    ExternalDisplayContentView(database: database)
+                    ExternalDisplayContentView(model: model, database: database)
                     NavigationLink {
-                        LocalOverlaysNetworkInterfaceNamesSettingsView(database: database)
+                        LocalOverlaysNetworkInterfaceNamesSettingsView(model: model, database: database)
                     } label: {
                         Text("Network interface names")
                     }

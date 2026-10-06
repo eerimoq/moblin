@@ -40,7 +40,7 @@ struct QuickButtonDjiDevicesView: View {
             }
             ShortcutSectionView {
                 NavigationLink {
-                    DjiDevicesSettingsView(djiDevices: djiDevices)
+                    DjiDevicesSettingsView(model: model, djiDevices: djiDevices)
                 } label: {
                     Label("DJI devices", systemImage: "appletvremote.gen1")
                 }

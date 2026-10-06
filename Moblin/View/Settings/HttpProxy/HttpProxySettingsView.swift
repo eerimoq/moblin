@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HttpProxySettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var status: StatusOther
     @ObservedObject var httpProxy: SettingsHttpProxy
 

@@ -32,6 +32,7 @@ struct ZoomSettingsView: View {
                 List {
                     ForEach(zoom.back) { preset in
                         ZoomPresetSettingsView(
+                            model: model,
                             preset: preset,
                             minX: minZoomX,
                             maxX: model.getMinMaxZoomX(position: .back).1
@@ -66,6 +67,7 @@ struct ZoomSettingsView: View {
                 List {
                     ForEach(zoom.front) { preset in
                         ZoomPresetSettingsView(
+                            model: model,
                             preset: preset,
                             minX: minZoomX,
                             maxX: model.getMinMaxZoomX(position: .front).1

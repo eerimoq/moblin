@@ -2,7 +2,7 @@ import PhotosUI
 import SwiftUI
 
 private struct QuickButtonStealthModeView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stealthMode: StealthMode
     @State var presentingPicker: Bool = false
     @State var selectedImageItem: PhotosPickerItem?
@@ -243,7 +243,7 @@ struct QuickButtonsButtonSettingsView: View {
             }
             switch button.type {
             case .blackScreen:
-                QuickButtonStealthModeView(stealthMode: model.stealthMode)
+                QuickButtonStealthModeView(model: model, stealthMode: model.stealthMode)
             default:
                 EmptyView()
             }

@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct WatchSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var watch: WatchSettings
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    WatchChatSettingsView(chat: model.database.watch.chat)
+                    WatchChatSettingsView(model: model, chat: model.database.watch.chat)
                 } label: {
                     Text("Chat")
                 }

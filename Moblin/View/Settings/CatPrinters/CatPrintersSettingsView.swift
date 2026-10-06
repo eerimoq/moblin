@@ -28,7 +28,7 @@ private struct CatPrinterSettingsWrapperView: View {
 }
 
 struct CatPrintersSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var catPrinters: SettingsCatPrinters
 
     var body: some View {

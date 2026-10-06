@@ -626,7 +626,7 @@ private struct ChatBotCustomCommandTextSettingsView: View {
             Section {
                 TextWidgetSuggestionsView(widget: false, text: $value)
             }
-            TextFormatVariablesView(widget: false, value: $value)
+            TextFormatVariablesView(model: model, widget: false, value: $value)
         }
         .onChange(of: value) { _ in
             customCommand.formatString = value
@@ -686,7 +686,7 @@ private struct ChatBotCustomCommandSettingsView: View {
 }
 
 private struct ChatBotCustomCommandsSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chat: SettingsChat
 
     var body: some View {
@@ -763,7 +763,7 @@ struct ChatBotSettingsView: View {
                     Text("Commands")
                 }
                 NavigationLink {
-                    ChatBotCustomCommandsSettingsView(chat: model.database.chat)
+                    ChatBotCustomCommandsSettingsView(model: model, chat: model.database.chat)
                 } label: {
                     Text("Custom commands")
                 }

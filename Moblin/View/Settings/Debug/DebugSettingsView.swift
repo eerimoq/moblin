@@ -3,7 +3,7 @@ import SwiftUI
 import WebKit
 
 struct DebugSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var debug: SettingsDebug
     @State var presentingLog: Bool = false
     @State var log: Deque<LogEntry> = []
@@ -71,7 +71,7 @@ struct DebugSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    DebugVideoSettingsView(debug: debug)
+                    DebugVideoSettingsView(model: model, debug: debug)
                 } label: {
                     Text("Video")
                 }
@@ -114,7 +114,11 @@ struct DebugSettingsView: View {
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
                 NavigationLink {
-                    HttpProxySettingsView(status: model.statusOther, httpProxy: model.database.httpProxy)
+                    HttpProxySettingsView(
+                        model: model,
+                        status: model.statusOther,
+                        httpProxy: model.database.httpProxy
+                    )
                 } label: {
                     Text("HTTP proxy")
                 }

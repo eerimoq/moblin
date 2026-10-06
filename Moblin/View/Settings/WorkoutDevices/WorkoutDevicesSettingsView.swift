@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WorkoutDevicesSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var workoutDevices: SettingsWorkoutDevices
 
     var body: some View {

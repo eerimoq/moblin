@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamOverlayRightMediaPlayerControlsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mediaPlayer: MediaPlayerPlayer
 
     private func playPauseImage() -> String {

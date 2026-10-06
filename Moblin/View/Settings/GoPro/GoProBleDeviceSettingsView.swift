@@ -91,7 +91,7 @@ private struct GoProDeviceSelectionSection: View {
 }
 
 private struct GoProDeviceWifiSection: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var device: SettingsGoProDevice
 
     var body: some View {
@@ -280,7 +280,7 @@ private struct GoProDeviceStreamSettingsSection: View {
 }
 
 private struct GoProDeviceStartStopSection: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var device: SettingsGoProDevice
     @ObservedObject var status: StatusOther
 
@@ -305,7 +305,7 @@ private struct GoProDeviceStartStopSection: View {
 }
 
 private struct GoProBleDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var device: SettingsGoProDevice
 
     var body: some View {
@@ -314,7 +314,7 @@ private struct GoProBleDeviceSettingsView: View {
                 NameEditView(name: $device.name, existingNames: model.database.goPro.devices)
             }
             GoProDeviceSelectionSection(device: device)
-            GoProDeviceWifiSection(device: device)
+            GoProDeviceWifiSection(model: model, device: device)
             GoProDeviceRtmpSection(
                 device: device,
                 status: model.statusOther,
@@ -326,7 +326,7 @@ private struct GoProBleDeviceSettingsView: View {
                     Text(formatGoProDeviceState(device.state))
                 }
             }
-            GoProDeviceStartStopSection(device: device, status: model.statusOther)
+            GoProDeviceStartStopSection(model: model, device: device, status: model.statusOther)
         }
         .navigationTitle("GoPro device")
     }
@@ -340,7 +340,7 @@ struct GoProBleDevicesSettingsSection: View {
         Section {
             ForEach(goPro.devices) { device in
                 NavigationLink {
-                    GoProBleDeviceSettingsView(device: device)
+                    GoProBleDeviceSettingsView(model: model, device: device)
                 } label: {
                     HStack {
                         DraggableItemPrefixView()

@@ -45,7 +45,7 @@ private struct StoreSettingsBoughtEverythingView: View {
 }
 
 private struct StoreSettingsIconsToBuyView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
     @State var disabledPurchaseButtons: Set<String> = []
 
@@ -97,7 +97,7 @@ private struct StoreSettingsIconsToBuyView: View {
 }
 
 private struct StoreSettingsMyIconsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
 
     private func setAppIcon(iconImage: String) {
@@ -155,11 +155,11 @@ struct StoreSettingsView: View {
                 Text("Support Moblin developers by buying icons. ❤️")
             }
             if !store.iconsInStore.isEmpty {
-                StoreSettingsIconsToBuyView(store: store)
+                StoreSettingsIconsToBuyView(model: model, store: store)
             } else {
                 StoreSettingsBoughtEverythingView()
             }
-            StoreSettingsMyIconsView(store: store)
+            StoreSettingsMyIconsView(model: model, store: store)
             StoreSettingsRestoreView(model: model)
         }
         .navigationTitle("Store")

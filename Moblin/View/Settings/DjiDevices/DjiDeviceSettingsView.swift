@@ -371,7 +371,7 @@ private struct DjiDeviceAutoRestartSettingsView: View {
 }
 
 private struct DjiDeviceStartStopButtonSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var status: StatusOther
     @ObservedObject var device: SettingsDjiDevice
 
@@ -396,7 +396,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 }
 
 struct DjiDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
     @ObservedObject var status: StatusTopRight
@@ -424,7 +424,7 @@ struct DjiDeviceSettingsView: View {
                     Text(state())
                 }
             }
-            DjiDeviceStartStopButtonSettingsView(status: model.statusOther, device: device)
+            DjiDeviceStartStopButtonSettingsView(model: model, status: model.statusOther, device: device)
         }
         .onAppear {
             model.setCurrentDjiDevice(device: device)

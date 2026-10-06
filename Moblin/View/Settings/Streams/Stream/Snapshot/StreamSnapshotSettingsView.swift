@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamSnapshotSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @ObservedObject var recording: SettingsStreamRecording
 

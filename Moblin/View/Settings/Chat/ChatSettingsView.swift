@@ -29,7 +29,7 @@ private struct ChatSettingsGeneralView: View {
             }
         }
         NavigationLink {
-            ChatTextToSpeechSettingsView(chat: chat, ttsMonster: chat.ttsMonster)
+            ChatTextToSpeechSettingsView(model: model, chat: chat, ttsMonster: chat.ttsMonster)
         } label: {
             Toggle(isOn: Binding(get: {
                 chat.textToSpeechEnabled

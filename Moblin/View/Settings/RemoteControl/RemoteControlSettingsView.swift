@@ -243,7 +243,7 @@ private struct RemoteControlUrlsView: View {
 }
 
 private struct StreamerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var streamer: SettingsRemoteControlAssistant
     @ObservedObject var streamerRelay: SettingsRemoteControlServerRelay
@@ -412,6 +412,7 @@ struct RemoteControlStreamersView: View {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
                     StreamerView(
+                        model: model,
                         remoteControlSettings: remoteControlSettings,
                         streamer: streamer,
                         streamerRelay: streamer.relay

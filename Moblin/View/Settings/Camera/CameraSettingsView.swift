@@ -73,7 +73,7 @@ private struct CameraSettingsCubeLutsView: View {
                 model.onDocumentPickerUrl = onUrl
             }
             .sheet(isPresented: $showPicker) {
-                AlertPickerView(type: .item)
+                AlertPickerView(model: model, type: .item)
             }
         } header: {
             Text("My .cube LUTs")
@@ -194,7 +194,7 @@ private struct CameraSettingsAppleLogLutView: View {
 }
 
 private struct CameraPreviewSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
@@ -213,7 +213,7 @@ private struct CameraPreviewSettingsView: View {
 }
 
 private struct PhotoShootSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
@@ -269,9 +269,9 @@ struct CameraSettingsView: View {
                         Text("Zoom")
                     }
                 }
-                VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
+                VideoStabilizationSettingsView(model: model, mode: database.videoStabilizationMode)
                 if database.showAllSettings {
-                    FixedHorizonView(database: database)
+                    FixedHorizonView(model: model, database: database)
                 }
                 MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
@@ -285,7 +285,7 @@ struct CameraSettingsView: View {
             }
             if database.showAllSettings {
                 Section {
-                    CameraControlsView(database: database)
+                    CameraControlsView(model: model, database: database)
                 } footer: {
                     Text(
                         "⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled."
@@ -293,8 +293,8 @@ struct CameraSettingsView: View {
                 }
             }
             if database.showAllSettings {
-                CameraPreviewSettingsView(database: database)
-                PhotoShootSettingsView(database: database)
+                CameraPreviewSettingsView(model: model, database: database)
+                PhotoShootSettingsView(model: model, database: database)
                 Section {
                     Picker("Color space", selection: $color.space) {
                         ForEach(colorSpaces(), id: \.self) {

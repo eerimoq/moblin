@@ -20,7 +20,7 @@ struct Video: Transferable {
 }
 
 struct MediaPlayerSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
     @ObservedObject var player: SettingsMediaPlayer
     @State var presentingPicker: Bool = false

@@ -60,7 +60,7 @@ private struct ChatBotCommandView: View {
 }
 
 struct WidgetAlertsChatBotSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chatBot: SettingsWidgetAlertsChatBot
 
     private func deleteCommand(at indexes: IndexSet) {

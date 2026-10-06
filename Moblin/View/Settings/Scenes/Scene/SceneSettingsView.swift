@@ -224,7 +224,7 @@ private struct QuickSwitchGroupView: View {
 }
 
 private struct SceneColorView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var scene: SettingsScene
 
     var body: some View {
@@ -247,7 +247,7 @@ private struct SceneColorView: View {
 }
 
 private struct SceneMicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
 
@@ -374,9 +374,9 @@ struct SceneSettingsView: View {
             NameEditView(name: $scene.name, existingNames: database.scenes)
             VideoSourceView(database: database, scene: scene, videoSources: model.videoSources)
             QuickSwitchGroupView(database: database, scene: scene)
-            SceneMicView(database: database, scene: scene)
+            SceneMicView(model: model, database: database, scene: scene)
             WidgetsView(database: database, scene: scene)
-            SceneColorView(scene: scene)
+            SceneColorView(model: model, scene: scene)
         }
         .navigationTitle("Scene")
     }

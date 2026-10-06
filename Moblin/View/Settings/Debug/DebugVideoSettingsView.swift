@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DebugVideoSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var debug: SettingsDebug
 
     var body: some View {

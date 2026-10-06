@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WhepClientStreamSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var whepClient: SettingsWhepClient
     @ObservedObject var stream: SettingsWhepClientStream
 

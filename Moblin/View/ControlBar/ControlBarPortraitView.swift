@@ -108,7 +108,7 @@ private struct PageView: View {
 }
 
 private struct IconAndSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
 
     var body: some View {
@@ -174,7 +174,7 @@ private struct MainPageView: View {
                 .padding(.top, 3)
                 .padding(.trailing, 5)
                 .padding(.leading, 0)
-                IconAndSettingsView(store: model.store)
+                IconAndSettingsView(model: model, store: model.store)
                 StreamButton(show: model.show)
                     .padding(.top, 10)
                     .padding(.horizontal, 5)

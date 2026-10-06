@@ -2,7 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 private struct SettingsFilePickerView: UIViewControllerRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
         let documentPicker = UIDocumentPickerViewController(
@@ -47,7 +47,7 @@ struct ImportSettingsView: View {
                 }
                 .disabled(model.isLive || model.isRecording || importState != .idle)
                 .sheet(isPresented: $showPicker) {
-                    SettingsFilePickerView()
+                    SettingsFilePickerView(model: model)
                 }
             }
         }

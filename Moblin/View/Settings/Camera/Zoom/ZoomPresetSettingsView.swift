@@ -2,7 +2,7 @@ import AVFoundation
 import SwiftUI
 
 struct ZoomPresetSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var preset: SettingsZoomPreset
     let minX: Float
     let maxX: Float

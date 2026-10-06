@@ -15,7 +15,7 @@ private struct PlayersPlayerView: View {
 }
 
 private struct PlayersView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     let updated: () -> Void
 
@@ -165,6 +165,6 @@ struct WidgetScoreboardPadelSettingsView: View {
         } header: {
             Text("Away")
         }
-        PlayersView(database: model.database, updated: updated)
+        PlayersView(model: model, database: model.database, updated: updated)
     }
 }

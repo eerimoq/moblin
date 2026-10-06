@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WhepClientSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var whepClient: SettingsWhepClient
     @State var numberOfEnabledStreams: Int = 0
 
@@ -24,7 +24,7 @@ struct WhepClientSettingsView: View {
                 Section {
                     List {
                         ForEach(whepClient.streams) { stream in
-                            WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
+                            WhepClientStreamSettingsView(model: model, whepClient: whepClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(whepClient.streams, stream.id) {
                                         deleteStream(at: offsets)

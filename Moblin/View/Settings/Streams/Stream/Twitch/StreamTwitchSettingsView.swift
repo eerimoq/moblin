@@ -27,7 +27,7 @@ struct TwitchStreamLiveSettingsView: View {
             }
         }
         NavigationLink {
-            TwitchCategoryPickerView(stream: stream)
+            TwitchCategoryPickerView(model: model, stream: stream)
         } label: {
             HStack {
                 Text("Category")
@@ -43,7 +43,7 @@ struct TwitchStreamLiveSettingsView: View {
 }
 
 private struct TwitchCategoryPickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var searchText: String = ""
     @State private var categories: [TwitchApiGameData] = []

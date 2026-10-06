@@ -94,8 +94,8 @@ private struct RelayStreamerServerView: View {
 }
 
 private struct RelayStreamerUrlView: View {
+    let model: Model
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var model: Model
     @ObservedObject var moblink: Moblink
     @State var streamerUrl: String
 
@@ -165,7 +165,7 @@ private struct RelayView: View {
             .disabled(model.isLive)
             if relay.manual {
                 NavigationLink {
-                    RelayStreamerUrlView(moblink: model.moblink, streamerUrl: relay.url)
+                    RelayStreamerUrlView(model: model, moblink: model.moblink, streamerUrl: relay.url)
                 } label: {
                     TextItemLocalizedView(name: "Streamer URL", value: relay.url)
                 }

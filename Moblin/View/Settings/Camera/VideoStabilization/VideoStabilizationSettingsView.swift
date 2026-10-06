@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct VideoStabilizationSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @State var mode: SettingsVideoStabilizationMode
 
     var body: some View {

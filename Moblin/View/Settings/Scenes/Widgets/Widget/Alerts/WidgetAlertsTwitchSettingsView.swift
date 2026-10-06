@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct TwitchFollowsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -44,7 +44,7 @@ private struct TwitchFollowsView: View {
 }
 
 private struct TwitchSubscriptionsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -90,7 +90,7 @@ private struct TwitchSubscriptionsView: View {
 }
 
 private struct TwitchRaidsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -257,7 +257,7 @@ private struct TwitchCheerBitsItemView: View {
 }
 
 private struct TwitchCheerBitsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var twitch: SettingsWidgetAlertsTwitch
 
     private func deleteCheerBit(at offsets: IndexSet) {
@@ -353,22 +353,22 @@ struct WidgetAlertsTwitchSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    TwitchFollowsView(alert: twitch.follows)
+                    TwitchFollowsView(model: model, alert: twitch.follows)
                 } label: {
                     Text("Follows")
                 }
                 NavigationLink {
-                    TwitchSubscriptionsView(alert: twitch.subscriptions)
+                    TwitchSubscriptionsView(model: model, alert: twitch.subscriptions)
                 } label: {
                     Text("Subscriptions")
                 }
                 NavigationLink {
-                    TwitchRaidsView(alert: twitch.raids)
+                    TwitchRaidsView(model: model, alert: twitch.raids)
                 } label: {
                     Text("Raids")
                 }
                 NavigationLink {
-                    TwitchCheerBitsView(twitch: twitch)
+                    TwitchCheerBitsView(model: model, twitch: twitch)
                 } label: {
                     Text("Cheers")
                 }

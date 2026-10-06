@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     private func deleteNetworkInterface(at offsets: IndexSet) {

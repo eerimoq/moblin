@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 let alertTestNames = ["Mark", "Natasha", "Pedro", "Anna"]
 
 struct AlertPickerView: UIViewControllerRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
     let type: UTType
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
@@ -201,7 +201,7 @@ struct AlertMediaView: View {
 }
 
 private struct AlertPositionFaceView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State private var facePosition: CGPoint = .init(x: 100, y: 100)
     @State private var facePositionOffset: CGSize = .init(width: 0, height: 0)
@@ -304,7 +304,7 @@ struct AlertPositionView: View {
         Section {
             switch alert.positionType {
             case .face:
-                AlertPositionFaceView(alert: alert)
+                AlertPositionFaceView(model: model, alert: alert)
             default:
                 EmptyView()
             }
@@ -362,12 +362,12 @@ struct WidgetAlertsSettingsView: View {
                 KickLogoAndNameView()
             }
             NavigationLink {
-                WidgetAlertsChatBotSettingsView(chatBot: widget.alerts.chatBot)
+                WidgetAlertsChatBotSettingsView(model: model, chatBot: widget.alerts.chatBot)
             } label: {
                 Text("Chat bot")
             }
             NavigationLink {
-                WidgetAlertsSpeechToTextSettingsView(speechToText: widget.alerts.speechToText)
+                WidgetAlertsSpeechToTextSettingsView(model: model, speechToText: widget.alerts.speechToText)
             } label: {
                 Text("Speech to text")
             }

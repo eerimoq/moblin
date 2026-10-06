@@ -1228,7 +1228,7 @@ private struct DebugVariablesView: View {
 }
 
 struct TextFormatVariablesView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: Bool
     @Binding var value: String
 
@@ -1265,7 +1265,7 @@ private struct TextSelectionView: View {
             Section {
                 TextWidgetSuggestionsView(widget: true, text: $value)
             }
-            TextFormatVariablesView(widget: true, value: $value)
+            TextFormatVariablesView(model: model, widget: true, value: $value)
         }
         .onChange(of: value) { _ in
             widget.text.formatString = value

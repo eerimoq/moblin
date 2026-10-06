@@ -102,7 +102,7 @@ private struct SliderAndLockView: View {
 }
 
 private struct ExposureBiasView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var camera: CameraState
 
     var body: some View {
@@ -348,7 +348,7 @@ struct StreamOverlayRightCameraSettingsControlView: View {
         VStack(alignment: .trailing, spacing: 1) {
             switch show.type {
             case .bias:
-                ExposureBiasView(camera: camera)
+                ExposureBiasView(model: model, camera: camera)
             case .whiteBalance:
                 WhiteBalanceView(camera: camera)
             case .iso:

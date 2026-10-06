@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsResetView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @State private var presentingResetConfirm: Bool = false
 
     var body: some View {

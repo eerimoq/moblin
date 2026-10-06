@@ -68,7 +68,7 @@ private struct CustomImageView: View {
                     }
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertPickerView(type: .gif)
+                    AlertPickerView(model: model, type: .gif)
                 }
             } footer: {
                 Text("Only GIF:s are supported.")

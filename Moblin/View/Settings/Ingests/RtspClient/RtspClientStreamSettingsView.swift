@@ -85,7 +85,7 @@ struct UrlSettingsView: View {
 }
 
 struct RtspClientStreamSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var rtspClient: SettingsRtspClient
     @ObservedObject var stream: SettingsRtspClientStream
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SrtClientStreamSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var srtClient: SettingsSrtClient
     @ObservedObject var stream: SettingsSrtClientStream
 

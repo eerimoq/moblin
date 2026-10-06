@@ -117,7 +117,7 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView(mediaPlayers: database.mediaPlayers)
+                        MediaPlayersSettingsView(model: model, mediaPlayers: database.mediaPlayers)
                     } label: {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
                     }
@@ -171,7 +171,7 @@ struct SettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        DjiDevicesSettingsView(djiDevices: database.djiDevices)
+                        DjiDevicesSettingsView(model: model, djiDevices: database.djiDevices)
                     } label: {
                         Label("DJI devices", systemImage: "appletvremote.gen1")
                     }
@@ -181,7 +181,7 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
-                        CatPrintersSettingsView(catPrinters: database.catPrinters)
+                        CatPrintersSettingsView(model: model, catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")
                     }
@@ -191,12 +191,12 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        WorkoutDevicesSettingsView(workoutDevices: database.workoutDevices)
+                        WorkoutDevicesSettingsView(model: model, workoutDevices: database.workoutDevices)
                     } label: {
                         Label("Workout devices", systemImage: "figure.walk.motion")
                     }
                     NavigationLink {
-                        BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database
+                        BlackSharkCoolerDevicesSettingsView(model: model, blackSharkCoolerDevices: database
                             .blackSharkCoolerDevices)
                     } label: {
                         Label("Black Shark coolers", systemImage: "fan")
@@ -220,7 +220,7 @@ struct SettingsView: View {
             if database.showAllSettings, isPhone() {
                 Section {
                     NavigationLink {
-                        WatchSettingsView(watch: database.watch)
+                        WatchSettingsView(model: model, watch: database.watch)
                     } label: {
                         Label("Apple Watch", systemImage: "applewatch")
                     }
@@ -239,7 +239,7 @@ struct SettingsView: View {
                         Label("About", systemImage: "info.circle")
                     }
                     NavigationLink {
-                        DebugSettingsView(debug: database.debug)
+                        DebugSettingsView(model: model, debug: database.debug)
                     } label: {
                         Label("Debug", systemImage: "ladybug")
                     }
@@ -269,7 +269,7 @@ struct SettingsView: View {
                 SettingsSaveView(model: model)
             }
             Section {
-                SettingsResetView()
+                SettingsResetView(model: model)
             }
         }
         .navigationTitle("Settings")

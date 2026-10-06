@@ -86,7 +86,7 @@ private struct TextFormatView: View {
                     TextWidgetSuggestionsView(widget: false, text: $value)
                 }
             }
-            TextFormatVariablesView(widget: false, value: $value)
+            TextFormatVariablesView(model: model, widget: false, value: $value)
         }
         .onChange(of: value) { _ in
             text = value

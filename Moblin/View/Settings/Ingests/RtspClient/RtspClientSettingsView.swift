@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RtspClientSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var rtspClient: SettingsRtspClient
     @State var numberOfEnabledStreams: Int = 0
 
@@ -21,7 +21,7 @@ struct RtspClientSettingsView: View {
                 Section {
                     List {
                         ForEach(rtspClient.streams) { stream in
-                            RtspClientStreamSettingsView(rtspClient: rtspClient, stream: stream)
+                            RtspClientStreamSettingsView(model: model, rtspClient: rtspClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(rtspClient.streams, stream.id) {
                                         deleteStream(at: offsets)

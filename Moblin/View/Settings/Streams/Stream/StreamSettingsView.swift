@@ -130,7 +130,7 @@ struct StreamPlatformsSettingsView: View {
             }
         }
         NavigationLink {
-            StreamKickSettingsView(stream: stream)
+            StreamKickSettingsView(model: model, stream: stream)
         } label: {
             HStack {
                 KickLogoAndNameView()
@@ -295,7 +295,7 @@ struct StreamSettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
+                        StreamSnapshotSettingsView(model: model, stream: stream, recording: stream.recording)
                     } label: {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
@@ -352,7 +352,7 @@ struct StreamSettingsView: View {
                         Text("Go live notification")
                     }
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: stream)
+                        StreamRealtimeIrlSettingsView(model: model, stream: stream)
                     } label: {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
                             stream.realtimeIrlEnabled

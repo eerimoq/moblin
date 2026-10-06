@@ -61,7 +61,7 @@ private struct CustomSoundView: View {
                     }
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertPickerView(type: .audio)
+                    AlertPickerView(model: model, type: .audio)
                 }
             }
         }
@@ -70,7 +70,7 @@ private struct CustomSoundView: View {
 }
 
 private struct SoundGalleryItemView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var sound: SettingsAlertsMediaGalleryItem
 
     var body: some View {
@@ -102,7 +102,7 @@ private struct SoundGalleryView: View {
             Section {
                 List {
                     ForEach(gallery.customSounds) { sound in
-                        SoundGalleryItemView(sound: sound)
+                        SoundGalleryItemView(model: model, sound: sound)
                             .contextMenuDeleteButton {
                                 if let offsets = makeOffsets(gallery.customSounds, sound.id) {
                                     deleteSound(at: offsets)

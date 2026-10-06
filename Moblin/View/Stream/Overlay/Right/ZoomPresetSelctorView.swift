@@ -10,7 +10,7 @@ private struct PickerItemView: View {
 }
 
 private struct ZoomPresetView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
@@ -60,7 +60,7 @@ private struct ZoomPresetView: View {
 }
 
 private struct ZoomPresetVView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
@@ -132,7 +132,7 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            ZoomPresetView(database: model.database,
+            ZoomPresetView(model: model, database: model.database,
                            presets: presets(),
                            selectedPresetId: selectedPresetId(),
                            selectedColor: model.database.zoom.backgroundColor.color(),
@@ -163,7 +163,7 @@ struct StreamOverlayRightZoomPresetVSelctorView: View {
     }
 
     var body: some View {
-        ZoomPresetVView(database: model.database,
+        ZoomPresetVView(model: model, database: model.database,
                         presets: presets(),
                         selectedPresetId: selectedPresetId(),
                         selectedColor: model.database.zoom.backgroundColor.color(),
