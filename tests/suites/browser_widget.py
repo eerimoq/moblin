@@ -1,6 +1,7 @@
 import functools
 import logging
 import math
+import time
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -21,6 +22,7 @@ from systest_moblin.ffmpeg import measure_max_volume
 from systest_moblin.ffmpeg import read_qr_codes
 from systest_moblin.ffmpeg import video_encoder_args
 
+from ..utils.config import HTTP_PROXY_PORT
 from ..utils.config import WEB_SERVER_PORT
 from ..utils.config import Capability
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
@@ -454,6 +456,52 @@ class BrowserWidgetLog(BrowserWidgetPageTestCase):
         self.assert_true(any(expected in entry for entry in log_entries), expected)
 
 
+class BrowserWidgetReloadAfterFailedLoadTestCase(BrowserWidgetPageTestCase):
+    def reload_after_failed_load(self, overrides: dict):
+        create_media()
+        ip_address = self.moblin.config.tester_ip_address()
+        url = f"http://{ip_address}:{WEB_SERVER_PORT}/BrowserWidgetStatic.html?{uuid()}"
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        "cameraPosition": CameraPosition.NONE,
+                        "widgets": [scene_widget_settings(PAGE_WIDGET_ID, 0, 0, 100)],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [browser_widget_settings("Browser", PAGE_WIDGET_ID, url)],
+                **overrides,
+            }
+        )
+        time.sleep(5)
+        with HttpServer(WEB_SERVER_PORT, WEBSITES_DIR, ip_address) as server:
+            time.sleep(5)
+            self.assert_equal(page_reports(server.request_counts(), "Static"), [])
+            self.moblin.reload_browser_widgets()
+            recording_file = self.moblin.record(10, f"{type(self).__name__}.mp4")
+            request_counts = server.request_counts()
+        self.assert_reported_ok(request_counts, "Static")
+        self.assert_qr_codes_found(read_qr_codes(recording_file, qr_code_crop(0, 0))[90:])
+
+
+class BrowserWidgetReloadAfterFailedLoad(BrowserWidgetReloadAfterFailedLoadTestCase):
+    """Reload browser widgets loads a page whose first load failed as its web server was down."""
+
+    def run(self):
+        self.reload_after_failed_load({})
+
+
+class BrowserWidgetReloadAfterFailedLoadHttpProxy(BrowserWidgetReloadAfterFailedLoadTestCase):
+    """Reload browser widgets loads a page whose first load through the HTTP proxy failed."""
+
+    def run(self):
+        self.reload_after_failed_load(
+            {"httpProxy": {"enabled": True, "localNetwork": True, "port": HTTP_PROXY_PORT}}
+        )
+
+
 class BrowserWidgetAudioElement(BrowserWidgetPageTestCase):
     """Beeps played by an audio element through the speaker."""
 
@@ -593,6 +641,8 @@ def tests(moblin: Moblin):
         BrowserWidgetHiddenVideo(moblin),
         BrowserWidgetIframe(moblin),
         BrowserWidgetLog(moblin),
+        BrowserWidgetReloadAfterFailedLoad(moblin),
+        BrowserWidgetReloadAfterFailedLoadHttpProxy(moblin),
         BrowserWidgetAudioElement(moblin),
         BrowserWidgetAudioLate(moblin),
         BrowserWidgetVideoSound(moblin),
