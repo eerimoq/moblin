@@ -91,3 +91,7 @@ func texts(_ segments: [ChatPostSegment]) -> [String?] {
 func emoteNames(_ segments: [ChatPostSegment]) -> [String?] {
     segments.map { $0.url?.still?.lastPathComponent }
 }
+
+func spokenEmoteNames(_ segments: [ChatPostSegment]) -> [String?] {
+    segments.map { ($0.url ?? $0.bigGifUrl)?.name }
+}
