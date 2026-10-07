@@ -185,7 +185,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
             return
         }
         startLoadingTime = .now
-        webView.load(URLRequest(url: url))
+        webView.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData))
     }
 
     @MainActor
