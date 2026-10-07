@@ -259,7 +259,7 @@ extension Model {
         )
         chatPostId += 1
         if isTextToSpeechEnabledForMessage(post: post) {
-            let message = post.text()
+            let message = post.textToSpeechText(sayEmotes: database.chat.textToSpeechSayEmotes)
             if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                 chatTextToSpeech.say(
                     messageId: post.messageId,

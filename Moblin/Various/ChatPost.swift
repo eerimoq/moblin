@@ -26,6 +26,7 @@ struct ChatPostSegment: Identifiable, Codable {
     var text: String?
     var url: ChatPostUrl?
     var bigGifUrl: ChatPostUrl?
+    var emoteName: String?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
@@ -286,6 +287,13 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
 
     func text() -> String {
         segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
+    }
+
+    func textToSpeechText(sayEmotes: Bool) -> String {
+        guard sayEmotes else {
+            return text()
+        }
+        return segments.map { $0.emoteName.map { "\($0) " } ?? $0.text ?? "" }.joined(separator: "").trim()
     }
 
     func displayName(nicknames: SettingsChatNicknames, displayStyle: SettingsChatDisplayStyle) -> String {

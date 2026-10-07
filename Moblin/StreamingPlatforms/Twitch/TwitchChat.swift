@@ -164,18 +164,26 @@ func createTwitchSegments(text: String,
                 id: &id
             )
         }
+        let emoteStartIndex = unicodeText.index(startIndex, offsetBy: emote.range.lowerBound - startOffset)
+        let emoteEndIndex = unicodeText.index(startIndex, offsetBy: emote.range.upperBound + 1 - startOffset)
+        let emoteName = String(unicodeText[emoteStartIndex ..< emoteEndIndex])
         if emote.isGif {
-            segments.append(ChatPostSegment(id: id, bigGifUrl: ChatPostUrl(moving: emote.url, still: nil)))
+            segments.append(ChatPostSegment(
+                id: id,
+                bigGifUrl: ChatPostUrl(moving: emote.url, still: nil),
+                emoteName: emoteName
+            ))
         } else {
             segments.append(ChatPostSegment(
                 id: id,
-                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl)
+                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl),
+                emoteName: emoteName
             ))
         }
         id += 1
         segments.append(ChatPostSegment(id: id, text: ""))
         id += 1
-        startIndex = unicodeText.index(startIndex, offsetBy: emote.range.upperBound + 1 - startOffset)
+        startIndex = emoteEndIndex
         startOffset = emote.range.upperBound + 1
     }
     if startIndex < unicodeText.endIndex {
@@ -193,7 +201,11 @@ func createTwitchSegments(fragments: [TwitchEventSubMessageFragment],
         if fragment.type == "emote", let emote = fragment.emote,
            let urls = makeTwitchEmoteUrls(id: emote.id)
         {
-            segments.append(ChatPostSegment(id: id, url: ChatPostUrl(moving: urls.moving, still: urls.still)))
+            segments.append(ChatPostSegment(
+                id: id,
+                url: ChatPostUrl(moving: urls.moving, still: urls.still),
+                emoteName: fragment.text
+            ))
             id += 1
             segments.append(ChatPostSegment(id: id, text: ""))
             id += 1
