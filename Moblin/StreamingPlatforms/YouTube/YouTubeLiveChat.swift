@@ -181,8 +181,20 @@ private struct GetLiveChat: Codable {
 }
 
 @MainActor
+protocol YouTubeLiveChatDelegate: AnyObject {
+    func youTubeLiveChatMakeErrorToast(title: String, subTitle: String)
+    func youTubeLiveChatMakeToast(title: String)
+    func youTubeLiveChatAppendMessage(user: String,
+                                      userId: String?,
+                                      segments: [ChatPostSegment],
+                                      isModerator: Bool,
+                                      isOwner: Bool,
+                                      highlight: ChatHighlight?)
+}
+
+@MainActor
 final class YouTubeLiveChat: NSObject {
-    private var model: Model
+    private weak var delegate: (any YouTubeLiveChatDelegate)?
     private var videoId: String
     private var task: Task<Void, any Error>?
     private var emotes: Emotes
@@ -191,8 +203,8 @@ final class YouTubeLiveChat: NSObject {
     private var continuation: String = ""
     private var delay = 2000
 
-    init(model: Model, videoId: String, settings: SettingsStreamChat) {
-        self.model = model
+    init(delegate: any YouTubeLiveChatDelegate, videoId: String, settings: SettingsStreamChat) {
+        self.delegate = delegate
         self.videoId = videoId
         self.settings = settings.clone()
         emotes = Emotes()
@@ -238,11 +250,11 @@ final class YouTubeLiveChat: NSObject {
     }
 
     private func handleError(title: String, subTitle: String) {
-        model.makeErrorToast(title: title, subTitle: subTitle)
+        delegate?.youTubeLiveChatMakeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        model.makeToast(title: title)
+        delegate?.youTubeLiveChatMakeToast(title: title)
     }
 
     private func makeLiveChatUrl() -> URL? {
@@ -280,63 +292,67 @@ final class YouTubeLiveChat: NSObject {
             if !response.isSuccessful {
                 throw "Unsuccessful HTTP response"
             }
-            var numberOfMessages = 0
-            let getLiveChat = try JSONDecoder().decode(GetLiveChat.self, from: data)
-            if let actions = getLiveChat.continuationContents.liveChatContinuation.actions {
-                for action in actions {
-                    guard let item = action.addChatItemAction?.item else {
-                        continue
-                    }
-                    if let chatDescription = item.liveChatTextMessageRenderer {
-                        numberOfMessages += handleChatDescription(
-                            chatDescription: chatDescription,
-                            highlight: nil
-                        )
-                    }
-                    if let chatDescription = item.liveChatPaidMessageRenderer {
-                        numberOfMessages += handleChatDescription(
-                            chatDescription: chatDescription,
-                            text: createPaidMessageText(chatDescription: chatDescription),
-                            highlight: ChatHighlight.makePaidMessage()
-                        )
-                    }
-                    if let chatDescription = item.liveChatPaidStickerRenderer {
-                        numberOfMessages += handleChatDescription(
-                            chatDescription: chatDescription,
-                            text: createPaidStickerText(chatDescription: chatDescription),
-                            highlight: ChatHighlight.makePaidSticker()
-                        )
-                    }
-                    if let chatDescription = item.liveChatMembershipItemRenderer {
-                        numberOfMessages += handleChatDescription(
-                            chatDescription: chatDescription,
-                            highlight: ChatHighlight.makeMember()
-                        )
-                    }
-                    if let giftPurchase = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
-                       let headerRenderer = giftPurchase.header?.liveChatSponsorshipsHeaderRenderer
-                    {
-                        numberOfMessages += handleGiftPurchaseDescription(
-                            headerRenderer: headerRenderer
-                        )
-                    }
-                    if let chatDescription = item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer {
-                        numberOfMessages += handleChatDescription(
-                            chatDescription: chatDescription,
-                            highlight: ChatHighlight.makeGiftedMemberships()
-                        )
-                    }
-                    if let giftMessageViewModel = item.giftMessageViewModel {
-                        numberOfMessages += handleGiftMessageViewModel(
-                            giftMessageViewModel: giftMessageViewModel
-                        )
-                    }
-                }
-            }
-            try updateContinuation(getLiveChat: getLiveChat)
-            updateDelayMs(numberOfMessages: numberOfMessages)
+            try handleGetLiveChat(data: data)
             try await sleep(milliSeconds: delay)
         }
+    }
+
+    func handleGetLiveChat(data: Data) throws {
+        var numberOfMessages = 0
+        let getLiveChat = try JSONDecoder().decode(GetLiveChat.self, from: data)
+        if let actions = getLiveChat.continuationContents.liveChatContinuation.actions {
+            for action in actions {
+                guard let item = action.addChatItemAction?.item else {
+                    continue
+                }
+                if let chatDescription = item.liveChatTextMessageRenderer {
+                    numberOfMessages += handleChatDescription(
+                        chatDescription: chatDescription,
+                        highlight: nil
+                    )
+                }
+                if let chatDescription = item.liveChatPaidMessageRenderer {
+                    numberOfMessages += handleChatDescription(
+                        chatDescription: chatDescription,
+                        text: createPaidMessageText(chatDescription: chatDescription),
+                        highlight: ChatHighlight.makePaidMessage()
+                    )
+                }
+                if let chatDescription = item.liveChatPaidStickerRenderer {
+                    numberOfMessages += handleChatDescription(
+                        chatDescription: chatDescription,
+                        text: createPaidStickerText(chatDescription: chatDescription),
+                        highlight: ChatHighlight.makePaidSticker()
+                    )
+                }
+                if let chatDescription = item.liveChatMembershipItemRenderer {
+                    numberOfMessages += handleChatDescription(
+                        chatDescription: chatDescription,
+                        highlight: ChatHighlight.makeMember()
+                    )
+                }
+                if let giftPurchase = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+                   let headerRenderer = giftPurchase.header?.liveChatSponsorshipsHeaderRenderer
+                {
+                    numberOfMessages += handleGiftPurchaseDescription(
+                        headerRenderer: headerRenderer
+                    )
+                }
+                if let chatDescription = item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer {
+                    numberOfMessages += handleChatDescription(
+                        chatDescription: chatDescription,
+                        highlight: ChatHighlight.makeGiftedMemberships()
+                    )
+                }
+                if let giftMessageViewModel = item.giftMessageViewModel {
+                    numberOfMessages += handleGiftMessageViewModel(
+                        giftMessageViewModel: giftMessageViewModel
+                    )
+                }
+            }
+        }
+        try updateContinuation(getLiveChat: getLiveChat)
+        updateDelayMs(numberOfMessages: numberOfMessages)
     }
 
     private func updateDelayMs(numberOfMessages: Int) {
@@ -390,23 +406,12 @@ final class YouTubeLiveChat: NSObject {
             return 0
         }
         let (isOwner, isModerator) = getUserRoles(authorBadges: chatDescription.authorBadges)
-        model.appendChatMessage(platform: .youTube,
-                                messageId: nil,
-                                displayName: chatDescription.authorName.simpleText,
-                                user: chatDescription.authorName.simpleText,
-                                userId: chatDescription.authorExternalChannelId,
-                                userColor: nil,
-                                userBadges: [],
-                                segments: segments,
-                                timestamp: model.statusOther.digitalClock,
-                                timestampTime: .now,
-                                isAction: false,
-                                isSubscriber: false,
-                                isModerator: isModerator,
-                                isOwner: isOwner,
-                                bits: nil,
-                                highlight: highlight,
-                                live: true)
+        delegate?.youTubeLiveChatAppendMessage(user: chatDescription.authorName.simpleText,
+                                               userId: chatDescription.authorExternalChannelId,
+                                               segments: segments,
+                                               isModerator: isModerator,
+                                               isOwner: isOwner,
+                                               highlight: highlight)
         return 1
     }
 
@@ -424,46 +429,24 @@ final class YouTubeLiveChat: NSObject {
             return 0
         }
         let (isOwner, isModerator) = getUserRoles(authorBadges: headerRenderer.authorBadges)
-        model.appendChatMessage(platform: .youTube,
-                                messageId: nil,
-                                displayName: headerRenderer.authorName.simpleText,
-                                user: headerRenderer.authorName.simpleText,
-                                userId: headerRenderer.authorExternalChannelId,
-                                userColor: nil,
-                                userBadges: [],
-                                segments: segments,
-                                timestamp: model.statusOther.digitalClock,
-                                timestampTime: .now,
-                                isAction: false,
-                                isSubscriber: false,
-                                isModerator: isModerator,
-                                isOwner: isOwner,
-                                bits: nil,
-                                highlight: ChatHighlight.makeGiftedMemberships(),
-                                live: true)
+        delegate?.youTubeLiveChatAppendMessage(user: headerRenderer.authorName.simpleText,
+                                               userId: headerRenderer.authorExternalChannelId,
+                                               segments: segments,
+                                               isModerator: isModerator,
+                                               isOwner: isOwner,
+                                               highlight: ChatHighlight.makeGiftedMemberships())
         return 1
     }
 
     private func handleGiftMessageViewModel(giftMessageViewModel: GiftMessageVieModel) -> Int {
         var id = 0
         let segments = createSegments(message: giftMessageViewModel.text.content, id: &id)
-        model.appendChatMessage(platform: .youTube,
-                                messageId: nil,
-                                displayName: giftMessageViewModel.authorName.content,
-                                user: giftMessageViewModel.authorName.content,
-                                userId: nil,
-                                userColor: nil,
-                                userBadges: [],
-                                segments: segments,
-                                timestamp: model.statusOther.digitalClock,
-                                timestampTime: .now,
-                                isAction: false,
-                                isSubscriber: false,
-                                isModerator: false,
-                                isOwner: false,
-                                bits: nil,
-                                highlight: ChatHighlight.makeJewels(),
-                                live: true)
+        delegate?.youTubeLiveChatAppendMessage(user: giftMessageViewModel.authorName.content,
+                                               userId: nil,
+                                               segments: segments,
+                                               isModerator: false,
+                                               isOwner: false,
+                                               highlight: ChatHighlight.makeJewels())
         return 1
     }
 

@@ -195,7 +195,7 @@ extension Model {
         youTubeLiveChats.removeAll()
         if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
             for videoId in stream.getYouTubeVideoIds() {
-                let chat = YouTubeLiveChat(model: self, videoId: videoId, settings: stream.chat)
+                let chat = YouTubeLiveChat(delegate: self, videoId: videoId, settings: stream.chat)
                 youTubeLiveChats[videoId] = chat
                 chat.start()
             }
@@ -316,5 +316,41 @@ extension Model: YouTubeApiDelegate {
         stream.youTubeAuthState = nil
         removeYouTubeAuthStateInKeychain(streamId: stream.id)
         makeNotLoggedInToToast(platform: .youTube)
+    }
+}
+
+extension Model: YouTubeLiveChatDelegate {
+    func youTubeLiveChatMakeErrorToast(title: String, subTitle: String) {
+        makeErrorToast(title: title, subTitle: subTitle)
+    }
+
+    func youTubeLiveChatMakeToast(title: String) {
+        makeToast(title: title)
+    }
+
+    func youTubeLiveChatAppendMessage(user: String,
+                                      userId: String?,
+                                      segments: [ChatPostSegment],
+                                      isModerator: Bool,
+                                      isOwner: Bool,
+                                      highlight: ChatHighlight?)
+    {
+        appendChatMessage(platform: .youTube,
+                          messageId: nil,
+                          displayName: user,
+                          user: user,
+                          userId: userId,
+                          userColor: nil,
+                          userBadges: [],
+                          segments: segments,
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: isModerator,
+                          isOwner: isOwner,
+                          bits: nil,
+                          highlight: highlight,
+                          live: true)
     }
 }
