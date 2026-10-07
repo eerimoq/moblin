@@ -60,17 +60,34 @@ private struct ButtonSettingsView: View {
 private struct ButtonsSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
+    @State private var filter = ""
+
+    private func buttons(page: Int) -> [SettingsQuickButton] {
+        database.quickButtons.reversed().filter { button in
+            guard button.page == page else {
+                return false
+            }
+            return filter.isEmpty || button.name.lowercased().contains(filter.lowercased())
+        }
+    }
 
     var body: some View {
+        Section {
+            TextField("Filter", text: $filter)
+                .autocorrectionDisabled()
+        }
         ForEach(1 ... controlBarPages, id: \.self) { page in
-            Section {
-                List {
-                    ForEach(database.quickButtons.reversed().filter { $0.page == page }) { button in
-                        ButtonSettingsView(model: model, button: button)
+            let buttons = buttons(page: page)
+            if !buttons.isEmpty {
+                Section {
+                    List {
+                        ForEach(buttons) { button in
+                            ButtonSettingsView(model: model, button: button)
+                        }
                     }
+                } header: {
+                    Text("Page \(page)")
                 }
-            } header: {
-                Text("Page \(page)")
             }
         }
     }
