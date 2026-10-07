@@ -210,6 +210,7 @@ struct QuickButtonsButtonSettingsView: View {
                         model.quickButtons.page = page
                         model.quickButtons.activePage = page
                         model.updateQuickButtonPairs()
+                        model.database.objectWillChange.send()
                     }
                 }
                 HStack {
