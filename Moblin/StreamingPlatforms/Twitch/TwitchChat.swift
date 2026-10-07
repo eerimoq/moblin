@@ -170,12 +170,12 @@ func createTwitchSegments(text: String,
         if emote.isGif {
             segments.append(ChatPostSegment(
                 id: id,
-                bigGifUrl: ChatPostUrl(moving: emote.url, still: nil, name: emoteName)
+                bigGifUrl: ChatPostEmote(moving: emote.url, still: nil, name: emoteName)
             ))
         } else {
             segments.append(ChatPostSegment(
                 id: id,
-                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl, name: emoteName)
+                url: ChatPostEmote(moving: emote.url, still: emote.stillUrl, name: emoteName)
             ))
         }
         id += 1
@@ -201,7 +201,7 @@ func createTwitchSegments(fragments: [TwitchEventSubMessageFragment],
         {
             segments.append(ChatPostSegment(
                 id: id,
-                url: ChatPostUrl(moving: urls.moving, still: urls.still, name: fragment.text)
+                url: ChatPostEmote(moving: urls.moving, still: urls.still, name: fragment.text)
             ))
             id += 1
             segments.append(ChatPostSegment(id: id, text: ""))
@@ -742,7 +742,7 @@ final class TwitchChat {
                 continue
             }
             id += 1
-            newSegments.append(.init(id: id, url: ChatPostUrl(moving: nil, still: url)))
+            newSegments.append(.init(id: id, url: ChatPostEmote(moving: nil, still: url)))
             id += 1
             newSegments.append(.init(id: id, text: "\(bits) "))
         }

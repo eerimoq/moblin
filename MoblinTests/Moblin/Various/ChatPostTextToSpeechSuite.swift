@@ -26,9 +26,9 @@ struct ChatPostTextToSpeechSuite {
         )
     }
 
-    private func makeEmote(_ name: String?) -> ChatPostUrl {
+    private func makeEmote(_ name: String?) -> ChatPostEmote {
         let url = URL(string: "https://emotes.example.com/emote")!
-        return ChatPostUrl(moving: url, still: url, name: name)
+        return ChatPostEmote(moving: url, still: url, name: name)
     }
 
     private func makeTwitchPost() -> ChatPost {
