@@ -297,11 +297,7 @@ private func createRunsSegments(runs: [Run], emotes: Emotes, id: inout Int) -> [
             segments += emotes.createSegments(text: text, id: &id)
         }
         if let emojiUrl = run.emoji?.image.thumbnails.first?.url, let url = URL(string: emojiUrl) {
-            segments.append(.init(
-                id: id,
-                url: ChatPostUrl(moving: url, still: url),
-                emoteName: run.emoji?.name()
-            ))
+            segments.append(.init(id: id, url: ChatPostUrl(moving: url, still: url, name: run.emoji?.name())))
             id += 1
         }
     }
