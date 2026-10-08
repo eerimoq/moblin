@@ -357,9 +357,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func takePhoto() {
+    func takePhoto(flash: Bool) {
         processorPipelineQueue.async {
-            self.captureSession.takePhoto()
+            self.captureSession.takePhoto(flash: flash)
         }
     }
 

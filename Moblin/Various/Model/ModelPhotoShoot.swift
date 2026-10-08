@@ -4,7 +4,7 @@ extension Model {
             return
         }
         photoShootTimer.startPeriodic(interval: 1) {
-            self.media.takePhoto()
+            self.media.takePhoto(flash: self.database.photoShootFlash)
         }
     }
 
