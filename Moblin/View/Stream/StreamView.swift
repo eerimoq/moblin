@@ -55,21 +55,21 @@ struct CameraPreviewWidget {
 }
 
 private class CameraPreviewWidgetLayer {
-    let deviceId: UUID
     let borderLayer = CALayer()
-    let previewLayer = AVCaptureVideoPreviewLayer()
     private let contentLayer = CALayer()
 
-    init(deviceId: UUID) {
-        self.deviceId = deviceId
+    init() {
         borderLayer.isHidden = true
         contentLayer.masksToBounds = true
-        previewLayer.videoGravity = .resizeAspectFill
-        contentLayer.addSublayer(previewLayer)
         borderLayer.addSublayer(contentLayer)
     }
 
-    func layout(widget: CameraPreviewWidget, index: Int, canvasSize: CGSize, streamSize: CGSize) {
+    func layout(widget: CameraPreviewWidget,
+                previewLayer: AVCaptureVideoPreviewLayer,
+                index: Int,
+                canvasSize: CGSize,
+                streamSize: CGSize)
+    {
         let shape = widget.shape
         let contentRegion = shape.contentRegion
         guard !contentRegion.isEmpty else {
@@ -95,19 +95,25 @@ private class CameraPreviewWidgetLayer {
         borderLayer.backgroundColor = borderWidth > 0 ? borderColor.cgColor : nil
         contentLayer.frame = CGRect(origin: CGPoint(x: borderWidth, y: borderWidth), size: placement.size)
         contentLayer.cornerRadius = CGFloat(shape.cornerRadiusPixels(placement.size))
+        if previewLayer.superlayer !== contentLayer {
+            contentLayer.addSublayer(previewLayer)
+        }
+        previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = CGRect(x: -contentRegion.minX * scale,
                                     y: -contentRegion.minY * scale,
                                     width: canvasSize.width * scale,
                                     height: canvasSize.height * scale)
+        previewLayer.isHidden = false
     }
 }
 
 class CameraPreviewUiView: UIView {
-    private var sceneLayers: [UUID: AVCaptureVideoPreviewLayer] = [:]
+    private var deviceLayers: [UUID: AVCaptureVideoPreviewLayer] = [:]
     private var widgetLayers: [UUID: CameraPreviewWidgetLayer] = [:]
     private let widgetsLayer = CALayer()
     private var widgets: [CameraPreviewWidget] = []
     private var canvasSize: CGSize = .zero
+    private var selectedId: UUID?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -123,85 +129,98 @@ class CameraPreviewUiView: UIView {
 
     var previewLayers: [AVCaptureVideoPreviewLayer: UUID] {
         var previewLayers: [AVCaptureVideoPreviewLayer: UUID] = [:]
-        for (id, previewLayer) in sceneLayers {
+        for (id, previewLayer) in deviceLayers {
             previewLayers[previewLayer] = id
-        }
-        for widgetLayer in widgetLayers.values {
-            previewLayers[widgetLayer.previewLayer] = widgetLayer.deviceId
         }
         return previewLayers
     }
 
     func setDevices(ids: [UUID], widgets: [UUID: UUID]) {
-        for (id, previewLayer) in sceneLayers where !ids.contains(id) {
+        let deviceIds = Set(ids).union(widgets.values)
+        for (id, previewLayer) in deviceLayers where !deviceIds.contains(id) {
             previewLayer.removeFromSuperlayer()
-            sceneLayers.removeValue(forKey: id)
+            deviceLayers.removeValue(forKey: id)
         }
-        for id in ids where sceneLayers[id] == nil {
+        for id in deviceIds where deviceLayers[id] == nil {
             let previewLayer = AVCaptureVideoPreviewLayer()
-            previewLayer.frame = bounds
             previewLayer.isHidden = true
             layer.addSublayer(previewLayer)
-            sceneLayers[id] = previewLayer
+            deviceLayers[id] = previewLayer
         }
-        for (id, widgetLayer) in widgetLayers where widgets[id] != widgetLayer.deviceId {
+        for (id, widgetLayer) in widgetLayers where widgets[id] == nil {
             widgetLayer.borderLayer.removeFromSuperlayer()
             widgetLayers.removeValue(forKey: id)
         }
-        for (id, deviceId) in widgets where widgetLayers[id] == nil {
-            let widgetLayer = CameraPreviewWidgetLayer(deviceId: deviceId)
+        for id in widgets.keys where widgetLayers[id] == nil {
+            let widgetLayer = CameraPreviewWidgetLayer()
             widgetsLayer.addSublayer(widgetLayer.borderLayer)
             widgetLayers[id] = widgetLayer
         }
+        updateLayers()
     }
 
     func select(id: UUID?, isMirrored: Bool) {
-        for (previewLayerId, previewLayer) in sceneLayers {
-            previewLayer.isHidden = previewLayerId != id
-        }
+        selectedId = id
         layer.sublayerTransform = isMirrored ? CATransform3DMakeScale(-1, 1, 1) : CATransform3DIdentity
+        updateLayers()
     }
 
     func setWidgets(widgets: [CameraPreviewWidget], canvasSize: CGSize) {
         self.widgets = widgets
         self.canvasSize = canvasSize
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        layoutWidgets()
-        CATransaction.commit()
+        updateLayers()
     }
 
     func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
-        for previewLayer in previewLayers.keys {
+        for previewLayer in deviceLayers.values {
             previewLayer.connection?.videoOrientation = videoOrientation
         }
     }
 
-    private func layoutWidgets() {
+    private func updateLayers() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for previewLayer in deviceLayers.values {
+            previewLayer.isHidden = true
+        }
         for widgetLayer in widgetLayers.values {
             widgetLayer.borderLayer.isHidden = true
         }
-        guard !widgets.isEmpty else {
-            return
+        if let selectedId, let previewLayer = deviceLayers[selectedId] {
+            if previewLayer.superlayer !== layer {
+                layer.addSublayer(previewLayer)
+            }
+            previewLayer.videoGravity = .resizeAspect
+            previewLayer.frame = bounds
+            previewLayer.isHidden = false
         }
-        widgetsLayer.frame = AVMakeRect(aspectRatio: canvasSize, insideRect: bounds)
+        if !widgets.isEmpty {
+            widgetsLayer.frame = AVMakeRect(aspectRatio: canvasSize, insideRect: bounds)
+        }
+        var usedDeviceIds: Set<UUID> = []
+        if let selectedId {
+            usedDeviceIds.insert(selectedId)
+        }
         for (index, widget) in widgets.enumerated() {
-            widgetLayers[widget.id]?.layout(widget: widget,
-                                            index: index,
-                                            canvasSize: canvasSize,
-                                            streamSize: widgetsLayer.bounds.size)
+            guard !usedDeviceIds.contains(widget.deviceId),
+                  let widgetLayer = widgetLayers[widget.id],
+                  let previewLayer = deviceLayers[widget.deviceId]
+            else {
+                continue
+            }
+            usedDeviceIds.insert(widget.deviceId)
+            widgetLayer.layout(widget: widget,
+                               previewLayer: previewLayer,
+                               index: index,
+                               canvasSize: canvasSize,
+                               streamSize: widgetsLayer.bounds.size)
         }
+        CATransaction.commit()
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        for previewLayer in sceneLayers.values {
-            previewLayer.frame = bounds
-        }
-        layoutWidgets()
-        CATransaction.commit()
+        updateLayers()
     }
 }
 
