@@ -330,6 +330,11 @@ class SceneSelector: ObservableObject {
 }
 
 @MainActor
+class PhotoShootProvider: ObservableObject {
+    @Published var photoTaken = false
+}
+
+@MainActor
 class StreamOverlay: ObservableObject {
     @Published var showMediaPlayerControls = false
     @Published var isFrontCameraSelected = false
@@ -798,6 +803,8 @@ final class Model: NSObject, ObservableObject {
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
     let photoShootTimer = MainTimer()
+    let photoShootFlashTimer = MainTimer()
+    let photoShoot = PhotoShootProvider()
 
     weak var processor: Processor? {
         didSet {

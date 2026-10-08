@@ -15,6 +15,7 @@ protocol ProcessorDelegate: AnyObject {
     func streamRecorderFinished()
     func streamAudio(sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
+    func streamPhotoTaken()
     @MainActor func streamSetZoomX(x: Float)
     @MainActor func streamSetExposureBias(bias: Float)
     func streamSelectedFps(auto: Bool)

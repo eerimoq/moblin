@@ -855,6 +855,10 @@ extension VideoCaptureSession: AVCaptureSessionControlsDelegate {
 }
 
 extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_: AVCapturePhotoOutput, willCapturePhotoFor _: AVCaptureResolvedPhotoSettings) {
+        processor?.delegate.streamPhotoTaken()
+    }
+
     func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error {
             logger.info("video-unit: Photo error: \(error)")

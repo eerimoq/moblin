@@ -321,25 +321,35 @@ private struct PhotoShootIntervalPickerView: View {
     }
 }
 
+private struct PhotoShootInfoView: View {
+    @ObservedObject var photoShoot: PhotoShootProvider
+
+    var body: some View {
+        VStack {
+            Image(systemName: "person.crop.square.badge.camera")
+                .font(.system(size: 60))
+            Text("Photo shoot")
+                .font(.system(size: 30))
+            Text("Taking photos periodically")
+        }
+        .foregroundStyle(.white)
+        .padding(20)
+        .background(photoShoot.photoTaken ? .white.opacity(0.75) : .black.opacity(0.75))
+        .cornerRadius(10)
+        .animation(photoShoot.photoTaken ? nil : .easeOut(duration: 0.2), value: photoShoot.photoTaken)
+        .allowsHitTesting(false)
+    }
+}
+
 private struct PhotoShootView: View {
     let model: Model
+    let photoShoot: PhotoShootProvider
     let enabled: Bool
 
     var body: some View {
         if enabled {
             VStack(spacing: 15) {
-                VStack {
-                    Image(systemName: "person.crop.square.badge.camera")
-                        .font(.system(size: 60))
-                    Text("Photo shoot")
-                        .font(.system(size: 30))
-                    Text("Taking photos periodically")
-                }
-                .foregroundStyle(.white)
-                .padding(20)
-                .background(.black.opacity(0.75))
-                .cornerRadius(10)
-                .allowsHitTesting(false)
+                PhotoShootInfoView(photoShoot: photoShoot)
                 HStack(spacing: 15) {
                     PhotoShootIntervalPickerView(model: model, database: model.database)
                     if model.cameraDevice?.hasFlash == true {
@@ -510,7 +520,7 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(audio: model.audio)
-                PhotoShootView(model: model, enabled: model.photoShootEnabled)
+                PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,
@@ -566,7 +576,7 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(audio: model.audio)
-                PhotoShootView(model: model, enabled: model.photoShootEnabled)
+                PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,

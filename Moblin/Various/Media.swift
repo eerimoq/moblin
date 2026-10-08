@@ -30,6 +30,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
+    func mediaOnPhotoTaken()
     func mediaOnFps(fps: Int)
     func mediaMoblinkStreamerDestinationAddress(address: String, port: UInt16)
     func mediaMoblinkStreamerRestartTunnel(relayId: UUID)
@@ -1151,6 +1152,10 @@ extension Media: ProcessorDelegate {
 
     func streamNoTorch() {
         delegate.mediaOnNoTorch()
+    }
+
+    func streamPhotoTaken() {
+        delegate.mediaOnPhotoTaken()
     }
 
     func streamVideoFps(fps: Int) {

@@ -56,6 +56,8 @@ extension ModelMock: ProcessorDelegate {
 
     func streamNoTorch() {}
 
+    func streamPhotoTaken() {}
+
     func streamSetZoomX(x _: Float) {}
 
     func streamSetExposureBias(bias _: Float) {}
