@@ -1,4 +1,8 @@
+import ImageIO
+import Photos
 import SwiftUI
+
+private let snapshotTitle = "Moblin snapshot"
 
 struct SnapshotJob {
     let isChatBot: Bool
@@ -16,11 +20,26 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+            self.saveSnapshotToPhotos(image: imageJpeg)
             self.makeToast(title: String(localized: "Snapshot saved to Photos"))
             self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             self.printSnapshotCatPrinters(image: portraitImage)
             self.appendSnapshotToSnapshotWidgets(image: image)
+        }
+    }
+
+    private func saveSnapshotToPhotos(image: Data) {
+        let image = addSnapshotMetadata(image: image) ?? image
+        PHPhotoLibrary.shared().performChanges {
+            let creationRequest = PHAssetCreationRequest.forAsset()
+            creationRequest.addResource(with: .photo, data: image, options: nil)
+            if let placeholder = creationRequest.placeholderForCreatedAsset {
+                snapshotAlbumChangeRequest()?.addAssets([placeholder] as NSArray)
+            }
+        } completionHandler: { _, error in
+            if let error {
+                logger.info("snapshot: Error saving snapshot: \(error.localizedDescription)")
+            }
         }
     }
 
@@ -129,4 +148,43 @@ extension Model {
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }
+}
+
+private func addSnapshotMetadata(image: Data) -> Data? {
+    guard let source = CGImageSourceCreateWithData(image as CFData, nil),
+          let type = CGImageSourceGetType(source)
+    else {
+        return nil
+    }
+    let data = NSMutableData()
+    guard let destination = CGImageDestinationCreateWithData(data, type, 1, nil) else {
+        return nil
+    }
+    let properties: [String: Any] = [
+        kCGImagePropertyTIFFDictionary as String: [
+            kCGImagePropertyTIFFImageDescription as String: snapshotTitle,
+            kCGImagePropertyTIFFSoftware as String: "Moblin",
+        ],
+        kCGImagePropertyIPTCDictionary as String: [
+            kCGImagePropertyIPTCCaptionAbstract as String: snapshotTitle,
+            kCGImagePropertyIPTCKeywords as String: ["Moblin", "Snapshot"],
+        ],
+    ]
+    CGImageDestinationAddImageFromSource(destination, source, 0, properties as CFDictionary)
+    guard CGImageDestinationFinalize(destination) else {
+        return nil
+    }
+    return data as Data
+}
+
+private func snapshotAlbumChangeRequest() -> PHAssetCollectionChangeRequest? {
+    let options = PHFetchOptions()
+    options.predicate = NSPredicate(format: "title = %@", snapshotTitle)
+    if let album = PHAssetCollection.fetchAssetCollections(with: .album,
+                                                           subtype: .albumRegular,
+                                                           options: options).firstObject
+    {
+        return PHAssetCollectionChangeRequest(for: album)
+    }
+    return PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: snapshotTitle)
 }
