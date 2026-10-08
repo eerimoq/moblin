@@ -107,7 +107,7 @@ class Emotes: @unchecked Sendable {
             segments.append(ChatPostSegment(
                 id: id,
                 text: "",
-                url: ChatPostUrl(moving: emote.url, still: emote.stillUrl ?? emote.url)
+                url: ChatPostEmote(moving: emote.url, still: emote.stillUrl ?? emote.url)
             ))
             id += 1
             segments.append(ChatPostSegment(id: id, text: ""))
