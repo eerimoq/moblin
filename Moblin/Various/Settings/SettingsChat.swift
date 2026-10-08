@@ -622,6 +622,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechDefaultLanguage: String?
     @Published var textToSpeechDetectLanguagePerMessage: Bool = false
     @Published var textToSpeechSayUsername: Bool = true
+    @Published var textToSpeechSayEmotes: Bool = false
     @Published var textToSpeechRate: Float = 0.4
     @Published var textToSpeechSayVolume: Float = 0.6
     @Published var textToSpeechLanguageVoices: [String: SettingsVoice] = .init()
@@ -682,6 +683,7 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechDefaultLanguage
         case textToSpeechDetectLanguagePerMessage
         case textToSpeechSayUsername
+        case textToSpeechSayEmotes
         case textToSpeechRate
         case textToSpeechSayVolume
         case textToSpeechLanguageVoices
@@ -745,6 +747,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechDefaultLanguage, textToSpeechDefaultLanguage)
         try container.encode(.textToSpeechDetectLanguagePerMessage, textToSpeechDetectLanguagePerMessage)
         try container.encode(.textToSpeechSayUsername, textToSpeechSayUsername)
+        try container.encode(.textToSpeechSayEmotes, textToSpeechSayEmotes)
         try container.encode(.textToSpeechRate, textToSpeechRate)
         try container.encode(.textToSpeechSayVolume, textToSpeechSayVolume)
         try container.encode(.textToSpeechLanguageVoices, textToSpeechLanguageVoices)
@@ -826,6 +829,7 @@ class SettingsChat: Codable, ObservableObject {
             false
         )
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
+        textToSpeechSayEmotes = container.decode(.textToSpeechSayEmotes, Bool.self, false)
         textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
         textToSpeechSayVolume = container.decode(.textToSpeechSayVolume, Float.self, 0.6)
         textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,

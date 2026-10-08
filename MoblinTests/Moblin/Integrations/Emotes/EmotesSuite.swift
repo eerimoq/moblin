@@ -42,6 +42,7 @@ struct EmotesSuite {
         let segments = createSegments("hello Kappa world", emotes: ["Kappa"])
         #expect(texts(segments) == ["hello ", "", "", "world "])
         #expect(emoteNames(segments) == [nil, "Kappa", nil, nil])
+        #expect(spokenEmoteNames(segments) == [nil, "Kappa", nil, nil])
     }
 
     @Test
@@ -55,6 +56,7 @@ struct EmotesSuite {
     func consecutiveEmotes() {
         let segments = createSegments("Kappa LUL", emotes: ["Kappa", "LUL"])
         #expect(emoteNames(segments) == ["Kappa", nil, "LUL", nil])
+        #expect(spokenEmoteNames(segments) == ["Kappa", nil, "LUL", nil])
     }
 
     @Test

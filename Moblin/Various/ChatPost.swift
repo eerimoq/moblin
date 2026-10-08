@@ -11,6 +11,7 @@ struct ChatMessageEmote: Identifiable {
 struct ChatPostEmote: Codable {
     let moving: URL?
     let still: URL?
+    var name: String?
 
     func url(animated: Bool) -> URL? {
         if animated {
@@ -284,8 +285,16 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
         segments.first?.bigGifUrl != nil
     }
 
-    func text() -> String {
-        segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
+    func text(emoteNames: Bool = false) -> String {
+        segments.compactMap { segment -> String? in
+            if emoteNames, let name = (segment.url ?? segment.bigGifUrl)?.name {
+                "\(name) "
+            } else {
+                segment.text
+            }
+        }
+        .joined()
+        .trim()
     }
 
     func displayName(nicknames: SettingsChatNicknames, displayStyle: SettingsChatDisplayStyle) -> String {

@@ -118,6 +118,15 @@ struct YouTubeLiveChatSuite {
         #expect(texts(segments) == ["hi ", nil, "there "])
         #expect(segments[1].url?.still?.absoluteString == "https://yt3.example.com/yt.png")
         #expect(Set(segments.map(\.id)).count == segments.count)
+        #expect(spokenEmoteNames(segments) == [nil, "yt", nil])
+    }
+
+    @Test
+    func emojiWithoutShortcutsHasNoName() throws {
+        let emoji = #"{"emoji": {"image": {"thumbnails": [{"url": "https://yt3.example.com/a.png"}]}}}"#
+        let messages = try handle(makeGetLiveChat(actions: [makeTextMessage(runs: "[\(emoji)]")]))
+        #expect(messages[0].segments[0].url != nil)
+        #expect(spokenEmoteNames(messages[0].segments) == [nil])
     }
 
     @Test
