@@ -34,9 +34,6 @@ extension Model {
             let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
             let creationRequest = PHAssetCreationRequest.forAsset()
             creationRequest.addResource(with: .photo, data: image, options: nil)
-            if let placeholder = creationRequest.placeholderForCreatedAsset {
-                snapshotAlbumChangeRequest()?.addAssets([placeholder] as NSArray)
-            }
         } completionHandler: { _, error in
             if let error {
                 logger.info("snapshot: Error saving snapshot: \(error.localizedDescription)")
@@ -179,16 +176,4 @@ private func encodeSnapshotForPhotos(image: UIImage) -> Data? {
         return nil
     }
     return data as Data
-}
-
-private func snapshotAlbumChangeRequest() -> PHAssetCollectionChangeRequest? {
-    let options = PHFetchOptions()
-    options.predicate = NSPredicate(format: "title = %@", snapshotTitle)
-    if let album = PHAssetCollection.fetchAssetCollections(with: .album,
-                                                           subtype: .albumRegular,
-                                                           options: options).firstObject
-    {
-        return PHAssetCollectionChangeRequest(for: album)
-    }
-    return PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: snapshotTitle)
 }
