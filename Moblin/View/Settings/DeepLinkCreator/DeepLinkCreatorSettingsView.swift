@@ -28,6 +28,10 @@ struct DeepLinkCreatorSettingsView: View {
         if stream.video.maxKeyFrameInterval != 2 {
             newStream.video!.maxKeyFrameInterval = stream.video.maxKeyFrameInterval
         }
+        if stream.video.timecodesEnabled {
+            newStream.video!.timecodesEnabled = true
+            newStream.video!.ntpPoolAddress = stream.video.ntpPoolAddress
+        }
         if stream.audio.bitrate != 128_000 {
             newStream.audio = .init()
             if stream.audio.bitrate != 128_000 {
