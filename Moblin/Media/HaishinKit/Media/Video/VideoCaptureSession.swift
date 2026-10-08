@@ -1,8 +1,19 @@
 import AVFoundation
+import ImageIO
 import Photos
 
 nonisolated(unsafe) var nativeLowLightBoost = false
 nonisolated(unsafe) var externalCameraVideoRange = false
+
+private func createPhotoShootMetadata() -> [String: Any] {
+    [
+        kCGImagePropertyIPTCDictionary as String: [
+            kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin photo shoot")],
+        ],
+    ]
+}
+
+private let photoShootMetadata = createPhotoShootMetadata()
 
 struct CaptureDevice {
     let device: AVCaptureDevice
@@ -419,6 +430,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             if flash, photoOutput.supportedFlashModes.contains(.on) {
                 settings.flashMode = .on
             }
+            settings.metadata = photoShootMetadata
             if #available(iOS 18, *) {
                 settings.isShutterSoundSuppressionEnabled = true
             }
