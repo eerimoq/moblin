@@ -40,7 +40,7 @@ class SettingsDebug: Codable, ObservableObject {
     var httpProxyToBeRemoved: Bool = false
     @Published var packetPadding: Bool = false
     @Published var externalCameraVideoRange: Bool = false
-    @Published var photosImageQuality: Double = 1.0
+    @Published var photosImageQuality: Double = 0.95
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -167,6 +167,6 @@ class SettingsDebug: Codable, ObservableObject {
         httpProxyToBeRemoved = container.decode(.httpProxy3, Bool.self, false)
         packetPadding = container.decode(.packetPadding, Bool.self, false)
         externalCameraVideoRange = container.decode(.externalCameraVideoRange, Bool.self, false)
-        photosImageQuality = container.decode(.photosImageQuality, Double.self, 1.0)
+        photosImageQuality = container.decode(.photosImageQuality, Double.self, 0.95)
     }
 }

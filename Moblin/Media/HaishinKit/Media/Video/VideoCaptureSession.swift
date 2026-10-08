@@ -4,7 +4,7 @@ import Photos
 
 nonisolated(unsafe) var nativeLowLightBoost = false
 nonisolated(unsafe) var externalCameraVideoRange = false
-nonisolated(unsafe) var photosImageQuality = 1.0
+nonisolated(unsafe) var photosImageQuality = 0.95
 
 struct CaptureDevice {
     let device: AVCaptureDevice
