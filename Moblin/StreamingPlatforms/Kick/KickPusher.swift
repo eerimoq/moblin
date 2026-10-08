@@ -249,7 +249,7 @@ private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGifte
 
 private let url =
     URL(
-        string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
+        string: "wss://ws-us2.pusher.com/app/34bf7a0ff419a2a775b9?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
 @MainActor
