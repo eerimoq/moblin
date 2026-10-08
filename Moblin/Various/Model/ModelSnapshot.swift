@@ -11,7 +11,7 @@ private func createSnapshotMetadata() -> [String: Any] {
     ]
 }
 
-private let snapshotMetadata = createSnapshotMetadata()
+private nonisolated(unsafe) let snapshotMetadata = createSnapshotMetadata()
 
 struct SnapshotJob {
     let isChatBot: Bool

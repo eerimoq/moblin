@@ -13,7 +13,7 @@ private func createPhotoShootMetadata() -> [String: Any] {
     ]
 }
 
-private let photoShootMetadata = createPhotoShootMetadata()
+private nonisolated(unsafe) let photoShootMetadata = createPhotoShootMetadata()
 
 struct CaptureDevice {
     let device: AVCaptureDevice
