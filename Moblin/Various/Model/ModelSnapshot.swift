@@ -1,6 +1,7 @@
 import ImageIO
 import Photos
 import SwiftUI
+import UniformTypeIdentifiers
 
 private let snapshotTitle = "Moblin snapshot"
 
@@ -20,7 +21,7 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            self.saveSnapshotToPhotos(image: imageJpeg)
+            self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
             self.makeToast(title: String(localized: "Snapshot saved to Photos"))
             self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             self.printSnapshotCatPrinters(image: portraitImage)
@@ -28,9 +29,9 @@ extension Model {
         }
     }
 
-    private func saveSnapshotToPhotos(image: Data) {
-        let image = addSnapshotMetadata(image: image) ?? image
+    private func saveSnapshotToPhotos(image: UIImage, fallbackImage: Data) {
         PHPhotoLibrary.shared().performChanges {
+            let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
             let creationRequest = PHAssetCreationRequest.forAsset()
             creationRequest.addResource(with: .photo, data: image, options: nil)
             if let placeholder = creationRequest.placeholderForCreatedAsset {
@@ -150,17 +151,20 @@ extension Model {
     }
 }
 
-private func addSnapshotMetadata(image: Data) -> Data? {
-    guard let source = CGImageSourceCreateWithData(image as CFData, nil),
-          let type = CGImageSourceGetType(source)
-    else {
+private func encodeSnapshotForPhotos(image: UIImage) -> Data? {
+    guard let cgImage = image.cgImage else {
         return nil
     }
     let data = NSMutableData()
-    guard let destination = CGImageDestinationCreateWithData(data, type, 1, nil) else {
+    guard let destination = CGImageDestinationCreateWithData(data,
+                                                             UTType.heic.identifier as CFString,
+                                                             1,
+                                                             nil)
+    else {
         return nil
     }
     let properties: [String: Any] = [
+        kCGImageDestinationLossyCompressionQuality as String: 1.0,
         kCGImagePropertyTIFFDictionary as String: [
             kCGImagePropertyTIFFImageDescription as String: snapshotTitle,
             kCGImagePropertyTIFFSoftware as String: "Moblin",
@@ -170,7 +174,7 @@ private func addSnapshotMetadata(image: Data) -> Data? {
             kCGImagePropertyIPTCKeywords as String: ["Moblin", "Snapshot"],
         ],
     ]
-    CGImageDestinationAddImageFromSource(destination, source, 0, properties as CFDictionary)
+    CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
     guard CGImageDestinationFinalize(destination) else {
         return nil
     }
