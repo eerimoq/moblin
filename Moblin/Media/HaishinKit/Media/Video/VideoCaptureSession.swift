@@ -858,19 +858,6 @@ extension VideoCaptureSession: AVCaptureSessionControlsDelegate {
 }
 
 extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
-    private func photoShootAlbumChangeRequest() -> PHAssetCollectionChangeRequest? {
-        let options = PHFetchOptions()
-        options.predicate = NSPredicate(format: "title = %@", photoShootTitle)
-        if let album = PHAssetCollection.fetchAssetCollections(with: .album,
-                                                               subtype: .albumRegular,
-                                                               options: options).firstObject
-        {
-            return PHAssetCollectionChangeRequest(for: album)
-        }
-        return PHAssetCollectionChangeRequest
-            .creationRequestForAssetCollection(withTitle: photoShootTitle)
-    }
-
     func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error {
             logger.info("video-unit: Photo error: \(error)")
@@ -880,9 +867,6 @@ extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
             PHPhotoLibrary.shared().performChanges {
                 let creationRequest = PHAssetCreationRequest.forAsset()
                 creationRequest.addResource(with: .photo, data: photoData, options: nil)
-                if let placeholder = creationRequest.placeholderForCreatedAsset {
-                    self.photoShootAlbumChangeRequest()?.addAssets([placeholder] as NSArray)
-                }
             } completionHandler: { _, error in
                 if let error {
                     logger.info("video-unit: Error saving photo: \(error.localizedDescription)")
