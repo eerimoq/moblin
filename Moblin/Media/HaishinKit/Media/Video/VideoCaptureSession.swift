@@ -1,5 +1,8 @@
 import AVFoundation
+import ImageIO
 import Photos
+
+private let photoShootTitle = "Moblin photo shoot"
 
 nonisolated(unsafe) var nativeLowLightBoost = false
 nonisolated(unsafe) var externalCameraVideoRange = false
@@ -419,11 +422,25 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             if flash, photoOutput.supportedFlashModes.contains(.on) {
                 settings.flashMode = .on
             }
+            settings.metadata = photoShootMetadata()
             if #available(iOS 18, *) {
                 settings.isShutterSoundSuppressionEnabled = true
             }
             photoOutput.capturePhoto(with: settings, delegate: self)
         }
+    }
+
+    private func photoShootMetadata() -> [String: Any] {
+        return [
+            kCGImagePropertyTIFFDictionary as String: [
+                kCGImagePropertyTIFFImageDescription as String: photoShootTitle,
+                kCGImagePropertyTIFFSoftware as String: "Moblin",
+            ],
+            kCGImagePropertyIPTCDictionary as String: [
+                kCGImagePropertyIPTCCaptionAbstract as String: photoShootTitle,
+                kCGImagePropertyIPTCKeywords as String: ["Moblin", "Photo shoot"],
+            ],
+        ]
     }
 
     private func updateOrientation(device: CaptureSessionDevice) {
@@ -841,6 +858,19 @@ extension VideoCaptureSession: AVCaptureSessionControlsDelegate {
 }
 
 extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
+    private func photoShootAlbumChangeRequest() -> PHAssetCollectionChangeRequest? {
+        let options = PHFetchOptions()
+        options.predicate = NSPredicate(format: "title = %@", photoShootTitle)
+        if let album = PHAssetCollection.fetchAssetCollections(with: .album,
+                                                               subtype: .albumRegular,
+                                                               options: options).firstObject
+        {
+            return PHAssetCollectionChangeRequest(for: album)
+        }
+        return PHAssetCollectionChangeRequest
+            .creationRequestForAssetCollection(withTitle: photoShootTitle)
+    }
+
     func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error {
             logger.info("video-unit: Photo error: \(error)")
@@ -850,6 +880,9 @@ extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
             PHPhotoLibrary.shared().performChanges {
                 let creationRequest = PHAssetCreationRequest.forAsset()
                 creationRequest.addResource(with: .photo, data: photoData, options: nil)
+                if let placeholder = creationRequest.placeholderForCreatedAsset {
+                    self.photoShootAlbumChangeRequest()?.addAssets([placeholder] as NSArray)
+                }
             } completionHandler: { _, error in
                 if let error {
                     logger.info("video-unit: Error saving photo: \(error.localizedDescription)")
