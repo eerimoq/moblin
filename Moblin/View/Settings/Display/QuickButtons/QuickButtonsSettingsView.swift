@@ -57,17 +57,28 @@ private struct ButtonSettingsView: View {
     }
 }
 
+private struct ButtonsPage: Identifiable {
+    let id: Int
+    let buttons: [SettingsQuickButton]
+}
+
 private struct ButtonsSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
     @State private var filter = ""
 
-    private func buttons(page: Int) -> [SettingsQuickButton] {
-        database.quickButtons.reversed().filter { button in
-            guard button.page == page else {
-                return false
+    private func pages() -> [ButtonsPage] {
+        (1 ... controlBarPages).compactMap { page in
+            let buttons = database.quickButtons.reversed().filter { button in
+                guard button.page == page else {
+                    return false
+                }
+                return filter.isEmpty || button.name.lowercased().contains(filter.lowercased())
             }
-            return filter.isEmpty || button.name.lowercased().contains(filter.lowercased())
+            guard !buttons.isEmpty else {
+                return nil
+            }
+            return ButtonsPage(id: page, buttons: buttons)
         }
     }
 
@@ -76,18 +87,13 @@ private struct ButtonsSettingsView: View {
             TextField("Filter", text: $filter)
                 .autocorrectionDisabled()
         }
-        ForEach(1 ... controlBarPages, id: \.self) { page in
-            let buttons = buttons(page: page)
-            if !buttons.isEmpty {
-                Section {
-                    List {
-                        ForEach(buttons) { button in
-                            ButtonSettingsView(model: model, button: button)
-                        }
-                    }
-                } header: {
-                    Text("Page \(page)")
+        ForEach(pages()) { page in
+            Section {
+                ForEach(page.buttons) { button in
+                    ButtonSettingsView(model: model, button: button)
                 }
+            } header: {
+                Text("Page \(page.id)")
             }
         }
     }
