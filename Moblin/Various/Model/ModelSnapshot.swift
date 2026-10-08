@@ -3,7 +3,15 @@ import Photos
 import SwiftUI
 import UniformTypeIdentifiers
 
-private let snapshotTitle = "Moblin snapshot"
+private func createSnapshotMetadata() -> [String: Any] {
+    [
+        kCGImagePropertyIPTCDictionary as String: [
+            kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin snapshot")],
+        ],
+    ]
+}
+
+private let snapshotMetadata = createSnapshotMetadata()
 
 struct SnapshotJob {
     let isChatBot: Bool
@@ -160,17 +168,8 @@ private func encodeSnapshotForPhotos(image: UIImage) -> Data? {
     else {
         return nil
     }
-    let properties: [String: Any] = [
-        kCGImageDestinationLossyCompressionQuality as String: 1.0,
-        kCGImagePropertyTIFFDictionary as String: [
-            kCGImagePropertyTIFFImageDescription as String: snapshotTitle,
-            kCGImagePropertyTIFFSoftware as String: "Moblin",
-        ],
-        kCGImagePropertyIPTCDictionary as String: [
-            kCGImagePropertyIPTCCaptionAbstract as String: snapshotTitle,
-            kCGImagePropertyIPTCKeywords as String: ["Moblin", "Snapshot"],
-        ],
-    ]
+    var properties = snapshotMetadata
+    properties[kCGImageDestinationLossyCompressionQuality as String] = 1.0
     CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
     guard CGImageDestinationFinalize(destination) else {
         return nil
