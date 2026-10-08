@@ -66,6 +66,14 @@ private struct Image: Codable {
 
 private struct Emoji: Codable {
     let image: Image
+    let shortcuts: [String]?
+
+    func name() -> String? {
+        guard let shortcut = shortcuts?.first else {
+            return nil
+        }
+        return shortcut.trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+    }
 }
 
 private struct Run: Codable {
@@ -386,7 +394,10 @@ final class YouTubeLiveChat: NSObject {
                     segments += createSegments(message: text, id: &id)
                 }
                 if let emojiUrl = run.emoji?.image.thumbnails.first?.url, let url = URL(string: emojiUrl) {
-                    segments.append(.init(id: id, url: ChatPostEmote(moving: url, still: url)))
+                    segments.append(.init(
+                        id: id,
+                        url: ChatPostEmote(moving: url, still: url, name: run.emoji?.name())
+                    ))
                     id += 1
                 }
             }
@@ -397,7 +408,10 @@ final class YouTubeLiveChat: NSObject {
                     segments += createSegments(message: text, id: &id)
                 }
                 if let emojiUrl = run.emoji?.image.thumbnails.first?.url, let url = URL(string: emojiUrl) {
-                    segments.append(.init(id: id, url: ChatPostEmote(moving: url, still: url)))
+                    segments.append(.init(
+                        id: id,
+                        url: ChatPostEmote(moving: url, still: url, name: run.emoji?.name())
+                    ))
                     id += 1
                 }
             }

@@ -21,6 +21,13 @@ struct KickChatSegmentsSuite {
         #expect(texts(segments) == ["hey ", nil, "there "])
         #expect(emoteNames(segments) == [nil, "fullsize", nil])
         #expect(segments[1].url?.still?.absoluteString == "https://files.kick.com/emotes/37226/fullsize")
+        #expect(spokenEmoteNames(segments) == [nil, "KEKW", nil])
+    }
+
+    @Test
+    func emoteNameMayContainColons() {
+        let segments = createSegments("[emote:1:a:b]")
+        #expect(spokenEmoteNames(segments) == ["a:b"])
     }
 
     @Test
@@ -38,6 +45,7 @@ struct KickChatSegmentsSuite {
         let segments = createSegments("[emote:1:A][emote:2:B]")
         #expect(texts(segments) == [nil, nil])
         #expect(segments.count == 2)
+        #expect(spokenEmoteNames(segments) == ["A", "B"])
     }
 
     @Test
@@ -58,6 +66,7 @@ struct KickChatSegmentsSuite {
         let segments = createSegments("LUL [emote:1:A] LUL", emotes: ["LUL"])
         #expect(texts(segments) == ["", "", nil, "", ""])
         #expect(emoteNames(segments) == ["LUL", nil, "fullsize", "LUL", nil])
+        #expect(spokenEmoteNames(segments) == ["LUL", nil, "A", "LUL", nil])
     }
 
     @Test

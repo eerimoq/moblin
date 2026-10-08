@@ -1,3 +1,4 @@
+import Foundation
 @testable import Moblin
 import Testing
 
@@ -38,5 +39,19 @@ struct SettingsSuite {
                                        .init(id: 0, text: "hi"),
                                        .init(id: 0, text: "ho"),
                                    ]))
+    }
+
+    @Test
+    func textToSpeechSayEmotesDefaultsToOff() throws {
+        let chat = try JSONDecoder().decode(SettingsChat.self, from: Data("{}".utf8))
+        #expect(!chat.textToSpeechSayEmotes)
+    }
+
+    @Test
+    func textToSpeechSayEmotesIsPersisted() throws {
+        let chat = SettingsChat()
+        chat.textToSpeechSayEmotes = true
+        let decoded = try JSONDecoder().decode(SettingsChat.self, from: JSONEncoder().encode(chat))
+        #expect(decoded.textToSpeechSayEmotes)
     }
 }

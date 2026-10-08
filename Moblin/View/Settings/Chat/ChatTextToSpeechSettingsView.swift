@@ -157,6 +157,7 @@ struct ChatTextToSpeechSettingsView: View {
                     .onChange(of: chat.textToSpeechSayUsername) {
                         model.chatTextToSpeech.setSayUsername(value: $0)
                     }
+                Toggle("Say emotes", isOn: $chat.textToSpeechSayEmotes)
                 Toggle("Subscribers only", isOn: $chat.textToSpeechSubscribersOnly)
             } footer: {
                 Text("Subscribers only is not available for all platforms.")

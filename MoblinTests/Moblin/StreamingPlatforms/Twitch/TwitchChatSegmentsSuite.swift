@@ -68,6 +68,7 @@ struct TwitchChatSegmentsSuite {
         ])
         #expect(texts(segments) == ["hi ", nil, "", "lol "])
         #expect(twitchEmoteIds(segments) == [nil, "25", nil, nil])
+        #expect(spokenEmoteNames(segments) == [nil, "Kappa", nil, nil])
     }
 
     @Test
@@ -79,6 +80,7 @@ struct TwitchChatSegmentsSuite {
         ])
         #expect(texts(segments) == [nil, "", nil, ""])
         #expect(twitchEmoteIds(segments) == ["25", nil, "305954156", nil])
+        #expect(spokenEmoteNames(segments) == ["Kappa", nil, "PogChamp", nil])
     }
 
     @Test
@@ -123,6 +125,7 @@ struct TwitchChatSegmentsSuite {
         let segments = createSegments("hi Kappa lol", [makeTwitchEmote("Kappa", 3 ... 7)])
         #expect(texts(segments) == ["hi ", nil, "", "lol "])
         #expect(emoteNames(segments) == [nil, "Kappa", nil, nil])
+        #expect(spokenEmoteNames(segments) == [nil, "Kappa", nil, nil])
     }
 
     @Test
@@ -154,6 +157,7 @@ struct TwitchChatSegmentsSuite {
         ])
         #expect(texts(segments) == [nil, "", nil, ""])
         #expect(emoteNames(segments) == ["Kappa", nil, "LUL", nil])
+        #expect(spokenEmoteNames(segments) == ["Kappa", nil, "LUL", nil])
     }
 
     @Test
@@ -178,6 +182,7 @@ struct TwitchChatSegmentsSuite {
         let segments = createSegments("😀 Kappa", [makeTwitchEmote("Kappa", 2 ... 6)])
         #expect(texts(segments) == ["😀 ", nil, ""])
         #expect(emoteNames(segments) == [nil, "Kappa", nil])
+        #expect(spokenEmoteNames(segments) == [nil, "Kappa", nil])
     }
 
     @Test
@@ -186,6 +191,7 @@ struct TwitchChatSegmentsSuite {
         #expect(texts(segments) == [nil, ""])
         #expect(emoteNames(segments) == [nil, nil])
         #expect(gifNames(segments) == ["hello", nil])
+        #expect(spokenEmoteNames(segments) == ["Hello GIF by HULU", nil])
         #expect(segments.compactMap(\.text).joined().isEmpty)
     }
 
@@ -222,6 +228,7 @@ struct TwitchChatSegmentsSuite {
         let segments = createSegments("hello", [makeTwitchEmote("Kappa", 1 ... 3)])
         #expect(texts(segments) == ["h ", nil, "", "o "])
         #expect(emoteNames(segments) == [nil, "Kappa", nil, nil])
+        #expect(spokenEmoteNames(segments) == [nil, "ell", nil, nil])
     }
 
     @Test

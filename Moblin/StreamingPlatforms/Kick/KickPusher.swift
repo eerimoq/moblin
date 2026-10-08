@@ -22,7 +22,7 @@ private enum BadgeType {
 
 private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
-private nonisolated(unsafe) let emoteRegex = /\[emote:(\d+):[^\]]+\]/
+private nonisolated(unsafe) let emoteRegex = /\[emote:(\d+):([^\]]+)\]/
 
 func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -> [ChatPostSegment] {
     var segments: [ChatPostSegment] = []
@@ -31,7 +31,7 @@ func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -
         let emoteId = match.output.1
         let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
         let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
-            .map { ChatPostEmote(moving: $0, still: $0) }
+            .map { ChatPostEmote(moving: $0, still: $0, name: String(match.output.2)) }
         segments += emotesManager.createSegments(text: String(textBeforeEmote), id: &id)
         segments.append(ChatPostSegment(id: id, url: url))
         id += 1
