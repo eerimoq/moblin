@@ -40,6 +40,7 @@ class SettingsDebug: Codable, ObservableObject {
     var httpProxyToBeRemoved: Bool = false
     @Published var packetPadding: Bool = false
     @Published var externalCameraVideoRange: Bool = false
+    @Published var photosImageQuality: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -80,6 +81,7 @@ class SettingsDebug: Codable, ObservableObject {
         case httpProxy3
         case packetPadding
         case externalCameraVideoRange
+        case photosImageQuality
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -115,6 +117,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.httpProxy3, httpProxyToBeRemoved)
         try container.encode(.packetPadding, packetPadding)
         try container.encode(.externalCameraVideoRange, externalCameraVideoRange)
+        try container.encode(.photosImageQuality, photosImageQuality)
     }
 
     init() {}
@@ -164,5 +167,6 @@ class SettingsDebug: Codable, ObservableObject {
         httpProxyToBeRemoved = container.decode(.httpProxy3, Bool.self, false)
         packetPadding = container.decode(.packetPadding, Bool.self, false)
         externalCameraVideoRange = container.decode(.externalCameraVideoRange, Bool.self, false)
+        photosImageQuality = container.decode(.photosImageQuality, Double.self, 1.0)
     }
 }

@@ -4,16 +4,7 @@ import Photos
 
 nonisolated(unsafe) var nativeLowLightBoost = false
 nonisolated(unsafe) var externalCameraVideoRange = false
-
-private func createPhotoShootMetadata() -> [String: Any] {
-    [
-        kCGImagePropertyIPTCDictionary as String: [
-            kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin photo shoot")],
-        ],
-    ]
-}
-
-private let photoShootMetadata = createPhotoShootMetadata()
+nonisolated(unsafe) var photosImageQuality = 1.0
 
 struct CaptureDevice {
     let device: AVCaptureDevice
@@ -424,13 +415,24 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             guard let photoOutput = device.photoOutput else {
                 continue
             }
-            let settings = AVCapturePhotoSettings()
+            var codec = AVVideoCodecType.jpeg
+            if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+                codec = .hevc
+            }
+            let settings = AVCapturePhotoSettings(format: [
+                AVVideoCodecKey: codec,
+                AVVideoCompressionPropertiesKey: [AVVideoQualityKey: photosImageQuality],
+            ])
             settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
             settings.photoQualityPrioritization = .balanced
             if flash, photoOutput.supportedFlashModes.contains(.on) {
                 settings.flashMode = .on
             }
-            settings.metadata = photoShootMetadata
+            settings.metadata = [
+                kCGImagePropertyIPTCDictionary as String: [
+                    kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin photo shoot")],
+                ],
+            ]
             if #available(iOS 18, *) {
                 settings.isShutterSoundSuppressionEnabled = true
             }

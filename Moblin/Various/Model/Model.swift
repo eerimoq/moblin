@@ -937,6 +937,10 @@ final class Model: NSObject, ObservableObject {
         externalCameraVideoRange = database.debug.externalCameraVideoRange
     }
 
+    func setPhotosImageQuality() {
+        photosImageQuality = database.debug.photosImageQuality
+    }
+
     func setHighQualityDownsampling() {
         highQualityDownsampling = database.graphicsHighQualityDownsampling
     }
@@ -1075,6 +1079,7 @@ final class Model: NSObject, ObservableObject {
         fixAlertMediasNoUpdate()
         setNativeLowLightBoost()
         setExternalCameraVideoRange()
+        setPhotosImageQuality()
         setHighQualityDownsampling()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop

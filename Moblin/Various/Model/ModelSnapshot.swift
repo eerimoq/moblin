@@ -1,4 +1,7 @@
+import ImageIO
+import Photos
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SnapshotJob {
     let isChatBot: Bool
@@ -16,11 +19,25 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+            self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
             self.makeToast(title: String(localized: "Snapshot saved to Photos"))
             self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             self.printSnapshotCatPrinters(image: portraitImage)
             self.appendSnapshotToSnapshotWidgets(image: image)
+        }
+    }
+
+    private func saveSnapshotToPhotos(image: UIImage, fallbackImage: Data) {
+        DispatchQueue.global().async {
+            let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
+            PHPhotoLibrary.shared().performChanges {
+                let creationRequest = PHAssetCreationRequest.forAsset()
+                creationRequest.addResource(with: .photo, data: image, options: nil)
+            } completionHandler: { _, error in
+                if let error {
+                    logger.info("snapshot: Error saving snapshot: \(error.localizedDescription)")
+                }
+            }
         }
     }
 
@@ -129,4 +146,29 @@ extension Model {
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }
+}
+
+private func encodeSnapshotForPhotos(image: UIImage) -> Data? {
+    guard let cgImage = image.cgImage else {
+        return nil
+    }
+    let data = NSMutableData()
+    guard let destination = CGImageDestinationCreateWithData(data,
+                                                             UTType.heic.identifier as CFString,
+                                                             1,
+                                                             nil)
+    else {
+        return nil
+    }
+    let properties: [String: Any] = [
+        kCGImagePropertyIPTCDictionary as String: [
+            kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin snapshot")],
+        ],
+        kCGImageDestinationLossyCompressionQuality as String: photosImageQuality,
+    ]
+    CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
+    guard CGImageDestinationFinalize(destination) else {
+        return nil
+    }
+    return data as Data
 }

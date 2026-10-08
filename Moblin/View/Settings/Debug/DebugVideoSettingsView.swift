@@ -21,6 +21,20 @@ struct DebugVideoSettingsView: View {
             Section {
                 Toggle("Periodic video bitrate change", isOn: $debug.videoBitrateChange)
             }
+            Section {
+                Picker(selection: $debug.photosImageQuality) {
+                    ForEach([0.9, 0.95, 1.0], id: \.self) { quality in
+                        Text(String(quality))
+                    }
+                } label: {
+                    Text("Photos image quality")
+                }
+                .onChange(of: debug.photosImageQuality) { _ in
+                    model.setPhotosImageQuality()
+                }
+            } footer: {
+                Text("Compression quality of snapshots and photo shoot photos saved to Photos.")
+            }
         }
         .navigationTitle("Video")
     }
