@@ -431,7 +431,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     private func photoShootMetadata() -> [String: Any] {
-        return [
+        [
             kCGImagePropertyTIFFDictionary as String: [
                 kCGImagePropertyTIFFImageDescription as String: photoShootTitle,
                 kCGImagePropertyTIFFSoftware as String: "Moblin",
