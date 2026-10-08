@@ -1257,6 +1257,7 @@ class Database: Codable, ObservableObject {
     @Published var alwaysAttachCameraPreview: Bool = false
     @Published var alwaysAttachPhotoShoot: Bool = false
     @Published var photoShootFlash: Bool = false
+    @Published var photoShootInterval: Int = 1
     @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
@@ -1389,6 +1390,7 @@ class Database: Codable, ObservableObject {
         case alwaysAttachCameraPreview
         case alwaysAttachPhotoShoot
         case photoShootFlash
+        case photoShootInterval
         case cameraControlsEnabled
         case externalDisplayContent
         case cyclingPowerDevices
@@ -1482,6 +1484,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.alwaysAttachCameraPreview, alwaysAttachCameraPreview)
         try container.encode(.alwaysAttachPhotoShoot, alwaysAttachPhotoShoot)
         try container.encode(.photoShootFlash, photoShootFlash)
+        try container.encode(.photoShootInterval, photoShootInterval)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
@@ -1594,6 +1597,7 @@ class Database: Codable, ObservableObject {
         alwaysAttachCameraPreview = container.decode(.alwaysAttachCameraPreview, Bool.self, false)
         alwaysAttachPhotoShoot = container.decode(.alwaysAttachPhotoShoot, Bool.self, false)
         photoShootFlash = container.decode(.photoShootFlash, Bool.self, false)
+        photoShootInterval = container.decode(.photoShootInterval, Int.self, 1)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, false)
         externalDisplayContent = container.decode(
             .externalDisplayContent,

@@ -291,6 +291,36 @@ private struct PhotoShootFlashButtonView: View {
     }
 }
 
+private struct PhotoShootIntervalPickerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Menu {
+            Picker("", selection: Binding(get: {
+                database.photoShootInterval
+            }, set: { interval in
+                model.setPhotoShootInterval(interval: interval)
+            })) {
+                ForEach([1, 2, 3, 10, 60], id: \.self) { interval in
+                    Text(formatShortDuration(seconds: interval))
+                }
+            }
+        } label: {
+            VStack(spacing: 2) {
+                Image(systemName: "timer")
+                    .font(.system(size: 24))
+                Text(verbatim: "\(database.photoShootInterval)s")
+                    .font(.system(size: 14))
+            }
+            .foregroundStyle(.white)
+            .frame(width: 60, height: 60)
+            .background(.black.opacity(0.75))
+            .clipShape(Circle())
+        }
+    }
+}
+
 private struct PhotoShootView: View {
     let model: Model
     let enabled: Bool
@@ -310,8 +340,11 @@ private struct PhotoShootView: View {
                 .background(.black.opacity(0.75))
                 .cornerRadius(10)
                 .allowsHitTesting(false)
-                if model.cameraDevice?.hasFlash == true {
-                    PhotoShootFlashButtonView(database: model.database)
+                HStack(spacing: 15) {
+                    PhotoShootIntervalPickerView(model: model, database: model.database)
+                    if model.cameraDevice?.hasFlash == true {
+                        PhotoShootFlashButtonView(database: model.database)
+                    }
                 }
             }
         }
