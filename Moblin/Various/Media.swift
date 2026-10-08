@@ -760,8 +760,8 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
-    func takePhoto() {
-        processor?.takePhoto()
+    func takePhoto(flash: Bool) {
+        processor?.takePhoto(flash: flash)
     }
 
     func takeVideoSourceSnapshot(videoSourceId: UUID,

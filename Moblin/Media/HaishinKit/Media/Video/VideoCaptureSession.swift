@@ -408,7 +408,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
         attachCameraPreviewLayers(params: params)
     }
 
-    func takePhoto() {
+    func takePhoto(flash: Bool) {
         for device in devices {
             guard let photoOutput = device.photoOutput else {
                 continue
@@ -416,6 +416,9 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             let settings = AVCapturePhotoSettings()
             settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
             settings.photoQualityPrioritization = .balanced
+            if flash, photoOutput.supportedFlashModes.contains(.on) {
+                settings.flashMode = .on
+            }
             if #available(iOS 18, *) {
                 settings.isShutterSoundSuppressionEnabled = true
             }
