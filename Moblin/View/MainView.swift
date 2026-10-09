@@ -326,7 +326,9 @@ private struct PhotoShootCountdownView: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.05)) { _ in
-            let remaining = max((photoShoot.nextPhotoTime - .now).seconds, 0)
+            let remaining = photoShoot.running
+                ? max((photoShoot.nextPhotoTime - .now).seconds, 0)
+                : photoShoot.interval
             ZStack {
                 Circle()
                     .stroke(.white.opacity(0.3), lineWidth: 5)

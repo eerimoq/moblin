@@ -6,7 +6,8 @@ extension Model {
         let interval = Double(database.photoShootInterval)
         photoShoot.interval = interval
         photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
-        guard !photoShootWaitingForCameraAttach else {
+        photoShoot.running = !photoShootWaitingForCameraAttach
+        guard photoShoot.running else {
             return
         }
         photoShootTimer.startPeriodic(interval: interval) {
@@ -20,6 +21,7 @@ extension Model {
         photoShootTimer.stop()
         photoShootFlashTimer.stop()
         photoShoot.photoTaken = false
+        photoShoot.running = false
     }
 
     func setPhotoShootInterval(interval: Int) {

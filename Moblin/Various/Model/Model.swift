@@ -334,6 +334,7 @@ class PhotoShootProvider: ObservableObject {
     @Published var photoTaken = false
     @Published var interval = 1.0
     @Published var nextPhotoTime = ContinuousClock.now
+    @Published var running = false
 }
 
 @MainActor
