@@ -805,7 +805,6 @@ final class Model: NSObject, ObservableObject {
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
     let photoShootTimer = MainTimer()
-    var photoShootWaitingForCameraAttach = false
     let photoShootFlashTimer = MainTimer()
     let photoShoot = PhotoShootProvider()
 
