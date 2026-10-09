@@ -61,6 +61,12 @@ extension Model {
                 {
                     targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
+                if let timecodesEnabled = video.timecodesEnabled {
+                    targetStream.timecodesEnabled = timecodesEnabled
+                }
+                if let ntpPoolAddress = video.ntpPoolAddress?.trim(), !ntpPoolAddress.isEmpty {
+                    targetStream.ntpPoolAddress = ntpPoolAddress
+                }
             }
             if let audio = stream.audio {
                 if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
