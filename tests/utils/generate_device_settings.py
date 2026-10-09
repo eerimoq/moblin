@@ -174,6 +174,10 @@ class MacroIfComparison(StrEnum):
     CONTAINS = "Contains"
 
 
+class QuickButtonType(StrEnum):
+    CAMERA_PREVIEW = "Camera preview"
+
+
 class Resolution(StrEnum):
     FULL_HD = "1920x1080"
     QUAD_HD_4_3 = "1920x1440"
@@ -348,6 +352,10 @@ def browser_widget_settings(name: str, widget_id: str, url: str, **browser):
         "type": WidgetType.BROWSER,
         "browser": {"url": url, "width": 1920, "height": 1080, **browser},
     }
+
+
+def quick_button_settings(button_type: QuickButtonType, is_on: bool):
+    return {"type": button_type, "isOn": is_on}
 
 
 def macro_settings(

@@ -1,3 +1,4 @@
+import bisect
 import logging
 import math
 import time
@@ -24,6 +25,7 @@ from ..utils.generate_device_settings import BitrateRateControl
 from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import ColorLutType
 from ..utils.generate_device_settings import GraphicsImplementation
+from ..utils.generate_device_settings import QuickButtonType
 from ..utils.generate_device_settings import SceneName
 from ..utils.generate_device_settings import VideoEffectType
 from ..utils.generate_device_settings import VideoStabilizationMode
@@ -32,6 +34,7 @@ from ..utils.generate_device_settings import WidgetType
 from ..utils.generate_device_settings import download_model
 from ..utils.generate_device_settings import download_zipped_model
 from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import quick_button_settings
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import text_widget_settings
 from ..utils.generate_device_settings import uuid
@@ -41,6 +44,7 @@ from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import manual_confirmation
+from ..utils.utils import read_video_frames_sharpness
 from ..utils.utils import write_png
 
 LOGGER = logging.getLogger(__name__)
@@ -49,6 +53,8 @@ HEIGHT = 1080
 WARM_UP_TIME = 5
 RECORDING_TIME = 5
 FRAME_TIMESTAMP = 2.5
+SCENE_SWITCH_INTERVAL = 6
+SCENE_SWITCH_TRANSITION_MARGIN = 2.5
 SMALL_MAP_CROP = Crop(x=0, y=0, width=216, height=216)
 LARGE_MAP_CROP = Crop(x=576, y=0, width=432, height=432)
 TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
@@ -57,6 +63,7 @@ IMAGE_CROP = Crop(x=20, y=20, width=40, height=40)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
 FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
+BACK_VIDEO_SOURCE_WIDGET_ID = uuid()
 TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
 MAP_SMALL_WIDGET_ID = uuid()
 MAP_LARGE_WIDGET_ID = uuid()
@@ -218,6 +225,105 @@ class SceneSwitchBackAndFrontCameraAudio(TestCase):
     def select_scene(self, name: SceneName) -> str:
         self.moblin.set_scene(name)
         return self.moblin.get_camera_status()
+
+
+class SceneSwitchSwappedCameras(TestCase):
+    """Switch between two scenes every few seconds while recording. The first scene has
+    the back camera as video source and the front camera in a video source widget. The
+    second scene has the cameras swapped. Validate that the recording never gets blurred,
+    as both scenes use the same cameras and the scene switch transition should not be
+    applied.
+
+    """
+
+    def __init__(self, moblin: Moblin, camera_preview: bool):
+        suffix = "Enabled" if camera_preview else "Disabled"
+        super().__init__(moblin, f"{type(self).__name__}CameraPreview{suffix}")
+        self.camera_preview = camera_preview
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        **BACK_SCENE_SETTINGS,
+                        "widgets": [
+                            scene_widget_settings(
+                                FRONT_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment=Alignment.BOTTOM_RIGHT,
+                            )
+                        ],
+                    },
+                    {
+                        **FRONT_SCENE_SETTINGS,
+                        "widgets": [
+                            scene_widget_settings(
+                                BACK_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment=Alignment.BOTTOM_RIGHT,
+                            )
+                        ],
+                    },
+                ],
+                "widgets": [
+                    video_source_widget_settings(
+                        "Front",
+                        FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        {"cameraPosition": CameraPosition.FRONT},
+                    ),
+                    video_source_widget_settings(
+                        "Back",
+                        BACK_VIDEO_SOURCE_WIDGET_ID,
+                        {"cameraPosition": CameraPosition.BACK},
+                    ),
+                ],
+                "globalButtons": [quick_button_settings(QuickButtonType.CAMERA_PREVIEW, self.camera_preview)],
+            }
+        )
+
+    def run(self):
+        back_camera = self.select_scene(SceneName.BACK)
+        time.sleep(WARM_UP_TIME)
+        with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
+            time.sleep(SCENE_SWITCH_INTERVAL)
+            for _ in range(3):
+                front_camera = self.select_scene(SceneName.FRONT)
+                self.assert_not_equal(front_camera, back_camera)
+                time.sleep(SCENE_SWITCH_INTERVAL)
+                self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                time.sleep(SCENE_SWITCH_INTERVAL)
+        self.assert_not_blurred(recorder.recording)
+
+    def select_scene(self, name: SceneName) -> str:
+        self.moblin.set_scene(name)
+        return self.moblin.get_camera_status()
+
+    def assert_not_blurred(self, recording_file: Path):
+        frames = read_video_frames_sharpness(recording_file)
+        self.assert_greater(len(frames), 0, "Number of frames")
+        timestamps = [pts for pts, _ in frames]
+
+        def sharpness_at(pts: float) -> float:
+            return frames[bisect.bisect_left(timestamps, pts)][1]
+
+        blurred = []
+        for pts, sharpness in frames:
+            if pts - SCENE_SWITCH_TRANSITION_MARGIN < timestamps[0]:
+                continue
+            if pts + SCENE_SWITCH_TRANSITION_MARGIN > timestamps[-1]:
+                continue
+            earlier = sharpness_at(pts - SCENE_SWITCH_TRANSITION_MARGIN)
+            later = sharpness_at(pts + SCENE_SWITCH_TRANSITION_MARGIN)
+            if sharpness < 0.5 * min(earlier, later):
+                blurred.append((pts, sharpness, earlier, later))
+        self.assert_equal(blurred, [], "Blurred frames (pts, sharpness, earlier sharpness, later sharpness)")
 
 
 class GraphicsImplementationTestCase(TestCase):
@@ -620,6 +726,8 @@ def tests(moblin: Moblin):
         SceneSwitchMultipleTimes(moblin),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
+        SceneSwitchSwappedCameras(moblin, camera_preview=False),
+        SceneSwitchSwappedCameras(moblin, camera_preview=True),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [

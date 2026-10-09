@@ -1,4 +1,5 @@
 import os
+import re
 import select
 import struct
 import subprocess
@@ -10,9 +11,12 @@ from logging import Logger
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from systest_moblin.ffmpeg import ffmpeg_run
+
 TEST_DIR = Path(__file__).parent.parent.resolve()
 WEBSITES_DIR = TEST_DIR / "suites" / "websites"
 FILES_DIR = TEST_DIR / "files"
+RE_SHARPNESS = re.compile(r"pts_time:(\S+)\s*\n\[Parsed_metadata.*? lavfi\.signalstats\.YAVG=(\S+)")
 
 
 @dataclass
@@ -68,6 +72,20 @@ def write_png(path: Path, width: int, height: int, rgba: bytes):
         + chunk(b"IDAT", zlib.compress(scanlines))
         + chunk(b"IEND", b"")
     )
+
+
+def read_video_frames_sharpness(path: Path) -> list[tuple[float, float]]:
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vf",
+        "sobel,signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+        "-an",
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    return [(float(pts), float(sharpness)) for pts, sharpness in RE_SHARPNESS.findall(output)]
 
 
 def format_generic_stream_url_stream_name(number: int, url: str) -> str:
