@@ -30,14 +30,16 @@ extension Model {
         photoShoot.flashTimer.startSingleShot(timeout: 0.15) {
             self.photoShoot.photoTaken = false
         }
+        if photoShoot.active {
+            start()
+        }
     }
 
     private func start() {
         let interval = Double(database.photoShootInterval)
         photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
-        photoShoot.timer.startPeriodic(interval: interval) {
+        photoShoot.timer.startSingleShot(timeout: interval) {
             self.media.takePhoto(flash: self.database.photoShootFlash)
-            self.photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
         }
     }
 

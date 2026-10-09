@@ -411,10 +411,12 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     func takePhoto(flash: Bool) {
+        var started = false
         for device in devices {
             guard let photoOutput = device.photoOutput else {
                 continue
             }
+            started = true
             var codec = AVVideoCodecType.jpeg
             if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
                 codec = .hevc
@@ -437,6 +439,9 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 settings.isShutterSoundSuppressionEnabled = true
             }
             photoOutput.capturePhoto(with: settings, delegate: self)
+        }
+        if !started {
+            processor?.delegate.streamPhotoTaken()
         }
     }
 
@@ -856,11 +861,11 @@ extension VideoCaptureSession: AVCaptureSessionControlsDelegate {
 
 extension VideoCaptureSession: AVCapturePhotoCaptureDelegate {
     func photoOutput(_: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        processor?.delegate.streamPhotoTaken()
         if let error {
             logger.info("video-unit: Photo error: \(error)")
             return
         }
-        processor?.delegate.streamPhotoTaken()
         if let photoData = photo.fileDataRepresentation() {
             PHPhotoLibrary.shared().performChanges {
                 let creationRequest = PHAssetCreationRequest.forAsset()
