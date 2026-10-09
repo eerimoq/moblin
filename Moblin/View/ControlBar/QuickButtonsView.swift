@@ -411,13 +411,6 @@ struct QuickButtonsInnerView: View {
     }
 
     private func photoShootAction() {
-        model.toggleQuickButton(type: .photoShoot)
-        model.photoShootEnabled = button.isOn
-        if model.photoShootEnabled {
-            model.startPhotoShoot()
-        } else {
-            model.stopPhotoShoot()
-        }
         model.togglePhotoShoot()
     }
 

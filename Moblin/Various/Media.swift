@@ -960,7 +960,8 @@ final class Media: NSObject, @unchecked Sendable {
         isLandscapeStreamAndPortraitUi: Bool,
         forceSceneTransition: Bool,
         macScreenCapture: Bool,
-        attachPhotoShoot: Bool
+        attachPhotoShoot: Bool,
+        onSuccess: (@MainActor () -> Void)? = nil
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -976,7 +977,7 @@ final class Media: NSObject, @unchecked Sendable {
                                            forceSceneTransition: forceSceneTransition,
                                            macScreenCapture: macScreenCapture,
                                            attachPhotoShoot: attachPhotoShoot)
-        processor?.attachCamera(params: params)
+        attachCamera(params: params, onSuccess: onSuccess)
     }
 
     func attachBufferedAudio(cameraId: UUID?) {

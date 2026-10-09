@@ -332,8 +332,7 @@ class SceneSelector: ObservableObject {
 @MainActor
 class PhotoShootProvider: ObservableObject {
     @Published var photoTaken = false
-    @Published var interval = 1.0
-    @Published var nextPhotoTime = ContinuousClock.now
+    @Published var nextPhotoTime: ContinuousClock.Instant?
 }
 
 @MainActor
@@ -2766,6 +2765,7 @@ final class Model: NSObject, ObservableObject {
                                            forceSceneTransition: false,
                                            macScreenCapture: false,
                                            attachPhotoShoot: false)
+        stopPhotoShoot()
         media.attachCamera(params: params)
     }
 
@@ -2967,6 +2967,7 @@ final class Model: NSObject, ObservableObject {
                 self.updateCameraPreviewWidgets()
                 self.updateCameraPreviewRotation()
                 self.updateVideoPreviews()
+                self.activatePhotoShoot()
             }
         )
         zoom.xPinch = zoom.x
@@ -3008,7 +3009,10 @@ final class Model: NSObject, ObservableObject {
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
             macScreenCapture: sceneNeedsMacScreenCapture(scene: scene),
-            attachPhotoShoot: photoShootEnabled || database.alwaysAttachPhotoShoot
+            attachPhotoShoot: photoShootEnabled || database.alwaysAttachPhotoShoot,
+            onSuccess: {
+                self.activatePhotoShoot()
+            }
         )
         media.usePendingAfterAttachEffects()
         updateVideoPreviews()
