@@ -805,6 +805,7 @@ final class Model: NSObject, ObservableObject {
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
     let photoShootTimer = MainTimer()
+    var photoShootWaitingForCameraAttach = false
     let photoShootFlashTimer = MainTimer()
     let photoShoot = PhotoShootProvider()
 
@@ -2967,6 +2968,7 @@ final class Model: NSObject, ObservableObject {
                 self.updateCameraPreviewWidgets()
                 self.updateCameraPreviewRotation()
                 self.updateVideoPreviews()
+                self.photoShootCameraAttached()
             }
         )
         zoom.xPinch = zoom.x
@@ -3013,6 +3015,7 @@ final class Model: NSObject, ObservableObject {
         media.usePendingAfterAttachEffects()
         updateVideoPreviews()
         zoomPresetsMayHaveChanged()
+        photoShootCameraAttached()
     }
 
     func attachExternalCamera(scene: SettingsScene) {

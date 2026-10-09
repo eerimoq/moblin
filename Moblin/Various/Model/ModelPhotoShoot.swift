@@ -6,6 +6,9 @@ extension Model {
         let interval = Double(database.photoShootInterval)
         photoShoot.interval = interval
         photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
+        guard !photoShootWaitingForCameraAttach else {
+            return
+        }
         photoShootTimer.startPeriodic(interval: interval) {
             self.media.takePhoto(flash: self.database.photoShootFlash)
             self.photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
@@ -13,6 +16,7 @@ extension Model {
     }
 
     func stopPhotoShoot() {
+        photoShootWaitingForCameraAttach = false
         photoShootTimer.stop()
         photoShootFlashTimer.stop()
         photoShoot.photoTaken = false
@@ -33,8 +37,24 @@ extension Model {
     }
 
     func togglePhotoShoot() {
+        if photoShootEnabled {
+            photoShootWaitingForCameraAttach = !database.alwaysAttachPhotoShoot
+            startPhotoShoot()
+        } else {
+            stopPhotoShoot()
+        }
         if !database.alwaysAttachPhotoShoot {
             attachCamera()
+        }
+    }
+
+    func photoShootCameraAttached() {
+        guard photoShootWaitingForCameraAttach else {
+            return
+        }
+        photoShootWaitingForCameraAttach = false
+        if photoShootEnabled {
+            startPhotoShoot()
         }
     }
 }
