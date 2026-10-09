@@ -10,14 +10,14 @@ extension VTCompressionSession {
     func encodeFrame(
         _ imageBuffer: CVImageBuffer,
         presentationTimeStamp: CMTime,
-        duration _: CMTime,
+        duration: CMTime,
         outputHandler: @escaping VTCompressionOutputHandler
     ) -> OSStatus {
         VTCompressionSessionEncodeFrame(
             self,
             imageBuffer: imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
-            duration: .invalid,
+            duration: duration,
             frameProperties: nil,
             infoFlagsOut: nil,
             outputHandler: outputHandler
