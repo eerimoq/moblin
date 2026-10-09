@@ -2924,12 +2924,12 @@ final class Model: NSObject, ObservableObject {
         let showCameraPreview = updateShowCameraPreview()
         let attachCameraPreview = showCameraPreview || database.alwaysAttachCameraPreview
         if attachCameraPreview {
-            cameraPreviewView.setDevices(
-                ids: getCameraPreviewDeviceIds(scene: scene, sceneDevice: cameraDevice),
-                widgets: getCameraPreviewWidgetDeviceIds(scene: scene)
-            )
+            cameraPreviewView.setDevices(ids: getCameraPreviewDeviceIds(
+                scene: scene,
+                sceneDevice: cameraDevice
+            ))
         } else {
-            cameraPreviewView.setDevices(ids: [], widgets: [:])
+            cameraPreviewView.setDevices(ids: [])
         }
         let params = VideoUnitAttachParams(
             devices: devices,
@@ -2993,7 +2993,7 @@ final class Model: NSObject, ObservableObject {
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
         zoom.hasZoom = false
-        cameraPreviewView.setDevices(ids: [], widgets: [:])
+        cameraPreviewView.setDevices(ids: [])
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,

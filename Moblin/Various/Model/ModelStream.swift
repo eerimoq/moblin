@@ -396,7 +396,7 @@ extension Model {
     }
 
     private func setNetStream() {
-        cameraPreviewView.setDevices(ids: [], widgets: [:])
+        cameraPreviewView.setDevices(ids: [])
         media.setNetStream(
             proto: stream.getProtocol(),
             portrait: stream.portrait,

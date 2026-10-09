@@ -531,16 +531,37 @@ extension Model {
     }
 
     func getCameraPreviewDeviceIds(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> [UUID] {
-        var devices: [CaptureDevice] = []
+        var deviceIds: Set<UUID> = []
         if let sceneDevice {
-            devices.append(makeCaptureDevice(device: sceneDevice))
+            deviceIds.insert(makeCaptureDevice(device: sceneDevice).id)
         }
-        if let quickSwitchGroup = scene.quickSwitchGroup {
-            for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
-                getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices)
+        for otherScene in getQuickSwitchScenes(scene: scene) {
+            var devices: [CaptureDevice] = []
+            getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices)
+            deviceIds.formUnion(devices.map(\.id))
+            deviceIds.formUnion(getCameraPreviewWidgets(scene: otherScene).map(\.deviceId))
+        }
+        return Array(deviceIds)
+    }
+
+    private func getQuickSwitchScenes(scene: SettingsScene) -> [SettingsScene] {
+        let deviceIds = getSceneBuiltinCameraDeviceIds(scene: scene)
+        return enabledScenes.filter { otherScene in
+            if let quickSwitchGroup = scene.quickSwitchGroup,
+               otherScene.quickSwitchGroup == quickSwitchGroup
+            {
+                return true
             }
+            return getSceneBuiltinCameraDeviceIds(scene: otherScene) == deviceIds
         }
-        return devices.map(\.id)
+    }
+
+    private func getSceneBuiltinCameraDeviceIds(scene: SettingsScene) -> Set<UUID> {
+        var devices: [CaptureDevice] = []
+        getBuiltinCameraDevices(videoSource: scene.videoSource, devices: &devices)
+        var addedSceneIds: Set<UUID> = []
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices, addedSceneIds: &addedSceneIds)
+        return Set(devices.map(\.id))
     }
 
     func getCameraPreviewWidgets(scene: SettingsScene) -> [CameraPreviewWidget] {
@@ -568,20 +589,6 @@ extension Model {
             widgets.append(previewWidget)
         }
         return widgets
-    }
-
-    func getCameraPreviewWidgetDeviceIds(scene: SettingsScene) -> [UUID: UUID] {
-        var scenes = [scene]
-        if let quickSwitchGroup = scene.quickSwitchGroup {
-            scenes += enabledScenes.filter { $0.quickSwitchGroup == quickSwitchGroup }
-        }
-        var deviceIds: [UUID: UUID] = [:]
-        for scene in scenes {
-            for widget in getCameraPreviewWidgets(scene: scene) {
-                deviceIds[widget.id] = widget.deviceId
-            }
-        }
-        return deviceIds
     }
 
     func updateCameraPreviewWidgets() {
