@@ -331,8 +331,11 @@ class SceneSelector: ObservableObject {
 
 @MainActor
 class PhotoShootProvider: ObservableObject {
+    let timer = MainTimer()
+    let flashTimer = MainTimer()
     @Published var photoTaken = false
     @Published var nextPhotoTime: ContinuousClock.Instant?
+    var active = false
 }
 
 @MainActor
@@ -803,8 +806,6 @@ final class Model: NSObject, ObservableObject {
     var httpProxyServer: HttpProxyServer?
     var httpProxyPort: Network.NWEndpoint.Port?
     let streamDeck = StreamDeck()
-    let photoShootTimer = MainTimer()
-    let photoShootFlashTimer = MainTimer()
     let photoShoot = PhotoShootProvider()
 
     weak var processor: Processor? {
@@ -2765,7 +2766,6 @@ final class Model: NSObject, ObservableObject {
                                            forceSceneTransition: false,
                                            macScreenCapture: false,
                                            attachPhotoShoot: false)
-        stopPhotoShoot()
         media.attachCamera(params: params)
     }
 
