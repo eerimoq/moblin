@@ -4,7 +4,6 @@ extension Model {
             return
         }
         let interval = Double(database.photoShootInterval)
-        photoShoot.interval = interval
         photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
         photoShootTimer.startPeriodic(interval: interval) {
             self.media.takePhoto(flash: self.database.photoShootFlash)
@@ -21,7 +20,6 @@ extension Model {
 
     func setPhotoShootInterval(interval: Int) {
         database.photoShootInterval = interval
-        photoShoot.interval = Double(interval)
         if photoShoot.nextPhotoTime != nil {
             startPhotoShoot()
         }
@@ -36,7 +34,6 @@ extension Model {
 
     func togglePhotoShoot() {
         stopPhotoShoot()
-        photoShoot.interval = Double(database.photoShootInterval)
         if database.alwaysAttachPhotoShoot {
             if photoShootEnabled {
                 startPhotoShoot()

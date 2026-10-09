@@ -323,19 +323,21 @@ private struct PhotoShootIntervalPickerView: View {
 
 private struct PhotoShootCountdownView: View {
     @ObservedObject var photoShoot: PhotoShootProvider
+    @ObservedObject var database: Database
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.05)) { _ in
+            let interval = Double(database.photoShootInterval)
             let remaining = if let nextPhotoTime = photoShoot.nextPhotoTime {
                 max((nextPhotoTime - .now).seconds, 0)
             } else {
-                photoShoot.interval
+                interval
             }
             ZStack {
                 Circle()
                     .stroke(.white.opacity(0.3), lineWidth: 5)
                 Circle()
-                    .trim(from: 0, to: remaining / photoShoot.interval)
+                    .trim(from: 0, to: remaining / interval)
                     .stroke(.white, style: StrokeStyle(lineWidth: 5, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                 Text(verbatim: "\(max(Int(remaining.rounded(.up)), 1))")
@@ -349,12 +351,13 @@ private struct PhotoShootCountdownView: View {
 
 private struct PhotoShootInfoView: View {
     @ObservedObject var photoShoot: PhotoShootProvider
+    let database: Database
 
     var body: some View {
         VStack {
             Text("Photo shoot")
                 .font(.system(size: 30))
-            PhotoShootCountdownView(photoShoot: photoShoot)
+            PhotoShootCountdownView(photoShoot: photoShoot, database: database)
         }
         .foregroundStyle(.white)
         .padding(20)
@@ -373,7 +376,7 @@ private struct PhotoShootView: View {
     var body: some View {
         if enabled {
             VStack(spacing: 15) {
-                PhotoShootInfoView(photoShoot: photoShoot)
+                PhotoShootInfoView(photoShoot: photoShoot, database: model.database)
                 HStack(spacing: 15) {
                     PhotoShootIntervalPickerView(model: model, database: model.database)
                     if model.cameraDevice?.hasFlash == true {
