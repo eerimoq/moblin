@@ -321,16 +321,36 @@ private struct PhotoShootIntervalPickerView: View {
     }
 }
 
+private struct PhotoShootCountdownView: View {
+    @ObservedObject var photoShoot: PhotoShootProvider
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 0.05)) { _ in
+            let remaining = max((photoShoot.nextPhotoTime - .now).seconds, 0)
+            ZStack {
+                Circle()
+                    .stroke(.white.opacity(0.3), lineWidth: 5)
+                Circle()
+                    .trim(from: 0, to: remaining / photoShoot.interval)
+                    .stroke(.white, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                Text(verbatim: "\(max(Int(remaining.rounded(.up)), 1))")
+                    .font(.system(size: 28, weight: .bold))
+                    .monospacedDigit()
+            }
+            .frame(width: 70, height: 70)
+        }
+    }
+}
+
 private struct PhotoShootInfoView: View {
     @ObservedObject var photoShoot: PhotoShootProvider
 
     var body: some View {
         VStack {
-            Image(systemName: "person.crop.square.badge.camera")
-                .font(.system(size: 60))
             Text("Photo shoot")
                 .font(.system(size: 30))
-            Text("Taking photos periodically")
+            PhotoShootCountdownView(photoShoot: photoShoot)
         }
         .foregroundStyle(.white)
         .padding(20)

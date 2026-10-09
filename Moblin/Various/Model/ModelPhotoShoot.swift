@@ -3,8 +3,12 @@ extension Model {
         guard !isChatPhone() else {
             return
         }
-        photoShootTimer.startPeriodic(interval: Double(database.photoShootInterval)) {
+        let interval = Double(database.photoShootInterval)
+        photoShoot.interval = interval
+        photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
+        photoShootTimer.startPeriodic(interval: interval) {
             self.media.takePhoto(flash: self.database.photoShootFlash)
+            self.photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
         }
     }
 
