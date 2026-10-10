@@ -44,6 +44,8 @@ struct Variables {
     let cyclingPower: String
     let cyclingCadence: String
     let cyclingSpeed: Double
+    let cyclingDistance: Double
+    let cyclingMetrics: [String: WorkoutDeviceCyclingMetrics]
     let runningMetrics: [String: WorkoutDeviceRunningMetrics]
     let browserTitle: String
     let gForce: GForce?

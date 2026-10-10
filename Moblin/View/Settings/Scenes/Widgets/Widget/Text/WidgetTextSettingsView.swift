@@ -1100,6 +1100,16 @@ private struct WorkoutVariablesView: View {
                             description: String(localized: "Show running distance"),
                             text: $value
                         )
+                        VariableView(
+                            title: "{cyclingSpeed:device:\(device.name)}",
+                            description: String(localized: "Show cycling speed"),
+                            text: $value
+                        )
+                        VariableView(
+                            title: "{cyclingDistance:device:\(device.name)}",
+                            description: String(localized: "Show cycling distance"),
+                            text: $value
+                        )
                     }
                     VariableView(
                         title: "{cyclingPower}",
@@ -1114,6 +1124,11 @@ private struct WorkoutVariablesView: View {
                     VariableView(
                         title: "{cyclingSpeed}",
                         description: String(localized: "Show cycling speed"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{cyclingDistance}",
+                        description: String(localized: "Show cycling distance"),
                         text: $value
                     )
                 }
