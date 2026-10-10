@@ -386,6 +386,10 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
             session.commitConfiguration()
         }
         removeDevices(session)
+        var photoShootDevice: CaptureDevice?
+        if params.attachPhotoShoot {
+            photoShootDevice = params.devices.getSceneDevice() ?? params.devices.devices.first
+        }
         for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
@@ -393,7 +397,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
                 preferAutoFrameRate: preferAutoFps,
                 colorSpace: colorSpace
             )
-            try attachDevice(device, session, params.attachPhotoShoot)
+            try attachDevice(device, session, device.id == photoShootDevice?.id)
         }
         device = params.devices.getSceneDevice()?.device
         for device in devices {
@@ -411,38 +415,32 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
     }
 
     func takePhoto(flash: Bool) {
-        var started = false
-        for device in devices {
-            guard let photoOutput = device.photoOutput else {
-                continue
-            }
-            started = true
-            var codec = AVVideoCodecType.jpeg
-            if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
-                codec = .hevc
-            }
-            let settings = AVCapturePhotoSettings(format: [
-                AVVideoCodecKey: codec,
-                AVVideoCompressionPropertiesKey: [AVVideoQualityKey: photosImageQuality],
-            ])
-            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-            settings.photoQualityPrioritization = .balanced
-            if flash, photoOutput.supportedFlashModes.contains(.on) {
-                settings.flashMode = .on
-            }
-            settings.metadata = [
-                kCGImagePropertyIPTCDictionary as String: [
-                    kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin photo shoot")],
-                ],
-            ]
-            if #available(iOS 18, *) {
-                settings.isShutterSoundSuppressionEnabled = true
-            }
-            photoOutput.capturePhoto(with: settings, delegate: self)
-        }
-        if !started {
+        guard let photoOutput = devices.compactMap(\.photoOutput).first else {
             processor?.delegate.streamPhotoTaken()
+            return
         }
+        var codec = AVVideoCodecType.jpeg
+        if photoOutput.availablePhotoCodecTypes.contains(.hevc) {
+            codec = .hevc
+        }
+        let settings = AVCapturePhotoSettings(format: [
+            AVVideoCodecKey: codec,
+            AVVideoCompressionPropertiesKey: [AVVideoQualityKey: photosImageQuality],
+        ])
+        settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
+        settings.photoQualityPrioritization = .balanced
+        if flash, photoOutput.supportedFlashModes.contains(.on) {
+            settings.flashMode = .on
+        }
+        settings.metadata = [
+            kCGImagePropertyIPTCDictionary as String: [
+                kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin photo shoot")],
+            ],
+        ]
+        if #available(iOS 18, *) {
+            settings.isShutterSoundSuppressionEnabled = true
+        }
+        photoOutput.capturePhoto(with: settings, delegate: self)
     }
 
     private func updateOrientation(device: CaptureSessionDevice) {
