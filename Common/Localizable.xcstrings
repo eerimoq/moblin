@@ -101810,6 +101810,9 @@
         }
       }
     },
+    "Failed to save snapshot to Photos" : {
+
+    },
     "Failed to set OBS scene to %@" : {
       "localizations" : {
         "de" : {

@@ -20,7 +20,6 @@ extension Model {
                 return
             }
             self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
-            self.makeToast(title: String(localized: "Snapshot saved to Photos"))
             self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
             self.printSnapshotCatPrinters(image: portraitImage)
             self.appendSnapshotToSnapshotWidgets(image: image)
@@ -35,7 +34,12 @@ extension Model {
                 creationRequest.addResource(with: .photo, data: image, options: nil)
             } completionHandler: { _, error in
                 if let error {
-                    logger.info("snapshot: Error saving snapshot: \(error.localizedDescription)")
+                    self.makeErrorToastMain(title: String(localized: "Failed to save snapshot to Photos"),
+                                            subTitle: error.localizedDescription)
+                } else {
+                    DispatchQueue.main.async {
+                        self.makeToast(title: String(localized: "Snapshot saved to Photos"))
+                    }
                 }
             }
         }
