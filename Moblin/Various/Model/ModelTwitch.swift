@@ -102,7 +102,13 @@ extension Model {
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
         twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createTwitchApi(stream: stream).searchCategories(query: filter, onComplete: onComplete)
+            self.createTwitchApi(stream: stream).searchCategories(query: filter) { categories in
+                guard let categories else {
+                    onComplete(nil)
+                    return
+                }
+                onComplete(sortedBySearchPrefix(categories, searchText: filter) { $0.name })
+            }
         }
     }
 
