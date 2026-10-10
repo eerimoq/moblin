@@ -280,7 +280,13 @@ extension Model {
         onComplete: @escaping ([KickCategory]?) -> Void
     ) {
         kickSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
+            self.createKickApi(stream: stream).searchCategories(query: query) { categories in
+                guard let categories else {
+                    onComplete(nil)
+                    return
+                }
+                onComplete(sortedBySearchPrefix(categories, searchText: query) { $0.name })
+            }
         }
     }
 
