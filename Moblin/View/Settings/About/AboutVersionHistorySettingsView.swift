@@ -8,6 +8,13 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "35.6.0", date: "2026-10-09", changes: [
+        "• New Kick pusher key. 🧑‍🏭 iChrisIRL",
+        "• Optionally use flash when taking photos during photo shoot.",
+        "• Photo shoot interval setting.",
+        "• Make photo shoot pictures searchable in Photos. 💡 G",
+        "• Save snapshots and photo shoot pictures as HEIC instead of JPG.",
+    ]),
     Version(version: "35.5.0", date: "2026-10-08", changes: [
         "• Lots of video color changes.",
         "  • New color range setting in Settings → Streams → My stream → Video → Color range. Full or limited range.",
