@@ -999,7 +999,7 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setMixedAudio(builtin: Bool, bufferedAudios: [UUID: String]) {
+    func setMixedAudio(builtin: AudioMixerSourceSettings?, bufferedAudios: [UUID: AudioMixerSourceSettings]) {
         processor?.setMixedAudio(builtin: builtin, bufferedAudios: bufferedAudios)
     }
 

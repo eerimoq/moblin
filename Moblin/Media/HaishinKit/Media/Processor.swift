@@ -187,7 +187,7 @@ final class Processor: @unchecked Sendable {
         audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func setMixedAudio(builtin: Bool, bufferedAudios: [UUID: String]) {
+    func setMixedAudio(builtin: AudioMixerSourceSettings?, bufferedAudios: [UUID: AudioMixerSourceSettings]) {
         audio.setMixedAudio(builtin: builtin, bufferedAudios: bufferedAudios)
     }
 

@@ -303,16 +303,17 @@ extension Model {
         if mixedMics != mic.mixed {
             mic.mixed = mixedMics
         }
-        var bufferedAudios: [UUID: String] = [:]
+        var bufferedAudios: [UUID: AudioMixerSourceSettings] = [:]
         var audioSessionMic: SettingsMicsMic?
         for mixedMic in mixedMics {
             if let cameraId = getMicCameraId(mic: mixedMic) {
-                bufferedAudios[cameraId] = mixedMic.name
+                bufferedAudios[cameraId] = makeAudioMixerSourceSettings(mic: mixedMic)
             } else if mixedMic.isAudioSession(), audioSessionMic == nil {
                 audioSessionMic = mixedMic
             }
         }
-        media.setMixedAudio(builtin: audioSessionMic != nil, bufferedAudios: bufferedAudios)
+        media.setMixedAudio(builtin: audioSessionMic.map { makeAudioMixerSourceSettings(mic: $0) },
+                            bufferedAudios: bufferedAudios)
         guard audioSessionMic?.id != mic.mixedAudioSessionMicId else {
             return
         }
@@ -322,6 +323,10 @@ extension Model {
             media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay,
                                            bufferedAudio: cameraId)
         }
+    }
+
+    private func makeAudioMixerSourceSettings(mic: SettingsMicsMic) -> AudioMixerSourceSettings {
+        AudioMixerSourceSettings(name: mic.name, gain: pow(10, mic.mixVolumeDb / 20))
     }
 
     private func setPreferredAudioSessionInput(mic: SettingsMicsMic) {

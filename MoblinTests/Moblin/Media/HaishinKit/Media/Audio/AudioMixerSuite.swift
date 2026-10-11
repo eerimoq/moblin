@@ -14,7 +14,7 @@ struct AudioMixerSuite {
     func mixFloatStereoIntoInt16Mono() {
         let mixer = AudioMixer()
         let sourceId = UUID()
-        mixer.setSources([sourceId: "source"])
+        mixer.setSources([sourceId: AudioMixerSourceSettings(name: "source", gain: 1)])
         _ = mixer.mix(createInt16MonoSampleBuffer(value: 0, numberOfFrames: 1024), .zero)
         mixer.append(sourceId: sourceId, createFloatStereoSampleBuffer(value: 0.25, numberOfFrames: 4096))
         let mixed = mixer.mix(createInt16MonoSampleBuffer(value: 1000, numberOfFrames: 1024), .zero)
@@ -27,7 +27,7 @@ struct AudioMixerSuite {
     func prebufferBeforeMixing() {
         let mixer = AudioMixer()
         let sourceId = UUID()
-        mixer.setSources([sourceId: "source"])
+        mixer.setSources([sourceId: AudioMixerSourceSettings(name: "source", gain: 1)])
         _ = mixer.mix(createInt16MonoSampleBuffer(value: 0, numberOfFrames: 1024), .zero)
         mixer.append(sourceId: sourceId, createFloatStereoSampleBuffer(value: 0.25, numberOfFrames: 1024))
         let mixed = mixer.mix(createInt16MonoSampleBuffer(value: 1000, numberOfFrames: 1024), .zero)
@@ -35,10 +35,22 @@ struct AudioMixerSuite {
     }
 
     @Test
+    func applyGain() {
+        let mixer = AudioMixer()
+        let sourceId = UUID()
+        mixer.setSources([sourceId: AudioMixerSourceSettings(name: "source", gain: 1)])
+        _ = mixer.mix(createInt16MonoSampleBuffer(value: 0, numberOfFrames: 1024), .zero)
+        mixer.setSources([sourceId: AudioMixerSourceSettings(name: "source", gain: 0.5)])
+        mixer.append(sourceId: sourceId, createFloatStereoSampleBuffer(value: 0.5, numberOfFrames: 4096))
+        let mixed = mixer.mix(createInt16MonoSampleBuffer(value: 1000, numberOfFrames: 1024), .zero)
+        #expect(readInt16Samples(mixed).allSatisfy { abs(Int($0) - 9191) <= 2 })
+    }
+
+    @Test
     func clampInt16() {
         let mixer = AudioMixer()
         let sourceId = UUID()
-        mixer.setSources([sourceId: "source"])
+        mixer.setSources([sourceId: AudioMixerSourceSettings(name: "source", gain: 1)])
         _ = mixer.mix(createInt16MonoSampleBuffer(value: 0, numberOfFrames: 1024), .zero)
         mixer.append(sourceId: sourceId, createFloatStereoSampleBuffer(value: 1, numberOfFrames: 4096))
         let mixed = mixer.mix(createInt16MonoSampleBuffer(value: 30000, numberOfFrames: 1024), .zero)

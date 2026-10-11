@@ -358,11 +358,11 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func setMixedAudio(builtin: Bool, bufferedAudios: [UUID: String]) {
+    func setMixedAudio(builtin: AudioMixerSourceSettings?, bufferedAudios: [UUID: AudioMixerSourceSettings]) {
         processorPipelineQueue.async {
             var sources = bufferedAudios
-            if builtin {
-                sources[self.builtinMixerSourceId] = "builtin"
+            if let builtin {
+                sources[self.builtinMixerSourceId] = builtin
             }
             self.mixer.setSources(sources)
         }

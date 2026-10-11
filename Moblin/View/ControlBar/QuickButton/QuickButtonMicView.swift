@@ -33,6 +33,28 @@ private struct QuickButtonMicMicView: View {
     }
 }
 
+private struct QuickButtonMicMixVolumeView: View {
+    let model: Model
+    @ObservedObject var mic: SettingsMicsMic
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(mic.name)
+                .lineLimit(1)
+            HStack {
+                Image(systemName: "speaker.wave.1.fill")
+                Slider(value: $mic.mixVolumeDb, in: -30 ... 12, step: 1)
+                    .onChange(of: mic.mixVolumeDb) { _ in
+                        model.updateMixedMics()
+                    }
+                Image(systemName: "speaker.wave.3.fill")
+                Text("\(formatOneDecimal(mic.mixVolumeDb)) dB")
+                    .frame(width: 65)
+            }
+        }
+    }
+}
+
 struct QuickButtonMicView: View {
     let model: Model
     @ObservedObject var mics: SettingsMics
@@ -69,6 +91,15 @@ struct QuickButtonMicView: View {
                     Text("Only one built-in or external mic can be used at a time.")
                     Text("")
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a mic"))
+                }
+            }
+            if !modelMic.mixed.isEmpty {
+                Section {
+                    ForEach(modelMic.mixed) { mic in
+                        QuickButtonMicMixVolumeView(model: model, mic: mic)
+                    }
+                } header: {
+                    Text("Mix volume")
                 }
             }
             if false {

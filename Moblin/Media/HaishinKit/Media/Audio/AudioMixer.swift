@@ -4,8 +4,14 @@ import Collections
 private let prebufferSeconds = 0.05
 private let maximumFillSeconds = 0.25
 
+struct AudioMixerSourceSettings {
+    let name: String
+    let gain: Float
+}
+
 private class AudioMixerSource {
     private let name: String
+    var gain: Float = 1.0
     private var converter: AVAudioConverter?
     private var channels: [Deque<Float>] = []
     private var isBuffering = true
@@ -70,12 +76,12 @@ private class AudioMixerSource {
             if let data = buffer.floatChannelData {
                 let output = interleaved ? data[0] + channel : data[channel]
                 for frame in 0 ..< numberOfFrames {
-                    output[frame * stride] = max(-1, min(1, output[frame * stride] + samples[frame]))
+                    output[frame * stride] = max(-1, min(1, output[frame * stride] + samples[frame] * gain))
                 }
             } else if let data = buffer.int16ChannelData {
                 let output = interleaved ? data[0] + channel : data[channel]
                 for frame in 0 ..< numberOfFrames {
-                    let sample = Int(max(-1, min(1, samples[frame])) * 32767)
+                    let sample = Int(max(-1, min(1, samples[frame] * gain)) * 32767)
                     output[frame * stride] = Int16(clamping: Int(output[frame * stride]) + sample)
                 }
             }
@@ -156,12 +162,15 @@ class AudioMixer {
     private var sources: [UUID: AudioMixerSource] = [:]
     private var outputFormat: AVAudioFormat?
 
-    func setSources(_ sourceIds: [UUID: String]) {
-        sources = sources.filter { sourceIds[$0.key] != nil }
-        for (sourceId, name) in sourceIds where sources[sourceId] == nil {
-            let source = AudioMixerSource(name: name)
-            source.reset(numberOfChannels: Int(outputFormat?.channelCount ?? 0))
-            sources[sourceId] = source
+    func setSources(_ sourcesSettings: [UUID: AudioMixerSourceSettings]) {
+        sources = sources.filter { sourcesSettings[$0.key] != nil }
+        for (sourceId, settings) in sourcesSettings {
+            if sources[sourceId] == nil {
+                let source = AudioMixerSource(name: settings.name)
+                source.reset(numberOfChannels: Int(outputFormat?.channelCount ?? 0))
+                sources[sourceId] = source
+            }
+            sources[sourceId]?.gain = settings.gain
         }
     }
 
