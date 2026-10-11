@@ -176,13 +176,13 @@ class SampleBufferReceiver: @unchecked Sendable {
     }
 
     private func outputAudioBuffer(_ format: AVAudioFormat, _ data: Data) {
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: format,
-                                            frameCapacity: AVAudioFrameCount(audioFramesPerBuffer)),
+        let numberOfFrames = AVAudioFrameCount(audioFramesPerBuffer)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: numberOfFrames),
               let channelData = buffer.int16ChannelData
         else {
             return
         }
-        buffer.frameLength = AVAudioFrameCount(audioFramesPerBuffer)
+        buffer.frameLength = numberOfFrames
         data.withUnsafeBytes {
             UnsafeMutableRawPointer(channelData[0]).copyMemory(from: $0.baseAddress!, byteCount: $0.count)
         }
