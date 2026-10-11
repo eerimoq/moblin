@@ -51,6 +51,15 @@ private struct QuickButtonMicMixVolumeView: View {
                 Text("\(formatOneDecimal(mic.mixVolumeDb)) dB")
                     .frame(width: 65)
             }
+            HStack {
+                Image(systemName: "clock")
+                Slider(value: $mic.mixDelay, in: 0 ... 1, step: 0.01)
+                    .onChange(of: mic.mixDelay) { _ in
+                        model.updateMixedMics()
+                    }
+                Text("\(formatTwoDecimals(mic.mixDelay)) s")
+                    .frame(width: 65)
+            }
         }
     }
 }
@@ -99,7 +108,9 @@ struct QuickButtonMicView: View {
                         QuickButtonMicMixVolumeView(model: model, mic: mic)
                     }
                 } header: {
-                    Text("Mix volume")
+                    Text("Mixed mics")
+                } footer: {
+                    Text("Volume and delay of each mixed mic.")
                 }
             }
             if false {

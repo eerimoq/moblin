@@ -29,6 +29,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
     @Published var connected: Bool = false
     @Published var mixed: Bool = false
     @Published var mixVolumeDb: Float = 0.0
+    @Published var mixDelay: Double = 0.0
 
     func isAudioSession() -> Bool {
         isBuiltin() || isExternal()
@@ -64,6 +65,9 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
             return false
         }
         if isMediaPlayerCameraOrMic(camera: name) {
+            return false
+        }
+        if isScreenCapture() {
             return false
         }
         return true
@@ -105,6 +109,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         isMediaPlayerCameraOrMic(camera: name)
     }
 
+    func isScreenCapture() -> Bool {
+        inputUid == screenCaptureCameraId.uuidString
+    }
+
     enum CodingKeys: CodingKey {
         case name
         case inputUid
@@ -113,6 +121,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         case delay
         case mixed
         case mixVolumeDb
+        case mixDelay
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -124,6 +133,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         try container.encode(.delay, delay)
         try container.encode(.mixed, mixed)
         try container.encode(.mixVolumeDb, mixVolumeDb)
+        try container.encode(.mixDelay, mixDelay)
     }
 
     init() {}
@@ -143,6 +153,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         delay = container.decode(.delay, Double.self, 0.0)
         mixed = container.decode(.mixed, Bool.self, false)
         mixVolumeDb = container.decode(.mixVolumeDb, Float.self, 0.0)
+        mixDelay = container.decode(.mixDelay, Double.self, 0.0)
     }
 }
 

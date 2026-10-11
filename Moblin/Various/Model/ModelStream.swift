@@ -733,6 +733,8 @@ extension Model {
         if isNetwork {
             markMicAsConnected(id: "\(cameraId) 0")
             switchMicIfNeededAfterNetworkCameraChange()
+        } else if cameraId == screenCaptureCameraId {
+            updateScreenCaptureMics()
         }
         updateDisconnectProtectionVideoSourceConnected()
         updateVideoPreviews()
@@ -757,6 +759,9 @@ extension Model {
         }
         if isNetwork {
             markMicAsDisconnected(id: "\(cameraId) 0")
+            switchMicIfNeededAfterNetworkCameraChange()
+        } else if cameraId == screenCaptureCameraId {
+            updateScreenCaptureMics()
             switchMicIfNeededAfterNetworkCameraChange()
         }
         if isCurrentScenesVideoSourceNetwork(cameraId: cameraId) {

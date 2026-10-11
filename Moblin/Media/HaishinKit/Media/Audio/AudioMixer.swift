@@ -7,11 +7,14 @@ private let maximumFillSeconds = 0.25
 struct AudioMixerSourceSettings {
     let name: String
     let gain: Float
+    let delay: Double
 }
 
 private class AudioMixerSource {
     private let name: String
     var gain: Float = 1.0
+    var delay = 0.0
+    private var delayFrames = 0
     private var converter: AVAudioConverter?
     private var channels: [Deque<Float>] = []
     private var isBuffering = true
@@ -46,9 +49,10 @@ private class AudioMixerSource {
                                                                          count: numberOfFrames))
             }
         }
-        let maximumFill = Int(maximumFillSeconds * outputFormat.sampleRate)
+        updateDelay(sampleRate: outputFormat.sampleRate)
+        let maximumFill = Int(maximumFillSeconds * outputFormat.sampleRate) + delayFrames
         if let fill = channels.first?.count, fill > maximumFill {
-            let numberOfFramesToDrop = fill - Int(prebufferSeconds * outputFormat.sampleRate)
+            let numberOfFramesToDrop = fill - Int(prebufferSeconds * outputFormat.sampleRate) - delayFrames
             logger.info("audio-mixer: \(name): Dropping \(numberOfFramesToDrop) frames.")
             for channel in channels.indices {
                 channels[channel].removeFirst(numberOfFramesToDrop)
@@ -57,11 +61,12 @@ private class AudioMixerSource {
     }
 
     func add(to buffer: AVAudioPCMBuffer) {
+        updateDelay(sampleRate: buffer.format.sampleRate)
         guard let fill = channels.first?.count else {
             return
         }
         if isBuffering {
-            guard fill >= Int(prebufferSeconds * buffer.format.sampleRate) else {
+            guard fill >= Int(prebufferSeconds * buffer.format.sampleRate) + delayFrames else {
                 return
             }
             isBuffering = false
@@ -88,6 +93,22 @@ private class AudioMixerSource {
         }
         for channel in channels.indices {
             channels[channel].removeFirst(numberOfFrames)
+        }
+    }
+
+    private func updateDelay(sampleRate: Double) {
+        let newDelayFrames = Int(delay * sampleRate)
+        let numberOfFrames = newDelayFrames - delayFrames
+        delayFrames = newDelayFrames
+        guard !isBuffering else {
+            return
+        }
+        for channel in channels.indices {
+            if numberOfFrames > 0 {
+                channels[channel].prepend(contentsOf: repeatElement(0, count: numberOfFrames))
+            } else if numberOfFrames < 0 {
+                channels[channel].removeFirst(min(-numberOfFrames, channels[channel].count))
+            }
         }
     }
 
@@ -171,6 +192,7 @@ class AudioMixer {
                 sources[sourceId] = source
             }
             sources[sourceId]?.gain = settings.gain
+            sources[sourceId]?.delay = settings.delay
         }
     }
 

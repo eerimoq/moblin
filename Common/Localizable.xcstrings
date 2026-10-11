@@ -152285,7 +152285,7 @@
         }
       }
     },
-    "Mix volume" : {
+    "Mixed mics" : {
 
     },
     "Mobcam" : {
@@ -292429,6 +292429,9 @@
           }
         }
       }
+    },
+    "Volume and delay of each mixed mic." : {
+
     },
     "VTuber" : {
       "localizations" : {

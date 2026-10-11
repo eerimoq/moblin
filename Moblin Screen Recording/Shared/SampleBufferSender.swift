@@ -1,3 +1,4 @@
+import AVFoundation
 import ReplayKit
 import System
 import VideoToolbox
@@ -17,25 +18,35 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
 class SampleBufferSender: NSObject {
     private var fd: FileDescriptor?
     private var videoEncoder: VideoEncoder?
+    private var audioConverter: AVAudioConverter?
     private var appGroup: String?
+    private let lock = NSLock()
 
     func start(appGroup: String) {
         self.appGroup = appGroup
     }
 
     func stop() {
-        try? fd?.close()
-        fd = nil
+        lock.withLock {
+            try? fd?.close()
+            fd = nil
+        }
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
-        if !isConnected() {
-            if !tryConnect() {
-                return
-            }
+        let connected = lock.withLock {
+            isConnected() || tryConnect()
         }
-        if type == .video {
+        guard connected else {
+            return
+        }
+        switch type {
+        case .video:
             try? sendVideo(sampleBuffer, type)
+        case .audioApp:
+            sendAudio(sampleBuffer)
+        default:
+            break
         }
     }
 
@@ -56,7 +67,8 @@ class SampleBufferSender: NSObject {
             let addr = try createAddr(path: path)
             try connect(fd: rawFd, addr: addr)
         } catch {
-            stop()
+            try? fd?.close()
+            fd = nil
             return false
         }
         return true
@@ -71,6 +83,59 @@ class SampleBufferSender: NSObject {
             videoEncoder?.delegate = self
         }
         videoEncoder?.appendImageBuffer(imageBuffer, sampleBuffer.presentationTimeStamp)
+    }
+
+    private func sendAudio(_ sampleBuffer: CMSampleBuffer) {
+        guard let formatDescription = sampleBuffer.formatDescription else {
+            return
+        }
+        let inputFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
+        let numberOfFrames = AVAudioFrameCount(sampleBuffer.numSamples)
+        guard numberOfFrames > 0,
+              let outputFormat = AVAudioFormat(commonFormat: .pcmFormatInt16,
+                                               sampleRate: inputFormat.sampleRate,
+                                               channels: inputFormat.channelCount,
+                                               interleaved: true),
+              let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: numberOfFrames),
+              let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: numberOfFrames)
+        else {
+            return
+        }
+        inputBuffer.frameLength = numberOfFrames
+        guard CMSampleBufferCopyPCMDataIntoAudioBufferList(
+            sampleBuffer,
+            at: 0,
+            frameCount: Int32(numberOfFrames),
+            into: inputBuffer.mutableAudioBufferList
+        ) == noErr else {
+            return
+        }
+        if audioConverter?.inputFormat != inputFormat {
+            audioConverter = AVAudioConverter(from: inputFormat, to: outputFormat)
+        }
+        guard let audioConverter,
+              (try? audioConverter.convert(to: outputBuffer, from: inputBuffer)) != nil,
+              let data = outputBuffer.int16ChannelData
+        else {
+            return
+        }
+        let size = Int(outputBuffer.frameLength) * Int(outputFormat.channelCount) * MemoryLayout<Int16>.size
+        let header = SampleBufferHeader(
+            type: .audioBuffer,
+            size: size,
+            presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+            isSync: false,
+            sampleRate: outputFormat.sampleRate,
+            numberOfChannels: Int(outputFormat.channelCount)
+        )
+        try? sendMessage(header, UnsafeRawBufferPointer(start: UnsafeRawPointer(data[0]), count: size))
+    }
+
+    private func sendMessage(_ header: SampleBufferHeader, _ payload: UnsafeRawBufferPointer) throws {
+        try lock.withLock {
+            try sendHeader(header)
+            try send(pointer: payload)
+        }
     }
 
     private func sendHeader(_ header: SampleBufferHeader) throws {
@@ -104,10 +169,9 @@ extension SampleBufferSender: VideoEncoderDelegate {
             presentationTimeStamp: 0.0,
             isSync: false
         )
-        do {
-            try sendHeader(header)
-            try send(data: hvcC)
-        } catch {}
+        try? hvcC.withUnsafeBytes {
+            try sendMessage(header, $0)
+        }
     }
 
     func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -123,10 +187,7 @@ extension SampleBufferSender: VideoEncoderDelegate {
             presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
             isSync: sampleBuffer.getIsSync()
         )
-        do {
-            try sendHeader(header)
-            try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
-        } catch {}
+        try? sendMessage(header, UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
     }
 }
 

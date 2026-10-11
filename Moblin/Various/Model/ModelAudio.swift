@@ -192,7 +192,15 @@ extension Model {
         updateRtmpMics()
         updateWhipMics()
         updateWhepMics()
+        updateScreenCaptureMics()
         syncMics(found: audioSession, isKind: { $0.isAudioSession() }, removeMissing: false)
+    }
+
+    func updateScreenCaptureMics() {
+        syncMics(found: listScreenCaptureMics(),
+                 isKind: { $0.isScreenCapture() },
+                 removeMissing: true,
+                 insertFirst: false)
     }
 
     func updateRtmpMics() {
@@ -235,7 +243,8 @@ extension Model {
 
     private func syncMics(found: [SettingsMicsMic],
                           isKind: (SettingsMicsMic) -> Bool,
-                          removeMissing: Bool)
+                          removeMissing: Bool,
+                          insertFirst: Bool = true)
     {
         var mics = database.mics.mics
         if removeMissing {
@@ -250,7 +259,11 @@ extension Model {
             }
         }
         for mic in found where !mics.contains(mic) {
-            mics.insert(mic, at: 0)
+            if insertFirst {
+                mics.insert(mic, at: 0)
+            } else {
+                mics.append(mic)
+            }
         }
         database.mics.mics = mics
         updateMixedMics()
@@ -326,7 +339,7 @@ extension Model {
     }
 
     private func makeAudioMixerSourceSettings(mic: SettingsMicsMic) -> AudioMixerSourceSettings {
-        AudioMixerSourceSettings(name: mic.name, gain: pow(10, mic.mixVolumeDb / 20))
+        AudioMixerSourceSettings(name: mic.name, gain: pow(10, mic.mixVolumeDb / 20), delay: mic.mixDelay)
     }
 
     private func setPreferredAudioSessionInput(mic: SettingsMicsMic) {
@@ -607,6 +620,16 @@ extension Model {
         }
     }
 
+    private func listScreenCaptureMics() -> [SettingsMicsMic] {
+        #if targetEnvironment(macCatalyst)
+        return []
+        #else
+        return [SettingsMicsMic(name: screenCaptureCameraName,
+                                inputUid: screenCaptureCameraId.uuidString,
+                                connected: activeBufferedVideoIds.contains(screenCaptureCameraId))]
+        #endif
+    }
+
     private func listMediaPlayerMics() -> [SettingsMicsMic] {
         database.mediaPlayers.players.map {
             SettingsMicsMic(name: $0.camera(), inputUid: $0.id.uuidString, connected: true)
@@ -762,6 +785,8 @@ extension Model {
             getWhepMicCameraId(mic: mic)
         } else if isMediaPlayerMic(mic: mic) {
             getMediaPlayerMicCameraId(mic: mic)
+        } else if mic.isScreenCapture() {
+            screenCaptureCameraId
         } else {
             nil
         }
