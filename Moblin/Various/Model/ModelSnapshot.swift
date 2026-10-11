@@ -4,9 +4,9 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SnapshotJob {
-    let isChatBot: Bool
     let message: String
     let user: String?
+    let takeSnapshot: (String) -> Void
 }
 
 extension Model {
@@ -19,10 +19,49 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
-            self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
-            self.printSnapshotCatPrinters(image: portraitImage)
-            self.appendSnapshotToSnapshotWidgets(image: image)
+            self.handleSnapshot(uiImage, imageJpeg, image, portraitImage, message, isChatBot)
+        }
+    }
+
+    private func handleSnapshot(_ uiImage: UIImage,
+                                _ imageJpeg: Data,
+                                _ image: CIImage,
+                                _ portraitImage: CIImage,
+                                _ message: String?,
+                                _ isChatBot: Bool)
+    {
+        saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
+        tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+        printSnapshotCatPrinters(image: portraitImage)
+        appendSnapshotToSnapshotWidgets(image: image)
+    }
+
+    func takeSnapshotWebRemoteControl(message: String? = nil) {
+        guard let url = URL(string: database.chat.botCommandSnapshot.webRemoteControlUrl)?
+            .appending(path: "snapshot")
+        else {
+            makeErrorToast(title: String(localized: "Invalid chat bot snapshot web remote control URL"))
+            return
+        }
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 15
+        httpRequest(request: request, queue: .global()) { data, response, error in
+            guard error == nil, response?.http?.isSuccessful == true, let data,
+                  let uiImage = UIImage(data: data), let cgImage = uiImage.cgImage,
+                  let imageJpeg = uiImage.jpegData(compressionQuality: 0.9)
+            else {
+                let title = String(localized: "Failed to fetch snapshot from web remote control")
+                self.makeErrorToastMain(title: title)
+                return
+            }
+            let image = CIImage(cgImage: cgImage)
+            var portraitImage = image
+            if image.extent.width > image.extent.height {
+                portraitImage = portraitImage.oriented(.left)
+            }
+            DispatchQueue.main.async {
+                self.handleSnapshot(uiImage, imageJpeg, image, portraitImage, message, true)
+            }
         }
     }
 
@@ -105,7 +144,7 @@ extension Model {
                 message += "\n"
                 message += self.formatSnapshotTakenBy(user: user)
             }
-            self.takeSnapshot(isChatBot: snapshotJob.isChatBot, message: message, noDelay: true)
+            snapshotJob.takeSnapshot(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                 self.snapshot.currentJob = nil
                 self.tryTakeNextSnapshot()
@@ -113,11 +152,8 @@ extension Model {
         }
     }
 
-    func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
-        guard !isChatPhone() else {
-            return
-        }
-        snapshotJobs.append(SnapshotJob(isChatBot: isChatBot, message: message, user: user))
+    func takeSnapshotWithCountdown(message: String, user: String?, takeSnapshot: @escaping (String) -> Void) {
+        snapshotJobs.append(SnapshotJob(message: message, user: user, takeSnapshot: takeSnapshot))
         tryTakeNextSnapshot()
     }
 

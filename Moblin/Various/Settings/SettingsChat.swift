@@ -319,6 +319,49 @@ class SettingsChatBotCustomCommand: Codable, ObservableObject, Identifiable {
     }
 }
 
+enum SettingsChatBotCommandSnapshotSource: String, Codable, CaseIterable {
+    case thisDevice = "This device"
+    case webRemoteControl = "Web remote control"
+
+    init(from decoder: any Decoder) throws {
+        self = try SettingsChatBotCommandSnapshotSource(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .thisDevice
+    }
+
+    func toString() -> String {
+        switch self {
+        case .thisDevice:
+            String(localized: "This device")
+        case .webRemoteControl:
+            String(localized: "Web remote control")
+        }
+    }
+}
+
+class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
+    @Published var source: SettingsChatBotCommandSnapshotSource = .thisDevice
+    @Published var webRemoteControlUrl: String = ""
+
+    enum CodingKeys: CodingKey {
+        case source
+        case webRemoteControlUrl
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.source, source)
+        try container.encode(.webRemoteControlUrl, webRemoteControlUrl)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        source = container.decode(.source, SettingsChatBotCommandSnapshotSource.self, .thisDevice)
+        webRemoteControlUrl = container.decode(.webRemoteControlUrl, String.self, "")
+    }
+}
+
 class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     static let tagRed = "🌹"
     static let tagGreen = "🐸"
@@ -636,6 +679,7 @@ class SettingsChat: Codable, ObservableObject {
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
     var botCommandAi: SettingsOpenAi = .init()
+    var botCommandSnapshot: SettingsChatBotCommandSnapshot = .init()
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
@@ -697,6 +741,7 @@ class SettingsChat: Codable, ObservableObject {
         case botCommandPermissions
         case botSendLowBatteryWarning
         case botCommandAi
+        case botCommandSnapshot
         case badges
         case showFirstTimeChatterMessage
         case showNewFollowerMessage
@@ -761,6 +806,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.botCommandPermissions, botCommandPermissions)
         try container.encode(.botSendLowBatteryWarning, botSendLowBatteryWarning)
         try container.encode(.botCommandAi, botCommandAi)
+        try container.encode(.botCommandSnapshot, botCommandSnapshot)
         try container.encode(.badges, badges)
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
@@ -862,6 +908,11 @@ class SettingsChat: Codable, ObservableObject {
         )
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
         botCommandAi = container.decode(.botCommandAi, SettingsOpenAi.self, .init())
+        botCommandSnapshot = container.decode(
+            .botCommandSnapshot,
+            SettingsChatBotCommandSnapshot.self,
+            .init()
+        )
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)

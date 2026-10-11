@@ -55,13 +55,21 @@ class ThreadingServer(ThreadingHTTPServer):
 
 
 class CountingRequestHandler(RequestHandler):
-    def __init__(self, *args, on_request, **kwargs):
+    def __init__(self, *args, on_request, on_post, **kwargs):
         self._on_request = on_request
+        self._on_post = on_post
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
         self._on_request(urlsplit(self.path).path)
         super().do_GET()
+
+    def do_POST(self):
+        body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+        self._on_post((urlsplit(self.path).path, body))
+        self.send_response(204)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
 
 class HttpServer:
@@ -69,12 +77,14 @@ class HttpServer:
         self.host = host
         self.port = port
         self._request_paths: list[str] = []
+        self._posts: list[tuple[str, bytes]] = []
         self._server = ThreadingServer(
             ("0.0.0.0", port),
             partial(
                 CountingRequestHandler,
                 directory=str(static_root),
                 on_request=self._request_paths.append,
+                on_post=self._posts.append,
             ),
         )
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
@@ -93,3 +103,6 @@ class HttpServer:
 
     def request_counts(self) -> dict[str, int]:
         return Counter(self._request_paths)
+
+    def posts(self) -> list[tuple[str, bytes]]:
+        return list(self._posts)

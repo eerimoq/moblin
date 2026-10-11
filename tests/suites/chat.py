@@ -8,6 +8,7 @@ from systest_moblin.ffmpeg import ffmpeg_run
 
 from ..utils import chat_message
 from ..utils import twitch_event_sub as event_sub
+from ..utils.config import WEB_REMOTE_CONTROL_PORT
 from ..utils.config import WEB_SERVER_PORT
 from ..utils.generate_device_settings import EMPTY_SCENE_SETTINGS
 from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
@@ -181,6 +182,42 @@ def create_segments(
         key = "moving" if is_animated_emote(emote_index) else "still"
         segments.append({"id": len(segments), "url": {key: emote_urls[emote_index]}})
     return segments
+
+
+class ChatBotSnapshotFromWebRemoteControl(TestCase):
+    """Fetch a chat bot snapshot from a web remote control and upload it to a Discord webhook."""
+
+    def setup(self):
+        tester_ip_address = self.moblin.config.tester_ip_address()
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    RECORD_STREAM_SETTINGS
+                    | {
+                        "discordChatBotSnapshotWebhook": f"http://{tester_ip_address}:{WEB_SERVER_PORT}/webhook",
+                        "discordSnapshotWebhookOnlyWhenLive": False,
+                    }
+                ],
+                "chat": {
+                    "botEnabled": True,
+                    "botCommandSnapshot": {
+                        "source": "Web remote control",
+                        "webRemoteControlUrl": f"http://{self.moblin.ip_address}:{WEB_REMOTE_CONTROL_PORT}",
+                    },
+                },
+            }
+        )
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        with HttpServer(WEB_SERVER_PORT, FILES_DIR, self.moblin.config.tester_ip_address()) as server:
+            self.moblin.send_chat_message("!moblin snapshot")
+            self.wait_until(lambda: len(server.posts()) == 1)
+            path, body = server.posts()[0]
+            self.assert_equal(path, "/webhook")
+            self.assert_in(b'filename="snapshot.jpg"', body)
+            self.assert_in(b"\xff\xd8\xff", body)
+            self.assert_greater(len(body), 10_000)
 
 
 class ChatEmotes(TestCase):
@@ -632,6 +669,7 @@ def tests(moblin: Moblin):
         ChatBotSwitchSceneUsingAlias(moblin),
         ChatBotMuteAndUnmute(moblin),
         ChatBotNotAllowedToSwitchScene(moblin),
+        ChatBotSnapshotFromWebRemoteControl(moblin),
         ChatEmotes(moblin),
         ChatTwitchFollows(moblin),
         ChatTwitchSubscriptions(moblin),

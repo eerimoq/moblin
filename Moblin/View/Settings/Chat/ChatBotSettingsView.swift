@@ -117,13 +117,39 @@ private struct FaxPermissionsSettingsView: View {
 
 private struct SnapshotPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
+    @ObservedObject var snapshot: SettingsChatBotCommandSnapshot
 
     var body: some View {
         Section {
-            PermissionsSettingsView(
-                title: String(localized: "!moblin snapshot <optional message>"),
-                permissions: permissions
-            )
+            NavigationLink {
+                Form {
+                    Section {
+                        Picker("Source", selection: $snapshot.source) {
+                            ForEach(SettingsChatBotCommandSnapshotSource.allCases, id: \.self) { source in
+                                Text(source.toString())
+                            }
+                        }
+                        if snapshot.source == .webRemoteControl {
+                            TextEditNavigationView(
+                                title: String(localized: "URL"),
+                                value: snapshot.webRemoteControlUrl,
+                                onChange: isValidHttpUrl,
+                                onSubmit: { snapshot.webRemoteControlUrl = cleanUrl(url: $0) },
+                                placeholder: "http://192.168.1.10:\(DefaultTcpPorts.remoteControlWeb)"
+                            )
+                        }
+                    } footer: {
+                        Text("""
+                        Take the snapshot on this device, or fetch it from another device's web remote \
+                        control.
+                        """)
+                    }
+                    PermissionsSettingsInnerView(permissions: permissions)
+                }
+                .navigationTitle("!moblin snapshot <optional message>")
+            } label: {
+                Text("!moblin snapshot <optional message>")
+            }
         } footer: {
             Text("Take snapshot.")
         }
@@ -525,7 +551,8 @@ private struct ChatBotCommandsSettingsView: View {
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
             ReactionPermissionsSettingsView(permissions: permissions.reaction)
             ScenePermissionsSettingsView(permissions: permissions.scene)
-            SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
+            SnapshotPermissionsSettingsView(permissions: permissions.snapshot,
+                                            snapshot: model.database.chat.botCommandSnapshot)
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             TorchPermissionsSettingsView(permissions: permissions.torch)

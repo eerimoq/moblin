@@ -234,14 +234,19 @@ extension Model {
             permissions: permissions,
             command: command
         ) {
+            var message: String?
             if let user = command.user() {
                 if permissions.sendChatMessages {
                     self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
                                           platform: command.message.platform)
                 }
-                self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
-            } else {
-                self.takeSnapshot(isChatBot: true)
+                message = self.formatSnapshotTakenBy(user: user)
+            }
+            switch self.database.chat.botCommandSnapshot.source {
+            case .thisDevice:
+                self.takeSnapshot(isChatBot: true, message: message)
+            case .webRemoteControl:
+                self.takeSnapshotWebRemoteControl(message: message)
             }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
@@ -262,11 +267,14 @@ extension Model {
                 self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
                                       platform: command.message.platform)
             }
-            self.takeSnapshotWithCountdown(
-                isChatBot: true,
-                message: command.rest(),
-                user: command.user()
-            )
+            self.takeSnapshotWithCountdown(message: command.rest(), user: command.user()) { message in
+                switch self.database.chat.botCommandSnapshot.source {
+                case .thisDevice:
+                    self.takeSnapshot(isChatBot: true, message: message, noDelay: true)
+                case .webRemoteControl:
+                    self.takeSnapshotWebRemoteControl(message: message)
+                }
+            }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),

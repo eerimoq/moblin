@@ -21,3 +21,6 @@ disable =
     consider-using-with,
     no-else-return,
     fixme
+
+[BASIC]
+good-names = do_POST
