@@ -99,7 +99,7 @@ extension Model {
             }
         case .snapshot:
             if !pressed {
-                takeSnapshot()
+                takeSnapshot(age: 0.0, isChatBot: false, message: nil)
             }
         case .pauseTts:
             if !pressed {

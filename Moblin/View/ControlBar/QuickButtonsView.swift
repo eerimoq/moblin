@@ -281,7 +281,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func snapshotAction() {
-        model.takeSnapshot()
+        model.takeSnapshot(age: 0.0, isChatBot: false, message: nil)
     }
 
     private func widgetsAction() {

@@ -245,9 +245,9 @@ extension Model {
             let age = self.stream.estimatedViewerDelay
             switch self.database.chat.botCommandSnapshot.source {
             case .thisDevice:
-                self.takeSnapshot(isChatBot: true, message: message, age: age)
+                self.takeSnapshot(age: age, isChatBot: true, message: message)
             case .webRemoteControl:
-                self.takeSnapshotWebRemoteControl(message: message, age: age)
+                self.takeSnapshotWebRemoteControl(age: age, isChatBot: true, message: message)
             }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
@@ -271,9 +271,9 @@ extension Model {
             self.takeSnapshotWithCountdown(message: command.rest(), user: command.user()) { message in
                 switch self.database.chat.botCommandSnapshot.source {
                 case .thisDevice:
-                    self.takeSnapshot(isChatBot: true, message: message)
+                    self.takeSnapshot(age: 0.0, isChatBot: true, message: message)
                 case .webRemoteControl:
-                    self.takeSnapshotWebRemoteControl(message: message, age: 0.0)
+                    self.takeSnapshotWebRemoteControl(age: 0.0, isChatBot: true, message: message)
                 }
             }
         } onNotAllowed: {

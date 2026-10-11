@@ -10,7 +10,7 @@ struct SnapshotJob {
 }
 
 extension Model {
-    func takeSnapshot(isChatBot: Bool = false, message: String? = nil, age: Float = 0.0) {
+    func takeSnapshot(age: Float, isChatBot: Bool, message: String?) {
         guard !isChatPhone() else {
             return
         }
@@ -18,13 +18,17 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            let uploadToDiscord = !self.stream.discordSnapshotWebhookOnlyWhenLive || self.isLive
             self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
-            self.handleSnapshot(imageJpeg, image, portraitImage, message, isChatBot, uploadToDiscord)
+            self.handleSnapshot(imageJpeg,
+                                image,
+                                portraitImage,
+                                message,
+                                isChatBot,
+                                !self.stream.discordSnapshotWebhookOnlyWhenLive || self.isLive)
         }
     }
 
-    func takeSnapshotWebRemoteControl(message: String?, age: Float) {
+    func takeSnapshotWebRemoteControl(age: Float, isChatBot: Bool, message: String?) {
         guard let url = URL(string: database.chat.botCommandSnapshot.webRemoteControlUrl)?
             .appending(path: "snapshot")
             .appending(queryItems: [URLQueryItem(name: "age", value: String(age))])
@@ -50,7 +54,7 @@ extension Model {
             }
             DispatchQueue.main.async {
                 self.saveSnapshotToPhotos(image: data)
-                self.handleSnapshot(imageJpeg, image, portraitImage, message, true, true)
+                self.handleSnapshot(imageJpeg, image, portraitImage, message, isChatBot, true)
             }
         }
     }

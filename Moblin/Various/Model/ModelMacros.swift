@@ -465,7 +465,7 @@ extension Model {
     }
 
     private func executeSnapshot() -> Bool {
-        takeSnapshot()
+        takeSnapshot(age: 0.0, isChatBot: false, message: nil)
         return true
     }
 

@@ -7,7 +7,7 @@ struct SnapshotIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        model.takeSnapshot()
+        model.takeSnapshot(age: 0.0, isChatBot: false, message: nil)
         return .result()
     }
 
