@@ -195,7 +195,6 @@ class ChatBotSnapshotFromWebRemoteControl(TestCase):
                     RECORD_STREAM_SETTINGS
                     | {
                         "discordChatBotSnapshotWebhook": f"http://{tester_ip_address}:{WEB_SERVER_PORT}/webhook",
-                        "discordSnapshotWebhookOnlyWhenLive": False,
                     }
                 ],
                 "chat": {

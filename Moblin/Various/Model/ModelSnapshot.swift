@@ -18,21 +18,10 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            self.handleSnapshot(uiImage, imageJpeg, image, portraitImage, message, isChatBot)
+            let uploadToDiscord = !self.stream.discordSnapshotWebhookOnlyWhenLive || self.isLive
+            self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
+            self.handleSnapshot(imageJpeg, image, portraitImage, message, isChatBot, uploadToDiscord)
         }
-    }
-
-    private func handleSnapshot(_ uiImage: UIImage,
-                                _ imageJpeg: Data,
-                                _ image: CIImage,
-                                _ portraitImage: CIImage,
-                                _ message: String?,
-                                _ isChatBot: Bool)
-    {
-        saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
-        tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
-        printSnapshotCatPrinters(image: portraitImage)
-        appendSnapshotToSnapshotWidgets(image: image)
     }
 
     func takeSnapshotWebRemoteControl(message: String?, age: Float) {
@@ -60,7 +49,8 @@ extension Model {
                 portraitImage = portraitImage.oriented(.left)
             }
             DispatchQueue.main.async {
-                self.handleSnapshot(uiImage, imageJpeg, image, portraitImage, message, true)
+                self.saveSnapshotToPhotos(image: data)
+                self.handleSnapshot(imageJpeg, image, portraitImage, message, true, true)
             }
         }
     }
@@ -80,20 +70,40 @@ extension Model {
         }
     }
 
+    private func handleSnapshot(_ imageJpeg: Data,
+                                _ image: CIImage,
+                                _ portraitImage: CIImage,
+                                _ message: String?,
+                                _ isChatBot: Bool,
+                                _ uploadToDiscord: Bool)
+    {
+        if uploadToDiscord {
+            tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+        }
+        printSnapshotCatPrinters(image: portraitImage)
+        appendSnapshotToSnapshotWidgets(image: image)
+    }
+
     private func saveSnapshotToPhotos(image: UIImage, fallbackImage: Data) {
         DispatchQueue.global().async {
             let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
-            PHPhotoLibrary.shared().performChanges {
-                let creationRequest = PHAssetCreationRequest.forAsset()
-                creationRequest.addResource(with: .photo, data: image, options: nil)
-            } completionHandler: { _, error in
-                if let error {
-                    self.makeErrorToastMain(title: String(localized: "Failed to save snapshot to Photos"),
-                                            subTitle: error.localizedDescription)
-                } else {
-                    DispatchQueue.main.async {
-                        self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                    }
+            DispatchQueue.main.async {
+                self.saveSnapshotToPhotos(image: image)
+            }
+        }
+    }
+
+    private func saveSnapshotToPhotos(image: Data) {
+        PHPhotoLibrary.shared().performChanges { @Sendable in
+            let creationRequest = PHAssetCreationRequest.forAsset()
+            creationRequest.addResource(with: .photo, data: image, options: nil)
+        } completionHandler: { @Sendable _, error in
+            if let error {
+                self.makeErrorToastMain(title: String(localized: "Failed to save snapshot to Photos"),
+                                        subTitle: error.localizedDescription)
+            } else {
+                DispatchQueue.main.async {
+                    self.makeToast(title: String(localized: "Snapshot saved to Photos"))
                 }
             }
         }
@@ -166,9 +176,7 @@ extension Model {
     }
 
     private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
-        guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive,
-              let url = getDiscordWebhookUrl(isChatBot)
-        else {
+        guard let url = getDiscordWebhookUrl(isChatBot) else {
             return
         }
         uploadImage(
