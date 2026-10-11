@@ -418,6 +418,7 @@ extension Model {
         setCleanExternalDisplay()
         updateCameraControls()
         updateTalkback()
+        updateMixedMics()
     }
 
     private func attachStream() {

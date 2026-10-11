@@ -13,6 +13,13 @@ private struct QuickButtonMicMicView: View {
             Text(mic.name)
                 .lineLimit(1)
             Spacer()
+            if model.isMicMixable(mic: mic) {
+                Image(systemName: mic.mixed ? "plus.circle.fill" : "plus.circle")
+                    .foregroundStyle(.blue)
+                    .onTapGesture {
+                        model.setMicMixed(mic: mic, mixed: !mic.mixed)
+                    }
+            }
             Image(systemName: "checkmark")
                 .foregroundStyle(mic == modelMic.current ? .blue : .clear)
                 .bold()
@@ -52,6 +59,14 @@ struct QuickButtonMicView: View {
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Highest priority mic at the top of the list.")
+                    Text("")
+                    let image = Image(systemName: "plus.circle")
+                    Text("""
+                    Tap a mic to select it. Tap \(image) to mix its audio into the \
+                    selected mic.
+                    """)
+                    Text("")
+                    Text("Only one built-in or external mic can be used at a time.")
                     Text("")
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a mic"))
                 }

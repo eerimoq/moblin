@@ -13,7 +13,7 @@ private struct MicView: View {
                 HStack {
                     Text("Mic")
                     Spacer()
-                    GrayTextView(text: mic.current.name)
+                    GrayTextView(text: mic.statusText())
                 }
             } icon: {
                 Image(systemName: "music.mic")
