@@ -10,11 +10,10 @@ struct SnapshotJob {
 }
 
 extension Model {
-    func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
+    func takeSnapshot(isChatBot: Bool = false, message: String? = nil, age: Float = 0.0) {
         guard !isChatPhone() else {
             return
         }
-        let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay : 0.0
         media.takeSnapshot(age: age) { uiImage, image, portraitImage in
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
@@ -36,9 +35,10 @@ extension Model {
         appendSnapshotToSnapshotWidgets(image: image)
     }
 
-    func takeSnapshotWebRemoteControl(message: String? = nil) {
+    func takeSnapshotWebRemoteControl(message: String?, age: Float) {
         guard let url = URL(string: database.chat.botCommandSnapshot.webRemoteControlUrl)?
             .appending(path: "snapshot")
+            .appending(queryItems: [URLQueryItem(name: "age", value: String(age))])
         else {
             makeErrorToast(title: String(localized: "Invalid chat bot snapshot web remote control URL"))
             return
@@ -65,12 +65,12 @@ extension Model {
         }
     }
 
-    func takeSnapshotHeic(onComplete: @escaping @MainActor (Data?) -> Void) {
+    func takeSnapshotHeic(age: Float, onComplete: @escaping @MainActor (Data?) -> Void) {
         guard !isChatPhone() else {
             onComplete(nil)
             return
         }
-        media.takeSnapshot(age: 0.0) { uiImage, _, _ in
+        media.takeSnapshot(age: age) { uiImage, _, _ in
             DispatchQueue.global().async {
                 let imageHeic = encodeSnapshotForPhotos(image: uiImage)
                 DispatchQueue.main.async {

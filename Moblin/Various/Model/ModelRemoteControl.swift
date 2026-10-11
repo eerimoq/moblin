@@ -1468,8 +1468,8 @@ extension Model: RemoteControlWebDelegate {
         recordingThumbnailsCache.removeValue(forKey: filename)
     }
 
-    func remoteControlWebTakeSnapshot(onComplete: @escaping @MainActor (Data?) -> Void) {
-        takeSnapshotHeic(onComplete: onComplete)
+    func remoteControlWebTakeSnapshot(age: Float, onComplete: @escaping @MainActor (Data?) -> Void) {
+        takeSnapshotHeic(age: age, onComplete: onComplete)
     }
 
     func remoteControlWebStartPreview() {

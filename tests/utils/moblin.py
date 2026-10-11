@@ -375,8 +375,8 @@ class Moblin:
             response = requests.delete(f"{base_url}/recordings/{recording['name']}", timeout=15)
             response.raise_for_status()
 
-    def take_snapshot(self) -> bytes:
-        response = requests.get(f"{self._web_remote_control_url()}/snapshot", timeout=15)
+    def take_snapshot(self, age: float = 0.0) -> bytes:
+        response = requests.get(f"{self._web_remote_control_url()}/snapshot", params={"age": age}, timeout=15)
         response.raise_for_status()
         if response.headers["Content-Type"] != "image/heic":
             raise RuntimeError(f"Unexpected snapshot content type {response.headers['Content-Type']}.")

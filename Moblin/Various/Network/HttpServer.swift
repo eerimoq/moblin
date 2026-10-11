@@ -4,6 +4,7 @@ import Network
 private struct HttpRequestParseResult {
     let method: String
     let path: String
+    let query: [String: String]
     let version: String
     let headers: [SettingsHttpHeader]
     let data: Data
@@ -21,9 +22,22 @@ private class HttpRequestParser: HttpParser {
             return (true, nil)
         }
         let method = startParts[0]
-        let path = startParts[1]
-        guard !path.contains("//"), !path.contains("..") else {
+        let target = startParts[1]
+        guard !target.contains("//"), !target.contains("..") else {
             return (true, nil)
+        }
+        let targetParts = target.split(separator: "?", maxSplits: 1)
+        let path = targetParts[0]
+        var query: [String: String] = [:]
+        if targetParts.count == 2 {
+            for item in targetParts[1].split(separator: "&") {
+                let parts = item.split(separator: "=", maxSplits: 1)
+                guard let name = parts[0].removingPercentEncoding else {
+                    continue
+                }
+                let value = parts.count == 2 ? parts[1].removingPercentEncoding ?? "" : ""
+                query[name] = value
+            }
         }
         let version = startParts[2]
         guard version.hasPrefix("HTTP/1.") else {
@@ -47,6 +61,7 @@ private class HttpRequestParser: HttpParser {
                 }
                 return (true, HttpRequestParseResult(method: String(method),
                                                      path: String(path),
+                                                     query: query,
                                                      version: String(version),
                                                      headers: headers,
                                                      data: body.prefix(contentLength)))
@@ -60,6 +75,7 @@ private class HttpRequestParser: HttpParser {
 class HttpServerRequest {
     let method: String
     let path: String
+    let query: [String: String]
     let version: String
     let headers: [SettingsHttpHeader]
     let body: Data
@@ -67,12 +83,14 @@ class HttpServerRequest {
     fileprivate init(
         method: String,
         path: String,
+        query: [String: String],
         version: String,
         headers: [SettingsHttpHeader],
         body: Data
     ) {
         self.method = method
         self.path = path
+        self.query = query
         self.version = version
         self.headers = headers
         self.body = body
@@ -219,6 +237,7 @@ private class HttpServerConnection: @unchecked Sendable {
         }
         request = HttpServerRequest(method: result.method,
                                     path: result.path,
+                                    query: result.query,
                                     version: result.version,
                                     headers: result.headers,
                                     body: result.data)

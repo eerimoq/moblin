@@ -43,7 +43,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
     func remoteControlWebDeleteRecording(filename: String)
-    func remoteControlWebTakeSnapshot(onComplete: @escaping @MainActor (Data?) -> Void)
+    func remoteControlWebTakeSnapshot(age: Float, onComplete: @escaping @MainActor (Data?) -> Void)
     func remoteControlWebStartPreview()
     func remoteControlWebStopPreview()
 }
@@ -302,7 +302,8 @@ class RemoteControlWeb {
             response.send(status: .serviceUnavailable)
             return
         }
-        delegate.remoteControlWebTakeSnapshot { snapshot in
+        let age = Float(request.query["age"] ?? "0") ?? 0.0
+        delegate.remoteControlWebTakeSnapshot(age: age) { snapshot in
             guard let snapshot else {
                 response.send(status: .serviceUnavailable)
                 return
