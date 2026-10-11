@@ -103,6 +103,24 @@ struct SettingsMacrosSuite {
     }
 
     @Test
+    func waitForChatBotCommandMatchesCommandAndItsArguments() {
+        let action = makeWaitForEventAction(event: .chatBotCommand)
+        #expect(action.matches(event: MacroEvent(event: .chatBotCommand, text: "tts on")))
+        action.eventText = "Scene"
+        #expect(action.matches(event: MacroEvent(event: .chatBotCommand, text: "scene")))
+        #expect(action.matches(event: MacroEvent(event: .chatBotCommand, text: "scene main")))
+        #expect(!action.matches(event: MacroEvent(event: .chatBotCommand, text: "scenes")))
+        #expect(!action.matches(event: MacroEvent(event: .chatBotCommand, text: "tts on")))
+    }
+
+    @Test
+    func waitForRewardDoesNotMatchTextPrefix() {
+        let action = makeWaitForEventAction(event: .twitchReward)
+        action.eventText = "Hydrate"
+        #expect(!action.matches(event: MacroEvent(event: .twitchReward, text: "Hydrate now")))
+    }
+
+    @Test
     func waitForSceneSwitchedMatchesSelectedOrAnyScene() {
         let sceneId = UUID()
         let action = makeWaitForEventAction(event: .switchScene)

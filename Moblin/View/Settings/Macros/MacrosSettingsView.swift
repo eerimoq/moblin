@@ -350,6 +350,12 @@ private struct ActionView: View {
                                 Wait until a viewer redeems the reward, then continue with the following \
                                 actions. Leave reward empty to wait for any reward.
                                 """)
+                            case .chatBotCommand:
+                                Text("""
+                                Wait until a chat bot command is received, then continue with the following \
+                                actions. For example, command "scene" matches "!moblin scene main". Leave \
+                                command empty to wait for any command.
+                                """)
                             default:
                                 Text("""
                                 Wait until the event happens, then continue with the following actions.

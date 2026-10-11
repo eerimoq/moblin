@@ -162,6 +162,7 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
     case startRecording = "Recording started"
     case stopRecording = "Recording stopped"
     case switchScene = "Scene switched"
+    case chatBotCommand = "Chat bot command"
 
     func toString() -> String {
         switch self {
@@ -201,6 +202,8 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
             String(localized: "Stop recording")
         case .switchScene:
             String(localized: "Switch scene")
+        case .chatBotCommand:
+            String(localized: "Chat bot command")
         }
     }
 
@@ -241,6 +244,8 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
             [.twitchCheerUser]
         case .twitchRaid:
             [.twitchRaidChannelId, .twitchRaidChannelName]
+        case .chatBotCommand:
+            [.chatBotCommandUser, .chatBotCommand]
         default:
             []
         }
@@ -250,6 +255,8 @@ enum SettingsMacrosEvent: String, Codable, CaseIterable {
         switch self {
         case .twitchReward, .kickReward:
             String(localized: "Reward")
+        case .chatBotCommand:
+            String(localized: "Command")
         default:
             nil
         }
@@ -266,6 +273,8 @@ enum MacroVariable: String {
     case twitchCheerUser
     case twitchRaidChannelId
     case twitchRaidChannelName
+    case chatBotCommandUser
+    case chatBotCommand
 
     func toString() -> String {
         "{\(rawValue)}"
@@ -291,6 +300,10 @@ enum MacroVariable: String {
             String(localized: "Id of the raiding channel")
         case .twitchRaidChannelName:
             String(localized: "Name of the raiding channel")
+        case .chatBotCommandUser:
+            String(localized: "Name of the user who sent the chat bot command")
+        case .chatBotCommand:
+            String(localized: "The chat bot command, without !moblin")
         }
     }
 }
@@ -506,8 +519,12 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         if let eventSceneId, event.sceneId != eventSceneId {
             return false
         }
-        let text = eventText.trim()
-        return text.isEmpty || event.text.trim().caseInsensitiveCompare(text) == .orderedSame
+        let text = eventText.trim().lowercased()
+        let eventText = event.text.trim().lowercased()
+        if text.isEmpty || eventText == text {
+            return true
+        }
+        return self.event == .chatBotCommand && eventText.starts(with: text + " ")
     }
 }
 

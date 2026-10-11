@@ -21,6 +21,12 @@ extension Model {
         guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
         }
+        macrosEventOccurred(MacroEvent(event: .chatBotCommand,
+                                       text: command.rest(),
+                                       variables: [
+                                           .chatBotCommandUser: message.user ?? "",
+                                           .chatBotCommand: command.rest(),
+                                       ]))
         guard let mainCommand = command.popFirstArgument(ChatBotMainArgument.self) else {
             return
         }
