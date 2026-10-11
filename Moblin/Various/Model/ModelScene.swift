@@ -185,10 +185,12 @@ extension Model {
         toggleShowingPanel(type: nil, panel: .sceneSettings)
     }
 
-    func selectSceneByName(name: String) {
-        if let scene = enabledScenes.first(where: { $0.name.lowercased() == name.lowercased() }) {
-            selectScene(id: scene.id)
+    func selectSceneByName(name: String) -> Bool {
+        guard let scene = enabledScenes.first(where: { $0.name.lowercased() == name.lowercased() }) else {
+            return false
         }
+        selectScene(id: scene.id)
+        return true
     }
 
     func selectScene(id: UUID) {

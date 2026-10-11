@@ -155,11 +155,15 @@ extension Model {
     }
 
     private func handleChatBotMessageTtsSay(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.tts
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tts,
+            permissions: permissions,
             command: command
         ) {
             guard self.isTextToSpeechOutputAllowed() else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, text to speech requires a Bluetooth speaker. 😢")
+                }
                 return
             }
             let user = command.user() ?? "Unknown"
@@ -174,8 +178,9 @@ extension Model {
     }
 
     private func handleChatBotMessageObsFix(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.fix
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.fix,
+            permissions: permissions,
             command: command
         ) {
             if self.obsWebSocket != nil {
@@ -191,6 +196,9 @@ extension Model {
                         localized: "Cannot fix OBS input. OBS remote control is not configured."
                     )
                 )
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, OBS remote control is not configured. 😢")
+                }
             }
         }
     }
@@ -230,6 +238,12 @@ extension Model {
 
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.snapshot
+        guard isLive else {
+            sendChatBotFailedReply(permissions: permissions, command: command) {
+                String(localized: "\($0), sorry, snapshots can only be taken when live. 😢")
+            }
+            return
+        }
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -254,6 +268,12 @@ extension Model {
     @MainActor
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.snapshot
+        guard isLive else {
+            sendChatBotFailedReply(permissions: permissions, command: command) {
+                String(localized: "\($0), sorry, snapshots can only be taken when live. 😢")
+            }
+            return
+        }
         executeIfUserAllowedToUseChatBot(
             permissions: permissions,
             command: command
@@ -310,8 +330,9 @@ extension Model {
     }
 
     private func handleChatBotMessageTorch(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.torch
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.torch,
+            permissions: permissions,
             command: command
         ) {
             switch command.popFirstArgument(ChatBotTorchArgument.self) {
@@ -320,7 +341,7 @@ extension Model {
             case .off:
                 self.handleChatBotMessageTorchOff()
             case .level:
-                self.handleChatBotMessageTorchLevel(command: command)
+                self.handleChatBotMessageTorchLevel(permissions: permissions, command: command)
             case nil:
                 break
             }
@@ -337,8 +358,13 @@ extension Model {
         setQuickButton(type: .torch, isOn: false)
     }
 
-    private func handleChatBotMessageTorchLevel(command: ChatBotCommand) {
+    private func handleChatBotMessageTorchLevel(permissions: SettingsChatBotPermissionsCommand,
+                                                command: ChatBotCommand)
+    {
         guard let level = command.popFirstInt(in: 1 ... 100) else {
+            sendChatBotFailedReply(permissions: permissions, command: command) {
+                String(localized: "\($0), sorry, torch level must be a number between 1 and 100. 😢")
+            }
             return
         }
         database.torchLevel = Float(level) / 100
@@ -362,11 +388,13 @@ extension Model {
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
         let question = command.rest()
         let ai = database.chat.botCommandAi
-        guard let baseUrl = URL(string: ai.baseUrl) else {
-            return
-        }
         let platform = command.message.platform
         let user = command.user() ?? String(localized: "Unknown")
+        guard let baseUrl = URL(string: ai.baseUrl) else {
+            sendChatBotReply(message: String(localized: "\(user), sorry, AI is not configured. 😢"),
+                             platform: platform)
+            return
+        }
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
             .ask(question, model: ai.model, role: ai.personality) { result in
                 switch result {
@@ -385,75 +413,96 @@ extension Model {
 
     @MainActor
     private func handleChatBotMessageTwitch(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.twitch
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.twitch,
+            permissions: permissions,
             command: command
         ) {
             switch command.popFirstArgument(ChatBotTwitchArgument.self) {
             case .raid:
-                self.handleChatBotMessageTwitchRaid(command: command)
+                self.handleChatBotMessageTwitchRaid(permissions: permissions, command: command)
             case nil:
                 break
             }
         }
     }
 
-    private func handleChatBotMessageTwitchRaid(command: ChatBotCommand) {
+    private func handleChatBotMessageTwitchRaid(permissions: SettingsChatBotPermissionsCommand,
+                                                command: ChatBotCommand)
+    {
         let channelName = command.rest()
         searchTwitchChannel(stream: stream, channelName: channelName) { channel in
             guard let channel else {
                 self.makeErrorToast(title: String(localized: "Raid failed"),
                                     subTitle: String(localized: "Channel \(channelName) not found"))
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, channel \(channelName) was not found. 😢")
+                }
                 return
             }
-            self.startRaidTwitchChannel(channelId: channel.id) {
-                switch $0 {
+            self.startRaidTwitchChannel(channelId: channel.id) { result in
+                switch result {
                 case .success:
                     break
                 default:
                     self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+                    self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                        String(localized: "\($0), sorry, failed to raid \(channelName). 😢")
+                    }
                 }
             }
         }
     }
 
     private func handleChatBotMessageGimbal(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.gimbal
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.gimbal,
+            permissions: permissions,
             command: command
         ) {
             switch command.popFirstArgument(ChatBotGimbalArgument.self) {
             case .preset:
-                self.handleChatBotMessageGimbalPreset(command: command)
+                self.handleChatBotMessageGimbalPreset(permissions: permissions, command: command)
             case nil:
                 break
             }
         }
     }
 
-    private func handleChatBotMessageGimbalPreset(command: ChatBotCommand) {
+    private func handleChatBotMessageGimbalPreset(permissions: SettingsChatBotPermissionsCommand,
+                                                  command: ChatBotCommand)
+    {
         guard let presetName = command.popFirstLowerCased() else {
             return
         }
         guard let preset = database.gimbal.presets.first(where: {
             $0.name.lowercased() == presetName
         }) else {
+            sendChatBotFailedReply(permissions: permissions, command: command) {
+                String(localized: "\($0), sorry, gimbal preset \(presetName) was not found. 😢")
+            }
             return
         }
         moveToGimbalPreset(id: preset.id)
     }
 
     private func handleChatBotMessageMacro(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.macro
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.macro,
+            permissions: permissions,
             command: command
         ) {
             guard let subcommand = command.popFirstArgument(ChatBotMacroArgument.self),
-                  let macroName = command.popFirstLowerCased(),
-                  let macro = self.database.macros.macros.first(where: {
-                      $0.name.lowercased() == macroName
-                  })
+                  let macroName = command.popFirstLowerCased()
             else {
+                return
+            }
+            guard let macro = self.database.macros.macros.first(where: {
+                $0.name.lowercased() == macroName
+            }) else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, macro \(macroName) was not found. 😢")
+                }
                 return
             }
             switch subcommand {
@@ -516,8 +565,9 @@ extension Model {
     }
 
     private func handleChatBotMessageMusic(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.music
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.music,
+            permissions: permissions,
             command: command
         ) {
             switch command.popFirstArgument(ChatBotMusicArgument.self) {
@@ -526,7 +576,7 @@ extension Model {
             case .pause:
                 self.handleChatBotMessageMusicPause()
             case .add:
-                self.handleChatBotMessageMusicAdd(command: command)
+                self.handleChatBotMessageMusicAdd(permissions: permissions, command: command)
             case .next:
                 self.handleChatBotMessageMusicNext(command: command)
             case .previous:
@@ -547,9 +597,14 @@ extension Model {
         pauseMusic()
     }
 
-    private func handleChatBotMessageMusicAdd(command: ChatBotCommand) {
+    private func handleChatBotMessageMusicAdd(permissions: SettingsChatBotPermissionsCommand,
+                                              command: ChatBotCommand)
+    {
         let title = command.rest()
         guard !title.isEmpty else {
+            sendChatBotFailedReply(permissions: permissions, command: command) {
+                String(localized: "\($0), sorry, a song title is needed. 😢")
+            }
             return
         }
         let platform = command.message.platform
@@ -671,17 +726,23 @@ extension Model {
         guard let sceneName = command.popFirst() else {
             return
         }
+        let permissions = database.chat.botCommandPermissions.scene
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.scene,
+            permissions: permissions,
             command: command
         ) {
-            self.selectSceneByName(name: sceneName)
+            if !self.selectSceneByName(name: sceneName) {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, scene \(sceneName) was not found. 😢")
+                }
+            }
         }
     }
 
     private func handleChatBotMessageStream(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.stream
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.stream,
+            permissions: permissions,
             command: command
         ) {
             switch command.popFirstArgument(ChatBotStreamArgument.self) {
@@ -692,7 +753,7 @@ extension Model {
             case .title:
                 self.handleChatBotMessageStreamTitle(command: command)
             case .category:
-                self.handleChatBotMessageStreamCategory(command: command)
+                self.handleChatBotMessageStreamCategory(permissions: permissions, command: command)
             case nil:
                 break
             }
@@ -711,9 +772,15 @@ extension Model {
         setTwitchStreamTitle(stream: stream, title: command.rest())
     }
 
-    private func handleChatBotMessageStreamCategory(command: ChatBotCommand) {
-        fetchTwitchGameId(stream: stream, name: command.rest()) { gameId in
+    private func handleChatBotMessageStreamCategory(permissions: SettingsChatBotPermissionsCommand,
+                                                    command: ChatBotCommand)
+    {
+        let name = command.rest()
+        fetchTwitchGameId(stream: stream, name: name) { gameId in
             guard let gameId else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, category \(name) was not found. 😢")
+                }
                 return
             }
             self.setTwitchStreamCategory(stream: self.stream, categoryId: gameId)
@@ -722,14 +789,18 @@ extension Model {
 
     @MainActor
     private func handleChatBotMessageWidget(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.widget
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.widget,
+            permissions: permissions,
             command: command
         ) {
             guard let name = command.popFirst() else {
                 return
             }
             guard let widget = self.findWidget(name: name) else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, widget \(name) was not found. 😢")
+                }
                 return
             }
             switch command.popFirstArgument(ChatBotWidgetArgument.self) {
@@ -815,13 +886,18 @@ extension Model {
     }
 
     private func handleChatBotMessageFax(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.fax
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.fax,
+            permissions: permissions,
             command: command
         ) {
-            if let url = command.peekFirst(), let url = URL(string: url) {
-                self.faxReceiver.add(url: url)
+            guard let url = command.peekFirst(), let url = URL(string: url) else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, a valid image URL is needed. 😢")
+                }
+                return
             }
+            self.faxReceiver.add(url: url)
         }
     }
 
@@ -881,10 +957,17 @@ extension Model {
     }
 
     private func handleChatBotMessageTesla(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.tesla
         executeIfUserAllowedToUseChatBot(
-            permissions: database.chat.botCommandPermissions.tesla,
+            permissions: permissions,
             command: command
         ) {
+            guard self.tesla.vehicle != nil else {
+                self.sendChatBotFailedReply(permissions: permissions, command: command) {
+                    String(localized: "\($0), sorry, no Tesla is connected. 😢")
+                }
+                return
+            }
             switch command.popFirstArgument(ChatBotTeslaArgument.self) {
             case .trunk:
                 self.handleChatBotMessageTeslaTrunk(command: command)
@@ -929,6 +1012,16 @@ extension Model {
         default:
             break
         }
+    }
+
+    private func sendChatBotFailedReply(permissions: SettingsChatBotPermissionsCommand,
+                                        command: ChatBotCommand,
+                                        makeMessage: (String) -> String)
+    {
+        guard permissions.sendChatMessages, let user = command.user() else {
+            return
+        }
+        sendChatBotReply(message: makeMessage(user), platform: command.message.platform)
     }
 
     private func executeIfUserAllowedToUseChatBot(

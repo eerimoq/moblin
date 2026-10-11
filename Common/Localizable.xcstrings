@@ -771,6 +771,51 @@
         }
       }
     },
+    "%@, sorry, AI is not configured. 😢" : {
+
+    },
+    "%@, sorry, OBS remote control is not configured. 😢" : {
+
+    },
+    "%@, sorry, a song title is needed. 😢" : {
+
+    },
+    "%@, sorry, a valid image URL is needed. 😢" : {
+
+    },
+    "%@, sorry, category %@ was not found. 😢" : {
+
+    },
+    "%@, sorry, channel %@ was not found. 😢" : {
+
+    },
+    "%@, sorry, failed to raid %@. 😢" : {
+
+    },
+    "%@, sorry, gimbal preset %@ was not found. 😢" : {
+
+    },
+    "%@, sorry, macro %@ was not found. 😢" : {
+
+    },
+    "%@, sorry, no Tesla is connected. 😢" : {
+
+    },
+    "%@, sorry, scene %@ was not found. 😢" : {
+
+    },
+    "%@, sorry, snapshots can only be taken when live. 😢" : {
+
+    },
+    "%@, sorry, text to speech requires a Bluetooth speaker. 😢" : {
+
+    },
+    "%@, sorry, torch level must be a number between 1 and 100. 😢" : {
+
+    },
+    "%@, sorry, widget %@ was not found. 😢" : {
+
+    },
     "-" : {
       "localizations" : {
         "de" : {
