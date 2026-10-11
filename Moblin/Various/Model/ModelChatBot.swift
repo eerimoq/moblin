@@ -21,12 +21,6 @@ extension Model {
         guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
         }
-        macrosEventOccurred(MacroEvent(event: .chatBotCommand,
-                                       text: command.rest(),
-                                       variables: [
-                                           .chatBotCommandUser: message.user ?? "",
-                                           .chatBotCommand: command.rest(),
-                                       ]))
         guard let mainCommand = command.popFirstArgument(ChatBotMainArgument.self) else {
             return
         }
@@ -942,6 +936,28 @@ extension Model {
         command: ChatBotCommand,
         onCompleted: @escaping () -> Void,
         onNotAllowed: (() -> Void)? = nil
+    ) {
+        executeIfUserAllowedToUseChatBotInner(
+            permissions: permissions,
+            command: command,
+            onCompleted: {
+                self.macrosEventOccurred(MacroEvent(event: .chatBotCommand,
+                                                    text: command.text,
+                                                    variables: [
+                                                        .chatBotCommandUser: command.user() ?? "",
+                                                        .chatBotCommand: command.text,
+                                                    ]))
+                onCompleted()
+            },
+            onNotAllowed: onNotAllowed
+        )
+    }
+
+    private func executeIfUserAllowedToUseChatBotInner(
+        permissions: SettingsChatBotPermissionsCommand,
+        command: ChatBotCommand,
+        onCompleted: @escaping () -> Void,
+        onNotAllowed: (() -> Void)?
     ) {
         let now = ContinuousClock.now
         if isChannelOwner(command: command) {

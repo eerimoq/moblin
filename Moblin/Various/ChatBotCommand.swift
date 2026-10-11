@@ -187,6 +187,7 @@ struct ChatBotMessage {
 class ChatBotCommand {
     let message: ChatBotMessage
     private var parts: Deque<String> = []
+    private(set) var text = ""
 
     init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias]) {
         self.message = message
@@ -208,6 +209,7 @@ class ChatBotCommand {
                 }
             }
         }
+        text = rest()
     }
 
     func popFirst() -> String? {
