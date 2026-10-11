@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-private struct HttpRequestParseResult {
+struct HttpRequestParseResult {
     let method: String
     let path: String
     let query: [String: String]
@@ -10,7 +10,7 @@ private struct HttpRequestParseResult {
     let data: Data
 }
 
-private class HttpRequestParser: HttpParser {
+class HttpRequestParser: HttpParser {
     func parse() -> (Bool, HttpRequestParseResult?) {
         var offset = 0
         guard let (startLine, nextLineOffset) = getLine(data: data, offset: offset) else {
