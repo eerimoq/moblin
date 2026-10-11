@@ -58,6 +58,8 @@ extension ModelMock: ProcessorDelegate {
 
     func streamPhotoTaken() {}
 
+    func streamNoPhotoDevice() {}
+
     func streamSetZoomX(x _: Float) {}
 
     func streamSetExposureBias(bias _: Float) {}

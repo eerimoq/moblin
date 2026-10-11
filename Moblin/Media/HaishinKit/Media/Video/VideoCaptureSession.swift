@@ -416,7 +416,7 @@ final class VideoCaptureSession: NSObject, @unchecked Sendable {
 
     func takePhoto(flash: Bool) {
         guard let photoOutput = devices.compactMap(\.photoOutput).first else {
-            processor?.delegate.streamPhotoTaken()
+            processor?.delegate.streamNoPhotoDevice()
             return
         }
         var codec = AVVideoCodecType.jpeg

@@ -1060,6 +1060,12 @@ extension Model: MediaDelegate {
         }
     }
 
+    nonisolated func mediaOnNoPhotoDevice() {
+        DispatchQueue.main.async {
+            self.handleNoPhotoDevice()
+        }
+    }
+
     nonisolated func mediaOnFps(fps: Int) {
         DispatchQueue.main.async {
             self.currentFps = fps

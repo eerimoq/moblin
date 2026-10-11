@@ -168493,6 +168493,9 @@
         }
       }
     },
+    "No device configured to take photos." : {
+
+    },
     "No direct sunlight" : {
       "localizations" : {
         "de" : {

@@ -35,6 +35,13 @@ extension Model {
         }
     }
 
+    func handleNoPhotoDevice() {
+        makeErrorToast(title: String(localized: "No device configured to take photos."))
+        if photoShoot.active {
+            start()
+        }
+    }
+
     private func start() {
         let interval = Double(database.photoShootInterval)
         photoShoot.nextPhotoTime = ContinuousClock.now + .seconds(interval)
