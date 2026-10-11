@@ -43,6 +43,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
     func remoteControlWebDeleteRecording(filename: String)
+    func remoteControlWebTakeSnapshot(onComplete: @escaping @MainActor (Data?) -> Void)
     func remoteControlWebStartPreview()
     func remoteControlWebStopPreview()
 }
@@ -159,6 +160,7 @@ class RemoteControlWeb {
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
         routes.append(HttpServerRoute(path: "/recordings.json", handler: handleRecordingsJson))
+        routes.append(HttpServerRoute(path: "/snapshot", handler: handleSnapshot))
         routes.append(HttpServerRoute(
             path: recordingsPrefix,
             prefixMatch: true,
@@ -289,6 +291,24 @@ class RemoteControlWeb {
             return
         }
         response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
+    }
+
+    private func handleSnapshot(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            response.send(status: .methodNotAllowed)
+            return
+        }
+        guard let delegate else {
+            response.send(status: .serviceUnavailable)
+            return
+        }
+        delegate.remoteControlWebTakeSnapshot { snapshot in
+            guard let snapshot else {
+                response.send(status: .serviceUnavailable)
+                return
+            }
+            response.send(data: snapshot, status: .ok, contentType: "image/heic")
+        }
     }
 
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {

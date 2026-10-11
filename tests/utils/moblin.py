@@ -375,6 +375,13 @@ class Moblin:
             response = requests.delete(f"{base_url}/recordings/{recording['name']}", timeout=15)
             response.raise_for_status()
 
+    def take_snapshot(self) -> bytes:
+        response = requests.get(f"{self._web_remote_control_url()}/snapshot", timeout=15)
+        response.raise_for_status()
+        if response.headers["Content-Type"] != "image/heic":
+            raise RuntimeError(f"Unexpected snapshot content type {response.headers['Content-Type']}.")
+        return response.content
+
     def _web_remote_control_url(self) -> str:
         return f"http://{self.ip_address}:{WEB_REMOTE_CONTROL_PORT}"
 

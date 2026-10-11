@@ -46,7 +46,21 @@ class WebRemoteControlLive(TestCase):
                 browser.close()
 
 
+class WebRemoteControlSnapshot(TestCase):
+    """Take a snapshot over the web remote control HTTP endpoint and check that a HEIC image is returned."""
+
+    def setup(self):
+        self.moblin.import_settings(overrides={})
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        snapshot = self.moblin.take_snapshot()
+        self.assert_equal(snapshot[4:8], b"ftyp")
+        self.assert_greater(len(snapshot), 10_000)
+
+
 def tests(moblin: Moblin):
     return [
         WebRemoteControlLive(moblin),
+        WebRemoteControlSnapshot(moblin),
     ]

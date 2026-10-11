@@ -105,6 +105,7 @@ enum HttpServerStatus {
     case badRequest
     case notFound
     case methodNotAllowed
+    case serviceUnavailable
 
     func code() -> Int {
         switch self {
@@ -120,6 +121,8 @@ enum HttpServerStatus {
             404
         case .methodNotAllowed:
             405
+        case .serviceUnavailable:
+            503
         }
     }
 
@@ -137,6 +140,8 @@ enum HttpServerStatus {
             "Not Found"
         case .methodNotAllowed:
             "Method Not Allowed"
+        case .serviceUnavailable:
+            "Service Unavailable"
         }
     }
 }

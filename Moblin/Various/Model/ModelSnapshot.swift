@@ -26,6 +26,21 @@ extension Model {
         }
     }
 
+    func takeSnapshotHeic(onComplete: @escaping @MainActor (Data?) -> Void) {
+        guard !isChatPhone() else {
+            onComplete(nil)
+            return
+        }
+        media.takeSnapshot(age: 0.0) { uiImage, _, _ in
+            DispatchQueue.global().async {
+                let imageHeic = encodeSnapshotForPhotos(image: uiImage)
+                DispatchQueue.main.async {
+                    onComplete(imageHeic)
+                }
+            }
+        }
+    }
+
     private func saveSnapshotToPhotos(image: UIImage, fallbackImage: Data) {
         DispatchQueue.global().async {
             let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
