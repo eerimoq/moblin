@@ -183,8 +183,9 @@ class SrtSender: @unchecked Sendable {
     private var packetsToSend: Deque<SrtDataPacket> = []
     private var packetsInFlight: Deque<SrtDataPacket> = []
     private var packetsInFlightBySequenceNumber: [UInt32: SrtDataPacket] = [:]
-    private var audioSequenceNumbersToRetransmit: OrderedSet<UInt32> = []
-    private var videoSequenceNumbersToRetransmit: OrderedSet<UInt32> = []
+    private var audioSequenceNumbersToRetransmit: Deque<UInt32> = []
+    private var videoSequenceNumbersToRetransmit: Deque<UInt32> = []
+    private var sequenceNumbersToRetransmit: Set<UInt32> = []
     private var state: SrtSenderState = .connecting
     private var performanceData: Atomic<SrtPerformanceData> = .init(.zero)
     private var numberOfBytesSent: UInt64 = 0
@@ -263,8 +264,8 @@ class SrtSender: @unchecked Sendable {
         checkIfConnected(now: now)
     }
 
-    func input(packet: Data) {
-        latestReceivedPacketTime = .now
+    func input(packet: Data, now: ContinuousClock.Instant = .now) {
+        latestReceivedPacketTime = now
         do {
             try handleControlPacket(packet: packet, now: latestReceivedPacketTime)
         } catch {
@@ -339,11 +340,11 @@ class SrtSender: @unchecked Sendable {
         updatePerformanceData()
     }
 
-    private func retransmitPacketIfNeeded(sequenceNumbers: inout OrderedSet<UInt32>,
+    private func retransmitPacketIfNeeded(sequenceNumbers: inout Deque<UInt32>,
                                           now: ContinuousClock.Instant) -> Bool
     {
-        while !sequenceNumbers.isEmpty {
-            let packetSequenceNumber = sequenceNumbers.removeFirst()
+        while let packetSequenceNumber = sequenceNumbers.popFirst() {
+            sequenceNumbersToRetransmit.remove(packetSequenceNumber)
             guard let packet = packetsInFlightBySequenceNumber[packetSequenceNumber] else {
                 continue
             }
@@ -595,7 +596,9 @@ class SrtSender: @unchecked Sendable {
     }
 
     private func appendSequenceNumberToRetransmit(_ sequenceNumber: UInt32) {
-        guard let packet = packetsInFlightBySequenceNumber[sequenceNumber] else {
+        guard let packet = packetsInFlightBySequenceNumber[sequenceNumber],
+              sequenceNumbersToRetransmit.insert(sequenceNumber).inserted
+        else {
             return
         }
         if packet.containsAudio {
