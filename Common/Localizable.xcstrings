@@ -1943,8 +1943,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "!moblin custom <名稱>"
+            "state" : "translated",
+            "value" : "!moblin custom <name>"
           }
         }
       }
@@ -5207,7 +5207,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "[Moblin 網站](https://moblin.app/#streamers)"
           }
         }
@@ -6117,8 +6117,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@(%2$lld 點數,%3$lld 位使用者)"
+            "state" : "translated",
+            "value" : "%1$@（%2$lld 點數，%3$lld 位使用者）"
           }
         }
       }
@@ -6267,8 +6267,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@(%2$lld 票)"
+            "state" : "translated",
+            "value" : "%1$@（%2$lld 票）"
           }
         }
       }
@@ -6725,7 +6725,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%2$@ 將 %1$@ 加入了佇列。"
           }
         }
@@ -6875,7 +6875,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ 提問：%2$@ 回答：%3$@"
           }
         }
@@ -7921,7 +7921,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "找不到 %2$@ 點播的 %1$@。"
           }
         }
@@ -9417,8 +9417,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%1$@，抱歉，我無法回答你的問題（%2$@）。😢"
+            "state" : "translated",
+            "value" : "%1$@，抱歉，我無法回答您的問題（%2$@）。😢"
           }
         }
       }
@@ -12531,8 +12531,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ 請在 iOS 設定中允許 Moblin 存取你的位置，以查看目前的 WiFi 網路。"
+            "state" : "translated",
+            "value" : "⚠️ 請在 iOS 設定中允許 Moblin 存取您的位置，以查看目前的 WiFi 網路。"
           }
         }
       }
@@ -12675,8 +12675,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "⚠️ 請在 iOS 設定中允許 Moblin 存取你的位置，以使用定位功能。"
+            "state" : "translated",
+            "value" : "⚠️ 請在 iOS 設定中允許 Moblin 存取您的位置，以使用定位功能。"
           }
         }
       }
@@ -14009,7 +14009,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 請輸入 GoPro 應推流到的 URL。"
           }
         }
@@ -14153,7 +14153,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 請輸入 GoPro 推流時應使用的 WiFi 網路。"
           }
         }
@@ -14593,7 +14593,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ Moblin 在背景執行時 MetalPetal 無法運作。"
           }
         }
@@ -15037,7 +15037,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "⚠️ 請選擇 GoPro 裝置。首次連線需要配對模式。"
           }
         }
@@ -19032,7 +19032,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "1. 依照[此處](https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#mobcam-obs-plugin)的說明安裝 OBS Mobcam 外掛程式。"
           }
         }
@@ -19176,7 +19176,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "2. 使用 USB 線將 Moblin 連接到電腦。"
           }
         }
@@ -19468,7 +19468,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "3. 在 OBS 中新增 Mobcam 來源。"
           }
         }
@@ -19760,7 +19760,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "4. 在 Moblin 中按下 Go live，開始向 OBS 串流。"
           }
         }
@@ -22422,7 +22422,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "一個選項"
           }
         }
@@ -24346,8 +24346,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "巨集是一連串動作，只需點一下按鈕即可變更設定、濾鏡等。它也可以在繼續之前等待事件，例如新追蹤者。"
+            "state" : "translated",
+            "value" : "巨集是一連串動作，只需輕點按鈕即可變更設定、濾鏡等。它也可以在繼續之前等待事件，例如新追蹤者。"
           }
         }
       }
@@ -25524,7 +25524,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "正延遲會讓音訊較晚，負延遲則較早。"
           }
         }
@@ -28926,8 +28926,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "VTuber 小工具會顯示模仿你臉部動作的 VRM 或 Live2D 模型。"
+            "state" : "translated",
+            "value" : "VTuber 小工具會顯示模仿您臉部動作的 VRM 或 Live2D 模型。"
           }
         }
       }
@@ -30698,7 +30698,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "要執行的動作"
           }
         }
@@ -30842,7 +30842,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "動態摘要"
           }
         }
@@ -31876,7 +31876,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "新增歌曲"
           }
         }
@@ -33056,8 +33056,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "允許區域網路上的其他裝置透過此代理伺服器執行 HTTP 請求。區域網路上的任何人都能使用，因此請僅在你信任的網路上啟用。"
+            "state" : "translated",
+            "value" : "允許區域網路上的其他裝置透過此代理伺服器執行 HTTP 請求。區域網路上的任何人都能使用，因此請僅在您信任的網路上啟用。"
           }
         }
       }
@@ -33648,7 +33648,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在共享聊天工作階段中也顯示其他頻道的事件。"
           }
         }
@@ -35422,7 +35422,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "一個結果"
           }
         }
@@ -36898,7 +36898,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "App 模式"
           }
         }
@@ -37338,7 +37338,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Apple Music"
           }
         }
@@ -38074,7 +38074,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "封存投票"
           }
         }
@@ -38512,7 +38512,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "確定要取代目前指令的文字嗎？"
           }
         }
@@ -40868,7 +40868,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "自動開始直播"
           }
         }
@@ -42936,7 +42936,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "App 進入前景時自動開始直播。"
           }
         }
@@ -45006,7 +45006,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選取時場景按鈕的背景顏色。"
           }
         }
@@ -45150,7 +45150,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選取時變焦預設按鈕的背景顏色。"
           }
         }
@@ -46772,7 +46772,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "已封鎖 %@"
           }
         }
@@ -49732,7 +49732,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "大 GIF 縮放"
           }
         }
@@ -51504,7 +51504,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "僅藍牙喇叭"
           }
         }
@@ -57994,7 +57994,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "取消預測"
           }
         }
@@ -58138,7 +58138,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "取消了預測：%@"
           }
         }
@@ -58430,7 +58430,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "取消預測會退還所有頻道點數。"
           }
         }
@@ -60496,7 +60496,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "編輯 URL 即可更改連接埠。"
           }
         }
@@ -62860,7 +62860,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "聊天室手機"
           }
         }
@@ -63900,7 +63900,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選項"
           }
         }
@@ -64044,7 +64044,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選項"
           }
         }
@@ -66713,8 +66713,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "直播與錄影的色彩範圍。完整範圍使用所有色階,而有限範圍是部分伺服器和播放器所期望的廣播標準。色彩空間可在「設定 → 相機」中設定。"
+            "state" : "translated",
+            "value" : "直播與錄影的色彩範圍。完整範圍使用所有色階，而有限範圍是部分伺服器和播放器所期望的廣播標準。色彩空間可在「設定 → 相機」中設定。"
           }
         }
       }
@@ -67449,7 +67449,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "精簡事件"
           }
         }
@@ -67739,7 +67739,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "儲存至「照片」的快照與拍攝照片的壓縮品質。"
           }
         }
@@ -67881,7 +67881,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "透過 USB 線連接電腦"
           }
         }
@@ -68917,7 +68917,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在另一台裝置上將其中一個 URL 設定為 HTTP 代理伺服器。"
           }
         }
@@ -69503,7 +69503,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "用 USB 線將此裝置連接到電腦，並在電腦上執行 Moblin Mobcam 主機工具以接收串流。電腦會透過線材連接到上方的連接埠。"
           }
         }
@@ -70387,7 +70387,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "正在連線到 GoPro %@"
           }
         }
@@ -70825,7 +70825,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "包含"
           }
         }
@@ -71561,7 +71561,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "控制列"
           }
         }
@@ -72597,8 +72597,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "已將 %@ 拷貝到剪貼簿"
+            "state" : "translated",
+            "value" : "已將 %@ 複製到剪貼簿"
           }
         }
       }
@@ -74073,7 +74073,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Core Image 是 Apple 的影像處理框架。MetalPetal 為實驗性功能。MetalPetal 提供類似的影像處理，並有望佔用更少的系統資源。"
           }
         }
@@ -75107,7 +75107,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "建立特效精靈"
           }
         }
@@ -77177,7 +77177,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "目前網路"
           }
         }
@@ -78059,7 +78059,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "自訂指令"
           }
         }
@@ -78497,7 +78497,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "自訂 Mobcam"
           }
         }
@@ -80123,7 +80123,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在 CPU 上解碼接收的影片，而不是使用硬體影片解碼器。會耗用更多 CPU 和電量並產生更多熱量，但可解碼硬體解碼器不支援的影片，也能同時解碼更多串流。"
           }
         }
@@ -81007,7 +81007,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "延遲"
           }
         }
@@ -82929,7 +82929,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "裝置"
           }
         }
@@ -92979,7 +92979,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "結束投票"
           }
         }
@@ -93419,7 +93419,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "已結束"
           }
         }
@@ -93563,8 +93563,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "在 %lld 級結束了 Hype Train!"
+            "state" : "translated",
+            "value" : "在 %lld 級結束了發燒列車！"
           }
         }
       }
@@ -93707,8 +93707,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "結束了投票:%@"
+            "state" : "translated",
+            "value" : "結束了投票：%@"
           }
         }
       }
@@ -93857,7 +93857,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "結束了投票：%1$@ 獲勝者：%2$@"
           }
         }
@@ -94007,7 +94007,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "結束了預測：%1$@ 結果：%2$@"
           }
         }
@@ -94151,8 +94151,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "結束投票會顯示最終結果,封存則會隱藏結果。"
+            "state" : "translated",
+            "value" : "結束投票會顯示最終結果，封存則會隱藏結果。"
           }
         }
       }
@@ -94295,7 +94295,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@後結束"
           }
         }
@@ -95769,7 +95769,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "事件"
           }
         }
@@ -96949,7 +96949,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@後過期。"
           }
         }
@@ -97531,7 +97531,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "外接相機影像範圍"
           }
         }
@@ -99003,7 +99003,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "封鎖使用者失敗"
           }
         }
@@ -101079,7 +101079,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "識別失敗"
           }
         }
@@ -101371,7 +101371,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "載入 .png 檔案失敗"
           }
         }
@@ -101515,7 +101515,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "載入內建檔案失敗"
           }
         }
@@ -102254,7 +102254,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "無法從 GoPro %@ 開始直播"
           }
         }
@@ -103138,7 +103138,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "解壓縮模型失敗"
           }
         }
@@ -111870,7 +111870,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "全範圍"
           }
         }
@@ -112902,7 +112902,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "向 %@ 發出了推薦！"
           }
         }
@@ -114380,7 +114380,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "巨大化表情"
           }
         }
@@ -116616,7 +116616,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "開始直播"
           }
         }
@@ -117800,7 +117800,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro %@ 啟動串流失敗"
           }
         }
@@ -117944,7 +117944,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro %@ 正在串流至自訂 URL"
           }
         }
@@ -118088,7 +118088,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro 裝置"
           }
         }
@@ -118380,7 +118380,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未收到 AI 回應：%@"
           }
         }
@@ -118524,7 +118524,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "圖形"
           }
         }
@@ -120300,7 +120300,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高品質降採樣可讓縮小後的影像更好看，但會使用更多系統資源。"
           }
         }
@@ -123264,7 +123264,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "HTTP 代理"
           }
         }
@@ -123556,8 +123556,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hype Train 已結束"
+            "state" : "translated",
+            "value" : "發燒列車已結束"
           }
         }
       }
@@ -123700,8 +123700,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hype Train 已開始"
+            "state" : "translated",
+            "value" : "發燒列車已開始"
           }
         }
       }
@@ -123842,7 +123842,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "圖示"
           }
         }
@@ -124284,8 +124284,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "發起突襲的頻道 ID"
+            "state" : "translated",
+            "value" : "發起揪團的頻道 ID"
           }
         }
       }
@@ -124574,7 +124574,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "閒置"
           }
         }
@@ -124716,7 +124716,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "如果"
           }
         }
@@ -127674,7 +127674,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "即時相機預覽"
           }
         }
@@ -127816,7 +127816,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "即時拍照"
           }
         }
@@ -130034,7 +130034,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "加入"
           }
         }
@@ -130176,8 +130176,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "剛剛延續了贈送的訂閱!"
+            "state" : "translated",
+            "value" : "剛剛延續了贈送的訂閱！"
           }
         }
       }
@@ -130318,8 +130318,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "剛剛將 Prime 訂閱轉換為 %lld 級!"
+            "state" : "translated",
+            "value" : "剛剛將 Prime 訂閱轉換為 %lld 級！"
           }
         }
       }
@@ -130918,7 +130918,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "剛剛續訂了 %1$lld 級訂閱，共 %2$lld 個月，已連續 %3$lld 個月！"
           }
         }
@@ -131068,7 +131068,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "剛剛續訂了 %1$lld 級訂閱，共 %2$lld 個月！"
           }
         }
@@ -131358,8 +131358,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "剛剛使用 Prime 訂閱了!"
+            "state" : "translated",
+            "value" : "剛剛使用 Prime 訂閱了！"
           }
         }
       }
@@ -131648,8 +131648,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "剛剛連續觀看了 %lld 場直播!"
+            "state" : "translated",
+            "value" : "剛剛連續觀看了 %lld 場直播！"
           }
         }
       }
@@ -132974,7 +132974,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kick 贈送訂閱"
           }
         }
@@ -133116,7 +133116,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kick 的 Kicks"
           }
         }
@@ -133260,8 +133260,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kick 突襲"
+            "state" : "translated",
+            "value" : "Kick 揪團"
           }
         }
       }
@@ -133404,7 +133404,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kick 獎勵"
           }
         }
@@ -133548,7 +133548,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kick 訂閱"
           }
         }
@@ -136068,7 +136068,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "鏡頭"
           }
         }
@@ -136658,7 +136658,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "有限"
           }
         }
@@ -136802,7 +136802,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "線性"
           }
         }
@@ -137686,7 +137686,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "區域網路"
           }
         }
@@ -138572,7 +138572,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "鎖定預測"
           }
         }
@@ -138864,8 +138864,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "已鎖定,等待結果"
+            "state" : "translated",
+            "value" : "已鎖定，等待結果"
           }
         }
       }
@@ -139008,7 +139008,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%@後鎖定"
           }
         }
@@ -142838,7 +142838,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "請確保 Moblin 裝置離車輛相對較近。"
           }
         }
@@ -143276,7 +143276,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mobcam URL 格式錯誤"
           }
         }
@@ -146526,7 +146526,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最大位元率"
           }
         }
@@ -148744,7 +148744,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "訊息"
           }
         }
@@ -150824,7 +150824,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最少月數"
           }
         }
@@ -151116,7 +151116,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最少訂閱數"
           }
         }
@@ -151260,7 +151260,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最少觀眾數"
           }
         }
@@ -151402,7 +151402,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "最低觀看連續紀錄"
           }
         }
@@ -152432,7 +152432,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mobcam"
           }
         }
@@ -152574,7 +152574,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Mobcam 主機必須為 localhost"
           }
         }
@@ -152716,7 +152716,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "缺少 Mobcam 連接埠號碼"
           }
         }
@@ -153600,7 +153600,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin 拍攝"
           }
         }
@@ -153744,7 +153744,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin 會透過藍牙將這些憑證安全地傳送到已配對的 GoPro。"
           }
         }
@@ -153886,7 +153886,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin 快照"
           }
         }
@@ -154622,7 +154622,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Moblin 的網頁瀏覽器和瀏覽器小工具會使用該代理伺服器。"
           }
         }
@@ -155952,8 +155952,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "媽媽"
+            "state" : "translated",
+            "value" : "Mom"
           }
         }
       }
@@ -156836,7 +156836,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "支援大多數 VRM 0.0 檔案和壓縮的 Live2D Cubism 模型。"
           }
         }
@@ -158172,7 +158172,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "音樂播放器錯誤"
           }
         }
@@ -158464,7 +158464,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "必須為偶數"
           }
         }
@@ -160532,7 +160532,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "我的 GoPro"
           }
         }
@@ -163492,8 +163492,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "發起突襲的頻道名稱"
+            "state" : "translated",
+            "value" : "發起揪團的頻道名稱"
           }
         }
       }
@@ -163636,7 +163636,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "送出 Cheer 的使用者名稱"
           }
         }
@@ -163780,7 +163780,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "追隨者的使用者名稱"
           }
         }
@@ -163924,7 +163924,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "贈送訂閱的使用者名稱"
           }
         }
@@ -164068,7 +164068,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "兌換獎勵的使用者名稱"
           }
         }
@@ -164212,7 +164212,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "續訂使用者的名稱"
           }
         }
@@ -164356,7 +164356,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "分享連續觀看紀錄的使用者名稱"
           }
         }
@@ -164500,7 +164500,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "訂閱使用者的名稱"
           }
         }
@@ -164940,7 +164940,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "原生低光源增強"
           }
         }
@@ -166274,7 +166274,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "新"
           }
         }
@@ -169234,8 +169234,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "streamer 中未設定巨集"
+            "state" : "translated",
+            "value" : "實況主尚未設定任何巨集"
           }
         }
       }
@@ -172190,7 +172190,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "未登入 %@"
           }
         }
@@ -172778,7 +172778,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "通知"
           }
         }
@@ -174996,7 +174996,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "僅在硬體視訊解碼無法運作時啟用。"
           }
         }
@@ -175436,7 +175436,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "僅當音訊輸出為藍牙喇叭或耳機時才朗讀訊息。"
           }
         }
@@ -177792,7 +177792,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "其他值"
           }
         }
@@ -178528,7 +178528,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "結果：%@"
           }
         }
@@ -180597,7 +180597,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "透過藍牙配對並控制相容的 GoPro 裝置。需要 HERO9 Black 或更新機型。"
           }
         }
@@ -182961,7 +182961,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "拍照"
           }
         }
@@ -183103,7 +183103,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "「照片」影像品質"
           }
         }
@@ -183541,7 +183541,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "子母畫面"
           }
         }
@@ -186057,7 +186057,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "投票已結束"
           }
         }
@@ -186201,7 +186201,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "投票已開始"
           }
         }
@@ -187681,7 +187681,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "預測"
           }
         }
@@ -187825,7 +187825,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "預測已取消"
           }
         }
@@ -187969,7 +187969,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "預測已結束"
           }
         }
@@ -188113,7 +188113,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "預測已開始"
           }
         }
@@ -192857,8 +192857,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "請將 GoPro 設為配對模式,放在附近,並確認已中斷 GoPro Quik 的連線。"
+            "state" : "translated",
+            "value" : "請將 GoPro 設為配對模式，放在附近，並確認已中斷 GoPro Quik 的連線。"
           }
         }
       }
@@ -193149,7 +193149,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "QR 碼"
           }
         }
@@ -194773,8 +194773,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "曾突襲過"
+            "state" : "translated",
+            "value" : "曾揪團過"
           }
         }
       }
@@ -195065,8 +195065,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "突襲過你"
+            "state" : "translated",
+            "value" : "揪團過您"
           }
         }
       }
@@ -199655,7 +199655,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "遠端控制助理拒絕了密碼"
           }
         }
@@ -203951,7 +203951,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "結算"
           }
         }
@@ -204095,7 +204095,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選擇獲勝結果以結算預測。"
           }
         }
@@ -205425,7 +205425,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "獎勵"
           }
         }
@@ -209419,7 +209419,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "App 啟動時執行"
           }
         }
@@ -209563,8 +209563,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "App 啟動時執行適用於等待事件的巨集,例如有人追蹤時執行動作。將重複設為永遠,即可在每次事件後再次等待。"
+            "state" : "translated",
+            "value" : "App 啟動時執行適用於等待事件的巨集，例如有人追蹤時執行動作。將重複設為永遠，即可在每次事件後再次等待。"
           }
         }
       }
@@ -210003,8 +210003,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "條件符合時,執行後續指定數量的動作。"
+            "state" : "translated",
+            "value" : "條件符合時，執行後續指定數量的動作。"
           }
         }
       }
@@ -210297,7 +210297,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "所有名稱使用相同顏色"
           }
         }
@@ -211035,7 +211035,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "儲存設定"
           }
         }
@@ -211179,7 +211179,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "已儲存 😅"
           }
         }
@@ -211473,7 +211473,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "已儲存的 URL"
           }
         }
@@ -211615,7 +211615,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "朗讀表情"
           }
         }
@@ -217255,8 +217255,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "選擇「伺服器」可串流到 Moblin,選擇「自訂」可直接串流到其他 RTMP 目的地。"
+            "state" : "translated",
+            "value" : "選擇「伺服器」可串流到 Moblin，選擇「自訂」可直接串流到其他 RTMP 目的地。"
           }
         }
       }
@@ -217545,7 +217545,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "選擇車輛"
           }
         }
@@ -218279,8 +218279,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "向 {twitchRaidChannelId} 中的頻道發送 Twitch 呼喊，通常由先前的 Twitch 突襲事件設定。"
+            "state" : "translated",
+            "value" : "向 {twitchRaidChannelId} 中的頻道發送 Twitch 推薦，通常由先前的 Twitch 揪團事件設定。"
           }
         }
       }
@@ -218569,7 +218569,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發送聊天訊息"
           }
         }
@@ -219159,7 +219159,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "向 [Moblin 網站](https://moblin.app/#streamers) 發送開播通知"
           }
         }
@@ -219747,7 +219747,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "將指定名稱的指令文字發送到聊天室。"
           }
         }
@@ -219889,7 +219889,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "當使用者發送 !moblin custom <name> 時，將文字發送到聊天室。"
           }
         }
@@ -220033,8 +220033,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "發送 Twitch 呼喊"
+            "state" : "translated",
+            "value" : "發送 Twitch 推薦"
           }
         }
       }
@@ -220781,7 +220781,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發送了 %@ 的 Super Chat！"
           }
         }
@@ -220925,7 +220925,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發送了 %@ 的 Super Sticker！"
           }
         }
@@ -221069,7 +221069,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發送了 Super Chat！"
           }
         }
@@ -221213,7 +221213,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發送了 Super Sticker！"
           }
         }
@@ -222688,7 +222688,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "設定手電筒亮度，範圍 1 到 100。"
           }
         }
@@ -223276,7 +223276,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在封存檔中找不到設定檔"
           }
         }
@@ -224010,7 +224010,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "共享聊天室"
           }
         }
@@ -224450,8 +224450,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "已送出 Shoutout"
+            "state" : "translated",
+            "value" : "已送出推薦"
           }
         }
       }
@@ -227120,7 +227120,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "顯示聚合分流百分比"
           }
         }
@@ -228298,7 +228298,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "顯示騎乘速度"
           }
         }
@@ -230222,7 +230222,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在活動動態中顯示"
           }
         }
@@ -230366,7 +230366,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "在聊天室中顯示"
           }
         }
@@ -234818,7 +234818,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "顯示系統監控（若已啟用）"
           }
         }
@@ -236300,7 +236300,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "顯示在實況主的動態消息中。"
           }
         }
@@ -238962,7 +238962,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "軟體視訊解碼"
           }
         }
@@ -246662,8 +246662,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "發起了熱潮列車！"
+            "state" : "translated",
+            "value" : "發起了發燒列車！"
           }
         }
       }
@@ -246806,7 +246806,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發起了投票：%@"
           }
         }
@@ -246950,7 +246950,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "發起了預測：%@"
           }
         }
@@ -251530,7 +251530,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "直播設定"
           }
         }
@@ -255674,7 +255674,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Super Chat"
           }
         }
@@ -255818,7 +255818,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Super Sticker"
           }
         }
@@ -255962,7 +255962,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "SuperView"
           }
         }
@@ -263516,7 +263516,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "相機預覽快速按鈕可即時顯示和隱藏相機預覽，沒有場景切換轉場。會稍微多佔用系統資源。"
           }
         }
@@ -264548,7 +264548,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "HTTP 代理會透過最有可能連上網際網路的網路介面執行 HTTP 請求。"
           }
         }
@@ -265578,7 +265578,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "名稱不可為空。"
           }
         }
@@ -266460,8 +266460,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "拍照快捷按鈕可立即開始和停止拍照,無需場景切換轉場。會略微增加系統資源使用量。"
+            "state" : "translated",
+            "value" : "拍照快捷按鈕可立即開始和停止拍照，無需場景切換轉場。會略微增加系統資源使用量。"
           }
         }
       }
@@ -266604,7 +266604,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "上一次運動仍在停止中。請再試一次。"
           }
         }
@@ -269412,7 +269412,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "此裝置目前連接的 WiFi 網路。"
           }
         }
@@ -270002,7 +270002,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "此裝置"
           }
         }
@@ -271040,7 +271040,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "已禁言 %@"
           }
         }
@@ -273994,7 +273994,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "手電筒亮度"
           }
         }
@@ -278289,7 +278289,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "關閉手電筒。"
           }
         }
@@ -278432,7 +278432,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "開啟手電筒。"
           }
         }
@@ -279168,7 +279168,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch Bits"
           }
         }
@@ -279312,7 +279312,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 追隨"
           }
         }
@@ -279456,7 +279456,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 贈送訂閱"
           }
         }
@@ -279600,8 +279600,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Twitch 突襲"
+            "state" : "translated",
+            "value" : "Twitch 揪團"
           }
         }
       }
@@ -279744,7 +279744,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 續訂"
           }
         }
@@ -279888,7 +279888,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 獎勵"
           }
         }
@@ -280180,7 +280180,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 訂閱"
           }
         }
@@ -280324,7 +280324,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Twitch 觀看連勝"
           }
         }
@@ -285356,7 +285356,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "透過 USB 將 Moblin 用作 OBS Studio 中的低延遲攝影機。"
           }
         }
@@ -286240,7 +286240,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "用於同步音訊與影像。"
           }
         }
@@ -286974,7 +286974,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "用於根據車輪轉數計算速度。"
           }
         }
@@ -287856,7 +287856,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "值"
           }
         }
@@ -288146,8 +288146,8 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "由事件設定的變數。後續動作可在文字中使用它們。點一下變數即可拷貝到剪貼簿。"
+            "state" : "translated",
+            "value" : "由事件設定的變數。後續動作可在文字中使用它們。輕點變數即可複製到剪貼簿。"
           }
         }
       }
@@ -288584,7 +288584,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "車輛"
           }
         }
@@ -292726,7 +292726,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "等待事件"
           }
         }
@@ -292868,7 +292868,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "等待觀眾兌換獎勵後，繼續執行後續動作。獎勵留空則等待任何獎勵。"
           }
         }
@@ -293010,7 +293010,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "等待事件發生後，繼續執行後續動作。"
           }
         }
@@ -294044,7 +294044,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "觀看連續紀錄"
           }
         }
@@ -294186,7 +294186,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "觀看連續紀錄"
           }
         }
@@ -295222,7 +295222,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "網站"
           }
         }
@@ -295956,7 +295956,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "輪圈周長"
           }
         }
@@ -299362,7 +299362,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "GoPro %@ 的 WiFi 設定失敗"
           }
         }
@@ -299950,7 +299950,7 @@
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "密碼錯誤"
           }
         }
