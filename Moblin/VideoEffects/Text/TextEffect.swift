@@ -371,7 +371,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
             return
         }
         if !forceUpdate {
-            nextUpdateTime += .seconds(1)
+            nextUpdateTime = now.advanced(by: .seconds(1))
         }
         DispatchQueue.main.async {
             self.updateOverlayInternal(size: size, now: now)
