@@ -1171,7 +1171,6 @@ final class Model: NSObject, ObservableObject {
         addObserver(UIApplication.willTerminateNotification, #selector(handleApplicationWillTerminate))
         updateOrientation()
         reloadHttpProxyServer()
-        reloadIngests()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
@@ -1588,7 +1587,6 @@ final class Model: NSObject, ObservableObject {
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             reloadAudioSession()
-            reloadIngests()
             reloadDjiDevices()
             reloadBrowserWidgets()
             chatTextToSpeech.reset(running: true)

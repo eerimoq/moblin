@@ -912,7 +912,6 @@ extension Model {
         for mediaPlayer in mediaPlayers.values {
             mediaPlayer.setPixelFormatType(stream.colorRange)
         }
-        reloadIngests()
     }
 }
 
