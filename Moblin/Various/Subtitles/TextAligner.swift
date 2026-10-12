@@ -31,12 +31,14 @@ class TextAligner {
             }
             var matches = 0
             var offset = startOffset
+            var newIndex = newText.index(newText.startIndex, offsetBy: startOffset)
+            var oldIndex = oldText.index(oldText.startIndex, offsetBy: startOffset + shift)
             while offset <= endOffset {
-                let newIndex = newText.index(newText.startIndex, offsetBy: offset)
-                let oldIndex = oldText.index(oldText.startIndex, offsetBy: offset + shift)
                 if newText[newIndex] == oldText[oldIndex] {
                     matches += 1
                 }
+                newText.formIndex(after: &newIndex)
+                oldText.formIndex(after: &oldIndex)
                 offset += 1
             }
             if matches > bestMatches
