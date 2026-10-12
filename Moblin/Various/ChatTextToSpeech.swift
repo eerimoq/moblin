@@ -77,6 +77,8 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
     private var ttsMonster: TtsMonster?
+    private var ttsMonsterTask: Task<Void, Never>?
+    private var ttsMonsterRequestId: UUID?
     private var audioPlayer: AudioPlayer?
     private var isSpeaking: Bool = false
     private var isPausingBetweenMessages: Bool = false
@@ -206,6 +208,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
 
     func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
+            self.cancelTtsMonsterRequest()
             self.running = running
             self.synthesizer.stopSpeaking(at: .immediate)
             self.audioPlayer?.stop()
@@ -240,6 +243,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     }
 
     private func skipCurrentMessageInternal() {
+        cancelTtsMonsterRequest()
         synthesizer.stopSpeaking(at: .immediate)
         synthesizer = createSpeechSynthesizer()
         synthesizer.delegate = self
@@ -404,17 +408,35 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     }
 
     private func utterTtsMonster(voiceId: String, text: String) {
-        Task {
-            if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
-                textToSpeechDispatchQueue.async {
+        let requestId = UUID()
+        ttsMonsterRequestId = requestId
+        let ttsMonster = ttsMonster
+        ttsMonsterTask = Task {
+            guard !Task.isCancelled else {
+                return
+            }
+            let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text)
+            textToSpeechDispatchQueue.async {
+                guard self.ttsMonsterRequestId == requestId else {
+                    return
+                }
+                self.ttsMonsterTask = nil
+                self.ttsMonsterRequestId = nil
+                if let data {
                     self.audioPlayer = try? AudioPlayer(data: data)
                     self.audioPlayer?.setDelegate(delegate: self)
                     self.audioPlayer?.play()
+                } else {
+                    self.sayFinishedInternal()
                 }
-            } else {
-                sayFinished()
             }
         }
+    }
+
+    private func cancelTtsMonsterRequest() {
+        ttsMonsterRequestId = nil
+        ttsMonsterTask?.cancel()
+        ttsMonsterTask = nil
     }
 
     private func shouldSayUser(user: String, now: ContinuousClock.Instant) -> Bool {
@@ -429,10 +451,14 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
 
     private func sayFinished() {
         textToSpeechDispatchQueue.async {
-            self.isSpeaking = false
-            self.currentlyPlayingMessage = nil
-            self.sayNextMessageAfterPause(pause: self.pauseBetweenMessages)
+            self.sayFinishedInternal()
         }
+    }
+
+    private func sayFinishedInternal() {
+        isSpeaking = false
+        currentlyPlayingMessage = nil
+        sayNextMessageAfterPause(pause: pauseBetweenMessages)
     }
 
     private func sayNextMessageAfterPause(pause: Double) {
