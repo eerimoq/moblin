@@ -100,12 +100,16 @@ final class VideoSnapshots: @unchecked Sendable {
     {
         Task {
             var bestSampleBuffer = preferredSampleBuffer
-            var bestResult = try? await CalculateImageAestheticsScoresRequest()
+            let preferredResult = try? await CalculateImageAestheticsScoresRequest()
                 .perform(on: preferredSampleBuffer)
+            var bestResult = preferredResult
             for sampleBuffer in sampleBuffers {
-                guard let result = try? await CalculateImageAestheticsScoresRequest()
-                    .perform(on: sampleBuffer)
-                else {
+                var result = sampleBuffer === preferredSampleBuffer ? preferredResult : nil
+                if result == nil {
+                    result = try? await CalculateImageAestheticsScoresRequest()
+                        .perform(on: sampleBuffer)
+                }
+                guard let result else {
                     continue
                 }
                 if bestResult == nil || result.overallScore > bestResult!.overallScore + 0.2 {
