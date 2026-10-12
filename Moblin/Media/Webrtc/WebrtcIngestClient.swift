@@ -354,7 +354,7 @@ final class WebrtcIngestClient: @unchecked Sendable {
         case .h264:
             let units = readH264NalUnits(data: frameData,
                                          nalUnits: nalUnits,
-                                         filter: [.sps, .pps, .idr])
+                                         filter: [.sps, .pps])
             formatDescription = units.makeFormatDescription()
         case .h265:
             let units = readH265NalUnits(data: frameData,

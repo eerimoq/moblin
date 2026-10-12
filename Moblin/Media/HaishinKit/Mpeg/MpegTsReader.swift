@@ -399,9 +399,12 @@ class MpegTsReader: @unchecked Sendable {
         _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
     ) {
         let nalUnits = getNalUnits(data: packetizedElementaryStream.data)
+        let isSync = nalUnits.contains {
+            packetizedElementaryStream.data[$0.dataOffset()] & 0x1F == AvcNalUnitType.idr.rawValue
+        }
         let units = readH264NalUnits(data: packetizedElementaryStream.data,
                                      nalUnits: nalUnits,
-                                     filter: [.pps, .sps, .idr])
+                                     filter: [.pps, .sps])
         let formatDescription = units.makeFormatDescription()
         if let formatDescription, formatDescriptions[packetId] != formatDescription {
             formatDescriptions[packetId] = formatDescription
@@ -421,7 +424,7 @@ class MpegTsReader: @unchecked Sendable {
         ) else {
             return
         }
-        sampleBuffer.setIsSync(units.contains { $0.header.type == .idr })
+        sampleBuffer.setIsSync(isSync)
         handleVideoSampleBuffer(sampleBuffer)
     }
 
