@@ -233,9 +233,7 @@ struct BrowserWidgetView: UIViewRepresentable {
         browser.browserEffect.webView
     }
 
-    func updateUIView(_: WKWebView, context _: Context) {
-        browser.browserEffect.reload()
-    }
+    func updateUIView(_: WKWebView, context _: Context) {}
 }
 
 private struct InstantReplayCountdownView: View {
