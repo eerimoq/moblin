@@ -15,8 +15,9 @@ struct DebugLogSettingsView: View {
     let clearLog: () -> Void
     @State private var shareItem: ShareItem?
 
-    private func isMessageVisible(message: String) -> Bool {
-        debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
+    private var filteredLog: Deque<LogEntry> {
+        let filter = debug.logFilter.lowercased()
+        return log.filter { filter.isEmpty || $0.message.lowercased().contains(filter) }
     }
 
     var body: some View {
@@ -30,18 +31,17 @@ struct DebugLogSettingsView: View {
                     if log.isEmpty {
                         Text("The log is empty.")
                     } else {
-                        VStack(alignment: .leading) {
-                            ForEach(log) { item in
-                                if isMessageVisible(message: item.message) {
-                                    HStack {
-                                        Text(item.message)
-                                        Spacer()
-                                    }
-                                }
+                        ForEach(filteredLog) { item in
+                            HStack {
+                                Text(item.message)
+                                Spacer()
                             }
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 20, bottom: 4, trailing: 20))
                         }
                     }
                 }
+                .environment(\.defaultMinListRowHeight, 0)
             }
             .navigationTitle("Log")
             .navigationBarTitleDisplayMode(.inline)
@@ -54,8 +54,7 @@ struct DebugLogSettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        shareItem = ShareItem(url: model
-                            .formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
+                        shareItem = ShareItem(url: model.formatLog(log: filteredLog))
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
