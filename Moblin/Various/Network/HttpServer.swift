@@ -1,6 +1,8 @@
 import Foundation
 import Network
 
+private let httpServerFileQueue = DispatchQueue(label: "com.eerimoq.http-server-file")
+
 struct HttpRequestParseResult {
     let method: String
     let path: String
@@ -201,15 +203,17 @@ class HttpServerResponse {
     }
 }
 
-private class HttpServerConnection: @unchecked Sendable {
+class HttpServerConnection: @unchecked Sendable {
     private let connection: NWConnection
     private weak let server: HttpServer?
+    private let queue: DispatchQueue
     private var parser = HttpRequestParser()
     private var request: HttpServerRequest?
 
-    init(connection: NWConnection, server: HttpServer) {
+    init(connection: NWConnection, server: HttpServer, queue: DispatchQueue) {
         self.connection = connection
         self.server = server
+        self.queue = queue
     }
 
     func receiveData() {
@@ -276,24 +280,34 @@ private class HttpServerConnection: @unchecked Sendable {
         guard let request else {
             return
         }
-        guard let fileHandle = try? FileHandle(forReadingFrom: fileUrl) else {
-            sendAndClose(status: .notFound, content: Data())
-            return
-        }
-        let fileSize = fileUrl.fileSize
         var lines: [String] = []
         lines.append("\(request.version) \(HttpServerStatus.ok.code()) \(HttpServerStatus.ok.text())")
         lines.append("Content-Type: \(contentType)")
-        lines.append("Content-Length: \(fileSize)")
         appendExtraHeaders(headers: extraHeaders, lines: &lines)
-        let headerData = appendCloseHeaderAndFinalize(lines: &lines)
-        connection.send(content: headerData, completion: .contentProcessed { error in
-            if error != nil {
-                self.closeFileAndConnection(fileHandle: fileHandle)
+        let headerLines = lines
+        let version = request.version
+        httpServerFileQueue.async {
+            guard let fileHandle = try? FileHandle(forReadingFrom: fileUrl) else {
+                self.queue.async {
+                    var lines = ["\(version) 404 Not Found", "Content-Length: 0"]
+                    self.sendAndClose(data: appendCloseHeaderAndFinalize(lines: &lines))
+                }
                 return
             }
-            self.sendFileChunk(fileHandle: fileHandle, remaining: fileSize)
-        })
+            let fileSize = fileUrl.fileSize
+            var lines = headerLines
+            lines.insert("Content-Length: \(fileSize)", at: 2)
+            let headerData = appendCloseHeaderAndFinalize(lines: &lines)
+            self.connection.send(content: headerData, completion: .contentProcessed { error in
+                httpServerFileQueue.async {
+                    if error != nil {
+                        self.closeFileAndConnection(fileHandle: fileHandle)
+                        return
+                    }
+                    self.sendFileChunk(fileHandle: fileHandle, remaining: fileSize)
+                }
+            })
+        }
     }
 
     private func sendFileChunk(fileHandle: FileHandle, remaining: UInt64) {
@@ -307,11 +321,13 @@ private class HttpServerConnection: @unchecked Sendable {
         }
         let newRemaining = remaining - UInt64(chunk.count)
         connection.send(content: chunk, completion: .contentProcessed { error in
-            if error != nil {
-                self.closeFileAndConnection(fileHandle: fileHandle)
-                return
+            httpServerFileQueue.async {
+                if error != nil {
+                    self.closeFileAndConnection(fileHandle: fileHandle)
+                    return
+                }
+                self.sendFileChunk(fileHandle: fileHandle, remaining: newRemaining)
             }
-            self.sendFileChunk(fileHandle: fileHandle, remaining: newRemaining)
         })
     }
 
@@ -438,7 +454,7 @@ class HttpServer: @unchecked Sendable {
             }
         }
         connection.start(queue: queue)
-        let connection = HttpServerConnection(connection: connection, server: self)
+        let connection = HttpServerConnection(connection: connection, server: self, queue: queue)
         connection.receiveData()
     }
 
