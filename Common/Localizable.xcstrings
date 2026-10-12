@@ -65236,6 +65236,9 @@
         }
       }
     },
+    "Clear the queue." : {
+
+    },
     "Clock" : {
       "localizations" : {
         "de" : {

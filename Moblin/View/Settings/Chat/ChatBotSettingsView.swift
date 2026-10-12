@@ -525,6 +525,9 @@ private struct AppleMusicPermissionsSettingsView: View {
                 Text("")
                 Text(String("!moblin music status"))
                 Text("Show status.")
+                Text("")
+                Text(String("!moblin music clear"))
+                Text("Clear the queue.")
             }
         }
     }

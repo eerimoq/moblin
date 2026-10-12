@@ -29,6 +29,7 @@
 | !moblin music next [\<count>] | Next song(s). |
 | !moblin music previous [\<count>] | Previous song(s). |
 | !moblin music status | Show status. |
+| !moblin music clear | Clear the queue. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
 | !moblin tesla media next | Next track. |

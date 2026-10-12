@@ -10,6 +10,7 @@ private enum Action {
     case next(count: Int)
     case previous(count: Int)
     case status(onCompleted: (MusicStatus) -> Void)
+    case clear
 }
 
 @MainActor private var songs: [Song] = []
@@ -64,6 +65,11 @@ extension Model {
         tryRunNextAction()
     }
 
+    func clearMusic() {
+        actions.append(.clear)
+        tryRunNextAction()
+    }
+
     private func tryRunNextAction() {
         guard !isActionRunning, let action = actions.popFirst() else {
             return
@@ -85,6 +91,8 @@ extension Model {
                     try await previousAction(count: count)
                 case let .status(onCompleted: onCompleted):
                     try await statusAction(onCompleted: onCompleted)
+                case .clear:
+                    clearAction()
                 }
             } catch {
                 self.makeErrorToast(title: String(localized: "Music player error"),
@@ -170,6 +178,13 @@ extension Model {
         for _ in 0 ..< min(count, songs.count) {
             try await musicPlayer.skipToPreviousEntry()
         }
+    }
+
+    private func clearAction() {
+        playRequested = true
+        songs = []
+        musicPlayer.stop()
+        musicPlayer.queue = .init(for: songs)
     }
 
     private func statusAction(onCompleted: (MusicStatus) -> Void) async throws {

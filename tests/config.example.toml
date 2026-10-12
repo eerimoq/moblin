@@ -10,6 +10,7 @@ capabilities = [
     "p3-color-space",
     "hlg-color-space",
     "apple-log-color-space",
+    "apple-music",
 ]
 
 [device.macpro]

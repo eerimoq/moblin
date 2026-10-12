@@ -7,6 +7,7 @@ from .suites import http_proxy
 from .suites import ingests
 from .suites import macros
 from .suites import mic
+from .suites import music
 from .suites import record
 from .suites import scenes
 from .suites import settings
@@ -33,6 +34,7 @@ def create_suites(moblin, _):
         gimbal.tests(moblin),
         http_proxy.tests(moblin),
         macros.tests(moblin),
+        music.tests(moblin),
         web_remote_control.tests(moblin),
     ]
 

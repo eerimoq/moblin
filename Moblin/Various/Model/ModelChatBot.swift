@@ -542,6 +542,8 @@ extension Model {
                 self.handleChatBotMessageMusicPrevious(command: command)
             case .status:
                 self.handleChatBotMessageMusicStatus(command: command)
+            case .clear:
+                self.handleChatBotMessageMusicClear()
             case nil:
                 break
             }
@@ -585,6 +587,10 @@ extension Model {
 
     private func handleChatBotMessageMusicPrevious(command: ChatBotCommand) {
         previousMusic(count: command.popFirstInt(in: 1 ... 100) ?? 1)
+    }
+
+    private func handleChatBotMessageMusicClear() {
+        clearMusic()
     }
 
     private func handleChatBotMessageMusicStatus(command: ChatBotCommand) {

@@ -104,6 +104,7 @@ enum ChatBotMusicArgument: String, ChatBotArgument {
     case next
     case previous
     case status
+    case clear
 }
 
 enum ChatBotStreamArgument: String, ChatBotArgument {

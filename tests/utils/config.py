@@ -50,6 +50,7 @@ class Capability(StrEnum):
     HLG_COLOR_SPACE = "hlg-color-space"
     APPLE_LOG_COLOR_SPACE = "apple-log-color-space"
     SAME_PAGE_CONCURRENT_AUDIO = "same-page-concurrent-audio"
+    APPLE_MUSIC = "apple-music"
 
 
 def srt_listener_url(
