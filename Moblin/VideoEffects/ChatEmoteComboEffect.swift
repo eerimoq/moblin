@@ -92,10 +92,13 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
             state.emoteUrl = emoteUrl
             state.count = comboCount
         }
-        timer.startSingleShot(timeout: Double(settings.resetAfter)) {
-            self.currentEmoteUrl = nil
-            self.comboCount = 0
-            self.setComboImage(image: nil)
+        timer.startSingleShot(timeout: Double(settings.resetAfter)) { [weak self] in
+            guard let self else {
+                return
+            }
+            currentEmoteUrl = nil
+            comboCount = 0
+            setComboImage(image: nil)
         }
     }
 
