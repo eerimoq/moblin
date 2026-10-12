@@ -728,7 +728,7 @@ final class Model: NSObject, ObservableObject {
     var latestDebugActions: [String] = []
     var streamingHistoryStream: StreamingHistoryStream?
     var recordingsStorage = RecordingsStorage()
-    var recordingThumbnailsCache: [String: Data] = [:]
+    let recordingThumbnails = RecordingThumbnails()
     var latestLowBitrateTime = ContinuousClock.now
     // periphery:ignore
     var bluetoothCentralManger: CBCentralManager?

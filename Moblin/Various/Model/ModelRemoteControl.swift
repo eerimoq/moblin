@@ -3,6 +3,79 @@ import CoreLocation
 import Foundation
 import SwiftUI
 
+private let recordingThumbnailQueue = DispatchQueue(label: "com.eerimoq.recording-thumbnail")
+
+private func loadRecordingThumbnail(url: URL, onComplete: @escaping @MainActor (Data?) -> Void) {
+    recordingThumbnailQueue.async {
+        let thumbnail = autoreleasepool { () -> Data? in
+            let asset = AVURLAsset(url: url)
+            let generator = AVAssetImageGenerator(asset: asset)
+            generator.appliesPreferredTrackTransform = true
+            generator.maximumSize = CGSize(width: 480, height: 480)
+            guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
+                return nil
+            }
+            return UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.9)
+        }
+        DispatchQueue.main.async {
+            onComplete(thumbnail)
+        }
+    }
+}
+
+@MainActor
+class RecordingThumbnails {
+    private struct Pending {
+        let id = UUID()
+        var completions: [@MainActor (Data?) -> Void]
+    }
+
+    private var cache: [String: Data] = [:]
+    private var pending: [String: Pending] = [:]
+    private let load: @MainActor (URL, @escaping @MainActor (Data?) -> Void) -> Void
+
+    init(
+        load: @escaping @MainActor (URL, @escaping @MainActor (Data?) -> Void)
+            -> Void = loadRecordingThumbnail
+    ) {
+        self.load = load
+    }
+
+    func get(filename: String, url: @autoclosure () -> URL,
+             onComplete: @escaping @MainActor (Data?) -> Void)
+    {
+        if let thumbnail = cache[filename] {
+            onComplete(thumbnail)
+            return
+        }
+        if pending[filename] != nil {
+            pending[filename]?.completions.append(onComplete)
+            return
+        }
+        let request = Pending(completions: [onComplete])
+        pending[filename] = request
+        let id = request.id
+        load(url()) { thumbnail in
+            guard self.pending[filename]?.id == id else {
+                return
+            }
+            let completions = self.pending.removeValue(forKey: filename)?.completions ?? []
+            self.cache[filename] = thumbnail
+            for completion in completions {
+                completion(thumbnail)
+            }
+        }
+    }
+
+    func remove(filename: String) {
+        cache.removeValue(forKey: filename)
+        let completions = pending.removeValue(forKey: filename)?.completions ?? []
+        for completion in completions {
+            completion(nil)
+        }
+    }
+}
+
 @MainActor
 class RemoteControl: ObservableObject {
     @Published var general: RemoteControlStatusGeneral?
@@ -1435,23 +1508,13 @@ extension Model: RemoteControlWebDelegate {
             }
     }
 
-    func remoteControlWebGetRecordingThumbnail(filename: String) -> Data? {
-        if let thumbnail = recordingThumbnailsCache[filename] {
-            return thumbnail
-        }
-        let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
-        let asset = AVURLAsset(url: url)
-        let generator = AVAssetImageGenerator(asset: asset)
-        generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = CGSize(width: 480, height: 480)
-        guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
-            return nil
-        }
-        guard let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.9) else {
-            return nil
-        }
-        recordingThumbnailsCache[filename] = thumbnail
-        return thumbnail
+    func remoteControlWebGetRecordingThumbnail(filename: String,
+                                               onComplete: @escaping @MainActor (Data?) -> Void)
+    {
+        recordingThumbnails.get(filename: filename,
+                                url: recordingsStorage.defaultStorageDirectory()
+                                    .appending(component: filename),
+                                onComplete: onComplete)
     }
 
     func remoteControlWebGetRecordingUrl(filename: String) -> URL? {
@@ -1465,7 +1528,7 @@ extension Model: RemoteControlWebDelegate {
     func remoteControlWebDeleteRecording(filename: String) {
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
         try? FileManager.default.removeItem(at: url)
-        recordingThumbnailsCache.removeValue(forKey: filename)
+        recordingThumbnails.remove(filename: filename)
     }
 
     func remoteControlWebTakeSnapshot(age: Float, onComplete: @escaping @MainActor (Data?) -> Void) {

@@ -41,7 +41,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlWebGetRecordings() -> [[String: String]]
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
-    func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
+    func remoteControlWebGetRecordingThumbnail(filename: String,
+                                               onComplete: @escaping @MainActor (Data?) -> Void)
     func remoteControlWebDeleteRecording(filename: String)
     func remoteControlWebTakeSnapshot(age: Float, onComplete: @escaping @MainActor (Data?) -> Void)
     func remoteControlWebStartPreview()
@@ -286,11 +287,17 @@ class RemoteControlWeb {
             return
         }
         let filename = String(request.path.dropFirst(thumbnailsPrefix.count))
-        guard let thumbnail = delegate?.remoteControlWebGetRecordingThumbnail(filename: filename) else {
+        guard let delegate else {
             response.send(status: .notFound)
             return
         }
-        response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
+        delegate.remoteControlWebGetRecordingThumbnail(filename: filename) { thumbnail in
+            guard let thumbnail else {
+                response.send(status: .notFound)
+                return
+            }
+            response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
+        }
     }
 
     private func handleSnapshot(request: HttpServerRequest, response: HttpServerResponse) {
