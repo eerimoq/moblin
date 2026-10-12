@@ -48,7 +48,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
     private var port: Int = 0
     private var groupId: Data?
 
-    private var totalByteCount: Int64 = 0
+    private let totalByteCount: Atomic<Int64> = .init(0)
     private var networkInterfaces: SrtlaNetworkInterfaces
     private var connectionPriorities: [SettingsStreamSrtConnectionPriority]
     private var latestFlushDataPacketsTime = ContinuousClock.now
@@ -113,7 +113,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
                 self.networkPathMonitor.pathUpdateHandler = self.handleNetworkPathUpdate(path:)
                 self.networkPathMonitor.start(queue: srtlaClientQueue)
             }
-            self.totalByteCount = 0
+            self.totalByteCount.mutate { $0 = 0 }
             self.host = host
             self.port = port
             logger.info("srtla: Using destination address \(host) and port \(port)")
@@ -238,9 +238,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
     }
 
     func getTotalByteCount() -> Int64 {
-        srtlaClientQueue.sync {
-            totalByteCount
-        }
+        totalByteCount.value
     }
 
     func handleLocalPacket(packet: Data) {
@@ -257,7 +255,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
                 }
             }
         }
-        totalByteCount += Int64(packet.count)
+        totalByteCount.mutate { $0 += Int64(packet.count) }
     }
 
     private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
@@ -481,7 +479,7 @@ extension SrtlaClient: RemoteConnectionDelegate {
         case .official:
             localListener?.sendPacket(packet: packet)
         }
-        totalByteCount += Int64(packet.count)
+        totalByteCount.mutate { $0 += Int64(packet.count) }
     }
 
     func remoteConnectionOnSrtAck(sn: UInt32) {
