@@ -342,19 +342,41 @@ enum SettingsChatBotCommandSnapshotSource: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsChatBotCommandSnapshotWebRemoteControlMode: String, Codable, CaseIterable {
+    case fallbackWhenNotLive
+    case always
+
+    init(from decoder: any Decoder) throws {
+        self = try SettingsChatBotCommandSnapshotWebRemoteControlMode(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .fallbackWhenNotLive
+    }
+
+    func toString() -> String {
+        switch self {
+        case .fallbackWhenNotLive:
+            String(localized: "When not live")
+        case .always:
+            String(localized: "Always")
+        }
+    }
+}
+
 class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
     @Published var source: SettingsChatBotCommandSnapshotSource = .thisDevice
     @Published var webRemoteControlUrl: String = ""
+    @Published var webRemoteControlMode: SettingsChatBotCommandSnapshotWebRemoteControlMode = .always
 
     enum CodingKeys: CodingKey {
         case source
         case webRemoteControlUrl
+        case webRemoteControlMode
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.source, source)
         try container.encode(.webRemoteControlUrl, webRemoteControlUrl)
+        try container.encode(.webRemoteControlMode, webRemoteControlMode)
     }
 
     init() {}
@@ -363,6 +385,25 @@ class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         source = container.decode(.source, SettingsChatBotCommandSnapshotSource.self, .thisDevice)
         webRemoteControlUrl = container.decode(.webRemoteControlUrl, String.self, "")
+        webRemoteControlMode = container.decode(
+            .webRemoteControlMode,
+            SettingsChatBotCommandSnapshotWebRemoteControlMode.self,
+            .fallbackWhenNotLive
+        )
+    }
+
+    func effectiveSource(isLive: Bool) -> SettingsChatBotCommandSnapshotSource {
+        guard source == .webRemoteControl else {
+            return .thisDevice
+        }
+        switch webRemoteControlMode {
+        case .fallbackWhenNotLive:
+            return isLive
+                ? SettingsChatBotCommandSnapshotSource.thisDevice
+                : SettingsChatBotCommandSnapshotSource.webRemoteControl
+        case .always:
+            return SettingsChatBotCommandSnapshotSource.webRemoteControl
+        }
     }
 }
 

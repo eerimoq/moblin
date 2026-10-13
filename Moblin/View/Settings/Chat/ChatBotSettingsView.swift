@@ -130,6 +130,14 @@ private struct SnapshotPermissionsSettingsView: View {
                             }
                         }
                         if snapshot.source == .webRemoteControl {
+                            Picker("Use remote source", selection: $snapshot.webRemoteControlMode) {
+                                ForEach(
+                                    SettingsChatBotCommandSnapshotWebRemoteControlMode.allCases,
+                                    id: \.self
+                                ) { mode in
+                                    Text(mode.toString()).tag(mode)
+                                }
+                            }
                             TextEditNavigationView(
                                 title: String(localized: "URL"),
                                 value: snapshot.webRemoteControlUrl,
@@ -141,7 +149,7 @@ private struct SnapshotPermissionsSettingsView: View {
                     } footer: {
                         Text("""
                         Take the snapshot on this device, or fetch it from another device's web remote \
-                        control.
+                        control. The remote source can be used when this device is not live, or always.
                         """)
                     }
                     PermissionsSettingsInnerView(permissions: permissions)
