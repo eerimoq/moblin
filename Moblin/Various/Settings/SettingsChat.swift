@@ -176,6 +176,7 @@ class SettingsChatBotPermissions: Codable {
     var send: SettingsChatBotPermissionsCommand = .init()
     var music: SettingsChatBotPermissionsCommand = .init()
     var torch: SettingsChatBotPermissionsCommand = .init()
+    var vibrate: SettingsChatBotPermissionsCommand = .init()
 
     enum CodingKeys: CodingKey {
         case tts
@@ -200,6 +201,7 @@ class SettingsChatBotPermissions: Codable {
         case send
         case music
         case torch
+        case vibrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -226,6 +228,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.send, send)
         try container.encode(.music, music)
         try container.encode(.torch, torch)
+        try container.encode(.vibrate, vibrate)
     }
 
     init() {}
@@ -256,6 +259,7 @@ class SettingsChatBotPermissions: Codable {
         send = container.decode(.send, SettingsChatBotPermissionsCommand.self, .init())
         music = container.decode(.music, SettingsChatBotPermissionsCommand.self, .init())
         torch = container.decode(.torch, SettingsChatBotPermissionsCommand.self, .init())
+        vibrate = container.decode(.vibrate, SettingsChatBotPermissionsCommand.self, .init())
     }
 }
 

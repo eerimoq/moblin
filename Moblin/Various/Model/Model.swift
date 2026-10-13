@@ -643,6 +643,7 @@ final class Model: NSObject, ObservableObject {
     let vTuberStorage = VTuberStorage()
     let pngTuberStorage = PngTuberStorage()
     let reconnectTimer = MainTimer()
+    let haptics = Haptics()
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
@@ -1067,7 +1068,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
-        try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
+        let allow = database.vibrate || haptics.isActive
+        try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(allow)
     }
 
     private func removeUnusedKeychainItems() {
@@ -1085,6 +1087,7 @@ final class Model: NSObject, ObservableObject {
         media = Media(delegate: self)
         setupAppIntents()
         faxReceiver.delegate = self
+        haptics.delegate = self
         fixAlertMediasNoUpdate()
         setNativeLowLightBoost()
         setExternalCameraVideoRange()

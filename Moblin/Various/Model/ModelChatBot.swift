@@ -79,6 +79,8 @@ extension Model {
             handleChatBotMessageMusic(command: command)
         case .torch:
             handleChatBotMessageTorch(command: command)
+        case .vibrate:
+            handleChatBotMessageVibrate(command: command)
         case .custom:
             handleChatBotMessageCustom(command: command)
         }
@@ -352,6 +354,27 @@ extension Model {
         }
         database.torchLevel = Float(level) / 100
         updateTorch()
+    }
+
+    private func handleChatBotMessageVibrate(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.vibrate,
+            command: command
+        ) {
+            switch command.popFirstArgument(ChatBotOnOffArgument.self) {
+            case .on:
+                let duration = command.popFirstDouble(in: 0.1 ... 3600)
+                let intensity = command.popFirstInt(in: 1 ... 100) ?? 100
+                let sharpness = command.popFirstInt(in: 1 ... 100) ?? 50
+                self.haptics.start(duration: duration,
+                                   intensity: Float(intensity) / 100,
+                                   sharpness: Float(sharpness) / 100)
+            case .off:
+                self.haptics.stop()
+            case nil:
+                break
+            }
+        }
     }
 
     private func handleChatBotMessageAi(command: ChatBotCommand) {

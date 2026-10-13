@@ -427,6 +427,28 @@ private struct TorchPermissionsSettingsView: View {
     }
 }
 
+private struct VibratePermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin vibrate ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin vibrate on [<seconds>] [<intensity>] [<sharpness>]"))
+                Text("Vibrate the phone. Until turned off if no seconds is given.")
+                Text("Intensity and sharpness from 1 to 100, default 100 and 50.")
+                Text("")
+                Text(String("!moblin vibrate off"))
+                Text("Stop vibrating the phone.")
+            }
+        }
+    }
+}
+
 private struct TeslaPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -559,6 +581,7 @@ private struct ChatBotCommandsSettingsView: View {
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             TorchPermissionsSettingsView(permissions: permissions.torch)
+            VibratePermissionsSettingsView(permissions: permissions.vibrate)
             SendPermissionsSettingsView(permissions: permissions.send)
             AppleMusicPermissionsSettingsView(permissions: permissions.music)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)

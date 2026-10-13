@@ -51,6 +51,7 @@ enum ChatBotMainArgument: String, ChatBotArgument {
     case send
     case music
     case torch
+    case vibrate
     case custom
 }
 

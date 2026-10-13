@@ -23,6 +23,8 @@
 | !moblin torch on | Turn the torch on. |
 | !moblin torch off | Turn the torch off. |
 | !moblin torch level \<level> | Set torch level, from 1 to 100. |
+| !moblin vibrate on [\<seconds>] [\<intensity>] [\<sharpness>] | Vibrate the phone. Until turned off if no seconds is given. Intensity and sharpness from 1 to 100, default 100 and 50. |
+| !moblin vibrate off | Stop vibrating the phone. |
 | !moblin music add <song> | Add a song. Free text search or share link. |
 | !moblin music play | Play. |
 | !moblin music pause | Pause. |
