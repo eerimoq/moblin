@@ -48,7 +48,7 @@ final class AudioEncoderRingBuffer {
         if latestPresentationTimeStamp == .invalid {
             let offsetTimeStamp = CMTime(
                 value: CMTimeValue(workingIndex),
-                timescale: workingBufferPresentationTimeStamp.timescale
+                timescale: CMTimeScale(format.sampleRate)
             )
             latestPresentationTimeStamp = workingBufferPresentationTimeStamp + offsetTimeStamp
         }
