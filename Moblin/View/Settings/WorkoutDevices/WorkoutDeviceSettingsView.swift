@@ -66,7 +66,9 @@ struct WorkoutDeviceSettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    NameEditView(name: $device.name, existingNames: workoutDevices.devices)
+                    NameEditView(name: $device.name,
+                                 existingNames: workoutDevices.devices.filter { $0.id != device.id },
+                                 caseInsensitive: true)
                 } footer: {
                     Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
                 }
@@ -107,7 +109,10 @@ struct WorkoutDeviceSettingsView: View {
                         valueFormat: { "\($0) mm" }
                     )
                 } footer: {
-                    Text("Used to calculate speed from wheel revolutions.")
+                    Text("""
+                    Used to calculate cycling speed and distance from wheel revolutions. \
+                    Add {cyclingSpeed} or {cyclingDistance} to a text widget to show them on stream.
+                    """)
                 }
                 if device.enabled {
                     Section {

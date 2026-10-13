@@ -23,11 +23,17 @@ struct WorkoutDevicesSettingsView: View {
                                                   device: device,
                                                   status: model.statusTopRight)
                             .contextMenuDeleteButton {
-                                workoutDevices.devices.removeAll { $0.id == device.id }
+                                model.removeWorkoutDevice(device: device)
                             }
                     }
                     .onDelete { offsets in
-                        workoutDevices.devices.remove(atOffsets: offsets)
+                        let devices = offsets.map { workoutDevices.devices[$0] }
+                        for device in devices {
+                            model.removeWorkoutDevice(device: device)
+                        }
+                    }
+                    .onMove { source, destination in
+                        workoutDevices.devices.move(fromOffsets: source, toOffset: destination)
                     }
                 }
                 CreateButtonView {
@@ -37,6 +43,9 @@ struct WorkoutDevicesSettingsView: View {
                     workoutDevices.devices.append(device)
                 }
             } footer: {
+                Text(
+                    "Cycling speed and distance use the first enabled device in this list that has reported wheel data."
+                )
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a device"))
             }
         }

@@ -272,6 +272,9 @@ enum TextFormatPart: Equatable {
     case cyclingPower
     case cyclingCadence
     case cyclingSpeed(TextFormatSpeedUnit)
+    case cyclingSpeedDevice(String)
+    case cyclingDistance(TextFormatLengthUnit)
+    case cyclingDistanceDevice(String)
     case runningPace(String)
     case runningCadence(String)
     case runningDistance(String)
@@ -383,6 +386,7 @@ class TextFormatLoader {
                 } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
                 } else if appendCyclingSpeedIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendCyclingDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {
@@ -422,8 +426,25 @@ class TextFormatLoader {
     private func appendCyclingSpeedIfPresent(formatFromIndex: String) -> Bool {
         appendOptionsIfPresent(formatFromIndex,
                                "{cyclingspeed}",
-                               /{cyclingspeed:([^}]+)}/,
-                               TextFormatSpeedUnit.init) { .cyclingSpeed($0 ?? .system) }
+                               /{cyclingspeed:device:([^}]+)}/,
+                               { $0 },
+                               { $0.map(TextFormatPart.cyclingSpeedDevice) ?? .cyclingSpeed(.system) })
+            || appendOptionsIfPresent(formatFromIndex,
+                                      "{cyclingspeed}",
+                                      /{cyclingspeed:([^}]+)}/,
+                                      TextFormatSpeedUnit.init) { .cyclingSpeed($0 ?? .system) }
+    }
+
+    private func appendCyclingDistanceIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{cyclingdistance}",
+                               /{cyclingdistance:device:([^}]+)}/,
+                               { $0 },
+                               { $0.map(TextFormatPart.cyclingDistanceDevice) ?? .cyclingDistance(.system) })
+            || appendOptionsIfPresent(formatFromIndex,
+                                      "{cyclingdistance}",
+                                      /{cyclingdistance:([^}]+)}/,
+                                      TextFormatLengthUnit.init) { .cyclingDistance($0 ?? .system) }
     }
 
     private func appendAverageSpeedIfPresent(formatFromIndex: String) -> Bool {
