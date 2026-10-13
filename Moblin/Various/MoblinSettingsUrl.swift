@@ -17,6 +17,8 @@ class MoblinSettingsUrlStreamVideo: Codable {
     var codec: SettingsStreamCodec?
     var bFrames: Bool?
     var maxKeyFrameInterval: Int32?
+    var timecodesEnabled: Bool?
+    var ntpPoolAddress: String?
 }
 
 class MoblinSettingsUrlStreamAudio: Codable {

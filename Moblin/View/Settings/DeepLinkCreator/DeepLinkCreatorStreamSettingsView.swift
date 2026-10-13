@@ -59,6 +59,26 @@ private struct DeepLinkCreatorStreamVideoView: View {
                     Text("B-frames")
                 }
             }
+            Section {
+                Toggle("Timecodes", isOn: $video.timecodesEnabled)
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "NTP pool address"),
+                        value: video.ntpPoolAddress
+                    ) {
+                        video.ntpPoolAddress = $0.trim()
+                    }
+                } label: {
+                    TextItemLocalizedView(name: "NTP pool address", value: video.ntpPoolAddress)
+                }
+                .disabled(!video.timecodesEnabled)
+            } footer: {
+                Text("""
+                Synchronize multiple streams on your server using timecodes. \
+                Timecodes are in UTC and requires H.265/HEVC codec and SRT(LA) or \
+                RIST.
+                """)
+            }
         }
         .navigationTitle("Video")
     }
