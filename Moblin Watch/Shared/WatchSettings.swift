@@ -69,6 +69,7 @@ class WatchSettings: Codable, ObservableObject {
     var chat: WatchSettingsChat = .init()
     var show: WatchSettingsShow = .init()
     @Published var viaRemoteControl: Bool = false
+    @Published var swimmingPoolLength: Double = 25
 
     init() {}
 
@@ -76,6 +77,7 @@ class WatchSettings: Codable, ObservableObject {
         case chat
         case show
         case viaRemoteControl
+        case swimmingPoolLength
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -83,6 +85,7 @@ class WatchSettings: Codable, ObservableObject {
         try container.encode(.chat, chat)
         try container.encode(.show, show)
         try container.encode(.viaRemoteControl, viaRemoteControl)
+        try container.encode(.swimmingPoolLength, swimmingPoolLength)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -90,5 +93,6 @@ class WatchSettings: Codable, ObservableObject {
         chat = container.decode(.chat, WatchSettingsChat.self, .init())
         show = container.decode(.show, WatchSettingsShow.self, .init())
         viaRemoteControl = container.decode(.viaRemoteControl, Bool.self, false)
+        swimmingPoolLength = container.decode(.swimmingPoolLength, Double.self, 25)
     }
 }

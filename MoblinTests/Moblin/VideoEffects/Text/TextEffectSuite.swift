@@ -69,6 +69,31 @@ struct TextEffectSuite {
     }
 
     @Test
+    func workoutRemaining() {
+        let cases: [(Int?, String)] = [(nil, "-"), (0, "1000"), (600, "400"),
+                                       (1000, "0"), (1002, "0"), (-10, "1000")]
+        for (distance, expected) in cases {
+            let lines = format(format: "{workoutRemaining:1000}",
+                               variables: createVariables(workoutDistance: distance))
+            #expect(lines == createLine(data: .text(expected)))
+        }
+        let lines = format(format: "{workoutRemaining:2500}",
+                           variables: createVariables(workoutDistance: 600))
+        #expect(lines == createLine(data: .text("1900")))
+    }
+
+    @Test
+    func workoutGoalRequiresPositiveMeters() {
+        for token in ["{workoutRemaining}", "{workoutRemaining:0}", "{workoutRemaining:-1}",
+                      "{workoutRemaining:abc}", "{workoutRemaining:999999999999999999999}"]
+        {
+            #expect(loadTextFormat(format: token) == [.text(token)])
+        }
+        #expect(loadTextFormat(format: "{workoutRemaining:500}") == [.workoutRemaining(500)])
+        #expect(loadTextFormat(format: "{workoutRemaining:500}").isWorkoutVariable())
+    }
+
+    @Test
     func speed() {
         var lines = format(format: "{speed:m/s}", variables: createVariables())
         #expect(lines == createLine(data: .text("5 m/s")))
@@ -334,6 +359,7 @@ struct TextEffectSuite {
     private func createVariables(conditions: String? = nil,
                                  condition: WeatherCondition? = nil,
                                  heartRates: [String: Int?] = [:],
+                                 workoutDistance: Int? = nil,
                                  gForce: GForce? = nil,
                                  systemMonitor: String = "") -> Variables
     {
@@ -370,7 +396,7 @@ struct TextEffectSuite {
                   muted: false,
                   heartRates: heartRates,
                   activeEnergyBurned: nil,
-                  workoutDistance: nil,
+                  workoutDistance: workoutDistance,
                   power: nil,
                   stepCount: nil,
                   teslaBatteryLevel: "",
