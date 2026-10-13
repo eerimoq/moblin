@@ -266,10 +266,10 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
     {
         let size = image.extent.size
         return detections.map { detection in
-            let boundingBox = CGRect(x: detection.boundingBox.origin.x * 1920,
-                                     y: detection.boundingBox.origin.y * 1080,
-                                     width: detection.boundingBox.width * 1920,
-                                     height: detection.boundingBox.height * 1080)
+            let boundingBox = CGRect(x: detection.boundingBox.origin.x * size.width,
+                                     y: detection.boundingBox.origin.y * size.height,
+                                     width: detection.boundingBox.width * size.width,
+                                     height: detection.boundingBox.height * size.height)
             let contentRegion = CGRect(x: boundingBox.minX,
                                        y: size.height - boundingBox.maxY,
                                        width: boundingBox.width,
@@ -356,10 +356,10 @@ final class FaceEffect: VideoEffect, @unchecked Sendable {
     private func createTextsMaskImage(imageExtent: CGRect, detections: [TextDetection]) -> CIImage? {
         var mask = CIImage.empty().cropped(to: imageExtent)
         for detection in detections {
-            let x = detection.boundingBox.origin.x * 1920
-            let y = detection.boundingBox.origin.y * 1080
-            let width = detection.boundingBox.width * 1920
-            let height = detection.boundingBox.height * 1080
+            let x = detection.boundingBox.origin.x * imageExtent.width
+            let y = detection.boundingBox.origin.y * imageExtent.height
+            let width = detection.boundingBox.width * imageExtent.width
+            let height = detection.boundingBox.height * imageExtent.height
             let boundingBox = CGRect(x: x, y: y, width: width, height: height)
             mask = CIImage(color: .white)
                 .cropped(to: boundingBox)
