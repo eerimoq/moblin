@@ -280,6 +280,18 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .sendMessage(text: text), onSuccess: {})
     }
 
+    func music(command: RemoteControlMusicCommand, onSuccess: @escaping (RemoteControlMusicStatus) -> Void) {
+        performRequest(data: .music(command: command)) {
+            switch $0 {
+            case let .music(status: status):
+                onSuccess(status)
+            default:
+                break
+            }
+        } onError: { _ in
+        }
+    }
+
     private func tryNextTwitchEventSubNotification() {
         guard !twitchEventSubNotiticationWaitForResponse else {
             return

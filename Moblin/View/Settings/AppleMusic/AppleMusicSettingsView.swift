@@ -1,11 +1,107 @@
 import MusicKit
 import SwiftUI
 
+struct MusicArtistView: View {
+    let artist: String
+
+    var body: some View {
+        Text(artist)
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+    }
+}
+
+struct MusicAddedByView: View {
+    let user: String
+
+    var body: some View {
+        Text("Added by: \(user)")
+            .font(.subheadline)
+    }
+}
+
+private struct ControlsView: View {
+    let model: Model
+    @ObservedObject var playerState: ApplicationMusicPlayer.State
+    let isEmpty: Bool
+
+    var body: some View {
+        Section {
+            HStack {
+                Spacer()
+                if playerState.playbackStatus == .playing {
+                    Button {
+                        model.pauseMusic()
+                    } label: {
+                        Image(systemName: "pause")
+                    }
+                    .buttonStyle(.borderless)
+                } else {
+                    Button {
+                        model.playMusic()
+                    } label: {
+                        Image(systemName: "play")
+                    }
+                    .buttonStyle(.borderless)
+                }
+                Spacer()
+            }
+            .disabled(isEmpty)
+            .font(.title)
+        }
+    }
+}
+
+private struct PlaylistView: View {
+    let model: Model
+    let songs: [MusicPlaylistSong]
+    @ObservedObject var queue: ApplicationMusicPlayer.Queue
+
+    var body: some View {
+        let currentIndex = musicCurrentIndex(queue: queue)
+        Section {
+            ForEach(Array(songs.enumerated()), id: \.element.id) { index, song in
+                HStack {
+                    let isPlaying = index == currentIndex
+                    if isPlaying {
+                        Image(systemName: "music.quarternote.3")
+                    }
+                    VStack(alignment: .leading) {
+                        if isPlaying {
+                            Text(song.title)
+                                .bold()
+                        } else {
+                            Text(song.title)
+                        }
+                        if let artist = song.artist {
+                            MusicArtistView(artist: artist)
+                        }
+                        if let user = song.addedBy {
+                            MusicAddedByView(user: user)
+                        }
+                    }
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    model.selectMusic(entryId: song.id)
+                }
+            }
+            .onDelete { offsets in
+                for offset in offsets {
+                    model.removeMusic(entryId: songs[offset].id)
+                }
+            }
+        } header: {
+            Text("Playlist")
+        }
+    }
+}
+
 struct AppleMusicSettingsView: View {
     let model: Model
+    @ObservedObject var musicPlaylist: MusicPlaylist
     @State private var searchText: String = ""
-    @ObservedObject private var playerState = musicPlayer.state
-    @ObservedObject private var playerQueue = musicPlayer.queue
     @State private var isShowingSubscriptionOffer: Bool = false
     @State private var musicSubscription: MusicSubscription?
 
@@ -23,61 +119,17 @@ struct AppleMusicSettingsView: View {
                     }
                 }
             }
-            Section {
-                HStack {
-                    Spacer()
-                    Button {
-                        model.previousMusic(count: 1)
-                    } label: {
-                        Image(systemName: "arrow.backward.to.line")
-                    }
-                    .buttonStyle(.borderless)
-                    Spacer()
-                    if playerState.playbackStatus == .playing {
-                        Button {
-                            model.pauseMusic()
-                        } label: {
-                            Image(systemName: "pause")
-                        }
-                        .buttonStyle(.borderless)
-                    } else {
-                        Button {
-                            model.playMusic()
-                        } label: {
-                            Image(systemName: "play")
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                    Spacer()
-                    Button {
-                        model.nextMusic(count: 1)
-                    } label: {
-                        Image(systemName: "arrow.forward.to.line")
-                    }
-                    .buttonStyle(.borderless)
-                    Spacer()
-                }
-                .disabled(playerQueue.entries.isEmpty)
-                .font(.title)
-            }
+            ControlsView(model: model, playerState: musicPlayer.state, isEmpty: musicPlaylist.songs.isEmpty)
             Section {
                 TextField("Add song", text: $searchText)
                     .onSubmit {
-                        model.addMusic(title: searchText) { _ in }
+                        model.addMusic(title: searchText, user: nil) { _ in }
                     }
             }
-            Section {
-                ForEach(playerQueue.entries) { entry in
-                    if entry.id == playerQueue.currentEntry?.id {
-                        Text("• \(entry.title)")
-                            .bold()
-                    } else {
-                        Text(entry.title)
-                    }
-                }
-            } header: {
-                Text("Playlist")
-            }
+            PlaylistView(model: model, songs: musicPlaylist.songs, queue: musicPlaylist.queue)
+        }
+        .onAppear {
+            model.loadMusic()
         }
         .task {
             for await subscription in MusicSubscription.subscriptionUpdates {

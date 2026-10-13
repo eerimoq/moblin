@@ -61,6 +61,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerStartMacro(id: UUID)
     func remoteControlStreamerStopMacro(id: UUID)
     func remoteControlStreamerSendMessage(text: String)
+    func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
+                                    onCompleted: @escaping (RemoteControlMusicStatus) -> Void)
 }
 
 private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
@@ -429,6 +431,10 @@ class RemoteControlStreamer {
         case let .sendMessage(text: text):
             delegate.remoteControlStreamerSendMessage(text: text)
             sendEmptyOkResponse(id: id)
+        case let .music(command: command):
+            delegate.remoteControlStreamerMusic(command: command) { status in
+                self.send(message: .response(id: id, result: .ok, data: .music(status: status)))
+            }
         }
     }
 

@@ -741,6 +741,106 @@ private struct SendMessageView: View {
     }
 }
 
+private struct MusicView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+    @State private var title = ""
+
+    private func add() {
+        let title = title.trim()
+        guard !title.isEmpty else {
+            return
+        }
+        model.remoteControlAssistantMusic(command: .add(title: title, user: nil))
+        self.title = ""
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button {
+                            if remoteControl.musicStatus?.playing == true {
+                                model.remoteControlAssistantMusic(command: .pause)
+                            } else {
+                                model.remoteControlAssistantMusic(command: .play)
+                            }
+                        } label: {
+                            Image(systemName: remoteControl.musicStatus?.playing == true
+                                ? "pause.fill"
+                                : "play.fill")
+                        }
+                        Spacer()
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
+                }
+                Section {
+                    TextField("Song", text: $title)
+                        .onSubmit {
+                            add()
+                        }
+                    TextButtonView("Add") {
+                        add()
+                    }
+                } footer: {
+                    Text("Song title or Apple Music link.")
+                }
+                Section {
+                    if let status = remoteControl.musicStatus, !status.songs.isEmpty {
+                        ForEach(Array(status.songs.enumerated()), id: \.element.id) { index, song in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(song.title)
+                                    if let artist = song.artist {
+                                        MusicArtistView(artist: artist)
+                                    }
+                                    if let addedBy = song.user {
+                                        MusicAddedByView(user: addedBy)
+                                    }
+                                }
+                                Spacer()
+                                if index == status.currentSongIndex {
+                                    Image(systemName: status.playing ? "play.fill" : "pause.fill")
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                model.remoteControlAssistantMusic(command: .select(id: song.id))
+                            }
+                        }
+                        .onDelete { offsets in
+                            for offset in offsets {
+                                let id = status.songs[offset].id
+                                model.remoteControlAssistantMusic(command: .remove(id: id))
+                            }
+                        }
+                    } else {
+                        HCenter {
+                            Text("Empty queue")
+                        }
+                    }
+                } header: {
+                    Text("Queue")
+                }
+                Section {
+                    TextButtonView("Clear queue") {
+                        model.remoteControlAssistantMusic(command: .clear)
+                    }
+                }
+            }
+            .navigationTitle("Music")
+            .onAppear {
+                model.remoteControlAssistantMusic(command: .status)
+            }
+        } label: {
+            Text("Music")
+        }
+    }
+}
+
 private struct DebugLoggingView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -785,6 +885,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 GimbalPresetView(model: model, remoteControl: remoteControl)
                 MacrosView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
+                MusicView(model: model, remoteControl: remoteControl)
                 SendMessageView(model: model)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {

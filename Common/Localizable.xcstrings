@@ -10903,6 +10903,9 @@
         }
       }
     },
+    "•" : {
+
+    },
     "• %@" : {
       "localizations" : {
         "de" : {
@@ -31881,6 +31884,9 @@
           }
         }
       }
+    },
+    "Added by: %@" : {
+
     },
     "Advanced" : {
       "localizations" : {
@@ -65236,6 +65242,9 @@
         }
       }
     },
+    "Clear queue" : {
+
+    },
     "Clear the queue." : {
 
     },
@@ -90618,6 +90627,9 @@
           }
         }
       }
+    },
+    "Empty queue" : {
+
     },
     "Enable given widget." : {
       "localizations" : {
@@ -193159,6 +193171,9 @@
         }
       }
     },
+    "Queue" : {
+
+    },
     "Quick buttons" : {
       "localizations" : {
         "de" : {
@@ -239121,6 +239136,15 @@
           }
         }
       }
+    },
+    "Song" : {
+
+    },
+    "Song not found" : {
+
+    },
+    "Song title or Apple Music link." : {
+
     },
     "SOOP" : {
       "localizations" : {

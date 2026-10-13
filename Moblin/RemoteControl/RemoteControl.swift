@@ -74,6 +74,7 @@ enum RemoteControlRequest: Codable {
     case startMacro(id: UUID)
     case stopMacro(id: UUID)
     case sendMessage(text: String)
+    case music(command: RemoteControlMusicCommand)
 }
 
 enum RemoteControlResponse: Codable {
@@ -86,6 +87,7 @@ enum RemoteControlResponse: Codable {
     case getScoreboardSports(names: [String])
     case whip(status: Int, headers: [SettingsHttpHeader], body: Data)
     case getGolfScoreboard(data: RemoteControlGolfScoreboard)
+    case music(status: RemoteControlMusicStatus)
 }
 
 enum RemoteControlEvent: Codable {
@@ -159,6 +161,30 @@ struct RemoteControlChatMessage: Codable {
     let isOwner: Bool
     let bits: String?
     var highlight: RemoteControlChatHighlight?
+}
+
+enum RemoteControlMusicCommand: Codable {
+    case status
+    case play
+    case pause
+    case add(title: String, user: String?)
+    case clear
+    case remove(id: String)
+    case select(id: String)
+}
+
+struct RemoteControlMusicSong: Codable {
+    var id: String
+    var title: String
+    var artist: String?
+    var user: String?
+}
+
+struct RemoteControlMusicStatus: Codable {
+    var playing: Bool
+    var currentSongIndex: Int?
+    var songs: [RemoteControlMusicSong]
+    var songNotFound: Bool?
 }
 
 enum RemoteControlReaction: Codable, CaseIterable {

@@ -543,6 +543,7 @@ final class Model: NSObject, ObservableObject {
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
+    let musicPlaylist = MusicPlaylist()
     nonisolated(unsafe) var media: Media!
     let banners = Banners()
     let hypeTrain = HypeTrain()

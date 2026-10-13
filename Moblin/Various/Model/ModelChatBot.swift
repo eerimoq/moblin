@@ -588,7 +588,7 @@ extension Model {
         }
         let platform = command.message.platform
         let user = command.user() ?? String(localized: "Unknown")
-        addMusic(title: title) { result in
+        addMusic(title: title, user: user) { result in
             switch result {
             case let .added(song: song):
                 self.sendChatBotReply(

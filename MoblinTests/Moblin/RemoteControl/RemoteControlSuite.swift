@@ -24,6 +24,17 @@ struct RemoteControlSuite {
     }
 
     @Test
+    func musicRequests() throws {
+        #expect(try encode(.music(command: .play)) == #"{"music":{"command":{"play":{}}}}"#)
+        #expect(try encode(.music(command: .add(title: "Song", user: nil))) ==
+            #"{"music":{"command":{"add":{"title":"Song"}}}}"#)
+        #expect(try encode(.music(command: .add(title: "Song", user: "Erik"))) ==
+            #"{"music":{"command":{"add":{"title":"Song","user":"Erik"}}}}"#)
+        #expect(try encode(.music(command: .remove(id: "1"))) ==
+            #"{"music":{"command":{"remove":{"id":"1"}}}}"#)
+    }
+
+    @Test
     func remoteSceneDataVariables() throws {
         let variables = RemoteControlRemoteSceneDataVariables(variables: createVariables())
         let encoder = JSONEncoder()

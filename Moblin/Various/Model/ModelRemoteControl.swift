@@ -44,6 +44,7 @@ class RemoteControl: ObservableObject {
     @Published var beauty: Bool = false
     @Published var moblinInMouth: Bool = false
     @Published var cameraMan: Bool = false
+    @Published var musicStatus: RemoteControlMusicStatus?
 }
 
 enum RemoteControlAssistantPreviewUser {
@@ -315,6 +316,15 @@ extension Model {
 
     func remoteControlAssistantSendMessage(text: String) {
         remoteControlAssistant?.sendMessage(text: text)
+    }
+
+    func remoteControlAssistantMusic(command: RemoteControlMusicCommand) {
+        remoteControlAssistant?.music(command: command) { status in
+            if status.songNotFound == true {
+                self.makeErrorToast(title: String(localized: "Song not found"))
+            }
+            self.remoteControl.musicStatus = status
+        }
     }
 
     func remoteControlAssistantStartPreview(user: RemoteControlAssistantPreviewUser) {
@@ -916,6 +926,43 @@ extension Model: RemoteControlStreamerDelegate {
                               highlight: message.highlight.map { ChatHighlight(remoteControl: $0) },
                               live: live)
             remoteControlStreamerLatestReceivedChatMessageId = message.id
+        }
+    }
+
+    func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
+                                    onCompleted: @escaping (RemoteControlMusicStatus) -> Void)
+    {
+        var songNotFound = false
+        switch command {
+        case .status:
+            break
+        case .play:
+            playMusic()
+        case .pause:
+            pauseMusic()
+        case let .add(title: title, user: user):
+            addMusic(title: title, user: user ?? String(localized: "Remote control assistant")) { result in
+                if case .songNotFound = result {
+                    songNotFound = true
+                }
+            }
+        case .clear:
+            clearMusic()
+        case let .remove(id: id):
+            removeMusic(entryId: id)
+        case let .select(id: id):
+            selectMusic(entryId: id)
+        }
+        statusMusic { status in
+            onCompleted(RemoteControlMusicStatus(playing: status.playing,
+                                                 currentSongIndex: status.currentSongIndex,
+                                                 songs: status.songs.map {
+                                                     RemoteControlMusicSong(id: $0.id,
+                                                                            title: $0.title,
+                                                                            artist: $0.artist,
+                                                                            user: $0.addedBy)
+                                                 },
+                                                 songNotFound: songNotFound))
         }
     }
 
