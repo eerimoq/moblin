@@ -70689,6 +70689,9 @@
         }
       }
     },
+    "Connection status sound" : {
+
+    },
     "Contains" : {
       "localizations" : {
         "de" : {
@@ -91952,6 +91955,9 @@
           }
         }
       }
+    },
+    "Enable to play a short sound when the stream fails to connect." : {
+
     },
     "Enable to vibrate the device when the following toasts appear:" : {
       "localizations" : {

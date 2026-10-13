@@ -553,6 +553,7 @@ final class Model: NSObject, ObservableObject {
     let ingests = Ingests()
     let videoSources = VideoSources()
     let bitrate = Bitrate()
+    var connectionStatusSoundPlayer: AudioPlayer?
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
