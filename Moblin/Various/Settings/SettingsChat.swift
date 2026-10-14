@@ -364,7 +364,8 @@ enum SettingsChatBotCommandSnapshotWebRemoteControlMode: String, Codable, CaseIt
 class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
     @Published var source: SettingsChatBotCommandSnapshotSource = .thisDevice
     @Published var webRemoteControlUrl: String = ""
-    @Published var webRemoteControlMode: SettingsChatBotCommandSnapshotWebRemoteControlMode = .always
+    @Published var webRemoteControlMode: SettingsChatBotCommandSnapshotWebRemoteControlMode =
+        .fallbackWhenNotLive
 
     enum CodingKeys: CodingKey {
         case source
@@ -393,16 +394,18 @@ class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
     }
 
     func effectiveSource(isLive: Bool) -> SettingsChatBotCommandSnapshotSource {
-        guard source == .webRemoteControl else {
-            return .thisDevice
-        }
-        switch webRemoteControlMode {
-        case .fallbackWhenNotLive:
-            return isLive
-                ? SettingsChatBotCommandSnapshotSource.thisDevice
-                : SettingsChatBotCommandSnapshotSource.webRemoteControl
-        case .always:
-            return SettingsChatBotCommandSnapshotSource.webRemoteControl
+        switch source {
+        case .thisDevice:
+            SettingsChatBotCommandSnapshotSource.thisDevice
+        case .webRemoteControl:
+            switch webRemoteControlMode {
+            case .fallbackWhenNotLive:
+                isLive
+                    ? SettingsChatBotCommandSnapshotSource.thisDevice
+                    : SettingsChatBotCommandSnapshotSource.webRemoteControl
+            case .always:
+                SettingsChatBotCommandSnapshotSource.webRemoteControl
+            }
         }
     }
 }
