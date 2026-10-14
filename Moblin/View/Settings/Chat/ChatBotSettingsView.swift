@@ -134,8 +134,8 @@ private struct SnapshotPermissionsSettingsView: View {
                                 ForEach(
                                     SettingsChatBotCommandSnapshotWebRemoteControlMode.allCases,
                                     id: \.self
-                                ) { mode in
-                                    Text(mode.toString()).tag(mode)
+                                ) {
+                                    Text($0.toString())
                                 }
                             }
                             TextEditNavigationView(
