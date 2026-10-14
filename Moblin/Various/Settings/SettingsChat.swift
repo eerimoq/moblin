@@ -396,15 +396,13 @@ class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
     func effectiveSource(isLive: Bool) -> SettingsChatBotCommandSnapshotSource {
         switch source {
         case .thisDevice:
-            SettingsChatBotCommandSnapshotSource.thisDevice
+            .thisDevice
         case .webRemoteControl:
             switch webRemoteControlMode {
             case .fallbackWhenNotLive:
-                isLive
-                    ? SettingsChatBotCommandSnapshotSource.thisDevice
-                    : SettingsChatBotCommandSnapshotSource.webRemoteControl
+                isLive ? .thisDevice : .webRemoteControl
             case .always:
-                SettingsChatBotCommandSnapshotSource.webRemoteControl
+                .webRemoteControl
             }
         }
     }
