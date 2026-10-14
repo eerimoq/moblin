@@ -130,6 +130,14 @@ private struct SnapshotPermissionsSettingsView: View {
                             }
                         }
                         if snapshot.source == .webRemoteControl {
+                            Picker("Use remote source", selection: $snapshot.webRemoteControlMode) {
+                                ForEach(
+                                    SettingsChatBotCommandSnapshotWebRemoteControlMode.allCases,
+                                    id: \.self
+                                ) {
+                                    Text($0.toString())
+                                }
+                            }
                             TextEditNavigationView(
                                 title: String(localized: "URL"),
                                 value: snapshot.webRemoteControlUrl,

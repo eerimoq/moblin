@@ -245,7 +245,7 @@ extension Model {
                 message = self.formatSnapshotTakenBy(user: user)
             }
             let age = self.stream.estimatedViewerDelay
-            switch self.database.chat.botCommandSnapshot.source {
+            switch self.database.chat.botCommandSnapshot.effectiveSource(isLive: self.isLive) {
             case .thisDevice:
                 self.takeSnapshot(age: age, isChatBot: true, message: message)
             case .webRemoteControl:
@@ -271,7 +271,7 @@ extension Model {
                                       platform: command.message.platform)
             }
             self.takeSnapshotWithCountdown(message: command.rest(), user: command.user()) { message in
-                switch self.database.chat.botCommandSnapshot.source {
+                switch self.database.chat.botCommandSnapshot.effectiveSource(isLive: self.isLive) {
                 case .thisDevice:
                     self.takeSnapshot(age: 0.0, isChatBot: true, message: message)
                 case .webRemoteControl:
