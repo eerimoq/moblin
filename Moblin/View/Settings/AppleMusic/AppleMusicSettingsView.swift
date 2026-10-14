@@ -54,11 +54,12 @@ private struct ControlsView: View {
 
 private struct PlaylistView: View {
     let model: Model
-    let songs: [MusicPlaylistSong]
+    @ObservedObject var musicPlaylist: MusicPlaylist
     @ObservedObject var queue: ApplicationMusicPlayer.Queue
 
     var body: some View {
-        let currentIndex = musicCurrentIndex(queue: queue)
+        let songs = musicPlaylist.songs()
+        let currentIndex = musicPlaylist.currentIndex()
         Section {
             ForEach(Array(songs.enumerated()), id: \.element.id) { index, song in
                 HStack {
@@ -119,14 +120,18 @@ struct AppleMusicSettingsView: View {
                     }
                 }
             }
-            ControlsView(model: model, playerState: musicPlayer.state, isEmpty: musicPlaylist.songs.isEmpty)
+            ControlsView(
+                model: model,
+                playerState: musicPlayer.state,
+                isEmpty: musicPlaylist.state != .loaded
+            )
             Section {
                 TextField("Add song", text: $searchText)
                     .onSubmit {
                         model.addMusic(title: searchText, user: nil) { _ in }
                     }
             }
-            PlaylistView(model: model, songs: musicPlaylist.songs, queue: musicPlaylist.queue)
+            PlaylistView(model: model, musicPlaylist: musicPlaylist, queue: musicPlaylist.queue)
         }
         .onAppear {
             model.loadMusic()

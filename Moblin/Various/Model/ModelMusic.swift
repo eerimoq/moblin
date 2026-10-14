@@ -14,25 +14,12 @@ private enum Action {
     case clear
     case remove(entryId: String)
     case select(entryId: String)
-    case restore
+    case load
 }
 
-private struct MusicEntry {
-    let entry: ApplicationMusicPlayer.Queue.Entry
-    let songId: MusicItemID
-    let title: String
-    let artist: String?
+private struct MusicMetadata {
     let addedBy: String?
     let requestId: String?
-
-    init(song: Song, addedBy: String?, requestId: String?) {
-        entry = ApplicationMusicPlayer.Queue.Entry(song)
-        songId = song.id
-        title = song.title
-        artist = song.artistName
-        self.addedBy = addedBy
-        self.requestId = requestId
-    }
 }
 
 private struct StoredMusicEntry: Codable {
@@ -43,12 +30,16 @@ private struct StoredMusicEntry: Codable {
     let requestId: String?
 }
 
-@MainActor private var entries: [MusicEntry] = []
+enum MusicQueueState {
+    case notLoaded
+    case empty
+    case loaded
+}
+
 @MainActor let musicPlayer = ApplicationMusicPlayer.shared
 @MainActor private var isActionRunning = false
 @MainActor private var actions: Deque<Action> = []
 @MainActor private var playRequested = true
-@MainActor private var isRestored = false
 private let playlistQueue = DispatchQueue(label: "com.eerimoq.moblin.music-playlist")
 private let playlistStorage = SimpleStringStorage(key: "musicPlaylist")
 
@@ -62,21 +53,35 @@ private func loadPlaylist() async -> [StoredMusicEntry] {
     }
 }
 
-@MainActor
-private func storePlaylist() {
-    let playlist = entries.map {
-        StoredMusicEntry(songId: $0.songId.rawValue,
-                         title: $0.title,
-                         artist: $0.artist,
-                         addedBy: $0.addedBy,
-                         requestId: $0.requestId)
-    }
+private func storePlaylist(_ playlist: [StoredMusicEntry]) {
     playlistQueue.async {
         guard let data = try? JSONEncoder().encode(playlist) else {
             return
         }
         playlistStorage.set(String(bytes: data, encoding: .utf8) ?? "")
     }
+}
+
+private func makeSong(storedEntry: StoredMusicEntry) -> Song? {
+    var attributes: [String: Any] = [
+        "name": storedEntry.title,
+        "playParams": ["id": storedEntry.songId, "kind": "song"],
+    ]
+    if let artist = storedEntry.artist {
+        attributes["artistName"] = artist
+    }
+    let json: [String: Any] = ["id": storedEntry.songId, "type": "songs", "attributes": attributes]
+    guard let data = try? JSONSerialization.data(withJSONObject: json) else {
+        return nil
+    }
+    return try? JSONDecoder().decode(Song.self, from: data)
+}
+
+private func musicSong(entry: ApplicationMusicPlayer.Queue.Entry) -> Song? {
+    guard case let .song(song) = entry.item else {
+        return nil
+    }
+    return song
 }
 
 struct MusicPlaylistSong: Identifiable {
@@ -87,17 +92,30 @@ struct MusicPlaylistSong: Identifiable {
 }
 
 @MainActor
-func musicCurrentIndex(queue: ApplicationMusicPlayer.Queue) -> Int? {
-    guard let currentEntry = queue.currentEntry else {
-        return nil
-    }
-    return queue.entries.map(\.id).firstIndex(of: currentEntry.id)
-}
-
-@MainActor
 class MusicPlaylist: ObservableObject {
-    @Published var songs: [MusicPlaylistSong] = []
     @Published var queue = musicPlayer.queue
+    @Published var state: MusicQueueState = .notLoaded
+    fileprivate var metadata: [MusicItemID: MusicMetadata] = [:]
+
+    func songs() -> [MusicPlaylistSong] {
+        guard state == .loaded else {
+            return []
+        }
+        return queue.entries.map {
+            let song = musicSong(entry: $0)
+            return MusicPlaylistSong(id: $0.id,
+                                     title: song?.title ?? $0.title,
+                                     artist: song?.artistName ?? $0.subtitle,
+                                     addedBy: song.flatMap { metadata[$0.id]?.addedBy })
+        }
+    }
+
+    func currentIndex() -> Int? {
+        guard state == .loaded, let currentEntry = queue.currentEntry else {
+            return nil
+        }
+        return queue.entries.map(\.id).firstIndex(of: currentEntry.id)
+    }
 }
 
 struct MusicStatusSong {
@@ -176,36 +194,58 @@ extension Model {
     }
 
     func loadMusic() {
+        actions.append(.load)
         tryRunNextAction()
     }
 
-    private func setMusicQueue(_ queue: ApplicationMusicPlayer.Queue) {
-        musicPlayer.queue = queue
+    private func setMusicQueue(_ entries: [ApplicationMusicPlayer.Queue.Entry],
+                               startingAt: ApplicationMusicPlayer.Queue.Entry? = nil)
+    {
+        musicPlayer.queue = .init(entries, startingAt: startingAt)
         musicPlaylist.queue = musicPlayer.queue
+        musicPlaylist.state = entries.isEmpty ? .empty : .notLoaded
     }
 
-    private func updateMusicPlaylistSongs() {
-        musicPlaylist.songs = entries.map {
-            MusicPlaylistSong(id: $0.entry.id, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
+    private func storeMusicQueue() {
+        guard musicPlaylist.state != .notLoaded else {
+            return
         }
-    }
-
-    private func musicEntriesChanged() {
-        updateMusicPlaylistSongs()
-        storePlaylist()
+        var playlist: [StoredMusicEntry] = []
+        if musicPlaylist.state == .loaded {
+            for entry in musicPlayer.queue.entries {
+                guard let song = musicSong(entry: entry) else {
+                    continue
+                }
+                let metadata = musicPlaylist.metadata[song.id]
+                playlist.append(StoredMusicEntry(songId: song.id.rawValue,
+                                                 title: song.title,
+                                                 artist: song.artistName,
+                                                 addedBy: metadata?.addedBy,
+                                                 requestId: metadata?.requestId))
+            }
+        }
+        let songIds = Set(playlist.map { MusicItemID($0.songId) })
+        musicPlaylist.metadata = musicPlaylist.metadata.filter { songIds.contains($0.key) }
+        storePlaylist(playlist)
     }
 
     private func tryRunNextAction() {
-        if !isRestored {
-            isRestored = true
-            actions.prepend(.restore)
-        }
         guard !isActionRunning, let action = actions.popFirst() else {
             return
         }
         isActionRunning = true
         logger.debug("music: Running action: \(action)")
         Task {
+            switch action {
+            case .find, .clear:
+                break
+            default:
+                do {
+                    try await loadQueueIfNeeded()
+                } catch {
+                    logger.info("music: Load queue failed: \(error)")
+                }
+            }
             do {
                 switch action {
                 case let .add(title: title, user: user, requestId: requestId, onCompleted: onCompleted):
@@ -226,15 +266,15 @@ extension Model {
                 case let .previous(count: count):
                     try await previousAction(count: count)
                 case let .status(onCompleted: onCompleted):
-                    try await statusAction(onCompleted: onCompleted)
+                    statusAction(onCompleted: onCompleted)
                 case .clear:
                     clearAction()
                 case let .remove(entryId: entryId):
                     removeAction(entryId: entryId)
                 case let .select(entryId: entryId):
                     try await selectAction(entryId: entryId)
-                case .restore:
-                    try await restoreAction()
+                case .load:
+                    break
                 }
             } catch {
                 self.makeErrorToast(title: String(localized: "Music player error"),
@@ -245,17 +285,49 @@ extension Model {
         }
     }
 
+    private func loadQueueIfNeeded() async throws {
+        guard musicPlaylist.state == .notLoaded else {
+            return
+        }
+        let playlist = await loadPlaylist()
+        logger.debug("music: Loading \(playlist.count) songs")
+        guard !playlist.isEmpty else {
+            musicPlaylist.metadata = [:]
+            setMusicQueue([])
+            return
+        }
+        guard MusicAuthorization.currentStatus == .authorized else {
+            throw "Not authorized"
+        }
+        var songs = playlist.compactMap { makeSong(storedEntry: $0) }
+        if songs.count != playlist.count {
+            logger.info("music: Fetching songs from catalog")
+            let ids = playlist.map { MusicItemID($0.songId) }
+            let request = MusicCatalogResourceRequest<Song>(matching: \.id, memberOf: ids)
+            let response = try await request.response()
+            songs = playlist.compactMap { storedEntry in
+                response.items.first(where: { $0.id.rawValue == storedEntry.songId })
+            }
+        }
+        musicPlaylist.metadata = [:]
+        for storedEntry in playlist where musicPlaylist.metadata[MusicItemID(storedEntry.songId)] == nil {
+            musicPlaylist.metadata[MusicItemID(storedEntry.songId)] = MusicMetadata(
+                addedBy: storedEntry.addedBy,
+                requestId: storedEntry.requestId
+            )
+        }
+        setMusicQueue(songs.map { .init($0) })
+        try await musicPlayer.prepareToPlay()
+        musicPlaylist.state = .loaded
+        logger.debug("music: Loaded \(musicPlayer.queue.entries.count) songs")
+    }
+
     private func addAction(title: String,
                            user: String?,
                            requestId: String?,
                            onCompleted: (MusicAddResult) -> Void) async throws
     {
         let title = title.trim()
-        if let requestId, entries.contains(where: { $0.requestId == requestId }) {
-            logger.debug("music: Request \(requestId) already added")
-            onCompleted(.alreadyAdded)
-            return
-        }
         let authStatus = await MusicAuthorization.request()
         guard authStatus == .authorized else {
             logger.info("music: Not authorized")
@@ -263,41 +335,51 @@ extension Model {
             return
         }
         let song: Song?
+        guard musicPlaylist.state != .notLoaded else {
+            onCompleted(.failed)
+            throw "Playlist not loaded"
+        }
         do {
+            if let requestId, musicPlaylist.metadata.values.contains(where: { $0.requestId == requestId }) {
+                logger.debug("music: Request \(requestId) already added")
+                onCompleted(.alreadyAdded)
+                return
+            }
             song = try await findSong(title: title)
         } catch {
             onCompleted(.failed)
             throw error
         }
-        if let song {
-            logger.debug("music: Adding song \(song)")
-            onCompleted(.added(song: "\(song.artistName) - \(song.title)"))
-            let musicEntry = MusicEntry(song: song, addedBy: user, requestId: requestId)
-            let entry = musicEntry.entry
-            entries.append(musicEntry)
-            musicEntriesChanged()
-            if !musicPlayer.isPreparedToPlay || musicPlayer.queue.entries.isEmpty {
-                logger.debug("music: Creating queue")
-                setMusicQueue(.init(entries.map(\.entry)))
-                if playRequested {
-                    try await musicPlayer.play()
-                } else {
-                    try await musicPlayer.prepareToPlay()
-                }
-            } else {
-                if playRequested, musicPlayer.state.playbackStatus == .paused {
-                    logger.debug("music: New queue")
-                    setMusicQueue(.init(entries.map(\.entry), startingAt: entry))
-                    try await musicPlayer.play()
-                } else {
-                    logger.debug("music: Appending to queue")
-                    try await musicPlayer.queue.insert(entry, position: .tail)
-                }
-            }
-        } else {
+        guard let song else {
             logger.debug("music: Song '\(title)' not found")
             onCompleted(.songNotFound)
+            return
         }
+        logger.debug("music: Adding song \(song)")
+        onCompleted(.added(song: "\(song.artistName) - \(song.title)"))
+        musicPlaylist.metadata[song.id] = MusicMetadata(addedBy: user, requestId: requestId)
+        let entry = ApplicationMusicPlayer.Queue.Entry(song)
+        if musicPlaylist.state != .loaded {
+            logger.debug("music: Creating queue")
+            setMusicQueue([entry])
+            if playRequested {
+                try await musicPlayer.play()
+            } else {
+                try await musicPlayer.prepareToPlay()
+            }
+        } else if playRequested, [.paused, .stopped].contains(musicPlayer.state.playbackStatus) {
+            logger.debug("music: New queue")
+            let entries = musicPlayer.queue.entries
+                .compactMap { musicSong(entry: $0) }
+                .map { ApplicationMusicPlayer.Queue.Entry($0) }
+            setMusicQueue(entries + [entry], startingAt: entry)
+            try await musicPlayer.play()
+        } else {
+            logger.debug("music: Appending to queue")
+            try await musicPlayer.queue.insert(entry, position: .tail)
+        }
+        musicPlaylist.state = .loaded
+        storeMusicQueue()
     }
 
     private func findAction(title: String, onCompleted: (Song?) -> Void) async {
@@ -330,6 +412,9 @@ extension Model {
 
     private func playAction() async throws {
         playRequested = true
+        guard musicPlaylist.state == .loaded else {
+            return
+        }
         try await musicPlayer.play()
     }
 
@@ -339,92 +424,60 @@ extension Model {
     }
 
     private func nextAction(count: Int) async throws {
-        for _ in 0 ..< min(count, entries.count) {
+        guard musicPlaylist.state == .loaded else {
+            return
+        }
+        for _ in 0 ..< min(count, musicPlayer.queue.entries.count) {
             try await musicPlayer.skipToNextEntry()
         }
     }
 
     private func previousAction(count: Int) async throws {
-        for _ in 0 ..< min(count, entries.count) {
+        guard musicPlaylist.state == .loaded else {
+            return
+        }
+        for _ in 0 ..< min(count, musicPlayer.queue.entries.count) {
             try await musicPlayer.skipToPreviousEntry()
         }
     }
 
     private func clearAction() {
         playRequested = true
-        entries = []
-        musicEntriesChanged()
         musicPlayer.stop()
-        setMusicQueue(.init(entries.map(\.entry)))
+        musicPlaylist.metadata = [:]
+        setMusicQueue([])
+        storeMusicQueue()
     }
 
     private func removeAction(entryId: String) {
-        guard let index = entries.firstIndex(where: { $0.entry.id == entryId }) else {
+        guard musicPlaylist.state == .loaded else {
             return
         }
-        entries.remove(at: index)
-        musicEntriesChanged()
-        let queueEntryIds = musicPlayer.queue.entries.map(\.id)
-        if index < queueEntryIds.count {
-            musicPlayer.queue.entries.removeAll { $0.id == queueEntryIds[index] }
+        musicPlayer.queue.entries.removeAll { $0.id == entryId }
+        if musicPlayer.queue.entries.isEmpty {
+            musicPlayer.stop()
+            setMusicQueue([])
         }
+        storeMusicQueue()
     }
 
     private func selectAction(entryId: String) async throws {
-        guard let index = entries.firstIndex(where: { $0.entry.id == entryId }) else {
-            return
+        guard musicPlaylist.state == .loaded,
+              let entry = musicPlayer.queue.entries.first(where: { $0.id == entryId })
+        else {
+            throw "Entry not found"
         }
         playRequested = true
-        let queueEntries = Array(musicPlayer.queue.entries)
-        if index < queueEntries.count {
-            musicPlayer.queue.currentEntry = queueEntries[index]
-        } else {
-            logger.debug("music: Entry not in queue, creating new queue")
-            setMusicQueue(.init(entries.map(\.entry), startingAt: entries[index].entry))
-        }
+        musicPlayer.queue.currentEntry = entry
         try await musicPlayer.play()
     }
 
-    private func restoreAction() async throws {
-        guard entries.isEmpty else {
-            return
-        }
-        let playlist = await loadPlaylist()
-        logger.debug("music: Restoring \(playlist.count) songs")
-        guard !playlist.isEmpty else {
-            return
-        }
-        musicPlaylist.songs = playlist.map {
-            MusicPlaylistSong(id: UUID().uuidString, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
-        }
-        guard MusicAuthorization.currentStatus == .authorized else {
-            logger.info("music: Not authorized to restore songs")
-            return
-        }
-        let ids = playlist.map { MusicItemID($0.songId) }
-        let request = MusicCatalogResourceRequest<Song>(matching: \.id, memberOf: ids)
-        let response = try await request.response()
-        for storedEntry in playlist {
-            guard let song = response.items.first(where: { $0.id.rawValue == storedEntry.songId }) else {
-                continue
-            }
-            entries.append(MusicEntry(
-                song: song,
-                addedBy: storedEntry.addedBy,
-                requestId: storedEntry.requestId
-            ))
-        }
-        logger.debug("music: Restored \(entries.count) songs")
-        updateMusicPlaylistSongs()
-        setMusicQueue(.init(entries.map(\.entry)))
-    }
-
-    private func statusAction(onCompleted: (MusicStatus) -> Void) async throws {
+    private func statusAction(onCompleted: (MusicStatus) -> Void) {
         onCompleted(MusicStatus(
             playing: musicPlayer.state.playbackStatus == .playing,
-            currentSongIndex: musicCurrentIndex(queue: musicPlayer.queue),
-            songs: entries.map {
-                MusicStatusSong(id: $0.entry.id, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
+            currentSongIndex: musicPlaylist.currentIndex(),
+            songs: musicPlaylist.songs().map {
+                MusicStatusSong(id: $0.id, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
             }
         ))
     }
