@@ -1,6 +1,8 @@
 import logging
 import time
 
+from systest import wait_until
+
 from ..utils.config import Capability
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
@@ -16,6 +18,14 @@ NEXT_SONG = "Daft Punk Get Lucky"
 PREVIOUS_SONG = "Queen Bohemian Rhapsody"
 NOT_ALLOWED_SONG = "ABBA Dancing Queen"
 COMMAND_DELAY = 5
+QUICK_ADD_SONGS = [
+    "https://music.apple.com/us/album/billie-jean/269572838?i=269573364",
+    "https://music.apple.com/us/album/take-on-me/380907762?i=380907765",
+    "https://music.apple.com/us/album/eye-of-the-tiger/254685010?i=254685026",
+    "https://music.apple.com/us/album/the-final-countdown/196480323?i=196480329",
+    "https://music.apple.com/us/album/livin-on-a-prayer/1422954626?i=1422955211",
+    "https://music.apple.com/us/album/dont-stop-believin-2024-remaster/169003304?i=169003415",
+]
 
 
 class MusicTestCase(TestCase):
@@ -86,10 +96,25 @@ class MusicNotAllowed(MusicTestCase):
         self.send("play")
 
 
+class MusicAddManySongsQuickly(MusicTestCase):
+    """Add many songs in quick succession while a song is playing by sending chat bot commands."""
+
+    def run(self):
+        self.send(f"add {ADD_SONG}")
+        for song in QUICK_ADD_SONGS:
+            self.moblin.send_chat_message(f"!moblin music add {song}")
+        wait_until(
+            lambda: len(self.moblin.get_music_status()["songs"]) == len(QUICK_ADD_SONGS) + 1,
+            "all songs to be added",
+        )
+        self.assert_true(self.moblin.get_music_status()["playing"], "music is playing")
+
+
 def tests(moblin: Moblin):
     return [
         MusicAddAndPlay(moblin),
         MusicPauseAndPlay(moblin),
         MusicNextAndPrevious(moblin),
         MusicNotAllowed(moblin),
+        MusicAddManySongsQuickly(moblin),
     ]

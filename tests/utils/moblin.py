@@ -393,6 +393,10 @@ class Moblin:
     def ping(self):
         self._get_settings()
 
+    def get_music_status(self) -> dict:
+        response = self._request_with_timeout({"music": {"command": {"status": {}}}}, 15)
+        return response["data"]["music"]["status"]
+
     def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:
         return f"rist://{self._tester_ip_address}:{port}"
 
@@ -573,6 +577,11 @@ class Moblin:
 
     def _request(self, data):
         return make_client_request(self._remote_control_port, data)
+
+    def _request_with_timeout(self, data, timeout: float):
+        with connect(f"ws://localhost:{self._remote_control_port}/client", max_size=None) as server:
+            server.send(json.dumps({"type": "request", "data": data}))
+            return json.loads(server.recv(timeout=timeout))["data"]
 
     def _get_settings(self):
         return self._request({"getSettings": {}})["data"]["getSettings"]["data"]
