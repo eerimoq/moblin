@@ -3,6 +3,14 @@ import DequeModule
 import Foundation
 @preconcurrency import MusicKit
 
+func appleMusicSongId(url: URL) -> String? {
+    if url.pathComponents.contains("song") {
+        url.lastPathComponent
+    } else {
+        url.dictionaryFromQuery()["i"]
+    }
+}
+
 private enum Action {
     case add(title: String, user: String?, requestId: String?, onCompleted: (MusicAddResult) -> Void)
     case find(title: String, onCompleted: (Song?) -> Void)
@@ -395,7 +403,7 @@ extension Model {
             return nil
         }
         if let url = URL(string: title), url.scheme == "https" {
-            guard let id = url.dictionaryFromQuery()["i"] else {
+            guard let id = appleMusicSongId(url: url) else {
                 return nil
             }
             let identifier = MusicItemID(rawValue: id)
