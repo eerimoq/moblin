@@ -149,7 +149,7 @@ private struct SnapshotPermissionsSettingsView: View {
                     } footer: {
                         Text("""
                         Take the snapshot on this device, or fetch it from another device's web remote \
-                        control. The remote source can be used when this device is not live, or always.
+                        control.
                         """)
                     }
                     PermissionsSettingsInnerView(permissions: permissions)
