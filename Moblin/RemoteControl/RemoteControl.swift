@@ -88,6 +88,7 @@ enum RemoteControlResponse: Codable {
     case whip(status: Int, headers: [SettingsHttpHeader], body: Data)
     case getGolfScoreboard(data: RemoteControlGolfScoreboard)
     case music(status: RemoteControlMusicStatus)
+    case musicFind(song: RemoteControlMusicFoundSong?)
 }
 
 enum RemoteControlEvent: Codable {
@@ -167,7 +168,8 @@ enum RemoteControlMusicCommand: Codable {
     case status
     case play
     case pause
-    case add(title: String, user: String?)
+    case add(title: String, user: String?, requestId: String?)
+    case find(title: String)
     case clear
     case remove(id: String)
     case select(id: String)
@@ -178,6 +180,12 @@ struct RemoteControlMusicSong: Codable {
     var title: String
     var artist: String?
     var user: String?
+}
+
+struct RemoteControlMusicFoundSong: Codable {
+    var id: String
+    var title: String
+    var artist: String?
 }
 
 struct RemoteControlMusicStatus: Codable {

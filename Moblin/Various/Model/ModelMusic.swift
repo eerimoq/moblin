@@ -4,7 +4,8 @@ import Foundation
 @preconcurrency import MusicKit
 
 private enum Action {
-    case add(title: String, user: String?, onCompleted: (MusicAddResult) -> Void)
+    case add(title: String, user: String?, requestId: String?, onCompleted: (MusicAddResult) -> Void)
+    case find(title: String, onCompleted: (Song?) -> Void)
     case play
     case pause
     case next(count: Int)
@@ -22,13 +23,15 @@ private struct MusicEntry {
     let title: String
     let artist: String?
     let addedBy: String?
+    let requestId: String?
 
-    init(song: Song, addedBy: String?) {
+    init(song: Song, addedBy: String?, requestId: String?) {
         entry = ApplicationMusicPlayer.Queue.Entry(song)
         songId = song.id
         title = song.title
         artist = song.artistName
         self.addedBy = addedBy
+        self.requestId = requestId
     }
 }
 
@@ -37,6 +40,7 @@ private struct StoredMusicEntry: Codable {
     let title: String
     let artist: String?
     let addedBy: String?
+    let requestId: String?
 }
 
 @MainActor private var entries: [MusicEntry] = []
@@ -61,7 +65,11 @@ private func loadPlaylist() async -> [StoredMusicEntry] {
 @MainActor
 private func storePlaylist() {
     let playlist = entries.map {
-        StoredMusicEntry(songId: $0.songId.rawValue, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
+        StoredMusicEntry(songId: $0.songId.rawValue,
+                         title: $0.title,
+                         artist: $0.artist,
+                         addedBy: $0.addedBy,
+                         requestId: $0.requestId)
     }
     playlistQueue.async {
         guard let data = try? JSONEncoder().encode(playlist) else {
@@ -107,12 +115,23 @@ struct MusicStatus {
 
 enum MusicAddResult {
     case added(song: String)
+    case alreadyAdded
     case songNotFound
+    case failed
 }
 
 extension Model {
-    func addMusic(title: String, user: String?, onCompleted: @escaping (MusicAddResult) -> Void) {
-        actions.append(.add(title: title, user: user, onCompleted: onCompleted))
+    func addMusic(title: String,
+                  user: String?,
+                  requestId: String? = nil,
+                  onCompleted: @escaping (MusicAddResult) -> Void)
+    {
+        actions.append(.add(title: title, user: user, requestId: requestId, onCompleted: onCompleted))
+        tryRunNextAction()
+    }
+
+    func findMusic(title: String, onCompleted: @escaping (Song?) -> Void) {
+        actions.append(.find(title: title, onCompleted: onCompleted))
         tryRunNextAction()
     }
 
@@ -189,8 +208,15 @@ extension Model {
         Task {
             do {
                 switch action {
-                case let .add(title: title, user: user, onCompleted: onCompleted):
-                    try await addAction(title: title, user: user, onCompleted: onCompleted)
+                case let .add(title: title, user: user, requestId: requestId, onCompleted: onCompleted):
+                    try await addAction(
+                        title: title,
+                        user: user,
+                        requestId: requestId,
+                        onCompleted: onCompleted
+                    )
+                case let .find(title: title, onCompleted: onCompleted):
+                    await findAction(title: title, onCompleted: onCompleted)
                 case .play:
                     try await playAction()
                 case .pause:
@@ -221,18 +247,32 @@ extension Model {
 
     private func addAction(title: String,
                            user: String?,
+                           requestId: String?,
                            onCompleted: (MusicAddResult) -> Void) async throws
     {
         let title = title.trim()
+        if let requestId, entries.contains(where: { $0.requestId == requestId }) {
+            logger.debug("music: Request \(requestId) already added")
+            onCompleted(.alreadyAdded)
+            return
+        }
         let authStatus = await MusicAuthorization.request()
         guard authStatus == .authorized else {
             logger.info("music: Not authorized")
+            onCompleted(.failed)
             return
         }
-        if let song = try await findSong(title: title) {
+        let song: Song?
+        do {
+            song = try await findSong(title: title)
+        } catch {
+            onCompleted(.failed)
+            throw error
+        }
+        if let song {
             logger.debug("music: Adding song \(song)")
             onCompleted(.added(song: "\(song.artistName) - \(song.title)"))
-            let musicEntry = MusicEntry(song: song, addedBy: user)
+            let musicEntry = MusicEntry(song: song, addedBy: user, requestId: requestId)
             let entry = musicEntry.entry
             entries.append(musicEntry)
             musicEntriesChanged()
@@ -258,6 +298,14 @@ extension Model {
             logger.debug("music: Song '\(title)' not found")
             onCompleted(.songNotFound)
         }
+    }
+
+    private func findAction(title: String, onCompleted: (Song?) -> Void) async {
+        guard await MusicAuthorization.request() == .authorized else {
+            onCompleted(nil)
+            return
+        }
+        await onCompleted(try? findSong(title: title.trim()))
     }
 
     private func findSong(title: String) async throws -> Song? {
@@ -360,7 +408,11 @@ extension Model {
             guard let song = response.items.first(where: { $0.id.rawValue == storedEntry.songId }) else {
                 continue
             }
-            entries.append(MusicEntry(song: song, addedBy: storedEntry.addedBy))
+            entries.append(MusicEntry(
+                song: song,
+                addedBy: storedEntry.addedBy,
+                requestId: storedEntry.requestId
+            ))
         }
         logger.debug("music: Restored \(entries.count) songs")
         updateMusicPlaylistSongs()

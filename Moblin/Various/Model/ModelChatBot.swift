@@ -600,6 +600,8 @@ extension Model {
                     message: String(localized: "\(title) requested by \(user) not found."),
                     platform: platform
                 )
+            case .alreadyAdded, .failed:
+                break
             }
         }
     }

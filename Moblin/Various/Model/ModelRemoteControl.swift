@@ -930,9 +930,11 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
-                                    onCompleted: @escaping (RemoteControlMusicStatus) -> Void)
+                                    onCompleted: @escaping (RemoteControlResult, RemoteControlResponse?)
+                                        -> Void)
     {
         var songNotFound = false
+        var failed = false
         switch command {
         case .status:
             break
@@ -940,12 +942,27 @@ extension Model: RemoteControlStreamerDelegate {
             playMusic()
         case .pause:
             pauseMusic()
-        case let .add(title: title, user: user):
-            addMusic(title: title, user: user ?? String(localized: "Remote control assistant")) { result in
-                if case .songNotFound = result {
+        case let .add(title: title, user: user, requestId: requestId):
+            addMusic(title: title,
+                     user: user ?? String(localized: "Remote control assistant"),
+                     requestId: requestId)
+            { result in
+                switch result {
+                case .songNotFound:
                     songNotFound = true
+                case .failed:
+                    failed = true
+                case .added, .alreadyAdded:
+                    break
                 }
             }
+        case let .find(title: title):
+            findMusic(title: title) { song in
+                onCompleted(.ok, .musicFind(song: song.map {
+                    RemoteControlMusicFoundSong(id: $0.id.rawValue, title: $0.title, artist: $0.artistName)
+                }))
+            }
+            return
         case .clear:
             clearMusic()
         case let .remove(id: id):
@@ -954,15 +971,21 @@ extension Model: RemoteControlStreamerDelegate {
             selectMusic(entryId: id)
         }
         statusMusic { status in
-            onCompleted(RemoteControlMusicStatus(playing: status.playing,
-                                                 currentSongIndex: status.currentSongIndex,
-                                                 songs: status.songs.map {
-                                                     RemoteControlMusicSong(id: $0.id,
-                                                                            title: $0.title,
-                                                                            artist: $0.artist,
-                                                                            user: $0.addedBy)
-                                                 },
-                                                 songNotFound: songNotFound))
+            guard !failed else {
+                onCompleted(.error, nil)
+                return
+            }
+            onCompleted(.ok, .music(status: RemoteControlMusicStatus(
+                playing: status.playing,
+                currentSongIndex: status.currentSongIndex,
+                songs: status.songs.map {
+                    RemoteControlMusicSong(id: $0.id,
+                                           title: $0.title,
+                                           artist: $0.artist,
+                                           user: $0.addedBy)
+                },
+                songNotFound: songNotFound
+            )))
         }
     }
 

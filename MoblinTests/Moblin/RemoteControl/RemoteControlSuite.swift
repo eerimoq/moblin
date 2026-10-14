@@ -26,12 +26,45 @@ struct RemoteControlSuite {
     @Test
     func musicRequests() throws {
         #expect(try encode(.music(command: .play)) == #"{"music":{"command":{"play":{}}}}"#)
-        #expect(try encode(.music(command: .add(title: "Song", user: nil))) ==
+        #expect(try encode(.music(command: .add(title: "Song", user: nil, requestId: nil))) ==
             #"{"music":{"command":{"add":{"title":"Song"}}}}"#)
-        #expect(try encode(.music(command: .add(title: "Song", user: "Erik"))) ==
+        #expect(try encode(.music(command: .add(title: "Song", user: "Erik", requestId: nil))) ==
             #"{"music":{"command":{"add":{"title":"Song","user":"Erik"}}}}"#)
+        #expect(try encode(.music(command: .add(title: "Song", user: "Erik", requestId: "ORDER1"))) ==
+            #"{"music":{"command":{"add":{"requestId":"ORDER1","title":"Song","user":"Erik"}}}}"#)
+        #expect(try encode(.music(command: .find(title: "Song"))) ==
+            #"{"music":{"command":{"find":{"title":"Song"}}}}"#)
         #expect(try encode(.music(command: .remove(id: "1"))) ==
             #"{"music":{"command":{"remove":{"id":"1"}}}}"#)
+        let request = try JSONDecoder().decode(
+            RemoteControlRequest.self,
+            from: Data(#"{"music":{"command":{"add":{"title":"Song","user":"Erik"}}}}"#.utf8)
+        )
+        guard case let .music(command: .add(title: title, user: user, requestId: requestId)) = request else {
+            Issue.record("not an add")
+            return
+        }
+        #expect(title == "Song")
+        #expect(user == "Erik")
+        #expect(requestId == nil)
+    }
+
+    @Test
+    func musicResponses() throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let found = RemoteControlResponse.musicFind(song: RemoteControlMusicFoundSong(
+            id: "1440818839",
+            title: "Song",
+            artist: "Band"
+        ))
+        #expect(try String(bytes: encoder.encode(found), encoding: .utf8) ==
+            #"{"musicFind":{"song":{"artist":"Band","id":"1440818839","title":"Song"}}}"#)
+        #expect(try String(
+            bytes: encoder.encode(RemoteControlResponse.musicFind(song: nil)),
+            encoding: .utf8
+        ) ==
+            #"{"musicFind":{}}"#)
     }
 
     @Test

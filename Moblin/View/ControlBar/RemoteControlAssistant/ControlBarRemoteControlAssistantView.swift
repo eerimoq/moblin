@@ -751,7 +751,7 @@ private struct MusicView: View {
         guard !title.isEmpty else {
             return
         }
-        model.remoteControlAssistantMusic(command: .add(title: title, user: nil))
+        model.remoteControlAssistantMusic(command: .add(title: title, user: nil, requestId: nil))
         self.title = ""
     }
 
