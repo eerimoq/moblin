@@ -384,10 +384,22 @@ extension Model {
             try await musicPlayer.play()
         } else {
             logger.debug("music: Appending to queue")
+            await waitForMusicQueueResolved()
             try await musicPlayer.queue.insert(entry, position: .tail)
         }
         musicPlaylist.state = .loaded
         storeMusicQueue()
+    }
+
+    private func waitForMusicQueueResolved() async {
+        let deadline = ContinuousClock.now + .seconds(5)
+        while musicPlayer.queue.entries.contains(where: \.isTransient) {
+            guard ContinuousClock.now < deadline else {
+                logger.info("music: Queue still has transient entries")
+                return
+            }
+            try? await Task.sleep(for: .milliseconds(100))
+        }
     }
 
     private func findAction(title: String, onCompleted: (Song?) -> Void) async {
