@@ -179,6 +179,7 @@ struct RemoteControlMusicSong: Codable {
     var id: String
     var title: String
     var artist: String?
+    var duration: Int?
     var user: String?
 }
 
@@ -186,6 +187,7 @@ struct RemoteControlMusicFoundSong: Codable {
     var id: String
     var title: String
     var artist: String?
+    var duration: Int?
 }
 
 struct RemoteControlMusicStatus: Codable {

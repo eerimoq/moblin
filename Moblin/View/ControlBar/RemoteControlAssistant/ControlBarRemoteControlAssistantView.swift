@@ -802,6 +802,9 @@ private struct MusicView: View {
                                     }
                                 }
                                 Spacer()
+                                if let duration = song.duration {
+                                    MusicDurationView(duration: duration)
+                                }
                                 if index == status.currentSongIndex {
                                     Image(systemName: status.playing ? "play.fill" : "pause.fill")
                                 }

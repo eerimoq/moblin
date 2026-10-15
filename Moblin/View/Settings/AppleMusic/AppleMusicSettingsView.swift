@@ -11,6 +11,44 @@ struct MusicArtistView: View {
     }
 }
 
+func formatMusicDuration(_ duration: Int) -> String {
+    let seconds = String(format: "%02d", duration % 60)
+    if duration < 3600 {
+        return "\(duration / 60):\(seconds)"
+    }
+    let minutes = String(format: "%02d", duration / 60 % 60)
+    return "\(duration / 3600):\(minutes):\(seconds)"
+}
+
+struct MusicDurationView: View {
+    let duration: Int
+
+    var body: some View {
+        Text(formatMusicDuration(duration))
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .monospacedDigit()
+    }
+}
+
+private struct PlaylistEndView: View {
+    @ObservedObject var musicPlaylist: MusicPlaylist
+    @ObservedObject var queue: ApplicationMusicPlayer.Queue
+
+    var body: some View {
+        let currentIndex = musicPlaylist.currentIndex()
+        let remaining = musicPlaylist.songs()[(currentIndex ?? 0)...].compactMap(\.duration)
+        if !remaining.isEmpty {
+            TimelineView(.periodic(from: .now, by: 10)) { context in
+                let playbackTime = currentIndex == nil ? 0 : musicPlayer.playbackTime
+                let end = context.date + Double(remaining.reduce(0, +)) - playbackTime
+                Text("Ends \(end, style: .time)")
+                    .monospacedDigit()
+            }
+        }
+    }
+}
+
 struct MusicAddedByView: View {
     let user: String
 
@@ -82,6 +120,9 @@ private struct PlaylistView: View {
                         }
                     }
                     Spacer()
+                    if let duration = song.duration {
+                        MusicDurationView(duration: duration)
+                    }
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -94,7 +135,11 @@ private struct PlaylistView: View {
                 }
             }
         } header: {
-            Text("Playlist")
+            HStack {
+                Text("Playlist")
+                Spacer()
+                PlaylistEndView(musicPlaylist: musicPlaylist, queue: queue)
+            }
         }
     }
 }

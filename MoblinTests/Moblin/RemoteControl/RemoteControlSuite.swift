@@ -56,10 +56,11 @@ struct RemoteControlSuite {
         let found = RemoteControlResponse.musicFind(song: RemoteControlMusicFoundSong(
             id: "1440818839",
             title: "Song",
-            artist: "Band"
+            artist: "Band",
+            duration: 213
         ))
         #expect(try String(bytes: encoder.encode(found), encoding: .utf8) ==
-            #"{"musicFind":{"song":{"artist":"Band","id":"1440818839","title":"Song"}}}"#)
+            #"{"musicFind":{"song":{"artist":"Band","duration":213,"id":"1440818839","title":"Song"}}}"#)
         #expect(try String(
             bytes: encoder.encode(RemoteControlResponse.musicFind(song: nil)),
             encoding: .utf8

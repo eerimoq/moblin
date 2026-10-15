@@ -34,6 +34,7 @@ private struct StoredMusicEntry: Codable {
     let songId: String
     let title: String
     let artist: String?
+    let duration: Int?
     let addedBy: String?
     let requestId: String?
 }
@@ -78,11 +79,18 @@ private func makeSong(storedEntry: StoredMusicEntry) -> Song? {
     if let artist = storedEntry.artist {
         attributes["artistName"] = artist
     }
+    if let duration = storedEntry.duration {
+        attributes["durationInMillis"] = duration * 1000
+    }
     let json: [String: Any] = ["id": storedEntry.songId, "type": "songs", "attributes": attributes]
     guard let data = try? JSONSerialization.data(withJSONObject: json) else {
         return nil
     }
     return try? JSONDecoder().decode(Song.self, from: data)
+}
+
+func musicDuration(song: Song) -> Int? {
+    song.duration.map { Int($0.rounded()) }
 }
 
 private func musicSong(entry: ApplicationMusicPlayer.Queue.Entry) -> Song? {
@@ -96,6 +104,7 @@ struct MusicPlaylistSong: Identifiable {
     let id: String
     let title: String
     let artist: String?
+    let duration: Int?
     let addedBy: String?
 }
 
@@ -114,6 +123,7 @@ class MusicPlaylist: ObservableObject {
             return MusicPlaylistSong(id: $0.id,
                                      title: song?.title ?? $0.title,
                                      artist: song?.artistName ?? $0.subtitle,
+                                     duration: song.flatMap { musicDuration(song: $0) },
                                      addedBy: song.flatMap { metadata[$0.id]?.addedBy })
         }
     }
@@ -130,6 +140,7 @@ struct MusicStatusSong {
     let id: String
     let title: String
     let artist: String?
+    let duration: Int?
     let addedBy: String?
 }
 
@@ -232,6 +243,7 @@ extension Model {
                 playlist.append(StoredMusicEntry(songId: song.id.rawValue,
                                                  title: song.title,
                                                  artist: song.artistName,
+                                                 duration: musicDuration(song: song),
                                                  addedBy: metadata?.addedBy,
                                                  requestId: metadata?.requestId))
             }
@@ -503,7 +515,11 @@ extension Model {
             playing: musicPlayer.state.playbackStatus == .playing,
             currentSongIndex: musicPlaylist.currentIndex(),
             songs: musicPlaylist.songs().map {
-                MusicStatusSong(id: $0.id, title: $0.title, artist: $0.artist, addedBy: $0.addedBy)
+                MusicStatusSong(id: $0.id,
+                                title: $0.title,
+                                artist: $0.artist,
+                                duration: $0.duration,
+                                addedBy: $0.addedBy)
             }
         ))
     }

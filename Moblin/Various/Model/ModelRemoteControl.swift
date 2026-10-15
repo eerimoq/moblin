@@ -969,7 +969,10 @@ extension Model: RemoteControlStreamerDelegate {
         case let .find(title: title):
             findMusic(title: title) { song in
                 onCompleted(.ok, .musicFind(song: song.map {
-                    RemoteControlMusicFoundSong(id: $0.id.rawValue, title: $0.title, artist: $0.artistName)
+                    RemoteControlMusicFoundSong(id: $0.id.rawValue,
+                                                title: $0.title,
+                                                artist: $0.artistName,
+                                                duration: musicDuration(song: $0))
                 }))
             }
             return
@@ -992,6 +995,7 @@ extension Model: RemoteControlStreamerDelegate {
                     RemoteControlMusicSong(id: $0.id,
                                            title: $0.title,
                                            artist: $0.artist,
+                                           duration: $0.duration,
                                            user: $0.addedBy)
                 },
                 songNotFound: songNotFound
