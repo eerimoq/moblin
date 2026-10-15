@@ -394,7 +394,19 @@ class Moblin:
         self._get_settings()
 
     def get_music_status(self) -> dict:
-        response = self._request_with_timeout({"music": {"command": {"status": {}}}}, 15)
+        return self.music_command({"status": {}})
+
+    def add_music(self, title: str) -> dict:
+        return self.music_command({"add": {"title": title}})
+
+    def remove_music(self, entry_id: str) -> dict:
+        return self.music_command({"remove": {"id": entry_id}})
+
+    def select_music(self, entry_id: str) -> dict:
+        return self.music_command({"select": {"id": entry_id}})
+
+    def music_command(self, command: dict) -> dict:
+        response = self._request_with_timeout({"music": {"command": command}}, 15)
         return response["data"]["music"]["status"]
 
     def tester_rist_url(self, port: int = TESTER_RIST_PORT) -> str:

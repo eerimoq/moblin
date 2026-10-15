@@ -278,7 +278,7 @@ extension Model {
                 case .clear:
                     clearAction()
                 case let .remove(entryId: entryId):
-                    removeAction(entryId: entryId)
+                    await removeAction(entryId: entryId)
                 case let .select(entryId: entryId):
                     try await selectAction(entryId: entryId)
                 case .load:
@@ -384,14 +384,14 @@ extension Model {
             try await musicPlayer.play()
         } else {
             logger.debug("music: Appending to queue")
-            await waitForMusicQueueResolved()
+            await workaroundAppleMusicTransientQueueEntriesBug()
             try await musicPlayer.queue.insert(entry, position: .tail)
         }
         musicPlaylist.state = .loaded
         storeMusicQueue()
     }
 
-    private func waitForMusicQueueResolved() async {
+    private func workaroundAppleMusicTransientQueueEntriesBug() async {
         let deadline = ContinuousClock.now + .seconds(5)
         while musicPlayer.queue.entries.contains(where: \.isTransient) {
             guard ContinuousClock.now < deadline else {
@@ -469,10 +469,11 @@ extension Model {
         storeMusicQueue()
     }
 
-    private func removeAction(entryId: String) {
+    private func removeAction(entryId: String) async {
         guard musicPlaylist.state == .loaded else {
             return
         }
+        await workaroundAppleMusicTransientQueueEntriesBug()
         musicPlayer.queue.entries.removeAll { $0.id == entryId }
         if musicPlayer.queue.entries.isEmpty {
             musicPlayer.stop()
@@ -482,6 +483,7 @@ extension Model {
     }
 
     private func selectAction(entryId: String) async throws {
+        await workaroundAppleMusicTransientQueueEntriesBug()
         guard musicPlaylist.state == .loaded,
               let entry = musicPlayer.queue.entries.first(where: { $0.id == entryId })
         else {

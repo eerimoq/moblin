@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 
 from systest import wait_until
@@ -46,6 +47,17 @@ class MusicTestCase(TestCase):
     def teardown(self):
         self.moblin.send_chat_message("!moblin music clear")
         super().teardown()
+
+    def add_songs_quickly(self, songs: list[str]):
+        for song in songs:
+            self.moblin.send_chat_message(f"!moblin music add {song}")
+
+    def wait_for_number_of_songs(self, number_of_songs: int) -> dict:
+        wait_until(
+            lambda: len(self.moblin.get_music_status()["songs"]) == number_of_songs,
+            f"{number_of_songs} songs in the queue",
+        )
+        return self.moblin.get_music_status()
 
     def send(self, *commands: str, is_moderator: bool = True):
         for command in commands:
@@ -101,13 +113,60 @@ class MusicAddManySongsQuickly(MusicTestCase):
 
     def run(self):
         self.send(f"add {ADD_SONG}")
-        for song in QUICK_ADD_SONGS:
+        for song in 3 * QUICK_ADD_SONGS:
             self.moblin.send_chat_message(f"!moblin music add {song}")
         wait_until(
-            lambda: len(self.moblin.get_music_status()["songs"]) == len(QUICK_ADD_SONGS) + 1,
+            lambda: len(self.moblin.get_music_status()["songs"]) == 3 * len(QUICK_ADD_SONGS) + 1,
             "all songs to be added",
         )
         self.assert_true(self.moblin.get_music_status()["playing"], "music is playing")
+
+
+class MusicRemoveSongsQuickly(MusicTestCase):
+    """Remove songs in quick succession right after adding them and then add another song."""
+
+    def run(self):
+        self.send(f"add {ADD_SONG}")
+        self.add_songs_quickly(QUICK_ADD_SONGS)
+        status = self.wait_for_number_of_songs(len(QUICK_ADD_SONGS) + 1)
+        removed_ids = [song["id"] for song in status["songs"][-3:]]
+        for entry_id in removed_ids:
+            self.moblin.remove_music(entry_id)
+        self.add_songs_quickly(QUICK_ADD_SONGS[:1])
+        status = self.wait_for_number_of_songs(len(QUICK_ADD_SONGS) - 1)
+        self.assert_equal([song["id"] for song in status["songs"] if song["id"] in removed_ids], [])
+        self.assert_true(status["playing"], "music is playing")
+
+
+class MusicRemoveCurrentSongRightAfterAdd(MusicTestCase):
+    """Remove the playing song right after adding a song."""
+
+    def run(self):
+        self.send(f"add {ADD_SONG}")
+        status = self.moblin.get_music_status()
+        current_id = status["songs"][status["currentSongIndex"]]["id"]
+        adder = threading.Thread(target=self.moblin.add_music, args=(QUICK_ADD_SONGS[0],))
+        adder.start()
+        time.sleep(0.01)
+        self.moblin.remove_music(current_id)
+        adder.join()
+        status = self.wait_for_number_of_songs(1)
+        self.assert_not_equal(status["songs"][0]["id"], current_id)
+        wait_until(lambda: self.moblin.get_music_status()["playing"], "music to play")
+
+
+class MusicSelectSongsQuickly(MusicTestCase):
+    """Select the last song right after adding songs and then add another song."""
+
+    def run(self):
+        self.send(f"add {ADD_SONG}")
+        self.add_songs_quickly(QUICK_ADD_SONGS)
+        status = self.wait_for_number_of_songs(len(QUICK_ADD_SONGS) + 1)
+        self.moblin.select_music(status["songs"][-1]["id"])
+        self.add_songs_quickly(QUICK_ADD_SONGS[:1])
+        status = self.wait_for_number_of_songs(len(QUICK_ADD_SONGS) + 2)
+        self.assert_equal(status["currentSongIndex"], len(QUICK_ADD_SONGS))
+        self.assert_true(status["playing"], "music is playing")
 
 
 def tests(moblin: Moblin):
@@ -117,4 +176,7 @@ def tests(moblin: Moblin):
         MusicNextAndPrevious(moblin),
         MusicNotAllowed(moblin),
         MusicAddManySongsQuickly(moblin),
+        MusicRemoveSongsQuickly(moblin),
+        MusicRemoveCurrentSongRightAfterAdd(moblin),
+        MusicSelectSongsQuickly(moblin),
     ]
