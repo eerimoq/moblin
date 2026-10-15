@@ -111,7 +111,7 @@ class RemoteControlStreamer {
         webSocket.start()
     }
 
-    func stopInternal() {
+    private func stopInternal() {
         webSocket.delegate = nil
         webSocket.stop()
         handleDisconnected()
