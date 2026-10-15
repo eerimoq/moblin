@@ -66,8 +66,6 @@ protocol RemoteControlStreamerDelegate: AnyObject {
                                         -> Void)
 }
 
-private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
-
 @MainActor
 class RemoteControlStreamer {
     private var clientUrl: URL
@@ -80,16 +78,19 @@ class RemoteControlStreamer {
     private let keepAliveTimer = MainTimer()
     private var gotPong = true
     private var wrongPassword = false
+    private let streamerId: String
 
-    init(clientUrl: URL, password: String, delegate: any RemoteControlStreamerDelegate) {
+    init(clientUrl: URL,
+         password: String,
+         streamerId: String,
+         delegate: any RemoteControlStreamerDelegate)
+    {
         self.clientUrl = clientUrl
         self.password = password
+        self.streamerId = streamerId
         self.delegate = delegate
         encryption = RemoteControlEncryption(password: password)
         webSocket = .init(url: clientUrl)
-        if idStorage.get().isEmpty {
-            idStorage.set(UUID().uuidString)
-        }
     }
 
     func start() {
@@ -234,7 +235,7 @@ class RemoteControlStreamer {
             salt: authentication.salt,
             password: password
         )
-        send(message: .identify(streamerId: idStorage.get(), authentication: hash))
+        send(message: .identify(streamerId: streamerId, authentication: hash))
     }
 
     private func handleIdentified(result: RemoteControlResult) -> Bool {

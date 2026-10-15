@@ -47,6 +47,8 @@ class RemoteControl: ObservableObject {
     @Published var musicStatus: RemoteControlMusicStatus?
 }
 
+private let remoteControlStreamerIdStorage = SimpleStringStorage(key: "remoteControlStreamerId")
+
 enum RemoteControlAssistantPreviewUser {
     case panel
     case watch
@@ -81,9 +83,17 @@ extension Model {
         remoteControlStreamer = RemoteControlStreamer(
             clientUrl: url,
             password: database.remoteControl.password,
+            streamerId: getRemoteControlStreamerId(),
             delegate: self
         )
         remoteControlStreamer!.start()
+    }
+
+    private func getRemoteControlStreamerId() -> String {
+        if remoteControlStreamerIdStorage.get().isEmpty {
+            remoteControlStreamerIdStorage.set(UUID().uuidString)
+        }
+        return remoteControlStreamerIdStorage.get()
     }
 
     private func remoteControlStreamerSendTwitchStart() {
