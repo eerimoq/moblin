@@ -5979,7 +5979,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ (%2$lld Punkte, %3$lld Nutzer)"
           }
         },
@@ -6129,7 +6129,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "%1$@ (%2$lld Stimmen)"
           }
         },
@@ -10902,9 +10902,6 @@
           }
         }
       }
-    },
-    "•" : {
-
     },
     "• %@" : {
       "localizations" : {
@@ -46649,8 +46646,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "%@ gesperrt"
+            "state" : "translated",
+            "value" : "%@ gebannt"
           }
         },
         "eo" : {
@@ -66593,8 +66590,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Farbbereich von Streams und Aufnahmen. Voller Bereich nutzt alle Stufen, während der eingeschränkte Bereich der Broadcast-Standard ist, den manche Server und Player erwarten. Der Farbraum wird unter Einstellungen → Kamera festgelegt."
+            "state" : "translated",
+            "value" : "Farbbereich von Streams und Aufzeichnungen. Der volle Farbbereich nutzt alle Farbstufen, während der eingeschränkte Farbbereich dem Übertragungsstandard entspricht, den manche Server und Player erwarten. Der Farbraum wird unter „Einstellungen“ → „Kamera“ konfiguriert."
           }
         },
         "eo" : {
@@ -67619,7 +67616,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Kompressionsqualität von Snapshots und Fotoshooting-Fotos, die in Fotos gespeichert werden."
           }
         },
@@ -97417,7 +97414,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Videobereich der externen Kamera"
           }
         },
@@ -98889,7 +98886,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Nutzer konnte nicht gebannt werden"
           }
         },
@@ -111756,7 +111753,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Voll"
           }
         },
@@ -136548,7 +136545,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Eingeschränkt"
           }
         },
@@ -153490,8 +153487,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin-Fotoshooting"
+            "state" : "translated",
+            "value" : "Moblin Fotoshooting"
           }
         },
         "eo" : {
@@ -153776,8 +153773,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Moblin-Snapshot"
+            "state" : "translated",
+            "value" : "Moblin Snapshot"
           }
         },
         "eo" : {
@@ -158354,7 +158351,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Muss gerade sein"
           }
         },
@@ -172668,7 +172665,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Benachrichtigung"
           }
         },
@@ -182993,8 +182990,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bildqualität in Fotos"
+            "state" : "translated",
+            "value" : "Foto Bildqualität"
           }
         },
         "eo" : {
@@ -183431,8 +183428,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "PiP"
+            "state" : "translated",
+            "value" : "Bild-in-Bild"
           }
         },
         "eo" : {
@@ -211508,7 +211505,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Emotes vorlesen"
           }
         },
@@ -222581,7 +222578,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Legt die Taschenlampenstärke von 1 bis 100 fest."
           }
         },
@@ -230115,7 +230112,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Im Aktivitäts-Feed anzeigen"
           }
         },
@@ -230259,7 +230256,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Im Chat anzeigen"
           }
         },
@@ -270945,7 +270942,7 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Timeout %@"
           }
         },
@@ -278194,8 +278191,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schaltet die Taschenlampe aus."
+            "state" : "translated",
+            "value" : "Schalte die Taschenlampe aus."
           }
         },
         "eo" : {
@@ -278337,8 +278334,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Schaltet die Taschenlampe ein."
+            "state" : "translated",
+            "value" : "Schalte die Taschenlampe ein."
           }
         },
         "eo" : {
