@@ -67,21 +67,36 @@ private struct ControlsView: View {
         Section {
             HStack {
                 Spacer()
-                if playerState.playbackStatus == .playing {
-                    Button {
-                        model.pauseMusic()
-                    } label: {
-                        Image(systemName: "pause")
-                    }
-                    .buttonStyle(.borderless)
-                } else {
-                    Button {
-                        model.playMusic()
-                    } label: {
-                        Image(systemName: "play")
-                    }
-                    .buttonStyle(.borderless)
+                Button {
+                    model.previousMusic(count: 1)
+                } label: {
+                    Image(systemName: "arrow.backward.to.line")
                 }
+                .buttonStyle(.borderless)
+                Spacer()
+                let isPlaying = playerState.playbackStatus == .playing
+                Button {
+                    if isPlaying {
+                        model.pauseMusic()
+                    } else {
+                        model.playMusic()
+                    }
+                } label: {
+                    ZStack {
+                        Image(systemName: "play")
+                            .opacity(isPlaying ? 0 : 1)
+                        Image(systemName: "pause")
+                            .opacity(isPlaying ? 1 : 0)
+                    }
+                }
+                .buttonStyle(.borderless)
+                Spacer()
+                Button {
+                    model.nextMusic(count: 1)
+                } label: {
+                    Image(systemName: "arrow.forward.to.line")
+                }
+                .buttonStyle(.borderless)
                 Spacer()
             }
             .disabled(isEmpty)
