@@ -156,6 +156,10 @@ extension Model {
         tryRunNextAction()
     }
 
+    func makeMusicAddedMessage(song: String, user: String) -> String {
+        String(localized: "\(song) added to the queue by \(user).")
+    }
+
     func findMusic(title: String, onCompleted: @escaping (Song?) -> Void) {
         actions.append(.find(title: title, onCompleted: onCompleted))
         tryRunNextAction()

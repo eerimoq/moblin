@@ -943,16 +943,16 @@ extension Model: RemoteControlStreamerDelegate {
         case .pause:
             pauseMusic()
         case let .add(title: title, user: user, requestId: requestId):
-            addMusic(title: title,
-                     user: user ?? String(localized: "Remote control assistant"),
-                     requestId: requestId)
-            { result in
+            let user = user ?? String(localized: "Remote control assistant")
+            addMusic(title: title, user: user, requestId: requestId) { result in
                 switch result {
+                case let .added(song: song):
+                    self.sendChatMessage(message: self.makeMusicAddedMessage(song: song, user: user))
                 case .songNotFound:
                     songNotFound = true
                 case .failed:
                     failed = true
-                case .added, .alreadyAdded:
+                case .alreadyAdded:
                     break
                 }
             }

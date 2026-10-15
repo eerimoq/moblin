@@ -591,10 +591,8 @@ extension Model {
         addMusic(title: title, user: user) { result in
             switch result {
             case let .added(song: song):
-                self.sendChatBotReply(
-                    message: String(localized: "\(song) added to the queue by \(user)."),
-                    platform: platform
-                )
+                self.sendChatBotReply(message: self.makeMusicAddedMessage(song: song, user: user),
+                                      platform: platform)
             case .songNotFound:
                 self.sendChatBotReply(
                     message: String(localized: "\(title) requested by \(user) not found."),
