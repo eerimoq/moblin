@@ -3,6 +3,7 @@ import ReplayKit
 import System
 
 let screenRecordingLatency = 0.2
+private let audioFramesPerBuffer = 1024
 
 private func bind(fd: Int32, addr: sockaddr_un) throws {
     var addr = addr
@@ -43,6 +44,9 @@ class SampleBufferReceiver: @unchecked Sendable {
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
+    private var audioFormat: AVAudioFormat?
+    private var pendingAudio = Data()
+    private var pendingAudioPresentationTimeStamp = 0.0
     private let colorRange: Atomic<SettingsStreamColorRange> = .init(.full)
 
     func setPixelFormatType(_ colorRange: SettingsStreamColorRange) {
@@ -87,6 +91,8 @@ class SampleBufferReceiver: @unchecked Sendable {
                 try handleVideoFormat(senderFd, header)
             case .videoBuffer:
                 try handleVideoBuffer(senderFd, header)
+            case .audioBuffer:
+                try handleAudioBuffer(senderFd, header)
             }
         }
     }
@@ -134,6 +140,57 @@ class SampleBufferReceiver: @unchecked Sendable {
         }
         sampleBuffer.setIsSync(header.isSync)
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func handleAudioBuffer(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        guard header.sampleRate > 0, header.numberOfChannels > 0 else {
+            return
+        }
+        let numberOfChannels = AVAudioChannelCount(header.numberOfChannels)
+        if audioFormat?.sampleRate != header.sampleRate || audioFormat?.channelCount != numberOfChannels {
+            audioFormat = AVAudioFormat(commonFormat: .pcmFormatInt16,
+                                        sampleRate: header.sampleRate,
+                                        channels: numberOfChannels,
+                                        interleaved: true)
+            pendingAudio.removeAll()
+        }
+        guard let audioFormat else {
+            return
+        }
+        let bytesPerFrame = header.numberOfChannels * MemoryLayout<Int16>.size
+        let expectedPresentationTimeStamp = pendingAudioPresentationTimeStamp +
+            Double(pendingAudio.count / bytesPerFrame) / header.sampleRate
+        let drift = abs(expectedPresentationTimeStamp - header.presentationTimeStamp)
+        if pendingAudio.isEmpty || drift > 0.1 {
+            pendingAudio.removeAll()
+            pendingAudioPresentationTimeStamp = header.presentationTimeStamp
+        }
+        pendingAudio.append(data)
+        let bytesPerBuffer = audioFramesPerBuffer * bytesPerFrame
+        while pendingAudio.count >= bytesPerBuffer {
+            outputAudioBuffer(audioFormat, pendingAudio.prefix(bytesPerBuffer))
+            pendingAudio.removeFirst(bytesPerBuffer)
+            pendingAudioPresentationTimeStamp += Double(audioFramesPerBuffer) / header.sampleRate
+        }
+    }
+
+    private func outputAudioBuffer(_ format: AVAudioFormat, _ data: Data) {
+        let numberOfFrames = AVAudioFrameCount(audioFramesPerBuffer)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: numberOfFrames),
+              let channelData = buffer.int16ChannelData
+        else {
+            return
+        }
+        buffer.frameLength = numberOfFrames
+        data.withUnsafeBytes {
+            UnsafeMutableRawPointer(channelData[0]).copyMemory(from: $0.baseAddress!, byteCount: $0.count)
+        }
+        let presentationTimeStamp = pendingAudioPresentationTimeStamp + screenRecordingLatency
+        guard let sampleBuffer = buffer.makeSampleBuffer(CMTime(seconds: presentationTimeStamp)) else {
+            return
+        }
+        delegate?.handleSampleBuffer(type: .audioApp, sampleBuffer: sampleBuffer)
     }
 
     private func readHeader(_ senderFd: FileDescriptor) throws -> SampleBufferHeader {

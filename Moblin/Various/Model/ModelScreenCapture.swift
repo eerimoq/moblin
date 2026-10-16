@@ -82,11 +82,17 @@ extension Model {
             name: screenCaptureCameraName,
             latency: latency
         )
+        media.addBufferedAudio(
+            cameraId: screenCaptureCameraId,
+            name: screenCaptureCameraName,
+            latency: latency
+        )
     }
 
     private func handleScreenCaptureStopped() {
         makeToast(title: String(localized: "Screen capture stopped"))
         media.removeBufferedVideo(cameraId: screenCaptureCameraId)
+        media.removeBufferedAudio(cameraId: screenCaptureCameraId)
     }
 }
 
@@ -107,6 +113,8 @@ extension Model: SampleBufferReceiverDelegate {
         switch type {
         case .video:
             media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
+        case .audioApp:
+            media.appendBufferedAudioSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
         default:
             break
         }

@@ -999,6 +999,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
+    func setMixedAudio(builtin: AudioMixerSourceSettings?, bufferedAudios: [UUID: AudioMixerSourceSettings]) {
+        processor?.setMixedAudio(builtin: builtin, bufferedAudios: bufferedAudios)
+    }
+
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
@@ -1011,11 +1015,11 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func attachDefaultAudioDevice(builtinDelay: Double) {
+    func attachDefaultAudioDevice(builtinDelay: Double, bufferedAudio: UUID? = nil) {
         let params = AudioUnitAttachParams(
             device: AVCaptureDevice.default(for: .audio),
             builtinDelay: builtinDelay,
-            bufferedAudio: nil
+            bufferedAudio: bufferedAudio
         )
         processor?.attachAudio(params: params) {
             self.delegate.mediaError(error: $0)
