@@ -17,7 +17,7 @@ private struct WheelOfLuckWidgetView: View {
             Spacer()
             Button {
                 widget.wheelOfLuck.shuffle()
-                model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
+                model.updateWheelOfLuckEffect(widget: widget)
 
             } label: {
                 Image(systemName: "shuffle")
@@ -41,7 +41,7 @@ private struct OptionView: View {
     @ObservedObject var options: SettingsWidgetWheelOfLuckOption
 
     private func updateEffect() {
-        model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
+        model.updateWheelOfLuckEffect(widget: widget)
     }
 
     private func calcPercent() -> Int {
@@ -72,6 +72,29 @@ private struct OptionView: View {
                 Text(options.text)
                 Spacer()
                 Text(String("\(calcPercent())%"))
+            }
+        }
+    }
+}
+
+private struct ResultView: View {
+    let result: WheelOfLuckSpinResult
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(result.text)
+                    .bold()
+                Spacer()
+                Text(result.date.formatted(date: .omitted, time: .standard))
+                    .foregroundStyle(.secondary)
+            }
+            if !result.name.isEmpty {
+                Text(result.name)
+            }
+            if !result.message.isEmpty {
+                Text(result.message)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -110,7 +133,7 @@ struct WidgetWheelOfLuckSettingsView: View {
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
 
     private func updateEffect() {
-        model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
+        model.updateWheelOfLuckEffect(widget: widget)
     }
 
     private func deleteOption(at offsets: IndexSet) {
@@ -165,6 +188,21 @@ struct WidgetWheelOfLuckSettingsView: View {
             if let effect = model.getWheelOfLuckEffect(id: widget.id) {
                 WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: false)
             }
+        }
+        Section {
+            ForEach(wheelOfLuck.results) { result in
+                ResultView(result: result)
+                    .contextMenuDeleteButton {
+                        if let offsets = makeOffsets(wheelOfLuck.results, result.id) {
+                            wheelOfLuck.results.remove(atOffsets: offsets)
+                        }
+                    }
+            }
+            .onDelete { offsets in
+                wheelOfLuck.results.remove(atOffsets: offsets)
+            }
+        } header: {
+            Text("Results")
         }
     }
 }

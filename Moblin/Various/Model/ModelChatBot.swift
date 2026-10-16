@@ -833,7 +833,7 @@ extension Model {
         case .options:
             let options = command.popAll()
             widget.wheelOfLuck.optionsFromText(text: options.joined(separator: "\n"))
-            getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
+            updateWheelOfLuckEffect(widget: widget)
         case nil:
             break
         }

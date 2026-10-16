@@ -64,6 +64,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
                                     onCompleted: @escaping (RemoteControlResult, RemoteControlResponse?)
                                         -> Void)
+    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int)
 }
 
 @MainActor
@@ -156,6 +157,13 @@ class RemoteControlStreamer {
             return
         }
         send(message: .event(data: .stats(data: data)))
+    }
+
+    func sendWheelOfLuck(wheel: RemoteControlWheelOfLuck?) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .wheelOfLuck(wheel: wheel)))
     }
 
     func sendPreview(preview: Data) {
@@ -437,6 +445,9 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerMusic(command: command) { result, response in
                 self.send(message: .response(id: id, result: result, data: response))
             }
+        case let .spinWheelOfLuck(name: name, message: message, count: count):
+            delegate.remoteControlStreamerSpinWheelOfLuck(name: name, message: message, count: count)
+            sendEmptyOkResponse(id: id)
         }
     }
 

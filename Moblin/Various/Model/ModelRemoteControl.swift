@@ -648,6 +648,26 @@ extension Model {
         remoteControlWeb?.sendScoreboardUpdate(config: config)
     }
 
+    private func getRemoteControlWheelOfLuckWidget() -> SettingsWidget? {
+        guard let id = database.remoteControl.streamer.wheelOfLuckWidgetId else {
+            return nil
+        }
+        return database.widgets.first(where: { $0.id == id && $0.type == .wheelOfLuck })
+    }
+
+    func isRemoteControlWheelOfLuckWidget(widget: SettingsWidget) -> Bool {
+        widget.id == database.remoteControl.streamer.wheelOfLuckWidgetId
+    }
+
+    func remoteControlStreamerSendWheelOfLuck() {
+        let wheel = getRemoteControlWheelOfLuckWidget().map {
+            RemoteControlWheelOfLuck(options: $0.wheelOfLuck.options.map {
+                RemoteControlWheelOfLuckOption(text: $0.text, weight: $0.weight)
+            })
+        }
+        remoteControlStreamer?.sendWheelOfLuck(wheel: wheel)
+    }
+
     func reloadRemoteControlWeb() {
         remoteControlWeb?.stop()
         remoteControlWeb = nil
@@ -761,6 +781,7 @@ extension Model: RemoteControlStreamerDelegate {
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
+        remoteControlStreamerSendWheelOfLuck()
     }
 
     func remoteControlStreamerDisconnected() {
@@ -1106,6 +1127,13 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerStopMacro(id: UUID) {
         stopMacro(id: id)
+    }
+
+    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int) {
+        guard let widget = getRemoteControlWheelOfLuckWidget() else {
+            return
+        }
+        getWheelOfLuckEffect(id: widget.id)?.spin(name: name, message: message, count: min(max(count, 1), 10))
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {

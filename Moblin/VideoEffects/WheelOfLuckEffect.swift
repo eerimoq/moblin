@@ -13,6 +13,20 @@ struct WheelOfLuckEffectOption: Identifiable {
     let textAngle: Angle
 }
 
+struct WheelOfLuckSpinResult: Identifiable {
+    let id = UUID()
+    let date = Date()
+    let text: String
+    let name: String
+    let message: String
+}
+
+private struct PendingSpin {
+    let caption: EffectImageCgImage?
+    let name: String
+    let message: String
+}
+
 @available(iOS 17, *)
 private struct WheelView: View {
     let size: Double
@@ -54,19 +68,54 @@ private struct ArrowView: View {
     }
 }
 
+private struct CaptionView: View {
+    let size: Double
+    let name: String
+    let message: String
+
+    var body: some View {
+        VStack(spacing: size / 80) {
+            if !name.isEmpty {
+                Text(name)
+                    .bold()
+                    .lineLimit(1)
+                    .font(.system(size: size / 12))
+            }
+            if !message.isEmpty {
+                Text(message)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .font(.system(size: size / 16))
+            }
+        }
+        .minimumScaleFactor(0.1)
+        .foregroundStyle(.white)
+        .padding(size / 40)
+        .frame(width: size)
+        .background(RoundedRectangle(cornerRadius: size / 20).foregroundStyle(.black.opacity(0.6)))
+    }
+}
+
 final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
     private var wheel: EffectImageCgImage?
     private var arrow: EffectImageCgImage?
+    private var caption: EffectImageCgImage?
+    private var pendingSpins: [PendingSpin] = []
+    private var currentSpin: PendingSpin?
+    private var options: [WheelOfLuckEffectOption] = []
     private var startPresentationTimeStamp: Double = .infinity
     private var previousPresentationTimeStamp: Double = 0
     private var speed: Double = 0
     private var angle: Double = 0
     private let spinTime: Double = 12
+    private let pauseBetweenSpins: Double = 3
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private let canvasSize: CGSize
+    private let onResult: @MainActor (WheelOfLuckSpinResult) -> Void
 
-    init(canvasSize: CGSize) {
+    init(canvasSize: CGSize, onResult: @escaping @MainActor (WheelOfLuckSpinResult) -> Void) {
         self.canvasSize = canvasSize
+        self.onResult = onResult
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
@@ -88,15 +137,30 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
                                                    text: inputOption.text,
                                                    textAngle: .degrees(textAngle)))
         }
-        let size = wheelSize * (canvasSize.width / 1920)
-        render(size: size, options: options)
+        render(size: getSize(), options: options)
     }
 
     func spin() {
         processorPipelineQueue.async {
-            self.speed = .random(in: 8 ... 15)
-            self.startPresentationTimeStamp = .nan
+            self.pendingSpins.append(PendingSpin(caption: nil, name: "", message: ""))
         }
+    }
+
+    func spin(name: String, message: String, count: Int) {
+        let size = getSize()
+        DispatchQueue.main.async {
+            let caption = self.renderCaption(size: size, name: name, message: message)
+            processorPipelineQueue.async {
+                self.pendingSpins += Array(
+                    repeating: PendingSpin(caption: caption, name: name, message: message),
+                    count: count
+                )
+            }
+        }
+    }
+
+    private func getSize() -> Double {
+        wheelSize * (canvasSize.width / 1920)
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
@@ -105,7 +169,7 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
         }
         updateAngle(info.presentationTimeStamp.seconds)
         let size = wheel.extent.width
-        return arrow
+        var output = arrow
             .translated(x: size - arrow.extent.width * 0.7, y: size / 2 - arrow.extent.height / 2)
             .composited(over: wheel
                 .translated(x: -size / 2, y: -size / 2)
@@ -113,6 +177,13 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
                 .translated(x: size / 2, y: size / 2)
                 .cropped(to: .init(x: 0, y: 0, width: size, height: size)))
             .move(sceneWidget.layout, image.extent.size)
+        if let caption = caption?.getCiImage() {
+            output = caption
+                .translated(x: output.extent.minX + size / 2 - caption.extent.width / 2,
+                            y: output.extent.minY - caption.extent.height - size / 40)
+                .composited(over: output)
+        }
+        return output
             .cropped(to: image.extent)
             .composited(over: image)
     }
@@ -129,28 +200,75 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
         let rotation = Float(-angle)
         let filter = MTIMultilayerCompositingFilter()
         filter.inputBackgroundImage = image
+        let wheelCenterX = position.x - 0.15 * arrowSize.width
         filter.layers = [
             .init(content: wheel,
-                  position: CGPoint(x: position.x - 0.15 * arrowSize.width, y: position.y),
+                  position: CGPoint(x: wheelCenterX, y: position.y),
                   rotation: rotation),
             .init(content: arrow,
                   position: CGPoint(x: position.x + size / 2 - 0.35 * arrowSize.width,
                                     y: position.y)),
         ]
+        if let caption = caption?.getMetalPetalImage() {
+            filter.layers.append(.init(content: caption,
+                                       position: CGPoint(
+                                           x: wheelCenterX,
+                                           y: position.y + size / 2 + size / 40 + caption.extent.height / 2
+                                       )))
+        }
         return filter.outputImage ?? image
     }
 
     private func updateAngle(_ presentationTimeStamp: Double) {
-        if startPresentationTimeStamp.isInfinite {
-            return
-        } else if startPresentationTimeStamp.isNaN {
+        if !startPresentationTimeStamp.isInfinite {
+            let elapsedSinceStart = presentationTimeStamp - startPresentationTimeStamp
+            let ratio = max(1 - elapsedSinceStart / spinTime, 0)
+            angle += -speed * ratio * (presentationTimeStamp - previousPresentationTimeStamp)
+            previousPresentationTimeStamp = presentationTimeStamp
+            if elapsedSinceStart >= spinTime, let currentSpin {
+                reportResult(spin: currentSpin)
+                self.currentSpin = nil
+            }
+            if elapsedSinceStart >= spinTime + 5 {
+                caption = nil
+                startPresentationTimeStamp = .infinity
+            }
+        }
+        if !pendingSpins.isEmpty,
+           startPresentationTimeStamp.isInfinite
+           || presentationTimeStamp - startPresentationTimeStamp >= spinTime + pauseBetweenSpins
+        {
+            let spin = pendingSpins.removeFirst()
+            currentSpin = spin
+            caption = spin.caption
+            speed = .random(in: 8 ... 15)
             startPresentationTimeStamp = presentationTimeStamp
             previousPresentationTimeStamp = presentationTimeStamp
         }
-        let elapsedSinceStart = presentationTimeStamp - startPresentationTimeStamp
-        let ratio = max(1 - elapsedSinceStart / spinTime, 0)
-        angle += -speed * ratio * (presentationTimeStamp - previousPresentationTimeStamp)
-        previousPresentationTimeStamp = presentationTimeStamp
+    }
+
+    private func reportResult(spin: PendingSpin) {
+        let totalWeight = Double(options.reduce(0) { $0 + $1.weight })
+        guard totalWeight > 0 else {
+            return
+        }
+        var arrowAngle = (90 + angle * 180 / .pi).truncatingRemainder(dividingBy: 360)
+        if arrowAngle < 0 {
+            arrowAngle += 360
+        }
+        var endAngle = 0.0
+        var text = options.last?.text ?? ""
+        for option in options {
+            endAngle += 360 * Double(option.weight) / totalWeight
+            if arrowAngle < endAngle {
+                text = option.text
+                break
+            }
+        }
+        let result = WheelOfLuckSpinResult(text: text, name: spin.name, message: spin.message)
+        DispatchQueue.main.async {
+            self.onResult(result)
+        }
     }
 
     private func render(size: Double, options: [WheelOfLuckEffectOption]) {
@@ -160,6 +278,7 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
             processorPipelineQueue.async {
                 self.wheel = wheel
                 self.arrow = arrow
+                self.options = options
             }
         }
     }
@@ -170,6 +289,15 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
             return nil
         }
         let renderer = ImageRenderer(content: WheelView(size: size, options: options))
+        return renderer.cgImage?.toEffectImage()
+    }
+
+    @MainActor
+    private func renderCaption(size: Double, name: String, message: String) -> EffectImageCgImage? {
+        guard !name.isEmpty || !message.isEmpty else {
+            return nil
+        }
+        let renderer = ImageRenderer(content: CaptionView(size: size, name: name, message: message))
         return renderer.cgImage?.toEffectImage()
     }
 

@@ -86,6 +86,13 @@ extension Model {
         wheelOfLuckEffects[id]
     }
 
+    func updateWheelOfLuckEffect(widget: SettingsWidget) {
+        getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
+        if isRemoteControlWheelOfLuckWidget(widget: widget) {
+            remoteControlStreamerSendWheelOfLuck()
+        }
+    }
+
     func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
         bingoCardEffects[id]
     }
@@ -971,7 +978,11 @@ extension Model {
     private func resetWheelOfLuckEffects(widgets: [SettingsWidget]) {
         wheelOfLuckEffects.removeAll()
         for widget in widgets where widget.type == .wheelOfLuck {
-            wheelOfLuckEffects[widget.id] = WheelOfLuckEffect(canvasSize: media.getCanvasSize())
+            wheelOfLuckEffects[widget.id] = WheelOfLuckEffect(canvasSize: media
+                .getCanvasSize())
+            { [weak widget] in
+                widget?.wheelOfLuck.appendResult(result: $0)
+            }
         }
     }
 

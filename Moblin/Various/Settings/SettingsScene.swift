@@ -2115,6 +2115,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     @Published var totalWeight: Int = 1
     @Published var options: [SettingsWidgetWheelOfLuckOption] = []
     @Published var text: String = ""
+    @Published var results: [WheelOfLuckSpinResult] = []
 
     enum CodingKeys: CodingKey {
         case advanced
@@ -2139,6 +2140,13 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
 
     func updateTotalWeight() {
         totalWeight = max(options.reduce(0) { $0 + $1.weight }, 1)
+    }
+
+    func appendResult(result: WheelOfLuckSpinResult) {
+        results.insert(result, at: 0)
+        if results.count > 100 {
+            results.removeLast()
+        }
     }
 
     func updateText() {
