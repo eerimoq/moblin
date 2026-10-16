@@ -1129,11 +1129,61 @@ extension Model: RemoteControlStreamerDelegate {
         stopMacro(id: id)
     }
 
-    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int) {
+    private func isRemoteControlRequestAlreadyHandled(requestId: String?) -> Bool {
+        guard let requestId else {
+            return false
+        }
+        if remoteControlHandledRequestIds.contains(requestId) {
+            logger.debug("remote-control-streamer: Request \(requestId) already handled")
+            return true
+        }
+        remoteControlHandledRequestIds.append(requestId)
+        if remoteControlHandledRequestIds.count > 1000 {
+            remoteControlHandledRequestIds.removeFirst()
+        }
+        return false
+    }
+
+    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
+        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId) else {
+            return
+        }
         guard let widget = getRemoteControlWheelOfLuckWidget() else {
             return
         }
         getWheelOfLuckEffect(id: widget.id)?.spin(name: name, message: message, count: min(max(count, 1), 10))
+    }
+
+    func remoteControlStreamerTip(name: String,
+                                  message: String,
+                                  amount: String,
+                                  currency: String,
+                                  requestId: String)
+    {
+        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId) else {
+            return
+        }
+        var text = String(localized: "Tipped \(amount) \(currency)")
+        if !message.isEmpty {
+            text += ": \(message)"
+        }
+        appendChatMessage(platform: nil,
+                          messageId: nil,
+                          displayName: name,
+                          user: name,
+                          userId: nil,
+                          userColor: RgbColor(red: 0x2F, green: 0xF5, blue: 0x2C),
+                          userBadges: [],
+                          segments: makeChatPostTextSegments(text: text),
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          isOwner: false,
+                          bits: nil,
+                          highlight: ChatHighlight.makeRemoteControlAssistant(),
+                          live: true)
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {

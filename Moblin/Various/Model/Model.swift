@@ -685,6 +685,7 @@ final class Model: NSObject, ObservableObject {
     var relaxedBitrate = false
     var remoteControlAssistantStreamerState = RemoteControlAssistantStreamerState()
     var remoteControlStreamer: RemoteControlStreamer?
+    var remoteControlHandledRequestIds: [String] = []
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
     var remoteControlWeb: RemoteControlWeb?
