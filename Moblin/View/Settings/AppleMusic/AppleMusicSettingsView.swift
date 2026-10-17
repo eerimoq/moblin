@@ -53,8 +53,9 @@ struct MusicAddedByView: View {
     let user: String
 
     var body: some View {
-        Text("Added by: \(user)")
+        Text("added by \(Text(user).foregroundColor(.primary).fontWeight(.medium))")
             .font(.subheadline)
+            .foregroundStyle(.gray)
     }
 }
 
