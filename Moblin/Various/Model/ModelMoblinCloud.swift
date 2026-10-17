@@ -119,13 +119,13 @@ class MoblinCloud {
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
-        model?.makeToast(title: String(localized: "Moblin cloud connected"))
+        model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
     }
 
     func remoteControlStreamerDisconnected() {
-        model?.makeToast(title: String(localized: "Moblin cloud disconnected"))
+        model?.makeToast(title: String(localized: "Moblin Cloud disconnected"))
         model?.updateMoblinCloudStatus()
     }
 

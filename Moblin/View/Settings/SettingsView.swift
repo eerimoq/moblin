@@ -175,7 +175,7 @@ struct SettingsView: View {
                             moblinCloud: database.moblinCloud
                         )
                     } label: {
-                        Label("Moblin cloud", systemImage: "cloud")
+                        Label("Moblin Cloud", systemImage: "cloud")
                     }
                 }
                 Section {

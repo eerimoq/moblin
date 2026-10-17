@@ -79,7 +79,7 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "appletvremote.gen1")
                 }
                 Label {
-                    Toggle("Moblin cloud", isOn: $show.moblinCloud)
+                    Toggle("Moblin Cloud", isOn: $show.moblinCloud)
                 } icon: {
                     Image(systemName: "cloud")
                 }

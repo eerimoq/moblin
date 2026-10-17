@@ -46,6 +46,6 @@ struct MoblinCloudSettingsView: View {
                 Text("Wheel of luck widget viewers can spin.")
             }
         }
-        .navigationTitle("Moblin cloud")
+        .navigationTitle("Moblin Cloud")
     }
 }
