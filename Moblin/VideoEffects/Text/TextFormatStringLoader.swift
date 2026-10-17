@@ -266,6 +266,7 @@ enum TextFormatPart: Equatable {
     case power
     case stepCount
     case workoutDistance
+    case workoutRemaining(Int)
     case teslaBatteryLevel
     case teslaDrive
     case teslaMedia
@@ -372,6 +373,7 @@ class TextFormatLoader {
                     loadItem(part: .stepCount, offsetBy: 11)
                 } else if !isMac(), formatFromIndex.hasPrefix("{workoutdistance}") {
                     loadItem(part: .workoutDistance, offsetBy: 17)
+                } else if appendWorkoutRemainingIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{teslabatterylevel}") {
                     loadItem(part: .teslaBatteryLevel, offsetBy: 19)
                 } else if formatFromIndex.hasPrefix("{tesladrive}") {
@@ -488,6 +490,16 @@ class TextFormatLoader {
                                /{heartrate:([^}]+)}/,
                                { $0 },
                                { .heartRate($0 ?? "") })
+    }
+
+    private func appendWorkoutRemainingIfPresent(formatFromIndex: String) -> Bool {
+        guard let match = formatFromIndex.prefixMatch(of: /{workoutremaining:([^}]+)}/),
+              let goal = Int(match.output.1), goal > 0
+        else {
+            return false
+        }
+        loadItem(part: .workoutRemaining(goal), offsetBy: match.output.0.count)
+        return true
     }
 
     private func appendPaceIfPresent(formatFromIndex: String) -> Bool {
@@ -625,6 +637,8 @@ extension [TextFormatPart] {
             case .stepCount:
                 return true
             case .workoutDistance:
+                return true
+            case .workoutRemaining:
                 return true
             default:
                 break

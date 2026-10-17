@@ -325,7 +325,7 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
   - Presets, tracking and zoom.
 - Cycling power monitor.
 - Heart rate monitor.
-- Workout. Walking, running and cycling.
+- Workout. Walking, running, cycling and pool swimming from Apple Watch.
 - Show video on external display. Aka clean HDMI out.
 - Basic VTuber and PNGTuber.
 - Auto scene switcher.
@@ -358,6 +358,36 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
 - Scoreboards.
   - Padel and generic.
 - Watch face complication.
+
+### Pool swimming overlay
+
+Set the pool length in meters under Settings > Apple Watch > Pool swimming on the iPhone
+before starting the workout. The initial value is 25 meters and can be changed, including
+to a short pool such as 6 meters. The new length applies to the next workout.
+
+Start **Pool swimming** in the Moblin Apple Watch companion, allow access to Health data,
+and add a Text widget to the streaming scene. Both the iPhone and watch apps need this version.
+Starting a workout in Apple's separate Workout app does not start a Moblin workout.
+
+- `{workoutDistance}` shows the recorded distance in meters.
+- `{heartRate}` shows the latest heart rate supplied by the watch.
+- `{workoutRemaining:1000}` optionally shows meters remaining to a 1000-meter goal.
+  Choose any positive whole-meter goal in the Text widget's Workout variables, or edit
+  the number in the token. Omit this variable if no goal is needed. Reaching the goal
+  shows zero remaining and does not stop the workout.
+
+For example: `Swum {workoutDistance} m | Remaining {workoutRemaining:1000} m | HR {heartRate}`.
+Without a goal: `Swum {workoutDistance} m | HR {heartRate}`.
+
+The watch keeps the accumulated statistics while disconnected and sends them again when
+reachable. The overlay displays the last received values during a connection gap; they
+are not current measurements. Water can interrupt the watch-to-phone connection, so
+continuous updates underwater are not guaranteed. Test several lengths in the actual
+pool and compare the recorded distance before relying on the counter, especially in short pools.
+
+The watch target must be signed with the HealthKit entitlement enabled. A custom build
+requires signing and installation of both apps; editing the source does not modify an
+already-installed App Store or TestFlight build.
 
 # Import settings using moblin:// (custom URL)
 

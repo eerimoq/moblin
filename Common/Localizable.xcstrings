@@ -1363,6 +1363,126 @@
         }
       }
     },
+    "A workout is already running on Apple Watch" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На Apple Watch уже идёт тренировка"
+          }
+        }
+      }
+    },
+    "Add the remaining-distance variable only if you want to show a goal." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте переменную оставшейся дистанции, если хотите показывать цель."
+          }
+        }
+      }
+    },
+    "Apple Watch disconnected" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch отключены"
+          }
+        }
+      }
+    },
+    "Distance goal (optional)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цель по дистанции (необязательно)"
+          }
+        }
+      }
+    },
+    "Goal (meters)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цель (метры)"
+          }
+        }
+      }
+    },
+    "Pool length (meters)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Длина бассейна (метры)"
+          }
+        }
+      }
+    },
+    "Pool swimming" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плавание в бассейне"
+          }
+        }
+      }
+    },
+    "Set the pool length before starting a swimming workout on Apple Watch." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажите длину бассейна перед началом плавания на Apple Watch."
+          }
+        }
+      }
+    },
+    "Show meters remaining to a workout distance goal." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать, сколько метров осталось до цели тренировки."
+          }
+        }
+      }
+    },
+    "Start pool swimming workout" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать плавание в бассейне"
+          }
+        }
+      }
+    },
+    "Start swimming on Apple Watch" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните плавание на Apple Watch"
+          }
+        }
+      }
+    },
+    "Stop the workout on your Apple Watch" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остановите тренировку на Apple Watch"
+          }
+        }
+      }
+    },
     "‼️ Low on disk. Stopping recording. ‼️" : {
       "localizations" : {
         "de" : {

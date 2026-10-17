@@ -17,6 +17,7 @@ let maximumNumberOfWatchChatMessages = 50
 let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
 let distanceCyclingType = HKQuantityType.quantityType(forIdentifier: .distanceCycling)!
 let distanceWalkingRunningType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+let distanceSwimmingType = HKQuantityType.quantityType(forIdentifier: .distanceSwimming)!
 let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
 let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
 let runningPowerType = HKQuantityType.quantityType(forIdentifier: .runningPower)!

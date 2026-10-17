@@ -1051,6 +1051,7 @@ private struct LanguageVariablesView: View {
 private struct WorkoutVariablesView: View {
     let model: Model
     @Binding var value: String
+    @State private var distanceGoal: Int = 1000
 
     var body: some View {
         NavigationLink {
@@ -1075,6 +1076,28 @@ private struct WorkoutVariablesView: View {
                     )
                 } header: {
                     Text("Apple workout")
+                }
+                Section {
+                    HStack {
+                        Text("Goal (meters)")
+                        Spacer()
+                        TextField("", value: $distanceGoal, format: .number)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                    }
+                    if distanceGoal > 0 {
+                        VariableView(
+                            title: "{workoutRemaining:\(distanceGoal)}",
+                            description: String(
+                                localized: "Show meters remaining to a workout distance goal."
+                            ),
+                            text: $value
+                        )
+                    }
+                } header: {
+                    Text("Distance goal (optional)")
+                } footer: {
+                    Text("Add the remaining-distance variable only if you want to show a goal.")
                 }
                 Section("Other devices") {
                     ForEach(model.database.workoutDevices.devices) { device in

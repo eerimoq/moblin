@@ -148,6 +148,9 @@ private struct ControlWorkoutView: View {
                 Button("Start cycling workout") {
                     model.startWorkout(type: .cycling)
                 }
+                Button("Start pool swimming workout") {
+                    model.startWorkout(type: .poolSwimming)
+                }
             }
         }
     }

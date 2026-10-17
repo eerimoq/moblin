@@ -215,6 +215,9 @@ class TextEffectFormatter {
                 formatStepCount(variables: variables)
             case .workoutDistance:
                 formatWorkoutDistance(variables: variables)
+            case let .workoutRemaining(goal):
+                let remaining = variables.workoutDistance.map { max(0, goal - max(0, $0)) }
+                appendTextPart(value: formatOptional(value: remaining))
             case .teslaBatteryLevel:
                 formatTeslaBatteryLevel(variables: variables)
             case .teslaDrive:
