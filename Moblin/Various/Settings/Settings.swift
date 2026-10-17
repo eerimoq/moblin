@@ -154,6 +154,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var gameController: Bool = true
     @Published var location: Bool = false
     @Published var remoteControl: Bool = true
+    @Published var moblinCloud: Bool = true
     @Published var browserWidgets: Bool = true
     @Published var bonding: Bool = true
     @Published var events: Bool = true
@@ -183,6 +184,7 @@ class SettingsShow: Codable, ObservableObject {
         case gameController
         case location
         case remoteControl
+        case moblinCloud
         case browserWidgets
         case bonding
         case events
@@ -212,6 +214,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.gameController, gameController)
         try container.encode(.location, location)
         try container.encode(.remoteControl, remoteControl)
+        try container.encode(.moblinCloud, moblinCloud)
         try container.encode(.browserWidgets, browserWidgets)
         try container.encode(.bonding, bonding)
         try container.encode(.events, events)
@@ -241,6 +244,7 @@ class SettingsShow: Codable, ObservableObject {
         gameController = container.decode(.gameController, Bool.self, true)
         location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
+        moblinCloud = container.decode(.moblinCloud, Bool.self, true)
         browserWidgets = container.decode(.browserWidgets, Bool.self, true)
         bonding = container.decode(.bonding, Bool.self, true)
         events = container.decode(.events, Bool.self, true)
@@ -1205,6 +1209,34 @@ class SettingsWiFi: Codable, Identifiable, ObservableObject {
     }
 }
 
+class SettingsMoblinCloud: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var key: String = ""
+    @Published var wheelOfLuckWidgetId: UUID?
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case enabled
+        case key
+        case wheelOfLuckWidgetId
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.key, key)
+        try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        key = container.decode(.key, String.self, "")
+        wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1227,6 +1259,7 @@ class Database: Codable, ObservableObject {
     @Published var vibrate: Bool = false
     @Published var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
+    var moblinCloud: SettingsMoblinCloud = .init()
     @Published var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
     @Published var mirrorFrontCameraOnStream: Bool = true
@@ -1361,6 +1394,7 @@ class Database: Codable, ObservableObject {
         case vibrate
         case gameControllers
         case remoteControl
+        case moblinCloud
         case startStopRecordingConfirmations
         case color
         case mirrorFrontCameraOnStream
@@ -1455,6 +1489,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.vibrate, vibrate)
         try container.encode(.gameControllers, gameControllers)
         try container.encode(.remoteControl, remoteControl)
+        try container.encode(.moblinCloud, moblinCloud)
         try container.encode(.startStopRecordingConfirmations, startStopRecordingConfirmations)
         try container.encode(.color, color)
         try container.encode(.mirrorFrontCameraOnStream, mirrorFrontCameraOnStream)
@@ -1559,6 +1594,7 @@ class Database: Codable, ObservableObject {
         vibrate = container.decode(.vibrate, Bool.self, false)
         gameControllers = container.decode(.gameControllers, [SettingsGameController].self, [.init()])
         remoteControl = container.decode(.remoteControl, SettingsRemoteControl.self, .init())
+        moblinCloud = container.decode(.moblinCloud, SettingsMoblinCloud.self, .init())
         startStopRecordingConfirmations = container.decode(.startStopRecordingConfirmations, Bool.self, true)
         color = container.decode(.color, SettingsColor.self, .init())
         mirrorFrontCameraOnStream = container.decode(.mirrorFrontCameraOnStream, Bool.self, true)

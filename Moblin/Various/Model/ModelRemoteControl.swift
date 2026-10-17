@@ -89,7 +89,7 @@ extension Model {
         remoteControlStreamer!.start()
     }
 
-    private func getRemoteControlStreamerId() -> String {
+    func getRemoteControlStreamerId() -> String {
         if remoteControlStreamerIdStorage.get().isEmpty {
             remoteControlStreamerIdStorage.set(UUID().uuidString)
         }
@@ -648,26 +648,6 @@ extension Model {
         remoteControlWeb?.sendScoreboardUpdate(config: config)
     }
 
-    private func getRemoteControlWheelOfLuckWidget() -> SettingsWidget? {
-        guard let id = database.remoteControl.streamer.wheelOfLuckWidgetId else {
-            return nil
-        }
-        return database.widgets.first(where: { $0.id == id && $0.type == .wheelOfLuck })
-    }
-
-    func isRemoteControlWheelOfLuckWidget(widget: SettingsWidget) -> Bool {
-        widget.id == database.remoteControl.streamer.wheelOfLuckWidgetId
-    }
-
-    func remoteControlStreamerSendWheelOfLuck() {
-        let wheel = getRemoteControlWheelOfLuckWidget().map {
-            RemoteControlWheelOfLuck(options: $0.wheelOfLuck.options.map {
-                RemoteControlWheelOfLuckOption(text: $0.text, weight: $0.weight)
-            })
-        }
-        remoteControlStreamer?.sendWheelOfLuck(wheel: wheel)
-    }
-
     func reloadRemoteControlWeb() {
         remoteControlWeb?.stop()
         remoteControlWeb = nil
@@ -781,7 +761,6 @@ extension Model: RemoteControlStreamerDelegate {
         setLowFpsImage()
         updateRemoteControlStatus()
         remoteControlStateChanged(state: createRemoteControlStateChanged())
-        remoteControlStreamerSendWheelOfLuck()
     }
 
     func remoteControlStreamerDisconnected() {
@@ -1129,7 +1108,7 @@ extension Model: RemoteControlStreamerDelegate {
         stopMacro(id: id)
     }
 
-    private func isRemoteControlRequestAlreadyHandled(requestId: String?) -> Bool {
+    func isRemoteControlRequestAlreadyHandled(requestId: String?) -> Bool {
         guard let requestId else {
             return false
         }
@@ -1144,15 +1123,12 @@ extension Model: RemoteControlStreamerDelegate {
         return false
     }
 
-    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
-        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId) else {
-            return
-        }
-        guard let widget = getRemoteControlWheelOfLuckWidget() else {
-            return
-        }
-        getWheelOfLuckEffect(id: widget.id)?.spin(name: name, message: message, count: min(max(count, 1), 10))
-    }
+    func remoteControlStreamerSpinWheelOfLuck(
+        name _: String,
+        message _: String,
+        count _: Int,
+        requestId _: String?
+    ) {}
 
     func remoteControlStreamerTip(name: String,
                                   message: String,

@@ -72,7 +72,6 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var previewFps: Float = 1.0
     @Published var reliableChatAndEvents: Bool = false
     @Published var savedUrls: [SettingsRemoteControlStreamerUrl] = []
-    @Published var wheelOfLuckWidgetId: UUID?
 
     enum CodingKeys: CodingKey {
         case enabled
@@ -81,7 +80,6 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         case previewFps
         case reliableChatAndEvents
         case savedUrls
-        case wheelOfLuckWidgetId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -92,7 +90,6 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         try container.encode(.previewFps, previewFps)
         try container.encode(.reliableChatAndEvents, reliableChatAndEvents)
         try container.encode(.savedUrls, savedUrls)
-        try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
     }
 
     init() {}
@@ -105,7 +102,6 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         previewFps = container.decode(.previewFps, Float.self, 1.0)
         reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, false)
         savedUrls = container.decode(.savedUrls, [SettingsRemoteControlStreamerUrl].self, [])
-        wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
     }
 }
 

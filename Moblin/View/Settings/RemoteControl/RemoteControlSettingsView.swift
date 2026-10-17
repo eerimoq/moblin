@@ -188,21 +188,6 @@ private struct RemoteControlSettingsStreamerView: View {
             }
         }
         Section {
-            Picker("Wheel of luck", selection: $streamer.wheelOfLuckWidgetId) {
-                Text("None")
-                    .tag(nil as UUID?)
-                ForEach(model.database.widgets.filter { $0.type == .wheelOfLuck }) {
-                    Text($0.name)
-                        .tag($0.id as UUID?)
-                }
-            }
-            .onChange(of: streamer.wheelOfLuckWidgetId) { _ in
-                model.remoteControlStreamerSendWheelOfLuck()
-            }
-        } footer: {
-            Text("Wheel of luck widget the assistant can see and spin.")
-        }
-        Section {
             HStack {
                 Text("Preview FPS")
                 SliderView(

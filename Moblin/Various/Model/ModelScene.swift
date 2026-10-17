@@ -88,8 +88,8 @@ extension Model {
 
     func updateWheelOfLuckEffect(widget: SettingsWidget) {
         getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
-        if isRemoteControlWheelOfLuckWidget(widget: widget) {
-            remoteControlStreamerSendWheelOfLuck()
+        if isMoblinCloudWheelOfLuckWidget(widget: widget) {
+            moblinCloudSendWheelOfLuck()
         }
     }
 

@@ -126,12 +126,13 @@ class RemoteControlStreamer {
 
     private func handleDisconnected() {
         stopKeepAlive()
-        if connected {
-            delegate?.remoteControlStreamerDisconnected()
-        }
+        let wasConnected = connected
         connected = false
         if !wrongPassword {
             connectionErrorMessage = String(localized: "Disconnected")
+        }
+        if wasConnected {
+            delegate?.remoteControlStreamerDisconnected()
         }
     }
 

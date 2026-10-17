@@ -300,6 +300,25 @@ private struct RemoteControlStatusView: View {
     }
 }
 
+private struct MoblinCloudStatusView: View {
+    let model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    @ObservedObject var moblinCloud: SettingsMoblinCloud
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusMoblinCloud() {
+            StreamOverlayIconAndTextView(
+                icon: "cloud",
+                text: status.moblinCloudStatus,
+                textPlacement: textPlacement,
+                color: status.moblinCloudOk ? .white : .red
+            )
+        }
+    }
+}
+
 private struct DjiDevicesStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
@@ -549,6 +568,11 @@ private struct StatusesView: View {
                                 streamer: model.database.remoteControl.streamer,
                                 assistant: model.database.remoteControl.assistant,
                                 textPlacement: textPlacement)
+        MoblinCloudStatusView(model: model,
+                              show: model.database.show,
+                              status: model.statusTopRight,
+                              moblinCloud: model.database.moblinCloud,
+                              textPlacement: textPlacement)
         DjiDevicesStatusView(model: model,
                              show: model.database.show,
                              status: model.statusTopRight,

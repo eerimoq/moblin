@@ -293,6 +293,8 @@ class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatusChanged = false
     @Published var remoteControlOk = false
     @Published var remoteControlStatus = noValue
+    @Published var moblinCloudOk = false
+    @Published var moblinCloudStatus = noValue
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
@@ -689,6 +691,7 @@ final class Model: NSObject, ObservableObject {
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
     var remoteControlWeb: RemoteControlWeb?
+    var moblinCloud: MoblinCloud?
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var isRemoteControlAssistantRequestingStats = false
@@ -1874,6 +1877,7 @@ final class Model: NSObject, ObservableObject {
         media.logStatistics()
         updateObsStatus()
         updateRemoteControlStatus()
+        updateMoblinCloudStatus()
         if stream.enabled, database.debug.videoBitrateChange {
             media.updateVideoStreamBitrate(bitrate: stream.bitrate)
         }
@@ -2340,6 +2344,7 @@ final class Model: NSObject, ObservableObject {
         reloadRemoteControlAssistant()
         reloadRemoteControlRelay()
         reloadRemoteControlWeb()
+        reloadMoblinCloud()
         reloadKickViewers()
         reloadSoopPlatformStatus()
         reloadNtpClient()
