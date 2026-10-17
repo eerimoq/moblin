@@ -10,7 +10,7 @@ struct MoblinCloudSettingsView: View {
             Section {
                 Text("""
                 Let viewers interact with your stream from your page at https://moblin.app. \
-                Sign in at https://moblin.app/dashboard to get your secret key.
+                Sign in at https://moblin.app/dashboard to get your Moblin Cloud key.
                 """)
             }
             Section {
@@ -19,7 +19,7 @@ struct MoblinCloudSettingsView: View {
                         model.reloadMoblinCloud()
                     }
                 TextEditNavigationView(
-                    title: String(localized: "Secret key"),
+                    title: String(localized: "Moblin Cloud key"),
                     value: moblinCloud.key,
                     onSubmit: {
                         moblinCloud.key = $0
@@ -28,7 +28,7 @@ struct MoblinCloudSettingsView: View {
                     sensitive: true
                 )
             } footer: {
-                Text("Keep the secret key to yourself.")
+                Text("Keep the Moblin Cloud key to yourself.")
             }
             Section {
                 Picker("Wheel of luck", selection: $moblinCloud.wheelOfLuckWidgetId) {
