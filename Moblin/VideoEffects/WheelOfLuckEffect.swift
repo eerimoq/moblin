@@ -109,6 +109,8 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
     private var angle: Double = 0
     private let spinTime: Double = 12
     private let pauseBetweenSpins: Double = 3
+    private let showBeforeSpin: Double = 1.5
+    private var onlyShowWhenSpinning = false
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private let canvasSize: CGSize
     private let onResult: @MainActor (WheelOfLuckSpinResult) -> Void
@@ -136,6 +138,10 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
                                                    weight: inputOption.weight,
                                                    text: inputOption.text,
                                                    textAngle: .degrees(textAngle)))
+        }
+        let onlyShowWhenSpinning = settings.onlyShowWhenSpinning
+        processorPipelineQueue.async {
+            self.onlyShowWhenSpinning = onlyShowWhenSpinning
         }
         render(size: getSize(), options: options)
     }
@@ -219,11 +225,18 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
         return filter.outputImage ?? image
     }
 
+    override func isEnabled() -> Bool {
+        !onlyShowWhenSpinning || !startPresentationTimeStamp.isInfinite || !pendingSpins.isEmpty
+    }
+
     private func updateAngle(_ presentationTimeStamp: Double) {
         if !startPresentationTimeStamp.isInfinite {
             let elapsedSinceStart = presentationTimeStamp - startPresentationTimeStamp
-            let ratio = max(1 - elapsedSinceStart / spinTime, 0)
-            angle += -speed * ratio * (presentationTimeStamp - previousPresentationTimeStamp)
+            if elapsedSinceStart > 0 {
+                let ratio = max(1 - elapsedSinceStart / spinTime, 0)
+                let previous = max(previousPresentationTimeStamp, startPresentationTimeStamp)
+                angle += -speed * ratio * (presentationTimeStamp - previous)
+            }
             previousPresentationTimeStamp = presentationTimeStamp
             if elapsedSinceStart >= spinTime, let currentSpin {
                 reportResult(spin: currentSpin)
@@ -238,11 +251,12 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
            startPresentationTimeStamp.isInfinite
            || presentationTimeStamp - startPresentationTimeStamp >= spinTime + pauseBetweenSpins
         {
+            let delay = onlyShowWhenSpinning && startPresentationTimeStamp.isInfinite ? showBeforeSpin : 0
             let spin = pendingSpins.removeFirst()
             currentSpin = spin
             caption = spin.caption
             speed = .random(in: 8 ... 15)
-            startPresentationTimeStamp = presentationTimeStamp
+            startPresentationTimeStamp = presentationTimeStamp + delay
             previousPresentationTimeStamp = presentationTimeStamp
         }
     }

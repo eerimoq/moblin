@@ -2112,6 +2112,7 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
 
 class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     @Published var advanced: Bool = false
+    @Published var onlyShowWhenSpinning: Bool = false
     @Published var totalWeight: Int = 1
     @Published var options: [SettingsWidgetWheelOfLuckOption] = []
     @Published var text: String = ""
@@ -2119,6 +2120,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case advanced
+        case onlyShowWhenSpinning
         case options
     }
 
@@ -2127,12 +2129,14 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.advanced, advanced)
+        try container.encode(.onlyShowWhenSpinning, onlyShowWhenSpinning)
         try container.encode(.options, options)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         advanced = container.decode(.advanced, Bool.self, false)
+        onlyShowWhenSpinning = container.decode(.onlyShowWhenSpinning, Bool.self, false)
         options = container.decode(.options, [SettingsWidgetWheelOfLuckOption].self, [])
         updateText()
         updateTotalWeight()

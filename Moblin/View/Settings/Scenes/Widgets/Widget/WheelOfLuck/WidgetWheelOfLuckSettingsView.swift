@@ -185,6 +185,12 @@ struct WidgetWheelOfLuckSettingsView: View {
             Toggle("Advanced", isOn: $wheelOfLuck.advanced)
         }
         Section {
+            Toggle("Only show when spinning", isOn: $wheelOfLuck.onlyShowWhenSpinning)
+                .onChange(of: wheelOfLuck.onlyShowWhenSpinning) { _ in
+                    updateEffect()
+                }
+        }
+        Section {
             if let effect = model.getWheelOfLuckEffect(id: widget.id) {
                 WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: false)
             }
