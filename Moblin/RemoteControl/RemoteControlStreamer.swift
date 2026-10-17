@@ -172,6 +172,13 @@ class RemoteControlStreamer {
         send(message: .event(data: .wheelOfLuck(wheel: wheel)))
     }
 
+    func sendSongRequests(enabled: Bool) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .songRequests(enabled: enabled)))
+    }
+
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
     }

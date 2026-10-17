@@ -45,6 +45,16 @@ struct MoblinCloudSettingsView: View {
             } footer: {
                 Text("Wheel of luck widget viewers can spin.")
             }
+            Section {
+                Toggle("Song requests", isOn: $moblinCloud.songRequests)
+                    .onChange(of: moblinCloud.songRequests) { _ in
+                        model.moblinCloudSendSongRequests()
+                    }
+            } footer: {
+                Text("""
+                Let viewers add songs to your Apple Music queue. The queue is still shown when disabled.
+                """)
+            }
         }
         .navigationTitle("Moblin Cloud")
     }

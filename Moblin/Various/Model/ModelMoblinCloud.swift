@@ -75,6 +75,10 @@ extension Model {
         moblinCloud?.sendWheelOfLuck(wheel: wheel)
     }
 
+    func moblinCloudSendSongRequests() {
+        moblinCloud?.sendSongRequests(enabled: database.moblinCloud.songRequests)
+    }
+
     func moblinCloudSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
         guard !isRemoteControlRequestAlreadyHandled(requestId: requestId),
               let widget = getMoblinCloudWheelOfLuckWidget()
@@ -115,6 +119,10 @@ class MoblinCloud {
     func sendWheelOfLuck(wheel: RemoteControlWheelOfLuck?) {
         streamer?.sendWheelOfLuck(wheel: wheel)
     }
+
+    func sendSongRequests(enabled: Bool) {
+        streamer?.sendSongRequests(enabled: enabled)
+    }
 }
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
@@ -122,6 +130,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
+        model?.moblinCloudSendSongRequests()
     }
 
     func remoteControlStreamerDisconnected() {

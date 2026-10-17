@@ -160,6 +160,24 @@ private struct PlaylistView: View {
     }
 }
 
+private struct SongRequestsView: View {
+    let model: Model
+    @ObservedObject var moblinCloud: SettingsMoblinCloud
+
+    var body: some View {
+        if moblinCloud.enabled {
+            Section {
+                Toggle("Song requests", isOn: $moblinCloud.songRequests)
+                    .onChange(of: moblinCloud.songRequests) { _ in
+                        model.moblinCloudSendSongRequests()
+                    }
+            } header: {
+                Text("Moblin Cloud")
+            }
+        }
+    }
+}
+
 struct AppleMusicSettingsView: View {
     let model: Model
     @ObservedObject var musicPlaylist: MusicPlaylist
@@ -192,6 +210,7 @@ struct AppleMusicSettingsView: View {
                         model.addMusic(title: searchText, user: nil) { _ in }
                     }
             }
+            SongRequestsView(model: model, moblinCloud: model.database.moblinCloud)
             PlaylistView(model: model, musicPlaylist: musicPlaylist, queue: musicPlaylist.queue)
         }
         .onAppear {
