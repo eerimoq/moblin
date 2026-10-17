@@ -112,12 +112,18 @@ class MoblinSettingsRemoteControl: Codable {
     var password: String
 }
 
+class MoblinSettingsMoblinCloud: Codable {
+    var enabled: Bool
+    var key: String
+}
+
 class MoblinSettingsUrl: Codable {
     // The last enabled stream will be selected (if any).
     var streams: [MoblinSettingsUrlStream]?
     var quickButtons: MoblinQuickButtons?
     var webBrowser: MoblinSettingsWebBrowser?
     var remoteControl: MoblinSettingsRemoteControl?
+    var moblinCloud: MoblinSettingsMoblinCloud?
 
     func toString() throws -> String {
         let encoder = JSONEncoder()

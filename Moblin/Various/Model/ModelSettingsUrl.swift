@@ -159,6 +159,15 @@ extension Model {
         reloadRemoteControlRelay()
     }
 
+    private func handleSettingsUrlsDefaultMoblinCloud(settings: MoblinSettingsUrl) {
+        guard let moblinCloud = settings.moblinCloud else {
+            return
+        }
+        database.moblinCloud.enabled = moblinCloud.enabled
+        database.moblinCloud.key = moblinCloud.key.trim()
+        reloadMoblinCloud()
+    }
+
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
         let collisions = findCollidingStreamNames(streams: settings.streams ?? [])
         if collisions.isEmpty {
@@ -182,6 +191,7 @@ extension Model {
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         handleSettingsUrlsDefaultRemoteControl(settings: settings)
+        handleSettingsUrlsDefaultMoblinCloud(settings: settings)
         makeToast(title: String(localized: "URL import successful"))
         updateQuickButtonPairs()
     }
