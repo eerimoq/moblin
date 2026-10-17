@@ -1675,6 +1675,7 @@ final class Model: NSObject, ObservableObject {
         stopCatPrinters()
         stopWorkoutDevices()
         stopRemoteControlAssistant()
+        stopMoblinCloud()
         stopHttpProxyServer()
         fixedHorizonEffect.stop()
         cameraLevel.stop()

@@ -20,9 +20,13 @@ private func makeMoblinCloudUrl(key: String) -> URL? {
 }
 
 extension Model {
-    func reloadMoblinCloud() {
+    func stopMoblinCloud() {
         moblinCloud?.stop()
         moblinCloud = nil
+    }
+
+    func reloadMoblinCloud() {
+        stopMoblinCloud()
         let settings = database.moblinCloud
         let key = settings.key.trim()
         guard settings.enabled, !key.isEmpty, let url = makeMoblinCloudUrl(key: key) else {
