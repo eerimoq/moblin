@@ -18,6 +18,7 @@ enum AlertsEffectAlert {
     case kickHost(event: KickPusherStreamHostEvent)
     case kickReward(event: KickPusherRewardRedeemedEvent)
     case kickKicks(event: KickPusherKicksGiftedEvent)
+    case moblinCloudTip(name: String, message: String, amount: String, currency: String)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
     case quickButton
@@ -67,6 +68,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var kickHostMedia = AlertsEffectMedia()
     private var kickRewardMedia = AlertsEffectMedia()
     private var kickGiftsMedias: [AlertsEffectMedia] = []
+    private var moblinCloudTipMedia = AlertsEffectMedia()
     private var chatBotCommandsMedias: [AlertsEffectMedia] = []
     private var speechToTextStringsMedias: [AlertsEffectMedia] = []
     private var quickButtonMedias = AlertsEffectMedia()
@@ -143,6 +145,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     func setSettings(settings: SettingsWidgetAlerts) {
         setTwitchSettings(twitch: settings.twitch)
         setKickSettings(kick: settings.kick)
+        setMoblinCloudSettings(moblinCloud: settings.moblinCloud)
         setChatBotSettings(settings: settings)
         setSpeechToTextSettings(settings: settings)
         setQuickButtonSettings(alert: settings.quickButton)
@@ -229,6 +232,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playKickReward(event: event)
         case let .kickKicks(event):
             playKickKicks(event: event)
+        case let .moblinCloudTip(name, message, amount, currency):
+            playMoblinCloudTip(name: name, message: message, amount: amount, currency: currency)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
@@ -932,6 +937,27 @@ extension AlertsEffect {
             )
             break
         }
+    }
+}
+
+extension AlertsEffect {
+    private func setMoblinCloudSettings(moblinCloud: SettingsWidgetAlertsMoblinCloud) {
+        moblinCloudTipMedia.update(moblinCloud.tips, mediaStorage, bundledImages, bundledSounds)
+    }
+
+    @MainActor
+    private func playMoblinCloudTip(name: String, message: String, amount: String, currency: String) {
+        guard settings.moblinCloud.tips.enabled else {
+            return
+        }
+        var text = String(localized: "tipped \(amount) \(currency)!")
+        if !message.isEmpty {
+            text += " \(message)"
+        }
+        play(media: moblinCloudTipMedia,
+             username: name,
+             message: text,
+             settings: settings.moblinCloud.tips)
     }
 }
 

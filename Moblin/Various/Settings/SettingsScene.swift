@@ -1447,6 +1447,36 @@ class SettingsWidgetAlertsKick: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetAlertsMoblinCloud: Codable, ObservableObject {
+    var tips: SettingsWidgetAlertsAlert = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case tips
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.tips, tips)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        tips = container.decode(.tips, SettingsWidgetAlertsAlert.self, .init())
+    }
+
+    func clone() -> SettingsWidgetAlertsMoblinCloud {
+        let new = SettingsWidgetAlertsMoblinCloud()
+        new.tips = tips.clone()
+        return new
+    }
+
+    func disableAll() {
+        tips.enabled = false
+    }
+}
+
 enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
     case file = "File"
 }
@@ -1603,6 +1633,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     private static let aiPersonality = "You are rude and gives insulting answers. Answer in a few sentences."
     var twitch: SettingsWidgetAlertsTwitch = .init()
     var kick: SettingsWidgetAlertsKick = .init()
+    var moblinCloud: SettingsWidgetAlertsMoblinCloud = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
     var quickButton: SettingsWidgetAlertsAlert = .init()
@@ -1616,6 +1647,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case twitch
         case kick
+        case moblinCloud
         case chatBot
         case speechToText
         case needsSubtitles
@@ -1628,6 +1660,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twitch, twitch)
         try container.encode(.kick, kick)
+        try container.encode(.moblinCloud, moblinCloud)
         try container.encode(.chatBot, chatBot)
         try container.encode(.speechToText, speechToText)
         try container.encode(.needsSubtitles, needsSubtitles)
@@ -1640,6 +1673,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twitch = container.decode(.twitch, SettingsWidgetAlertsTwitch.self, .init())
         kick = container.decode(.kick, SettingsWidgetAlertsKick.self, .init())
+        moblinCloud = container.decode(.moblinCloud, SettingsWidgetAlertsMoblinCloud.self, .init())
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
@@ -1656,6 +1690,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         let new = SettingsWidgetAlerts()
         new.twitch = twitch.clone()
         new.kick = kick.clone()
+        new.moblinCloud = moblinCloud.clone()
         new.chatBot = chatBot.clone()
         new.speechToText = speechToText.clone()
         new.needsSubtitles = needsSubtitles
@@ -1668,6 +1703,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     func disableAll() {
         twitch.disableAll()
         kick.disableAll()
+        moblinCloud.disableAll()
         chatBot.disableAll()
         speechToText.disableAll()
         quickButton.enabled = false

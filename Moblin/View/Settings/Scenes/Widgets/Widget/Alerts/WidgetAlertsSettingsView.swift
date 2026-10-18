@@ -362,6 +362,11 @@ struct WidgetAlertsSettingsView: View {
                 KickLogoAndNameView()
             }
             NavigationLink {
+                WidgetAlertsMoblinCloudSettingsView(moblinCloud: widget.alerts.moblinCloud)
+            } label: {
+                Label("Moblin Cloud", systemImage: "cloud")
+            }
+            NavigationLink {
                 WidgetAlertsChatBotSettingsView(model: model, chatBot: widget.alerts.chatBot)
             } label: {
                 Text("Chat bot")
