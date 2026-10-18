@@ -31,8 +31,20 @@ struct MoblinCloudSettingsView: View {
                 Text("Keep the Moblin Cloud key to yourself.")
             }
             Section {
+                Picker("Tips", selection: $moblinCloud.alertsWidgetId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(database.widgets.filter { $0.type == .alerts }) {
+                        Text($0.name)
+                            .tag($0.id as UUID?)
+                    }
+                }
+            } footer: {
+                Text("Alerts widget that shows tips.")
+            }
+            Section {
                 Picker("Wheel of luck", selection: $moblinCloud.wheelOfLuckWidgetId) {
-                    Text("None")
+                    Text("-- None --")
                         .tag(nil as UUID?)
                     ForEach(database.widgets.filter { $0.type == .wheelOfLuck }) {
                         Text($0.name)

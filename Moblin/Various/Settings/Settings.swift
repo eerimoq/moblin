@@ -1213,6 +1213,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var key: String = ""
     @Published var wheelOfLuckWidgetId: UUID?
+    @Published var alertsWidgetId: UUID?
     @Published var songRequests: Bool = true
 
     init() {}
@@ -1221,6 +1222,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         case enabled
         case key
         case wheelOfLuckWidgetId
+        case alertsWidgetId
         case songRequests
     }
 
@@ -1229,6 +1231,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.key, key)
         try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
+        try container.encode(.alertsWidgetId, alertsWidgetId)
         try container.encode(.songRequests, songRequests)
     }
 
@@ -1237,6 +1240,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         key = container.decode(.key, String.self, "")
         wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
+        alertsWidgetId = container.decode(.alertsWidgetId, UUID?.self, nil)
         songRequests = container.decode(.songRequests, Bool.self, true)
     }
 }

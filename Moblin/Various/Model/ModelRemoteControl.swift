@@ -1160,7 +1160,7 @@ extension Model: RemoteControlStreamerDelegate {
                           bits: nil,
                           highlight: ChatHighlight.makeRemoteControlAssistant(),
                           live: true)
-        playAlert(alert: .moblinCloudTip(name: name, message: message, amount: amount, currency: currency))
+        moblinCloudPlayTipAlert(name: name, message: message, amount: amount, currency: currency)
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {

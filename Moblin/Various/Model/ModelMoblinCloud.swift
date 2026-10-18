@@ -79,6 +79,16 @@ extension Model {
         moblinCloud?.sendWheelOfLuck(wheel: wheel)
     }
 
+    func moblinCloudPlayTipAlert(name: String, message: String, amount: String, currency: String) {
+        guard let id = database.moblinCloud.alertsWidgetId,
+              let effect = getAlertsEffect(id: id),
+              enabledAlertsEffects.contains(where: { $0 === effect })
+        else {
+            return
+        }
+        effect.play(alert: .moblinCloudTip(name: name, message: message, amount: amount, currency: currency))
+    }
+
     func moblinCloudSendSongRequests() {
         moblinCloud?.sendSongRequests(enabled: database.moblinCloud.songRequests)
     }
