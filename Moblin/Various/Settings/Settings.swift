@@ -146,6 +146,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var audioLevel: Bool = true
     @Published var zoom: Bool = false
     @Published var zoomPresets: Bool = true
+    @Published var zoomSlider: Bool = false
     @Published var microphone: Bool = false
     @Published var audioBar: Bool = true
     @Published var cameras: Bool = false
@@ -176,6 +177,7 @@ class SettingsShow: Codable, ObservableObject {
         case audioLevel
         case zoom
         case zoomPresets
+        case zoomSlider
         case microphone
         case audioBar
         case cameras
@@ -206,6 +208,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.audioLevel, audioLevel)
         try container.encode(.zoom, zoom)
         try container.encode(.zoomPresets, zoomPresets)
+        try container.encode(.zoomSlider, zoomSlider)
         try container.encode(.microphone, microphone)
         try container.encode(.audioBar, audioBar)
         try container.encode(.cameras, cameras)
@@ -236,6 +239,7 @@ class SettingsShow: Codable, ObservableObject {
         audioLevel = container.decode(.audioLevel, Bool.self, true)
         zoom = container.decode(.zoom, Bool.self, false)
         zoomPresets = container.decode(.zoomPresets, Bool.self, true)
+        zoomSlider = container.decode(.zoomSlider, Bool.self, false)
         microphone = container.decode(.microphone, Bool.self, false)
         audioBar = container.decode(.audioBar, Bool.self, true)
         cameras = container.decode(.cameras, Bool.self, false)

@@ -722,6 +722,9 @@ private struct RightOverlayBottomVerticalView: View {
                     if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
                         StreamOverlayRightTorchView(model: model, database: database)
                     }
+                    if show.zoomSlider, zoom.hasZoom {
+                        StreamOverlayRightZoomSliderView(model: model)
+                    }
                 }
                 if show.zoomPresets, zoom.hasZoom {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
@@ -766,6 +769,9 @@ private struct RightOverlayBottomHorizontalView: View {
             if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
                 StreamOverlayRightTorchView(model: model, database: database)
             }
+            if show.zoomSlider, zoom.hasZoom {
+                StreamOverlayRightZoomSliderView(model: model)
+            }
             if show.zoomPresets, zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
                                                         zoom: zoom,
@@ -797,6 +803,9 @@ struct RightOverlayBottomView: View {
                 } else if streamOverlay.showingBeauty {
                     StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
                 } else if streamOverlay.showingVideoPreview {
+                    if show.zoomSlider, zoom.hasZoom {
+                        StreamOverlayRightZoomSliderView(model: model)
+                    }
                     if show.zoomPresets, zoom.hasZoom {
                         StreamOverlayRightZoomPresetSelctorView(model: model,
                                                                 zoom: zoom,
