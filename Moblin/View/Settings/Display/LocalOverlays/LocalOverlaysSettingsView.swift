@@ -135,6 +135,11 @@ struct LocalOverlaysSettingsView: View {
                 } icon: {
                     Image(systemName: "magnifyingglass")
                 }
+                Label {
+                    Toggle("Zoom slider", isOn: $show.zoomSlider)
+                } icon: {
+                    Image(systemName: "plus.magnifyingglass")
+                }
             } header: {
                 Text("Bottom right")
             } footer: {

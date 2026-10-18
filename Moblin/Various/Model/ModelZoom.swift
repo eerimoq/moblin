@@ -9,6 +9,8 @@ class Zoom: ObservableObject {
     var xPinch: Float = 1.0
     var backX: Float = 0.5
     var frontX: Float = 0.5
+    var speedActive = false
+    let speedTimer = MainTimer()
     @Published var backPresetId = UUID()
     @Published var frontPresetId = UUID()
     @Published var x: Float = 1.0
@@ -90,6 +92,42 @@ extension Model {
             return
         }
         setZoomX(x: zoom.xPinch * amount, rate: rate)
+    }
+
+    func setZoomSpeed(speed: Float) {
+        guard zoom.hasZoom else {
+            return
+        }
+        if abs(speed) < 0.05 {
+            _ = stopCameraZoom()
+            return
+        }
+        if !zoom.speedActive {
+            zoom.speedActive = true
+            clearZoomPresetId()
+            zoom.speedTimer.startPeriodic(interval: 0.1) { [weak self] in
+                self?.updateZoomXFromCamera()
+            }
+        }
+        let x = speed > 0 ? cameraZoomXMaximum : cameraZoomXMinimum
+        _ = setCameraZoomX(x: x, rate: 0.05 + 3 * pow(abs(speed), 2))
+    }
+
+    func stopZoomSpeed() {
+        guard zoom.speedActive else {
+            return
+        }
+        zoom.speedActive = false
+        zoom.speedTimer.stop()
+        if let x = stopCameraZoom() {
+            setZoomXWhenInRange(x: x)
+        }
+    }
+
+    private func updateZoomXFromCamera() {
+        if let device = cameraDevice {
+            zoom.x = Float(device.videoZoomFactor) * cameraZoomLevelToXScale
+        }
     }
 
     private func clearZoomPresetId() {
