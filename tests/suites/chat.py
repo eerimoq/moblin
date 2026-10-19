@@ -105,6 +105,88 @@ class ChatBotNotAllowedToSwitchScene(ChatTestCase):
         super().teardown()
 
 
+class ChatBotPrefixes(ChatTestCase):
+    """Switch scenes with enabled prefixes and aliases while rejecting disabled prefixes and unauthorized users."""
+
+    def __init__(self, moblin: Moblin, prefixes: list[str]):
+        names = {"!": "Bang", ".": "Dot", "/": "Slash"}
+        super().__init__(moblin, "ChatBotPrefixes" + "".join(names[prefix] for prefix in prefixes))
+        self.prefixes = prefixes
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [EMPTY_SCENE_SETTINGS, SCREEN_SCENE_SETTINGS],
+                "chat": {
+                    "botEnabled": True,
+                    "botCommandPrefixes": self.prefixes,
+                    "botCommandPermissions": {"scene": {"moderatorsEnabled": True}, "migrated": True},
+                    "aliases": [{"alias": "!screen", "replacement": "!moblin scene Screen"}],
+                },
+            }
+        )
+
+    def run(self):
+        for prefix in self.prefixes:
+            self.moblin.send_chat_message(f"{prefix}moblin scene Screen")
+            self.wait_until(lambda: self.moblin.get_camera_status() == "Screen capture")
+            self.moblin.send_chat_message(f"{prefix}moblin scene Empty")
+            self.wait_until(lambda: self.moblin.get_camera_status() == "None")
+            self.moblin.send_chat_message(f"{prefix}screen")
+            self.wait_until(lambda: self.moblin.get_camera_status() == "Screen capture")
+            self.moblin.send_chat_message(f"{prefix}moblin scene Empty")
+            self.wait_until(lambda: self.moblin.get_camera_status() == "None")
+            self.moblin.send_chat_message(f"{prefix}moblin scene Screen", is_moderator=False)
+            self.moblin.send_chat_message(f"{prefix}screen", is_moderator=False)
+        for prefix in ("!", ".", "/"):
+            if prefix not in self.prefixes:
+                self.moblin.send_chat_message(f"{prefix}moblin scene Screen")
+                self.moblin.send_chat_message(f"{prefix}screen")
+        self.moblin.send_chat_message(f"{self.prefixes[0]}moblin mute")
+        self.wait_until(self.moblin.is_muted)
+        self.assert_equal(self.moblin.get_camera_status(), "None")
+
+    def teardown(self):
+        self.moblin.set_muted(False)
+        super().teardown()
+
+
+class ChatBotPrefixCooldown(ChatTestCase):
+    """Share the scene cooldown across prefixes and aliases for an ordinary viewer."""
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [EMPTY_SCENE_SETTINGS, SCREEN_SCENE_SETTINGS],
+                "chat": {
+                    "botEnabled": True,
+                    "botCommandPrefixes": ["!", ".", "/"],
+                    "botCommandPermissions": {
+                        "scene": {"othersEnabled": True, "cooldown": 60},
+                        "migrated": True,
+                    },
+                    "aliases": [{"alias": "!empty", "replacement": "!moblin scene Empty"}],
+                },
+            }
+        )
+
+    def run(self):
+        self.moblin.send_chat_message("!moblin scene Screen", is_moderator=False)
+        self.wait_until(lambda: self.moblin.get_camera_status() == "Screen capture")
+        for prefix in ("!", ".", "/"):
+            self.moblin.send_chat_message(f"{prefix}moblin scene Empty", is_moderator=False)
+            self.moblin.send_chat_message(f"{prefix}empty", is_moderator=False)
+        self.moblin.send_chat_message("!moblin mute")
+        self.wait_until(self.moblin.is_muted)
+        self.assert_equal(self.moblin.get_camera_status(), "Screen capture")
+
+    def teardown(self):
+        self.moblin.set_muted(False)
+        super().teardown()
+
+
 def is_animated_emote(index: int) -> bool:
     return index % 2 == 0
 
@@ -664,6 +746,11 @@ class ChatYouTubeSuperChat(ChatEventsTestCase):
 
 def tests(moblin: Moblin):
     return [
+        *[
+            ChatBotPrefixes(moblin, prefixes)
+            for prefixes in (["!"], ["."], ["/"], ["!", "."], ["!", "/"], [".", "/"], ["!", ".", "/"])
+        ],
+        ChatBotPrefixCooldown(moblin),
         ChatBotSwitchScene(moblin),
         ChatBotSwitchSceneUsingAlias(moblin),
         ChatBotMuteAndUnmute(moblin),
