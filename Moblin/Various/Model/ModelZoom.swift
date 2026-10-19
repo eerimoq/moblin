@@ -4,6 +4,47 @@ import Foundation
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
+#if targetEnvironment(macCatalyst)
+@MainActor
+class MacZoomRamp {
+    private let timer = MainTimer()
+    private var device: AVCaptureDevice?
+    private var level: Float = 1.0
+    private var rate: Float = 1.0
+    private var latestUpdateTime = ContinuousClock.now
+
+    func start(media: Media, device: AVCaptureDevice, level: Float, rate: Float) {
+        self.level = level
+        self.rate = rate
+        guard self.device !== device else {
+            return
+        }
+        self.device = device
+        latestUpdateTime = .now
+        timer.startPeriodic(interval: 1 / 30, initial: 0) { [weak self] in
+            self?.update(media: media, device: device)
+        }
+    }
+
+    func stop() {
+        timer.stop()
+        device = nil
+    }
+
+    private func update(media: Media, device: AVCaptureDevice) {
+        let now = ContinuousClock.now
+        let step = pow(2, rate * Float(latestUpdateTime.duration(to: now).seconds))
+        latestUpdateTime = now
+        let current = Float(device.videoZoomFactor)
+        let next = current < level ? min(current * step, level) : max(current / step, level)
+        _ = media.setCameraZoomLevel(device: device, level: next, rate: nil)
+        if next == level {
+            stop()
+        }
+    }
+}
+#endif
+
 @MainActor
 class Zoom: ObservableObject {
     var xPinch: Float = 1.0
@@ -11,6 +52,9 @@ class Zoom: ObservableObject {
     var frontX: Float = 0.5
     var speedActive = false
     let speedTimer = MainTimer()
+    #if targetEnvironment(macCatalyst)
+    let macRamp = MacZoomRamp()
+    #endif
     @Published var backPresetId = UUID()
     @Published var frontPresetId = UUID()
     @Published var x: Float = 1.0
@@ -288,7 +332,16 @@ extension Model {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        cameraZoomLevelToX(media.setCameraZoomLevel(
+        #if targetEnvironment(macCatalyst)
+        if let rate, let device = cameraDevice {
+            let level = (x / cameraZoomLevelToXScale)
+                .clamped(to: 1.0 ... Float(device.activeFormat.videoMaxZoomFactor))
+            zoom.macRamp.start(media: media, device: device, level: level, rate: rate)
+            return cameraZoomLevelToX(level)
+        }
+        zoom.macRamp.stop()
+        #endif
+        return cameraZoomLevelToX(media.setCameraZoomLevel(
             device: cameraDevice,
             level: x / cameraZoomLevelToXScale,
             rate: rate
@@ -296,7 +349,10 @@ extension Model {
     }
 
     func stopCameraZoom() -> Float? {
-        cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
+        #if targetEnvironment(macCatalyst)
+        zoom.macRamp.stop()
+        #endif
+        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
     }
 
     private func cameraZoomLevelToX(_ level: Float?) -> Float? {
