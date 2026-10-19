@@ -219,19 +219,20 @@ extension Model {
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
-           segments.first?.text?.trim().starts(with: "!") == true
+           ChatBotPrefix.commandName(
+               segments.first?.text?.trim() ?? "",
+               prefixes: database.chat.effectiveBotCommandPrefixes
+           ) != nil, chatBotMessages.count < 25 || isModerator
         {
-            if chatBotMessages.count < 25 || isModerator {
-                chatBotMessages.append(ChatBotMessage(
-                    platform: platform,
-                    user: user,
-                    isOwner: isOwner,
-                    isModerator: isModerator,
-                    isSubscriber: isSubscriber,
-                    userId: userId,
-                    segments: segments
-                ))
-            }
+            chatBotMessages.append(ChatBotMessage(
+                platform: platform,
+                user: user,
+                isOwner: isOwner,
+                isModerator: isModerator,
+                isSubscriber: isSubscriber,
+                userId: userId,
+                segments: segments
+            ))
         }
         if pollEnabled, live, filter?.poll != false {
             handlePollVote(vote: segments.first?.text?.trim())
@@ -425,10 +426,7 @@ extension Model {
             }
             .frame(width: 384)
             let renderer = ImageRenderer(content: message)
-            guard let image = renderer.uiImage else {
-                return
-            }
-            guard let ciImage = CIImage(image: image) else {
+            guard let image = renderer.uiImage, let ciImage = CIImage(image: image) else {
                 return
             }
             for catPrinter in self.catPrinters.values

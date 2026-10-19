@@ -722,6 +722,12 @@ class SettingsChat: Codable, ObservableObject {
     @Published var ttsMonster: SettingsTtsMonster = .init()
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
+    @Published var botCommandPrefixes: [String] = ["!"]
+
+    var effectiveBotCommandPrefixes: [String] {
+        ChatBotPrefix.normalized(botCommandPrefixes)
+    }
+
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
     var botCommandAi: SettingsOpenAi = .init()
@@ -784,6 +790,7 @@ class SettingsChat: Codable, ObservableObject {
         case ttsMonster
         case mirrored
         case botEnabled
+        case botCommandPrefixes
         case botCommandPermissions
         case botSendLowBatteryWarning
         case botCommandAi
@@ -849,6 +856,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.ttsMonster, ttsMonster)
         try container.encode(.mirrored, mirrored)
         try container.encode(.botEnabled, botEnabled)
+        try container.encode(.botCommandPrefixes, effectiveBotCommandPrefixes)
         try container.encode(.botCommandPermissions, botCommandPermissions)
         try container.encode(.botSendLowBatteryWarning, botSendLowBatteryWarning)
         try container.encode(.botCommandAi, botCommandAi)
@@ -947,6 +955,11 @@ class SettingsChat: Codable, ObservableObject {
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)
+        botCommandPrefixes = ChatBotPrefix.normalized(container.decode(
+            .botCommandPrefixes,
+            [String].self,
+            ["!"]
+        ))
         botCommandPermissions = container.decode(
             .botCommandPermissions,
             SettingsChatBotPermissions.self,

@@ -186,20 +186,65 @@ struct ChatBotMessage {
     let segments: [ChatPostSegment]
 }
 
+enum ChatBotPrefix {
+    static let supported = ["!", ".", "/"]
+
+    static func normalized(_ prefixes: [String]) -> [String] {
+        let prefixes = supported.filter { prefixes.contains($0) }
+        return prefixes.isEmpty ? ["!"] : prefixes
+    }
+
+    static func commandName(_ token: String, prefixes: [String]) -> String? {
+        guard let first = token.first, prefixes.contains(String(first)) else {
+            return nil
+        }
+        let name = String(token.dropFirst()).lowercased()
+        guard !name.isEmpty, !name.contains(where: \.isWhitespace),
+              !supported.contains(String(name.prefix(1)))
+        else {
+            return nil
+        }
+        return name
+    }
+
+    static func canonicalAlias(_ value: String) -> String? {
+        guard let name = commandName(value, prefixes: supported), !name.hasPrefix("moblin") else {
+            return nil
+        }
+        return "!" + name
+    }
+
+    static func canonicalReplacement(_ value: String) -> String? {
+        guard let end = value.firstIndex(where: \.isWhitespace),
+              commandName(String(value[..<end]), prefixes: supported) == "moblin",
+              !value[end...].allSatisfy(\.isWhitespace)
+        else {
+            return nil
+        }
+        return "!moblin" + value[end...]
+    }
+}
+
 class ChatBotCommand {
     let message: ChatBotMessage
     private var parts: Deque<String> = []
 
-    init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias]) {
+    init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias], prefixes: [String] = ["!"]) {
         self.message = message
-        guard let firstWord = message.segments.first?.text?.lowercased().trim() else {
+        guard let firstWord = message.segments.first?.text?.lowercased().trim(),
+              let name = ChatBotPrefix.commandName(firstWord, prefixes: ChatBotPrefix.normalized(prefixes))
+        else {
             return nil
         }
-        if firstWord != "!moblin" {
-            guard let alias = aliases.first(where: { $0.alias == firstWord }) else {
+        if name != "moblin" {
+            let canonical = "!" + name
+            guard let alias = aliases.first(where: { $0.alias == canonical })
+                ?? aliases.first(where: { ChatBotPrefix.canonicalAlias($0.alias) == canonical }),
+                let replacement = ChatBotPrefix.canonicalReplacement(alias.replacement)
+            else {
                 return nil
             }
-            for word in alias.replacement.split(separator: " ").suffix(from: 1) {
+            for word in replacement.split(whereSeparator: \.isWhitespace).dropFirst() {
                 parts.append(word.trim())
             }
         }
