@@ -18,7 +18,11 @@ extension Model {
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
-        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
+        guard let command = ChatBotCommand(
+            message: message,
+            aliases: database.chat.aliases,
+            prefixes: database.chat.effectiveBotCommandPrefixes
+        ) else {
             return
         }
         guard let mainCommand = command.popFirstArgument(ChatBotMainArgument.self) else {

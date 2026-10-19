@@ -812,11 +812,34 @@ private struct ChatBotAliasesSettingsView: View {
     }
 }
 
-struct ChatBotSettingsView: View {
+private struct ChatBotSettingsInnerView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chat: SettingsChat
 
     var body: some View {
         Form {
+            Section {
+                ForEach(ChatBotPrefix.supported, id: \.self) { prefix in
+                    Toggle(isOn: Binding(get: {
+                        chat.effectiveBotCommandPrefixes.contains(prefix)
+                    }, set: { enabled in
+                        var prefixes = chat.effectiveBotCommandPrefixes
+                        if enabled {
+                            prefixes.append(prefix)
+                        } else {
+                            prefixes.removeAll { $0 == prefix }
+                        }
+                        chat.botCommandPrefixes = ChatBotPrefix.normalized(prefixes)
+                    })) {
+                        Text(verbatim: prefix)
+                    }
+                    .disabled(chat.effectiveBotCommandPrefixes == [prefix])
+                }
+            } header: {
+                Text("Command prefixes")
+            } footer: {
+                Text("Commands and aliases work with every enabled prefix. Examples and alias editing use !.")
+            }
             Section {
                 NavigationLink {
                     ChatBotCommandsSettingsView()
@@ -845,5 +868,16 @@ struct ChatBotSettingsView: View {
             }
         }
         .navigationTitle("Bot")
+        .onChange(of: chat.botCommandPrefixes) { _ in
+            model.chatTextToSpeech.setCommandPrefixes(prefixes: chat.effectiveBotCommandPrefixes)
+        }
+    }
+}
+
+struct ChatBotSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ChatBotSettingsInnerView(chat: model.database.chat)
     }
 }

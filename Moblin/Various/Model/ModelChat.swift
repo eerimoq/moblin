@@ -219,7 +219,9 @@ extension Model {
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
-           segments.first?.text?.trim().starts(with: "!") == true
+           database.chat.effectiveBotCommandPrefixes.contains(where: {
+               segments.first?.text?.trim().hasPrefix($0) == true
+           })
         {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(

@@ -1214,6 +1214,7 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setDefaultLanguage(value: chat.textToSpeechDefaultLanguage)
         chatTextToSpeech.setDetectLanguagePerMessage(value: chat.textToSpeechDetectLanguagePerMessage)
         chatTextToSpeech.setFilter(value: chat.textToSpeechFilter)
+        chatTextToSpeech.setCommandPrefixes(prefixes: chat.effectiveBotCommandPrefixes)
         chatTextToSpeech.setFilterMentions(value: chat.textToSpeechFilterMentions)
         chatTextToSpeech.setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
         chatTextToSpeech.setTtsMonsterApiToken(apiToken: chat.ttsMonster.apiToken)

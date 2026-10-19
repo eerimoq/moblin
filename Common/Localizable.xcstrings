@@ -308113,7 +308113,9 @@
           }
         }
       }
-    }
+    },
+    "Command prefixes" : {},
+    "Commands and aliases work with every enabled prefix. Examples and alias editing use !." : {}
   },
   "version" : "1.1"
 }

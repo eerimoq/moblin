@@ -71,6 +71,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var latestUserThatSaidSomething: String?
     private var sayLatestUserThatSaidSomethingAgain = ContinuousClock.now
     private var filterEnabled: Bool = true
+    private var commandPrefixes: [String] = ["!"]
     private var filterMentionsEnabled: Bool = true
     private var streamerMentions: [String] = []
     private var running = true
@@ -155,6 +156,12 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     func setSayUsername(value: Bool) {
         textToSpeechDispatchQueue.async {
             self.sayUsername = value
+        }
+    }
+
+    func setCommandPrefixes(prefixes: [String]) {
+        textToSpeechDispatchQueue.async {
+            self.commandPrefixes = ChatBotPrefix.normalized(["!"] + prefixes)
         }
     }
 
@@ -272,7 +279,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         if probability < 0.7, message.count > 30 {
             return true
         }
-        if message.hasPrefix("!") {
+        if commandPrefixes.contains(where: { message.hasPrefix($0) }) {
             return true
         }
         if message.contains("https") {

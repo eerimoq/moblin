@@ -54,4 +54,38 @@ struct SettingsSuite {
         let decoded = try JSONDecoder().decode(SettingsChat.self, from: JSONEncoder().encode(chat))
         #expect(decoded.textToSpeechSayEmotes)
     }
+
+    @Test(arguments: ["{}", "{\"botCommandPrefixes\":null}", "{\"botCommandPrefixes\":[]}",
+                      "{\"botCommandPrefixes\":[\"?\"]}", "{\"botCommandPrefixes\":true}",
+                      "{\"botCommandPrefixes\":[1]}"])
+    func chatPrefixesDefaultToBang(json: String) throws {
+        let chat = try JSONDecoder().decode(SettingsChat.self, from: Data(json.utf8))
+        #expect(chat.botCommandPrefixes == ["!"])
+        #expect(SettingsChat().effectiveBotCommandPrefixes == ["!"])
+    }
+
+    @Test(arguments: [["!"], ["."], ["/"], ["!", "."], ["!", "/"], [".", "/"], ["!", ".", "/"]])
+    func chatPrefixesRoundTrip(prefixes: [String]) throws {
+        let chat = SettingsChat()
+        chat.botCommandPrefixes = prefixes
+        let alias = SettingsChatBotAlias()
+        alias.alias = "!screen"
+        alias.replacement = "!moblin scene Screen"
+        chat.aliases = [alias]
+        let decoded = try JSONDecoder().decode(SettingsChat.self, from: JSONEncoder().encode(chat))
+        #expect(decoded.botCommandPrefixes == prefixes)
+        #expect(decoded.aliases.first?.alias == alias.alias)
+        #expect(decoded.aliases.first?.replacement == alias.replacement)
+    }
+
+    @Test
+    func chatPrefixesNormalizeOnImportAndExport() throws {
+        let json = "{\"botCommandPrefixes\":[\"/\",\"?\",\".\",\"/\"]}"
+        let chat = try JSONDecoder().decode(SettingsChat.self, from: Data(json.utf8))
+        #expect(chat.botCommandPrefixes == [".", "/"])
+        chat.botCommandPrefixes = ["/", "/", "!", "?"]
+        #expect(chat.effectiveBotCommandPrefixes == ["!", "/"])
+        let decoded = try JSONDecoder().decode(SettingsChat.self, from: JSONEncoder().encode(chat))
+        #expect(decoded.botCommandPrefixes == ["!", "/"])
+    }
 }

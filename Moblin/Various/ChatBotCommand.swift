@@ -186,15 +186,28 @@ struct ChatBotMessage {
     let segments: [ChatPostSegment]
 }
 
+enum ChatBotPrefix {
+    static let supported = ["!", ".", "/"]
+
+    static func normalized(_ prefixes: [String]) -> [String] {
+        let prefixes = supported.filter { prefixes.contains($0) }
+        return prefixes.isEmpty ? ["!"] : prefixes
+    }
+}
+
 class ChatBotCommand {
     let message: ChatBotMessage
     private var parts: Deque<String> = []
 
-    init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias]) {
+    init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias], prefixes: [String] = ["!"]) {
         self.message = message
-        guard let firstWord = message.segments.first?.text?.lowercased().trim() else {
+        guard let token = message.segments.first?.text?.lowercased().trim(),
+              let prefix = token.first,
+              ChatBotPrefix.normalized(prefixes).contains(String(prefix))
+        else {
             return nil
         }
+        let firstWord = "!" + token.dropFirst()
         if firstWord != "!moblin" {
             guard let alias = aliases.first(where: { $0.alias == firstWord }) else {
                 return nil

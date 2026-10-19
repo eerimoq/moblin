@@ -1,3 +1,14 @@
+# Command prefixes
+
+Choose `!`, `.` and/or `/` in Settings → Chat → Bot → Command prefixes. `!` is the
+default; at least one prefix must stay enabled. Every enabled prefix invokes the
+same commands and aliases, with the same permissions and cooldowns. For example,
+an existing `!screen → !moblin scene Screen` alias also works as `.screen` when
+`.` is enabled, even if `!` is disabled. Examples and alias editing keep using `!`;
+substitute an enabled prefix when sending a command. With the TTS filter enabled,
+messages starting with `!` or any enabled prefix are skipped. Slash commands only
+work when the sending chat client delivers them as chat messages.
+
 # Moblin chat bot help
 
 | Command | Description |
