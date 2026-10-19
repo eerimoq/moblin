@@ -1,5 +1,16 @@
 import SwiftUI
 
+private struct ChatBotCommandPrefixKey: EnvironmentKey {
+    static let defaultValue = "!"
+}
+
+private extension EnvironmentValues {
+    var chatBotCommandPrefix: String {
+        get { self[ChatBotCommandPrefixKey.self] }
+        set { self[ChatBotCommandPrefixKey.self] = newValue }
+    }
+}
+
 private struct PermissionsSettingsInnerView: View {
     @ObservedObject var permissions: SettingsChatBotPermissionsCommand
 
@@ -56,12 +67,13 @@ private struct PermissionsSettingsView: View {
 }
 
 private struct FixPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin obs fix",
+                title: String(localized: "\(commandPrefix)moblin obs fix"),
                 permissions: permissions
             )
         } footer: {
@@ -71,12 +83,13 @@ private struct FixPermissionsSettingsView: View {
 }
 
 private struct GimbalPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin gimbal preset <name>"),
+                title: String(localized: "\(commandPrefix)moblin gimbal preset <name>"),
                 permissions: permissions
             )
         } footer: {
@@ -86,12 +99,13 @@ private struct GimbalPermissionsSettingsView: View {
 }
 
 private struct AlertPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin alert <name>"),
+                title: String(localized: "\(commandPrefix)moblin alert <name>"),
                 permissions: permissions
             )
         } footer: {
@@ -101,12 +115,13 @@ private struct AlertPermissionsSettingsView: View {
 }
 
 private struct FaxPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin fax <url>"),
+                title: String(localized: "\(commandPrefix)moblin fax <url>"),
                 permissions: permissions
             )
         } footer: {
@@ -116,6 +131,7 @@ private struct FaxPermissionsSettingsView: View {
 }
 
 private struct SnapshotPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
     @ObservedObject var snapshot: SettingsChatBotCommandSnapshot
 
@@ -154,9 +170,9 @@ private struct SnapshotPermissionsSettingsView: View {
                     }
                     PermissionsSettingsInnerView(permissions: permissions)
                 }
-                .navigationTitle("!moblin snapshot <optional message>")
+                .navigationTitle(String(localized: "\(commandPrefix)moblin snapshot <optional message>"))
             } label: {
-                Text("!moblin snapshot <optional message>")
+                Text("\(commandPrefix)moblin snapshot <optional message>")
             }
         } footer: {
             Text("Take snapshot.")
@@ -165,12 +181,13 @@ private struct SnapshotPermissionsSettingsView: View {
 }
 
 private struct ReactionPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin reaction <reaction>"),
+                title: String(localized: "\(commandPrefix)moblin reaction <reaction>"),
                 permissions: permissions
             )
         } footer: {
@@ -184,12 +201,13 @@ private struct ReactionPermissionsSettingsView: View {
 }
 
 private struct FilterPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin filter <filter> <on/off>"),
+                title: String(localized: "\(commandPrefix)moblin filter <filter> <on/off>"),
                 permissions: permissions
             )
         } footer: {
@@ -205,12 +223,13 @@ private struct FilterPermissionsSettingsView: View {
 }
 
 private struct ZoomPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin zoom <x>",
+                title: String(localized: "\(commandPrefix)moblin zoom <x>"),
                 permissions: permissions
             )
         } footer: {
@@ -220,12 +239,13 @@ private struct ZoomPermissionsSettingsView: View {
 }
 
 private struct ScenePermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin scene <name>"),
+                title: String(localized: "\(commandPrefix)moblin scene <name>"),
                 permissions: permissions
             )
         } footer: {
@@ -235,26 +255,27 @@ private struct ScenePermissionsSettingsView: View {
 }
 
 private struct StreamPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin stream ...",
+                title: String(localized: "\(commandPrefix)moblin stream ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin stream start"))
+                Text("\(commandPrefix)moblin stream start")
                 Text("Start the stream.")
                 Text("")
-                Text(String("!moblin stream stop"))
+                Text("\(commandPrefix)moblin stream stop")
                 Text("Stop the stream.")
                 Text("")
-                Text("!moblin stream title <title>")
+                Text("\(commandPrefix)moblin stream title <title>")
                 Text("Set stream title.")
                 Text("")
-                Text("!moblin stream category <category name>")
+                Text("\(commandPrefix)moblin stream category <category name>")
                 Text("Set stream category.")
             }
         }
@@ -262,29 +283,30 @@ private struct StreamPermissionsSettingsView: View {
 }
 
 private struct WidgetPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin widget ..."),
+                title: String(localized: "\(commandPrefix)moblin widget ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin widget <name> enable")
+                Text("\(commandPrefix)moblin widget <name> enable")
                 Text("Enable given widget.")
                 Text("")
-                Text("!moblin widget <name> disable")
+                Text("\(commandPrefix)moblin widget <name> disable")
                 Text("Disable given widget.")
                 Text("")
-                Text("!moblin widget <name> wheelofluck options <option 1> <option 2> ...")
+                Text("\(commandPrefix)moblin widget <name> wheelofluck options <option 1> <option 2> ...")
                 Text("Set options for given wheel of luck.")
                 Text("")
-                Text("!moblin widget <name> wheelofluck spin")
+                Text("\(commandPrefix)moblin widget <name> wheelofluck spin")
                 Text("Spin given wheel of luck.")
                 Text("")
-                Text("!moblin widget <name> timer <number> add <seconds>")
+                Text("\(commandPrefix)moblin widget <name> timer <number> add <seconds>")
                 Text("Change timer value.")
             }
         }
@@ -292,20 +314,21 @@ private struct WidgetPermissionsSettingsView: View {
 }
 
 private struct LocationPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin location ...",
+                title: String(localized: "\(commandPrefix)moblin location ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin location data reset"))
+                Text("\(commandPrefix)moblin location data reset")
                 Text("Resets distances, average speed and slope.")
                 Text("")
-                Text(String("!moblin location data split"))
+                Text("\(commandPrefix)moblin location data split")
                 Text("Reset split distance.")
             }
         }
@@ -313,12 +336,13 @@ private struct LocationPermissionsSettingsView: View {
 }
 
 private struct MapPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin map zoom out",
+                title: String(localized: "\(commandPrefix)moblin map zoom out"),
                 permissions: permissions
             )
         } footer: {
@@ -328,23 +352,24 @@ private struct MapPermissionsSettingsView: View {
 }
 
 private struct TtsSayPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin tts/say ...",
+                title: String(localized: "\(commandPrefix)moblin tts/say ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin tts on"))
+                Text("\(commandPrefix)moblin tts on")
                 Text("Turn on chat text to speech.")
                 Text("")
-                Text(String("!moblin tts off"))
+                Text("\(commandPrefix)moblin tts off")
                 Text("Turn off chat text to speech.")
                 Text("")
-                Text("!moblin say <message>")
+                Text("\(commandPrefix)moblin say <message>")
                 Text("Say given message.")
             }
         }
@@ -352,6 +377,7 @@ private struct TtsSayPermissionsSettingsView: View {
 }
 
 private struct AiPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     @ObservedObject var permissions: SettingsChatBotPermissionsCommand
     let ai: SettingsOpenAi
 
@@ -362,9 +388,9 @@ private struct AiPermissionsSettingsView: View {
                     OpenAiSettingsView(ai: ai)
                     PermissionsSettingsInnerView(permissions: permissions)
                 }
-                .navigationTitle("!moblin ai ask <question>")
+                .navigationTitle(String(localized: "\(commandPrefix)moblin ai ask <question>"))
             } label: {
-                Text("!moblin ai ask <question>")
+                Text("\(commandPrefix)moblin ai ask <question>")
             }
         } footer: {
             Text("Ask an AI a question.")
@@ -373,17 +399,18 @@ private struct AiPermissionsSettingsView: View {
 }
 
 private struct TwitchPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     @ObservedObject var permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin twitch ...",
+                title: String(localized: "\(commandPrefix)moblin twitch ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin twitch raid <channel>"))
+                Text("\(commandPrefix)moblin twitch raid <channel>")
                 Text("Raid given channel.")
             }
         }
@@ -391,20 +418,21 @@ private struct TwitchPermissionsSettingsView: View {
 }
 
 private struct MuteUnmutePermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin mute/unmute",
+                title: String(localized: "\(commandPrefix)moblin mute/unmute"),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin mute"))
+                Text("\(commandPrefix)moblin mute")
                 Text("Mute audio.")
                 Text("")
-                Text(String("!moblin unmute"))
+                Text("\(commandPrefix)moblin unmute")
                 Text("Unmute audio.")
             }
         }
@@ -412,23 +440,24 @@ private struct MuteUnmutePermissionsSettingsView: View {
 }
 
 private struct TorchPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin torch ...",
+                title: String(localized: "\(commandPrefix)moblin torch ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin torch on"))
+                Text("\(commandPrefix)moblin torch on")
                 Text("Turn the torch on.")
                 Text("")
-                Text(String("!moblin torch off"))
+                Text("\(commandPrefix)moblin torch off")
                 Text("Turn the torch off.")
                 Text("")
-                Text(String("!moblin torch level <level>"))
+                Text("\(commandPrefix)moblin torch level <level>")
                 Text("Set torch level, from 1 to 100.")
             }
         }
@@ -436,21 +465,22 @@ private struct TorchPermissionsSettingsView: View {
 }
 
 private struct VibratePermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin vibrate ...",
+                title: String(localized: "\(commandPrefix)moblin vibrate ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin vibrate on [<seconds>] [<intensity>] [<sharpness>]"))
+                Text("\(commandPrefix)moblin vibrate on [<seconds>] [<intensity>] [<sharpness>]")
                 Text("Vibrate the phone. Until turned off if no seconds is given.")
                 Text("Intensity and sharpness from 1 to 100, default 100 and 50.")
                 Text("")
-                Text(String("!moblin vibrate off"))
+                Text("\(commandPrefix)moblin vibrate off")
                 Text("Stop vibrating the phone.")
             }
         }
@@ -458,29 +488,30 @@ private struct VibratePermissionsSettingsView: View {
 }
 
 private struct TeslaPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin tesla ...",
+                title: String(localized: "\(commandPrefix)moblin tesla ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text(String("!moblin tesla trunk open"))
+                Text("\(commandPrefix)moblin tesla trunk open")
                 Text("Open the trunk.")
                 Text("")
-                Text(String("!moblin tesla trunk close"))
+                Text("\(commandPrefix)moblin tesla trunk close")
                 Text("Close the trunk.")
                 Text("")
-                Text(String("!moblin tesla media next"))
+                Text("\(commandPrefix)moblin tesla media next")
                 Text("Next track.")
                 Text("")
-                Text(String("!moblin tesla media previous"))
+                Text("\(commandPrefix)moblin tesla media previous")
                 Text("Previous track.")
                 Text("")
-                Text(String("!moblin tesla media toggle-playback"))
+                Text("\(commandPrefix)moblin tesla media toggle-playback")
                 Text("Toggle playback.")
             }
         }
@@ -488,20 +519,21 @@ private struct TeslaPermissionsSettingsView: View {
 }
 
 private struct MacroPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin macro <run/cancel> <name>"),
+                title: String(localized: "\(commandPrefix)moblin macro <run/cancel> <name>"),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin macro run <name>")
+                Text("\(commandPrefix)moblin macro run <name>")
                 Text("Run given macro.")
                 Text("")
-                Text("!moblin macro cancel <name>")
+                Text("\(commandPrefix)moblin macro cancel <name>")
                 Text("Cancel given macro.")
             }
         }
@@ -509,17 +541,18 @@ private struct MacroPermissionsSettingsView: View {
 }
 
 private struct SendPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin send <message>"),
+                title: String(localized: "\(commandPrefix)moblin send <message>"),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin send <message>")
+                Text("\(commandPrefix)moblin send <message>")
                 Text("Send given message.")
             }
         }
@@ -527,36 +560,37 @@ private struct SendPermissionsSettingsView: View {
 }
 
 private struct AppleMusicPermissionsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let permissions: SettingsChatBotPermissionsCommand
 
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin music ...",
+                title: String(localized: "\(commandPrefix)moblin music ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("!moblin music add <song>")
+                Text("\(commandPrefix)moblin music add <song>")
                 Text("Add given song to the queue.")
                 Text("<song> is either a share link or text search.")
                 Text("")
-                Text(String("!moblin music play"))
+                Text("\(commandPrefix)moblin music play")
                 Text("Play.")
                 Text("")
-                Text(String("!moblin music pause"))
+                Text("\(commandPrefix)moblin music pause")
                 Text("Pause.")
                 Text("")
-                Text(String("!moblin music next"))
+                Text("\(commandPrefix)moblin music next")
                 Text("Next song.")
                 Text("")
-                Text(String("!moblin music previous"))
+                Text("\(commandPrefix)moblin music previous")
                 Text("Previous song.")
                 Text("")
-                Text(String("!moblin music status"))
+                Text("\(commandPrefix)moblin music status")
                 Text("Show status.")
                 Text("")
-                Text(String("!moblin music clear"))
+                Text("\(commandPrefix)moblin music clear")
                 Text("Clear the queue.")
             }
         }
@@ -603,35 +637,47 @@ private struct ChatBotCommandsSettingsView: View {
 
 private struct ChatBotAliasSettingsView: View {
     @ObservedObject var alias: SettingsChatBotAlias
+    @ObservedObject var chat: SettingsChat
+
+    private var editableAlias: String {
+        guard let canonical = ChatBotPrefix.canonicalAlias(alias.alias) else {
+            return alias.alias
+        }
+        return chat.effectiveBotCommandPrefixes[0] + canonical.dropFirst()
+    }
+
+    private var displayReplacement: String {
+        let canonical = ChatBotPrefix.canonicalReplacement(alias.replacement)
+        guard let replacement = canonical ?? (alias.replacement == "!moblin" ? alias.replacement : nil) else {
+            return alias.replacement
+        }
+        return chat.effectiveBotCommandPrefixes[0] + replacement.dropFirst()
+    }
+
+    private var displayAlias: String {
+        guard let canonical = ChatBotPrefix.canonicalAlias(alias.alias) else {
+            return alias.alias
+        }
+        return chat.effectiveBotCommandPrefixes.map { $0 + canonical.dropFirst() }.joined(separator: ", ")
+    }
 
     private func onAliasChange(value: String) -> String? {
-        guard !value.isEmpty else {
-            return String(localized: "The alias must not be empty.")
+        guard let canonical = ChatBotPrefix.canonicalAlias(value) else {
+            return String(
+                localized: "Use !, . or / followed by one alias name that does not start with moblin."
+            )
         }
-        guard value.starts(with: "!") else {
-            return String(localized: "The alias must start with !.")
-        }
-        guard value.count > 1 else {
-            return String(localized: "The alias is too short.")
-        }
-        guard !value.starts(with: "!moblin") else {
-            return String(localized: "The alias must not start with !moblin.")
-        }
-        guard value.split(separator: " ").count == 1 else {
-            return String(localized: "The alias must be exactly one word.")
+        guard !chat.aliases.contains(where: {
+            $0.id != alias.id && ChatBotPrefix.canonicalAlias($0.alias) == canonical
+        }) else {
+            return String(localized: "An alias with this name already exists.")
         }
         return nil
     }
 
     private func onReplacementChange(value: String) -> String? {
-        guard !value.isEmpty else {
-            return String(localized: "The replacement must not be empty.")
-        }
-        guard value.starts(with: "!moblin") else {
-            return String(localized: "The replacement must start with !moblin.")
-        }
-        guard value.split(separator: " ").count > 1 else {
-            return String(localized: "The replacement must be more than one word.")
+        guard ChatBotPrefix.canonicalReplacement(value) != nil else {
+            return String(localized: "Use !moblin, .moblin or /moblin followed by a command.")
         }
         return nil
     }
@@ -643,33 +689,38 @@ private struct ChatBotAliasSettingsView: View {
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Alias"),
-                            value: alias.alias,
+                            value: editableAlias,
                             onChange: onAliasChange
                         ) {
-                            alias.alias = $0
+                            alias.alias = ChatBotPrefix.canonicalAlias($0) ?? alias.alias
                         }
                     } label: {
-                        TextItemLocalizedView(name: "Alias", value: alias.alias)
+                        TextItemLocalizedView(name: "Alias", value: displayAlias)
                     }
                     NavigationLink {
                         TextEditView(
                             title: String(localized: "Replacement"),
-                            value: alias.replacement,
+                            value: displayReplacement,
                             onChange: onReplacementChange
                         ) {
-                            alias.replacement = $0
+                            alias.replacement = ChatBotPrefix.canonicalReplacement($0) ?? alias.replacement
                         }
                     } label: {
-                        TextItemLocalizedView(name: "Replacement", value: alias.replacement)
+                        TextItemLocalizedView(
+                            name: "Replacement",
+                            value: displayReplacement
+                        )
                     }
+                } footer: {
+                    Text("Aliases work with every enabled prefix.")
                 }
             }
             .navigationTitle("Alias")
         } label: {
             HStack {
-                Text(alias.alias)
+                Text(displayAlias)
                 Spacer()
-                GrayTextView(text: alias.replacement)
+                GrayTextView(text: displayReplacement)
             }
         }
     }
@@ -698,6 +749,7 @@ private struct ChatBotCustomCommandTextSettingsView: View {
 }
 
 private struct ChatBotCustomCommandSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     @ObservedObject var customCommand: SettingsChatBotCustomCommand
 
     private func onNameChange(value: String) -> String? {
@@ -731,7 +783,7 @@ private struct ChatBotCustomCommandSettingsView: View {
                         TextItemLocalizedView(name: "Text", value: customCommand.formatString)
                     }
                 } footer: {
-                    Text("Send the text to chat when a user sends !moblin custom <name>.")
+                    Text("Send the text to chat when a user sends \(commandPrefix)moblin custom <name>.")
                 }
                 PermissionsSettingsInnerView(permissions: customCommand.permissions)
             }
@@ -747,6 +799,7 @@ private struct ChatBotCustomCommandSettingsView: View {
 }
 
 private struct ChatBotCustomCommandsSettingsView: View {
+    @Environment(\.chatBotCommandPrefix) private var commandPrefix
     let model: Model
     @ObservedObject var chat: SettingsChat
 
@@ -774,7 +827,7 @@ private struct ChatBotCustomCommandsSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("!moblin custom <name>")
+                    Text("\(commandPrefix)moblin custom <name>")
                     Text("Send the text of the command with given name to chat.")
                 }
             }
@@ -791,7 +844,7 @@ private struct ChatBotAliasesSettingsView: View {
             Section {
                 List {
                     ForEach(chat.aliases) { alias in
-                        ChatBotAliasSettingsView(alias: alias)
+                        ChatBotAliasSettingsView(alias: alias, chat: chat)
                             .contextMenuDeleteButton {
                                 chat.aliases.removeAll { $0.id == alias.id }
                             }
@@ -804,7 +857,15 @@ private struct ChatBotAliasesSettingsView: View {
                     }
                 }
                 CreateButtonView {
-                    chat.aliases.append(SettingsChatBotAlias())
+                    let alias = SettingsChatBotAlias()
+                    var number = 2
+                    while chat.aliases.contains(where: {
+                        ChatBotPrefix.canonicalAlias($0.alias) == alias.alias
+                    }) {
+                        alias.alias = "!myalias\(number)"
+                        number += 1
+                    }
+                    chat.aliases.append(alias)
                 }
             }
         }
@@ -812,11 +873,34 @@ private struct ChatBotAliasesSettingsView: View {
     }
 }
 
-struct ChatBotSettingsView: View {
+private struct ChatBotSettingsInnerView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var chat: SettingsChat
 
     var body: some View {
         Form {
+            Section {
+                ForEach(ChatBotPrefix.supported, id: \.self) { prefix in
+                    Toggle(isOn: Binding(get: {
+                        chat.effectiveBotCommandPrefixes.contains(prefix)
+                    }, set: { enabled in
+                        var prefixes = chat.effectiveBotCommandPrefixes
+                        if enabled {
+                            prefixes.append(prefix)
+                        } else {
+                            prefixes.removeAll { $0 == prefix }
+                        }
+                        chat.botCommandPrefixes = ChatBotPrefix.normalized(prefixes)
+                    })) {
+                        Text(verbatim: prefix)
+                    }
+                    .disabled(chat.effectiveBotCommandPrefixes == [prefix])
+                }
+            } header: {
+                Text("Command prefixes")
+            } footer: {
+                Text("Commands and aliases work with every enabled prefix. Keep at least one enabled.")
+            }
             Section {
                 NavigationLink {
                     ChatBotCommandsSettingsView()
@@ -845,5 +929,17 @@ struct ChatBotSettingsView: View {
             }
         }
         .navigationTitle("Bot")
+        .environment(\.chatBotCommandPrefix, chat.effectiveBotCommandPrefixes[0])
+        .onChange(of: chat.botCommandPrefixes) { _ in
+            model.chatTextToSpeech.setCommandPrefixes(prefixes: chat.effectiveBotCommandPrefixes)
+        }
+    }
+}
+
+struct ChatBotSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        ChatBotSettingsInnerView(chat: model.database.chat)
     }
 }

@@ -1,3 +1,25 @@
+# Command prefixes and aliases
+
+Choose enabled prefixes in Settings → Chat → Bot → Command prefixes. The default
+is `!`. You can enable `.` and `/` as well, or use either without `!`. Keep at
+least one prefix enabled; use the Bot switch to turn the bot off.
+
+Every enabled prefix works with the same commands and aliases. For example,
+`!moblin scene Main`, `.moblin scene Main` and `/moblin scene Main` invoke the
+same command when their prefixes are enabled. An alias `!screen` with replacement
+`!moblin scene Screen` also works as `.screen` and `/screen`. Existing aliases
+need no changes. Settings show the enabled spellings; saved aliases and
+replacements retain the canonical `!` representation.
+
+Permissions and cooldowns apply equally to all prefixes and aliases. Custom
+chat filters still match their configured literal text. With text-to-speech Filter
+enabled, bang messages and messages starting with any enabled prefix are skipped.
+Slash commands work
+only when the sending chat client delivers them as chat messages; Moblin cannot
+process input that a client intercepts locally.
+
+The examples below use the default `!` prefix. Substitute an enabled prefix.
+
 # Moblin chat bot help
 
 | Command | Description |

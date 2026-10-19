@@ -3,6 +3,7 @@ import SwiftUI
 private struct ChatBotCommandView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
+    @ObservedObject var chat: SettingsChat
     let command: SettingsWidgetAlertsChatBotCommand
     @State var name: String
 
@@ -30,7 +31,9 @@ private struct ChatBotCommandView: View {
                                            value: name,
                                            onSubmit: onSubmit)
                 } footer: {
-                    Text("Trigger with chat message '!moblin alert \(name)'")
+                    Text(
+                        "Trigger with chat message '\(chat.effectiveBotCommandPrefixes[0])moblin alert \(name)'"
+                    )
                 }
                 AlertMediaView(alert: alert)
                 AlertPositionView(alert: alert)
@@ -75,6 +78,7 @@ struct WidgetAlertsChatBotSettingsView: View {
                     ForEach(chatBot.commands) { command in
                         ChatBotCommandView(
                             alert: command.alert,
+                            chat: model.database.chat,
                             command: command,
                             name: command.name
                         )
