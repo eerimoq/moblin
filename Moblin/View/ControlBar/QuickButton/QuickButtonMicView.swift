@@ -13,6 +13,13 @@ private struct QuickButtonMicMicView: View {
             Text(mic.name)
                 .lineLimit(1)
             Spacer()
+            if model.isMicMixable(mic: mic) {
+                Image(systemName: mic.mixed ? "plus.circle.fill" : "plus.circle")
+                    .foregroundStyle(.blue)
+                    .onTapGesture {
+                        model.setMicMixed(mic: mic, mixed: !mic.mixed)
+                    }
+            }
             Image(systemName: "checkmark")
                 .foregroundStyle(mic == modelMic.current ? .blue : .clear)
                 .bold()
@@ -21,6 +28,37 @@ private struct QuickButtonMicMicView: View {
         .onTapGesture {
             if mic.connected {
                 model.manualSelectMicById(id: mic.id)
+            }
+        }
+    }
+}
+
+private struct QuickButtonMicMixVolumeView: View {
+    let model: Model
+    @ObservedObject var mic: SettingsMicsMic
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(mic.name)
+                .lineLimit(1)
+            HStack {
+                Image(systemName: "speaker.wave.1.fill")
+                Slider(value: $mic.mixVolumeDb, in: -30 ... 12, step: 1)
+                    .onChange(of: mic.mixVolumeDb) { _ in
+                        model.updateMixedMics()
+                    }
+                Image(systemName: "speaker.wave.3.fill")
+                Text("\(formatOneDecimal(mic.mixVolumeDb)) dB")
+                    .frame(width: 65)
+            }
+            HStack {
+                Image(systemName: "clock")
+                Slider(value: $mic.mixDelay, in: 0 ... 1, step: 0.01)
+                    .onChange(of: mic.mixDelay) { _ in
+                        model.updateMixedMics()
+                    }
+                Text("\(formatTwoDecimals(mic.mixDelay)) s")
+                    .frame(width: 65)
             }
         }
     }
@@ -53,7 +91,26 @@ struct QuickButtonMicView: View {
                 VStack(alignment: .leading) {
                     Text("Highest priority mic at the top of the list.")
                     Text("")
+                    let image = Image(systemName: "plus.circle")
+                    Text("""
+                    Tap a mic to select it. Tap \(image) to mix its audio into the \
+                    selected mic.
+                    """)
+                    Text("")
+                    Text("Only one built-in or external mic can be used at a time.")
+                    Text("")
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a mic"))
+                }
+            }
+            if !modelMic.mixed.isEmpty {
+                Section {
+                    ForEach(modelMic.mixed) { mic in
+                        QuickButtonMicMixVolumeView(model: model, mic: mic)
+                    }
+                } header: {
+                    Text("Mixed mics")
+                } footer: {
+                    Text("Volume and delay of each mixed mic.")
                 }
             }
             if false {

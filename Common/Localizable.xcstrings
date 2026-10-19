@@ -154004,6 +154004,9 @@
         }
       }
     },
+    "Mixed mics" : {
+
+    },
     "Mobcam" : {
       "localizations" : {
         "de" : {
@@ -177579,6 +177582,9 @@
           }
         }
       }
+    },
+    "Only one built-in or external mic can be used at a time." : {
+
     },
     "Only say messages when a Bluetooth speaker or headset is the audio output." : {
       "comment" : "A description of the Bluetooth speaker and headset feature.",
@@ -262946,6 +262952,9 @@
         }
       }
     },
+    "Tap a mic to select it. Tap %@ to mix its audio into the selected mic." : {
+
+    },
     "Tap here to disable it." : {
       "localizations" : {
         "de" : {
@@ -296455,6 +296464,9 @@
           }
         }
       }
+    },
+    "Volume and delay of each mixed mic." : {
+
     },
     "VTuber" : {
       "localizations" : {

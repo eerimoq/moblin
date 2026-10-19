@@ -171,6 +171,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var latestBuiltinPresentationTimeStamp: CMTime = .invalid
     private var nextBuiltinPresentationTimeStamp: CMTime = .invalid
     private var isOutputtingSilence = false
+    private let mixer = AudioMixer()
+    private let builtinMixerSourceId = UUID()
 
     override init() {
         super.init()
@@ -356,6 +358,16 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    func setMixedAudio(builtin: AudioMixerSourceSettings?, bufferedAudios: [UUID: AudioMixerSourceSettings]) {
+        processorPipelineQueue.async {
+            var sources = bufferedAudios
+            if let builtin {
+                sources[self.builtinMixerSourceId] = builtin
+            }
+            self.mixer.setSources(sources)
+        }
+    }
+
     func setTalkback(cameraId: UUID?) {
         processorPipelineQueue.async {
             self.setTalkbackInternal(cameraId: cameraId)
@@ -437,7 +449,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ presentationTimeStamp: CMTime)
     {
-        guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
+        guard let sampleBuffer = mixer.mix(sampleBuffer, presentationTimeStamp).muted(muted)?.withGain(gain)
+        else {
             return
         }
         let presentationTimeStamp = presentationTimeStamp + CMTime(
@@ -580,6 +593,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             sampleBuffer = bufferedAudio.getSampleBuffer(presentationTimeStamp.seconds) ?? sampleBuffer
         }
         guard selectedBufferedAudioId == nil else {
+            mixer.append(sourceId: builtinMixerSourceId, sampleBuffer)
             return
         }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
@@ -599,6 +613,7 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
             appendTalkback(sampleBuffer: sampleBuffer)
         }
         guard selectedBufferedAudioId == cameraId, let processor else {
+            mixer.append(sourceId: cameraId, sampleBuffer)
             return
         }
         appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)

@@ -9,6 +9,7 @@ import VideoToolbox
 enum SampleBufferType: Codable {
     case videoFormat
     case videoBuffer
+    case audioBuffer
 }
 
 struct SampleBufferHeader: Codable {
@@ -16,6 +17,8 @@ struct SampleBufferHeader: Codable {
     var size: Int
     var presentationTimeStamp: Double
     var isSync: Bool
+    var sampleRate: Double = 0
+    var numberOfChannels: Int = 0
 }
 
 func createContainerDir(appGroup: String) throws -> URL {
