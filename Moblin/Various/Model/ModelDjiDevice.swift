@@ -237,4 +237,8 @@ extension Model: DjiDeviceDelegate {
             break
         }
     }
+
+    func djiDeviceModel(_ device: DjiDevice, model: SettingsDjiDeviceModel) {
+        getDjiDeviceSettings(djiDevice: device)?.model = model
+    }
 }
