@@ -82,6 +82,10 @@ class TextEffectFormatter {
     let speedFormatter = MeasurementFormatter()
     let altitudeFormatter = MeasurementFormatter()
     let lengthFormatter = MeasurementFormatter()
+    var timeFormat = textEffectTimeFormat
+    var shortTimeFormat = textEffectShortTimeFormat
+    var dateFormatter = textEffectDateFormatter
+    var fullDateFormatter = textEffectFullDateFormatter
     var checkboxes: [Bool]
     var ratings: [Int]
     var subtitles: [String?: Subtitles] = [:]
@@ -269,19 +273,19 @@ class TextEffectFormatter {
     }
 
     private func formatClock(variables: Variables) {
-        appendTextPart(value: variables.date.formatted(textEffectTimeFormat))
+        appendTextPart(value: variables.date.formatted(timeFormat))
     }
 
     private func formatShortClock(variables: Variables) {
-        appendTextPart(value: variables.date.formatted(textEffectShortTimeFormat))
+        appendTextPart(value: variables.date.formatted(shortTimeFormat))
     }
 
     private func formatDate(variables: Variables) {
-        appendTextPart(value: textEffectDateFormatter.string(from: variables.date))
+        appendTextPart(value: dateFormatter.string(from: variables.date))
     }
 
     private func formatFullDate(variables: Variables) {
-        appendTextPart(value: textEffectFullDateFormatter.string(from: variables.date))
+        appendTextPart(value: fullDateFormatter.string(from: variables.date))
     }
 
     private func formatBitrate(variables: Variables) {

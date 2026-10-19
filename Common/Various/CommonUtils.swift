@@ -221,8 +221,8 @@ func formatWindAndGustSpeed(speed: Measurement<UnitSpeed>,
     return "\(speed) (\(gust)) \(unit.symbol)"
 }
 
-func formatPace(speed: Double) -> String {
-    let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+func formatPace(speed: Double, unit: UnitLength? = nil) -> String {
+    let unit = unit ?? (Locale.current.measurementSystem == .metric ? .kilometers : .miles)
     let pace: String
     if speed > 0 {
         let metersPerUnit = Measurement(value: 1, unit: unit).converted(to: .meters).value

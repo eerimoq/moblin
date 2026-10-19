@@ -5,13 +5,13 @@ import WeatherKit
 
 @MainActor
 struct TextEffectSuite {
-    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    @Test
     func time() {
         let lines = format(format: "{time}", variables: createVariables())
         #expect(lines == createLine(data: .text("06:26:06")))
     }
 
-    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    @Test
     func date() {
         let lines = format(format: "{date}", variables: createVariables())
         #expect(lines == createLine(data: .text("2024-08-11")))
@@ -328,6 +328,28 @@ struct TextEffectSuite {
                                             checkboxes: [],
                                             ratings: [],
                                             lapTimes: [])
+        let locale = Locale(identifier: "en_SE")
+        let timeZone = TimeZone(identifier: "Europe/Stockholm")!
+        for measurementFormatter in [formatter.temperatureFormatter, formatter.speedFormatter,
+                                     formatter.altitudeFormatter, formatter.lengthFormatter]
+        {
+            measurementFormatter.locale = locale
+            measurementFormatter.numberFormatter.locale = locale
+            measurementFormatter.numberFormatter.maximumFractionDigits = 0
+        }
+        formatter.timeFormat.locale = locale
+        formatter.timeFormat.timeZone = timeZone
+        formatter.timeFormat.calendar = Calendar(identifier: .gregorian)
+        formatter.shortTimeFormat.locale = locale
+        formatter.shortTimeFormat.timeZone = timeZone
+        formatter.shortTimeFormat.calendar = Calendar(identifier: .gregorian)
+        formatter.dateFormatter = textEffectDateFormatter.copy() as! DateFormatter
+        formatter.fullDateFormatter = textEffectFullDateFormatter.copy() as! DateFormatter
+        for dateFormatter in [formatter.dateFormatter, formatter.fullDateFormatter] {
+            dateFormatter.locale = locale
+            dateFormatter.timeZone = timeZone
+            dateFormatter.calendar = Calendar(identifier: .gregorian)
+        }
         return formatter.format(variables: variables, now: .now)
     }
 

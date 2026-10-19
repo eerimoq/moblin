@@ -17,31 +17,61 @@ struct UtilsSuite {
         #expect(formatShortDuration(seconds: 90 * 86400) == "90 days")
     }
 
-    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    @Test
     func pace() {
-        #expect(formatPace(speed: 0) == "- min/km")
-        #expect(formatPace(speed: 1) == "16:40 min/km")
-        #expect(formatPace(speed: 3) == "5:33 min/km")
-        #expect(formatPace(speed: 5) == "3:20 min/km")
-        #expect(formatPace(speed: 10) == "1:40 min/km")
-        #expect(formatPace(speed: 16.66) == "1:00 min/km")
-        #expect(formatPace(speed: 16.667) == "0:59 min/km")
+        #expect(formatPace(speed: 0, unit: .kilometers) == "- min/km")
+        #expect(formatPace(speed: 1, unit: .kilometers) == "16:40 min/km")
+        #expect(formatPace(speed: 3, unit: .kilometers) == "5:33 min/km")
+        #expect(formatPace(speed: 5, unit: .kilometers) == "3:20 min/km")
+        #expect(formatPace(speed: 10, unit: .kilometers) == "1:40 min/km")
+        #expect(formatPace(speed: 16.66, unit: .kilometers) == "1:00 min/km")
+        #expect(formatPace(speed: 16.667, unit: .kilometers) == "0:59 min/km")
+        #expect(formatPace(speed: 0, unit: .miles) == "- min/mi")
+        #expect(formatPace(speed: 1, unit: .miles) == "26:49 min/mi")
+        #expect(formatPace(speed: 3, unit: .miles) == "8:56 min/mi")
+        #expect(formatPace(speed: 5, unit: .miles) == "5:21 min/mi")
+        #expect(formatPace(speed: 10, unit: .miles) == "2:40 min/mi")
     }
 
-    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    @Test
+    func paceDefaultsToCurrentMeasurementSystem() {
+        let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+        #expect(formatPace(speed: 5) == formatPace(speed: 5, unit: unit))
+    }
+
+    @Test
     func windSpeed() {
-        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour), unit: nil) == "2 m/s")
-        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour), unit: nil) == "4 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour), unit: .metersPerSecond) ==
+            "2 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour), unit: .metersPerSecond) ==
+            "4 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour), unit: .milesPerHour) ==
+            "5 mph")
+        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour), unit: .milesPerHour) ==
+            "10 mph")
     }
 
-    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    @Test
     func windSpeedAndGust() {
         #expect(formatWindAndGustSpeed(speed: Measurement(value: 5, unit: .milesPerHour),
                                        gust: Measurement(value: 10, unit: .milesPerHour),
-                                       unit: nil) == "2 (4) m/s")
+                                       unit: .metersPerSecond) == "2 (4) m/s")
         #expect(formatWindAndGustSpeed(speed: Measurement(value: 15, unit: .milesPerHour),
                                        gust: Measurement(value: 20, unit: .milesPerHour),
-                                       unit: nil) == "6 (8) m/s")
+                                       unit: .metersPerSecond) == "6 (8) m/s")
+        #expect(formatWindAndGustSpeed(speed: Measurement(value: 5, unit: .milesPerHour),
+                                       gust: Measurement(value: 10, unit: .milesPerHour),
+                                       unit: .milesPerHour) == "5 (10) mph")
+    }
+
+    @Test
+    func windSpeedDefaultsToCurrentMeasurementSystem() {
+        let unit: UnitSpeed = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+        let speed = Measurement(value: 5, unit: UnitSpeed.milesPerHour)
+        let gust = Measurement(value: 10, unit: UnitSpeed.milesPerHour)
+        #expect(formatWindSpeed(speed: speed, unit: nil) == formatWindSpeed(speed: speed, unit: unit))
+        #expect(formatWindAndGustSpeed(speed: speed, gust: gust, unit: nil)
+            == formatWindAndGustSpeed(speed: speed, gust: gust, unit: unit))
     }
 
     @Test
