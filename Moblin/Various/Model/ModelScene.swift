@@ -86,6 +86,16 @@ extension Model {
         wheelOfLuckEffects[id]
     }
 
+    private func executeWheelOfLuckOptionFunction(widget: SettingsWidget, optionId: UUID?) {
+        guard let option = widget.wheelOfLuck.options.first(where: { $0.id == optionId }) else {
+            return
+        }
+        handleControllerFunction(buttonId: "wol:\(option.id)",
+                                 function: option.function,
+                                 functionData: option.functionData,
+                                 pressed: false)
+    }
+
     func updateWheelOfLuckEffect(widget: SettingsWidget) {
         getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
         if isMoblinCloudWheelOfLuckWidget(widget: widget) {
@@ -980,8 +990,12 @@ extension Model {
         for widget in widgets where widget.type == .wheelOfLuck {
             wheelOfLuckEffects[widget.id] = WheelOfLuckEffect(canvasSize: media
                 .getCanvasSize())
-            { [weak widget] in
-                widget?.wheelOfLuck.appendResult(result: $0)
+            { [weak self, weak widget] in
+                guard let widget else {
+                    return
+                }
+                widget.wheelOfLuck.appendResult(result: $0)
+                self?.executeWheelOfLuckOptionFunction(widget: widget, optionId: $0.optionId)
             }
         }
     }

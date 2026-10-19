@@ -2118,6 +2118,8 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
     var id: UUID = .init()
     @Published var text: String = ""
     @Published var weight: Int = 1
+    @Published var function: SettingsControllerFunction = .unused
+    @Published var functionData: SettingsControllerFunctionData = .init()
 
     static func == (lhs: SettingsWidgetWheelOfLuckOption, rhs: SettingsWidgetWheelOfLuckOption) -> Bool {
         lhs.id == rhs.id
@@ -2127,6 +2129,13 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         case id
         case text
         case weight
+        case function
+        case sceneId
+        case widgetId
+        case gimbalPresetId
+        case gimbalMotion
+        case macroId
+        case streamDeckLayoutId
     }
 
     init() {}
@@ -2136,6 +2145,13 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         try container.encode(.id, id)
         try container.encode(.text, text)
         try container.encode(.weight, weight)
+        try container.encode(.function, function)
+        try container.encode(.sceneId, functionData.sceneId)
+        try container.encode(.widgetId, functionData.widgetId)
+        try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
+        try container.encode(.gimbalMotion, functionData.gimbalMotion)
+        try container.encode(.macroId, functionData.macroId)
+        try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2143,6 +2159,13 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
         id = container.decode(.id, UUID.self, .init())
         text = container.decode(.text, String.self, "")
         weight = container.decode(.weight, Int.self, 1)
+        function = container.decode(.function, SettingsControllerFunction.self, .unused)
+        functionData.sceneId = container.decode(.sceneId, UUID?.self, nil)
+        functionData.widgetId = container.decode(.widgetId, UUID?.self, nil)
+        functionData.gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
+        functionData.macroId = container.decode(.macroId, UUID?.self, nil)
+        functionData.streamDeckLayoutId = container.decode(.streamDeckLayoutId, UUID?.self, nil)
     }
 }
 

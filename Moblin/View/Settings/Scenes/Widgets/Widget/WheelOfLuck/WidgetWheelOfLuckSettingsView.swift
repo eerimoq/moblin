@@ -48,21 +48,40 @@ private struct OptionView: View {
         100 * options.weight / wheelOfLuck.totalWeight
     }
 
+    private func functions() -> [SettingsControllerFunction] {
+        SettingsControllerFunction.allCases.filter {
+            ![.zoomIn, .zoomOut, .gimbalUp, .gimbalDown, .gimbalLeft, .gimbalRight, .gimbalPreset]
+                .contains($0)
+        }
+    }
+
     var body: some View {
         NavigationLink {
             Form {
-                TextEditNavigationView(title: "Text", value: options.text) {
-                    options.text = $0
-                    updateEffect()
-                }
-                Picker("Weight", selection: $options.weight) {
-                    ForEach(wheelOfLuckOptionWeights, id: \.self) {
-                        Text(String($0))
+                Section {
+                    TextEditNavigationView(title: "Text", value: options.text) {
+                        options.text = $0
+                        updateEffect()
+                    }
+                    Picker("Weight", selection: $options.weight) {
+                        ForEach(wheelOfLuckOptionWeights, id: \.self) {
+                            Text(String($0))
+                        }
+                    }
+                    .onChange(of: options.weight) { _ in
+                        wheelOfLuck.updateTotalWeight()
+                        updateEffect()
                     }
                 }
-                .onChange(of: options.weight) { _ in
-                    wheelOfLuck.updateTotalWeight()
-                    updateEffect()
+                Section {
+                    ControllerButtonView(model: model,
+                                         functions: functions(),
+                                         function: $options.function,
+                                         functionData: $options.functionData)
+                } header: {
+                    Text("Action")
+                } footer: {
+                    Text("Executed when the wheel stops on this option.")
                 }
             }
             .navigationTitle("Option")

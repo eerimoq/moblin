@@ -8,6 +8,7 @@ private let optionColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan]
 
 struct WheelOfLuckEffectOption: Identifiable {
     let id: Int
+    let optionId: UUID
     let weight: Int
     let text: String
     let textAngle: Angle
@@ -16,6 +17,7 @@ struct WheelOfLuckEffectOption: Identifiable {
 struct WheelOfLuckSpinResult: Identifiable {
     let id = UUID()
     let date = Date()
+    let optionId: UUID?
     let text: String
     let name: String
     let message: String
@@ -135,6 +137,7 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
             let textAngle = angle + ratio * 360 / 2 - 90
             angle += ratio * 360
             options.append(WheelOfLuckEffectOption(id: index,
+                                                   optionId: inputOption.id,
                                                    weight: inputOption.weight,
                                                    text: inputOption.text,
                                                    textAngle: .degrees(textAngle)))
@@ -271,15 +274,18 @@ final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
             arrowAngle += 360
         }
         var endAngle = 0.0
-        var text = options.last?.text ?? ""
+        var resultOption = options.last
         for option in options {
             endAngle += 360 * Double(option.weight) / totalWeight
             if arrowAngle < endAngle {
-                text = option.text
+                resultOption = option
                 break
             }
         }
-        let result = WheelOfLuckSpinResult(text: text, name: spin.name, message: spin.message)
+        let result = WheelOfLuckSpinResult(optionId: resultOption?.optionId,
+                                           text: resultOption?.text ?? "",
+                                           name: spin.name,
+                                           message: spin.message)
         DispatchQueue.main.async {
             self.onResult(result)
         }
