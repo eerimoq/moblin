@@ -608,8 +608,8 @@ private struct ChatBotAliasSettingsView: View {
         guard !value.isEmpty else {
             return String(localized: "The alias must not be empty.")
         }
-        guard value.starts(with: "!") else {
-            return String(localized: "The alias must start with !.")
+        guard let prefix = value.first, "!./".contains(prefix) else {
+            return String(localized: "The alias must start with !, . or /.")
         }
         guard value.count > 1 else {
             return String(localized: "The alias is too short.")

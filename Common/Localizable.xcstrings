@@ -266352,6 +266352,9 @@
         }
       }
     },
+    "The alias must start with !, . or /." : {
+
+    },
     "The alias must start with !." : {
       "localizations" : {
         "de" : {

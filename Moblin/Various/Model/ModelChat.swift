@@ -218,8 +218,10 @@ extension Model {
         sourceChannelIcon: URL? = nil
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
+        let firstWord = segments.first?.text?.lowercased().trim() ?? ""
+        let isAlias = ChatBotCommand.findAlias(word: firstWord, aliases: database.chat.aliases) != nil
         if let platform, database.chat.botEnabled, live, filter?.chatBot != false,
-           segments.first?.text?.trim().starts(with: "!") == true
+           firstWord.starts(with: "!") || isAlias
         {
             if chatBotMessages.count < 25 || isModerator {
                 chatBotMessages.append(ChatBotMessage(
@@ -258,7 +260,7 @@ extension Model {
             state: ChatPostState()
         )
         chatPostId += 1
-        if isTextToSpeechEnabledForMessage(post: post) {
+        if isTextToSpeechEnabledForMessage(post: post), !database.chat.textToSpeechFilter || !isAlias {
             let message = post.text(emoteNames: database.chat.textToSpeechSayEmotes)
             if !message.trimmingCharacters(in: .whitespaces).isEmpty {
                 chatTextToSpeech.say(
