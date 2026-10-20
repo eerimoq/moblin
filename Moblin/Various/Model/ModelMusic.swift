@@ -284,7 +284,7 @@ extension Model {
                 case .play:
                     try await playAction()
                 case .pause:
-                    pauseAction()
+                    await pauseAction()
                 case let .next(count: count):
                     try await nextAction(count: count)
                 case let .previous(count: count):
@@ -452,11 +452,20 @@ extension Model {
             return
         }
         try await musicPlayer.play()
+        await waitForPlaybackStatus(playing: true)
     }
 
-    private func pauseAction() {
+    private func pauseAction() async {
         playRequested = false
         musicPlayer.pause()
+        await waitForPlaybackStatus(playing: false)
+    }
+
+    private func waitForPlaybackStatus(playing: Bool) async {
+        let deadline = ContinuousClock.now + .seconds(2)
+        while (musicPlayer.state.playbackStatus == .playing) != playing, ContinuousClock.now < deadline {
+            try? await Task.sleep(for: .milliseconds(50))
+        }
     }
 
     private func nextAction(count: Int) async throws {
@@ -508,6 +517,7 @@ extension Model {
         playRequested = true
         musicPlayer.queue.currentEntry = entry
         try await musicPlayer.play()
+        await waitForPlaybackStatus(playing: true)
     }
 
     private func statusAction(onCompleted: (MusicStatus) -> Void) {
