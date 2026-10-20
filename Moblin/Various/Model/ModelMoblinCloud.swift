@@ -280,16 +280,11 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
                                     onCompleted: @escaping (RemoteControlResult, RemoteControlResponse?)
                                         -> Void)
     {
-        switch command {
-        case .status, .find, .add:
-            guard let model else {
-                onCompleted(.error, nil)
-                return
-            }
-            model.remoteControlStreamerMusic(command: command, onCompleted: onCompleted)
-        default:
+        guard let model else {
             onCompleted(.error, nil)
+            return
         }
+        model.remoteControlStreamerMusic(command: command, onCompleted: onCompleted)
     }
 
     func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
