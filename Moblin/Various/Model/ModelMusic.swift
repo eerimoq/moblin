@@ -25,12 +25,7 @@ private enum Action {
     case load
 }
 
-private struct MusicMetadata {
-    let addedBy: String?
-    let requestId: String?
-}
-
-private struct StoredMusicEntry: Codable {
+private struct MusicEntry: Codable {
     let songId: String
     let title: String
     let artist: String?
@@ -52,17 +47,17 @@ enum MusicQueueState {
 private let playlistQueue = DispatchQueue(label: "com.eerimoq.moblin.music-playlist")
 private let playlistStorage = SimpleStringStorage(key: "musicPlaylist")
 
-private func loadPlaylist() async -> [StoredMusicEntry] {
+private func loadPlaylist() async -> [MusicEntry] {
     await withCheckedContinuation { continuation in
         playlistQueue.async {
             let data = Data(playlistStorage.get().utf8)
             continuation
-                .resume(returning: (try? JSONDecoder().decode([StoredMusicEntry].self, from: data)) ?? [])
+                .resume(returning: (try? JSONDecoder().decode([MusicEntry].self, from: data)) ?? [])
         }
     }
 }
 
-private func storePlaylist(_ playlist: [StoredMusicEntry]) {
+private func storePlaylist(_ playlist: [MusicEntry]) {
     playlistQueue.async {
         guard let data = try? JSONEncoder().encode(playlist) else {
             return
@@ -71,7 +66,7 @@ private func storePlaylist(_ playlist: [StoredMusicEntry]) {
     }
 }
 
-private func makeSong(storedEntry: StoredMusicEntry) -> Song? {
+private func makeSong(storedEntry: MusicEntry) -> Song? {
     var attributes: [String: Any] = [
         "name": storedEntry.title,
         "playParams": ["id": storedEntry.songId, "kind": "song"],
@@ -93,6 +88,15 @@ func musicDuration(song: Song) -> Int? {
     song.duration.map { Int($0.rounded()) }
 }
 
+private func makeMusicEntry(song: Song, addedBy: String?, requestId: String?) -> MusicEntry {
+    MusicEntry(songId: song.id.rawValue,
+               title: song.title,
+               artist: song.artistName,
+               duration: musicDuration(song: song),
+               addedBy: addedBy,
+               requestId: requestId)
+}
+
 private func musicSong(entry: ApplicationMusicPlayer.Queue.Entry) -> Song? {
     guard case let .song(song) = entry.item else {
         return nil
@@ -112,34 +116,21 @@ struct MusicPlaylistSong: Identifiable {
 class MusicPlaylist: ObservableObject {
     @Published var queue = musicPlayer.queue
     @Published var state: MusicQueueState = .notLoaded
-    fileprivate var metadata: [MusicItemID: [MusicMetadata]] = [:]
+    fileprivate var entries: [MusicEntry] = []
 
     func songs() -> [MusicPlaylistSong] {
         guard state == .loaded else {
             return []
         }
-        var occurrences: [MusicItemID: Int] = [:]
-        return queue.entries.map {
-            let song = musicSong(entry: $0)
-            return MusicPlaylistSong(id: $0.id,
-                                     title: song?.title ?? $0.title,
-                                     artist: song?.artistName ?? $0.subtitle,
+        let inSync = queue.entries.count == entries.count
+        return queue.entries.enumerated().map { index, queueEntry in
+            let song = musicSong(entry: queueEntry)
+            return MusicPlaylistSong(id: queueEntry.id,
+                                     title: song?.title ?? queueEntry.title,
+                                     artist: song?.artistName ?? queueEntry.subtitle,
                                      duration: song.flatMap { musicDuration(song: $0) },
-                                     addedBy: song.flatMap { metadata(song: $0, occurrences: &occurrences)?.addedBy })
+                                     addedBy: inSync ? entries[index].addedBy : nil)
         }
-    }
-
-    fileprivate func metadata(song: Song, occurrences: inout [MusicItemID: Int]) -> MusicMetadata? {
-        let occurrence = occurrences[song.id, default: 0]
-        occurrences[song.id] = occurrence + 1
-        guard let entries = metadata[song.id], occurrence < entries.count else {
-            return nil
-        }
-        return entries[occurrence]
-    }
-
-    fileprivate func allMetadata() -> [MusicMetadata] {
-        metadata.values.flatMap { $0 }
     }
 
     func currentIndex() -> Int? {
@@ -247,27 +238,12 @@ extension Model {
         guard musicPlaylist.state != .notLoaded else {
             return
         }
-        var playlist: [StoredMusicEntry] = []
-        var metadata: [MusicItemID: [MusicMetadata]] = [:]
-        if musicPlaylist.state == .loaded {
-            var occurrences: [MusicItemID: Int] = [:]
-            for entry in musicPlayer.queue.entries {
-                guard let song = musicSong(entry: entry) else {
-                    continue
-                }
-                let entryMetadata = musicPlaylist.metadata(song: song, occurrences: &occurrences)
-                    ?? MusicMetadata(addedBy: nil, requestId: nil)
-                metadata[song.id, default: []].append(entryMetadata)
-                playlist.append(StoredMusicEntry(songId: song.id.rawValue,
-                                                 title: song.title,
-                                                 artist: song.artistName,
-                                                 duration: musicDuration(song: song),
-                                                 addedBy: entryMetadata.addedBy,
-                                                 requestId: entryMetadata.requestId))
-            }
+        if musicPlaylist.state == .empty {
+            musicPlaylist.entries = []
+        } else if musicPlayer.queue.entries.count != musicPlaylist.entries.count {
+            logger.info("music: Queue and playlist out of sync")
         }
-        musicPlaylist.metadata = metadata
-        storePlaylist(playlist)
+        storePlaylist(musicPlaylist.entries)
     }
 
     private func tryRunNextAction() {
@@ -333,35 +309,29 @@ extension Model {
         let playlist = await loadPlaylist()
         logger.debug("music: Loading \(playlist.count) songs")
         guard !playlist.isEmpty else {
-            musicPlaylist.metadata = [:]
+            musicPlaylist.entries = []
             setMusicQueue([])
             return
         }
         guard MusicAuthorization.currentStatus == .authorized else {
             throw "Not authorized"
         }
-        var songs = playlist.compactMap { storedEntry in
-            makeSong(storedEntry: storedEntry).map { (song: $0, storedEntry: storedEntry) }
-        }
-        if songs.count != playlist.count {
+        var songs = playlist.map { (entry: $0, song: makeSong(storedEntry: $0)) }
+        if songs.contains(where: { $0.song == nil }) {
             logger.info("music: Fetching songs from catalog")
             let ids = playlist.map { MusicItemID($0.songId) }
             let request = MusicCatalogResourceRequest<Song>(matching: \.id, memberOf: ids)
             let response = try await request.response()
-            songs = playlist.compactMap { storedEntry in
-                response.items
-                    .first(where: { $0.id.rawValue == storedEntry.songId })
-                    .map { (song: $0, storedEntry: storedEntry) }
+            songs = playlist.map { storedEntry in
+                (
+                    entry: storedEntry,
+                    song: response.items.first(where: { $0.id.rawValue == storedEntry.songId })
+                )
             }
         }
-        musicPlaylist.metadata = [:]
-        for (song, storedEntry) in songs {
-            musicPlaylist.metadata[song.id, default: []].append(MusicMetadata(
-                addedBy: storedEntry.addedBy,
-                requestId: storedEntry.requestId
-            ))
-        }
-        setMusicQueue(songs.map { .init($0.song) })
+        let loaded = songs.compactMap { pair in pair.song.map { (entry: pair.entry, song: $0) } }
+        musicPlaylist.entries = loaded.map(\.entry)
+        setMusicQueue(loaded.map { .init($0.song) })
         try await musicPlayer.prepareToPlay()
         musicPlaylist.state = .loaded
         logger.debug("music: Loaded \(musicPlayer.queue.entries.count) songs")
@@ -385,7 +355,7 @@ extension Model {
             throw "Playlist not loaded"
         }
         do {
-            if let requestId, musicPlaylist.allMetadata().contains(where: { $0.requestId == requestId }) {
+            if let requestId, musicPlaylist.entries.contains(where: { $0.requestId == requestId }) {
                 logger.debug("music: Request \(requestId) already added")
                 onCompleted(.alreadyAdded)
                 return
@@ -402,11 +372,12 @@ extension Model {
         }
         logger.debug("music: Adding song \(song)")
         onCompleted(.added(song: "\(song.artistName) - \(song.title)"))
-        musicPlaylist.metadata[song.id, default: []].append(MusicMetadata(addedBy: user, requestId: requestId))
+        let musicEntry = makeMusicEntry(song: song, addedBy: user, requestId: requestId)
         let entry = ApplicationMusicPlayer.Queue.Entry(song)
         if musicPlaylist.state != .loaded {
             logger.debug("music: Creating queue")
             setMusicQueue([entry])
+            musicPlaylist.entries = [musicEntry]
             if playRequested {
                 try await musicPlayer.play()
             } else {
@@ -418,11 +389,13 @@ extension Model {
                 .compactMap { musicSong(entry: $0) }
                 .map { ApplicationMusicPlayer.Queue.Entry($0) }
             setMusicQueue(entries + [entry], startingAt: entry)
+            musicPlaylist.entries.append(musicEntry)
             try await musicPlayer.play()
         } else {
             logger.debug("music: Appending to queue")
             await workaroundAppleMusicTransientQueueEntriesBug()
             try await musicPlayer.queue.insert(entry, position: .tail)
+            musicPlaylist.entries.append(musicEntry)
         }
         musicPlaylist.state = .loaded
         storeMusicQueue()
@@ -510,7 +483,7 @@ extension Model {
     private func clearAction() {
         playRequested = true
         musicPlayer.stop()
-        musicPlaylist.metadata = [:]
+        musicPlaylist.entries = []
         setMusicQueue([])
         storeMusicQueue()
     }
@@ -520,12 +493,10 @@ extension Model {
             return
         }
         await workaroundAppleMusicTransientQueueEntriesBug()
-        let entries = musicPlayer.queue.entries
-        if let index = entries.firstIndex(where: { $0.id == entryId }), let song = musicSong(entry: entries[index]) {
-            let occurrence = entries[..<index].filter { musicSong(entry: $0)?.id == song.id }.count
-            if musicPlaylist.metadata[song.id]?.indices.contains(occurrence) == true {
-                musicPlaylist.metadata[song.id]?.remove(at: occurrence)
-            }
+        if let index = musicPlayer.queue.entries.firstIndex(where: { $0.id == entryId }),
+           index < musicPlaylist.entries.count
+        {
+            musicPlaylist.entries.remove(at: index)
         }
         musicPlayer.queue.entries.removeAll { $0.id == entryId }
         if musicPlayer.queue.entries.isEmpty {
