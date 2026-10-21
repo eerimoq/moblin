@@ -65,3 +65,9 @@
 | !moblin reaction sparkle | Trigger sparkle reaction. |
 | !moblin macro run \<name> | Run given macro. |
 | !moblin macro cancel \<name> | Cancel given macro. |
+
+Aliases in Settings > Chat > Bot > Aliases may start with `!`, `.` or `/`.
+For example, set alias `.scene` to replacement `!moblin scene`, then use
+`.scene <name>`. Only the configured alias spelling works; built-in commands keep `!`.
+Aliases are excluded from TTS when its Filter is enabled. Slash aliases require a
+chat client that sends them as chat messages.

@@ -133,6 +133,42 @@ struct ChatBotCommandSuite {
         #expect(command.popFirstArgument(ChatBotReactionArgument.self) == expected)
     }
 
+    @Test(arguments: ["!", ".", "/"])
+    func sceneAlias(prefix: String) throws {
+        let alias = SettingsChatBotAlias()
+        alias.alias = "\(prefix)scene"
+        alias.replacement = "!moblin scene"
+        let message = createMessage(text: "\(prefix)SCENE \"Main Camera\"")
+        let firstWord = try #require(message.segments.first?.text?.lowercased().trim())
+        #expect(ChatBotCommand.findAlias(word: firstWord, aliases: [alias]) === alias)
+        let command = try #require(ChatBotCommand(message: message, aliases: [alias]))
+        #expect(command.popFirstArgument(ChatBotMainArgument.self) == .scene)
+        #expect(command.popFirst() == "Main Camera")
+        #expect(command.popFirst() == nil)
+        #expect(command.message.isOwner == message.isOwner)
+        #expect(command.message.isModerator == message.isModerator)
+    }
+
+    @Test(arguments: ["!scene", "/scene", ".scenes", ".moblin", "/moblin", ".hello", "/hello", "hello", ""])
+    func unconfiguredAliases(word: String) {
+        let alias = SettingsChatBotAlias()
+        alias.alias = ".scene"
+        alias.replacement = "!moblin scene"
+        #expect(ChatBotCommand.findAlias(word: word, aliases: [alias]) == nil)
+        #expect(ChatBotCommand(message: createMessage(text: "\(word) Main"), aliases: [alias]) == nil)
+    }
+
+    @Test
+    func builtInSceneWithAlias() throws {
+        let alias = SettingsChatBotAlias()
+        alias.alias = ".scene"
+        alias.replacement = "!moblin scene"
+        let command = try #require(ChatBotCommand(
+            message: createMessage(text: "!moblin scene Main"), aliases: [alias]
+        ))
+        #expect(command.popAll() == ["scene", "Main"])
+    }
+
     private func createMessage(text: String) -> ChatBotMessage {
         ChatBotMessage(platform: .twitch,
                        user: "erik",

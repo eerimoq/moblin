@@ -190,13 +190,17 @@ class ChatBotCommand {
     let message: ChatBotMessage
     private var parts: Deque<String> = []
 
+    static func findAlias(word: String, aliases: [SettingsChatBotAlias]) -> SettingsChatBotAlias? {
+        aliases.first(where: { $0.alias == word })
+    }
+
     init?(message: ChatBotMessage, aliases: [SettingsChatBotAlias]) {
         self.message = message
         guard let firstWord = message.segments.first?.text?.lowercased().trim() else {
             return nil
         }
         if firstWord != "!moblin" {
-            guard let alias = aliases.first(where: { $0.alias == firstWord }) else {
+            guard let alias = Self.findAlias(word: firstWord, aliases: aliases) else {
                 return nil
             }
             for word in alias.replacement.split(separator: " ").suffix(from: 1) {
