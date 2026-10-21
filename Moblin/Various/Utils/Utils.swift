@@ -324,14 +324,6 @@ func sortedBySearchPrefix<T>(_ items: [T], searchText: String, name: (T) -> Stri
     return matches + others
 }
 
-func createSpeechSynthesizer() -> AVSpeechSynthesizer {
-    let synthesizer = AVSpeechSynthesizer()
-    // Using the application audio session makes mic buffers 144 bytes, which adds a lot of overhead.
-    // But when using two audio sessions the volume is all wrong...
-    synthesizer.usesApplicationAudioSession = false
-    return synthesizer
-}
-
 func makeRecordingPath(recordingPath: Data) -> URL? {
     var isStale = false
     return try? URL(resolvingBookmarkData: recordingPath, bookmarkDataIsStale: &isStale)

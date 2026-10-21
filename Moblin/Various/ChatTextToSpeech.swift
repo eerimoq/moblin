@@ -66,7 +66,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var pauseBetweenMessages: Double = 0.5
     private var voices: [String: SettingsVoice] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
-    private var synthesizer = createSpeechSynthesizer()
+    private let synthesizer = SpeechSynthesizer(queue: textToSpeechDispatchQueue)
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
     private var sayLatestUserThatSaidSomethingAgain = ContinuousClock.now
@@ -207,15 +207,13 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
             self.running = running
-            self.synthesizer.stopSpeaking(at: .immediate)
+            self.synthesizer.stop()
             self.audioPlayer?.stop()
             self.isSpeaking = false
             self.stopPauseBetweenMessages()
             self.currentlyPlayingMessage = nil
             self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
-            self.synthesizer = createSpeechSynthesizer()
-            self.synthesizer.delegate = self
             self.recognizer = NLLanguageRecognizer()
         }
     }
@@ -240,9 +238,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     }
 
     private func skipCurrentMessageInternal() {
-        synthesizer.stopSpeaking(at: .immediate)
-        synthesizer = createSpeechSynthesizer()
-        synthesizer.delegate = self
+        synthesizer.stop()
         audioPlayer?.stop()
         isSpeaking = false
         currentlyPlayingMessage = nil
@@ -397,10 +393,10 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
-        utterance.volume = volume
         utterance.voice = voice
-        synthesizer.speak(utterance)
-        KeepSpeakerAlivePlayer.shared.audioPlayed()
+        synthesizer.speak(utterance: utterance, volume: volume) {
+            self.sayFinished()
+        }
     }
 
     private func utterTtsMonster(voiceId: String, text: String) {
@@ -441,12 +437,6 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
             self.isPausingBetweenMessages = false
             self.trySayNextMessage()
         }
-    }
-}
-
-extension ChatTextToSpeech: AVSpeechSynthesizerDelegate {
-    func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
-        sayFinished()
     }
 }
 

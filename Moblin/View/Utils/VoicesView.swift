@@ -107,7 +107,7 @@ private struct VoiceView: View {
     let voiceItem: VoicePickerItem
     let appleVoices: [AVSpeechSynthesisVoice]
     let languageCode: String
-    let synthesizer: AVSpeechSynthesizer
+    let synthesizer: SpeechSynthesizer
     @State var audioPlayer: AudioPlayer?
     @Binding var rate: Float
     @Binding var volume: Float
@@ -118,12 +118,10 @@ private struct VoiceView: View {
         let utterance = AVSpeechUtterance(string: getTestMessage(languageCode))
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
-        utterance.volume = volume
         utterance.voice = getVoice(appleVoices: appleVoices,
                                    languageCode: languageCode,
                                    identifier: identifier)
-        synthesizer.speak(utterance)
-        KeepSpeakerAlivePlayer.shared.audioPlayed()
+        synthesizer.speak(utterance: utterance, volume: volume)
     }
 
     private func playTtsMonsterTestMessage(voiceId: String) {
@@ -186,7 +184,7 @@ private struct LanguageView: View {
     @State var selectedVoice: VoicePickerItem?
     let onVoiceChange: (String, SettingsVoice) -> Void
     let onLanguageReset: (String) -> Void
-    let synthesizer: AVSpeechSynthesizer
+    let synthesizer: SpeechSynthesizer
     @Binding var rate: Float
     @Binding var volume: Float
     let ttsMonsterApiToken: String
@@ -259,7 +257,7 @@ struct VoicesView: View {
     @Binding var textToSpeechLanguageVoices: [String: SettingsVoice]
     let onVoiceChange: (String, SettingsVoice) -> Void
     let onLanguageReset: (String) -> Void
-    private let synthesizer = createSpeechSynthesizer()
+    private let synthesizer = SpeechSynthesizer(queue: .main)
     @Binding var rate: Float
     @Binding var volume: Float
     @State private var appleVoices: [AVSpeechSynthesisVoice] = []

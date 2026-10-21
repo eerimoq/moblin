@@ -51,7 +51,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var audioPlayer: AudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
-    private var synthesizer = createSpeechSynthesizer()
+    private let synthesizer = SpeechSynthesizer(queue: .main)
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
     private weak let delegate: (any AlertsEffectDelegate)?
     private var isPlaying: Bool = false
@@ -352,11 +352,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let utterance = AVSpeechUtterance(string: "\(username) \(message)")
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
-        utterance.volume = volume
         utterance.voice = voice
         DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay) {
-            self.synthesizer.speak(utterance)
-            KeepSpeakerAlivePlayer.shared.audioPlayed()
+            self.synthesizer.speak(utterance: utterance, volume: self.volume)
         }
     }
 

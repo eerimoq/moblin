@@ -37,6 +37,10 @@ class AudioPlayer {
         player.delegate = delegate
     }
 
+    func setVolume(volume: Float) {
+        player.volume = volume
+    }
+
     func play() {
         KeepSpeakerAlivePlayer.shared.audioPlayed()
         player.play()
