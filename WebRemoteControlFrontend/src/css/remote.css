@@ -1,7 +1,10 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: 14px;
   font-weight: 600;
   user-select: none;
