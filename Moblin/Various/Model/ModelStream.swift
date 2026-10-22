@@ -352,6 +352,10 @@ extension Model {
 
     func reloadStream() {
         cameraPosition = nil
+        let restartRecording = isRecording && currentRecording != nil
+        if restartRecording {
+            suspendRecording()
+        }
         stopRecorderIfNeeded(forceStop: true)
         _ = stopStream()
         setColorRange()
@@ -374,6 +378,9 @@ extension Model {
         setAudioGain(gainDb: database.audio.gainDb)
         updateMicDelay()
         startRecorderIfNeeded()
+        if restartRecording {
+            _ = resumeRecording()
+        }
         reloadConnections()
         resetChat()
         reloadLocation()
