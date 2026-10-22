@@ -44,6 +44,7 @@ enum MusicQueueState {
 @MainActor private var isActionRunning = false
 @MainActor private var actions: Deque<Action> = []
 @MainActor private var playRequested = true
+let maximumMusicQueueLength = 250
 private let playlistQueue = DispatchQueue(label: "com.eerimoq.moblin.music-playlist")
 private let playlistStorage = SimpleStringStorage(key: "musicPlaylist")
 
@@ -385,6 +386,8 @@ extension Model {
             }
         } else if playRequested, [.paused, .stopped].contains(musicPlayer.state.playbackStatus) {
             logger.debug("music: New queue")
+            await workaroundAppleMusicTransientQueueEntriesBug()
+            removeOldestMusicIfFull()
             let entries = musicPlayer.queue.entries
                 .compactMap { musicSong(entry: $0) }
                 .map { ApplicationMusicPlayer.Queue.Entry($0) }
@@ -394,11 +397,26 @@ extension Model {
         } else {
             logger.debug("music: Appending to queue")
             await workaroundAppleMusicTransientQueueEntriesBug()
+            removeOldestMusicIfFull()
             try await musicPlayer.queue.insert(entry, position: .tail)
             musicPlaylist.entries.append(musicEntry)
         }
         musicPlaylist.state = .loaded
         storeMusicQueue()
+    }
+
+    private func removeOldestMusicIfFull() {
+        let entries = musicPlayer.queue.entries
+        guard entries.count >= maximumMusicQueueLength,
+              let index = entries.firstIndex(where: { $0.id != musicPlayer.queue.currentEntry?.id })
+        else {
+            return
+        }
+        logger.debug("music: Queue full, removing oldest song")
+        if index < musicPlaylist.entries.count {
+            musicPlaylist.entries.remove(at: index)
+        }
+        musicPlayer.queue.entries.remove(at: index)
     }
 
     private func workaroundAppleMusicTransientQueueEntriesBug() async {

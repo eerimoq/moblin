@@ -827,6 +827,11 @@ private struct MusicView: View {
                     }
                 } header: {
                     Text("Queue")
+                } footer: {
+                    Text("""
+                    The queue holds at most \(maximumMusicQueueLength) songs. The oldest song is \
+                    removed when a song is added to a full queue.
+                    """)
                 }
                 Section {
                     TextButtonView("Clear queue") {

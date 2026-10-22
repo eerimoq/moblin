@@ -156,6 +156,11 @@ private struct PlaylistView: View {
                 Spacer()
                 PlaylistEndView(musicPlaylist: musicPlaylist, queue: queue)
             }
+        } footer: {
+            Text("""
+            The playlist holds at most \(maximumMusicQueueLength) songs. The oldest song is \
+            removed when a song is added to a full playlist.
+            """)
         }
     }
 }
