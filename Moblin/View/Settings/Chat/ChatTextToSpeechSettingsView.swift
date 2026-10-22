@@ -23,6 +23,28 @@ struct TtsMonsterSettingsView: View {
     }
 }
 
+struct ElevenLabsSettingsView: View {
+    @ObservedObject var elevenLabs: SettingsElevenLabs
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(title: String(localized: "API key"),
+                                           value: elevenLabs.apiKey,
+                                           onSubmit: { value in
+                                               elevenLabs.apiKey = value
+                                           },
+                                           sensitive: true)
+                }
+            }
+            .navigationTitle("ElevenLabs")
+        } label: {
+            ElevenLabsLogoAndNameView()
+        }
+    }
+}
+
 func textToSpeechLocalize(_ languageCode: String) -> String {
     NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
 }
@@ -50,6 +72,7 @@ struct ChatTextToSpeechSettingsView: View {
     let model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var ttsMonster: SettingsTtsMonster
+    @ObservedObject var elevenLabs: SettingsElevenLabs
     @State private var appleVoices: [AVSpeechSynthesisVoice] = []
 
     private func onVoiceChange(languageCode: String, voice: SettingsVoice) {
@@ -72,7 +95,8 @@ struct ChatTextToSpeechSettingsView: View {
                         onLanguageReset: onLanguageReset,
                         rate: $chat.textToSpeechRate,
                         volume: $chat.textToSpeechSayVolume,
-                        ttsMonsterApiToken: ttsMonster.apiToken
+                        ttsMonsterApiToken: ttsMonster.apiToken,
+                        elevenLabsApiKey: elevenLabs.apiKey
                     )
                 } label: {
                     Text("Voices")
@@ -110,6 +134,10 @@ struct ChatTextToSpeechSettingsView: View {
                 TtsMonsterSettingsView(ttsMonster: chat.ttsMonster)
                     .onChange(of: ttsMonster.apiToken) { _ in
                         model.chatTextToSpeech.setTtsMonsterApiToken(apiToken: ttsMonster.apiToken)
+                    }
+                ElevenLabsSettingsView(elevenLabs: chat.elevenLabs)
+                    .onChange(of: elevenLabs.apiKey) { _ in
+                        model.chatTextToSpeech.setElevenLabsApiKey(apiKey: elevenLabs.apiKey)
                     }
             } header: {
                 Text("Voice")

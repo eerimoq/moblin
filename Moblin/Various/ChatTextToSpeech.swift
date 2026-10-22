@@ -55,6 +55,7 @@ private let saysByLanguage = [
 private enum Voice {
     case apple(voice: AVSpeechSynthesisVoice?)
     case ttsMonster(voiceId: String)
+    case elevenLabs(voiceId: String)
 }
 
 final class ChatTextToSpeech: NSObject, @unchecked Sendable {
@@ -77,6 +78,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
     private var ttsMonster: TtsMonster?
+    private var elevenLabs: ElevenLabs?
     private var audioPlayer: AudioPlayer?
     private var isSpeaking: Bool = false
     private var isPausingBetweenMessages: Bool = false
@@ -200,6 +202,16 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
                 self.ttsMonster = nil
             } else {
                 self.ttsMonster = TtsMonster(apiToken: apiToken)
+            }
+        }
+    }
+
+    func setElevenLabsApiKey(apiKey: String) {
+        textToSpeechDispatchQueue.async {
+            if apiKey.isEmpty {
+                self.elevenLabs = nil
+            } else {
+                self.elevenLabs = ElevenLabs(apiKey: apiKey)
             }
         }
     }
@@ -340,6 +352,8 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
             return (.apple(voice: AVSpeechSynthesisVoice(identifier: voiceIdentifier)), getSays(language))
         } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
             return (.ttsMonster(voiceId: voiceId), getSays(language))
+        } else if voice?.type == .elevenLabs, let voiceId = voice?.elevenLabs.voiceId {
+            return (.elevenLabs(voiceId: voiceId), getSays(language))
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first
         {
@@ -371,6 +385,8 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
             utterApple(voice: voice, text: text)
         case let .ttsMonster(voiceId):
             utterTtsMonster(voiceId: voiceId, text: text)
+        case let .elevenLabs(voiceId):
+            utterElevenLabs(voiceId: voiceId, text: text)
         }
         latestUserThatSaidSomething = message.user
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
@@ -401,15 +417,25 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
 
     private func utterTtsMonster(voiceId: String, text: String) {
         Task {
-            if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
-                textToSpeechDispatchQueue.async {
-                    self.audioPlayer = try? AudioPlayer(data: data)
-                    self.audioPlayer?.setDelegate(delegate: self)
-                    self.audioPlayer?.play()
-                }
-            } else {
-                sayFinished()
+            await playGeneratedAudio(data: ttsMonster?.generateTts(voiceId: voiceId, message: text))
+        }
+    }
+
+    private func utterElevenLabs(voiceId: String, text: String) {
+        Task {
+            await playGeneratedAudio(data: elevenLabs?.generateTts(voiceId: voiceId, message: text))
+        }
+    }
+
+    private func playGeneratedAudio(data: Data?) {
+        if let data {
+            textToSpeechDispatchQueue.async {
+                self.audioPlayer = try? AudioPlayer(data: data)
+                self.audioPlayer?.setDelegate(delegate: self)
+                self.audioPlayer?.play()
             }
+        } else {
+            sayFinished()
         }
     }
 

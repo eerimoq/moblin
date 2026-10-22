@@ -80,6 +80,12 @@ struct TtsMonsterLogoAndNameView: View {
     }
 }
 
+struct ElevenLabsLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "ElevenLabs", name: String(localized: "ElevenLabs"))
+    }
+}
+
 struct MobcamLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "MobcamLogo", name: String(localized: "Mobcam"), scale: 1.25)

@@ -1217,6 +1217,7 @@ final class Model: NSObject, ObservableObject {
         chatTextToSpeech.setFilterMentions(value: chat.textToSpeechFilterMentions)
         chatTextToSpeech.setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
         chatTextToSpeech.setTtsMonsterApiToken(apiToken: chat.ttsMonster.apiToken)
+        chatTextToSpeech.setElevenLabsApiKey(apiKey: chat.elevenLabs.apiKey)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         initMediaPlayers()

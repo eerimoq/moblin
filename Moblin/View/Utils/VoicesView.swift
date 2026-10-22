@@ -56,6 +56,7 @@ private func getTestMessage(_ languageCode: String) -> String {
 private enum Voice {
     case apple(name: String, identifier: String)
     case ttsMonster(name: String, voiceId: String)
+    case elevenLabs(name: String, voiceId: String)
 
     init(voice: SettingsVoice) {
         switch voice.type {
@@ -63,6 +64,8 @@ private enum Voice {
             self = .apple(name: "", identifier: voice.apple.voice)
         case .ttsMonster:
             self = .ttsMonster(name: voice.ttsMonster.name, voiceId: voice.ttsMonster.voiceId)
+        case .elevenLabs:
+            self = .elevenLabs(name: voice.elevenLabs.name, voiceId: voice.elevenLabs.voiceId)
         }
     }
 }
@@ -74,6 +77,8 @@ private struct VoicePickerItem: Identifiable, Equatable, Hashable {
             "apple:\(identifier)"
         case let .ttsMonster(_, voice_id):
             "tts-monster:\(voice_id)"
+        case let .elevenLabs(_, voiceId):
+            "eleven-labs:\(voiceId)"
         }
     }
 
@@ -98,6 +103,10 @@ private struct VoicePickerItem: Identifiable, Equatable, Hashable {
             settings.type = .ttsMonster
             settings.ttsMonster.name = name
             settings.ttsMonster.voiceId = voiceId
+        case let .elevenLabs(name, voiceId):
+            settings.type = .elevenLabs
+            settings.elevenLabs.name = name
+            settings.elevenLabs.voiceId = voiceId
         }
         return settings
     }
@@ -112,6 +121,7 @@ private struct VoiceView: View {
     @Binding var rate: Float
     @Binding var volume: Float
     let ttsMonsterApiToken: String
+    let elevenLabsApiKey: String
     @State private var fetching: Bool = false
 
     private func playAppleTestMessage(languageCode: String, identifier: String) {
@@ -125,21 +135,48 @@ private struct VoiceView: View {
     }
 
     private func playTtsMonsterTestMessage(voiceId: String) {
+        guard !ttsMonsterApiToken.isEmpty else {
+            return
+        }
+        let apiToken = ttsMonsterApiToken
+        playGeneratedTestMessage {
+            await TtsMonster(apiToken: apiToken).generateTts(voiceId: voiceId, message: $0)
+        }
+    }
+
+    private func playElevenLabsTestMessage(voiceId: String) {
+        guard !elevenLabsApiKey.isEmpty else {
+            return
+        }
+        let apiKey = elevenLabsApiKey
+        playGeneratedTestMessage {
+            await ElevenLabs(apiKey: apiKey).generateTts(voiceId: voiceId, message: $0)
+        }
+    }
+
+    private func playGeneratedTestMessage(generate: @escaping @Sendable (String) async -> Data?) {
         Task {
-            guard !ttsMonsterApiToken.isEmpty else {
-                return
-            }
             fetching = true
             defer {
                 fetching = false
             }
-            let ttsMonster = TtsMonster(apiToken: ttsMonsterApiToken)
-            let message = getTestMessage(languageCode)
-            guard let data = await ttsMonster.generateTts(voiceId: voiceId, message: message) else {
+            guard let data = await generate(getTestMessage(languageCode)) else {
                 return
             }
             audioPlayer = try? AudioPlayer(data: data)
             audioPlayer?.play()
+        }
+    }
+
+    private func playButton(action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+        } label: {
+            if fetching {
+                ProgressView()
+            } else {
+                Image(systemName: "play.fill")
+            }
         }
     }
 
@@ -163,14 +200,18 @@ private struct VoiceView: View {
                     .frame(width: 15)
                 Text("\(voiceItem.flagEmoji) \(name)")
                 Spacer()
-                Button {
+                playButton {
                     playTtsMonsterTestMessage(voiceId: voiceId)
-                } label: {
-                    if fetching {
-                        ProgressView()
-                    } else {
-                        Image(systemName: "play.fill")
-                    }
+                }
+            case let .elevenLabs(name: name, voiceId: voiceId):
+                Image("ElevenLabs")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 15)
+                Text("\(voiceItem.flagEmoji) \(name)")
+                Spacer()
+                playButton {
+                    playElevenLabsTestMessage(voiceId: voiceId)
                 }
             }
         }
@@ -180,6 +221,7 @@ private struct VoiceView: View {
 private struct LanguageView: View {
     let appleVoices: [AVSpeechSynthesisVoice]
     let ttsMonsterVoices: TtsMonsterVoicesResponse?
+    let elevenLabsVoices: ElevenLabsVoicesResponse?
     let languageCode: String
     @State var selectedVoice: VoicePickerItem?
     let onVoiceChange: (String, SettingsVoice) -> Void
@@ -188,6 +230,7 @@ private struct LanguageView: View {
     @Binding var rate: Float
     @Binding var volume: Float
     let ttsMonsterApiToken: String
+    let elevenLabsApiKey: String
 
     private func voices(languageCode: String) -> [VoicePickerItem] {
         var voices: [VoicePickerItem] = []
@@ -200,6 +243,11 @@ private struct LanguageView: View {
             let flagEmoji = emojiFlag(countryCode: voice.countryCode())
             voices.append(VoicePickerItem(flagEmoji: flagEmoji,
                                           voice: .ttsMonster(name: voice.name, voiceId: voice.voice_id)))
+        }
+        for voice in elevenLabsVoices?.voices ?? [] {
+            let flagEmoji = emojiFlag(countryCode: voice.countryCode(languageCode: languageCode))
+            voices.append(VoicePickerItem(flagEmoji: flagEmoji,
+                                          voice: .elevenLabs(name: voice.name, voiceId: voice.voice_id)))
         }
         return voices
     }
@@ -216,7 +264,8 @@ private struct LanguageView: View {
                             synthesizer: synthesizer,
                             rate: $rate,
                             volume: $volume,
-                            ttsMonsterApiToken: ttsMonsterApiToken
+                            ttsMonsterApiToken: ttsMonsterApiToken,
+                            elevenLabsApiKey: elevenLabsApiKey
                         )
                         .tag(voiceItem as VoicePickerItem?)
                     }
@@ -262,7 +311,9 @@ struct VoicesView: View {
     @Binding var volume: Float
     @State private var appleVoices: [AVSpeechSynthesisVoice] = []
     @State private var ttsMonsterVoices: TtsMonsterVoicesResponse?
+    @State private var elevenLabsVoices: ElevenLabsVoicesResponse?
     let ttsMonsterApiToken: String
+    let elevenLabsApiKey: String
 
     private func languages() -> [Language] {
         textToSpeechLanguages(appleVoices: appleVoices).map {
@@ -289,6 +340,7 @@ struct VoicesView: View {
                     LanguageView(
                         appleVoices: appleVoices,
                         ttsMonsterVoices: ttsMonsterVoices,
+                        elevenLabsVoices: elevenLabsVoices,
                         languageCode: language.code,
                         selectedVoice: selectedVoice(language: language),
                         onVoiceChange: onVoiceChange,
@@ -296,7 +348,8 @@ struct VoicesView: View {
                         synthesizer: synthesizer,
                         rate: $rate,
                         volume: $volume,
-                        ttsMonsterApiToken: ttsMonsterApiToken
+                        ttsMonsterApiToken: ttsMonsterApiToken,
+                        elevenLabsApiKey: elevenLabsApiKey
                     )
                 } label: {
                     HStack {
@@ -317,6 +370,12 @@ struct VoicesView: View {
                                     .scaledToFit()
                                     .frame(width: 15)
                                 Text(selectedVoice.ttsMonster.name)
+                            case .elevenLabs:
+                                Image("ElevenLabs")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 15)
+                                Text(selectedVoice.elevenLabs.name)
                             }
                         }
                     }
@@ -331,6 +390,9 @@ struct VoicesView: View {
             if ttsMonsterVoices == nil, !ttsMonsterApiToken.isEmpty {
                 let ttsMonster = TtsMonster(apiToken: ttsMonsterApiToken)
                 ttsMonsterVoices = await ttsMonster.getVoices()
+            }
+            if elevenLabsVoices == nil, !elevenLabsApiKey.isEmpty {
+                elevenLabsVoices = await ElevenLabs(apiKey: elevenLabsApiKey).getVoices()
             }
         }
     }

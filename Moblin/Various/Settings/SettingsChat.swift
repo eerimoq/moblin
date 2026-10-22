@@ -654,6 +654,7 @@ enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
 enum SettingsVoiceType: String, Codable, CaseIterable {
     case apple
     case ttsMonster
+    case elevenLabs
 
     init(from decoder: any Decoder) throws {
         self = try SettingsVoiceType(rawValue: decoder.singleValueContainer()
@@ -670,10 +671,80 @@ class SettingsVoiceTtsMonster: Codable {
     var voiceId: String = ""
 }
 
+class SettingsVoiceElevenLabs: Codable {
+    var name: String = ""
+    var voiceId: String = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case name
+        case voiceId
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.voiceId, voiceId)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        voiceId = container.decode(.voiceId, String.self, "")
+    }
+}
+
 class SettingsVoice: Codable, @unchecked Sendable {
     var type: SettingsVoiceType = .apple
     var apple: SettingsVoiceApple = .init()
     var ttsMonster: SettingsVoiceTtsMonster = .init()
+    var elevenLabs: SettingsVoiceElevenLabs = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case type
+        case apple
+        case ttsMonster
+        case elevenLabs
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.apple, apple)
+        try container.encode(.ttsMonster, ttsMonster)
+        try container.encode(.elevenLabs, elevenLabs)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsVoiceType.self, .apple)
+        apple = container.decode(.apple, SettingsVoiceApple.self, .init())
+        ttsMonster = container.decode(.ttsMonster, SettingsVoiceTtsMonster.self, .init())
+        elevenLabs = container.decode(.elevenLabs, SettingsVoiceElevenLabs.self, .init())
+    }
+}
+
+class SettingsElevenLabs: Codable, ObservableObject {
+    @Published var apiKey: String = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case apiKey
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.apiKey, apiKey)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        apiKey = container.decode(.apiKey, String.self, "")
+    }
 }
 
 class SettingsChat: Codable, ObservableObject {
@@ -720,6 +791,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechFilterMentions: Bool = true
     @Published var textToSpeechBluetoothSpeakerOnly: Bool = false
     @Published var ttsMonster: SettingsTtsMonster = .init()
+    @Published var elevenLabs: SettingsElevenLabs = .init()
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
@@ -782,6 +854,7 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechFilterMentions
         case textToSpeechBluetoothSpeakerOnly
         case ttsMonster
+        case elevenLabs
         case mirrored
         case botEnabled
         case botCommandPermissions
@@ -847,6 +920,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechFilterMentions, textToSpeechFilterMentions)
         try container.encode(.textToSpeechBluetoothSpeakerOnly, textToSpeechBluetoothSpeakerOnly)
         try container.encode(.ttsMonster, ttsMonster)
+        try container.encode(.elevenLabs, elevenLabs)
         try container.encode(.mirrored, mirrored)
         try container.encode(.botEnabled, botEnabled)
         try container.encode(.botCommandPermissions, botCommandPermissions)
@@ -945,6 +1019,7 @@ class SettingsChat: Codable, ObservableObject {
             false
         )
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
+        elevenLabs = container.decode(.elevenLabs, SettingsElevenLabs.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)
         botCommandPermissions = container.decode(

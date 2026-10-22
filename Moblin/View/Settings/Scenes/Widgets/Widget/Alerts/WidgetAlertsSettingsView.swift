@@ -73,7 +73,8 @@ struct AlertTextToSpeechView: View {
                     onLanguageReset: onLanguageReset,
                     rate: $rate,
                     volume: $volume,
-                    ttsMonsterApiToken: ""
+                    ttsMonsterApiToken: "",
+                    elevenLabsApiKey: ""
                 )
             } label: {
                 Text("Voices")
