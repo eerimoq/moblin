@@ -39,13 +39,10 @@ extension DjiDeviceScanner: @MainActor CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi _: NSNumber
     ) {
-        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
-            return
-        }
-        guard isDjiDevice(manufacturerData: manufacturerData) else {
-            return
-        }
-        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data,
+              isDjiDevice(manufacturerData: manufacturerData),
+              !discoveredDevices.contains(where: { $0.peripheral == peripheral })
+        else {
             return
         }
         let model = djiModelFromManufacturerData(data: manufacturerData)

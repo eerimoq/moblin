@@ -64,10 +64,7 @@ extension Model {
     }
 
     func automaticServerRtmpUrl(device: SettingsGoProDevice) -> String? {
-        guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
-            return nil
-        }
-        guard let status = statusOther.ipStatuses
+        guard let stream = getRtmpStream(id: device.serverRtmpStreamId), let status = statusOther.ipStatuses
             .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })
         else {
             return nil

@@ -4,10 +4,9 @@ import simd
 let graphicsEpsilon = 0.00001
 
 private let kernel: CIWarpKernel? = {
-    guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib") else {
-        return nil
-    }
-    guard let data = try? Data(contentsOf: url) else {
+    guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib"),
+          let data = try? Data(contentsOf: url)
+    else {
         return nil
     }
     return try? CIWarpKernel(functionName: "dewarp360", fromMetalLibraryData: data)

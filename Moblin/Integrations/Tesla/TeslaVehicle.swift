@@ -306,10 +306,7 @@ class TeslaVehicle: NSObject {
     private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest,
                                           onCompleted: @escaping () throws -> Void)
     {
-        guard state == .connected else {
-            return
-        }
-        guard let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
+        guard state == .connected, let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
             return
         }
         var unsignedMessage = VCSEC_UnsignedMessage()
@@ -329,10 +326,7 @@ class TeslaVehicle: NSObject {
         _ action: CarServer_Action,
         onCompleted: @escaping (CarServer_Response) throws -> Void
     ) {
-        guard state == .connected else {
-            return
-        }
-        guard let vehicleDomain = vehicleDomains[.infotainment] else {
+        guard state == .connected, let vehicleDomain = vehicleDomains[.infotainment] else {
             return
         }
         do {

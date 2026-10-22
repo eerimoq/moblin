@@ -51,10 +51,8 @@ struct WorkoutDeviceSettingsView: View {
     }
 
     private func onDeviceChange(value: String) {
-        guard let deviceId = UUID(uuidString: value) else {
-            return
-        }
-        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
+        guard let deviceId = UUID(uuidString: value),
+              let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
         else {
             return
         }

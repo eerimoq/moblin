@@ -32,13 +32,9 @@ enum WatchMessageToWatch: String {
     }
 
     static func unpack(_ message: [String: Any]) -> (WatchMessageToWatch, Any)? {
-        guard let type = message["type"] as? String else {
-            return nil
-        }
-        guard let type = WatchMessageToWatch(rawValue: type) else {
-            return nil
-        }
-        guard let data = message["data"] else {
+        guard let type = message["type"] as? String, let type = WatchMessageToWatch(rawValue: type),
+              let data = message["data"]
+        else {
             return nil
         }
         return (type, data)
@@ -70,13 +66,9 @@ enum WatchMessageFromWatch: String {
     }
 
     static func unpack(_ message: [String: Any]) -> (WatchMessageFromWatch, Any)? {
-        guard let type = message["type"] as? String else {
-            return nil
-        }
-        guard let type = WatchMessageFromWatch(rawValue: type) else {
-            return nil
-        }
-        guard let data = message["data"] else {
+        guard let type = message["type"] as? String, let type = WatchMessageFromWatch(rawValue: type),
+              let data = message["data"]
+        else {
             return nil
         }
         return (type, data)

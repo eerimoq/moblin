@@ -465,10 +465,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
     }
 
     private func decodeFrame() {
-        guard data.count > 4 else {
-            return
-        }
-        guard AvcNalUnitType.isPicture(type: data[4] & 0x1F) else {
+        guard data.count > 4, AvcNalUnitType.isPicture(type: data[4] & 0x1F) else {
             return
         }
         tryDecodeFrame()
@@ -532,10 +529,7 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
     }
 
     private func decodeFrame() {
-        guard data.count > 4 else {
-            return
-        }
-        guard HevcNalUnitType.isPicture(type: (data[4] >> 1) & 0x3F) else {
+        guard data.count > 4, HevcNalUnitType.isPicture(type: (data[4] >> 1) & 0x3F) else {
             return
         }
         tryDecodeFrame()

@@ -80,13 +80,10 @@ extension Model {
     }
 
     private func processGimbalPresetQueue() {
-        guard !moveToGimbalPresetQueueRunning else {
-            return
-        }
-        guard let id = moveToGimbalPresetQueue.popFirst() else {
-            return
-        }
-        guard #available(iOS 18.0, *) else {
+        guard !moveToGimbalPresetQueueRunning, let id = moveToGimbalPresetQueue.popFirst(), #available(
+            iOS 18.0,
+            *
+        ) else {
             return
         }
         guard let preset = database.gimbal.presets.first(where: { $0.id == id }) else {

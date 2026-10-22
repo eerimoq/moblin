@@ -205,10 +205,9 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
     {
         var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
-            guard let quantityType = type as? HKQuantityType else {
-                continue
-            }
-            guard let statistics = workoutBuilder.statistics(for: quantityType) else {
+            guard let quantityType = type as? HKQuantityType,
+                  let statistics = workoutBuilder.statistics(for: quantityType)
+            else {
                 continue
             }
             stats.update(statistics: statistics)

@@ -83,10 +83,7 @@ class TwitchAuth: NSObject {
     }
 
     private func startSession() -> Bool {
-        guard #available(iOS 17.4, *) else {
-            return false
-        }
-        guard let url = buildAuthUrl(redirectUri: sessionRedirectUri) else {
+        guard #available(iOS 17.4, *), let url = buildAuthUrl(redirectUri: sessionRedirectUri) else {
             return false
         }
         let session = ASWebAuthenticationSession(
@@ -154,13 +151,9 @@ extension TwitchAuth: ASWebAuthenticationPresentationContextProviding {
 
 extension TwitchAuth: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
-        guard let url = webView.url else {
-            return
-        }
-        guard url.host() == browserRedirectHost else {
-            return
-        }
-        guard let accessToken = extractAccessToken(url: url) else {
+        guard let url = webView.url, url.host() == browserRedirectHost,
+              let accessToken = extractAccessToken(url: url)
+        else {
             return
         }
         onAccessToken?(accessToken)
@@ -178,10 +171,9 @@ private func isCanceledByUser(error: Error) -> Bool {
 }
 
 private func extractAccessToken(url: URL) -> String? {
-    guard let fragment = url.fragment() else {
-        return nil
-    }
-    guard let urlComponents = URLComponents(string: "foo:///?\(fragment)") else {
+    guard let fragment = url.fragment(),
+          let urlComponents = URLComponents(string: "foo:///?\(fragment)")
+    else {
         return nil
     }
     return urlComponents.queryItems?.first(where: { $0.name == "access_token" })?.value

@@ -492,10 +492,7 @@ extension Data {
             return nil
         }
         return withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> CMBlockBuffer? in
-            guard let baseAddress = buffer.baseAddress else {
-                return nil
-            }
-            guard CMBlockBufferCreateWithMemoryBlock(
+            guard let baseAddress = buffer.baseAddress, CMBlockBufferCreateWithMemoryBlock(
                 allocator: kCFAllocatorDefault,
                 memoryBlock: nil,
                 blockLength: length,
@@ -505,10 +502,7 @@ extension Data {
                 dataLength: length,
                 flags: 0,
                 blockBufferOut: &blockBuffer
-            ) == noErr, let blockBuffer else {
-                return nil
-            }
-            guard CMBlockBufferReplaceDataBytes(
+            ) == noErr, let blockBuffer, CMBlockBufferReplaceDataBytes(
                 with: baseAddress.advanced(by: advancedBy),
                 blockBuffer: blockBuffer,
                 offsetIntoDestination: 0,
@@ -836,10 +830,7 @@ extension RgbColor {
 
 extension Color {
     func toRgb() -> RgbColor? {
-        guard let components = UIColor(self).cgColor.components else {
-            return nil
-        }
-        guard components.count >= 3 else {
+        guard let components = UIColor(self).cgColor.components, components.count >= 3 else {
             return nil
         }
         return RgbColor(

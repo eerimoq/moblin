@@ -293,10 +293,9 @@ class RemoteControlAssistant: NSObject {
     }
 
     private func tryNextTwitchEventSubNotification() {
-        guard !twitchEventSubNotiticationWaitForResponse else {
-            return
-        }
-        guard let message = twitchEventSubNotitications.first else {
+        guard !twitchEventSubNotiticationWaitForResponse,
+              let message = twitchEventSubNotitications.first
+        else {
             return
         }
         twitchEventSubNotiticationWaitForResponse = true

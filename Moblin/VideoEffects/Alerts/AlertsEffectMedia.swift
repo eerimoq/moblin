@@ -223,13 +223,9 @@ private func loadVideoSound(path: URL, onCompleted: @escaping @MainActor (URL?) 
     let asset = AVAsset(url: path)
     asset.loadTracks(withMediaType: .audio) { tracks, error in
         DispatchQueue.global().async {
-            guard let reader = try? AVAssetReader(asset: asset) else {
-                DispatchQueue.main.async {
-                    onCompleted(nil)
-                }
-                return
-            }
-            guard let track = tracks?.first, error == nil else {
+            guard let reader = try? AVAssetReader(asset: asset), let track = tracks?.first,
+                  error == nil
+            else {
                 DispatchQueue.main.async {
                     onCompleted(nil)
                 }

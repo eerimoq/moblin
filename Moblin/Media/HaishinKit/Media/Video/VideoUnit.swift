@@ -624,10 +624,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func handleGapFillerTimer() {
-        guard isFirstAfterAttach else {
-            return
-        }
-        guard var latestSampleBuffer, let latestSampleBufferTime = effectsProcessor.latestSampleBufferTime
+        guard isFirstAfterAttach, var latestSampleBuffer,
+              let latestSampleBufferTime = effectsProcessor.latestSampleBufferTime
         else {
             return
         }
@@ -655,10 +653,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     }
 
     private func renderSceneSwitchTransitionEnd(sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
-        guard let imageBuffer = sampleBuffer.imageBuffer else {
-            return sampleBuffer
-        }
-        guard let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
+        guard let imageBuffer = sampleBuffer.imageBuffer,
+              let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer)
+        else {
             return sampleBuffer
         }
         return effectsProcessor.renderSceneSwitchTransitionEnd(sampleBuffer, imageBuffer, outputImageBuffer)

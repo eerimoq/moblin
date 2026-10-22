@@ -62,10 +62,8 @@ extension Model {
                     targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
-            if let audio = stream.audio {
-                if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
-                    targetStream.audioBitrate = bitrate
-                }
+            if let audio = stream.audio, let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
+                targetStream.audioBitrate = bitrate
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {

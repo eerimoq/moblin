@@ -662,10 +662,7 @@ extension Model {
     }
 
     private func handleUpdatePadelScoreboardUndo(scoreboard: SettingsWidgetPadelScoreboard) {
-        guard let team = scoreboard.scoreChanges.popLast() else {
-            return
-        }
-        guard let score = scoreboard.score.last else {
+        guard let team = scoreboard.scoreChanges.popLast(), let score = scoreboard.score.last else {
             return
         }
         if score.home == 0, score.away == 0, scoreboard.score.count > 1 {
@@ -782,13 +779,9 @@ extension Model {
     }
 
     private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {
-        guard let score = scoreboard.score.last else {
-            return
-        }
-        guard isSetCompleted(score: score) else {
-            return
-        }
-        guard !isMatchCompleted(scoreboard: scoreboard) else {
+        guard let score = scoreboard.score.last, isSetCompleted(score: score),
+              !isMatchCompleted(scoreboard: scoreboard)
+        else {
             return
         }
         scoreboard.score.append(.init())

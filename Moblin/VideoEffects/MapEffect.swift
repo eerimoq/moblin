@@ -119,10 +119,7 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             }
             return (self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }()
-        guard let newLocation else {
-            return
-        }
-        guard size != self.size
+        guard let newLocation, size != self.size
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
             || newLocation.speed != location.speed

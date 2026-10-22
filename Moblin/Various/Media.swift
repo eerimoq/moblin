@@ -562,10 +562,7 @@ final class Media: NSObject, @unchecked Sendable {
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool
     ) -> URL? {
-        guard let url = URL(string: url) else {
-            return nil
-        }
-        guard let localUrl = URL(string: "srt://localhost:\(port)") else {
+        guard let url = URL(string: url), let localUrl = URL(string: "srt://localhost:\(port)") else {
             return nil
         }
         var urlComponents = URLComponents(url: localUrl, resolvingAgainstBaseURL: false)!
@@ -575,11 +572,9 @@ final class Media: NSObject, @unchecked Sendable {
             logger.info("Setting SRT latency to \(latency)")
             queryItems.append(URLQueryItem(name: "latency", value: String(latency)))
         }
-        if !queryContains(queryItems: queryItems, name: "maxbw") {
-            if maximumBandwidthFollowInput {
-                logger.info("Setting SRT maxbw to 0 (follows input)")
-                queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
-            }
+        if !queryContains(queryItems: queryItems, name: "maxbw"), maximumBandwidthFollowInput {
+            logger.info("Setting SRT maxbw to 0 (follows input)")
+            queryItems.append(URLQueryItem(name: "maxbw", value: "0"))
         }
         if !queryContains(queryItems: queryItems, name: "oheadbw") {
             logger.info("Setting SRT oheadbw to \(overheadBandwidth)")

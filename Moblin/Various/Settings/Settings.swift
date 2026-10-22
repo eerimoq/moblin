@@ -1776,10 +1776,8 @@ private func addDefaultBackZoomPresets(database: Database) {
         }
         for factor in device.virtualDeviceSwitchOverVideoZoomFactors {
             let x = (Float(truncating: factor) * scale).rounded()
-            if let prevX = xs.last {
-                if (x / prevX) >= 4 {
-                    xs.append(2 * prevX)
-                }
+            if let prevX = xs.last, (x / prevX) >= 4 {
+                xs.append(2 * prevX)
             }
             xs.append(x)
         }

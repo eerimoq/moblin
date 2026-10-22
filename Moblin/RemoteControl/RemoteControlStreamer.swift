@@ -192,10 +192,9 @@ class RemoteControlStreamer {
     }
 
     func twitchStart(channelName: String?, channelId: String, accessToken: String) {
-        guard connected else {
-            return
-        }
-        guard let accessToken = encryption.encrypt(data: accessToken.utf8Data)?.base64EncodedString() else {
+        guard connected,
+              let accessToken = encryption.encrypt(data: accessToken.utf8Data)?.base64EncodedString()
+        else {
             return
         }
         send(message: .twitchStart(channelName: channelName, channelId: channelId, accessToken: accessToken))

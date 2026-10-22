@@ -113,10 +113,8 @@ extension Model {
     }
 
     func updateKickChannelInfoIfNeeded() {
-        guard !stream.kickChannelName.isEmpty else {
-            return
-        }
-        guard stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil
+        guard !stream.kickChannelName.isEmpty,
+              stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil
         else {
             return
         }

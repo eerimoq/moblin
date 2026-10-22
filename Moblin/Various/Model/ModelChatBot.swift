@@ -18,10 +18,9 @@ extension Model {
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
-        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
-            return
-        }
-        guard let mainCommand = command.popFirstArgument(ChatBotMainArgument.self) else {
+        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases),
+              let mainCommand = command.popFirstArgument(ChatBotMainArgument.self)
+        else {
             return
         }
         switch mainCommand {
@@ -464,12 +463,11 @@ extension Model {
     }
 
     private func handleChatBotMessageGimbalPreset(command: ChatBotCommand) {
-        guard let presetName = command.popFirstLowerCased() else {
-            return
-        }
-        guard let preset = database.gimbal.presets.first(where: {
-            $0.name.lowercased() == presetName
-        }) else {
+        guard let presetName = command.popFirstLowerCased(),
+              let preset = database.gimbal.presets.first(where: {
+                  $0.name.lowercased() == presetName
+              })
+        else {
             return
         }
         moveToGimbalPreset(id: preset.id)
@@ -764,10 +762,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.widget,
             command: command
         ) {
-            guard let name = command.popFirst() else {
-                return
-            }
-            guard let widget = self.findWidget(name: name) else {
+            guard let name = command.popFirst(), let widget = self.findWidget(name: name) else {
                 return
             }
             switch command.popFirstArgument(ChatBotWidgetArgument.self) {
@@ -799,10 +794,7 @@ extension Model {
 
     private func handleChatBotMessageWidgetTimer(command: ChatBotCommand, widget: SettingsWidget) {
         let effects = getTextEffects(id: widget.id)
-        guard !effects.isEmpty else {
-            return
-        }
-        guard !widget.text.timers.isEmpty,
+        guard !effects.isEmpty, !widget.text.timers.isEmpty,
               let number = command.popFirstInt(in: 1 ... widget.text.timers.count)
         else {
             return

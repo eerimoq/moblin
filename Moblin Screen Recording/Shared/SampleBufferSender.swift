@@ -29,10 +29,8 @@ class SampleBufferSender: NSObject {
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
-        if !isConnected() {
-            if !tryConnect() {
-                return
-            }
+        if !isConnected(), !tryConnect() {
+            return
         }
         if type == .video {
             try? sendVideo(sampleBuffer, type)
@@ -92,10 +90,7 @@ class SampleBufferSender: NSObject {
 
 extension SampleBufferSender: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ formatDescription: CMFormatDescription) {
-        guard let atoms = formatDescription.atoms() else {
-            return
-        }
-        guard let hvcC = atoms["hvcC"] as? Data else {
+        guard let atoms = formatDescription.atoms(), let hvcC = atoms["hvcC"] as? Data else {
             return
         }
         let header = SampleBufferHeader(
@@ -140,10 +135,9 @@ class VideoEncoder: @unchecked Sendable {
     private var session: VTCompressionSession?
     private var formatDescription: CMFormatDescription? {
         didSet {
-            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
-                return
-            }
-            guard let formatDescription else {
+            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue),
+                  let formatDescription
+            else {
                 return
             }
             delegate?.videoEncoderOutputFormat(formatDescription)
@@ -166,10 +160,7 @@ class VideoEncoder: @unchecked Sendable {
             frameProperties: nil,
             infoFlagsOut: nil,
             outputHandler: { [weak self] status, _, sampleBuffer in
-                guard let self else {
-                    return
-                }
-                guard let sampleBuffer, status == noErr else {
+                guard let self, let sampleBuffer, status == noErr else {
                     return
                 }
                 formatDescription = sampleBuffer.formatDescription

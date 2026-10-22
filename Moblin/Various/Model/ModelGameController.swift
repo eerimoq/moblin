@@ -48,10 +48,8 @@ extension Model {
                 gimbalPresetLongPressTimers[buttonId] = timer
             }
         case .gimbalAnimate:
-            if !pressed {
-                if #available(iOS 18.0, *) {
-                    Gimbal.shared?.animate(motion: functionData.gimbalMotion)
-                }
+            if !pressed, #available(iOS 18.0, *) {
+                Gimbal.shared?.animate(motion: functionData.gimbalMotion)
             }
         case .torch:
             if !pressed {
@@ -201,10 +199,9 @@ extension Model {
     }
 
     private func getGameControllerIndex(_ gameController: GCController) -> Int? {
-        guard let index = gameControllers.firstIndex(of: gameController) else {
-            return nil
-        }
-        guard index < database.gameControllers.count else {
+        guard let index = gameControllers.firstIndex(of: gameController),
+              index < database.gameControllers.count
+        else {
             return nil
         }
         return index
@@ -244,10 +241,9 @@ extension Model {
     }
 
     @objc func handleGameControllerDidConnect(_ notification: Notification) {
-        guard let gameController = notification.object as? GCController else {
-            return
-        }
-        guard let gamepad = gameController.extendedGamepad else {
+        guard let gameController = notification.object as? GCController,
+              let gamepad = gameController.extendedGamepad
+        else {
             return
         }
         gamepad.dpad.left.pressedChangedHandler = { button, value, pressed in

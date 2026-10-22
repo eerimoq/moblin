@@ -36,10 +36,9 @@ extension Model {
                                                oldFeeds: oldFeeds)
                     continue
                 }
-                guard let cameraId = UUID(uuidString: camera.id) else {
-                    continue
-                }
-                guard activeBufferedVideoIds.contains(cameraId) else {
+                guard let cameraId = UUID(uuidString: camera.id),
+                      activeBufferedVideoIds.contains(cameraId)
+                else {
                     continue
                 }
                 appendVideoPreviewIfNeeded(cameraId: cameraId, name: camera.name, oldFeeds: oldFeeds)

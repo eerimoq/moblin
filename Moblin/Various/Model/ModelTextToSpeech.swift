@@ -9,10 +9,9 @@ extension Model {
     }
 
     func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled, post.live, post.filter?.textToSpeech != false else {
-            return false
-        }
-        guard isTextToSpeechOutputAllowed() else {
+        guard database.chat.textToSpeechEnabled, post.live, post.filter?.textToSpeech != false,
+              isTextToSpeechOutputAllowed()
+        else {
             return false
         }
         if database.chat.textToSpeechSubscribersOnly {

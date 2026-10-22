@@ -44,13 +44,9 @@ class QuickButtonObs: ObservableObject {
 
 extension Model {
     func updateObsSourceScreenshot() {
-        guard obsQuickButton.sourceFetchScreenshot else {
-            return
-        }
-        guard !obsQuickButton.sourceScreenshotIsFetching else {
-            return
-        }
-        guard !obsQuickButton.currentScene.isEmpty else {
+        guard obsQuickButton.sourceFetchScreenshot, !obsQuickButton.sourceScreenshotIsFetching,
+              !obsQuickButton.currentScene.isEmpty
+        else {
             return
         }
         obsWebSocket?.getSourceScreenshot(name: obsQuickButton.currentScene, onSuccess: { data in
@@ -119,10 +115,7 @@ extension Model {
                 onSuccess: { settings in
                     var sources: [ObsSceneMediaSource] = []
                     for (index, name) in names.enumerated() {
-                        guard let setting = settings[index] else {
-                            continue
-                        }
-                        guard !setting.isLocalFile else {
+                        guard let setting = settings[index], !setting.isLocalFile else {
                             continue
                         }
                         sources.append(ObsSceneMediaSource(name: name, input: setting.input))
@@ -154,10 +147,11 @@ extension Model {
                     for input in inputs {
                         if specialInputs.mics().contains(input) {
                             obsSceneInputs.append(ObsSceneInput(name: input))
-                        } else if sceneItems.contains(where: { $0.sourceName == input }) {
-                            if sceneItems.first(where: { $0.sourceName == input })?.sceneItemEnabled == true {
-                                obsSceneInputs.append(ObsSceneInput(name: input))
-                            }
+                        } else if sceneItems.contains(where: { $0.sourceName == input }),
+                                  sceneItems.first(where: { $0.sourceName == input })?
+                                      .sceneItemEnabled == true
+                        {
+                            obsSceneInputs.append(ObsSceneInput(name: input))
                         }
                     }
                     self.obsWebSocket?.getInputMuteBatch(
@@ -356,11 +350,7 @@ extension Model {
     func reloadObsWebSocket() {
         obsWebSocket?.stop()
         obsWebSocket = nil
-        guard isObsRemoteControlConfigured() else {
-            updateStatusObsText()
-            return
-        }
-        guard let url = URL(string: stream.obsWebSocketUrl) else {
+        guard isObsRemoteControlConfigured(), let url = URL(string: stream.obsWebSocketUrl) else {
             updateStatusObsText()
             return
         }

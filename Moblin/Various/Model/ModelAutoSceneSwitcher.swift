@@ -54,10 +54,10 @@ extension Model {
             autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map(\.id).reversed()
             if autoSwitcher.shuffle {
                 autoSceneSwitcher.sceneIds.shuffle()
-                if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId {
-                    if let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
-                        autoSceneSwitcher.sceneIds.insert(switcherSceneId, at: 0)
-                    }
+                if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId,
+                   let switcherSceneId = autoSceneSwitcher.sceneIds.popLast()
+                {
+                    autoSceneSwitcher.sceneIds.insert(switcherSceneId, at: 0)
                 }
             }
         }
@@ -67,16 +67,10 @@ extension Model {
                                       now: ContinuousClock.Instant) -> Bool
     {
         while let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
-            guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
-                continue
-            }
-            guard let sceneId = switcherScene.sceneId else {
-                continue
-            }
-            guard enabledScenes.contains(where: { $0.id == sceneId }) else {
-                continue
-            }
-            guard isSceneVideoSourceActive(sceneId: sceneId) else {
+            guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }),
+                  let sceneId = switcherScene.sceneId, enabledScenes.contains(where: { $0.id == sceneId }),
+                  isSceneVideoSourceActive(sceneId: sceneId)
+            else {
                 continue
             }
             selectScene(id: sceneId)
@@ -88,13 +82,10 @@ extension Model {
     }
 
     func updateAutoSceneSwitcherVideoSourceDisconnected() {
-        guard autoSceneSwitcher.currentSwitcherId != nil else {
-            return
-        }
-        guard let currentSceneId = autoSceneSwitcher.currentSwitcherSceneId else {
-            return
-        }
-        guard !isSceneVideoSourceActive(sceneId: currentSceneId) else {
+        guard autoSceneSwitcher.currentSwitcherId != nil,
+              let currentSceneId = autoSceneSwitcher.currentSwitcherSceneId,
+              !isSceneVideoSourceActive(sceneId: currentSceneId)
+        else {
             return
         }
         updateAutoSceneSwitcher(now: .now, forceSwitch: true)

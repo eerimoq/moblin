@@ -114,10 +114,7 @@ struct ADTSReaderIterator: IteratorProtocol {
     }
 
     mutating func next() -> Int? {
-        guard cursor < data.count else {
-            return nil
-        }
-        guard let header = AdtsHeader(data: data.advanced(by: cursor)) else {
+        guard cursor < data.count, let header = AdtsHeader(data: data.advanced(by: cursor)) else {
             return nil
         }
         defer {

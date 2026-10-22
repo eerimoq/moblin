@@ -302,10 +302,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
     }
 
     private func processMessageAudio() {
-        guard let client else {
-            return
-        }
-        guard checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
+        guard let client, checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
             return
         }
         let control = messageBody[0]

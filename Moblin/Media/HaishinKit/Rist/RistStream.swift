@@ -398,10 +398,10 @@ extension RistStream: RistSenderContextDelegate {
 }
 
 func makeRistBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String? {
-    guard let url = URL(string: url) else {
-        return nil
-    }
-    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+    guard let url = URL(string: url), var urlComponents = URLComponents(
+        url: url,
+        resolvingAgainstBaseURL: false
+    ) else {
         return nil
     }
     urlComponents.query = url.query
@@ -415,10 +415,7 @@ func makeRistBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String
 }
 
 func makeRistMoblinkBondingUrl(_ url: String, _ endpoint: NWEndpoint) -> String? {
-    guard var url = URLComponents(string: url) else {
-        return nil
-    }
-    guard case let .hostPort(host, port) = endpoint else {
+    guard var url = URLComponents(string: url), case let .hostPort(host, port) = endpoint else {
         return nil
     }
     url.host = "\(host)"

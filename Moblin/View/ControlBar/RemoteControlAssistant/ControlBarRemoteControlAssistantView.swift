@@ -437,10 +437,9 @@ private struct ZoomView: View {
                 .multilineTextAlignment(.trailing)
                 .disableAutocorrection(true)
                 .onSubmit {
-                    guard let zoom = model.remoteControlAssistantStreamerState.zoom else {
-                        return
-                    }
-                    guard remoteControl.zoom != String(zoom) else {
+                    guard let zoom = model.remoteControlAssistantStreamerState.zoom,
+                          remoteControl.zoom != String(zoom)
+                    else {
                         return
                     }
                     submitZoom(value: remoteControl.zoom)

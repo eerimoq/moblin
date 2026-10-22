@@ -381,10 +381,10 @@ private final class PeerConnection {
                                                             Int32(remotePointer.count)))
                 }
             }
-            guard let local = String(bytes: local, encoding: .utf8) else {
-                return nil
-            }
-            guard let remote = String(bytes: remote, encoding: .utf8) else {
+            guard let local = String(bytes: local, encoding: .utf8), let remote = String(
+                bytes: remote,
+                encoding: .utf8
+            ) else {
                 return nil
             }
             return (local, remote)
@@ -651,13 +651,9 @@ final class WhipStream: @unchecked Sendable {
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
-        guard connected, let audioTrack else {
-            return
-        }
-        guard let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp) else {
-            return
-        }
-        guard buffer.byteLength > 0 else {
+        guard connected, let audioTrack, let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp),
+              buffer.byteLength > 0
+        else {
             return
         }
         do {
@@ -705,10 +701,9 @@ final class WhipStream: @unchecked Sendable {
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard connected, let videoTrack else {
-            return
-        }
-        guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {
+        guard connected, let videoTrack,
+              let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp)
+        else {
             return
         }
         do {

@@ -66,16 +66,14 @@ private func makeMtiColor(_ color: RgbColor) -> MTIColor {
 private func makeCheckerboardImage(_ extent: CGRect, _ settings: MaskEffectSettings) -> CGImage? {
     let width = Int(extent.width)
     let height = Int(extent.height)
-    guard width > 0, height > 0 else {
-        return nil
-    }
-    guard let context = CGContext(data: nil,
-                                  width: width,
-                                  height: height,
-                                  bitsPerComponent: 8,
-                                  bytesPerRow: 0,
-                                  space: CGColorSpaceCreateDeviceRGB(),
-                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+    guard width > 0, height > 0, let context = CGContext(data: nil,
+                                                         width: width,
+                                                         height: height,
+                                                         bitsPerComponent: 8,
+                                                         bytesPerRow: 0,
+                                                         space: CGColorSpaceCreateDeviceRGB(),
+                                                         bitmapInfo: CGImageAlphaInfo.premultipliedLast
+                                                             .rawValue)
     else {
         return nil
     }
@@ -132,10 +130,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         }
         let width = Int(extent.width)
         let height = Int(extent.height)
-        guard width > 0, height > 0 else {
-            return nil
-        }
-        guard let context = CGContext(
+        guard width > 0, height > 0, let context = CGContext(
             data: nil,
             width: width,
             height: height,

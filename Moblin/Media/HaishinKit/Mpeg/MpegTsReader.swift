@@ -90,10 +90,9 @@ class MpegTsReader: @unchecked Sendable {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
-            return
-        }
-        guard let dataBuffer = sampleBuffer.dataBuffer else {
+        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer,
+              let dataBuffer = sampleBuffer.dataBuffer
+        else {
             return
         }
         guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
@@ -272,10 +271,9 @@ class MpegTsReader: @unchecked Sendable {
     private func getOpusFormatDescription(_ packetId: UInt16,
                                           _ data: ElementaryStreamSpecificData) -> CMFormatDescription?
     {
-        guard let extensionData = data.getDescriptor(tag: .extension) else {
-            return nil
-        }
-        guard extensionData.count == 2, extensionData[0] == 0x80 else {
+        guard let extensionData = data.getDescriptor(tag: .extension), extensionData.count == 2,
+              extensionData[0] == 0x80
+        else {
             return nil
         }
         let channels = extensionData[1]
@@ -300,10 +298,7 @@ class MpegTsReader: @unchecked Sendable {
             magicCookie: nil,
             extensions: nil,
             formatDescriptionOut: &formatDescription
-        ) == noErr else {
-            return nil
-        }
-        guard let formatDescription else {
+        ) == noErr, let formatDescription else {
             return nil
         }
         if formatDescriptions[packetId] != formatDescription {

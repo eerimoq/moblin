@@ -55,10 +55,7 @@ extension Model {
     }
 
     func startRecorderIfNeeded() {
-        guard !isRecorderRecording else {
-            return
-        }
-        guard isRecording || stream.replay.enabled else {
+        guard !isRecorderRecording, isRecording || stream.replay.enabled else {
             return
         }
         isRecorderRecording = true

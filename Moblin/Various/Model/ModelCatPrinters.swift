@@ -70,10 +70,10 @@ extension Model {
         Task {
             var image: CIImage?
             for catPrinter in catPrinters.values {
-                guard let settings = getCatPrinterSettings(catPrinter: catPrinter) else {
-                    continue
-                }
-                guard isCatPrinterEventEnabled(event: event, settings: settings) else {
+                guard let settings = getCatPrinterSettings(catPrinter: catPrinter), isCatPrinterEventEnabled(
+                    event: event,
+                    settings: settings
+                ) else {
                     continue
                 }
                 if image == nil {

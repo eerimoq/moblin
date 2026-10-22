@@ -292,10 +292,9 @@ final class MobcamStream: @unchecked Sendable {
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard connectedAt != nil else {
-            return
-        }
-        guard let presentationTimeStamp = toMicroseconds(sampleBuffer.presentationTimeStamp) else {
+        guard connectedAt != nil,
+              let presentationTimeStamp = toMicroseconds(sampleBuffer.presentationTimeStamp)
+        else {
             return
         }
         let isSync = sampleBuffer.getIsSync()
@@ -318,10 +317,9 @@ final class MobcamStream: @unchecked Sendable {
     }
 
     private func handleAudioEncoderOutputFormat(_ format: AVAudioFormat) {
-        guard connectedAt != nil else {
-            return
-        }
-        guard let description = format.formatDescription.audioStreamBasicDescription else {
+        guard connectedAt != nil,
+              let description = format.formatDescription.audioStreamBasicDescription
+        else {
             return
         }
         let sampleRate = UInt32(format.sampleRate)
@@ -351,10 +349,9 @@ final class MobcamStream: @unchecked Sendable {
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
-        guard connectedAt != nil, audioSupported, buffer.byteLength > 0 else {
-            return
-        }
-        guard let presentationTimeStamp = toMicroseconds(presentationTimeStamp) else {
+        guard connectedAt != nil, audioSupported, buffer.byteLength > 0,
+              let presentationTimeStamp = toMicroseconds(presentationTimeStamp)
+        else {
             return
         }
         let units = UnsafeRawBufferPointer(start: buffer.data, count: Int(buffer.byteLength))

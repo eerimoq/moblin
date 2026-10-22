@@ -64,10 +64,7 @@ class RtspTransportRtpRtspTcp: RtspTransport, @unchecked Sendable {
     }
 
     override func sendRtcp(_ data: Data) {
-        guard let rtcpChannel else {
-            return
-        }
-        guard let size = UInt16(exactly: data.count) else {
+        guard let rtcpChannel, let size = UInt16(exactly: data.count) else {
             return
         }
         let writer = ByteWriter()

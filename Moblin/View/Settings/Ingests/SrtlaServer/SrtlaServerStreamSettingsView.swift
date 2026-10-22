@@ -20,10 +20,9 @@ struct SrtlaServerStreamSettingsView: View {
 
     private func submitStreamId(value: String) {
         let streamId = value.trim()
-        guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil else {
-            return
-        }
-        guard model.getSrtlaStream(streamId: streamId) == nil else {
+        guard streamId.wholeMatch(of: /[a-zA-Z0-9]*/) != nil,
+              model.getSrtlaStream(streamId: streamId) == nil
+        else {
             return
         }
         stream.streamId = streamId

@@ -78,8 +78,8 @@ class Navigation: ObservableObject {
     }
 }
 
+@available(iOS 26, *)
 extension Model {
-    @available(iOS 26, *)
     func navigation() -> Navigation {
         Navigation.shared
     }

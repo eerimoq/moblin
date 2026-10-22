@@ -743,10 +743,8 @@ extension Model {
 
     private func registerGlobalVideoEffectsOnTop() -> [VideoEffect] {
         var effects: [VideoEffect] = []
-        if isQuickButtonOn(type: .poll) {
-            if let pollEffect {
-                effects.append(pollEffect)
-            }
+        if isQuickButtonOn(type: .poll), let pollEffect {
+            effects.append(pollEffect)
         }
         return effects
     }
@@ -1090,10 +1088,7 @@ extension Model {
             effects.append(lutEffect)
         }
         for lut in database.color.allLuts() {
-            guard lut.enabled else {
-                continue
-            }
-            guard let lutEffect = lutEffects[lut.id] else {
+            guard lut.enabled, let lutEffect = lutEffects[lut.id] else {
                 continue
             }
             effects.append(lutEffect)
@@ -1161,10 +1156,7 @@ extension Model {
         }
         addedScenes.append(scene)
         for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                continue
-            }
-            guard widget.enabled else {
+            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
                 continue
             }
             switch widget.type {
@@ -1577,10 +1569,7 @@ extension Model {
     {
         var widgets: [WidgetInScene] = []
         for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                continue
-            }
-            guard !onlyEnabled || widget.enabled else {
+            guard let widget = findWidget(id: sceneWidget.widgetId), !onlyEnabled || widget.enabled else {
                 continue
             }
             if widget.type == .scene {
@@ -1673,11 +1662,10 @@ extension Model {
 
     private func getBuiltinCameraDevices(videoSource: SettingsVideoSource, devices: inout [CaptureDevice]) {
         if let cameraId = videoSource.getCaptureDeviceCameraId(),
-           let device = AVCaptureDevice(uniqueID: cameraId)
+           let device = AVCaptureDevice(uniqueID: cameraId),
+           !devices.contains(where: { $0.device == device })
         {
-            if !devices.contains(where: { $0.device == device }) {
-                devices.append(makeCaptureDevice(device: device))
-            }
+            devices.append(makeCaptureDevice(device: device))
         }
     }
 

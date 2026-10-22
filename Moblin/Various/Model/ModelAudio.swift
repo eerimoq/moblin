@@ -561,10 +561,7 @@ extension Model {
     }
 
     private func trySwitchMic() {
-        guard !mic.isSwitchTimerRunning else {
-            return
-        }
-        guard let mic = mic.requested else {
+        guard !mic.isSwitchTimerRunning, let mic = mic.requested else {
             return
         }
         self.mic.requested = nil

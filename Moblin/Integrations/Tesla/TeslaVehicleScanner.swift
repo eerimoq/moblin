@@ -30,13 +30,10 @@ extension TeslaVehicleScanner: @MainActor CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi _: NSNumber
     ) {
-        guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String else {
-            return
-        }
-        guard localName.wholeMatch(of: /S[0-9a-f]{16}C/) != nil else {
-            return
-        }
-        guard !discoveredPeripherals.contains(where: { $0 == peripheral }) else {
+        guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String,
+              localName.wholeMatch(of: /S[0-9a-f]{16}C/) != nil,
+              !discoveredPeripherals.contains(where: { $0 == peripheral })
+        else {
             return
         }
         discoveredPeripherals.append(peripheral)

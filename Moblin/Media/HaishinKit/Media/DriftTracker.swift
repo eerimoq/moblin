@@ -59,10 +59,9 @@ class DriftTracker {
                 _ outputPresentationTimeStamp: Double,
                 _ newestPresentationTimeStamp: Double)
     {
-        guard let state = state(media) else {
-            return
-        }
-        guard outputPresentationTimeStamp > state.latestFillLevelPresentationTimeStamp + 0.5 else {
+        guard let state = state(media),
+              outputPresentationTimeStamp > state.latestFillLevelPresentationTimeStamp + 0.5
+        else {
             return
         }
         state.latestFillLevelPresentationTimeStamp = outputPresentationTimeStamp

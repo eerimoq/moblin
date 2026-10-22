@@ -108,10 +108,7 @@ private struct MaskImage {
     var image: CIImage?
 
     func get(extent: CGRect, settings: ShapeEffectSettings) -> CIImage? {
-        guard extent == self.extent else {
-            return nil
-        }
-        guard settings.cornerRadius == cornerRadius else {
+        guard extent == self.extent, settings.cornerRadius == cornerRadius else {
             return nil
         }
         return image

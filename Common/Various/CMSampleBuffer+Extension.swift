@@ -32,10 +32,9 @@ extension CMSampleBuffer {
                              _ presentationTimeStamp: CMTime,
                              _ samplesPerBuffer: UInt32) -> CMSampleBuffer?
     {
-        guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: samplesPerBuffer) else {
-            return nil
-        }
-        guard let data = dataBuffer.int16ChannelData else {
+        guard let dataBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: samplesPerBuffer),
+              let data = dataBuffer.int16ChannelData
+        else {
             return nil
         }
         for i in 0 ..< Int(samplesPerBuffer) {
@@ -91,10 +90,9 @@ extension CMSampleBuffer {
     func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
                             int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
     {
-        guard let dataBuffer else {
-            return nil
-        }
-        guard let audioStreamBasicDescription = formatDescription?.audioStreamBasicDescription else {
+        guard let dataBuffer,
+              let audioStreamBasicDescription = formatDescription?.audioStreamBasicDescription
+        else {
             return nil
         }
         var length = 0

@@ -27,11 +27,9 @@ private struct TeslaSettingsConfigurationView: View {
     }
 
     private func onDeviceChange(value: String) {
-        guard let deviceId = UUID(uuidString: value) else {
-            return
-        }
-        guard let peripheral = TeslaVehicleScanner.shared.discoveredPeripherals
-            .first(where: { $0.identifier == deviceId })
+        guard let deviceId = UUID(uuidString: value),
+              let peripheral = TeslaVehicleScanner.shared.discoveredPeripherals
+                  .first(where: { $0.identifier == deviceId })
         else {
             return
         }

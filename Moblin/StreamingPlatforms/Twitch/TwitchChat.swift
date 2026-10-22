@@ -83,10 +83,7 @@ private func lowResolutionGiphyUrl(_ url: URL) -> URL {
 
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
     let parts = specifier.split(separator: "=", maxSplits: 1)
-    guard parts.count == 2, let name = parts.first, let value = parts.last else {
-        return nil
-    }
-    guard !value.isEmpty else {
+    guard parts.count == 2, let name = parts.first, let value = parts.last, !value.isEmpty else {
         return nil
     }
     return (String(name), unescapeTagValue(value))

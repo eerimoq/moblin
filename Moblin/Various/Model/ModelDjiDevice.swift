@@ -40,16 +40,10 @@ extension Model {
 
     func reloadDjiDevices() {
         for deviceId in djiDevices.keys {
-            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }) else {
-                continue
-            }
-            guard device.isStarted else {
-                continue
-            }
-            guard let djiDevice = djiDevices[device.id] else {
-                continue
-            }
-            guard djiDevice.getState() != .streaming else {
+            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }),
+                  device.isStarted, let djiDevice = djiDevices[device.id],
+                  djiDevice.getState() != .streaming
+            else {
                 continue
             }
             startDjiDeviceLiveStream(device: device)
@@ -96,10 +90,7 @@ extension Model {
     func updateDjiDevicesStatus() {
         var statuses: [String] = []
         for device in database.djiDevices.devices {
-            guard let djiDevice = djiDevices[device.id] else {
-                continue
-            }
-            guard djiDevice.getState() == .streaming else {
+            guard let djiDevice = djiDevices[device.id], djiDevice.getState() == .streaming else {
                 continue
             }
             let (status, ok) = formatDeviceStatus(
@@ -151,10 +142,7 @@ extension Model {
     }
 
     func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
-        guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
-            return nil
-        }
-        guard let status = statusOther.ipStatuses
+        guard let stream = getRtmpStream(id: device.serverRtmpStreamId), let status = statusOther.ipStatuses
             .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })
         else {
             return nil
@@ -198,10 +186,7 @@ extension Model {
         case .custom:
             return
         }
-        guard let djiDevice = djiDevices[device.id] else {
-            return
-        }
-        guard device.isStarted else {
+        guard let djiDevice = djiDevices[device.id], device.isStarted else {
             return
         }
         startDjiDeviceLiveStreamInternal(djiDevice: djiDevice, device: device)

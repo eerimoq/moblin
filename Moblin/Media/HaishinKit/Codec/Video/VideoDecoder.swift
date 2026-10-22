@@ -69,14 +69,14 @@ class VideoDecoder: @unchecked Sendable {
                     }
                     return
                 }
-                guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
-                    return
-                }
-                guard let sampleBuffer = CMSampleBuffer.create(imageBuffer,
-                                                               formatDescription,
-                                                               duration,
-                                                               presentationTimeStamp,
-                                                               sampleBuffer.decodeTimeStamp)
+                guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer),
+                      let sampleBuffer = CMSampleBuffer.create(
+                          imageBuffer,
+                          formatDescription,
+                          duration,
+                          presentationTimeStamp,
+                          sampleBuffer.decodeTimeStamp
+                      )
                 else {
                     return
                 }

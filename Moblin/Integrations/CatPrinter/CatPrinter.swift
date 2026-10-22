@@ -161,10 +161,7 @@ class CatPrinter: NSObject, @unchecked Sendable {
             reconnect()
             return
         }
-        guard currentJob == nil else {
-            return
-        }
-        guard let printJob = printJobs.popFirst() else {
+        guard currentJob == nil, let printJob = printJobs.popFirst() else {
             return
         }
         let image: [[UInt8]]
@@ -512,10 +509,7 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 
     private func handleMessageMxw01(characteristic: CBCharacteristic) {
-        guard let value = characteristic.value else {
-            return
-        }
-        guard let command = CatPrinterCommandMxw01(data: value) else {
+        guard let value = characteristic.value, let command = CatPrinterCommandMxw01(data: value) else {
             return
         }
         // logger.info("cat-printer: Got \(command) \(value.hexString())")
@@ -585,10 +579,9 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 
     private func handleMessageDefault(characteristic: CBCharacteristic) {
-        guard let value = characteristic.value, let currentJob else {
-            return
-        }
-        guard let command = CatPrinterCommand(data: value) else {
+        guard let value = characteristic.value, let currentJob,
+              let command = CatPrinterCommand(data: value)
+        else {
             return
         }
         switch currentJob.state {

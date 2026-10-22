@@ -22,10 +22,7 @@ final class VideoLowFpsImage: @unchecked Sendable {
     }
 
     func handleImageBuffer(_ imageBuffer: CVImageBuffer, _ presentationTimeStamp: Double) {
-        guard enabled else {
-            return
-        }
-        guard presentationTimeStamp > latest + interval else {
+        guard enabled, presentationTimeStamp > latest + interval else {
             return
         }
         latest = presentationTimeStamp

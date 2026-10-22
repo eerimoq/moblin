@@ -6,10 +6,7 @@ private struct ChatSettingsGeneralView: View {
     @ObservedObject var chat: SettingsChat
 
     func submitMaximumAge(value: String) {
-        guard let maximumAge = Int(value) else {
-            return
-        }
-        guard maximumAge > 0 else {
+        guard let maximumAge = Int(value), maximumAge > 0 else {
             return
         }
         chat.maximumAge = maximumAge

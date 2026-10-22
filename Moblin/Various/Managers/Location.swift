@@ -11,10 +11,8 @@ private class BackgroundActivity {
     }
 
     func stop() {
-        if #available(iOS 17.0, *) {
-            if let session = backgroundSession as? CLBackgroundActivitySession {
-                session.invalidate()
-            }
+        if #available(iOS 17.0, *), let session = backgroundSession as? CLBackgroundActivitySession {
+            session.invalidate()
         }
     }
 }

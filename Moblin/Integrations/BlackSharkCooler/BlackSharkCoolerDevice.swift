@@ -293,10 +293,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
             color.blue,
             brightness: brightness,
             model: model
-        ) else {
-            return
-        }
-        guard let peripheral, let writeCharacteristic else {
+        ), let peripheral, let writeCharacteristic else {
             return
         }
         peripheral.writeValue(setColorCommand, for: writeCharacteristic, type: .withoutResponse)

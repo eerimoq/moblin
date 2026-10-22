@@ -33,10 +33,7 @@ extension Model {
                                                   addedSceneIds: inout Set<UUID>) -> Bool
     {
         for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                continue
-            }
-            guard widget.enabled else {
+            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
                 continue
             }
             switch widget.type {

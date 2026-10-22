@@ -199,10 +199,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func tryPlayNextAlert() {
-        guard !isPlaying else {
-            return
-        }
-        guard let alert = alertsQueue.popFirst() else {
+        guard !isPlaying, let alert = alertsQueue.popFirst() else {
             return
         }
         switch alert {
@@ -246,11 +243,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     @MainActor
     private func playChatBotCommand(command: String, name: String) {
         guard let commandIndex = settings.chatBot.commands
-            .firstIndex(where: { command == $0.name && $0.alert.enabled })
+            .firstIndex(where: { command == $0.name && $0.alert.enabled }),
+            commandIndex < chatBotCommandsMedias.count
         else {
-            return
-        }
-        guard commandIndex < chatBotCommandsMedias.count else {
             return
         }
         let media = chatBotCommandsMedias[commandIndex]
@@ -264,11 +259,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     @MainActor
     private func playSpeechToTextString(id: UUID) {
         guard let stringIndex = settings.speechToText.strings
-            .firstIndex(where: { $0.id == id && $0.alert.enabled })
+            .firstIndex(where: { $0.id == id && $0.alert.enabled }),
+            stringIndex < speechToTextStringsMedias.count
         else {
-            return
-        }
-        guard stringIndex < speechToTextStringsMedias.count else {
             return
         }
         play(
@@ -505,13 +498,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         _ imageSize: CGSize,
         _ landmarkSettings: AlertsEffectLandmarkSettings
     ) -> (center: CGPoint, height: Double, rotation: CGFloat)? {
-        guard let rotationAngle = detection.calcFaceAngle(imageSize: imageSize) else {
-            return nil
-        }
-        guard let boundingBox = detection.stableBoundingBox(
-            imageSize: imageSize,
-            rotationAngle: rotationAngle
-        ) else {
+        guard let rotationAngle = detection.calcFaceAngle(imageSize: imageSize),
+              let boundingBox = detection.stableBoundingBox(
+                  imageSize: imageSize,
+                  rotationAngle: rotationAngle
+              )
+        else {
             return nil
         }
         let faceMinX = boundingBox.minX

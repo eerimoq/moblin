@@ -162,10 +162,7 @@ extension Model {
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        guard isLive else {
-            return
-        }
-        guard !isLocationInPrivacyRegion(location: location) else {
+        guard isLive, !isLocationInPrivacyRegion(location: location) else {
             return
         }
         realtimeIrl?.update(location: location)

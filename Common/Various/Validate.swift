@@ -37,10 +37,7 @@ func isValidPort(value: String) -> String? {
 }
 
 func isValidAudioBitrate(bitrate: Int) -> Bool {
-    guard bitrate >= 32000, bitrate <= 320_000 else {
-        return false
-    }
-    guard bitrate % 32000 == 0 else {
+    guard bitrate >= 32000, bitrate <= 320_000, bitrate % 32000 == 0 else {
         return false
     }
     return true
@@ -124,10 +121,8 @@ func isValidUrl(url value: String,
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
     }
-    if let allowedSchemes, let scheme = url.scheme {
-        if !allowedSchemes.contains(scheme) {
-            return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
-        }
+    if let allowedSchemes, let scheme = url.scheme, !allowedSchemes.contains(scheme) {
+        return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
     }
     switch url.scheme {
     case "rtmp":

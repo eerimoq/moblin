@@ -419,17 +419,11 @@ final class WebrtcIngestClient: @unchecked Sendable {
     private func handleAudioMessageInternal(data: Data, timestamp: UInt32) {
         delegate?.webrtcIngestClientOnDataReceived(streamId: streamId, count: data.count)
         guard let timestampSeconds = audioTimestamper.timestampSeconds(trackId: audioTrackId,
-                                                                       timestamp: timestamp)
-        else {
-            return
-        }
-        guard !data.isEmpty else {
-            return
-        }
-        guard let opusCompressedBuffer,
-              let opusAudioConverter,
-              let pcmAudioBuffer,
-              pcmAudioFormat != nil
+                                                                       timestamp: timestamp), !data.isEmpty,
+            let opusCompressedBuffer,
+            let opusAudioConverter,
+            let pcmAudioBuffer,
+            pcmAudioFormat != nil
         else {
             return
         }

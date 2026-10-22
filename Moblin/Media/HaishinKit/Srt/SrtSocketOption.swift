@@ -444,10 +444,9 @@ enum SrtSocketOption: String {
     }
 
     static func getQueryItems(uri: URL) -> [String: String] {
-        guard let urlComponent = URLComponents(string: uri.absoluteString) else {
-            return [:]
-        }
-        guard let queryItems = urlComponent.queryItems else {
+        guard let urlComponent = URLComponents(string: uri.absoluteString),
+              let queryItems = urlComponent.queryItems
+        else {
             return [:]
         }
         var params: [String: String] = [:]

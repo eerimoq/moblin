@@ -178,11 +178,13 @@ final class Recorder: NSObject, @unchecked Sendable {
         if offset > maximumAudioPresentationTimeStampOffset, offset < 10 {
             appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
         }
-        guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp)
+        guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp),
+              appendAudioSampleBuffer(
+                  writer,
+                  input,
+                  sampleBuffer
+              )
         else {
-            return
-        }
-        guard appendAudioSampleBuffer(writer, input, sampleBuffer) else {
             return
         }
         nextAudioPresentationTimeStamp = presentationTimeStamp + duration
@@ -282,10 +284,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         if makeConverter {
             makeAudioConverter(sampleBuffer.formatDescription)
         }
-        guard let converter = audioConverter else {
-            return nil
-        }
-        guard let outputBuffer = AVAudioPCMBuffer(
+        guard let converter = audioConverter, let outputBuffer = AVAudioPCMBuffer(
             pcmFormat: converter.outputFormat,
             frameCapacity: UInt32(sampleBuffer.numSamples)
         ) else {

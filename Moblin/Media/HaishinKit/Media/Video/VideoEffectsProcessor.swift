@@ -342,15 +342,14 @@ final class VideoEffectsProcessor {
             let image = applySceneSwitchTransition(makeCiImage(imageBuffer))
             renderCoreImage(image, outputImageBuffer, image.extent)
         }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return sampleBuffer
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer),
+              let outputSampleBuffer = CMSampleBuffer.create(
+                  outputImageBuffer,
+                  formatDescription,
+                  sampleBuffer.duration,
+                  sampleBuffer.presentationTimeStamp,
+                  sampleBuffer.decodeTimeStamp
+              )
         else {
             return sampleBuffer
         }
@@ -531,22 +530,20 @@ final class VideoEffectsProcessor {
                 image = effectOutputImage
             }
         }
-        guard image !== originalImage else {
-            return (nil, nil)
-        }
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
-            return (nil, nil)
-        }
-        renderCoreImage(image, outputImageBuffer, extent)
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+        guard image !== originalImage,
+              let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer)
         else {
             return (nil, nil)
         }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
+        renderCoreImage(image, outputImageBuffer, extent)
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer),
+              let outputSampleBuffer = CMSampleBuffer.create(
+                  outputImageBuffer,
+                  formatDescription,
+                  sampleBuffer.duration,
+                  sampleBuffer.presentationTimeStamp,
+                  sampleBuffer.decodeTimeStamp
+              )
         else {
             return (nil, nil)
         }
@@ -589,15 +586,14 @@ final class VideoEffectsProcessor {
             logger.info("video-unit: Metal petal error: \(error)")
             return (nil, nil)
         }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer),
+              let outputSampleBuffer = CMSampleBuffer.create(
+                  outputImageBuffer,
+                  formatDescription,
+                  sampleBuffer.duration,
+                  sampleBuffer.presentationTimeStamp,
+                  sampleBuffer.decodeTimeStamp
+              )
         else {
             return (nil, nil)
         }

@@ -159,10 +159,8 @@ private struct MessagesView: View {
         guard chat.interactiveChat else {
             return
         }
-        if !chat.paused {
-            if !chat.posts.isEmpty {
-                model.pauseChat(chat: chat)
-            }
+        if !chat.paused, !chat.posts.isEmpty {
+            model.pauseChat(chat: chat)
         }
     }
 

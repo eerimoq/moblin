@@ -34,11 +34,9 @@ private class TalkbackPlayer {
 
     private func makePcmBuffer(from sampleBuffer: CMSampleBuffer) -> AVAudioPCMBuffer? {
         guard let formatDescription = sampleBuffer.formatDescription,
-              var asbd = formatDescription.audioStreamBasicDescription
+              var asbd = formatDescription.audioStreamBasicDescription,
+              let format = AVAudioFormat(streamDescription: &asbd)
         else {
-            return nil
-        }
-        guard let format = AVAudioFormat(streamDescription: &asbd) else {
             return nil
         }
         let frameCount = AVAudioFrameCount(sampleBuffer.numSamples)
@@ -232,7 +230,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if !isOutputtingSilence {
             guard let latestBuiltinSampleBuffer,
                   let sampleRate = latestBuiltinSampleBuffer.formatDescription?.audioStreamBasicDescription?
-                  .mSampleRate
+                      .mSampleRate
             else {
                 return
             }

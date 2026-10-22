@@ -77,13 +77,9 @@ extension Model {
     }
 
     func getCurrentMediaPlayer() -> MediaPlayer? {
-        guard let scene = getSelectedScene() else {
-            return nil
-        }
-        guard scene.videoSource.cameraPosition == .mediaPlayer else {
-            return nil
-        }
-        guard let mediaPlayerSettings = getMediaPlayer(id: scene.videoSource.mediaPlayerCameraId) else {
+        guard let scene = getSelectedScene(), scene.videoSource.cameraPosition == .mediaPlayer,
+              let mediaPlayerSettings = getMediaPlayer(id: scene.videoSource.mediaPlayerCameraId)
+        else {
             return nil
         }
         return mediaPlayers[mediaPlayerSettings.id]

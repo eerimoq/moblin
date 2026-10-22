@@ -93,11 +93,13 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
         {
             var anyFaceUsed = false
             for faceDetection in faceDetections {
-                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize)
+                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize),
+                      shouldUseFace(
+                          boundingBox,
+                          biggestBoundingBox,
+                          videoSourceImageSize
+                      )
                 else {
-                    continue
-                }
-                guard shouldUseFace(boundingBox, biggestBoundingBox, videoSourceImageSize) else {
                     continue
                 }
                 left = min(left, boundingBox.minX)
@@ -175,10 +177,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let sceneWidget else {
-            return backgroundImage
-        }
-        guard var widgetImage = info.getCiImage(videoSourceId) else {
+        guard let sceneWidget, var widgetImage = info.getCiImage(videoSourceId) else {
             return backgroundImage
         }
         if settings.trackFaceEnabled {
@@ -198,10 +197,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func executeMetalPetal(_ backgroundImage: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
-        guard let sceneWidget else {
-            return backgroundImage
-        }
-        guard let widgetImage = info.getMetalPetalImage(videoSourceId) else {
+        guard let sceneWidget, let widgetImage = info.getMetalPetalImage(videoSourceId) else {
             return backgroundImage
         }
         var shape = WidgetShape(contentRegion: widgetImage.extent)

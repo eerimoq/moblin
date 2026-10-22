@@ -304,10 +304,7 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     private func handleZoom(_ data: Any) throws {
-        guard let x = data as? Float else {
-            return
-        }
-        guard !preview.isZooming else {
+        guard let x = data as? Float, !preview.isZooming else {
             return
         }
         preview.zoomX = Double(x)
@@ -322,10 +319,7 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     private func handleZoomPreset(_ data: Any) throws {
-        guard let data = data as? String else {
-            return
-        }
-        guard let zoomPresetId = UUID(uuidString: data) else {
+        guard let data = data as? String, let zoomPresetId = UUID(uuidString: data) else {
             return
         }
         preview.zoomPresetId = zoomPresetId
@@ -348,10 +342,7 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     private func handleScene(_ data: Any) throws {
-        guard let data = data as? String else {
-            return
-        }
-        guard let sceneId = UUID(uuidString: data) else {
+        guard let data = data as? String, let sceneId = UUID(uuidString: data) else {
             return
         }
         preview.sceneId = sceneId
@@ -670,10 +661,9 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
     ) {
         var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
-            guard let quantityType = type as? HKQuantityType else {
-                continue
-            }
-            guard let statistics = workoutBuilder.statistics(for: quantityType) else {
+            guard let quantityType = type as? HKQuantityType,
+                  let statistics = workoutBuilder.statistics(for: quantityType)
+            else {
                 continue
             }
             stats.update(statistics: statistics)

@@ -70,10 +70,7 @@ func failedToConnectMessage(_ name: String) -> String {
 extension Model {
     func startStream(delayed: Bool = false) {
         logger.info("stream: Start")
-        guard !isChatPhone() else {
-            return
-        }
-        guard !streaming else {
+        guard !isChatPhone(), !streaming else {
             return
         }
         if delayed, !isLive {
@@ -154,10 +151,9 @@ extension Model {
     }
 
     private func isGoLiveNotificationDiscordConfigured() -> Bool {
-        guard !stream.goLiveNotificationDiscordMessage.isEmpty else {
-            return false
-        }
-        guard !stream.goLiveNotificationDiscordWebhookUrl.isEmpty else {
+        guard !stream.goLiveNotificationDiscordMessage.isEmpty,
+              !stream.goLiveNotificationDiscordWebhookUrl.isEmpty
+        else {
             return false
         }
         return true
@@ -680,10 +676,7 @@ extension Model {
     }
 
     private func checkLowBitrate(speed: Int64, now: ContinuousClock.Instant) {
-        guard database.lowBitrateWarning else {
-            return
-        }
-        guard streamState == .connected else {
+        guard database.lowBitrateWarning, streamState == .connected else {
             return
         }
         if speed < 500_000, now > latestLowBitrateTime + .seconds(15) {
@@ -693,10 +686,8 @@ extension Model {
     }
 
     private func handleLowFpsImage(image: Data, frameNumber: UInt64) {
-        if frameNumber % lowFpsImageFps == 0 {
-            if isWatchLocal() {
-                sendPreviewToWatch(image: image)
-            }
+        if frameNumber % lowFpsImageFps == 0, isWatchLocal() {
+            sendPreviewToWatch(image: image)
         }
         sendPreviewToRemoteControlAssistant(preview: image)
         sendPreviewToRemoteControlWeb(preview: image)

@@ -51,10 +51,9 @@ final class QrCodeEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func update(newSceneWidget: SettingsSceneWidget, size: CGSize) {
-        guard newSceneWidget.layout.extent() != sceneWidget?.layout.extent() || size != self.size else {
-            return
-        }
-        guard let data = widget.message.data(using: .utf8) else {
+        guard newSceneWidget.layout.extent() != sceneWidget?.layout.extent() || size != self.size,
+              let data = widget.message.data(using: .utf8)
+        else {
             return
         }
         let filter = CIFilter.qrCodeGenerator()

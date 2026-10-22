@@ -204,12 +204,11 @@ private func decodeEvent(message: String) throws -> (String, String) {
             with: jsonData,
             options: JSONSerialization.ReadingOptions.mutableContainers
         )
-        if let jsonResult: NSDictionary = data as? NSDictionary {
-            if let type: String = jsonResult["event"] as? String {
-                if let data: String = jsonResult["data"] as? String {
-                    return (type, data)
-                }
-            }
+        if let jsonResult: NSDictionary = data as? NSDictionary,
+           let type: String = jsonResult["event"] as? String,
+           let data: String = jsonResult["data"] as? String
+        {
+            return (type, data)
         }
     }
     throw "Failed to get message event type"
@@ -467,15 +466,13 @@ final class KickPusher: NSObject {
     }
 
     private func makeHighlight(message: ChatMessageEvent) -> ChatHighlight? {
-        if message.type == "reply" {
-            if let username = message.metadata?.original_sender?.username,
-               let content = message.metadata?.original_message?.content
-            {
-                return ChatHighlight.makeReply(
-                    user: username,
-                    segments: makeChatPostSegments(content: content)
-                )
-            }
+        if message.type == "reply", let username = message.metadata?.original_sender?.username,
+           let content = message.metadata?.original_message?.content
+        {
+            return ChatHighlight.makeReply(
+                user: username,
+                segments: makeChatPostSegments(content: content)
+            )
         }
         return nil
     }

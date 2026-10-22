@@ -180,10 +180,10 @@ struct VideoColorSuite {
                                            height: 64,
                                            colorAttachments: sourceColorAttachments,
                                            pixelFormat: pixelFormat)
-            let colorImage = CIImage(color: CIColor(red: CGFloat(color.0) / 255,
-                                                    green: CGFloat(color.1) / 255,
-                                                    blue: CGFloat(color.2) / 255,
-                                                    colorSpace: sRGBColorSpace)!)
+            let colorImage = try CIImage(color: #require(CIColor(red: CGFloat(color.0) / 255,
+                                                                 green: CGFloat(color.1) / 255,
+                                                                 blue: CGFloat(color.2) / 255,
+                                                                 colorSpace: sRGBColorSpace)))
                 .cropped(to: CGRect(x: 0, y: 0, width: 64, height: 64))
             processor.context.render(
                 colorImage,

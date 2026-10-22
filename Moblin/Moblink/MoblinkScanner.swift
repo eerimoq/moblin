@@ -51,10 +51,7 @@ class MoblinkScanner: NSObject {
                 continue
             }
             let metadata = NetService.dictionary(fromTXTRecord: data)
-            guard let nameData = metadata["name"] else {
-                continue
-            }
-            guard let name = String(bytes: nameData, encoding: .utf8) else {
+            guard let nameData = metadata["name"], let name = String(bytes: nameData, encoding: .utf8) else {
                 continue
             }
             streamers.append(.init(name: name, urls: service.urls))
@@ -95,10 +92,7 @@ extension MoblinkScanner: @MainActor NetServiceDelegate {
         var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
         address.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
             let sockaddrPtr = pointer.bindMemory(to: sockaddr.self)
-            guard let unsafePtr = sockaddrPtr.baseAddress else {
-                return
-            }
-            guard getnameinfo(
+            guard let unsafePtr = sockaddrPtr.baseAddress, getnameinfo(
                 unsafePtr,
                 socklen_t(address.count),
                 &hostname,

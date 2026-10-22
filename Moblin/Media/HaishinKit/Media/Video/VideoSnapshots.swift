@@ -52,10 +52,7 @@ final class VideoSnapshots: @unchecked Sendable {
                 takeSnapshotSampleBuffers.removeFirst()
             }
         }
-        guard let takeSnapshotComplete else {
-            return
-        }
-        guard let sampleBuffer = makeCopy(sampleBuffer) else {
+        guard let takeSnapshotComplete, let sampleBuffer = makeCopy(sampleBuffer) else {
             return
         }
         let sampleBuffers = takeSnapshotSampleBuffers

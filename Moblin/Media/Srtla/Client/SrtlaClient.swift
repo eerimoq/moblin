@@ -176,10 +176,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
             return
         }
         srtlaClientQueue.async {
-            guard self.state != .idle else {
-                return
-            }
-            guard let remoteConnection = self.remoteConnections
+            guard self.state != .idle, let remoteConnection = self.remoteConnections
                 .first(where: { $0.destinationHost == host && $0.destinationPort == port })
             else {
                 return
@@ -262,10 +259,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
 
     private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
         self.connectionPriorities = .init()
-        guard connectionPriorities.enabled else {
-            return
-        }
-        guard let lowestPriority = connectionPriorities.priorities
+        guard connectionPriorities.enabled, let lowestPriority = connectionPriorities.priorities
             .filter({ priority in priority.enabled })
             .min(by: { first, second in
                 first.priority < second.priority

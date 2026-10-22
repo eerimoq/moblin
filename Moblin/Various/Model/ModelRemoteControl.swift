@@ -70,12 +70,9 @@ extension Model {
     func reloadRemoteControlStreamer() {
         remoteControlStreamer?.stop()
         remoteControlStreamer = nil
-        guard isRemoteControlStreamerConfigured() else {
-            reloadTwitchEventSub()
-            reloadChats()
-            return
-        }
-        guard let url = URL(string: database.remoteControl.streamer.url) else {
+        guard isRemoteControlStreamerConfigured(),
+              let url = URL(string: database.remoteControl.streamer.url)
+        else {
             reloadTwitchEventSub()
             reloadChats()
             return
@@ -370,10 +367,9 @@ extension Model {
     func reloadRemoteControlRelay() {
         remoteControlRelay?.stop()
         remoteControlRelay = nil
-        guard isRemoteControlRelayConfigured() else {
-            return
-        }
-        guard let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl.assistant.port)") else {
+        guard isRemoteControlRelayConfigured(),
+              let assistantUrl = URL(string: "ws://localhost:\(database.remoteControl.assistant.port)")
+        else {
             return
         }
         remoteControlRelay = RemoteControlRelay(
@@ -790,10 +786,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetStream(id: UUID) {
-        guard let stream = findStream(id: id) else {
-            return
-        }
-        guard !stream.enabled, !isLive, !isRecording else {
+        guard let stream = findStream(id: id), !stream.enabled, !isLive, !isRecording else {
             return
         }
         setCurrentStream(stream: stream)
@@ -1583,10 +1576,9 @@ extension Model: RemoteControlWebDelegate {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         generator.maximumSize = CGSize(width: 480, height: 480)
-        guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
-            return nil
-        }
-        guard let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.9) else {
+        guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil),
+              let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.9)
+        else {
             return nil
         }
         recordingThumbnailsCache[filename] = thumbnail

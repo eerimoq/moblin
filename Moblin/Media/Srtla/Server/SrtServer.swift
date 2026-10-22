@@ -59,7 +59,7 @@ class SrtServer: @unchecked Sendable {
             let streamId = getStreamId(clientSocket)
             guard let srtlaServer,
                   let stream = srtlaServer.settings.streams
-                  .first(where: { $0.streamId == streamId }),
+                      .first(where: { $0.streamId == streamId }),
                   !srtlaServer.connectedStreamIds.value.contains(streamId)
             else {
                 srt_close(clientSocket)

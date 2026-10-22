@@ -178,10 +178,7 @@ private struct KeyFrameIntervalSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
     private func submitMaxKeyFrameInterval(value: String) {
-        guard let interval = Int32(value) else {
-            return
-        }
-        guard interval >= 0, interval <= 10 else {
+        guard let interval = Int32(value), interval >= 0, interval <= 10 else {
             return
         }
         stream.maxKeyFrameInterval = interval

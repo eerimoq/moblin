@@ -37,10 +37,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
     @ObservedObject var device: SettingsDjiDevice
 
     private func onDeviceChange(value: String) {
-        guard let deviceId = UUID(uuidString: value) else {
-            return
-        }
-        guard let djiDevice = djiScanner.discoveredDevices
+        guard let deviceId = UUID(uuidString: value), let djiDevice = djiScanner.discoveredDevices
             .first(where: { $0.peripheral.identifier == deviceId })
         else {
             return

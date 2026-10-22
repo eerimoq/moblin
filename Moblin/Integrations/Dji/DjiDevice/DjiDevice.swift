@@ -466,10 +466,7 @@ extension DjiDevice: @MainActor CBPeripheralDelegate {
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
         error _: (any Error)?
     ) {
-        guard state == .connecting else {
-            return
-        }
-        guard characteristic.uuid == fff4Id else {
+        guard state == .connecting, characteristic.uuid == fff4Id else {
             return
         }
         let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)

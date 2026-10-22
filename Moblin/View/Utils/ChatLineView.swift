@@ -333,10 +333,7 @@ class ChatLineUiView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        guard let content else {
-            return
-        }
-        guard let layout = layout(availableWidth: availableWidthForBounds()) else {
+        guard let content, let layout = layout(availableWidth: availableWidthForBounds()) else {
             return
         }
         if currentLayout?.sizesVersion != layout.sizesVersion

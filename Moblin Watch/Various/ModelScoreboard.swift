@@ -106,10 +106,7 @@ extension WatchModel {
     }
 
     func handleRemoveScoreboard(_ data: Any) throws {
-        guard let idString = data as? String, let id = UUID(uuidString: idString) else {
-            return
-        }
-        guard scoreboardId == id else {
+        guard let idString = data as? String, let id = UUID(uuidString: idString), scoreboardId == id else {
             return
         }
         scoreboardType = nil

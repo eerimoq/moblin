@@ -132,20 +132,18 @@ extension Model {
         stream.backgroundStreaming = createStreamWizard.backgroundStreaming
         stream.autoGoLive = createStreamWizard.autoGoLive
         stream.goLiveNotificationMoblinWebsite = createStreamWizard.goLiveNotificationMoblinWebsite
-        if createStreamWizard.platform != .custom {
-            if createStreamWizard.networkSetup != .direct {
-                if createStreamWizard.obsRemoteControlEnabled {
-                    let url = cleanUrl(url: createStreamWizard.obsRemoteControlUrl.trim())
-                    if isValidWebSocketUrl(url: url) == nil {
-                        stream.obsWebSocketEnabled = true
-                        stream.obsWebSocketUrl = url
-                        stream.obsWebSocketPassword = createStreamWizard.obsRemoteControlPassword.trim()
-                        stream.obsSourceName = createStreamWizard.obsRemoteControlSourceName.trim()
-                        stream.obsMainScene = createStreamWizard.obsRemoteControlMainScene.trim()
-                        stream.obsBrbScene = createStreamWizard.obsRemoteControlBrbScene.trim()
-                        stream.streamingDirectlyToObs = createStreamWizard.networkSetup == .obs
-                    }
-                }
+        if createStreamWizard.platform != .custom, createStreamWizard.networkSetup != .direct,
+           createStreamWizard.obsRemoteControlEnabled
+        {
+            let url = cleanUrl(url: createStreamWizard.obsRemoteControlUrl.trim())
+            if isValidWebSocketUrl(url: url) == nil {
+                stream.obsWebSocketEnabled = true
+                stream.obsWebSocketUrl = url
+                stream.obsWebSocketPassword = createStreamWizard.obsRemoteControlPassword.trim()
+                stream.obsSourceName = createStreamWizard.obsRemoteControlSourceName.trim()
+                stream.obsMainScene = createStreamWizard.obsRemoteControlMainScene.trim()
+                stream.obsBrbScene = createStreamWizard.obsRemoteControlBrbScene.trim()
+                stream.streamingDirectlyToObs = createStreamWizard.networkSetup == .obs
             }
         }
         switch createStreamWizard.platform {

@@ -378,10 +378,7 @@ struct RemoteControlStreamersView: View {
 
     private func deleteStreamer(at offsets: IndexSet) {
         remoteControlSettings.streamers.remove(atOffsets: offsets)
-        guard remoteControlSettings.selectedStreamer != nil else {
-            return
-        }
-        guard !remoteControlSettings.streamers
+        guard remoteControlSettings.selectedStreamer != nil, !remoteControlSettings.streamers
             .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
         else {
             return

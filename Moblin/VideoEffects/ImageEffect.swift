@@ -13,10 +13,10 @@ final class ImageEffect: VideoEffect, @unchecked Sendable {
 
     func loadImage(imageStorage: ImageStorage, widgetId: UUID) {
         DispatchQueue.global().async {
-            guard let data = imageStorage.read(id: widgetId) else {
-                return
-            }
-            guard let image = CIImage(data: data, options: [.applyOrientationProperty: true]) else {
+            guard let data = imageStorage.read(id: widgetId), let image = CIImage(
+                data: data,
+                options: [.applyOrientationProperty: true]
+            ) else {
                 return
             }
             let originalImage = image.toEffectImage(isOpaque: false)

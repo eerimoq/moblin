@@ -89,10 +89,9 @@ private func getWebpFile(files: [SeventvFile]) -> SeventvFile? {
 }
 
 private func makeEmote(data: SeventvEmoteData) -> Emote? {
-    guard let file = getWebpFile(files: data.host.files) else {
-        return nil
-    }
-    guard let url = URL(string: "https:\(data.host.url)/\(file.name)") else {
+    guard let file = getWebpFile(files: data.host.files),
+          let url = URL(string: "https:\(data.host.url)/\(file.name)")
+    else {
         return nil
     }
     return Emote(url: url, stillUrl: file.static_name.flatMap {

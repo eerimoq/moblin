@@ -214,11 +214,7 @@ final class GoProDevice: NSObject {
     }
 
     private func connectToScannedWifi() {
-        guard let scanMatch else {
-            fail(state: .wifiSetupFailed)
-            return
-        }
-        guard !scanMatch.isUnsupportedType() else {
+        guard let scanMatch, !scanMatch.isUnsupportedType() else {
             fail(state: .wifiSetupFailed)
             return
         }
@@ -353,10 +349,9 @@ final class GoProDevice: NSObject {
     }
 
     private func processScanningNotification(_ payload: Data) {
-        guard let notification = try? OpenGopro_NotifStartScanning(serializedBytes: payload) else {
-            return
-        }
-        guard state == .settingUpWifi else {
+        guard let notification = try? OpenGopro_NotifStartScanning(serializedBytes: payload),
+              state == .settingUpWifi
+        else {
             return
         }
         switch notification.scanningState {
@@ -384,10 +379,9 @@ final class GoProDevice: NSObject {
     }
 
     private func processGetApEntriesResponse(_ payload: Data) {
-        guard let response = try? OpenGopro_ResponseGetApEntries(serializedBytes: payload) else {
-            return
-        }
-        guard state == .settingUpWifi, scanId != nil else {
+        guard let response = try? OpenGopro_ResponseGetApEntries(serializedBytes: payload),
+              state == .settingUpWifi, scanId != nil
+        else {
             return
         }
         guard response.result == .resultSuccess else {

@@ -225,10 +225,8 @@ class RemoteConnection: @unchecked Sendable {
     }
 
     func handleSrtlaAckSn(sn: UInt32) {
-        if packetsInFlight.remove(sn) != nil {
-            if packetsInFlight.count * windowMultiply > windowSize {
-                windowSize += windowIncrement - 1
-            }
+        if packetsInFlight.remove(sn) != nil, packetsInFlight.count * windowMultiply > windowSize {
+            windowSize += windowIncrement - 1
         }
         windowSize = min(windowSize + 1, windowMaximum * windowMultiply)
     }

@@ -36,11 +36,7 @@ class KeyPressUIView: UIView {
     }
 
     private func claimFocus() {
-        guard window != nil else {
-            reclaimFocusTimer.stop()
-            return
-        }
-        guard !isFirstResponder else {
+        guard window != nil, !isFirstResponder else {
             reclaimFocusTimer.stop()
             return
         }

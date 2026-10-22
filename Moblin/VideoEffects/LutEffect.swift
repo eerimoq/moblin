@@ -67,10 +67,9 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     let width = Int(image.size.width * image.scale)
     let height = Int(image.size.height * image.scale)
     let dimension = Int(cbrt(Double(width * height)))
-    guard dimension > 0, width % dimension == 0, height % dimension == 0 else {
-        throw String(localized: "LUT image is not a cube")
-    }
-    guard dimension * dimension * dimension == width * height else {
+    guard dimension > 0, width % dimension == 0, height % dimension == 0,
+          dimension * dimension * dimension == width * height
+    else {
         throw String(localized: "LUT image is not a cube")
     }
     guard let cgImage = image.cgImage else {
@@ -249,10 +248,9 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func loadBundledPngLut(lut: SettingsColorLut) throws {
-        guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
-            return
-        }
-        guard let image = UIImage(contentsOfFile: path) else {
+        guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil),
+              let image = UIImage(contentsOfFile: path)
+        else {
             return
         }
         try loadImageLut(image: image)

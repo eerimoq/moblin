@@ -5,10 +5,7 @@ import Foundation
 
 extension Model {
     func startLiveActivity() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
-            return
-        }
-        guard liveActivity == nil else {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled, liveActivity == nil else {
             return
         }
         do {

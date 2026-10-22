@@ -2445,10 +2445,10 @@ final class Model: NSObject, ObservableObject {
             let progress = browser.browserEffect.progress
             if browser.browserEffect.isLoaded {
                 messages.append("\(browser.browserEffect.host): \(progress)%")
-                if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now {
-                    if !statusTopRight.browserWidgetsStatusChanged {
-                        statusTopRight.browserWidgetsStatusChanged = true
-                    }
+                if progress != 100 || browser.browserEffect.startLoadingTime + .seconds(5) > .now,
+                   !statusTopRight.browserWidgetsStatusChanged
+                {
+                    statusTopRight.browserWidgetsStatusChanged = true
                 }
             }
         }
