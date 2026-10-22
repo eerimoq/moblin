@@ -7,6 +7,8 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var bFrames: Bool = false
     @Published var maxKeyFrameInterval: Int32 = 2
+    @Published var timecodesEnabled: Bool = false
+    @Published var ntpPoolAddress: String = "time.apple.com"
 
     enum CodingKeys: CodingKey {
         case resolution
@@ -15,6 +17,8 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
         case codec
         case bFrames
         case maxKeyFrameInterval
+        case timecodesEnabled
+        case ntpPoolAddress
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -25,6 +29,8 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
         try container.encode(.codec, codec)
         try container.encode(.bFrames, bFrames)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
+        try container.encode(.timecodesEnabled, timecodesEnabled)
+        try container.encode(.ntpPoolAddress, ntpPoolAddress)
     }
 
     init() {}
@@ -41,6 +47,8 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
         bFrames = container.decode(.bFrames, Bool.self, false)
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
+        timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
+        ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
     }
 }
 
