@@ -93,21 +93,6 @@ extension Model {
         moblinCloud?.sendSongRequests(enabled: database.moblinCloud.songRequests)
     }
 
-    func startMoblinCloudSongRequests(hours: Int?) {
-        let settings = database.moblinCloud
-        settings.songRequestsHours = hours
-        if let hours {
-            settings.songRequestsEndTime = Date() + Double(hours * 3600)
-        }
-        settings.songRequests = true
-        moblinCloudSendSongRequests()
-    }
-
-    func stopMoblinCloudSongRequests() {
-        database.moblinCloud.songRequests = false
-        moblinCloudSendSongRequests()
-    }
-
     func moblinCloudSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
         guard !isRemoteControlRequestAlreadyHandled(requestId: requestId),
               let widget = getMoblinCloudWheelOfLuckWidget()

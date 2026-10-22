@@ -1,73 +1,5 @@
 import SwiftUI
 
-private struct StartSongRequestsView: View {
-    let model: Model
-    @Binding var presenting: Bool
-    @State var hours: Int?
-
-    var body: some View {
-        VStack {
-            VStack {
-                Text("Time limit")
-                Picker("", selection: $hours) {
-                    Text("Unlimited")
-                        .tag(nil as Int?)
-                    ForEach(1 ... 24, id: \.self) {
-                        Text(formatShortDuration(seconds: $0 * 3600))
-                            .tag($0 as Int?)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 200, height: 150)
-                if let hours {
-                    Text("Last song ends \(Date() + Double(hours * 3600), style: .time)")
-                } else {
-                    Text("No time limit")
-                }
-            }
-            .padding()
-            HStack {
-                TimeButtonView(text: "OK") {
-                    model.startMoblinCloudSongRequests(hours: hours)
-                    presenting = false
-                }
-                TimeButtonView(text: "Cancel") {
-                    presenting = false
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .padding()
-        }
-        .padding()
-    }
-}
-
-struct MoblinCloudSongRequestsView: View {
-    let model: Model
-    @ObservedObject var moblinCloud: SettingsMoblinCloud
-    @State private var presentingStart = false
-
-    var body: some View {
-        Toggle("Song requests", isOn: Binding(get: {
-            moblinCloud.songRequests
-        }, set: {
-            if $0 {
-                presentingStart = true
-            } else {
-                model.stopMoblinCloudSongRequests()
-            }
-        }))
-        .popover(isPresented: $presentingStart) {
-            StartSongRequestsView(model: model,
-                                  presenting: $presentingStart,
-                                  hours: moblinCloud.songRequestsHours)
-        }
-        if moblinCloud.songRequests, moblinCloud.songRequestsHours != nil {
-            Text("Last song ends \(moblinCloud.songRequestsEndTime, style: .time)")
-        }
-    }
-}
-
 struct MoblinCloudSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -126,7 +58,10 @@ struct MoblinCloudSettingsView: View {
                 Text("Wheel of luck widget viewers can spin.")
             }
             Section {
-                MoblinCloudSongRequestsView(model: model, moblinCloud: moblinCloud)
+                Toggle("Song requests", isOn: $moblinCloud.songRequests)
+                    .onChange(of: moblinCloud.songRequests) { _ in
+                        model.moblinCloudSendSongRequests()
+                    }
             } footer: {
                 Text("""
                 Let viewers add songs to your Apple Music queue. The queue is still shown when disabled.

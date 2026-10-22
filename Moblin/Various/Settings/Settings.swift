@@ -1219,8 +1219,6 @@ class SettingsMoblinCloud: Codable, ObservableObject {
     @Published var wheelOfLuckWidgetId: UUID?
     @Published var alertsWidgetId: UUID?
     @Published var songRequests: Bool = true
-    @Published var songRequestsHours: Int?
-    @Published var songRequestsEndTime: Date = .init()
 
     init() {}
 
@@ -1230,8 +1228,6 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         case wheelOfLuckWidgetId
         case alertsWidgetId
         case songRequests
-        case songRequestsHours
-        case songRequestsEndTime
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1241,8 +1237,6 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
         try container.encode(.alertsWidgetId, alertsWidgetId)
         try container.encode(.songRequests, songRequests)
-        try container.encode(.songRequestsHours, songRequestsHours)
-        try container.encode(.songRequestsEndTime, songRequestsEndTime.timeIntervalSince1970)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1252,10 +1246,6 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
         alertsWidgetId = container.decode(.alertsWidgetId, UUID?.self, nil)
         songRequests = container.decode(.songRequests, Bool.self, true)
-        songRequestsHours = container.decode(.songRequestsHours, Int?.self, nil)
-        songRequestsEndTime = Date(timeIntervalSince1970: container.decode(.songRequestsEndTime,
-                                                                           Double.self,
-                                                                           0))
     }
 }
 

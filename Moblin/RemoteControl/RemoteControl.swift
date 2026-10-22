@@ -208,7 +208,6 @@ struct RemoteControlMusicStatus: Codable {
     var currentSongIndex: Int?
     var songs: [RemoteControlMusicSong]
     var songNotFound: Bool?
-    var timeLimitEnd: Int?
 }
 
 enum RemoteControlReaction: Codable, CaseIterable {

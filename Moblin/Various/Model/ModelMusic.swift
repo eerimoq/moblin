@@ -140,16 +140,6 @@ class MusicPlaylist: ObservableObject {
         }
         return queue.entries.map(\.id).firstIndex(of: currentEntry.id)
     }
-
-    func end(now: Date) -> Date? {
-        let currentIndex = currentIndex()
-        let remaining = songs()[(currentIndex ?? 0)...].compactMap(\.duration)
-        guard !remaining.isEmpty else {
-            return nil
-        }
-        let playbackTime = currentIndex == nil ? 0 : musicPlayer.playbackTime
-        return now + Double(remaining.reduce(0, +)) - playbackTime
-    }
 }
 
 struct MusicStatusSong {

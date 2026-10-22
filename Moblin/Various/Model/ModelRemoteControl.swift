@@ -976,9 +976,6 @@ extension Model: RemoteControlStreamerDelegate {
         case let .select(id: id):
             selectMusic(entryId: id)
         }
-        let timeLimitEnd = database.moblinCloud.songRequestsHours != nil
-            ? Int(database.moblinCloud.songRequestsEndTime.timeIntervalSince1970)
-            : nil
         statusMusic { status in
             guard !failed else {
                 onCompleted(.error, nil)
@@ -994,8 +991,7 @@ extension Model: RemoteControlStreamerDelegate {
                                            duration: $0.duration,
                                            user: $0.addedBy)
                 },
-                songNotFound: songNotFound,
-                timeLimitEnd: timeLimitEnd
+                songNotFound: songNotFound
             )))
         }
     }
