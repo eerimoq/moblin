@@ -387,10 +387,7 @@ class RtmpStream: @unchecked Sendable {
             logger.info("rtmp: \(name): Dropping audio buffer. Failed to rebase timestamp.")
             return
         }
-        var delta = 0.0
-        if let prevRebasedAudioTimeStamp {
-            delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
-        }
+        let delta = (rebasedTimestamp - (prevRebasedAudioTimeStamp ?? 0)) * 1000
         guard delta >= 0 else {
             logger.info("rtmp: \(name): Dropping audio buffer (delta: \(delta))")
             return
@@ -447,10 +444,7 @@ class RtmpStream: @unchecked Sendable {
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
             return
         }
-        var delta = 0.0
-        if let prevRebasedVideoTimeStamp {
-            delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
-        }
+        let delta = (rebasedTimestamp - (prevRebasedVideoTimeStamp ?? 0)) * 1000
         guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
             logger.info("rtmp: \(name): Dropping video buffer (delta: \(delta))")
             return
