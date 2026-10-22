@@ -36,14 +36,12 @@ private struct PlaylistEndView: View {
     @ObservedObject var queue: ApplicationMusicPlayer.Queue
 
     var body: some View {
-        let currentIndex = musicPlaylist.currentIndex()
-        let remaining = musicPlaylist.songs()[(currentIndex ?? 0)...].compactMap(\.duration)
-        if !remaining.isEmpty {
+        if musicPlaylist.end(now: .now) != nil {
             TimelineView(.periodic(from: .now, by: 10)) { context in
-                let playbackTime = currentIndex == nil ? 0 : musicPlayer.playbackTime
-                let end = context.date + Double(remaining.reduce(0, +)) - playbackTime
-                Text("Ends \(end, style: .time)")
-                    .monospacedDigit()
+                if let end = musicPlaylist.end(now: context.date) {
+                    Text("Ends \(end, style: .time)")
+                        .monospacedDigit()
+                }
             }
         }
     }
@@ -172,10 +170,7 @@ private struct SongRequestsView: View {
     var body: some View {
         if moblinCloud.enabled {
             Section {
-                Toggle("Song requests", isOn: $moblinCloud.songRequests)
-                    .onChange(of: moblinCloud.songRequests) { _ in
-                        model.moblinCloudSendSongRequests()
-                    }
+                MoblinCloudSongRequestsView(model: model, moblinCloud: moblinCloud)
             } header: {
                 Text("Moblin Cloud")
             }
