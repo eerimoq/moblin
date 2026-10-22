@@ -138,6 +138,16 @@ extension Model {
         }
     }
 
+    func reloadCatPrintersAfterSettingsImport() {
+        for (deviceId, catPrinter) in catPrinters
+            where !database.catPrinters.devices.contains(where: { $0.id == deviceId })
+        {
+            catPrinter.stop()
+            catPrinters.removeValue(forKey: deviceId)
+        }
+        autoStartCatPrinters()
+    }
+
     func stopCatPrinters() {
         for catPrinter in catPrinters.values {
             catPrinter.stop()
