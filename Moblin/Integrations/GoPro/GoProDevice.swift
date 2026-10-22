@@ -267,7 +267,7 @@ final class GoProDevice: NSObject {
     }
 
     private func startShutterWhenReady() {
-        guard state == .configuring, !didScheduleShutterStart else {
+        guard state == .configuring, !waitingForShutterOffBeforeConfigure, !didScheduleShutterStart else {
             return
         }
         didScheduleShutterStart = true
