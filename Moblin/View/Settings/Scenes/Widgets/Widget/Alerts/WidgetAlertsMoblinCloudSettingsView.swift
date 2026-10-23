@@ -39,7 +39,7 @@ private struct MoblinCloudTipsView: View {
                 }
             }
         }
-        .navigationTitle("Tips")
+        .navigationTitle("Message")
     }
 }
 
@@ -52,7 +52,7 @@ struct WidgetAlertsMoblinCloudSettingsView: View {
                 NavigationLink {
                     MoblinCloudTipsView(alert: moblinCloud.tips)
                 } label: {
-                    Text("Tips")
+                    Text("Message")
                 }
             }
         }

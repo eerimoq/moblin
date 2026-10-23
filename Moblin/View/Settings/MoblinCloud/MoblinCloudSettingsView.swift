@@ -12,7 +12,7 @@ struct MoblinCloudSettingsView: View {
                 Text("""
                 1. Sign in at https://moblin.app/dashboard and connect PayPal or Stripe.
                 2. Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below.
-                3. Pick the alerts widget that shows tips and the wheel of luck widget that tips spin.
+                3. Pick the alerts widget that shows messages and the wheel of luck widget that tips spin.
                 """)
                 Text("Guide: https://moblin.app/docs/#guides/moblin-cloud")
             }
@@ -34,7 +34,7 @@ struct MoblinCloudSettingsView: View {
                 Text("Keep the Moblin Cloud key to yourself.")
             }
             Section {
-                Picker("Tips", selection: $moblinCloud.alertsWidgetId) {
+                Picker("Message", selection: $moblinCloud.alertsWidgetId) {
                     Text("-- None --")
                         .tag(nil as UUID?)
                     ForEach(database.widgets.filter { $0.type == .alerts }) {
@@ -44,7 +44,7 @@ struct MoblinCloudSettingsView: View {
                 }
             } footer: {
                 Text("""
-                Alerts widget that shows tips on stream. Tips always show in chat. \
+                Alerts widget that shows messages on stream. Messages always show in chat. \
                 Create one in Settings → Scenes and add it to the scenes you stream with.
                 """)
             }
