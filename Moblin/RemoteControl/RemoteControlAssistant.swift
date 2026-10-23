@@ -537,8 +537,6 @@ class RemoteControlAssistant: NSObject {
             break
         case .wheelOfLuck:
             break
-        case .songRequests:
-            break
         case let .stats(data: data):
             delegate?.remoteControlAssistantStats(data: data)
         }
