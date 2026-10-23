@@ -122,9 +122,22 @@ extension Model {
         if !message.isEmpty {
             text += ": \(message)"
         }
+        moblinCloudTipEffects.append((name, text, url))
+        moblinCloudTryNextEffect()
+    }
+
+    private func moblinCloudTryNextEffect() {
+        guard moblinCloudTipEffectPlayer == nil, let (name, text, url) = moblinCloudTipEffects.popFirst() else {
+            return
+        }
         moblinCloudAppendChatMessage(name: name, text: text)
-        moblinCloudEffectPlayer = try? AudioPlayer(contentsOf: url)
-        moblinCloudEffectPlayer?.play()
+        moblinCloudTipEffectPlayer = try? AudioPlayer(contentsOf: url)
+        moblinCloudTipEffectPlayer?.play()
+        let timeUntilNextEffect = (moblinCloudTipEffectPlayer?.duration() ?? 0) + 3
+        moblinCloudTipEffectTimer.startSingleShot(timeout: timeUntilNextEffect) {
+            self.moblinCloudTipEffectPlayer = nil
+            self.moblinCloudTryNextEffect()
+        }
     }
 
     private func moblinCloudTipWheelOfLuck(name: String, message: String, count: Int) {

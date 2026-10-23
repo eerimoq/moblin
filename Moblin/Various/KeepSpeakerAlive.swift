@@ -37,6 +37,10 @@ class AudioPlayer {
         player.delegate = delegate
     }
 
+    func duration() -> TimeInterval {
+        player.duration
+    }
+
     func setVolume(volume: Float) {
         player.volume = volume
     }

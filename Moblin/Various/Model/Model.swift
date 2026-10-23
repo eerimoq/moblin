@@ -692,7 +692,9 @@ final class Model: NSObject, ObservableObject {
     var remoteControlRelay: RemoteControlRelay?
     var remoteControlWeb: RemoteControlWeb?
     var moblinCloud: MoblinCloud?
-    var moblinCloudEffectPlayer: AudioPlayer?
+    var moblinCloudTipEffects: Deque<(String, String, URL)> = []
+    var moblinCloudTipEffectPlayer: AudioPlayer?
+    let moblinCloudTipEffectTimer = MainTimer()
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var isRemoteControlAssistantRequestingStats = false
