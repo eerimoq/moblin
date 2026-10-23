@@ -3481,6 +3481,14 @@ extension Model: AlertsEffectDelegate {
     func alertsMakeKickSegments(text: String) -> [ChatPostSegment] {
         kickPusher?.makeChatPostSegments(content: text) ?? makeChatPostTextSegments(text: text)
     }
+
+    func alertsTtsMonsterApiToken() -> String {
+        database.chat.ttsMonster.apiToken
+    }
+
+    func alertsElevenLabsApiKey() -> String {
+        database.chat.elevenLabs.apiKey
+    }
 }
 
 extension Model: UIDocumentPickerDelegate {

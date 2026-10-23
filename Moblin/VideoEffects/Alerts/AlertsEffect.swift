@@ -30,6 +30,14 @@ protocol AlertsEffectDelegate: AnyObject {
                                              fragments: [TwitchEventSubMessageFragment],
                                              bits: String?) -> [ChatPostSegment]
     @MainActor func alertsMakeKickSegments(text: String) -> [ChatPostSegment]
+    @MainActor func alertsTtsMonsterApiToken() -> String
+    @MainActor func alertsElevenLabsApiKey() -> String
+}
+
+private enum AlertsEffectVoice {
+    case apple(voice: AVSpeechSynthesisVoice)
+    case ttsMonster(voiceId: String)
+    case elevenLabs(voiceId: String)
 }
 
 private struct Pipeline {
@@ -49,6 +57,7 @@ private struct Pipeline {
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var audioPlayer: AudioPlayer?
+    private var textToSpeechAudioPlayer: AudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
     private let synthesizer = SpeechSynthesizer(queue: .main)
@@ -318,6 +327,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     private func play(player: AlertsEffectPlayer,
                       username: String,
                       message: String,
@@ -338,29 +348,71 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     private func say(username: String, message: String, settings: SettingsWidgetAlertsAlert) {
         guard let voice = getVoice(settings: settings) else {
             return
         }
-        let utterance = AVSpeechUtterance(string: "\(username) \(message)")
-        utterance.rate = rate
-        utterance.pitchMultiplier = 0.8
-        utterance.voice = voice
-        DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay) {
-            self.synthesizer.speak(utterance: utterance, volume: self.volume)
+        let text = "\(username) \(message)"
+        let delay = settings.textToSpeechDelay
+        switch voice {
+        case let .apple(voice):
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = rate
+            utterance.pitchMultiplier = 0.8
+            utterance.voice = voice
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                self.synthesizer.speak(utterance: utterance, volume: self.volume)
+            }
+        case let .ttsMonster(voiceId):
+            guard let apiToken = delegate?.alertsTtsMonsterApiToken(), !apiToken.isEmpty else {
+                return
+            }
+            sayGenerated(delay: delay) {
+                await TtsMonster(apiToken: apiToken).generateTts(voiceId: voiceId, message: text)
+            }
+        case let .elevenLabs(voiceId):
+            guard let apiKey = delegate?.alertsElevenLabsApiKey(), !apiKey.isEmpty else {
+                return
+            }
+            sayGenerated(delay: delay) {
+                await ElevenLabs(apiKey: apiKey).generateTts(voiceId: voiceId, message: text)
+            }
         }
     }
 
-    private func getVoice(settings: SettingsWidgetAlertsAlert) -> AVSpeechSynthesisVoice? {
+    @MainActor
+    private func sayGenerated(delay: Double, generate: @escaping @Sendable () async -> Data?) {
+        let playAt = ContinuousClock.now.advanced(by: .seconds(delay))
+        Task { @MainActor in
+            guard let data = await generate() else {
+                return
+            }
+            try? await Task.sleep(until: playAt)
+            textToSpeechAudioPlayer = try? AudioPlayer(data: data)
+            textToSpeechAudioPlayer?.setVolume(volume: volume)
+            textToSpeechAudioPlayer?.play()
+        }
+    }
+
+    private func getVoice(settings: SettingsWidgetAlertsAlert) -> AlertsEffectVoice? {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language]?.apple.voice {
-            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first
+        let voice = settings.textToSpeechLanguageVoices[language]
+        if voice?.type == .apple, let voiceIdentifier = voice?.apple.voice,
+           let voice = AVSpeechSynthesisVoice(identifier: voiceIdentifier)
         {
-            return AVSpeechSynthesisVoice(identifier: voice.identifier)
+            return .apple(voice: voice)
+        } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
+            return .ttsMonster(voiceId: voiceId)
+        } else if voice?.type == .elevenLabs, let voiceId = voice?.elevenLabs.voiceId {
+            return .elevenLabs(voiceId: voiceId)
+        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
+            .filter({ $0.language.starts(with: language) }).first,
+            let voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
+        {
+            return .apple(voice: voice)
         }
         return nil
     }
