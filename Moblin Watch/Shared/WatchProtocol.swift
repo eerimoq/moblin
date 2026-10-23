@@ -23,6 +23,7 @@ enum WatchMessageToWatch: String {
     case genericScoreboard
     case removeScoreboard
     case scoreboardPlayers
+    case stopWorkout
 
     static func pack(type: WatchMessageToWatch, data: Any) -> [String: Any] {
         [
@@ -121,13 +122,17 @@ struct WatchProtocolZoomPreset: Codable, Identifiable {
     var name: String
 }
 
-enum WatchProtocolWorkoutType: Codable {
+enum WatchProtocolWorkoutType: Codable, Equatable {
     case walking
     case running
     case cycling
+    case poolSwimming
 }
 
 struct WatchProtocolWorkoutStats: Codable, Equatable {
+    var workoutStartedAt: Date?
+    var workoutType: WatchProtocolWorkoutType?
+    var workoutActive: Bool?
     var heartRate: Int?
     var activeEnergyBurned: Int?
     var distance: Int?
@@ -148,7 +153,7 @@ struct WatchProtocolWorkoutStats: Codable, Equatable {
             if let activeEnergyBurned = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
                 self.activeEnergyBurned = Int(activeEnergyBurned)
             }
-        case distanceWalkingRunningType, distanceCyclingType:
+        case distanceWalkingRunningType, distanceCyclingType, distanceSwimmingType:
             if let distance = statistics.sumQuantity()?.doubleValue(for: .meter()) {
                 self.distance = Int(distance)
             }
@@ -179,6 +184,19 @@ struct WatchProtocolWorkoutStats: Codable, Equatable {
                 break
             }
         }
+    }
+
+    mutating func merge(_ stats: WatchProtocolWorkoutStats) {
+        workoutStartedAt = stats.workoutStartedAt ?? workoutStartedAt
+        workoutType = stats.workoutType ?? workoutType
+        workoutActive = stats.workoutActive ?? workoutActive
+        heartRate = stats.heartRate ?? heartRate
+        activeEnergyBurned = stats.activeEnergyBurned ?? activeEnergyBurned
+        distance = stats.distance ?? distance
+        stepCount = stats.stepCount ?? stepCount
+        power = stats.power ?? power
+        cyclingPower = stats.cyclingPower ?? cyclingPower
+        cyclingCadence = stats.cyclingCadence ?? cyclingCadence
     }
 }
 

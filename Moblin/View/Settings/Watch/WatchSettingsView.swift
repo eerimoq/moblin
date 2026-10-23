@@ -29,6 +29,24 @@ struct WatchSettingsView: View {
                 case, chat, skip current TTS and a few other features are not supported.
                 """)
             }
+            Section {
+                Stepper(value: $watch.swimmingPoolLength, in: 1 ... 1500, step: 0.5) {
+                    HStack {
+                        Text("Pool length (meters)")
+                        Spacer()
+                        TextField("", value: $watch.swimmingPoolLength, format: .number)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+                .onChange(of: watch.swimmingPoolLength) { _ in
+                    model.sendSettingsToWatch()
+                }
+            } header: {
+                Text("Pool swimming")
+            } footer: {
+                Text("Set the pool length before starting a swimming workout on Apple Watch.")
+            }
         }
         .navigationTitle("Apple Watch")
     }

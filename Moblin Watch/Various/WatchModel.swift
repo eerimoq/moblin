@@ -13,6 +13,7 @@ private let healthKitTypes: Set<HKSampleType> = [
     heartRateType,
     distanceCyclingType,
     distanceWalkingRunningType,
+    distanceSwimmingType,
     stepCountType,
     activeEnergyBurnedType,
     runningPowerType,
@@ -107,6 +108,7 @@ class WatchModel: NSObject, ObservableObject {
     private var healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
+    private var workoutStats = WatchProtocolWorkoutStats()
 
     func setup() {
         if WCSession.isSupported() {
@@ -390,17 +392,34 @@ class WatchModel: NSObject, ObservableObject {
             preview.workoutType = "Cycling"
             addStepCount = false
             addCyclingMetrics = true
+        case .poolSwimming:
+            guard settings.swimmingPoolLength.isFinite,
+                  (1 ... 1500).contains(settings.swimmingPoolLength)
+            else {
+                return
+            }
+            activityType = .swimming
+            preview.workoutType = String(localized: "Pool swimming")
+            addStepCount = false
+            addCyclingMetrics = false
+            configuration.swimmingLocationType = .pool
+            configuration.lapLength = HKQuantity(unit: .meter(), doubleValue: settings.swimmingPoolLength)
         }
         configuration.activityType = activityType
-        configuration.locationType = .outdoor
+        configuration.locationType = type == .poolSwimming ? .indoor : .outdoor
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
             return
         }
         workoutBuilder = workoutSession.associatedWorkoutBuilder()
         guard let workoutBuilder else {
+            self.workoutSession = nil
             return
         }
+        workoutStats = WatchProtocolWorkoutStats(workoutStartedAt: .now,
+                                                 workoutType: type,
+                                                 workoutActive: true,
+                                                 distance: 0)
         let dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
             workoutConfiguration: configuration
@@ -412,11 +431,15 @@ class WatchModel: NSObject, ObservableObject {
             dataSource.enableCollection(for: cyclingPowerType, predicate: nil)
             dataSource.enableCollection(for: cyclingCadenceType, predicate: nil)
         }
+        if type == .poolSwimming {
+            dataSource.enableCollection(for: distanceSwimmingType, predicate: nil)
+        }
         workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
+        sendWorkoutStats()
     }
 
     private func authorizeHealthKit(completion: @escaping @Sendable () -> Void) {
@@ -457,6 +480,9 @@ class WatchModel: NSObject, ObservableObject {
     func keepAlive() {
         let message = WatchMessageFromWatch.pack(type: .keepAlive, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
+        if control.workoutActive {
+            sendWorkoutStats()
+        }
     }
 
     func skipCurrentChatTextToSpeechMessage() {
@@ -494,7 +520,16 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     private func updateWorkoutStats(stats: WatchProtocolWorkoutStats) {
-        guard let data = try? JSONEncoder().encode(stats) else {
+        workoutStats.merge(stats)
+        sendWorkoutStats()
+    }
+
+    private func sendWorkoutStats() {
+        guard workoutStats.workoutStartedAt != nil,
+              WCSession.default.activationState == .activated,
+              WCSession.default.isReachable,
+              let data = try? JSONEncoder().encode(workoutStats)
+        else {
             return
         }
         let message = WatchMessageFromWatch.pack(type: .updateWorkoutStats, data: data)
@@ -562,6 +597,8 @@ class WatchModel: NSObject, ObservableObject {
         workoutSession = nil
         workoutBuilder = nil
         control.workoutActive = false
+        workoutStats.workoutActive = false
+        sendWorkoutStats()
     }
 }
 
@@ -621,12 +658,18 @@ extension WatchModel: WCSessionDelegate {
                     try self.handleRemoveScoreboard(data)
                 case .scoreboardPlayers:
                     try self.handleScoreboardPlayers(data)
+                case .stopWorkout:
+                    self.stopWorkout()
                 }
             } catch {}
         }
     }
 
-    nonisolated func sessionReachabilityDidChange(_: WCSession) {}
+    nonisolated func sessionReachabilityDidChange(_: WCSession) {
+        DispatchQueue.main.async {
+            self.sendWorkoutStats()
+        }
+    }
 
     nonisolated func session(
         _: WCSession,
@@ -672,6 +715,9 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
             return
         }
         DispatchQueue.main.async {
+            guard workoutBuilder === self.workoutBuilder else {
+                return
+            }
             self.updateWorkoutStats(stats: stats)
         }
     }

@@ -6,6 +6,7 @@ private func types() -> Set<HKSampleType> {
         heartRateType,
         distanceCyclingType,
         distanceWalkingRunningType,
+        distanceSwimmingType,
         stepCountType,
         activeEnergyBurnedType,
         runningPowerType,
@@ -54,6 +55,8 @@ private class Workout: NSObject {
             activityType = .cycling
             addStepCount = false
             addCyclingMetrics = true
+        case .poolSwimming:
+            return false
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -225,6 +228,16 @@ extension Workout: HKLiveWorkoutBuilderDelegate {
 
 extension Model {
     func startWorkout(type: WatchProtocolWorkoutType) {
+        guard !watchWorkoutActive else {
+            makeErrorToast(title: String(localized: "Cannot start workout"),
+                           subTitle: String(localized: "A workout is already running on Apple Watch"))
+            return
+        }
+        guard type != .poolSwimming else {
+            makeErrorToast(title: String(localized: "Cannot start workout"),
+                           subTitle: String(localized: "Start swimming on Apple Watch"))
+            return
+        }
         guard #available(iOS 26, *) else {
             makeErrorToast(title: String(localized: "Cannot start workout"),
                            subTitle: String(localized: "Needs iOS 26 or to be started from an Apple Watch"))
@@ -247,6 +260,10 @@ extension Model {
     }
 
     func stopWorkout() {
+        if watchWorkoutActive {
+            stopWatchWorkout()
+            return
+        }
         guard #available(iOS 26, *) else {
             return
         }

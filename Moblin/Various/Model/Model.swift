@@ -656,6 +656,8 @@ final class Model: NSObject, ObservableObject {
     var workoutDistance: Int?
     var workoutPower: Int?
     var workoutStepCount: Int?
+    var watchWorkoutStartedAt: Date?
+    var watchWorkoutActive = false
     private var pollVotes: [Int] = [0, 0, 0]
     var pollEnabled = false
     var mediaPlayers: [UUID: MediaPlayer] = [:]

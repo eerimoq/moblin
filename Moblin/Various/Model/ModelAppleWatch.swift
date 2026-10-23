@@ -527,9 +527,40 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
+                if let startedAt = stats.workoutStartedAt {
+                    if let current = self.watchWorkoutStartedAt, startedAt < current {
+                        return
+                    }
+                    if self.watchWorkoutStartedAt != startedAt {
+                        self.watchWorkoutStartedAt = startedAt
+                        self.heartRates[""] = nil
+                        self.workoutActiveEnergyBurned = nil
+                        self.workoutDistance = nil
+                        self.workoutPower = nil
+                        self.workoutStepCount = nil
+                    }
+                }
+                if let active = stats.workoutActive {
+                    let wasActive = self.watchWorkoutActive
+                    self.watchWorkoutActive = active
+                    if active, let type = stats.workoutType, self.workoutType != type {
+                        self.setIsWorkout(type: type)
+                    } else if !active, wasActive {
+                        self.setIsWorkout(type: nil)
+                    }
+                }
                 self.handleWorkout(stats: stats)
             }
         }
+    }
+
+    func stopWatchWorkout() {
+        guard isWatchReachable() else {
+            makeErrorToast(title: String(localized: "Apple Watch disconnected"),
+                           subTitle: String(localized: "Stop the workout on your Apple Watch"))
+            return
+        }
+        sendMessageToWatch(type: .stopWorkout, data: true)
     }
 
     private nonisolated func handleUpdatePadelScoreboard(_ data: Any) {
