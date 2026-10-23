@@ -95,15 +95,15 @@ extension Model {
         }
         switch kind {
         case let .message(amount: amount, currency: currency):
-            moblinCloudShowTip(name: name, message: message, amount: amount, currency: currency)
+            moblinCloudShowTipMessage(name: name, message: message, amount: amount, currency: currency)
         case let .effect(sound: sound):
-            moblinCloudPlaySound(name: name, message: message, sound: sound)
+            moblinCloudTipEffect(name: name, message: message, sound: sound)
         case let .wheelOfLuck(count: count):
-            moblinCloudSpinWheelOfLuck(name: name, message: message, count: count)
+            moblinCloudTipWheelOfLuck(name: name, message: message, count: count)
         }
     }
 
-    private func moblinCloudShowTip(name: String, message: String, amount: String, currency: String) {
+    private func moblinCloudShowTipMessage(name: String, message: String, amount: String, currency: String) {
         var text = String(localized: "Tipped \(amount) \(currency)")
         if !message.isEmpty {
             text += ": \(message)"
@@ -112,7 +112,7 @@ extension Model {
         moblinCloudPlayTipAlert(name: name, message: message, amount: amount, currency: currency)
     }
 
-    private func moblinCloudPlaySound(name: String, message: String, sound: String) {
+    private func moblinCloudTipEffect(name: String, message: String, sound: String) {
         guard database.alertsMediaGallery.bundledSounds.contains(where: { $0.name == sound }),
               let url = Bundle.main.url(forResource: "Alerts.bundle/\(sound)", withExtension: "mp3")
         else {
@@ -127,7 +127,7 @@ extension Model {
         moblinCloudEffectPlayer?.play()
     }
 
-    private func moblinCloudSpinWheelOfLuck(name: String, message: String, count: Int) {
+    private func moblinCloudTipWheelOfLuck(name: String, message: String, count: Int) {
         guard let widget = getMoblinCloudWheelOfLuckWidget() else {
             return
         }
