@@ -52,12 +52,6 @@ private let saysByLanguage = [
     "zh": "说",
 ]
 
-private enum Voice {
-    case apple(voice: AVSpeechSynthesisVoice?)
-    case ttsMonster(voiceId: String)
-    case elevenLabs(voiceId: String)
-}
-
 final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
@@ -334,7 +328,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         saysByLanguage[language] ?? ""
     }
 
-    private func getVoice(message: String) -> (Voice?, String)? {
+    private func getVoice(message: String) -> (TextToSpeechVoice, String)? {
         recognizer.reset()
         recognizer.processString(message)
         guard !isFilteredOut(message: message) else {
@@ -344,22 +338,10 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         if !detectLanguagePerMessage || language == nil {
             language = defaultLanguage ?? Locale.current.language.languageCode?.identifier
         }
-        guard let language else {
+        guard let language, let voice = TextToSpeechVoice.find(voices: voices, language: language) else {
             return nil
         }
-        let voice = voices[language]
-        if voice?.type == .apple, let voiceIdentifier = voice?.apple.voice {
-            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voiceIdentifier)), getSays(language))
-        } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
-            return (.ttsMonster(voiceId: voiceId), getSays(language))
-        } else if voice?.type == .elevenLabs, let voiceId = voice?.elevenLabs.voiceId {
-            return (.elevenLabs(voiceId: voiceId), getSays(language))
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first
-        {
-            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voice.identifier)), getSays(language))
-        }
-        return nil
+        return (voice, getSays(language))
     }
 
     private func trySayNextMessage() {
@@ -392,12 +374,9 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
     }
 
-    private func findNextMessageToSay() -> (TextToSpeechMessage, Voice, String)? {
+    private func findNextMessageToSay() -> (TextToSpeechMessage, TextToSpeechVoice, String)? {
         while let message = messageQueue.popFirst() {
             guard let (voice, says) = getVoice(message: message.message) else {
-                continue
-            }
-            guard let voice else {
                 continue
             }
             return (message, voice, says)

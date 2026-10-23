@@ -34,12 +34,6 @@ protocol AlertsEffectDelegate: AnyObject {
     @MainActor func alertsElevenLabsApiKey() -> String
 }
 
-private enum AlertsEffectVoice {
-    case apple(voice: AVSpeechSynthesisVoice)
-    case ttsMonster(voiceId: String)
-    case elevenLabs(voiceId: String)
-}
-
 private struct Pipeline {
     var playing: Bool = false
     var messageImage: EffectImageCiImage?
@@ -395,26 +389,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func getVoice(settings: SettingsWidgetAlertsAlert) -> AlertsEffectVoice? {
+    private func getVoice(settings: SettingsWidgetAlertsAlert) -> TextToSpeechVoice? {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        let voice = settings.textToSpeechLanguageVoices[language]
-        if voice?.type == .apple, let voiceIdentifier = voice?.apple.voice,
-           let voice = AVSpeechSynthesisVoice(identifier: voiceIdentifier)
-        {
-            return .apple(voice: voice)
-        } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
-            return .ttsMonster(voiceId: voiceId)
-        } else if voice?.type == .elevenLabs, let voiceId = voice?.elevenLabs.voiceId {
-            return .elevenLabs(voiceId: voiceId)
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first,
-            let voice = AVSpeechSynthesisVoice(identifier: voice.identifier)
-        {
-            return .apple(voice: voice)
-        }
-        return nil
+        return TextToSpeechVoice.find(voices: settings.textToSpeechLanguageVoices, language: language)
     }
 
     @MainActor
