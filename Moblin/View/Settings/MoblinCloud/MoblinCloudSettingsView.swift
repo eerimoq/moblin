@@ -8,10 +8,13 @@ struct MoblinCloudSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("Let viewers tip you from your page at https://moblin.app")
                 Text("""
-                Let viewers interact with your stream from your page at https://moblin.app. \
-                Sign in at https://moblin.app/dashboard to get your Moblin Cloud key.
+                1. Sign in at https://moblin.app/dashboard and connect PayPal or Stripe.
+                2. Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below.
+                3. Pick the alerts widget that shows tips and the wheel of luck widget that tips spin.
                 """)
+                Text("Guide: https://moblin.app/docs/#guides/moblin-cloud")
             }
             Section {
                 Toggle("Enabled", isOn: $moblinCloud.enabled)
@@ -40,7 +43,10 @@ struct MoblinCloudSettingsView: View {
                     }
                 }
             } footer: {
-                Text("Alerts widget that shows tips.")
+                Text("""
+                Alerts widget that shows tips on stream. Tips always show in chat. \
+                Create one in Settings → Scenes and add it to the scenes you stream with.
+                """)
             }
             Section {
                 Picker("Wheel of luck", selection: $moblinCloud.wheelOfLuckWidgetId) {
@@ -55,7 +61,11 @@ struct MoblinCloudSettingsView: View {
                     model.moblinCloudSendWheelOfLuck()
                 }
             } footer: {
-                Text("Wheel of luck widget viewers can spin.")
+                Text("""
+                Wheel of luck widget that viewers spin with their tip. Viewers can only tip to \
+                spin while one is picked. Create one in Settings → Scenes and add it to the scenes \
+                you stream with.
+                """)
             }
         }
         .navigationTitle("Moblin Cloud")
