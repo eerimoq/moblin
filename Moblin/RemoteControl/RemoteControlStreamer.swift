@@ -64,12 +64,12 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
                                     onCompleted: @escaping (RemoteControlResult, RemoteControlResponse?)
                                         -> Void)
-    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?)
-    func remoteControlStreamerTip(name: String,
-                                  message: String,
-                                  amount: String,
-                                  currency: String,
-                                  requestId: String)
+    func remoteControlStreamerTip(
+        name: String,
+        message: String,
+        kind: RemoteControlTipKind,
+        requestId: String
+    )
 }
 
 @MainActor
@@ -450,22 +450,8 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerMusic(command: command) { result, response in
                 self.send(message: .response(id: id, result: result, data: response))
             }
-        case let .spinWheelOfLuck(name: name, message: message, count: count, requestId: requestId):
-            delegate.remoteControlStreamerSpinWheelOfLuck(
-                name: name,
-                message: message,
-                count: count,
-                requestId: requestId
-            )
-            sendEmptyOkResponse(id: id)
-        case let .tip(name: name, message: message, amount: amount, currency: currency, requestId: requestId):
-            delegate.remoteControlStreamerTip(
-                name: name,
-                message: message,
-                amount: amount,
-                currency: currency,
-                requestId: requestId
-            )
+        case let .tip(name: name, message: message, kind: kind, requestId: requestId):
+            delegate.remoteControlStreamerTip(name: name, message: message, kind: kind, requestId: requestId)
             sendEmptyOkResponse(id: id)
         }
     }

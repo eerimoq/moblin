@@ -50,6 +50,37 @@ struct RemoteControlSuite {
     }
 
     @Test
+    func tipRequests() throws {
+        let message = RemoteControlRequest.tip(name: "Erik",
+                                               message: "Hi",
+                                               kind: .message(amount: "7.00", currency: "USD"),
+                                               requestId: "ORDER1")
+        #expect(try encode(message) == """
+        {"tip":{"kind":{"message":{"amount":"7.00","currency":"USD"}},\
+        "message":"Hi","name":"Erik","requestId":"ORDER1"}}
+        """)
+        let effect = RemoteControlRequest.tip(name: "Erik",
+                                              message: "",
+                                              kind: .effect(sound: "Bad chili fart"),
+                                              requestId: "ORDER2")
+        #expect(try encode(effect) == """
+        {"tip":{"kind":{"effect":{"sound":"Bad chili fart"}},"message":"","name":"Erik","requestId":"ORDER2"}}
+        """)
+        let wheelOfLuck = """
+        {"tip":{"name":"Erik","message":"Go!","kind":{"wheelOfLuck":{"count":3}},"requestId":"ORDER3"}}
+        """
+        let request = try JSONDecoder().decode(RemoteControlRequest.self, from: Data(wheelOfLuck.utf8))
+        guard case let .tip(name, message, .wheelOfLuck(count), requestId) = request else {
+            Issue.record("not a wheel of luck tip")
+            return
+        }
+        #expect(name == "Erik")
+        #expect(message == "Go!")
+        #expect(count == 3)
+        #expect(requestId == "ORDER3")
+    }
+
+    @Test
     func musicResponses() throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]

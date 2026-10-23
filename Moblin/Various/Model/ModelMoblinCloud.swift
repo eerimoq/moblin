@@ -89,13 +89,69 @@ extension Model {
         effect.play(alert: .moblinCloudTip(name: name, message: message, amount: amount, currency: currency))
     }
 
-    func moblinCloudSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
-        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId),
-              let widget = getMoblinCloudWheelOfLuckWidget()
+    func moblinCloudTip(name: String, message: String, kind: RemoteControlTipKind, requestId: String) {
+        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId) else {
+            return
+        }
+        switch kind {
+        case let .message(amount: amount, currency: currency):
+            moblinCloudShowTip(name: name, message: message, amount: amount, currency: currency)
+        case let .effect(sound: sound):
+            moblinCloudPlaySound(name: name, message: message, sound: sound)
+        case let .wheelOfLuck(count: count):
+            moblinCloudSpinWheelOfLuck(name: name, message: message, count: count)
+        }
+    }
+
+    private func moblinCloudShowTip(name: String, message: String, amount: String, currency: String) {
+        var text = String(localized: "Tipped \(amount) \(currency)")
+        if !message.isEmpty {
+            text += ": \(message)"
+        }
+        moblinCloudAppendChatMessage(name: name, text: text)
+        moblinCloudPlayTipAlert(name: name, message: message, amount: amount, currency: currency)
+    }
+
+    private func moblinCloudPlaySound(name: String, message: String, sound: String) {
+        guard database.alertsMediaGallery.bundledSounds.contains(where: { $0.name == sound }),
+              let url = Bundle.main.url(forResource: "Alerts.bundle/\(sound)", withExtension: "mp3")
         else {
             return
         }
+        var text = String(localized: "Played \(sound)")
+        if !message.isEmpty {
+            text += ": \(message)"
+        }
+        moblinCloudAppendChatMessage(name: name, text: text)
+        moblinCloudEffectPlayer = try? AudioPlayer(contentsOf: url)
+        moblinCloudEffectPlayer?.play()
+    }
+
+    private func moblinCloudSpinWheelOfLuck(name: String, message: String, count: Int) {
+        guard let widget = getMoblinCloudWheelOfLuckWidget() else {
+            return
+        }
         getWheelOfLuckEffect(id: widget.id)?.spin(name: name, message: message, count: min(max(count, 1), 10))
+    }
+
+    private func moblinCloudAppendChatMessage(name: String, text: String) {
+        appendChatMessage(platform: nil,
+                          messageId: nil,
+                          displayName: name,
+                          user: name,
+                          userId: nil,
+                          userColor: RgbColor(red: 0x2F, green: 0xF5, blue: 0x2C),
+                          userBadges: [],
+                          segments: makeChatPostTextSegments(text: text),
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          isOwner: false,
+                          bits: nil,
+                          highlight: ChatHighlight.makeRemoteControlAssistant(),
+                          live: true)
     }
 }
 
@@ -278,20 +334,12 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model.remoteControlStreamerMusic(command: command, onCompleted: onCompleted)
     }
 
-    func remoteControlStreamerSpinWheelOfLuck(name: String, message: String, count: Int, requestId: String?) {
-        model?.moblinCloudSpinWheelOfLuck(name: name, message: message, count: count, requestId: requestId)
-    }
-
-    func remoteControlStreamerTip(name: String,
-                                  message: String,
-                                  amount: String,
-                                  currency: String,
-                                  requestId: String)
-    {
-        model?.remoteControlStreamerTip(name: name,
-                                        message: message,
-                                        amount: amount,
-                                        currency: currency,
-                                        requestId: requestId)
+    func remoteControlStreamerTip(
+        name: String,
+        message: String,
+        kind: RemoteControlTipKind,
+        requestId: String
+    ) {
+        model?.remoteControlStreamerTip(name: name, message: message, kind: kind, requestId: requestId)
     }
 }

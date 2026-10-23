@@ -1116,44 +1116,13 @@ extension Model: RemoteControlStreamerDelegate {
         return false
     }
 
-    func remoteControlStreamerSpinWheelOfLuck(
-        name _: String,
-        message _: String,
-        count _: Int,
-        requestId _: String?
-    ) {}
-
-    func remoteControlStreamerTip(name: String,
-                                  message: String,
-                                  amount: String,
-                                  currency: String,
-                                  requestId: String)
-    {
-        guard !isRemoteControlRequestAlreadyHandled(requestId: requestId) else {
-            return
-        }
-        var text = String(localized: "Tipped \(amount) \(currency)")
-        if !message.isEmpty {
-            text += ": \(message)"
-        }
-        appendChatMessage(platform: nil,
-                          messageId: nil,
-                          displayName: name,
-                          user: name,
-                          userId: nil,
-                          userColor: RgbColor(red: 0x2F, green: 0xF5, blue: 0x2C),
-                          userBadges: [],
-                          segments: makeChatPostTextSegments(text: text),
-                          timestamp: statusOther.digitalClock,
-                          timestampTime: .now,
-                          isAction: false,
-                          isSubscriber: false,
-                          isModerator: false,
-                          isOwner: false,
-                          bits: nil,
-                          highlight: ChatHighlight.makeRemoteControlAssistant(),
-                          live: true)
-        moblinCloudPlayTipAlert(name: name, message: message, amount: amount, currency: currency)
+    func remoteControlStreamerTip(
+        name: String,
+        message: String,
+        kind: RemoteControlTipKind,
+        requestId: String
+    ) {
+        moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {

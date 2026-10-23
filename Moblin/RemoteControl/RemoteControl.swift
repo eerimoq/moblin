@@ -75,8 +75,13 @@ enum RemoteControlRequest: Codable {
     case stopMacro(id: UUID)
     case sendMessage(text: String)
     case music(command: RemoteControlMusicCommand)
-    case spinWheelOfLuck(name: String, message: String, count: Int, requestId: String?)
-    case tip(name: String, message: String, amount: String, currency: String, requestId: String)
+    case tip(name: String, message: String, kind: RemoteControlTipKind, requestId: String)
+}
+
+enum RemoteControlTipKind: Codable {
+    case message(amount: String, currency: String)
+    case effect(sound: String)
+    case wheelOfLuck(count: Int)
 }
 
 enum RemoteControlResponse: Codable {
