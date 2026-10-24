@@ -26,9 +26,11 @@ class SampleBufferSender: NSObject {
     }
 
     func stop() {
-        try? fd?.close()
-        fd = nil
-        audioFormat = nil
+        writeLock.withLock {
+            try? fd?.close()
+            fd = nil
+            audioFormat = nil
+        }
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
@@ -50,20 +52,22 @@ class SampleBufferSender: NSObject {
     }
 
     private func tryConnect() -> Bool {
-        guard let appGroup else {
+        guard let appGroup, let rawFd = try? createSocket() else {
             return false
         }
+        let fd = FileDescriptor(rawValue: rawFd)
         do {
-            let rawFd = try createSocket()
-            fd = FileDescriptor(rawValue: rawFd)
             try setIgnoreSigPipe(fd: rawFd)
             let containerDir = try createContainerDir(appGroup: appGroup)
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
             try connect(fd: rawFd, addr: addr)
         } catch {
-            stop()
+            try? fd.close()
             return false
+        }
+        writeLock.withLock {
+            self.fd = fd
         }
         return true
     }
@@ -86,18 +90,6 @@ class SampleBufferSender: NSObject {
             return
         }
         let format = Data(bytes: &asbd, count: MemoryLayout<AudioStreamBasicDescription>.size)
-        if format != audioFormat {
-            try writeLock.withLock {
-                try sendHeader(SampleBufferHeader(
-                    type: .audioFormat,
-                    size: format.count,
-                    presentationTimeStamp: 0.0,
-                    isSync: false
-                ))
-                try send(data: format)
-            }
-            audioFormat = format
-        }
         var data = Data(count: dataBuffer.dataLength)
         let status = data.withUnsafeMutableBytes { pointer in
             CMBlockBufferCopyDataBytes(dataBuffer,
@@ -109,6 +101,16 @@ class SampleBufferSender: NSObject {
             return
         }
         try writeLock.withLock {
+            if format != audioFormat {
+                try sendHeader(SampleBufferHeader(
+                    type: .audioFormat,
+                    size: format.count,
+                    presentationTimeStamp: 0.0,
+                    isSync: false
+                ))
+                try send(data: format)
+                audioFormat = format
+            }
             try sendHeader(SampleBufferHeader(
                 type: .audioBuffer,
                 size: data.count,
