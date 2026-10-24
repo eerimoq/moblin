@@ -64,23 +64,14 @@ final class Recorder: NSObject, @unchecked Sendable {
     private var videoOutputSettings: [String: Any] = [:]
     private var fileHandle: FileHandle?
     private var initSegment: Data?
-    private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
     private var writer: AVAssetWriter?
     private var audioWriterInput: (any WriterInput)?
     private var videoWriterInput: (any WriterInput)?
-    private var audioConverter: AVAudioConverter?
-    private var audioOutputFormat: AVAudioFormat?
-    private var audioConverterInputDescription: AudioStreamBasicDescription?
+    private var audioFormatDescription: CMFormatDescription?
     private var basePresentationTimeStamp: CMTime = .invalid
     private var nextAudioPresentationTimeStamp: CMTime = .invalid
-    private var isRecording: Bool = false
+    private(set) var isRecording: Bool = false
     weak var delegate: (any RecorderDelegate)?
-
-    func setAudioChannelsMap(map: [Int: Int]) {
-        queue.async {
-            self.outputChannelsMap = map
-        }
-    }
 
     func startRunning(
         url: URL?,
@@ -157,9 +148,9 @@ final class Recorder: NSObject, @unchecked Sendable {
 
     private func appendAudioInternal(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
-              let convertedSampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let input = getAudioWriterInput(sampleBuffer: convertedSampleBuffer),
-              let duration = makeAudioDuration(numberOfFrames: convertedSampleBuffer.numSamples),
+              let input = getAudioWriterInput(sampleBuffer: sampleBuffer),
+              let audioFormatDescription,
+              let audioStreamBasicDescription = audioFormatDescription.audioStreamBasicDescription,
               isReadyForStartWriting(writer: writer),
               basePresentationTimeStamp.isValid
         else {
@@ -177,13 +168,17 @@ final class Recorder: NSObject, @unchecked Sendable {
             return
         }
         if offset > maximumAudioPresentationTimeStampOffset, offset < 10 {
-            guard appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
+            guard appendAudioSilence(writer,
+                                     input,
+                                     AVAudioFormat(cmAudioFormatDescription: audioFormatDescription),
+                                     nextAudioPresentationTimeStamp,
+                                     presentationTimeStamp)
             else {
                 return
             }
             nextAudioPresentationTimeStamp = presentationTimeStamp
         }
-        guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp),
+        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp),
               appendAudioSampleBuffer(
                   writer,
                   input,
@@ -192,27 +187,21 @@ final class Recorder: NSObject, @unchecked Sendable {
         else {
             return
         }
-        nextAudioPresentationTimeStamp = presentationTimeStamp + duration
-    }
-
-    private func makeAudioDuration(numberOfFrames: Int) -> CMTime? {
-        guard let outputFormat = audioConverter?.outputFormat else {
-            return nil
-        }
-        return CMTime(value: CMTimeValue(numberOfFrames), timescale: CMTimeScale(outputFormat.sampleRate))
+        nextAudioPresentationTimeStamp = presentationTimeStamp + CMTime(
+            value: CMTimeValue(sampleBuffer.numSamples),
+            timescale: CMTimeScale(audioStreamBasicDescription.mSampleRate)
+        )
     }
 
     private func appendAudioSilence(_ writer: AVAssetWriter,
                                     _ input: any WriterInput,
+                                    _ format: AVAudioFormat,
                                     _ from: CMTime,
                                     _ to: CMTime) -> Bool
     {
-        guard let outputFormat = audioConverter?.outputFormat else {
-            return false
-        }
-        let numberOfFrames = UInt32(((to - from).seconds * outputFormat.sampleRate).rounded())
+        let numberOfFrames = UInt32(((to - from).seconds * format.sampleRate).rounded())
         guard numberOfFrames > 0,
-              let buffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: numberOfFrames)
+              let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: numberOfFrames)
         else {
             return false
         }
@@ -275,52 +264,6 @@ final class Recorder: NSObject, @unchecked Sendable {
         }
     }
 
-    private func convertAudio(_ sampleBuffer: CMSampleBuffer,
-                              _ presentationTimeStamp: CMTime) -> CMSampleBuffer?
-    {
-        if sampleBuffer.formatDescription?.audioStreamBasicDescription != audioConverterInputDescription {
-            makeAudioConverter(sampleBuffer.formatDescription)
-        }
-        guard let audioConverter else {
-            return nil
-        }
-        let ratio = audioConverter.outputFormat.sampleRate / audioConverter.inputFormat.sampleRate
-        guard let outputBuffer = AVAudioPCMBuffer(
-            pcmFormat: audioConverter.outputFormat,
-            frameCapacity: AVAudioFrameCount((Double(sampleBuffer.numSamples) * ratio).rounded(.up))
-        ) else {
-            return nil
-        }
-        return try? sampleBuffer.withAudioBufferList { list, _ in
-            guard let inputBuffer = AVAudioPCMBuffer(
-                pcmFormat: audioConverter.inputFormat,
-                bufferListNoCopy: list.unsafePointer
-            ) else {
-                logger.info("recorder: Failed to create input buffer")
-                return nil
-            }
-            nonisolated(unsafe) var inputProvided = false
-            var error: NSError?
-            let status = audioConverter.convert(to: outputBuffer, error: &error) { _, inputStatus in
-                if inputProvided {
-                    inputStatus.pointee = .noDataNow
-                    return nil
-                }
-                inputProvided = true
-                inputStatus.pointee = .haveData
-                return inputBuffer
-            }
-            if status == .error {
-                logger.info("recorder: audio: Convert failed with \(error?.localizedDescription ?? "")")
-                return nil
-            }
-            guard outputBuffer.frameLength > 0 else {
-                return nil
-            }
-            return outputBuffer.makeSampleBuffer(presentationTimeStamp)
-        }
-    }
-
     private func createAudioWriterInput(sampleBuffer: CMSampleBuffer) -> (any WriterInput)? {
         let sourceFormatHint = sampleBuffer.formatDescription
         var outputSettings: [String: Any] = [:]
@@ -343,6 +286,7 @@ final class Recorder: NSObject, @unchecked Sendable {
     private func getAudioWriterInput(sampleBuffer: CMSampleBuffer) -> (any WriterInput)? {
         if audioWriterInput == nil {
             audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer)
+            audioFormatDescription = sampleBuffer.formatDescription
         }
         return audioWriterInput
     }
@@ -402,73 +346,6 @@ final class Recorder: NSObject, @unchecked Sendable {
         return writerInput
     }
 
-    private func makeAudioConverter(_ formatDescription: CMFormatDescription?) {
-        audioConverter = nil
-        audioConverterInputDescription = formatDescription?.audioStreamBasicDescription
-        guard var streamBasicDescription = audioConverterInputDescription else {
-            return
-        }
-        logger.debug("recorder: Creating converter from \(streamBasicDescription)")
-        guard let inputFormat = makeAudioFormat(&streamBasicDescription) else {
-            return
-        }
-        if audioOutputFormat == nil {
-            audioOutputFormat = AVAudioFormat(
-                commonFormat: inputFormat.commonFormat,
-                sampleRate: inputFormat.sampleRate,
-                channels: min(inputFormat.channelCount, 2),
-                interleaved: inputFormat.isInterleaved
-            )
-        }
-        guard let audioOutputFormat else {
-            return
-        }
-        logger.debug("recorder: Input: \(inputFormat), output: \(audioOutputFormat)")
-        audioConverter = AVAudioConverter(from: inputFormat, to: audioOutputFormat)
-        audioConverter?.channelMap = makeChannelMap(
-            numberOfInputChannels: Int(inputFormat.channelCount),
-            numberOfOutputChannels: Int(audioOutputFormat.channelCount),
-            outputToInputChannelsMap: outputChannelsMap
-        )
-    }
-
-    private func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
-        guard numberOfChannels > 2 else {
-            return nil
-        }
-        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
-    }
-
-    private func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        if basicDescription.mFormatID == kAudioFormatLinearPCM,
-           kLinearPCMFormatFlagIsBigEndian ==
-           (basicDescription.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
-        {
-            // ReplayKit audioApp.
-            guard basicDescription.mBitsPerChannel == 16 else {
-                return nil
-            }
-            if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-                return AVAudioFormat(
-                    commonFormat: .pcmFormatInt16,
-                    sampleRate: basicDescription.mSampleRate,
-                    interleaved: true,
-                    channelLayout: layout
-                )
-            }
-            return AVAudioFormat(
-                commonFormat: .pcmFormatInt16,
-                sampleRate: basicDescription.mSampleRate,
-                channels: basicDescription.mChannelsPerFrame,
-                interleaved: true
-            )
-        }
-        if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-            return AVAudioFormat(streamDescription: &basicDescription, channelLayout: layout)
-        }
-        return AVAudioFormat(streamDescription: &basicDescription)
-    }
-
     private func startRunningInternal(
         url: URL?,
         replay: Bool,
@@ -524,9 +401,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         writer = nil
         audioWriterInput = nil
         videoWriterInput = nil
-        audioConverter = nil
-        audioOutputFormat = nil
-        audioConverterInputDescription = nil
+        audioFormatDescription = nil
         basePresentationTimeStamp = .invalid
         nextAudioPresentationTimeStamp = .invalid
         fileWriterQueue.async {

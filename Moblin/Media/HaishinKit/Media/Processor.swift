@@ -264,7 +264,7 @@ final class Processor: @unchecked Sendable {
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        recorder.setAudioChannelsMap(map: map)
+        audio.setChannelsMap(map: map)
     }
 
     func setSpeechToText(enabled: Bool) {

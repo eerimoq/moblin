@@ -7,14 +7,13 @@ protocol AudioEncoderDelegate: AnyObject {
 
 class AudioEncoder: @unchecked Sendable {
     weak var delegate: (any AudioEncoderDelegate)?
-    private var isRunning = false
+    private(set) var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
     private var audioConverter: AVAudioConverter?
     private var settings = AudioEncoderSettings()
     private var bitrate: Atomic<Int> = .init(128_000)
     private var sampleRate: Atomic<Double?> = .init(nil)
-    private var inSourceFormat: AudioStreamBasicDescription?
 
     init(lockQueue: DispatchQueue) {
         self.lockQueue = lockQueue
@@ -52,14 +51,19 @@ class AudioEncoder: @unchecked Sendable {
         }
     }
 
-    func setInputSourceFormat(_ newInSourceFormat: AudioStreamBasicDescription?) {
-        guard var newInSourceFormat, newInSourceFormat != inSourceFormat else {
+    func setInputFormat(_ inputFormat: AVAudioFormat?) {
+        guard inputFormat != audioConverter?.inputFormat else {
             return
         }
-        ringBuffer = .init(&newInSourceFormat, numSamplesPerBuffer: samplesPerBuffer())
-        audioConverter = makeAudioConverter(&newInSourceFormat)
-        let newSampleRate = newInSourceFormat.mSampleRate
-        sampleRate.mutate { $0 = newSampleRate }
+        guard let inputFormat else {
+            ringBuffer = nil
+            audioConverter = nil
+            sampleRate.mutate { $0 = nil }
+            return
+        }
+        ringBuffer = .init(inputFormat, numSamplesPerBuffer: samplesPerBuffer())
+        audioConverter = makeAudioConverter(inputFormat)
+        sampleRate.mutate { $0 = inputFormat.sampleRate }
     }
 
     func getBitrate() -> Int {
@@ -68,13 +72,6 @@ class AudioEncoder: @unchecked Sendable {
 
     func getSampleRate() -> Double? {
         sampleRate.value
-    }
-
-    static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        AVAudioFormat(
-            streamDescription: &basicDescription,
-            channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
-        )
     }
 
     private func samplesPerBuffer() -> Int {
@@ -94,17 +91,9 @@ class AudioEncoder: @unchecked Sendable {
     }
 
     private func stopRunningInternal() {
-        inSourceFormat = nil
         audioConverter = nil
         ringBuffer = nil
         isRunning = false
-    }
-
-    private static func makeChannelLayout(_ numberOfChannels: UInt32) -> AVAudioChannelLayout? {
-        guard numberOfChannels > 2 else {
-            return nil
-        }
-        return AVAudioChannelLayout(layoutTag: kAudioChannelLayoutTag_DiscreteInOrder | numberOfChannels)
     }
 
     private func convertBuffer(
@@ -125,13 +114,8 @@ class AudioEncoder: @unchecked Sendable {
         }
     }
 
-    private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription)
-        -> AVAudioConverter?
-    {
-        guard
-            let inputFormat = Self.makeAudioFormat(&inSourceFormat),
-            let outputFormat = settings.format.makeAudioFormat(inSourceFormat)
-        else {
+    private func makeAudioConverter(_ inputFormat: AVAudioFormat) -> AVAudioConverter? {
+        guard let outputFormat = settings.format.makeAudioFormat(inputFormat) else {
             return nil
         }
         logger.debug("audio-encoder: inputFormat: \(inputFormat)")
@@ -140,11 +124,6 @@ class AudioEncoder: @unchecked Sendable {
             logger.info("audio-encoder: Failed to create from \(inputFormat) to \(outputFormat)")
             return nil
         }
-        converter.channelMap = makeChannelMap(
-            numberOfInputChannels: Int(inputFormat.channelCount),
-            numberOfOutputChannels: Int(outputFormat.channelCount),
-            outputToInputChannelsMap: settings.channelsMap
-        )
         converter.setBitrate(to: settings.bitrate)
         delegate?.audioEncoderOutputFormat(outputFormat)
         return converter

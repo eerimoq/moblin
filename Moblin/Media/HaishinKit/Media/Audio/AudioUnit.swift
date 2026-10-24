@@ -173,6 +173,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var latestBuiltinPresentationTimeStamp: CMTime = .invalid
     private var nextBuiltinPresentationTimeStamp: CMTime = .invalid
     private var isOutputtingSilence = false
+    private let pcmConverter = AudioPcmConverter(name: "audio-unit")
 
     override init() {
         super.init()
@@ -186,13 +187,13 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                                                object: session)
     }
 
-    private var inputSourceFormat: AudioStreamBasicDescription? {
+    private var outputFormat: AVAudioFormat? {
         didSet {
-            guard inputSourceFormat != oldValue else {
+            guard outputFormat != oldValue else {
                 return
             }
-            encoder.setInputSourceFormat(inputSourceFormat)
-            previewEncoder?.setInputSourceFormat(inputSourceFormat)
+            encoder.setInputFormat(outputFormat)
+            previewEncoder?.setInputFormat(outputFormat)
         }
     }
 
@@ -322,7 +323,13 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     func stopEncoding() {
         encoder.stopRunning()
         processorPipelineQueue.async {
-            self.inputSourceFormat = nil
+            self.encoder.setInputFormat(self.outputFormat)
+        }
+    }
+
+    func setChannelsMap(map: [Int: Int]) {
+        processorPipelineQueue.async {
+            self.pcmConverter.setChannelsMap(map)
         }
     }
 
@@ -332,8 +339,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         encoder.delegate = delegate
         encoder.startRunning()
         processorPipelineQueue.async {
-            if let inputSourceFormat = self.inputSourceFormat {
-                encoder.setInputSourceFormat(inputSourceFormat)
+            if let outputFormat = self.outputFormat {
+                encoder.setInputFormat(outputFormat)
             }
             self.previewEncoder = encoder
         }
@@ -473,9 +480,27 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
         }
-        inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
+        let isOutputting = encoder.isRunning || previewEncoder != nil || processor.recorder.isRecording
+        pcmConverter.setOutputFormatFixed(isOutputting)
+        pcmConverter.setInputFormat(sampleBuffer.formatDescription?.audioStreamBasicDescription)
+        outputFormat = pcmConverter.outputFormat
+        guard isOutputting,
+              let outputFormat,
+              let sampleBuffer = pcmConverter.convert(sampleBuffer)
+        else {
+            return
+        }
+        let presentationTimeStamp = presentationTimeStamp.convertScale(
+            Int32(outputFormat.sampleRate),
+            method: .default
+        )
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
-        processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
+        if processor.recorder.isRecording {
+            let recorderSampleBuffer = pcmConverter.isPassthrough
+                ? sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
+                : sampleBuffer
+            processor.recorder.appendAudio(recorderSampleBuffer, presentationTimeStamp)
+        }
         previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 

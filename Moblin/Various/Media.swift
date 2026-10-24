@@ -873,8 +873,6 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func setAudioChannelsMap(channelsMap: [Int: Int]) {
-        audioEncoderSettings.channelsMap = channelsMap
-        commitAudioEncoderSettings()
         processor?.setAudioChannelsMap(map: channelsMap)
     }
 

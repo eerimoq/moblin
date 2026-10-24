@@ -11,11 +11,9 @@ final class AudioEncoderRingBuffer {
     private var workingBuffer: AVAudioPCMBuffer
     private var workingBufferPresentationTimeStamp: CMTime = .zero
 
-    init?(_ inputBasicDescription: inout AudioStreamBasicDescription, numSamplesPerBuffer: Int) {
+    init?(_ format: AVAudioFormat, numSamplesPerBuffer: Int) {
         self.numSamplesPerBuffer = numSamplesPerBuffer
         guard
-            inputBasicDescription.mFormatID == kAudioFormatLinearPCM,
-            let format = AudioEncoder.makeAudioFormat(&inputBasicDescription),
             let outputBuffer = AVAudioPCMBuffer(
                 pcmFormat: format,
                 frameCapacity: UInt32(numSamplesPerBuffer)
