@@ -18,6 +18,8 @@ class SampleBufferSender: NSObject {
     private var fd: FileDescriptor?
     private var videoEncoder: VideoEncoder?
     private var appGroup: String?
+    private var audioFormat: Data?
+    private let writeLock = NSLock()
 
     func start(appGroup: String) {
         self.appGroup = appGroup
@@ -26,14 +28,20 @@ class SampleBufferSender: NSObject {
     func stop() {
         try? fd?.close()
         fd = nil
+        audioFormat = nil
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
         if !isConnected(), !tryConnect() {
             return
         }
-        if type == .video {
+        switch type {
+        case .video:
             try? sendVideo(sampleBuffer, type)
+        case .audioApp:
+            try? sendAudio(sampleBuffer)
+        default:
+            break
         }
     }
 
@@ -71,6 +79,46 @@ class SampleBufferSender: NSObject {
         videoEncoder?.appendImageBuffer(imageBuffer, sampleBuffer.presentationTimeStamp)
     }
 
+    private func sendAudio(_ sampleBuffer: CMSampleBuffer) throws {
+        guard var asbd = sampleBuffer.formatDescription?.audioStreamBasicDescription,
+              let dataBuffer = sampleBuffer.dataBuffer
+        else {
+            return
+        }
+        let format = Data(bytes: &asbd, count: MemoryLayout<AudioStreamBasicDescription>.size)
+        if format != audioFormat {
+            try writeLock.withLock {
+                try sendHeader(SampleBufferHeader(
+                    type: .audioFormat,
+                    size: format.count,
+                    presentationTimeStamp: 0.0,
+                    isSync: false
+                ))
+                try send(data: format)
+            }
+            audioFormat = format
+        }
+        var data = Data(count: dataBuffer.dataLength)
+        let status = data.withUnsafeMutableBytes { pointer in
+            CMBlockBufferCopyDataBytes(dataBuffer,
+                                       atOffset: 0,
+                                       dataLength: pointer.count,
+                                       destination: pointer.baseAddress!)
+        }
+        guard status == noErr else {
+            return
+        }
+        try writeLock.withLock {
+            try sendHeader(SampleBufferHeader(
+                type: .audioBuffer,
+                size: data.count,
+                presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+                isSync: false
+            ))
+            try send(data: data)
+        }
+    }
+
     private func sendHeader(_ header: SampleBufferHeader) throws {
         let data = try PropertyListEncoder().encode(header)
         var size = Data(count: 4)
@@ -100,8 +148,10 @@ extension SampleBufferSender: VideoEncoderDelegate {
             isSync: false
         )
         do {
-            try sendHeader(header)
-            try send(data: hvcC)
+            try writeLock.withLock {
+                try sendHeader(header)
+                try send(data: hvcC)
+            }
         } catch {}
     }
 
@@ -119,8 +169,10 @@ extension SampleBufferSender: VideoEncoderDelegate {
             isSync: sampleBuffer.getIsSync()
         )
         do {
-            try sendHeader(header)
-            try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
+            try writeLock.withLock {
+                try sendHeader(header)
+                try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
+            }
         } catch {}
     }
 }

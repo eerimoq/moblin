@@ -719,6 +719,8 @@ extension Model {
             isNetwork = true
         } else if getWhepStream(id: cameraId) != nil {
             isNetwork = true
+        } else if cameraId == screenCaptureCameraId, !isMac() {
+            isNetwork = true
         }
         if isNetwork {
             markMicAsConnected(id: "\(cameraId) 0")
@@ -743,6 +745,8 @@ extension Model {
         } else if getWhipStream(id: cameraId) != nil {
             isNetwork = true
         } else if getWhepStream(id: cameraId) != nil {
+            isNetwork = true
+        } else if cameraId == screenCaptureCameraId, !isMac() {
             isNetwork = true
         }
         if isNetwork {

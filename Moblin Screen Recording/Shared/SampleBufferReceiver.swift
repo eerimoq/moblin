@@ -43,6 +43,7 @@ class SampleBufferReceiver: @unchecked Sendable {
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
+    private var audioConverter: AVAudioConverter?
     private let colorRange: Atomic<SettingsStreamColorRange> = .init(.full)
 
     func setPixelFormatType(_ colorRange: SettingsStreamColorRange) {
@@ -87,6 +88,10 @@ class SampleBufferReceiver: @unchecked Sendable {
                 try handleVideoFormat(senderFd, header)
             case .videoBuffer:
                 try handleVideoBuffer(senderFd, header)
+            case .audioFormat:
+                try handleAudioFormat(senderFd, header)
+            case .audioBuffer:
+                try handleAudioBuffer(senderFd, header)
             }
         }
     }
@@ -134,6 +139,68 @@ class SampleBufferReceiver: @unchecked Sendable {
         }
         sampleBuffer.setIsSync(header.isSync)
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func handleAudioFormat(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        audioConverter = nil
+        guard data.count == MemoryLayout<AudioStreamBasicDescription>.size else {
+            return
+        }
+        var asbd = data.withUnsafeBytes { $0.loadUnaligned(as: AudioStreamBasicDescription.self) }
+        guard let inputFormat = AVAudioFormat(streamDescription: &asbd),
+              let outputFormat = AVAudioFormat(
+                  commonFormat: .pcmFormatInt16,
+                  sampleRate: inputFormat.sampleRate,
+                  channels: inputFormat.channelCount,
+                  interleaved: true
+              )
+        else {
+            return
+        }
+        audioConverter = AVAudioConverter(from: inputFormat, to: outputFormat)
+    }
+
+    private func handleAudioBuffer(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        guard let audioConverter else {
+            return
+        }
+        let inputFormat = audioConverter.inputFormat
+        let bytesPerFrame = Int(inputFormat.streamDescription.pointee.mBytesPerFrame)
+        let numberOfBuffers = inputFormat.isInterleaved ? 1 : Int(inputFormat.channelCount)
+        guard bytesPerFrame > 0 else {
+            return
+        }
+        let frameCount = AVAudioFrameCount(data.count / bytesPerFrame / numberOfBuffers)
+        guard frameCount > 0,
+              let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: frameCount),
+              let outputBuffer = AVAudioPCMBuffer(
+                  pcmFormat: audioConverter.outputFormat,
+                  frameCapacity: frameCount
+              )
+        else {
+            return
+        }
+        inputBuffer.frameLength = frameCount
+        let bufferSize = Int(frameCount) * bytesPerFrame
+        let buffers = UnsafeMutableAudioBufferListPointer(inputBuffer.mutableAudioBufferList)
+        data.withUnsafeBytes { pointer in
+            for (index, buffer) in buffers.enumerated() {
+                buffer.mData?.copyMemory(from: pointer.baseAddress! + index * bufferSize,
+                                         byteCount: bufferSize)
+            }
+        }
+        do {
+            try audioConverter.convert(to: outputBuffer, from: inputBuffer)
+        } catch {
+            return
+        }
+        let timestamp = CMTime(seconds: header.presentationTimeStamp + screenRecordingLatency)
+        guard let sampleBuffer = outputBuffer.makeSampleBuffer(timestamp) else {
+            return
+        }
+        delegate?.handleSampleBuffer(type: .audioApp, sampleBuffer: sampleBuffer)
     }
 
     private func readHeader(_ senderFd: FileDescriptor) throws -> SampleBufferHeader {

@@ -64,6 +64,9 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         if isMediaPlayerCameraOrMic(camera: name) {
             return false
         }
+        if isScreenCapture() {
+            return false
+        }
         return true
     }
 
@@ -101,6 +104,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
 
     func isMediaPlayer() -> Bool {
         isMediaPlayerCameraOrMic(camera: name)
+    }
+
+    func isScreenCapture() -> Bool {
+        inputUid == screenCaptureCameraId.uuidString
     }
 
     enum CodingKeys: CodingKey {

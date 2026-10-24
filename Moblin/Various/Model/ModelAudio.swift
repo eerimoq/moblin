@@ -184,6 +184,7 @@ extension Model {
         updateRtmpMics()
         updateWhipMics()
         updateWhepMics()
+        updateScreenCaptureMics()
         syncMics(found: audioSession, isKind: { $0.isAudioSession() }, removeMissing: false)
     }
 
@@ -215,6 +216,13 @@ extension Model {
         syncMics(found: listMediaPlayerMics(), isKind: { $0.isMediaPlayer() }, removeMissing: true)
     }
 
+    func updateScreenCaptureMics() {
+        syncMics(found: listScreenCaptureMics(),
+                 isKind: { $0.isScreenCapture() },
+                 removeMissing: true,
+                 insertFirst: false)
+    }
+
     func updateAudioSessionMicsAsync(onCompleted: (@MainActor () -> Void)? = nil) {
         processorControlQueue.async {
             let audioSessionMics = listAudioSessionMics()
@@ -227,7 +235,8 @@ extension Model {
 
     private func syncMics(found: [SettingsMicsMic],
                           isKind: (SettingsMicsMic) -> Bool,
-                          removeMissing: Bool)
+                          removeMissing: Bool,
+                          insertFirst: Bool = true)
     {
         var mics = database.mics.mics
         if removeMissing {
@@ -242,7 +251,11 @@ extension Model {
             }
         }
         for mic in found where !mics.contains(mic) {
-            mics.insert(mic, at: 0)
+            if insertFirst {
+                mics.insert(mic, at: 0)
+            } else {
+                mics.append(mic)
+            }
         }
         database.mics.mics = mics
     }
@@ -533,6 +546,15 @@ extension Model {
         }
     }
 
+    private func listScreenCaptureMics() -> [SettingsMicsMic] {
+        guard !isMac() else {
+            return []
+        }
+        return [SettingsMicsMic(name: screenCaptureCameraName,
+                                inputUid: screenCaptureCameraId.uuidString,
+                                connected: activeBufferedVideoIds.contains(screenCaptureCameraId))]
+    }
+
     private func getConnectedMicById(id: String) -> SettingsMicsMic? {
         guard let mic = getMicById(id: id), mic.connected else {
             return nil
@@ -585,6 +607,8 @@ extension Model {
             attachBufferedAudio(cameraId: getWhepMicCameraId(mic: mic), micId: mic.id)
         } else if isMediaPlayerMic(mic: mic) {
             attachBufferedAudio(cameraId: getMediaPlayerMicCameraId(mic: mic), micId: mic.id)
+        } else if mic.isScreenCapture() {
+            attachBufferedAudio(cameraId: screenCaptureCameraId, micId: mic.id)
         } else {
             selectMicDefault(mic: mic)
         }
@@ -698,6 +722,8 @@ extension Model {
             media.setTalkback(cameraId: getWhepMicCameraId(mic: mic))
         } else if isMediaPlayerMic(mic: mic) {
             media.setTalkback(cameraId: getMediaPlayerMicCameraId(mic: mic))
+        } else if mic.isScreenCapture() {
+            media.setTalkback(cameraId: screenCaptureCameraId)
         } else {
             media.setTalkback(cameraId: nil)
         }
