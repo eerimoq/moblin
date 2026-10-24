@@ -70,6 +70,7 @@ final class Recorder: NSObject, @unchecked Sendable {
     private var videoWriterInput: (any WriterInput)?
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
+    private var audioConverterInputDescription: AudioStreamBasicDescription?
     private var basePresentationTimeStamp: CMTime = .invalid
     private var nextAudioPresentationTimeStamp: CMTime = .invalid
     private var isRecording: Bool = false
@@ -273,20 +274,16 @@ final class Recorder: NSObject, @unchecked Sendable {
     private func convertAudio(_ sampleBuffer: CMSampleBuffer,
                               _ presentationTimeStamp: CMTime) -> CMSampleBuffer?
     {
-        tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
-            ?? tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: true)
-    }
-
-    private func tryConvertAudio(_ sampleBuffer: CMSampleBuffer,
-                                 _ presentationTimeStamp: CMTime,
-                                 makeConverter: Bool) -> CMSampleBuffer?
-    {
-        if makeConverter {
+        if sampleBuffer.formatDescription?.audioStreamBasicDescription != audioConverterInputDescription {
             makeAudioConverter(sampleBuffer.formatDescription)
         }
-        guard let converter = audioConverter, let outputBuffer = AVAudioPCMBuffer(
+        guard let converter = audioConverter else {
+            return nil
+        }
+        let ratio = converter.outputFormat.sampleRate / converter.inputFormat.sampleRate
+        guard let outputBuffer = AVAudioPCMBuffer(
             pcmFormat: converter.outputFormat,
-            frameCapacity: UInt32(sampleBuffer.numSamples)
+            frameCapacity: AVAudioFrameCount((Double(sampleBuffer.numSamples) * ratio).rounded(.up))
         ) else {
             return nil
         }
@@ -298,10 +295,22 @@ final class Recorder: NSObject, @unchecked Sendable {
                 logger.info("recorder: Failed to create input buffer")
                 return nil
             }
-            do {
-                try converter.convert(to: outputBuffer, from: inputBuffer)
-            } catch {
-                logger.info("recorder: audio: Convert failed with \(error.localizedDescription)")
+            nonisolated(unsafe) var inputProvided = false
+            var error: NSError?
+            let status = converter.convert(to: outputBuffer, error: &error) { _, inputStatus in
+                if inputProvided {
+                    inputStatus.pointee = .noDataNow
+                    return nil
+                }
+                inputProvided = true
+                inputStatus.pointee = .haveData
+                return inputBuffer
+            }
+            if status == .error {
+                logger.info("recorder: audio: Convert failed with \(error?.localizedDescription ?? "")")
+                return nil
+            }
+            guard outputBuffer.frameLength > 0 else {
                 return nil
             }
             return outputBuffer.makeSampleBuffer(presentationTimeStamp)
@@ -390,7 +399,9 @@ final class Recorder: NSObject, @unchecked Sendable {
     }
 
     private func makeAudioConverter(_ formatDescription: CMFormatDescription?) {
-        guard var streamBasicDescription = formatDescription?.audioStreamBasicDescription else {
+        audioConverter = nil
+        audioConverterInputDescription = formatDescription?.audioStreamBasicDescription
+        guard var streamBasicDescription = audioConverterInputDescription else {
             return
         }
         logger.debug("recorder: Creating converter from \(streamBasicDescription)")
@@ -511,6 +522,7 @@ final class Recorder: NSObject, @unchecked Sendable {
         videoWriterInput = nil
         audioConverter = nil
         audioOutputFormat = nil
+        audioConverterInputDescription = nil
         basePresentationTimeStamp = .invalid
         nextAudioPresentationTimeStamp = .invalid
         fileWriterQueue.async {
