@@ -23,6 +23,7 @@ jobs:
           brew install just
       - name: Source code styling
         run: |
+          brew update
           brew install swiftformat oxfmt
           just style-check
       - name: Linting

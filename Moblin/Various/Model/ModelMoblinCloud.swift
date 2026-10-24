@@ -127,7 +127,9 @@ extension Model {
     }
 
     private func moblinCloudTryNextEffect() {
-        guard moblinCloudTipEffectPlayer == nil, let (name, text, url) = moblinCloudTipEffects.popFirst() else {
+        guard moblinCloudTipEffectPlayer == nil,
+              let (name, text, url) = moblinCloudTipEffects.popFirst()
+        else {
             return
         }
         moblinCloudAppendChatMessage(name: name, text: text)
