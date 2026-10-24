@@ -76,8 +76,12 @@ func makeChannelMap(
     outputToInputChannelsMap: [Int: Int]
 ) -> [NSNumber] {
     var channelMap = Array(repeating: -1, count: numberOfOutputChannels)
-    for inputIndex in 0 ..< min(numberOfInputChannels, numberOfOutputChannels) {
-        channelMap[inputIndex] = inputIndex
+    for outputIndex in 0 ..< numberOfOutputChannels {
+        if outputIndex < numberOfInputChannels {
+            channelMap[outputIndex] = outputIndex
+        } else if numberOfInputChannels == 1 {
+            channelMap[outputIndex] = 0
+        }
     }
     for outputIndex in 0 ..< numberOfOutputChannels {
         if let inputIndex = outputToInputChannelsMap[outputIndex], inputIndex < numberOfInputChannels {

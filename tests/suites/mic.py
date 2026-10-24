@@ -1,29 +1,40 @@
 import logging
 import time
 from dataclasses import dataclass
+from itertools import groupby
 from pathlib import Path
 
 from systest import wait_until
+from systest_moblin.ffmpeg import FfmpegCommand
 from systest_moblin.ffmpeg import FfmpegServer
+from systest_moblin.ffmpeg import FfmpegVideoCodec
+from systest_moblin.ffmpeg import TransportFormat
+from systest_moblin.ffmpeg import ffmpeg_run
 from systest_moblin.ffmpeg import ffprobe_audio
 from systest_moblin.ffmpeg import ffprobe_video
+from systest_moblin.ffmpeg import measure_audio_band_levels
+from systest_moblin.ffmpeg import video_encoder_args
 
 from ..utils.audio_video_sync import alert_chat_message
 from ..utils.audio_video_sync import alert_media_files
 from ..utils.audio_video_sync import alerts_media_gallery_settings
 from ..utils.audio_video_sync import alerts_widget_settings
 from ..utils.audio_video_sync import measure_alert_synchronization
+from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import Capability
 from ..utils.config import srt_listener_url
 from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
 from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import SceneName
+from ..utils.generate_device_settings import mic_id
 from ..utils.generate_device_settings import mics_settings
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.moblin import Moblin
 from ..utils.moblin import Recorder
+from ..utils.test_case import AUDIO_SAMPLES_PER_FRAME
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import manual_confirmation
@@ -47,6 +58,13 @@ NUMBER_OF_MICS = 2
 NUMBER_OF_SWITCHES = 10
 SWITCH_INTERVAL = 3
 ALERT_DURATION = 7
+TONE_STREAM_1_ID = uuid()
+TONE_STREAM_2_ID = uuid()
+TONE_STREAM_VIDEO_BITRATE = 4_000_000
+TONE_WINDOW = 0.25
+TONE_BANDWIDTH = 50
+TONE_BAND_MARGIN_DB = 3
+MAXIMUM_TRANSITION_DURATION = 0.5
 
 
 def settings_overrides(moblin: Moblin) -> dict:
@@ -354,10 +372,197 @@ class MicInterruption(TestCase):
         self.assert_less(report.spread(), MAXIMUM_OFFSET_SPREAD)
 
 
+@dataclass
+class ToneMic:
+    stream_id: str
+    stream_key: str
+    frequency: int
+    sample_rate: int
+    channels: int
+
+    def label(self) -> str:
+        return f"{self.sample_rate}Hz{self.channels}ch"
+
+
+class FfmpegToneTestStream(FfmpegCommand):
+    def __init__(self, url: str, mic: ToneMic) -> None:
+        super().__init__()
+        self._url = url
+        self._mic = mic
+
+    def args(self) -> list[str]:
+        return [
+            "-re",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc2=size=1920x1080:rate=30",
+            "-re",
+            "-f",
+            "lavfi",
+            "-i",
+            f"sine=frequency={self._mic.frequency}:sample_rate={self._mic.sample_rate}",
+            *video_encoder_args(TONE_STREAM_VIDEO_BITRATE, FfmpegVideoCodec.H264, True),
+            "-pix_fmt",
+            "yuv420p",
+            "-g",
+            "60",
+            "-keyint_min",
+            "60",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "128k",
+            "-ar",
+            str(self._mic.sample_rate),
+            "-ac",
+            str(self._mic.channels),
+            "-f",
+            TransportFormat.FLV,
+            self._url,
+        ]
+
+
+class MicSwitchFormats(TestCase):
+    """Stream a tone to each of two RTMP server ingests, each with its own frequency, sample
+    rate and number of channels, and record while switching between the two ingest mics every
+    few seconds. Validate that the recording is 48 kHz with the channels of the first mic, that
+    no audio samples are missing, and that the audio in every recorded channel alternates
+    between the two tones at their original pitch.
+
+    """
+
+    def __init__(self, moblin: Moblin, first: ToneMic, second: ToneMic):
+        super().__init__(moblin, f"MicSwitchFormats-{first.label()}-{second.label()}")
+        self._mics = [first, second]
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        **FRONT_SCENE_SETTINGS,
+                        "cameraPosition": CameraPosition.RTMP,
+                        "rtmpCameraId": self._mics[0].stream_id,
+                    }
+                ],
+                "rtmpServer": {
+                    "enabled": True,
+                    "port": RTMP_SERVER_PORT,
+                    "streams": [
+                        {"id": mic.stream_id, "name": mic.stream_key, "streamKey": mic.stream_key}
+                        for mic in self._mics
+                    ],
+                },
+            }
+        )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
+
+    def run(self):
+        streams = [
+            FfmpegToneTestStream(self.moblin.ingest_rtmp_url(mic.stream_key), mic) for mic in self._mics
+        ]
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        with streams[0], streams[1]:
+            self.wait_for_ingest_stream_started(number_of_ingests=len(self._mics))
+            self.moblin.set_scene(SceneName.FRONT)
+            self._select_mic(self._mics[0])
+            with recorder:
+                time.sleep(SWITCH_INTERVAL)
+                for index in range(1, NUMBER_OF_SWITCHES + 1):
+                    self._select_mic(self._mics[index % len(self._mics)])
+                    time.sleep(SWITCH_INTERVAL)
+        self._assert_format(recorder.recording)
+        for channel in range(self._mics[0].channels):
+            self._assert_channel_tones(recorder.recording, channel)
+
+    def _select_mic(self, mic: ToneMic):
+        name = self._mic_name(mic)
+        self.moblin.set_mic(name)
+        self.wait_until(lambda: self.moblin.get_mic() == name)
+        LOGGER.debug("Switched to mic '%s' (%s, %s Hz tone).", name, mic.label(), mic.frequency)
+
+    def _mic_name(self, mic: ToneMic) -> str:
+        for settings_mic in self.moblin.get_mics():
+            if settings_mic["id"] == mic_id(mic.stream_id):
+                return settings_mic["name"]
+        raise Exception(f"No mic for RTMP stream '{mic.stream_key}'.")
+
+    def _assert_format(self, path: Path):
+        audio = ffprobe_audio(path)
+        self.assert_equal(audio.sample_rate, 48000)
+        self.assert_equal(audio.channels, self._mics[0].channels)
+        for frame in audio.frames:
+            self.assert_equal(frame.channels, self._mics[0].channels)
+        self.assert_presentation_time_stamps(
+            path,
+            AUDIO_SAMPLES_PER_FRAME / audio.sample_rate,
+            [frame.pts for frame in audio.frames],
+            "audio",
+        )
+        video = ffprobe_video(path)
+        self.assert_less(
+            abs(audio.frames[-1].pts - video.frames[-1].pts), 0.5, "Audio and video end times differ."
+        )
+
+    def _assert_channel_tones(self, path: Path, channel: int):
+        LOGGER.debug("Tones in channel %d.", channel)
+        channel_path = path.with_name(f"{path.stem}-channel{channel}.wav")
+        ffmpeg_run("-i", str(path), "-vn", "-af", f"pan=mono|c0=c{channel}", str(channel_path))
+        self._assert_tones(channel_path)
+
+    def _assert_tones(self, path: Path):
+        total = measure_audio_band_levels(path, [], TONE_WINDOW)
+        bands = [
+            measure_audio_band_levels(path, self._band_filters(mic.frequency), TONE_WINDOW)
+            for mic in self._mics
+        ]
+        classes = []
+        for index, level in enumerate(total):
+            matches = [
+                mic_index
+                for mic_index, band in enumerate(bands)
+                if band[index].level > level.level - TONE_BAND_MARGIN_DB
+            ]
+            classes.append(matches[0] if len(matches) == 1 else None)
+        runs = [(mic_index, len(list(group))) for mic_index, group in groupby(classes)]
+        for mic_index, length in runs:
+            LOGGER.debug(
+                "%.2f s of %s.",
+                length * TONE_WINDOW,
+                "other audio" if mic_index is None else f"{self._mics[mic_index].frequency} Hz tone",
+            )
+        tone_runs = [(mic_index, length) for mic_index, length in runs if mic_index is not None]
+        self.assert_equal(
+            [mic_index for mic_index, _ in tone_runs],
+            [index % len(self._mics) for index in range(NUMBER_OF_SWITCHES + 1)],
+            "Tone sequence.",
+        )
+        for _, length in tone_runs[1:-1]:
+            self.assert_greater(length * TONE_WINDOW, SWITCH_INTERVAL - 1, "Tone duration.")
+        for mic_index, length in runs:
+            if mic_index is None:
+                self.assert_less_equal(length * TONE_WINDOW, MAXIMUM_TRANSITION_DURATION, "Other audio.")
+
+    def _band_filters(self, frequency: int) -> list[str]:
+        return [f"bandpass=f={frequency}:width_type=h:w={TONE_BANDWIDTH}"] * 2
+
+
 def tests(moblin: Moblin):
     return [
         MicDelay(moblin),
         MicSwitch(moblin),
+        MicSwitchFormats(
+            moblin,
+            ToneMic(TONE_STREAM_1_ID, "1", 1000, 48000, 1),
+            ToneMic(TONE_STREAM_2_ID, "2", 2500, 44100, 2),
+        ),
+        MicSwitchFormats(
+            moblin,
+            ToneMic(TONE_STREAM_1_ID, "1", 1000, 44100, 2),
+            ToneMic(TONE_STREAM_2_ID, "2", 2500, 48000, 1),
+        ),
         MicStereo(moblin),
         MicInterruption(moblin),
     ]
