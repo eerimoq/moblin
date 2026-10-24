@@ -76,6 +76,11 @@ struct AudioSettingsView: View {
                     } label: {
                         Text("Delays")
                     }
+                    NavigationLink {
+                        MicsGainSettingsView(model: model, mics: database.mics)
+                    } label: {
+                        Text("Gains")
+                    }
                 }
             }
             if database.showAllSettings {
@@ -99,7 +104,7 @@ struct AudioSettingsView: View {
                         Image(systemName: "speaker.wave.1.fill")
                         Slider(value: $audio.gainDb, in: 0.0 ... 24.0, step: 1.0)
                             .onChange(of: audio.gainDb) { _ in
-                                model.setAudioGain(gainDb: audio.gainDb)
+                                model.updateAudioGain()
                             }
                         Image(systemName: "speaker.wave.3.fill")
                         Text("\(formatOneDecimal(audio.gainDb)) dB")

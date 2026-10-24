@@ -371,7 +371,7 @@ extension Model {
             0: database.audio.outputToInputChannelsMap.channel1,
             1: database.audio.outputToInputChannelsMap.channel2,
         ])
-        setAudioGain(gainDb: database.audio.gainDb)
+        updateAudioGain()
         updateMicDelay()
         startRecorderIfNeeded()
         reloadConnections()
@@ -851,7 +851,8 @@ extension Model {
         media.setAudioChannelsMap(channelsMap: channelsMap)
     }
 
-    func setAudioGain(gainDb: Float) {
+    func updateAudioGain() {
+        let gainDb = database.audio.gainDb + (getMicById(id: mic.current.id)?.gainDb ?? 0)
         media.setAudioGain(gain: pow(10, gainDb / 20.0))
     }
 

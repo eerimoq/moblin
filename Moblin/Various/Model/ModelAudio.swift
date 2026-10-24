@@ -614,6 +614,7 @@ extension Model {
         }
         self.mic.current = mic
         updateMicDelay()
+        updateAudioGain()
         self.mic.isSwitchTimerRunning = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.mic.isSwitchTimerRunning = false
