@@ -348,7 +348,10 @@ extension Model {
         guard camera.exposureTargetOffsetObservation == nil else {
             return
         }
-        camera.exposureTargetOffsetObservation = device.observe(\.exposureTargetOffset) { [weak self] _, _ in
+        camera.exposureTargetOffsetObservation = device.observe(
+            \.exposureTargetOffset,
+            options: [.initial]
+        ) { [weak self] _, _ in
             DispatchQueue.main.async {
                 self?.compensateExposure(device: device)
             }
@@ -396,6 +399,8 @@ extension Model {
             device.setExposureModeCustom(duration: exposure, iso: iso) { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.camera.isCompensatingExposure = false
+                    // Offset changes during the update were ignored. Check again.
+                    self?.compensateExposure(device: device)
                 }
             }
             device.unlockForConfiguration()
