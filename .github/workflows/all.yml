@@ -49,6 +49,7 @@ jobs:
         run: |
           echo "xcode=$(xcodebuild -version | awk '/Build version/ {print $3}')" >> "$GITHUB_OUTPUT"
           echo "month=$(date +%Y-%m)" >> "$GITHUB_OUTPUT"
+          echo "day=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
       - name: Cache Swift packages
         uses: actions/cache@v4
         with:
@@ -58,7 +59,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: DerivedData/CompilationCache.noindex
-          key: compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.month }}-${{ github.sha }}
+          key: compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.day }}
           restore-keys: |
             compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.month }}-
       - name: Build
