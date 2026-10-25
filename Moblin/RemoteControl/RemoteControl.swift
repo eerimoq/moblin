@@ -108,6 +108,7 @@ enum RemoteControlEvent: Codable {
     case golfScoreboard(data: RemoteControlGolfScoreboard)
     case stats(data: RemoteControlStats)
     case wheelOfLuck(wheel: RemoteControlWheelOfLuck?)
+    case icon(id: String)
 }
 
 struct RemoteControlWheelOfLuckOption: Codable, Equatable {

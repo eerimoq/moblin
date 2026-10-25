@@ -537,6 +537,8 @@ class RemoteControlAssistant: NSObject {
             break
         case .wheelOfLuck:
             break
+        case .icon:
+            break
         case let .stats(data: data):
             delegate?.remoteControlAssistantStats(data: data)
         }

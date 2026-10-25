@@ -79,6 +79,10 @@ extension Model {
         moblinCloud?.sendWheelOfLuck(wheel: wheel)
     }
 
+    func moblinCloudSendIcon() {
+        moblinCloud?.sendIcon(id: database.iconImage)
+    }
+
     func moblinCloudPlayTipAlert(name: String, message: String, amount: String, currency: String) {
         guard let id = database.moblinCloud.alertsWidgetId,
               let effect = getAlertsEffect(id: id),
@@ -200,6 +204,10 @@ class MoblinCloud {
     func sendWheelOfLuck(wheel: RemoteControlWheelOfLuck?) {
         streamer?.sendWheelOfLuck(wheel: wheel)
     }
+
+    func sendIcon(id: String) {
+        streamer?.sendIcon(id: id)
+    }
 }
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
@@ -207,6 +215,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
+        model?.moblinCloudSendIcon()
     }
 
     func remoteControlStreamerDisconnected() {

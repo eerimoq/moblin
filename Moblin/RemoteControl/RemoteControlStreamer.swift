@@ -172,6 +172,13 @@ class RemoteControlStreamer {
         send(message: .event(data: .wheelOfLuck(wheel: wheel)))
     }
 
+    func sendIcon(id: String) {
+        guard connected else {
+            return
+        }
+        send(message: .event(data: .icon(id: id)))
+    }
+
     func sendPreview(preview: Data) {
         send(message: .preview(preview: preview))
     }

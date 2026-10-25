@@ -162,5 +162,6 @@ extension Model {
             database.iconImage = plainIcon.id
         }
         store.iconImage = database.iconImage
+        moblinCloudSendIcon()
     }
 }
