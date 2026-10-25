@@ -63,7 +63,6 @@ jobs:
             compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.month }}-
       - name: Build
         run: |
-          set -o pipefail
           xcodebuild \
               -scheme Moblin \
               -derivedDataPath DerivedData \
@@ -72,8 +71,4 @@ jobs:
               CODE_SIGN_IDENTITY="" \
               CODE_SIGNING_REQUIRED=NO \
               COMPILER_INDEX_STORE_ENABLE=NO \
-              COMPILATION_CACHE_ENABLE_CACHING=YES \
-              | tee build.log
-      - name: Compilation cache statistics
-        run: |
-          grep -A 1 CompilationCacheMetrics build.log || true
+              COMPILATION_CACHE_ENABLE_CACHING=YES
