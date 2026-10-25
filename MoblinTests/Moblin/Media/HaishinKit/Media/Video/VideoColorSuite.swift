@@ -2,6 +2,7 @@ import AVFoundation
 import CoreImage
 @testable import Moblin
 import Testing
+import VideoToolbox
 
 private let sRGBColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
 
