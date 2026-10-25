@@ -12,7 +12,6 @@
 		0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0318D3692CF51D6900E12F3B /* SwiftProtobuf */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032303212F671CC600790A63 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 03AA00012F6500000000AA00 /* ZipArchive */; };
-		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
 		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
 		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
 		035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035503F12FE7C9B500067E65 /* StreamDeckKit */; };
@@ -325,7 +324,6 @@
 			files = (
 				032303212F671CC600790A63 /* ZipArchive in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
-				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */,
 				03AC6B952D17786700832A7E /* TrueTime in Frameworks */,
@@ -494,7 +492,6 @@
 				03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */,
 				0320D8752AED36860030418F /* WrappingHStack */,
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
-				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 				03F465EB2C441D1400630708 /* CrcSwift */,
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
 				03AC6B942D17786700832A7E /* TrueTime */,
@@ -705,7 +702,6 @@
 				03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
-				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
 				03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
@@ -1613,14 +1609,6 @@
 				minimumVersion = 0.1.3;
 			};
 		};
-		033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eerimoq/NWWebSocket";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
@@ -1785,11 +1773,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */;
 			productName = WrappingHStack;
-		};
-		033BEAC32C0FCC0B005F4E06 /* NWWebSocket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
-			productName = NWWebSocket;
 		};
 		035351932F1C271700428DAC /* AppAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -1,5 +1,5 @@
 {
-  "originHash" : "57f8a2424c79da548cbb9298fdb239bd727e5c166369f054b34dafd2ece1aaa9",
+  "originHash" : "da3a2aed6960d3b492f6adecb6841772c8a3789840f22a6e2f9a3a38a2bf52a7",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -80,15 +80,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "8787ff999db2f3942541eaa480673d26cdfdbd10"
-      }
-    },
-    {
-      "identity" : "nwwebsocket",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/NWWebSocket",
-      "state" : {
-        "branch" : "main",
-        "revision" : "883fac3d524d1367d4cb82dd5dfca718ab3f2142"
       }
     },
     {

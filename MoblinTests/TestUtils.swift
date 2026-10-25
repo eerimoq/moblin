@@ -17,24 +17,31 @@ func areEqual<T: FloatingPoint>(_ actual: [T], _ expected: [T], epsilon: T) -> B
     return true
 }
 
-class MessageQueue<Message: Sendable>: @unchecked Sendable {
+final class MessageQueue<Message: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
     private var buffer: [Message] = []
     private var continuations: [CheckedContinuation<Message, Never>] = []
 
     func put(_ message: Message) {
-        if !continuations.isEmpty {
-            continuations.removeFirst().resume(returning: message)
-        } else {
+        lock.lock()
+        let continuation = continuations.isEmpty ? nil : continuations.removeFirst()
+        if continuation == nil {
             buffer.append(message)
         }
+        lock.unlock()
+        continuation?.resume(returning: message)
     }
 
     func get() async -> Message {
-        if !buffer.isEmpty {
-            buffer.removeFirst()
-        } else {
-            await withCheckedContinuation {
-                continuations.append($0)
+        await withCheckedContinuation { continuation in
+            lock.lock()
+            if buffer.isEmpty {
+                continuations.append(continuation)
+                lock.unlock()
+            } else {
+                let message = buffer.removeFirst()
+                lock.unlock()
+                continuation.resume(returning: message)
             }
         }
     }
