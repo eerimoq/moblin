@@ -40,6 +40,10 @@ Swift Testing (not XCTest): suites are `struct *Suite` in `MoblinTests/` using `
 xcodebuild test -scheme Moblin -destination 'platform=macOS,variant=Mac Catalyst'
 ```
 
+`Moblin.xctestplan` gives every test a 60 second execution time allowance. A test that exceeds it fails with
+"Time limit was exceeded", the test runner is killed and relaunched, and the run continues, so a hung test
+can no longer stall the whole run.
+
 ### System tests
 
 `tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. Ask user to 

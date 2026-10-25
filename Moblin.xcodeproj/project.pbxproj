@@ -148,6 +148,7 @@
 		03AA0006000000000000AA02 /* MoblinLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BB0005000000000000BB00 /* MoblinMac.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinMac.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		03E649432E634D2800728501 /* MoblinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		03E64A002E634D2800728502 /* Moblin.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Moblin.xctestplan; sourceTree = "<group>"; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -415,6 +416,7 @@
 				03BB0009000000000000BB00 /* Moblin Mac */,
 				037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */,
 				03E649442E634D2800728501 /* MoblinTests */,
+				03E64A002E634D2800728502 /* Moblin.xctestplan */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
