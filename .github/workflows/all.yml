@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  all:
+  checks:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v7
@@ -15,9 +15,6 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
-      - name: Create user config
-        run: |
-          cp User.template.xcconfig Config/User.xcconfig
       - name: Install just
         run: |
           brew install just
@@ -39,11 +36,44 @@ jobs:
           just web-remote-control-frontend-prepare
           just web-remote-control-frontend-build
           git diff --exit-code
+
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - name: Create user config
+        run: |
+          cp User.template.xcconfig Config/User.xcconfig
+      - name: Cache keys
+        id: keys
+        run: |
+          echo "xcode=$(xcodebuild -version | awk '/Build version/ {print $3}')" >> "$GITHUB_OUTPUT"
+          echo "month=$(date +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: DerivedData/SourcePackages
+          key: swift-packages-${{ steps.keys.outputs.xcode }}-${{ hashFiles('Moblin.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+      - name: Cache compilation cache
+        uses: actions/cache@v4
+        with:
+          path: DerivedData/CompilationCache.noindex
+          key: compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.month }}-${{ github.sha }}
+          restore-keys: |
+            compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.month }}-
       - name: Build
         run: |
+          set -o pipefail
           xcodebuild \
               -scheme Moblin \
+              -derivedDataPath DerivedData \
               -skipPackagePluginValidation \
               build \
               CODE_SIGN_IDENTITY="" \
-              CODE_SIGNING_REQUIRED=NO
+              CODE_SIGNING_REQUIRED=NO \
+              COMPILER_INDEX_STORE_ENABLE=NO \
+              COMPILATION_CACHE_ENABLE_CACHING=YES \
+              | tee build.log
+      - name: Compilation cache statistics
+        run: |
+          grep CompilationCacheMetrics build.log || true
