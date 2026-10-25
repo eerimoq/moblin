@@ -76,4 +76,4 @@ jobs:
               | tee build.log
       - name: Compilation cache statistics
         run: |
-          grep CompilationCacheMetrics build.log || true
+          grep -A 1 CompilationCacheMetrics build.log || true
