@@ -83,15 +83,6 @@
       }
     },
     {
-      "identity" : "nwwebsocket",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/NWWebSocket",
-      "state" : {
-        "branch" : "main",
-        "revision" : "883fac3d524d1367d4cb82dd5dfca718ab3f2142"
-      }
-    },
-    {
       "identity" : "rist",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eerimoq/Rist",
