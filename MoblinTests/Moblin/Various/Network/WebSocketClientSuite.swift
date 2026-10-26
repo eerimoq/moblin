@@ -39,7 +39,7 @@ private final class Delegate: WebSocketClientDelegate {
 @MainActor
 private final class WebSocketServerMock {
     private let listener: NWListener
-    private let ready = MessageQueue<UInt16>()
+    private let ready = MessageQueue<Result<UInt16, NWError>>()
     private let connections = MessageQueue<NWConnection>()
     let events = MessageQueue<ServerEvent>()
     private(set) var connectionCount = 0
@@ -74,15 +74,11 @@ private final class WebSocketServerMock {
         listener.cancel()
     }
 
-    func url() async -> URL {
+    func url() async throws -> URL {
         if port == nil {
-            port = await ready.get()
+            port = try await ready.get().get()
         }
         return URL(string: "ws://127.0.0.1:\(port!)")!
-    }
-
-    func stop() {
-        listener.cancel()
     }
 
     func expectEvent(_ expected: ServerEvent) async {
@@ -116,8 +112,13 @@ private final class WebSocketServerMock {
     }
 
     private func handleListenerState(_ state: NWListener.State) {
-        if state == .ready, let port = listener.port {
-            ready.put(port.rawValue)
+        switch state {
+        case .ready:
+            ready.put(.success(listener.port!.rawValue))
+        case let .waiting(error), let .failed(error):
+            ready.put(.failure(error))
+        default:
+            break
         }
     }
 
@@ -169,7 +170,7 @@ private struct Connection {
     static func make() async throws -> Connection {
         let server = try WebSocketServerMock()
         let delegate = Delegate()
-        let client = await WebSocketClient(url: server.url(), loopback: true)
+        let client = try await WebSocketClient(url: server.url(), loopback: true)
         client.delegate = delegate
         client.start()
         return Connection(server: server, delegate: delegate, client: client)
@@ -254,7 +255,7 @@ struct WebSocketClientSuite {
     func closeWhenClientIsDeallocated() async throws {
         let server = try WebSocketServerMock()
         let delegate = Delegate()
-        var client: WebSocketClient? = await WebSocketClient(url: server.url(), loopback: true)
+        var client: WebSocketClient? = try await WebSocketClient(url: server.url(), loopback: true)
         client?.delegate = delegate
         client?.start()
         await server.acceptConnection()
@@ -271,7 +272,7 @@ struct WebSocketClientSuite {
     func closeWithoutPeerResponseWhenClientIsDeallocated() async throws {
         let server = try WebSocketServerMock()
         let delegate = Delegate()
-        var client: WebSocketClient? = await WebSocketClient(url: server.url(), loopback: true)
+        var client: WebSocketClient? = try await WebSocketClient(url: server.url(), loopback: true)
         client?.delegate = delegate
         client?.start()
         await server.acceptConnection()
@@ -287,7 +288,7 @@ struct WebSocketClientSuite {
     func closeWhenClientIsDeallocatedWhileReceiving() async throws {
         let server = try WebSocketServerMock()
         let delegate = Delegate()
-        var client: WebSocketClient? = await WebSocketClient(url: server.url(), loopback: true)
+        var client: WebSocketClient? = try await WebSocketClient(url: server.url(), loopback: true)
         client?.delegate = delegate
         client?.start()
         await server.acceptConnection()
@@ -337,17 +338,14 @@ struct WebSocketClientSuite {
 
     @Test
     func reconnectWhenServerStartsLater() async throws {
-        let unavailableServer = try WebSocketServerMock()
-        let url = await unavailableServer.url()
-        unavailableServer.stop()
         let delegate = Delegate()
-        let client = WebSocketClient(url: url, loopback: true)
+        let client = try WebSocketClient(url: #require(URL(string: "ws://127.0.0.1:24680")), loopback: true)
         client.delegate = delegate
         client.start()
         try await Task.sleep(for: .milliseconds(700))
         #expect(!client.isConnected())
-        let server = try WebSocketServerMock(port: UInt16(#require(url.port)))
-        _ = await server.url()
+        let server = try WebSocketServerMock(port: 24680)
+        _ = try await server.url()
         await server.acceptConnection()
         let event = await delegate.events.get()
         #expect(event == .connected)
