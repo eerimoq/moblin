@@ -276935,7 +276935,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "hat %@ %@ getrinkgeldet!"
+            "value" : "hat %1$@ %2$@ getrinkgeldet!"
           }
         },
         "en" : {
@@ -276947,133 +276947,133 @@
         "eo" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "t1pp3d %@ %@!"
+            "value" : "t1pp3d %1$@ %2$@!"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "¡donó %@ %@!"
+            "value" : "¡donó %1$@ %2$@!"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "lahjoitti %@ %@!"
+            "value" : "lahjoitti %1$@ %2$@!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "a donné %@ %@ !"
+            "value" : "a donné %1$@ %2$@ !"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "ने %@ %@ टिप किया!"
+            "value" : "ने %1$@ %2$@ टिप किया!"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "memberi tip %@ %@!"
+            "value" : "memberi tip %1$@ %2$@!"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "ha donato %@ %@!"
+            "value" : "ha donato %1$@ %2$@!"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "が %@ %@ をチップしました！"
+            "value" : "が %1$@ %2$@ をチップしました！"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "님이 %@ %@ 팁을 보냈습니다!"
+            "value" : "님이 %1$@ %2$@ 팁을 보냈습니다!"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "gaf %@ %@ fooi!"
+            "value" : "gaf %1$@ %2$@ fooi!"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "wsparł(a) %@ %@!"
+            "value" : "wsparł(a) %1$@ %2$@!"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "doou %@ %@!"
+            "value" : "doou %1$@ %2$@!"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "doou %@ %@!"
+            "value" : "doou %1$@ %2$@!"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "отправил(а) чаевые %@ %@!"
+            "value" : "отправил(а) чаевые %1$@ %2$@!"
           }
         },
         "sk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "prispel(a) %@ %@!"
+            "value" : "prispel(a) %1$@ %2$@!"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "gav %@ %@ i dricks!"
+            "value" : "gav %1$@ %2$@ i dricks!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "%@ %@ bahşiş verdi!"
+            "value" : "%1$@ %2$@ bahşiş verdi!"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "надіслав(ла) %@ %@ чайових!"
+            "value" : "надіслав(ла) %1$@ %2$@ чайових!"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "đã tip %@ %@!"
+            "value" : "đã tip %1$@ %2$@!"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "打赏了 %@ %@！"
+            "value" : "打赏了 %1$@ %2$@！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "打賞了 %@ %@！"
+            "value" : "打賞了 %1$@ %2$@！"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "打賞了 %@ %@！"
+            "value" : "打賞了 %1$@ %2$@！"
           }
         }
       }
