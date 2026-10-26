@@ -209,6 +209,7 @@ class Ingests: ObservableObject {
 class Bitrate: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var speedMbpsOneDecimal = noValue
+    var bitsPerSecond: Int64?
     @Published var statusColor: Color = .white
     @Published var statusIconColor: Color?
 }
@@ -218,6 +219,7 @@ class Bonding: ObservableObject {
     @Published var statistics = noValue
     @Published var rtts = noValue
     @Published var pieChartPercentages: [BondingPercentage] = []
+    var connections: [BondingConnection] = []
     var statisticsFormatter = BondingStatisticsFormatter()
 }
 
@@ -1858,6 +1860,7 @@ final class Model: NSObject, ObservableObject {
         updateAutoSceneSwitcher(now: monotonicNow)
         sendPeriodicRemoteControlStreamerStatus()
         sendPeriodicRemoteControlStreamerStats(now: now)
+        moblinCloud?.sendPeriodicStatus()
         speechToTextProcess()
         updateTwitchRaid()
         updateTwitchPollCountdown()

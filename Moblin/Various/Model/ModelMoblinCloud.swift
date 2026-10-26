@@ -422,6 +422,8 @@ extension Model {
 class MoblinCloud {
     private weak var model: Model?
     private var streamer: RemoteControlStreamer?
+    private var requestingStatus = false
+    private var statusFilter: RemoteControlStartStatusFilter?
 
     init(model: Model, url: URL, streamerId: String) {
         self.model = model
@@ -452,6 +454,26 @@ class MoblinCloud {
     func sendIcon(id: String) {
         streamer?.sendIcon(id: id)
     }
+
+    func stateChanged(state: RemoteControlAssistantStreamerState) {
+        guard requestingStatus else {
+            return
+        }
+        streamer?.stateChanged(state: state)
+    }
+
+    func sendPeriodicStatus() {
+        guard requestingStatus, let streamer, streamer.isConnected(), let model else {
+            return
+        }
+        let (general, topLeft, topRight) = model.createRemoteControlStatus(filter: statusFilter)
+        streamer.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
+    }
+
+    private func setRequestingStatus(_ on: Bool, filter: RemoteControlStartStatusFilter? = nil) {
+        requestingStatus = on
+        statusFilter = filter
+    }
 }
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
@@ -465,6 +487,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerConnected() {
+        setRequestingStatus(false)
         model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
@@ -472,6 +495,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerDisconnected() {
+        setRequestingStatus(false)
         model?.makeToast(title: String(localized: "Moblin Cloud disconnected"))
         model?.updateMoblinCloudStatus()
     }
@@ -481,53 +505,85 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
-        (.init(), .init(), .init())
+        model?.remoteControlGetStatus() ?? (.init(), .init(), .init())
     }
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
-        RemoteControlSettings(streams: [],
-                              scenes: [],
-                              autoSceneSwitchers: nil,
-                              bitratePresets: [],
-                              mics: [],
-                              srt: .init(connectionPrioritiesEnabled: false, connectionPriorities: []))
+        model?.remoteControlGetSettings() ?? RemoteControlSettings(
+            streams: [],
+            scenes: [],
+            autoSceneSwitchers: nil,
+            bitratePresets: [],
+            mics: [],
+            srt: .init(connectionPrioritiesEnabled: false, connectionPriorities: [])
+        )
     }
 
-    func remoteControlStreamerSetStream(id _: UUID) {}
+    func remoteControlStreamerSetStream(id: UUID) {
+        model?.remoteControlSetStream(id: id)
+    }
 
-    func remoteControlStreamerSetScene(id _: UUID) {}
+    func remoteControlStreamerSetScene(id: UUID) {
+        model?.selectScene(id: id)
+    }
 
-    func remoteControlStreamerSetAutoSceneSwitcher(id _: UUID?) {}
+    func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?) {
+        model?.setAutoSceneSwitcher(id: id)
+    }
 
-    func remoteControlStreamerSetMic(id _: String) {}
+    func remoteControlStreamerSetMic(id: String) {
+        model?.manualSelectMicById(id: id)
+    }
 
     func remoteControlStreamerSetTalkbackMic(id _: String) {}
 
-    func remoteControlStreamerSetBitratePreset(id _: UUID) {}
+    func remoteControlStreamerSetBitratePreset(id: UUID) {
+        model?.remoteControlSetBitratePreset(id: id)
+    }
 
-    func remoteControlStreamerSetRecord(on _: Bool) {}
+    func remoteControlStreamerSetRecord(on: Bool) {
+        model?.remoteControlSetRecord(on: on)
+    }
 
-    func remoteControlStreamerSetLive(on _: Bool) {}
+    func remoteControlStreamerSetLive(on: Bool) {
+        model?.remoteControlSetLive(on: on)
+    }
 
     func remoteControlStreamerSetPreviewStream(on _: Bool) {}
 
     func remoteControlStreamerSetDebugLogging(on _: Bool) {}
 
-    func remoteControlStreamerSetZoom(x _: Float) {}
+    func remoteControlStreamerSetZoom(x: Float) {
+        model?.remoteControlSetZoom(x: x)
+    }
 
-    func remoteControlStreamerSetZoomPreset(id _: UUID) {}
+    func remoteControlStreamerSetZoomPreset(id: UUID) {
+        model?.setZoomPreset(id: id)
+    }
 
-    func remoteControlStreamerSetMute(on _: Bool) {}
+    func remoteControlStreamerSetMute(on: Bool) {
+        model?.setMuteOn(value: on)
+    }
 
-    func remoteControlStreamerSetStealthMode(on _: Bool) {}
+    func remoteControlStreamerSetStealthMode(on: Bool) {
+        model?.setStealthMode(on: on)
+    }
 
-    func remoteControlStreamerSetTorch(on _: Bool) {}
+    func remoteControlStreamerSetTorch(on: Bool) {
+        model?.remoteControlSetTorch(on: on)
+    }
 
-    func remoteControlStreamerReloadBrowserWidgets() {}
+    func remoteControlStreamerReloadBrowserWidgets() {
+        model?.reloadBrowserWidgets()
+    }
 
-    func remoteControlStreamerSetSrtConnectionPriority(id _: UUID, priority _: Int, enabled _: Bool) {}
+    func remoteControlStreamerSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool) {
+        model?.remoteControlSetSrtConnectionPriority(id: id, priority: priority, enabled: enabled)
+    }
 
-    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled _: Bool) {}
+    func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
+        model?.remoteControlSetSrtConnectionPrioritiesEnabled(enabled: enabled)
+    }
 
     func remoteControlStreamerTwitchEventSubNotification(message _: String) {}
 
@@ -541,13 +597,25 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetRemoteSceneData(data _: RemoteControlRemoteSceneData) {}
 
-    func remoteControlStreamerInstantReplay() {}
+    func remoteControlStreamerInstantReplay() {
+        model?.instantReplay()
+    }
 
-    func remoteControlStreamerSaveReplay() {}
+    func remoteControlStreamerSaveReplay() {
+        _ = model?.saveReplay()
+    }
 
-    func remoteControlStreamerStartStatus(interval _: Int, filter _: RemoteControlStartStatusFilter) {}
+    func remoteControlStreamerStartStatus(interval _: Int, filter: RemoteControlStartStatusFilter) {
+        setRequestingStatus(true, filter: filter)
+        if let model {
+            streamer?.stateChanged(state: model.createRemoteControlStateChanged())
+        }
+        sendPeriodicStatus()
+    }
 
-    func remoteControlStreamerStopStatus() {}
+    func remoteControlStreamerStopStatus() {
+        setRequestingStatus(false)
+    }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {
         []
@@ -608,7 +676,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
             onCompleted(.error, nil)
             return
         }
-        model.remoteControlStreamerMusic(command: command, onCompleted: onCompleted)
+        model.remoteControlMusic(command: command, onCompleted: onCompleted)
     }
 
     func remoteControlStreamerTip(
@@ -617,6 +685,6 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         kind: RemoteControlTipKind,
         requestId: String
     ) {
-        model?.remoteControlStreamerTip(name: name, message: message, kind: kind, requestId: requestId)
+        model?.moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
     }
 }

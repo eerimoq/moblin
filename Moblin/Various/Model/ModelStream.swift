@@ -610,9 +610,11 @@ extension Model {
         if bonding.statistics != noValue {
             bonding.statistics = noValue
         }
+        bonding.connections = []
     }
 
     private func handleBondingStatistics(connections: [BondingConnection]) {
+        bonding.connections = connections
         if let (message, rtts, percentages) = bonding.statisticsFormatter.format(connections) {
             bonding.statistics = message
             bonding.rtts = rtts
@@ -623,6 +625,7 @@ extension Model {
     func updateSpeed(now: ContinuousClock.Instant) {
         if isLive {
             let speed = Int64(media.getVideoStreamBitrate(bitrate: stream.bitrate))
+            bitrate.bitsPerSecond = speed
             checkLowBitrate(speed: speed, now: now)
             streamingHistoryStream?.updateBitrate(bitrate: speed)
             let speedMbpsOneDecimal = String(format: "%.1f", Double(speed) / 1_000_000)
@@ -654,6 +657,7 @@ extension Model {
                 sendSpeedAndTotalToWatch(speedAndTotal: bitrate.speedAndTotal)
             }
         } else if bitrate.speedAndTotal != noValue {
+            bitrate.bitsPerSecond = nil
             bitrate.speedMbpsOneDecimal = noValue
             bitrate.speedAndTotal = noValue
             if isWatchLocal() {

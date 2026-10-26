@@ -907,9 +907,22 @@ struct RemoteControlStatusTopLeft: Codable {
     var viewers: RemoteControlStatusItem?
 }
 
+struct RemoteControlStatusTopRightBitrateInfo: Codable {
+    var bitsPerSecond: Int64
+    var totalBytes: Int64
+}
+
+struct RemoteControlStatusTopRightBondingConnection: Codable {
+    var name: String
+    var bytesPerSecond: UInt64
+    var rtt: Int?
+}
+
 struct RemoteControlStatusTopRight: Codable {
     var audioInfo: RemoteControlStatusTopRightAudioInfo?
     var audioLevel: RemoteControlStatusItem?
+    var bitrateInfo: RemoteControlStatusTopRightBitrateInfo?
+    var bondingInfo: [RemoteControlStatusTopRightBondingConnection]?
     var rtmpServer: RemoteControlStatusItem?
     var remoteControl: RemoteControlStatusItem?
     var gameController: RemoteControlStatusItem?
