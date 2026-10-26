@@ -205,6 +205,9 @@ extension Model {
     }
 
     private func setBackZoomPreset(presetId: UUID) {
+        guard presetId != zoom.backPresetId else {
+            return
+        }
         zoom.backPresetId = presetId
         if cameraPosition == .back {
             remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
@@ -215,6 +218,9 @@ extension Model {
     }
 
     private func setFrontZoomPreset(presetId: UUID) {
+        guard presetId != zoom.frontPresetId else {
+            return
+        }
         zoom.frontPresetId = presetId
         if cameraPosition == .front {
             remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
