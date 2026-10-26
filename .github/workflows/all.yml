@@ -15,21 +15,20 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
-      - name: Install just
-        run: |
-          brew install just
-      - name: Source code styling
+      - name: Brew update
         run: |
           brew update
-          brew install swiftformat oxfmt
+      - name: Install tools
+        run: |
+          brew install just swiftformat swiftlint oxfmt oxlint codespell
+      - name: Source code styling
+        run: |
           just style-check
       - name: Linting
         run: |
-          brew install swiftlint oxlint
           just lint
       - name: Spell checking
         run: |
-          brew install codespell
           just spell-check
       - name: Web remote control frontend
         run: |
