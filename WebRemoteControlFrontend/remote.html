@@ -1,19 +1,26 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
     />
-    <title>Moblin Scoreboard Control</title>
+    <title>Moblin Scoreboard</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script>
+      const theme = localStorage.getItem("theme");
+      if (
+        theme === "light" ||
+        (theme !== "dark" && matchMedia("(prefers-color-scheme: light)").matches)
+      ) {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
     <link rel="stylesheet" href="./src/css/app.css" />
-    <link rel="stylesheet" href="./src/css/common.css" />
-    <link rel="stylesheet" href="./src/css/remote.css" />
   </head>
-  <body class="p-2">
+  <body>
     <div id="app"></div>
-    <script type="module" src="/src/remote.jsx"></script>
+    <script type="module" src="/src/app.tsx"></script>
   </body>
 </html>

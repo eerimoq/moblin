@@ -1,1 +1,207 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@theme {
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --breakpoint-tablet: 40rem;
+  --breakpoint-desktop: 80rem;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-bar: var(--bar);
+  --color-divider: var(--divider);
+  --color-card: var(--card);
+  --color-card-stroke: var(--card-stroke);
+  --color-control: var(--control);
+  --color-control-stroke: var(--control-stroke);
+  --color-selected: var(--selected);
+  --color-raised: var(--raised);
+  --color-raised-stroke: var(--raised-stroke);
+  --color-button: var(--button);
+  --color-button-stroke: var(--button-stroke);
+  --color-dash: var(--dashed);
+  --color-well: var(--well);
+  --color-well-soft: var(--well-soft);
+  --color-sunken: var(--sunken);
+  --color-knob: var(--knob);
+  --color-current-cell: var(--current-cell);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-hint: var(--hint);
+  --color-accent: #5e5ce6;
+  --color-accent-surface: var(--accent-surface);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: #ff3b30;
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-surface: var(--danger-surface);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-stroke: var(--danger-stroke);
+  --color-success-fg: var(--success-fg);
+  --color-success-surface: var(--success-surface);
+  --color-warning-fg: var(--warning-fg);
+  --color-eagle-fg: var(--eagle-fg);
+  --color-eagle-surface: var(--eagle-surface);
+  --color-bogey-fg: var(--bogey-fg);
+  --color-double-fg: var(--double-fg);
+  --color-double-surface: var(--double-surface);
+  --color-overlay: var(--overlay);
+  --color-highlight: var(--highlight);
+}
+
+:root {
+  color-scheme: dark;
+  --page: #0a0a0b;
+  --bar: #0d0d0e;
+  --divider: #1f1f22;
+  --card: #18181b;
+  --card-stroke: #2c2c31;
+  --control: #242429;
+  --control-stroke: #38383e;
+  --selected: #26262a;
+  --raised: #2c2c32;
+  --raised-stroke: #44444b;
+  --button: #26262a;
+  --button-stroke: #3a3a40;
+  --dashed: #3a3a40;
+  --well: #0a0a0b;
+  --well-soft: #141416;
+  --sunken: #0d0d0e;
+  --knob: #ededed;
+  --current-cell: #2c2c32;
+  --fg: #ededed;
+  --fg-2: #c8c8cc;
+  --fg-3: #a1a1a6;
+  --muted: #8b8b90;
+  --faint: #5e5e64;
+  --hint: #7a7a80;
+  --accent-surface: #1b1a3a;
+  --accent-fg: #bdbcff;
+  --danger-fg: #ff6b61;
+  --danger-surface: #2a1414;
+  --danger-soft: #2a1a1a;
+  --danger-stroke: #5c2a26;
+  --success-fg: #7bd066;
+  --success-surface: #13220f;
+  --warning-fg: #ffc400;
+  --eagle-fg: #6ea8ff;
+  --eagle-surface: #0f1a2e;
+  --bogey-fg: #ff8a80;
+  --double-fg: #c99bff;
+  --double-surface: #22142e;
+  --overlay: rgb(0 0 0 / 0.6);
+  --highlight: rgb(255 255 255 / 0.06);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --page: #f2f2f4;
+  --bar: #ffffff;
+  --divider: #e6e6ea;
+  --card: #ffffff;
+  --card-stroke: #e2e2e6;
+  --control: #f4f4f6;
+  --control-stroke: #dcdce0;
+  --selected: #e4e4e7;
+  --raised: #ffffff;
+  --raised-stroke: #d4d4d9;
+  --button: #ffffff;
+  --button-stroke: #d4d4d9;
+  --dashed: #c4c4ca;
+  --well: #f8f8fa;
+  --well-soft: #fafafb;
+  --sunken: #f8f8fa;
+  --knob: #ffffff;
+  --current-cell: #ededf0;
+  --fg: #18181b;
+  --fg-2: #3f3f46;
+  --fg-3: #52525b;
+  --muted: #6b6b73;
+  --faint: #a1a1aa;
+  --hint: #71717a;
+  --accent-surface: #eeeeff;
+  --accent-fg: #4b48d6;
+  --danger-fg: #d92d20;
+  --danger-surface: #fdecea;
+  --danger-soft: #f4f4f6;
+  --danger-stroke: #f5c2c0;
+  --success-fg: #2f8a22;
+  --success-surface: #eaf6e6;
+  --warning-fg: #b7791f;
+  --eagle-fg: #2563eb;
+  --eagle-surface: #e8f0fe;
+  --bogey-fg: #d92d20;
+  --double-fg: #7e22ce;
+  --double-surface: #f3e8ff;
+  --overlay: rgb(24 24 27 / 0.35);
+  --highlight: rgb(0 0 0 / 0.06);
+}
+
+@layer base {
+  body {
+    background-color: var(--page);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.25;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  input,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  input {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  input::placeholder {
+    color: var(--faint);
+  }
+
+  input[type="color"] {
+    appearance: none;
+    border: none;
+    padding: 0;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}

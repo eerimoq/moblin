@@ -1,5 +1,4 @@
 import { websocketPort } from "/js/config.mjs";
-import type { Setter } from "solid-js";
 
 export function websocketUrl(): string {
   return `ws://${window.location.hostname}:${websocketPort}`;
@@ -279,17 +278,26 @@ export class WebSocketConnection {
   protected nextId: number;
   protected status: string;
   protected websocket!: WebSocket;
+  attempt: number;
+  lostAt: number | undefined;
+  nextRetryAt: number | undefined;
 
   constructor() {
     this.connectTimerId = undefined;
     this.nextId = 1;
     this.status = connectionStatus.connecting;
+    this.attempt = 0;
+    this.lostAt = undefined;
+    this.nextRetryAt = undefined;
     this.connect();
   }
 
   connect(): void {
+    this.nextRetryAt = undefined;
     this.websocket = new WebSocket(websocketUrl());
     this.websocket.onopen = () => {
+      this.attempt = 0;
+      this.lostAt = undefined;
       this.setStatus(connectionStatus.connected);
       this.onConnected();
     };
@@ -307,16 +315,36 @@ export class WebSocketConnection {
 
   reconnectSoon(): void {
     if (this.websocket != undefined) {
+      this.websocket.onopen = null;
+      this.websocket.onerror = null;
+      this.websocket.onclose = null;
+      this.websocket.onmessage = null;
       this.websocket.close();
     }
     if (this.connectTimerId != undefined) {
       clearTimeout(this.connectTimerId);
     }
+    if (this.lostAt === undefined) {
+      this.lostAt = Date.now();
+    }
+    this.attempt += 1;
+    this.nextRetryAt = Date.now() + 5000;
     this.setStatus(connectionStatus.connecting);
+    this.onReconnectScheduled();
     this.connectTimerId = setTimeout(() => {
       this.connectTimerId = undefined;
       this.connect();
     }, 5000);
+  }
+
+  retryNow(): void {
+    if (this.connectTimerId === undefined) {
+      return;
+    }
+    clearTimeout(this.connectTimerId);
+    this.connectTimerId = undefined;
+    this.connect();
+    this.onReconnectScheduled();
   }
 
   setStatus(newStatus: string): void {
@@ -330,6 +358,8 @@ export class WebSocketConnection {
   onStatusChanged(_newStatus: string): void {}
 
   onConnected(): void {}
+
+  onReconnectScheduled(): void {}
 
   setLive(on: boolean): void {
     this.sendRequest({ setLive: { on } });
@@ -515,34 +545,35 @@ export class WebSocketConnection {
   }
 
   send(message: unknown): void {
+    if (this.websocket.readyState !== WebSocket.OPEN) {
+      return;
+    }
     this.websocket.send(JSON.stringify(message));
   }
 }
 
-let confirmComplete: ((result: boolean) => void) | null = null;
-let confirmResult = false;
-
-export async function showConfirm(
-  message: string,
-  setConfirmMessage: Setter<string>,
-  setConfirmOpen: Setter<boolean>,
-): Promise<boolean> {
-  setConfirmMessage(message);
-  setConfirmOpen(true);
-  await new Promise<void>((resolve) => {
-    confirmComplete = (result: boolean) => {
-      confirmResult = result;
-      resolve();
-    };
-  });
-  setConfirmOpen(false);
-  return confirmResult;
+export function formatBitrate(bitsPerSecond: number): string {
+  if (bitsPerSecond >= 1000000) return (bitsPerSecond / 1000000).toFixed(1) + " Mbps";
+  if (bitsPerSecond >= 1000) return (bitsPerSecond / 1000).toFixed(0) + " Kbps";
+  return bitsPerSecond + " bps";
 }
 
-export function confirmOk(): void {
-  if (confirmComplete) confirmComplete(true);
-}
-
-export function confirmCancel(): void {
-  if (confirmComplete) confirmComplete(false);
+export async function copyText(text: string): Promise<void> {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.top = "-1000px";
+  textArea.style.left = "-1000px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  textArea.setSelectionRange(0, text.length);
+  const success = document.execCommand("copy");
+  document.body.removeChild(textArea);
+  if (!success) throw new Error("Copy failed");
 }

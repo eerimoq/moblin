@@ -1,17 +1,30 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
     <title>Moblin Remote Control</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script type="module" crossorigin src="/js/index.mjs"></script>
-    <link rel="modulepreload" crossorigin href="/js/vendor.mjs">
-    <link rel="modulepreload" crossorigin href="/js/utils.mjs">
-    <link rel="modulepreload" crossorigin href="/js/components.mjs">
+    <script>
+      const theme = localStorage.getItem("theme");
+      if (
+        theme === "light" ||
+        (theme !== "dark" && matchMedia("(prefers-color-scheme: light)").matches)
+      ) {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+    <script type="module" crossorigin src="/js/vendor.mjs"></script>
+    <script type="module" crossorigin src="/js/config.mjs"></script>
+    <script type="module" crossorigin src="/js/utils.mjs"></script>
+    <script type="module" crossorigin src="/js/components.mjs"></script>
+    <script type="module" crossorigin src="/js/app.mjs"></script>
     <link rel="stylesheet" crossorigin href="/css/components.css">
   </head>
-  <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
+  <body>
     <div id="app"></div>
   </body>
 </html>

@@ -1,6 +1,9 @@
 body {
   cursor: pointer;
   font-family: "Inter", sans-serif;
+  font-weight: 600;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .team-column {

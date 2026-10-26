@@ -13,6 +13,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, "../Moblin/RemoteControl/Web"),
     emptyOutDir: false,
+    assetsInlineLimit: (filePath) => (filePath.endsWith(".woff2") ? true : undefined),
     rollupOptions: {
       input: {
         index: resolve(__dirname, "index.html"),
