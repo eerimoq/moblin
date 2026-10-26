@@ -52,6 +52,9 @@ class Zoom: ObservableObject {
     var frontX: Float = 0.5
     var speedActive = false
     let speedTimer = MainTimer()
+    let remoteControlTimer = MainTimer()
+    var remoteControlTimerRunning = false
+    var remoteControlPending = false
     #if targetEnvironment(macCatalyst)
     let macRamp = MacZoomRamp()
     #endif
@@ -115,12 +118,28 @@ extension Model {
             break
         }
         zoom.x = x
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoom: x))
+        remoteControlZoomChanged()
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }
         if setPinch {
             zoom.xPinch = zoom.x
+        }
+    }
+
+    private func remoteControlZoomChanged() {
+        guard !zoom.remoteControlTimerRunning else {
+            zoom.remoteControlPending = true
+            return
+        }
+        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoom: zoom.x))
+        zoom.remoteControlTimerRunning = true
+        zoom.remoteControlTimer.startSingleShot(timeout: 0.5) {
+            self.zoom.remoteControlTimerRunning = false
+            if self.zoom.remoteControlPending {
+                self.zoom.remoteControlPending = false
+                self.remoteControlZoomChanged()
+            }
         }
     }
 
