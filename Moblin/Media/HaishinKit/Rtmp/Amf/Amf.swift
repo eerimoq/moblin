@@ -215,9 +215,9 @@ final class Amf0Decoder: ByteReader {
     func decodeString() throws -> String {
         switch try readAmf0Type() {
         case .string:
-            return try decodeStringValue()
+            try decodeStringValue()
         case .longString:
-            return try decodeLongStringValue()
+            try decodeLongStringValue()
         default:
             throw AmfError.notString
         }
@@ -226,9 +226,9 @@ final class Amf0Decoder: ByteReader {
     func decodeObject() throws -> AsObject {
         switch try readAmf0Type() {
         case .null:
-            return AsObject()
+            AsObject()
         case .object:
-            return try decodeObjectValue()
+            try decodeObjectValue()
         default:
             throw AmfError.notObject
         }

@@ -613,17 +613,17 @@ let noValue = ""
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
     switch interfaceType {
     case .other:
-        return "questionmark"
+        "questionmark"
     case .wifi:
-        return "wifi"
+        "wifi"
     case .cellular:
-        return "antenna.radiowaves.left.and.right"
+        "antenna.radiowaves.left.and.right"
     case .wiredEthernet:
-        return "cable.coaxial"
+        "cable.coaxial"
     case .loopback:
-        return "questionmark"
+        "questionmark"
     @unknown default:
-        return "questionmark"
+        "questionmark"
     }
 }
 
