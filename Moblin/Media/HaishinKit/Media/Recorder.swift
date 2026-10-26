@@ -177,7 +177,11 @@ final class Recorder: NSObject, @unchecked Sendable {
             return
         }
         if offset > maximumAudioPresentationTimeStampOffset, offset < 10 {
-            appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
+            guard appendAudioSilence(writer, input, nextAudioPresentationTimeStamp, presentationTimeStamp)
+            else {
+                return
+            }
+            nextAudioPresentationTimeStamp = presentationTimeStamp
         }
         guard let sampleBuffer = convertedSampleBuffer.replacePresentationTimeStamp(presentationTimeStamp),
               appendAudioSampleBuffer(
@@ -201,16 +205,16 @@ final class Recorder: NSObject, @unchecked Sendable {
     private func appendAudioSilence(_ writer: AVAssetWriter,
                                     _ input: any WriterInput,
                                     _ from: CMTime,
-                                    _ to: CMTime)
+                                    _ to: CMTime) -> Bool
     {
         guard let outputFormat = audioConverter?.outputFormat else {
-            return
+            return false
         }
         let numberOfFrames = UInt32(((to - from).seconds * outputFormat.sampleRate).rounded())
         guard numberOfFrames > 0,
               let buffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: numberOfFrames)
         else {
-            return
+            return false
         }
         buffer.frameLength = numberOfFrames
         for audioBuffer in UnsafeMutableAudioBufferListPointer(buffer.mutableAudioBufferList) {
@@ -220,13 +224,13 @@ final class Recorder: NSObject, @unchecked Sendable {
             memset(data, 0, Int(audioBuffer.mDataByteSize))
         }
         guard let sampleBuffer = buffer.makeSampleBuffer(from) else {
-            return
+            return false
         }
         logger.info("""
         recorder: audio: Inserting \(formatThreeDecimals((to - from).seconds)) seconds of silence at \
         \(formatThreeDecimals(from.seconds))
         """)
-        _ = appendAudioSampleBuffer(writer, input, sampleBuffer)
+        return appendAudioSampleBuffer(writer, input, sampleBuffer)
     }
 
     private func appendAudioSampleBuffer(_ writer: AVAssetWriter,
