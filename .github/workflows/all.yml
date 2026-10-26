@@ -51,13 +51,13 @@ jobs:
           echo "day=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
       - name: Restore Swift packages
         id: swift-packages
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: DerivedData/SourcePackages
           key: swift-packages-${{ steps.keys.outputs.xcode }}-${{ hashFiles('Moblin.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
       - name: Restore compilation cache
         id: compilation-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: DerivedData/CompilationCache.noindex
           key: compilation-cache-${{ steps.keys.outputs.xcode }}-${{ steps.keys.outputs.day }}
@@ -76,13 +76,13 @@ jobs:
               COMPILATION_CACHE_ENABLE_CACHING=YES
       - name: Save Swift packages
         if: github.ref == 'refs/heads/main' && steps.swift-packages.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: DerivedData/SourcePackages
           key: ${{ steps.swift-packages.outputs.cache-primary-key }}
       - name: Save compilation cache
         if: github.ref == 'refs/heads/main' && steps.compilation-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: DerivedData/CompilationCache.noindex
           key: ${{ steps.compilation-cache.outputs.cache-primary-key }}
