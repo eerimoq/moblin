@@ -1125,6 +1125,12 @@ extension Model: RemoteControlStreamerDelegate {
         moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
     }
 
+    func remoteControlStreamerAppAttest(challenge _: Data,
+                                        onCompleted: @escaping (RemoteControlAppAttest?) -> Void)
+    {
+        onCompleted(nil)
+    }
+
     func remoteControlStreamerGetScoreboardSports() -> [String] {
         getScoreboardSports()
     }

@@ -480,7 +480,7 @@ class RemoteControlAssistant: NSObject {
         do {
             let message = try RemoteControlMessageToAssistant.fromJson(data: message)
             switch message {
-            case let .identify(streamerId: _, authentication: authentication):
+            case let .identify(streamerId: _, authentication: authentication, appAttest: _):
                 handleIdentify(authentication: authentication)
             case let .event(data: data):
                 try handleEvent(data: data)

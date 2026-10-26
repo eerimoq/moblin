@@ -168,14 +168,16 @@ struct SettingsView: View {
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }
-                    NavigationLink {
-                        MoblinCloudSettingsView(
-                            model: model,
-                            database: database,
-                            moblinCloud: database.moblinCloud
-                        )
-                    } label: {
-                        Label("Moblin Cloud", systemImage: "cloud")
+                    if !isMac() {
+                        NavigationLink {
+                            MoblinCloudSettingsView(
+                                model: model,
+                                database: database,
+                                moblinCloud: database.moblinCloud
+                            )
+                        } label: {
+                            Label("Moblin Cloud", systemImage: "cloud")
+                        }
                     }
                 }
                 Section {

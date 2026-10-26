@@ -1,4 +1,183 @@
+import CryptoKit
+import DeviceCheck
 import Foundation
+
+let moblinWebsiteApiUrl = Bundle.main.object(forInfoDictionaryKey: "MoblinWebsiteApiUrl") as! String
+private let liveUrl = URL(string: "\(moblinWebsiteApiUrl)/streamers/live")!
+private let challengeUrl = URL(string: "\(moblinWebsiteApiUrl)/streamers/live/challenge")!
+private let appAttestStorage = SimpleStringStorage(key: "moblinWebsiteAppAttest")
+
+private struct MoblinCloudChannel: Encodable {
+    let platform: String
+    let name: String
+}
+
+private struct MoblinCloudLive: Encodable {
+    let channels: [MoblinCloudChannel]
+    let challenge: String
+    let keyId: String
+    let attestation: String
+    let attestationChallenge: String
+}
+
+private struct MoblinCloudChallenge: Decodable {
+    let challenge: String
+}
+
+private struct MoblinCloudAppAttest: Codable {
+    let keyId: String
+    let challenge: Data
+    var attestation: Data?
+
+    func attestationBase64() -> String {
+        attestation!.base64EncodedString()
+    }
+
+    func challengeBase64() -> String {
+        challenge.base64EncodedString()
+    }
+}
+
+private enum MoblinCloudError: Error {
+    case notSupported
+    case keyRejected(String)
+    case badResponse(String)
+}
+
+private func describe(_ response: URLResponse, _ data: Data) -> String {
+    guard let response = response.http else {
+        return "not HTTP"
+    }
+    return "\(response.statusCode) \(String(bytes: data, encoding: .utf8) ?? "")"
+}
+
+private func loadAppAttest() -> MoblinCloudAppAttest? {
+    try? JSONDecoder().decode(MoblinCloudAppAttest.self, from: Data(appAttestStorage.get().utf8))
+}
+
+private func storeAppAttest(_ appAttest: MoblinCloudAppAttest?) {
+    guard let appAttest, let data = try? JSONEncoder().encode(appAttest) else {
+        appAttestStorage.set("")
+        return
+    }
+    appAttestStorage.set(String(bytes: data, encoding: .utf8) ?? "")
+}
+
+private func attestedKey() async throws -> MoblinCloudAppAttest {
+    let service = DCAppAttestService.shared
+    var appAttest: MoblinCloudAppAttest
+    if let stored = loadAppAttest() {
+        if stored.attestation != nil {
+            return stored
+        }
+        appAttest = stored
+    } else {
+        let keyId = try await service.generateKey()
+        let challenge = Data((0 ..< 32).map { _ in UInt8.random(in: .min ... .max) })
+        appAttest = MoblinCloudAppAttest(keyId: keyId, challenge: challenge, attestation: nil)
+        storeAppAttest(appAttest)
+    }
+    do {
+        let clientDataHash = Data(SHA256.hash(data: appAttest.challenge))
+        appAttest.attestation = try await service.attestKey(appAttest.keyId, clientDataHash: clientDataHash)
+    } catch let error as DCError where error.code == .serverUnavailable {
+        throw error
+    } catch {
+        storeAppAttest(nil)
+        throw error
+    }
+    storeAppAttest(appAttest)
+    return appAttest
+}
+
+private func withAttestedKey<T>(_ body: (MoblinCloudAppAttest) async throws -> T) async throws -> T {
+    guard DCAppAttestService.shared.isSupported else {
+        throw MoblinCloudError.notSupported
+    }
+    let attestedBefore = loadAppAttest()?.attestation != nil
+    do {
+        return try await body(attestedKey())
+    } catch let MoblinCloudError.keyRejected(reason) where attestedBefore {
+        logger.info("moblin-website: Key rejected (\(reason)), attesting a new one")
+        storeAppAttest(nil)
+        return try await body(attestedKey())
+    }
+}
+
+private func generateAssertion(appAttest: MoblinCloudAppAttest, clientData: Data) async throws -> Data {
+    do {
+        return try await DCAppAttestService.shared.generateAssertion(
+            appAttest.keyId,
+            clientDataHash: Data(SHA256.hash(data: clientData))
+        )
+    } catch {
+        throw MoblinCloudError.keyRejected("assertion: \(error)")
+    }
+}
+
+private func fetchChallenge() async throws -> String {
+    var request = URLRequest(url: challengeUrl, timeoutInterval: 30)
+    request.httpMethod = "POST"
+    let (data, response) = try await httpUrlSession().data(for: request)
+    guard response.http?.isSuccessful == true else {
+        throw MoblinCloudError.badResponse("challenge: \(describe(response, data))")
+    }
+    return try JSONDecoder().decode(MoblinCloudChallenge.self, from: data).challenge
+}
+
+private func postLive(channels: [MoblinCloudChannel], appAttest: MoblinCloudAppAttest) async throws {
+    let challenge = try await fetchChallenge()
+    let live = MoblinCloudLive(
+        channels: channels,
+        challenge: challenge,
+        keyId: appAttest.keyId,
+        attestation: appAttest.attestationBase64(),
+        attestationChallenge: appAttest.challengeBase64()
+    )
+    let body = try JSONEncoder().encode(live)
+    let assertion = try await generateAssertion(appAttest: appAttest, clientData: body)
+    var request = URLRequest(url: liveUrl, timeoutInterval: 30)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue(assertion.base64EncodedString(), forHTTPHeaderField: "Moblin-Assertion")
+    request.httpBody = body
+    let (data, response) = try await httpUrlSession().data(for: request)
+    if response.http?.isUnauthorized == true {
+        throw MoblinCloudError.keyRejected("live: \(describe(response, data))")
+    }
+    guard response.http?.isSuccessful == true else {
+        throw MoblinCloudError.badResponse("live: \(describe(response, data))")
+    }
+}
+
+private func makeAppAttest(challenge: Data,
+                           appAttest: MoblinCloudAppAttest) async throws -> RemoteControlAppAttest
+{
+    let assertion = try await generateAssertion(appAttest: appAttest, clientData: challenge)
+    return RemoteControlAppAttest(
+        keyId: appAttest.keyId,
+        attestation: appAttest.attestationBase64(),
+        attestationChallenge: appAttest.challengeBase64(),
+        assertion: assertion.base64EncodedString()
+    )
+}
+
+private func makeMoblinCloudAppAttest(challenge: Data) async -> RemoteControlAppAttest? {
+    do {
+        return try await withAttestedKey { try await makeAppAttest(challenge: challenge, appAttest: $0) }
+    } catch {
+        logger.info("moblin-website: App Attest failed: \(error)")
+        return nil
+    }
+}
+
+private func sendLive(channels: [MoblinCloudChannel]) async {
+    do {
+        try await withAttestedKey { try await postLive(channels: channels, appAttest: $0) }
+    } catch {
+        logger.info("moblin-website: Failed to send live: \(error)")
+    }
+}
 
 private func makeMoblinCloudUrl(key: String) -> URL? {
     guard var components = URLComponents(string: moblinWebsiteApiUrl) else {
@@ -20,6 +199,35 @@ private func makeMoblinCloudUrl(key: String) -> URL? {
 }
 
 extension Model {
+    func sendLiveToMoblinWebsite(onCompleted: (@MainActor () -> Void)? = nil) {
+        guard !isMac(), stream.goLiveNotificationMoblinWebsite else {
+            onCompleted?()
+            return
+        }
+        let stream = stream
+        Task {
+            defer {
+                onCompleted?()
+            }
+            var channels: [MoblinCloudChannel] = []
+            if stream.twitchLoggedIn, let name = await fetchTwitchChannelName(stream: stream), !name.isEmpty {
+                channels.append(.init(platform: "twitch", name: name))
+            }
+            if stream.isYouTubeAuthorized(), let name = await fetchYouTubeHandle(stream: stream),
+               !name.isEmpty
+            {
+                channels.append(.init(platform: "youtube", name: name))
+            }
+            if stream.kickLoggedIn, let name = await fetchKickChannelName(stream: stream), !name.isEmpty {
+                channels.append(.init(platform: "kick", name: name))
+            }
+            guard !channels.isEmpty else {
+                return
+            }
+            await sendLive(channels: channels)
+        }
+    }
+
     func stopMoblinCloud() {
         moblinCloud?.stop()
         moblinCloud = nil
@@ -29,7 +237,7 @@ extension Model {
         stopMoblinCloud()
         let settings = database.moblinCloud
         let key = settings.key.trim()
-        guard settings.enabled, !key.isEmpty, let url = makeMoblinCloudUrl(key: key) else {
+        guard !isMac(), settings.enabled, !key.isEmpty, let url = makeMoblinCloudUrl(key: key) else {
             updateMoblinCloudStatus()
             return
         }
@@ -39,7 +247,7 @@ extension Model {
     }
 
     func isShowingStatusMoblinCloud() -> Bool {
-        database.show.moblinCloud && database.moblinCloud.enabled
+        database.show.moblinCloud && database.moblinCloud.enabled && !isMac()
     }
 
     func updateMoblinCloudStatus() {
@@ -172,6 +380,42 @@ extension Model {
                           highlight: ChatHighlight.makeRemoteControlAssistant(),
                           live: true)
     }
+
+    private func fetchTwitchChannelName(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            createTwitchApi(stream: stream).getUserInfo { info in
+                continuation.resume(returning: info?.login.trim())
+            }
+        }
+    }
+
+    private func fetchYouTubeHandle(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            getYouTubeApi(stream: stream) { youTubeApi in
+                guard let youTubeApi else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                youTubeApi.listChannels {
+                    switch $0 {
+                    case let .success(response):
+                        let handle = response.items.first?.snippet.customUrl?.trim().trimmingPrefix("@")
+                        continuation.resume(returning: handle.map { String($0) })
+                    case .authError, .error:
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
+    }
+
+    private func fetchKickChannelName(stream: SettingsStream) async -> String? {
+        await withCheckedContinuation { continuation in
+            createKickApi(stream: stream).getUser { user in
+                continuation.resume(returning: user?.username.trim())
+            }
+        }
+    }
 }
 
 @MainActor
@@ -211,6 +455,15 @@ class MoblinCloud {
 }
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
+    func remoteControlStreamerAppAttest(
+        challenge: Data,
+        onCompleted: @escaping (RemoteControlAppAttest?) -> Void
+    ) {
+        Task {
+            await onCompleted(makeMoblinCloudAppAttest(challenge: challenge))
+        }
+    }
+
     func remoteControlStreamerConnected() {
         model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()

@@ -70,6 +70,10 @@ protocol RemoteControlStreamerDelegate: AnyObject {
         kind: RemoteControlTipKind,
         requestId: String
     )
+    func remoteControlStreamerAppAttest(
+        challenge: Data,
+        onCompleted: @escaping (RemoteControlAppAttest?) -> Void
+    )
 }
 
 @MainActor
@@ -255,7 +259,17 @@ class RemoteControlStreamer {
             salt: authentication.salt,
             password: password
         )
-        send(message: .identify(streamerId: streamerId, authentication: hash))
+        guard let delegate, let challenge = Data(base64Encoded: authentication.challenge) else {
+            send(message: .identify(streamerId: streamerId, authentication: hash, appAttest: nil))
+            return
+        }
+        let webSocket = webSocket
+        delegate.remoteControlStreamerAppAttest(challenge: challenge) { [weak self] appAttest in
+            guard let self, webSocket === self.webSocket else {
+                return
+            }
+            send(message: .identify(streamerId: streamerId, authentication: hash, appAttest: appAttest))
+        }
     }
 
     private func handleIdentified(result: RemoteControlResult) -> Bool {

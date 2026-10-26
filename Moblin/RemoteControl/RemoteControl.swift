@@ -1145,6 +1145,13 @@ struct RemoteControlAuthentication: Codable {
     let salt: String
 }
 
+struct RemoteControlAppAttest: Codable {
+    let keyId: String
+    let attestation: String
+    let attestationChallenge: String
+    let assertion: String
+}
+
 enum RemoteControlResult: Codable {
     case ok
     case wrongPassword
@@ -1177,7 +1184,7 @@ enum RemoteControlMessageToStreamer: Codable {
 }
 
 enum RemoteControlMessageToAssistant: Codable {
-    case identify(streamerId: String?, authentication: String)
+    case identify(streamerId: String?, authentication: String, appAttest: RemoteControlAppAttest?)
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
