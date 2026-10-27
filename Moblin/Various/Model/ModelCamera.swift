@@ -78,13 +78,16 @@ class CameraState: ObservableObject {
     var lockedFocuses: [AVCaptureDevice: Float] = [:]
     var editingLockedFocus = false
     var focusObservation: NSKeyValueObservation?
-    var isExposuresAndIsosLocked: [AVCaptureDevice: Bool] = [:]
+    var isIsosLocked: [AVCaptureDevice: Bool] = [:]
     var lockedIsos: [AVCaptureDevice: Float] = [:]
     var editingLockedIso = false
     var isoObservation: NSKeyValueObservation?
+    var isExposuresLocked: [AVCaptureDevice: Bool] = [:]
     var lockedExposures: [AVCaptureDevice: Float] = [:]
     var editingLockedExposure = false
     var exposureObservation: NSKeyValueObservation?
+    var exposureTargetOffsetObservation: NSKeyValueObservation?
+    var adjustingUnlockedExposureOrIso = false
     var isWhiteBalancesLocked: [AVCaptureDevice: Bool] = [:]
     var lockedWhiteBalances: [AVCaptureDevice: Float] = [:]
     var editingLockedWhiteBalance = false
@@ -93,9 +96,10 @@ class CameraState: ObservableObject {
     @Published var lockedFocus: Float = 1.0
     @Published var isFocusLocked = false
     @Published var lockedIso: Float = 1.0
+    @Published var isIsoLocked = false
     @Published var lockedExposure: Float = 1.0
     @Published var exposure: CMTime = .zero
-    @Published var isExposureAndIsoLocked = false
+    @Published var isExposureLocked = false
     @Published var lockedWhiteBalance: Float = 0
     @Published var isWhiteBalanceLocked = false
     @Published var manualFocusPoint: CGPoint?
@@ -147,7 +151,9 @@ extension Model {
             cameraDevice.focusPointOfInterest = focusPointOfInterest
             cameraDevice.focusMode = .autoFocus
             cameraDevice.exposurePointOfInterest = focusPointOfInterest
-            cameraDevice.exposureMode = .autoExpose
+            if !isExposureOrIsoLocked(device: cameraDevice) {
+                cameraDevice.exposureMode = .autoExpose
+            }
             cameraDevice.unlockForConfiguration()
             camera.setManualFocusPoint(value: focusPoint)
             startMotionDetection()
@@ -168,7 +174,9 @@ extension Model {
             cameraDevice.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
             cameraDevice.focusMode = .continuousAutoFocus
             cameraDevice.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            cameraDevice.exposureMode = .continuousAutoExposure
+            if !isExposureOrIsoLocked(device: cameraDevice) {
+                cameraDevice.exposureMode = .continuousAutoExposure
+            }
             cameraDevice.unlockForConfiguration()
             camera.setManualFocusPoint(value: nil)
         } catch let error as NSError {
@@ -236,20 +244,44 @@ extension Model {
         camera.focusObservation = nil
     }
 
-    func setAutoExposureAndIso() {
-        guard let cameraDevice, cameraDevice.isExposureModeSupported(.continuousAutoExposure) else {
-            makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
+    func setAutoIso() {
+        guard let cameraDevice else {
             return
         }
-        do {
-            try cameraDevice.lockForConfiguration()
-            cameraDevice.exposureMode = .continuousAutoExposure
-            cameraDevice.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.info("while locking device for continuous auto exposure: \(error)")
+        camera.isIsosLocked[cameraDevice] = false
+        camera.isIsoLocked = false
+        applyExposureAndIso(device: cameraDevice)
+    }
+
+    func setManualIso(factor: Float) {
+        guard let cameraDevice else {
+            return
         }
-        camera.isExposuresAndIsosLocked[cameraDevice] = false
-        camera.isExposureAndIsoLocked = false
+        camera.lockedIso = factor
+        camera.lockedIsos[cameraDevice] = factor
+        camera.isIsosLocked[cameraDevice] = true
+        camera.isIsoLocked = true
+        applyExposureAndIso(device: cameraDevice)
+    }
+
+    func setAutoExposure() {
+        guard let cameraDevice else {
+            return
+        }
+        camera.isExposuresLocked[cameraDevice] = false
+        camera.isExposureLocked = false
+        applyExposureAndIso(device: cameraDevice)
+    }
+
+    func setManualExposure(factor: Float) {
+        guard let cameraDevice else {
+            return
+        }
+        camera.lockedExposure = factor
+        camera.lockedExposures[cameraDevice] = factor
+        camera.isExposuresLocked[cameraDevice] = true
+        camera.isExposureLocked = true
+        applyExposureAndIso(device: cameraDevice)
     }
 
     func setExposureAndIsoAfterCameraAttach(device: AVCaptureDevice) {
@@ -259,9 +291,12 @@ extension Model {
             exposure: device.exposureDuration
         )
         camera.exposure = device.exposureDuration
-        camera.isExposureAndIsoLocked = camera.isExposuresAndIsosLocked[device] ?? false
-        if camera.isExposureAndIsoLocked {
-            setManualExposureAndIso(exposureFactor: camera.lockedExposure, isoFactor: camera.lockedIso)
+        camera.isIsoLocked = camera.isIsosLocked[device] ?? false
+        camera.isExposureLocked = camera.isExposuresLocked[device] ?? false
+        if isExposureOrIsoLocked() {
+            applyExposureAndIso(device: device)
+        } else {
+            stopAdjustingUnlockedExposureOrIso()
         }
         if camera.isoObservation != nil {
             stopObservingIso()
@@ -277,45 +312,126 @@ extension Model {
         cameraDevice?.isExposureModeSupported(.custom) ?? false
     }
 
-    private func setManualExposureAndIso(exposureFactor: Float?, isoFactor: Float?) {
-        guard let cameraDevice, cameraDevice.isExposureModeSupported(.custom) else {
-            makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
-            return
-        }
-        let iso: Float
-        let exposure: CMTime
-        if let isoFactor {
-            iso = factorToIso(device: cameraDevice, factor: isoFactor)
-            camera.lockedIsos[cameraDevice] = isoFactor
+    func isExposureOrIsoLocked() -> Bool {
+        camera.isIsoLocked || camera.isExposureLocked
+    }
+
+    private func isExposureOrIsoLocked(device: AVCaptureDevice) -> Bool {
+        (camera.isIsosLocked[device] ?? false) || (camera.isExposuresLocked[device] ?? false)
+    }
+
+    private func applyExposureAndIso(device: AVCaptureDevice) {
+        stopAdjustingUnlockedExposureOrIso()
+        if isExposureOrIsoLocked() {
+            applyCustomExposureAndIso(device: device)
         } else {
-            iso = AVCaptureDevice.currentISO
-            camera.lockedIsos[cameraDevice] = factorFromIso(device: cameraDevice, iso: cameraDevice.iso)
-        }
-        if let exposureFactor {
-            exposure = factorToExposure(device: cameraDevice, factor: exposureFactor)
-            camera.lockedExposures[cameraDevice] = exposureFactor
-            camera.exposure = exposure
-        } else {
-            exposure = AVCaptureDevice.currentExposureDuration
-            camera.lockedExposures[cameraDevice] = factorFromExposure(
-                device: cameraDevice,
-                exposure: cameraDevice.exposureDuration
-            )
-            camera.exposure = cameraDevice.exposureDuration
-        }
-        camera.isExposuresAndIsosLocked[cameraDevice] = true
-        camera.isExposureAndIsoLocked = true
-        do {
-            try cameraDevice.lockForConfiguration()
-            cameraDevice.setExposureModeCustom(duration: exposure, iso: iso) { _ in }
-            cameraDevice.unlockForConfiguration()
-        } catch let error as NSError {
-            logger.info("while locking device for manual exposure: \(error)")
+            applyContinuousAutoExposure(device: device)
         }
     }
 
-    func setManualIso(factor: Float) {
-        setManualExposureAndIso(exposureFactor: nil, isoFactor: factor)
+    private func applyContinuousAutoExposure(device: AVCaptureDevice) {
+        guard device.isExposureModeSupported(.continuousAutoExposure) else {
+            makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
+            return
+        }
+        do {
+            try device.lockForConfiguration()
+            device.exposureMode = .continuousAutoExposure
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.info("while locking device for continuous auto exposure: \(error)")
+        }
+    }
+
+    private func applyCustomExposureAndIso(device: AVCaptureDevice) {
+        guard device.isExposureModeSupported(.custom) else {
+            makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
+            return
+        }
+        let iso: Float = if camera.isIsoLocked {
+            factorToIso(device: device, factor: camera.lockedIso)
+        } else {
+            AVCaptureDevice.currentISO
+        }
+        let exposure: CMTime
+        if camera.isExposureLocked {
+            exposure = factorToExposure(device: device, factor: camera.lockedExposure)
+            camera.exposure = exposure
+        } else {
+            exposure = AVCaptureDevice.currentExposureDuration
+            camera.exposure = device.exposureDuration
+        }
+        setExposureModeCustom(device: device, exposure: exposure, iso: iso)
+        if camera.isIsoLocked != camera.isExposureLocked {
+            startAdjustingUnlockedExposureOrIso(device: device)
+        }
+    }
+
+    private func setExposureModeCustom(device: AVCaptureDevice, exposure: CMTime, iso: Float) {
+        camera.adjustingUnlockedExposureOrIso = true
+        do {
+            try device.lockForConfiguration()
+            device.setExposureModeCustom(duration: exposure, iso: iso) { _ in
+                DispatchQueue.main.async {
+                    self.camera.adjustingUnlockedExposureOrIso = false
+                }
+            }
+            device.unlockForConfiguration()
+        } catch let error as NSError {
+            logger.info("while locking device for manual exposure: \(error)")
+            camera.adjustingUnlockedExposureOrIso = false
+        }
+    }
+
+    private func startAdjustingUnlockedExposureOrIso(device: AVCaptureDevice) {
+        camera.exposureTargetOffsetObservation = device
+            .observe(\.exposureTargetOffset, options: [.new]) { _, change in
+                guard let offset = change.newValue, offset.isFinite, abs(offset) > 0.1 else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.adjustUnlockedExposureOrIso(device: device)
+                }
+            }
+    }
+
+    private func stopAdjustingUnlockedExposureOrIso() {
+        camera.exposureTargetOffsetObservation = nil
+        camera.adjustingUnlockedExposureOrIso = false
+    }
+
+    private func adjustUnlockedExposureOrIso(device: AVCaptureDevice) {
+        guard device == cameraDevice, device.exposureMode == .custom, !camera.adjustingUnlockedExposureOrIso
+        else {
+            return
+        }
+        let offset = device.exposureTargetOffset
+        guard offset.isFinite, abs(offset) > 0.1 else {
+            return
+        }
+        let factor = pow(2, -offset * 0.5)
+        let exposure: CMTime
+        let iso: Float
+        if camera.isExposureLocked, !camera.isIsoLocked {
+            let minIso = device.activeFormat.minISO
+            let maxIso = device.activeFormat.maxISO
+            iso = (device.iso * factor).clamped(to: minIso ... maxIso)
+            guard abs(iso / device.iso - 1) > 0.01 else {
+                return
+            }
+            exposure = factorToExposure(device: device, factor: camera.lockedExposure)
+        } else if camera.isIsoLocked, !camera.isExposureLocked {
+            let exposures = exposures(device: device)
+            exposure = CMTimeMultiplyByFloat64(device.exposureDuration, multiplier: Double(factor))
+                .clamped(to: exposures.first! ... exposures.last!)
+            guard abs(exposure.seconds / device.exposureDuration.seconds - 1) > 0.01 else {
+                return
+            }
+            iso = factorToIso(device: device, factor: camera.lockedIso)
+        } else {
+            return
+        }
+        setExposureModeCustom(device: device, exposure: exposure, iso: iso)
     }
 
     func startObservingIso() {
@@ -337,10 +453,6 @@ extension Model {
 
     func stopObservingIso() {
         camera.isoObservation = nil
-    }
-
-    func setManualExposure(factor: Float) {
-        setManualExposureAndIso(exposureFactor: factor, isoFactor: nil)
     }
 
     func getExposureFactorStep() -> Float {

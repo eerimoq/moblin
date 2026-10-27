@@ -1498,7 +1498,7 @@ final class Model: NSObject, ObservableObject {
         if camera.isWhiteBalanceLocked {
             isOn = true
         }
-        if camera.isExposureAndIsoLocked {
+        if isExposureOrIsoLocked() {
             isOn = true
         }
         if camera.isFocusLocked {
