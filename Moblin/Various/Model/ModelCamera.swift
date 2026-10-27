@@ -129,9 +129,7 @@ private let backWideDualLowEnergyCamera = Camera(
 
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
-        guard
-            let device = cameraDevice, device.isFocusPointOfInterestSupported
-        else {
+        guard let cameraDevice, cameraDevice.isFocusPointOfInterestSupported else {
             logger.info("Tap to focus not supported for this camera")
             makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
             return
@@ -145,68 +143,66 @@ extension Model {
             focusPointOfInterest.y = 1 - focusPoint.y
         }
         do {
-            try device.lockForConfiguration()
-            device.focusPointOfInterest = focusPointOfInterest
-            device.focusMode = .autoFocus
-            device.exposurePointOfInterest = focusPointOfInterest
-            device.exposureMode = .autoExpose
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.focusPointOfInterest = focusPointOfInterest
+            cameraDevice.focusMode = .autoFocus
+            cameraDevice.exposurePointOfInterest = focusPointOfInterest
+            cameraDevice.exposureMode = .autoExpose
+            cameraDevice.unlockForConfiguration()
             camera.setManualFocusPoint(value: focusPoint)
             startMotionDetection()
         } catch let error as NSError {
             logger.info("while locking device for focusPointOfInterest: \(error)")
         }
-        camera.isFocusesLocked[device] = false
+        camera.isFocusesLocked[cameraDevice] = false
         camera.isFocusLocked = false
     }
 
     func setAutoFocus() {
         stopMotionDetection()
-        guard let device = cameraDevice, device.isFocusPointOfInterestSupported else {
+        guard let cameraDevice, cameraDevice.isFocusPointOfInterestSupported else {
             return
         }
         do {
-            try device.lockForConfiguration()
-            device.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            device.focusMode = .continuousAutoFocus
-            device.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
-            device.exposureMode = .continuousAutoExposure
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.focusPointOfInterest = CGPoint(x: 0.5, y: 0.5)
+            cameraDevice.focusMode = .continuousAutoFocus
+            cameraDevice.exposurePointOfInterest = CGPoint(x: 0.5, y: 0.5)
+            cameraDevice.exposureMode = .continuousAutoExposure
+            cameraDevice.unlockForConfiguration()
             camera.setManualFocusPoint(value: nil)
         } catch let error as NSError {
             logger.info("while locking device for focusPointOfInterest: \(error)")
         }
-        camera.isFocusesLocked[device] = false
+        camera.isFocusesLocked[cameraDevice] = false
         camera.isFocusLocked = false
     }
 
     func setManualFocus(lensPosition: Float) {
-        guard
-            let device = cameraDevice, device.isLockingFocusWithCustomLensPositionSupported
-        else {
+        guard let cameraDevice, cameraDevice.isLockingFocusWithCustomLensPositionSupported else {
             makeErrorToast(title: String(localized: "Manual focus not supported for this camera"))
             return
         }
         stopMotionDetection()
         do {
-            try device.lockForConfiguration()
-            device.setFocusModeLocked(lensPosition: lensPosition)
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.setFocusModeLocked(lensPosition: lensPosition)
+            cameraDevice.unlockForConfiguration()
         } catch let error as NSError {
             logger.info("while locking device for manual focus: \(error)")
         }
         camera.setManualFocusPoint(value: nil)
-        camera.isFocusesLocked[device] = true
+        camera.isFocusesLocked[cameraDevice] = true
         camera.isFocusLocked = true
-        camera.lockedFocuses[device] = lensPosition
+        camera.lockedFocuses[cameraDevice] = lensPosition
     }
 
     func setFocusAfterCameraAttach() {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
-        camera.lockedFocus = camera.lockedFocuses[device] ?? device.lensPosition
-        camera.isFocusLocked = camera.isFocusesLocked[device] ?? false
+        camera.lockedFocus = camera.lockedFocuses[cameraDevice] ?? cameraDevice.lensPosition
+        camera.isFocusLocked = camera.isFocusesLocked[cameraDevice] ?? false
         if !camera.isFocusLocked {
             setAutoFocus()
         }
@@ -221,20 +217,17 @@ extension Model {
     }
 
     func startObservingFocus() {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
-        camera.lockedFocus = device.lensPosition
-        camera.focusObservation = device.observe(\.lensPosition) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
+        camera.lockedFocus = cameraDevice.lensPosition
+        camera.focusObservation = cameraDevice.observe(\.lensPosition) { _, _ in
             DispatchQueue.main.async {
                 guard !self.camera.editingLockedFocus else {
                     return
                 }
-                self.camera.lockedFocuses[device] = device.lensPosition
-                self.camera.lockedFocus = device.lensPosition
+                self.camera.lockedFocuses[cameraDevice] = cameraDevice.lensPosition
+                self.camera.lockedFocus = cameraDevice.lensPosition
             }
         }
     }
@@ -244,20 +237,18 @@ extension Model {
     }
 
     func setAutoExposureAndIso() {
-        guard
-            let device = cameraDevice, device.isExposureModeSupported(.continuousAutoExposure)
-        else {
+        guard let cameraDevice, cameraDevice.isExposureModeSupported(.continuousAutoExposure) else {
             makeErrorToast(title: String(localized: "Continuous auto exposure not supported for this camera"))
             return
         }
         do {
-            try device.lockForConfiguration()
-            device.exposureMode = .continuousAutoExposure
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.exposureMode = .continuousAutoExposure
+            cameraDevice.unlockForConfiguration()
         } catch let error as NSError {
             logger.info("while locking device for continuous auto exposure: \(error)")
         }
-        camera.isExposuresAndIsosLocked[device] = false
+        camera.isExposuresAndIsosLocked[cameraDevice] = false
         camera.isExposureAndIsoLocked = false
     }
 
@@ -287,37 +278,37 @@ extension Model {
     }
 
     private func setManualExposureAndIso(exposureFactor: Float?, isoFactor: Float?) {
-        guard let device = cameraDevice, device.isExposureModeSupported(.custom) else {
+        guard let cameraDevice, cameraDevice.isExposureModeSupported(.custom) else {
             makeErrorToast(title: String(localized: "Manual exposure not supported for this camera"))
             return
         }
         let iso: Float
         let exposure: CMTime
         if let isoFactor {
-            iso = factorToIso(device: device, factor: isoFactor)
-            camera.lockedIsos[device] = isoFactor
+            iso = factorToIso(device: cameraDevice, factor: isoFactor)
+            camera.lockedIsos[cameraDevice] = isoFactor
         } else {
             iso = AVCaptureDevice.currentISO
-            camera.lockedIsos[device] = factorFromIso(device: device, iso: device.iso)
+            camera.lockedIsos[cameraDevice] = factorFromIso(device: cameraDevice, iso: cameraDevice.iso)
         }
         if let exposureFactor {
-            exposure = factorToExposure(device: device, factor: exposureFactor)
-            camera.lockedExposures[device] = exposureFactor
+            exposure = factorToExposure(device: cameraDevice, factor: exposureFactor)
+            camera.lockedExposures[cameraDevice] = exposureFactor
             camera.exposure = exposure
         } else {
             exposure = AVCaptureDevice.currentExposureDuration
-            camera.lockedExposures[device] = factorFromExposure(
-                device: device,
-                exposure: device.exposureDuration
+            camera.lockedExposures[cameraDevice] = factorFromExposure(
+                device: cameraDevice,
+                exposure: cameraDevice.exposureDuration
             )
-            camera.exposure = device.exposureDuration
+            camera.exposure = cameraDevice.exposureDuration
         }
-        camera.isExposuresAndIsosLocked[device] = true
+        camera.isExposuresAndIsosLocked[cameraDevice] = true
         camera.isExposureAndIsoLocked = true
         do {
-            try device.lockForConfiguration()
-            device.setExposureModeCustom(duration: exposure, iso: iso) { _ in }
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.setExposureModeCustom(duration: exposure, iso: iso) { _ in }
+            cameraDevice.unlockForConfiguration()
         } catch let error as NSError {
             logger.info("while locking device for manual exposure: \(error)")
         }
@@ -328,20 +319,17 @@ extension Model {
     }
 
     func startObservingIso() {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
-        camera.lockedIso = factorFromIso(device: device, iso: device.iso)
-        camera.isoObservation = device.observe(\.iso) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
+        camera.lockedIso = factorFromIso(device: cameraDevice, iso: cameraDevice.iso)
+        camera.isoObservation = cameraDevice.observe(\.iso) { _, _ in
             DispatchQueue.main.async {
                 guard !self.camera.editingLockedIso else {
                     return
                 }
-                let iso = factorFromIso(device: device, iso: device.iso)
-                self.camera.lockedIsos[device] = iso
+                let iso = factorFromIso(device: cameraDevice, iso: cameraDevice.iso)
+                self.camera.lockedIsos[cameraDevice] = iso
                 self.camera.lockedIso = iso
             }
         }
@@ -356,30 +344,33 @@ extension Model {
     }
 
     func getExposureFactorStep() -> Float {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return 0.01
         }
-        return exposureFactorStep(device: device)
+        return exposureFactorStep(device: cameraDevice)
     }
 
     func startObservingExposure() {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
-        camera.lockedExposure = factorFromExposure(device: device, exposure: device.exposureDuration)
-        camera.exposure = device.exposureDuration
-        camera.exposureObservation = device.observe(\.exposureDuration) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
+        camera.lockedExposure = factorFromExposure(
+            device: cameraDevice,
+            exposure: cameraDevice.exposureDuration
+        )
+        camera.exposure = cameraDevice.exposureDuration
+        camera.exposureObservation = cameraDevice.observe(\.exposureDuration) { _, _ in
             DispatchQueue.main.async {
                 guard !self.camera.editingLockedExposure else {
                     return
                 }
-                let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
-                self.camera.lockedExposures[device] = exposure
+                let exposure = factorFromExposure(
+                    device: cameraDevice,
+                    exposure: cameraDevice.exposureDuration
+                )
+                self.camera.lockedExposures[cameraDevice] = exposure
                 self.camera.lockedExposure = exposure
-                self.camera.exposure = device.exposureDuration
+                self.camera.exposure = cameraDevice.exposureDuration
             }
         }
     }
@@ -389,43 +380,42 @@ extension Model {
     }
 
     func setAutoWhiteBalance() {
-        guard
-            let device = cameraDevice, device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance)
-        else {
+        guard let cameraDevice, cameraDevice.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance) else {
             makeErrorToast(
                 title: String(localized: "Continuous auto white balance not supported for this camera")
             )
             return
         }
         do {
-            try device.lockForConfiguration()
-            device.whiteBalanceMode = .continuousAutoWhiteBalance
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.whiteBalanceMode = .continuousAutoWhiteBalance
+            cameraDevice.unlockForConfiguration()
         } catch let error as NSError {
             logger.info("while locking device for continuous auto white balance: \(error)")
         }
-        camera.isWhiteBalancesLocked[device] = false
+        camera.isWhiteBalancesLocked[cameraDevice] = false
         camera.isWhiteBalanceLocked = false
         updateImageButtonState()
     }
 
     func setManualWhiteBalance(factor: Float) {
-        guard
-            let device = cameraDevice, device.isLockingWhiteBalanceWithCustomDeviceGainsSupported
-        else {
+        guard let cameraDevice, cameraDevice.isLockingWhiteBalanceWithCustomDeviceGainsSupported else {
             makeErrorToast(title: String(localized: "Manual white balance not supported for this camera"))
             return
         }
         do {
-            try device.lockForConfiguration()
-            device.setWhiteBalanceModeLocked(with: factorToWhiteBalance(device: device, factor: factor))
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.setWhiteBalanceModeLocked(with: factorToWhiteBalance(
+                device: cameraDevice,
+                factor: factor
+            ))
+            cameraDevice.unlockForConfiguration()
         } catch let error as NSError {
             logger.info("while locking device for manual white balance: \(error)")
         }
-        camera.isWhiteBalancesLocked[device] = true
+        camera.isWhiteBalancesLocked[cameraDevice] = true
         camera.isWhiteBalanceLocked = true
-        camera.lockedWhiteBalances[device] = factor
+        camera.lockedWhiteBalances[cameraDevice] = factor
     }
 
     func setWhiteBalanceAfterCameraAttach(device: AVCaptureDevice) {
@@ -445,26 +435,24 @@ extension Model {
     }
 
     func startObservingWhiteBalance() {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
         camera.lockedWhiteBalance = factorFromWhiteBalance(
-            device: device,
-            gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+            device: cameraDevice,
+            gains: cameraDevice.deviceWhiteBalanceGains.clamped(maxGain: cameraDevice.maxWhiteBalanceGain)
         )
-        camera.whiteBalanceObservation = device.observe(\.deviceWhiteBalanceGains) { [weak self] _, _ in
-            guard let self else {
-                return
-            }
+        camera.whiteBalanceObservation = cameraDevice.observe(\.deviceWhiteBalanceGains) { _, _ in
             DispatchQueue.main.async {
                 guard !self.camera.editingLockedWhiteBalance else {
                     return
                 }
                 let factor = factorFromWhiteBalance(
-                    device: device,
-                    gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+                    device: cameraDevice,
+                    gains: cameraDevice.deviceWhiteBalanceGains
+                        .clamped(maxGain: cameraDevice.maxWhiteBalanceGain)
                 )
-                self.camera.lockedWhiteBalances[device] = factor
+                self.camera.lockedWhiteBalances[cameraDevice] = factor
                 self.camera.lockedWhiteBalance = factor
             }
         }
@@ -938,19 +926,19 @@ extension Model {
     }
 
     func setExposureBias(bias: Float) {
-        guard let device = cameraDevice else {
+        guard let cameraDevice else {
             return
         }
-        if bias < device.minExposureTargetBias {
+        if bias < cameraDevice.minExposureTargetBias {
             return
         }
-        if bias > device.maxExposureTargetBias {
+        if bias > cameraDevice.maxExposureTargetBias {
             return
         }
         do {
-            try device.lockForConfiguration()
-            device.setExposureTargetBias(bias)
-            device.unlockForConfiguration()
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.setExposureTargetBias(bias)
+            cameraDevice.unlockForConfiguration()
         } catch {}
     }
 }
