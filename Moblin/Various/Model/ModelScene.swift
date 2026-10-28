@@ -7,9 +7,11 @@ class CreateWidgetWizard: ObservableObject {
     @Published var name: String = ""
     @Published var type: SettingsWidgetType = .text
     var widget: SettingsWidget = .init(name: "")
+    var sceneId: UUID?
 
-    func reset() {
+    func reset(scene: SettingsScene? = nil) {
         name = ""
+        sceneId = scene?.id
         type = .text
         widget = .init(name: "")
         widget.text.formatString = ""

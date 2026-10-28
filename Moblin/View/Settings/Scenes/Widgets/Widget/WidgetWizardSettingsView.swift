@@ -84,8 +84,9 @@ private struct SelectScenesView: View {
             CloseToolbar(presenting: $presentingCreateWizard)
         }
         .onAppear {
+            let sceneId = createWidgetWizard.sceneId ?? model.getSelectedScene()?.id
             scenesToAddWidgetTo = database.scenes.map {
-                SceneToAddWidgetTo(scene: $0, enabled: $0 === model.getSelectedScene())
+                SceneToAddWidgetTo(scene: $0, enabled: $0.id == sceneId)
             }
         }
     }
@@ -107,6 +108,22 @@ struct WidgetWizardSelectScenesNavigationView: View {
             } label: {
                 WizardNextButtonView()
             }
+        }
+    }
+}
+
+struct WidgetWizardSheetView: View {
+    let model: Model
+    let database: Database
+    @Binding var presentingCreateWizard: Bool
+
+    var body: some View {
+        NavigationStack {
+            WidgetWizardSettingsView(model: model,
+                                     database: database,
+                                     createWidgetWizard: model.createWidgetWizard,
+                                     presentingCreateWizard: $presentingCreateWizard)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

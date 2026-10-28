@@ -57,13 +57,9 @@ struct WidgetsSettingsView: View {
                 model.createWidgetWizard.reset()
             }
             .sheet(isPresented: $presentingCreateWizard) {
-                NavigationStack {
-                    WidgetWizardSettingsView(model: model,
-                                             database: database,
-                                             createWidgetWizard: model.createWidgetWizard,
-                                             presentingCreateWizard: $presentingCreateWizard)
-                        .navigationBarTitleDisplayMode(.inline)
-                }
+                WidgetWizardSheetView(model: model,
+                                      database: database,
+                                      presentingCreateWizard: $presentingCreateWizard)
             }
         } header: {
             Text("Widgets")

@@ -278,6 +278,7 @@ private struct WidgetsView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
     @State private var presentingAddWidget = false
+    @State private var presentingCreateWizard = false
 
     private var widgets: [SettingsWidget] {
         database.widgets
@@ -341,6 +342,15 @@ private struct WidgetsView: View {
                 .padding(5)
                 .presentationCompactAdaptation(.none)
             }
+            CreateButtonView {
+                model.createWidgetWizard.reset(scene: scene)
+                presentingCreateWizard = true
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                WidgetWizardSheetView(model: model,
+                                      database: database,
+                                      presentingCreateWizard: $presentingCreateWizard)
+            }
         } header: {
             Text("Widgets")
         } footer: {
@@ -372,10 +382,10 @@ struct SceneSettingsView: View {
     var body: some View {
         Form {
             NameEditView(name: $scene.name, existingNames: database.scenes)
+            WidgetsView(database: database, scene: scene)
             VideoSourceView(database: database, scene: scene, videoSources: model.videoSources)
             QuickSwitchGroupView(database: database, scene: scene)
             SceneMicView(model: model, database: database, scene: scene)
-            WidgetsView(database: database, scene: scene)
             SceneColorView(model: model, scene: scene)
         }
         .navigationTitle("Scene")
