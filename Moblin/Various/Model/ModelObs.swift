@@ -285,19 +285,15 @@ extension Model {
             } else {
                 switchToMainSceneIfNeeded()
             }
-        } else {
-            if isStreamLikelyBroken(now: now) {
-                switchToBrbSceneIfNeeded()
-            } else {
-                if obsQuickButton.currentScene == stream.obsBrbScene {
-                    makeStreamReconnectFixAudioToast()
-                    stopNetStream()
-                    streamState = .disconnected
-                    reconnectTimer.startSingleShot(timeout: 5) {
-                        logger.info("stream: Reconnecting because of OBS scene switcher")
-                        self.startNetStream()
-                    }
-                }
+        } else if isStreamLikelyBroken(now: now) {
+            switchToBrbSceneIfNeeded()
+        } else if obsQuickButton.currentScene == stream.obsBrbScene {
+            makeStreamReconnectFixAudioToast()
+            stopNetStream()
+            streamState = .disconnected
+            reconnectTimer.startSingleShot(timeout: 5) {
+                logger.info("stream: Reconnecting because of OBS scene switcher")
+                self.startNetStream()
             }
         }
     }

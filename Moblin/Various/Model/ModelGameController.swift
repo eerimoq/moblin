@@ -173,10 +173,8 @@ extension Model {
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
         if pressed {
             setZoomX(x: x, rate: database.zoom.speed)
-        } else {
-            if let x = stopCameraZoom() {
-                setZoomXWhenInRange(x: x)
-            }
+        } else if let x = stopCameraZoom() {
+            setZoomXWhenInRange(x: x)
         }
     }
 

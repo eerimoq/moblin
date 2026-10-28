@@ -84,12 +84,10 @@ final class BeautyEffect: VideoEffect, @unchecked Sendable {
     private func updateScaleFactors(_ detections: [VNFaceObservation]?, _ isFirstAfterAttach: Bool) {
         if isFirstAfterAttach {
             shapeScaleFactor = 1
+        } else if detections?.isEmpty ?? true {
+            decreaseShapeScaleFactor()
         } else {
-            if detections?.isEmpty ?? true {
-                decreaseShapeScaleFactor()
-            } else {
-                increaseShapeScaleFactor()
-            }
+            increaseShapeScaleFactor()
         }
     }
 

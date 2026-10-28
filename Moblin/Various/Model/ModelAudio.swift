@@ -137,12 +137,10 @@ extension Model {
                let mic = getConnectedMicById(id: scene.micId)
             {
                 selectMic(mic: mic)
-            } else {
-                if defaultMic.connected {
-                    selectMic(mic: defaultMic)
-                } else if let mic = getHighestPriorityConnectedMic() {
-                    selectMic(mic: mic)
-                }
+            } else if defaultMic.connected {
+                selectMic(mic: defaultMic)
+            } else if let mic = getHighestPriorityConnectedMic() {
+                selectMic(mic: mic)
             }
         }
     }
@@ -445,26 +443,22 @@ extension Model {
                     }
                     selectMicDefault(mic: mic.current)
                 }
-            } else {
-                if let activeMic = getActiveAudioSessionMic(),
-                   getMicPriority(mic: activeMic) > getMicPriority(mic: defaultMic)
-                {
-                    defaultMic = activeMic
-                }
-            }
-        } else {
-            if let activeMic = getActiveAudioSessionMic(),
-               getMicPriority(mic: activeMic) > getMicPriority(mic: mic.current)
+            } else if let activeMic = getActiveAudioSessionMic(),
+                      getMicPriority(mic: activeMic) > getMicPriority(mic: defaultMic)
             {
-                selectMic(mic: activeMic)
                 defaultMic = activeMic
-            } else if getActiveAudioSessionMic() == mic.current {
-            } else if mic.current.connected, mic.current.isAudioSession() {
-                selectMicDefault(mic: mic.current)
-            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
-                selectMic(mic: highestPrioMic)
-                defaultMic = highestPrioMic
             }
+        } else if let activeMic = getActiveAudioSessionMic(),
+                  getMicPriority(mic: activeMic) > getMicPriority(mic: mic.current)
+        {
+            selectMic(mic: activeMic)
+            defaultMic = activeMic
+        } else if getActiveAudioSessionMic() == mic.current {
+        } else if mic.current.connected, mic.current.isAudioSession() {
+            selectMicDefault(mic: mic.current)
+        } else if let highestPrioMic = getHighestPriorityConnectedMic() {
+            selectMic(mic: highestPrioMic)
+            defaultMic = highestPrioMic
         }
     }
 
