@@ -8,9 +8,9 @@ struct MoblinCloudSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Let viewers interact with your stream from your page at https://moblin.app")
+                Text("Let viewers interact with your stream from your page at https://cloud.moblin.app")
                 Text("""
-                1. Sign in at https://moblin.app/dashboard and set up your page.
+                1. Sign in at https://cloud.moblin.app and set up your page.
                 2. Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below.
                 3. Pick the alerts widget that shows messages and the wheel of luck widget that viewers spin.
                 """)

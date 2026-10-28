@@ -1,4 +1,5 @@
 MOBLIN_WEBSITE_API_URL = https:/$()/api.moblin.app
+MOBLIN_CLOUD_API_URL = https:/$()/cloud-api.moblin.app
 
 #include "Base.xcconfig"
 
