@@ -231,6 +231,15 @@ extension Model {
     func stopMoblinCloud() {
         moblinCloud?.stop()
         moblinCloud = nil
+        setLowFpsImage()
+    }
+
+    func isMoblinCloudPreviewActive() -> Bool {
+        moblinCloud?.isRequestingPreview() ?? false
+    }
+
+    func sendPreviewToMoblinCloud(preview: Data) {
+        moblinCloud?.sendPreview(preview: preview)
     }
 
     func reloadMoblinCloud() {
@@ -424,6 +433,7 @@ class MoblinCloud {
     private var streamer: RemoteControlStreamer?
     private var requestingStatus = false
     private var statusFilter: RemoteControlStartStatusFilter?
+    private var requestingPreview = false
 
     init(model: Model, url: URL, streamerId: String) {
         self.model = model
@@ -462,6 +472,17 @@ class MoblinCloud {
         streamer?.stateChanged(state: state)
     }
 
+    func isRequestingPreview() -> Bool {
+        requestingPreview
+    }
+
+    func sendPreview(preview: Data) {
+        guard requestingPreview, let streamer, streamer.isConnected() else {
+            return
+        }
+        streamer.sendPreview(preview: preview)
+    }
+
     func sendPeriodicStatus() {
         guard requestingStatus, let streamer, streamer.isConnected(), let model else {
             return
@@ -473,6 +494,11 @@ class MoblinCloud {
     private func setRequestingStatus(_ on: Bool, filter: RemoteControlStartStatusFilter? = nil) {
         requestingStatus = on
         statusFilter = filter
+    }
+
+    private func setRequestingPreview(_ on: Bool) {
+        requestingPreview = on
+        model?.setLowFpsImage()
     }
 }
 
@@ -488,6 +514,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerConnected() {
         setRequestingStatus(false)
+        setRequestingPreview(false)
         model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
@@ -496,6 +523,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerDisconnected() {
         setRequestingStatus(false)
+        setRequestingPreview(false)
         model?.makeToast(title: String(localized: "Moblin Cloud disconnected"))
         model?.updateMoblinCloudStatus()
     }
@@ -549,7 +577,9 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlSetLive(on: on)
     }
 
-    func remoteControlStreamerSetPreviewStream(on _: Bool) {}
+    func remoteControlStreamerSetPreviewStream(on: Bool) {
+        model?.remoteControlSetPreviewStream(on: on)
+    }
 
     func remoteControlStreamerSetDebugLogging(on _: Bool) {}
 
@@ -589,9 +619,13 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerChatMessages(history _: Bool, messages _: [RemoteControlChatMessage]) {}
 
-    func remoteControlStreamerStartPreview() {}
+    func remoteControlStreamerStartPreview() {
+        setRequestingPreview(true)
+    }
 
-    func remoteControlStreamerStopPreview() {}
+    func remoteControlStreamerStopPreview() {
+        setRequestingPreview(false)
+    }
 
     func remoteControlStreamerSetRemoteSceneSettings(data _: RemoteControlRemoteSceneSettings) {}
 
@@ -640,13 +674,17 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         onCompleted(404, [], Data())
     }
 
-    func remoteControlStreamerSetFilter(filter _: RemoteControlFilter, on _: Bool) {}
+    func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool) {
+        model?.remoteControlSetFilter(filter: filter, on: on)
+    }
 
     func remoteControlStreamerTriggerReaction(reaction _: RemoteControlReaction) {}
 
     func remoteControlStreamerMoveToGimbalPreset(id _: UUID) {}
 
-    func remoteControlStreamerSetGimbalTracking(on _: Bool) {}
+    func remoteControlStreamerSetGimbalTracking(on: Bool) {
+        model?.setGimbalTracking(on: on)
+    }
 
     func remoteControlStreamerSetGimbalMovement(x _: Float, y _: Float) {}
 
@@ -662,9 +700,13 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerStopStats() {}
 
-    func remoteControlStreamerStartMacro(id _: UUID) {}
+    func remoteControlStreamerStartMacro(id: UUID) {
+        model?.startMacro(id: id)
+    }
 
-    func remoteControlStreamerStopMacro(id _: UUID) {}
+    func remoteControlStreamerStopMacro(id: UUID) {
+        model?.stopMacro(id: id)
+    }
 
     func remoteControlStreamerSendMessage(text _: String) {}
 

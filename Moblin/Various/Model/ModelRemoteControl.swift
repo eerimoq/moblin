@@ -661,7 +661,7 @@ extension Model {
         remoteControlWeb?.start(port: database.remoteControl.web.port)
     }
 
-    private func handleRemoteControlSetFilter(filter: RemoteControlFilter, on: Bool) {
+    func remoteControlSetFilter(filter: RemoteControlFilter, on: Bool) {
         switch filter {
         case .pixellate:
             setPixellateQuickButton(on: on)
@@ -783,6 +783,14 @@ extension Model {
             startStream()
         } else {
             _ = stopStream()
+        }
+    }
+
+    func remoteControlSetPreviewStream(on: Bool) {
+        if on {
+            startPreviewStream()
+        } else {
+            stopPreviewStream()
         }
     }
 
@@ -952,11 +960,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetPreviewStream(on: Bool) {
-        if on {
-            startPreviewStream()
-        } else {
-            stopPreviewStream()
-        }
+        remoteControlSetPreviewStream(on: on)
     }
 
     func remoteControlStreamerSetDebugLogging(on: Bool) {
@@ -1241,7 +1245,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool) {
-        handleRemoteControlSetFilter(filter: filter, on: on)
+        remoteControlSetFilter(filter: filter, on: on)
     }
 
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction) {
@@ -1572,7 +1576,7 @@ extension Model: RemoteControlWebDelegate {
     }
 
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool) {
-        handleRemoteControlSetFilter(filter: filter, on: on)
+        remoteControlSetFilter(filter: filter, on: on)
     }
 
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction) {

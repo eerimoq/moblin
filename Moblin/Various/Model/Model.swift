@@ -2507,6 +2507,9 @@ final class Model: NSObject, ObservableObject {
         if isRemoteControlWebPreviewActive() {
             fps = max(fps, 1.0)
         }
+        if isMoblinCloudPreviewActive() {
+            fps = max(fps, 1.0)
+        }
         media.setLowFpsImage(fps: fps)
         lowFpsImageFps = UInt64(max(fps, 1))
     }

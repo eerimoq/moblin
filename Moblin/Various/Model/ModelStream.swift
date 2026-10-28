@@ -695,6 +695,7 @@ extension Model {
         }
         sendPreviewToRemoteControlAssistant(preview: image)
         sendPreviewToRemoteControlWeb(preview: image)
+        sendPreviewToMoblinCloud(preview: image)
     }
 
     private func handleEncoderResolutionChanged(resolution: CGSize) {
