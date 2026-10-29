@@ -255,6 +255,42 @@ class Moblin:
         )
         return response["result"]
 
+    def get_scenes(self) -> list[dict]:
+        return self._request({"getScenes": {}})["data"]["getScenes"]["scenes"]
+
+    def get_widgets(self) -> list[dict]:
+        return self._request({"getWidgets": {}})["data"]["getWidgets"]["widgets"]
+
+    def create_scene(self, scene: dict) -> dict:
+        return self._request({"createScene": {"scene": scene}})["result"]
+
+    def update_scene(self, scene: dict) -> dict:
+        return self._request({"updateScene": {"scene": scene}})["result"]
+
+    def delete_scene(self, scene_id: str) -> dict:
+        return self._request({"deleteScene": {"id": scene_id}})["result"]
+
+    def create_widget(self, widget: dict) -> dict:
+        return self._request({"createWidget": {"widget": widget}})["result"]
+
+    def update_widget(self, widget: dict) -> dict:
+        return self._request({"updateWidget": {"widget": widget}})["result"]
+
+    def delete_widget(self, widget_id: str) -> dict:
+        return self._request({"deleteWidget": {"id": widget_id}})["result"]
+
+    def get_video_sources(self) -> list[dict]:
+        return self._request({"getVideoSources": {}})["data"]["getVideoSources"]["videoSources"]
+
+    def get_alerts_media_gallery(self) -> dict:
+        return self._request({"getAlertsMediaGallery": {}})["data"]["getAlertsMediaGallery"]["gallery"]
+
+    def get_editor_options(self) -> dict:
+        return self._request({"getEditorOptions": {}})["data"]["getEditorOptions"]["options"]
+
+    def set_scoreboard_players(self, players: list[dict]) -> dict:
+        return self._request({"setScoreboardPlayers": {"players": players}})["result"]
+
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 
@@ -315,6 +351,9 @@ class Moblin:
         response = self._request({"setRemoteSceneData": {"data": {"location": location}}})
         if "ok" not in response["result"]:
             raise Exception(f"Set remote scene data failed: {response['result']}")
+
+    def set_scene_id(self, scene_id: str):
+        self._request({"setScene": {"id": scene_id}})
 
     def set_mic(self, name):
         self._request({"setMic": {"id": self._get_settings_id("mics", name)}})

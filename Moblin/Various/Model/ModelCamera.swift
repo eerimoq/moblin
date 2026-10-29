@@ -725,7 +725,7 @@ extension Model {
         }
     }
 
-    private func getCameraId(settingsCameraId: SettingsCameraId?) -> CameraId {
+    func getCameraId(settingsCameraId: SettingsCameraId?) -> CameraId {
         guard let settingsCameraId else {
             return ""
         }

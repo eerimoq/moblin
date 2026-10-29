@@ -319,7 +319,7 @@ class ColorsCameraPassThrough(ColorsTestCase):
 
 
 class ColorsCleanRecording(ColorsTestCase):
-    """Record a camera under a color chart widget as a clean recording and validate its camera color metadata."""
+    """Record a camera under a color chart widget as a clean recording and validate its color metadata."""
 
     def setup(self):
         self.import_settings([chart_scene(SceneName.FRONT, CameraPosition.FRONT)], clean_recordings=True)
@@ -335,7 +335,7 @@ class ColorsCleanRecording(ColorsTestCase):
 
 
 class ColorsSceneSwitch(ColorsTestCase):
-    """Switch between camera and color chart scenes while recording and streaming, and validate frame metadata."""
+    """Switch between camera and color chart scenes while recording and streaming and check frame metadata."""
 
     def setup(self):
         self.import_settings(

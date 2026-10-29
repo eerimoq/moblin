@@ -43,6 +43,8 @@ class WidgetType(StrEnum):
     IMAGE = "Image"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
+    SCOREBOARD = "Scoreboard"
+    SNAPSHOT = "Snapshot"
     TEXT = "Text"
     VIDEO_SOURCE = "Video source"
     V_TUBER = "VTuber"

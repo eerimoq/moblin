@@ -1285,6 +1285,58 @@ extension Model: RemoteControlStreamerDelegate {
             onCompleted($0)
         }
     }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        remoteControlGetScenes()
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        remoteControlGetWidgets()
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        remoteControlCreateScene(scene: scene)
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        remoteControlUpdateScene(scene: scene)
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        remoteControlDeleteScene(id: id)
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlCreateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlUpdateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        remoteControlDeleteWidget(id: id)
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        remoteControlGetAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        remoteControlGetVideoSources()
+    }
+
+    func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
+        remoteControlGetEditorOptions()
+    }
+
+    func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
+        remoteControlSetScoreboardPlayers(players: players)
+    }
+
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {

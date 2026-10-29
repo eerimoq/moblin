@@ -47,7 +47,7 @@ class WebRemoteControlLive(TestCase):
 
 
 class WebRemoteControlSnapshot(TestCase):
-    """Take snapshots with different ages over the web remote control HTTP endpoint and check the HEIC images."""
+    """Take snapshots of different ages via the web remote control HTTP endpoint and check the HEIC images."""
 
     def setup(self):
         self.moblin.import_settings(overrides={})

@@ -1,0 +1,250 @@
+import AVFoundation
+import Foundation
+import UIKit
+
+extension RemoteControlEditorOptions {
+    static func empty() -> RemoteControlEditorOptions {
+        RemoteControlEditorOptions(fonts: [],
+                                   luts: [],
+                                   scoreboardPlayers: [],
+                                   webRemote: .init(enabled: false, port: 0, deviceName: "", addresses: []),
+                                   workoutDevices: [],
+                                   streamDeckLayouts: [],
+                                   appleVoices: [],
+                                   showAllSettings: false,
+                                   isPhone: false,
+                                   forceSceneSwitchTransition: false,
+                                   workoutActive: false,
+                                   inactiveVideoSourceSceneIds: [],
+                                   canvasSize: .init(width: 1920, height: 1080))
+    }
+}
+
+extension Model {
+    func remoteControlGetScenes() -> [SettingsScene] {
+        database.scenes
+    }
+
+    func remoteControlGetWidgets() -> [SettingsWidget] {
+        database.widgets
+    }
+
+    func remoteControlCreateScene(scene: SettingsScene) -> Bool {
+        guard !database.scenes.contains(where: { $0.id == scene.id }) else {
+            return false
+        }
+        if scene.name.isEmpty {
+            scene.name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
+        }
+        let newScene = SettingsScene(name: scene.name)
+        newScene.id = scene.id
+        guard isValidRemoteControlScene(scene: scene,
+                                        scenes: database.scenes + [scene],
+                                        widgets: database.widgets),
+            remoteControlIsValidSceneUpdate(scene: newScene, new: scene)
+        else {
+            return false
+        }
+        database.scenes.append(newScene)
+        let attachCamera = remoteControlApplySceneUpdate(scene: newScene, new: scene)
+        remoteControlScenesChanged(sceneId: scene.id, attachCamera: attachCamera)
+        return true
+    }
+
+    func remoteControlUpdateScene(scene: SettingsScene) -> Bool {
+        guard let index = database.scenes.firstIndex(where: { $0.id == scene.id }) else {
+            return false
+        }
+        let oldScene = database.scenes[index]
+        var scenes = database.scenes
+        scenes[index] = scene
+        guard isValidRemoteControlScene(scene: scene, scenes: scenes, widgets: database.widgets),
+              remoteControlIsValidSceneUpdate(scene: oldScene, new: scene)
+        else {
+            return false
+        }
+        let attachCamera = remoteControlApplySceneUpdate(scene: oldScene, new: scene)
+        remoteControlScenesChanged(sceneId: scene.id, attachCamera: attachCamera)
+        return true
+    }
+
+    func remoteControlDeleteScene(id: UUID) -> Bool {
+        guard let scene = database.scenes.first(where: { $0.id == id }) else {
+            return false
+        }
+        deleteScene(scene: scene)
+        remoteControlScenesChanged(sceneId: id, attachCamera: false)
+        return true
+    }
+
+    func remoteControlCreateWidget(widget: SettingsWidget) -> Bool {
+        guard !database.widgets.contains(where: { $0.id == widget.id }),
+              let newWidget = remoteControlMakeWidget(widget: widget),
+              isValidName(newWidget, database.widgets + [newWidget], database.widgets)
+        else {
+            return false
+        }
+        database.widgets.append(newWidget)
+        fixAlertMedias()
+        resetSelectedScene(changeScene: false, attachCamera: false)
+        if newWidget.type == .text {
+            textWidgetTextChanged(widget: newWidget)
+        }
+        return true
+    }
+
+    func remoteControlUpdateWidget(widget: SettingsWidget) -> Bool {
+        guard let oldWidget = database.widgets.first(where: { $0.id == widget.id }),
+              isValidName(widget, database.widgets, database.widgets),
+              let update = remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget, creating: false)
+        else {
+            return false
+        }
+        remoteControlWidgetUpdated(update: update)
+        return true
+    }
+
+    func remoteControlDeleteWidget(id: UUID) -> Bool {
+        guard database.widgets.contains(where: { $0.id == id }) else {
+            return false
+        }
+        database.widgets.removeAll { $0.id == id }
+        removeDeadWidgetsFromScenes()
+        resetSelectedScene(changeScene: false)
+        return true
+    }
+
+    func remoteControlGetEditorOptions() -> RemoteControlEditorOptions {
+        let web = database.remoteControl.web
+        var addresses: [String] = []
+        if !web.deviceName.isEmpty {
+            addresses.append(makeMdnsHostname(deviceName: web.deviceName))
+        }
+        for status in statusOther.ipStatuses where status.ipType == .ipv4 {
+            if status.interfaceType == .wifi || status.interfaceType == .wiredEthernet {
+                addresses.append(status.ip)
+            }
+        }
+        let appleVoices = Dictionary(grouping: AVSpeechSynthesisVoice.speechVoices()) {
+            String($0.language.prefix(2))
+        }
+        .map { language, voices in
+            RemoteControlAppleVoices(language: language,
+                                     voices: voices
+                                         .map { .init(name: $0.name,
+                                                      identifier: $0.identifier,
+                                                      language: $0.language) })
+        }
+        .sorted { $0.language < $1.language }
+        let canvasSize = media.getCanvasSize()
+        return RemoteControlEditorOptions(
+            fonts: UIFont.familyNames.sorted().map {
+                RemoteControlFontFamily(family: $0, styles: UIFont.fontNames(forFamilyName: $0))
+            },
+            luts: database.color.allLuts().map { .init(id: $0.id, name: $0.name) },
+            scoreboardPlayers: database.scoreboardPlayers,
+            webRemote: .init(
+                enabled: web.enabled,
+                port: web.port,
+                deviceName: web.deviceName,
+                addresses: addresses
+            ),
+            workoutDevices: database.workoutDevices.devices.map { .init(id: $0.id, name: $0.name) },
+            streamDeckLayouts: database.streamDecks.layouts.map { .init(id: $0.id, name: $0.name) },
+            appleVoices: appleVoices,
+            showAllSettings: database.showAllSettings,
+            isPhone: isPhone(),
+            forceSceneSwitchTransition: database.forceSceneSwitchTransition,
+            workoutActive: workoutType != nil,
+            inactiveVideoSourceSceneIds: database.scenes.filter { !isSceneVideoSourceActive(scene: $0) }
+                .map(\.id),
+            canvasSize: RemoteControlSize(width: canvasSize.width, height: canvasSize.height)
+        )
+    }
+
+    func remoteControlGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        guard let widget = database.widgets.first(where: { $0.id == id }) else {
+            onCompleted(nil)
+            return
+        }
+        takeVideoSourcePreviewImage(widget: widget) { image in
+            onCompleted(image?.jpegData(compressionQuality: 0.8))
+        }
+    }
+
+    func remoteControlSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
+        guard hasUniqueIds(players),
+              players.allSatisfy({ isValidName($0, players, database.scoreboardPlayers) })
+        else {
+            return false
+        }
+        database.scoreboardPlayers = players
+        sceneUpdated()
+        sendScoreboardPlayersToWatch()
+        return true
+    }
+
+    func remoteControlGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        database.alertsMediaGallery
+    }
+
+    func remoteControlGetVideoSources() -> [RemoteControlVideoSource] {
+        videoSources.all().map { camera in
+            var videoSource = SettingsVideoSource()
+            videoSource.updateCameraId(settingsCameraId: cameraIdToSettingsCameraId(cameraId: camera.id))
+            return RemoteControlVideoSource(id: camera.id,
+                                            name: camera.name,
+                                            position: videoSource.cameraPosition)
+        }
+    }
+
+    private func remoteControlScenesChanged(sceneId: UUID, attachCamera: Bool) {
+        let selectedSceneId = sceneSelector.selectedSceneId
+        if findEnabledScene(id: selectedSceneId) == nil {
+            sceneSelector.sceneIndex = 0
+            resetSelectedScene()
+        } else {
+            sceneSelector.sceneIndex = findEnabledSceneIndex(id: selectedSceneId) ?? 0
+            sceneUpdated(attachCamera: sceneId == selectedSceneId && attachCamera)
+            if sceneId == selectedSceneId {
+                switchMicIfNeededAfterSceneSwitch()
+            }
+        }
+    }
+
+    private func isValidRemoteControlScene(scene: SettingsScene,
+                                           scenes: [SettingsScene],
+                                           widgets: [SettingsWidget]) -> Bool
+    {
+        isValidName(scene, scenes, database.scenes)
+            && hasUniqueIds(scene.widgets)
+            && !introducesDuplicatedWidgets(scenes: scenes, widgets: widgets)
+    }
+
+    private func introducesDuplicatedWidgets(scenes: [SettingsScene], widgets: [SettingsWidget]) -> Bool {
+        let before = SceneResolver(scenes: database.scenes, widgets: database.widgets)
+        let after = SceneResolver(scenes: scenes, widgets: widgets)
+        return scenes.contains { scene in
+            let beforeCounts = database.scenes.first(where: { $0.id == scene.id }).map {
+                before.resolve($0, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
+            } ?? [:]
+            return after.resolve(scene, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
+                .contains { widgetId, count in
+                    count > beforeCounts[widgetId, default: 0]
+                }
+        }
+    }
+
+    private func isValidName<T: Named & Identifiable>(_ item: T, _ items: [T], _ oldItems: [T]) -> Bool
+        where T.ID == UUID
+    {
+        if oldItems.first(where: { $0.id == item.id })?.name == item.name {
+            return true
+        }
+        return !item.name.isEmpty && !items.contains { $0.id != item.id && $0.name == item.name }
+    }
+
+    private func hasUniqueIds<T: Identifiable>(_ items: [T]) -> Bool where T.ID == UUID {
+        Set(items.map(\.id)).count == items.count
+    }
+}

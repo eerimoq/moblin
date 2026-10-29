@@ -56,6 +56,19 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerAnimateGimbal(motion: SettingsGimbalMotion)
     func remoteControlStreamerSaveGimbalPreset()
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
+    func remoteControlStreamerGetScenes() -> [SettingsScene]
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget]
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource]
+    func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions
+    func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -250,7 +263,20 @@ class RemoteControlStreamer {
         } catch {
             logger.info("remote-control-streamer: Decode failed")
             connectionErrorMessage = error.localizedDescription
+            if let id = undecodableRequestId(message: message) {
+                send(message: .response(id: id, result: .unknownRequest, data: nil))
+            }
         }
+    }
+
+    private func undecodableRequestId(message: String) -> Int? {
+        guard let data = message.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let request = json["request"] as? [String: Any]
+        else {
+            return nil
+        }
+        return request["id"] as? Int
     }
 
     private func handleHello(apiVersion _: String, authentication: RemoteControlAuthentication) {
@@ -474,11 +500,55 @@ class RemoteControlStreamer {
         case let .tip(name: name, message: message, kind: kind, requestId: requestId):
             delegate.remoteControlStreamerTip(name: name, message: message, kind: kind, requestId: requestId)
             sendEmptyOkResponse(id: id)
+        case .getScenes:
+            let scenes = delegate.remoteControlStreamerGetScenes()
+            send(message: .response(id: id, result: .ok, data: .getScenes(scenes: scenes)))
+        case .getWidgets:
+            let widgets = delegate.remoteControlStreamerGetWidgets()
+            send(message: .response(id: id, result: .ok, data: .getWidgets(widgets: widgets)))
+        case let .createScene(scene: scene):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateScene(scene: scene))
+        case let .updateScene(scene: scene):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateScene(scene: scene))
+        case let .deleteScene(id: sceneId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteScene(id: sceneId))
+        case let .createWidget(widget: widget):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateWidget(widget: widget))
+        case let .updateWidget(widget: widget):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateWidget(widget: widget))
+        case let .deleteWidget(id: widgetId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteWidget(id: widgetId))
+        case .getAlertsMediaGallery:
+            let gallery = delegate.remoteControlStreamerGetAlertsMediaGallery()
+            send(message: .response(id: id, result: .ok, data: .getAlertsMediaGallery(gallery: gallery)))
+        case .getVideoSources:
+            let videoSources = delegate.remoteControlStreamerGetVideoSources()
+            send(message: .response(id: id, result: .ok, data: .getVideoSources(videoSources: videoSources)))
+        case .getEditorOptions:
+            let options = delegate.remoteControlStreamerGetEditorOptions()
+            send(message: .response(id: id, result: .ok, data: .getEditorOptions(options: options)))
+        case let .setScoreboardPlayers(players: players):
+            sendResultResponse(
+                id: id,
+                ok: delegate.remoteControlStreamerSetScoreboardPlayers(players: players)
+            )
+        case let .getVideoSourceSnapshot(id: widgetId):
+            delegate.remoteControlStreamerGetVideoSourceSnapshot(id: widgetId) { image in
+                self.send(message: .response(
+                    id: id,
+                    result: .ok,
+                    data: .getVideoSourceSnapshot(image: image)
+                ))
+            }
         }
     }
 
     private func sendEmptyOkResponse(id: Int) {
         send(message: .response(id: id, result: .ok, data: nil))
+    }
+
+    private func sendResultResponse(id: Int, ok: Bool) {
+        send(message: .response(id: id, result: ok ? .ok : .error, data: nil))
     }
 }
 

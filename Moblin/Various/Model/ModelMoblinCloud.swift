@@ -730,4 +730,60 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     ) {
         model?.moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
     }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        model?.remoteControlGetScenes() ?? []
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        model?.remoteControlGetWidgets() ?? []
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlCreateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlUpdateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        model?.remoteControlDeleteScene(id: id) ?? false
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlCreateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlUpdateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        model?.remoteControlDeleteWidget(id: id) ?? false
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        model?.remoteControlGetAlertsMediaGallery() ?? SettingsAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        model?.remoteControlGetVideoSources() ?? []
+    }
+
+    func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
+        model?.remoteControlGetEditorOptions() ?? RemoteControlEditorOptions.empty()
+    }
+
+    func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
+        model?.remoteControlSetScoreboardPlayers(players: players) ?? false
+    }
+
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        guard let model else {
+            onCompleted(nil)
+            return
+        }
+        model.remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
+    }
 }

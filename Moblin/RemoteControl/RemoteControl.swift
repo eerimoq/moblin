@@ -76,6 +76,19 @@ enum RemoteControlRequest: Codable {
     case sendMessage(name: String?, text: String)
     case music(command: RemoteControlMusicCommand)
     case tip(name: String, message: String, kind: RemoteControlTipKind, requestId: String)
+    case getScenes
+    case getWidgets
+    case createScene(scene: SettingsScene)
+    case updateScene(scene: SettingsScene)
+    case deleteScene(id: UUID)
+    case createWidget(widget: SettingsWidget)
+    case updateWidget(widget: SettingsWidget)
+    case deleteWidget(id: UUID)
+    case getAlertsMediaGallery
+    case getVideoSources
+    case getEditorOptions
+    case setScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer])
+    case getVideoSourceSnapshot(id: UUID)
 }
 
 enum RemoteControlTipKind: Codable {
@@ -96,6 +109,12 @@ enum RemoteControlResponse: Codable {
     case getGolfScoreboard(data: RemoteControlGolfScoreboard)
     case music(status: RemoteControlMusicStatus)
     case musicFind(song: RemoteControlMusicFoundSong?)
+    case getScenes(scenes: [SettingsScene])
+    case getWidgets(widgets: [SettingsWidget])
+    case getAlertsMediaGallery(gallery: SettingsAlertsMediaGallery)
+    case getVideoSources(videoSources: [RemoteControlVideoSource])
+    case getEditorOptions(options: RemoteControlEditorOptions)
+    case getVideoSourceSnapshot(image: Data?)
 }
 
 enum RemoteControlEvent: Codable {
@@ -979,6 +998,61 @@ struct RemoteControlSettingsSrt: Codable {
 struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
     let id: UUID
     let name: String
+}
+
+struct RemoteControlVideoSource: Codable {
+    let id: String
+    let name: String
+    let position: SettingsSceneCameraPosition
+}
+
+struct RemoteControlSize: Codable {
+    let width: Double
+    let height: Double
+}
+
+struct RemoteControlFontFamily: Codable {
+    let family: String
+    let styles: [String]
+}
+
+struct RemoteControlNamedItem: Codable {
+    let id: UUID
+    let name: String
+}
+
+struct RemoteControlWebRemote: Codable {
+    let enabled: Bool
+    let port: UInt16
+    let deviceName: String
+    let addresses: [String]
+}
+
+struct RemoteControlAppleVoice: Codable {
+    let name: String
+    let identifier: String
+    let language: String
+}
+
+struct RemoteControlAppleVoices: Codable {
+    let language: String
+    let voices: [RemoteControlAppleVoice]
+}
+
+struct RemoteControlEditorOptions: Codable {
+    let fonts: [RemoteControlFontFamily]
+    let luts: [RemoteControlNamedItem]
+    let scoreboardPlayers: [SettingsWidgetScoreboardPlayer]
+    let webRemote: RemoteControlWebRemote
+    let workoutDevices: [RemoteControlNamedItem]
+    let streamDeckLayouts: [RemoteControlNamedItem]
+    let appleVoices: [RemoteControlAppleVoices]
+    let showAllSettings: Bool
+    let isPhone: Bool
+    let forceSceneSwitchTransition: Bool
+    let workoutActive: Bool
+    let inactiveVideoSourceSceneIds: [UUID]
+    let canvasSize: RemoteControlSize
 }
 
 struct RemoteControlSettings: Codable {

@@ -2075,7 +2075,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    private func fixAlert(alert: SettingsWidgetAlertsAlert) {
+    func fixAlert(alert: SettingsWidgetAlertsAlert) {
         if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery.bundledImages[0].id
         }
