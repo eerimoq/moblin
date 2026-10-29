@@ -68,9 +68,10 @@ struct QuickButtonSceneWidgetsView: View {
                 }
             }
             ShortcutSectionView {
-                ScenesShortcutView(database: model.database)
+                ScenesShortcutView(model: model, database: model.database)
             }
         }
         .navigationTitle("Scene widgets")
+        .showWidgetOutlines(model: model)
     }
 }

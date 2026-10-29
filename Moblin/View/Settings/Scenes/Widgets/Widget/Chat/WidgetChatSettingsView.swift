@@ -8,6 +8,7 @@ struct WidgetChatSettingsView: View {
 
     private func setEffectSettings() {
         model.getChatEffect(id: widget.id)?.setSettings(settings: chat)
+        model.updateWidgetOutlines()
     }
 
     var body: some View {

@@ -214,6 +214,7 @@ struct SceneNameView: View {
 }
 
 struct ScenesSettingsView: View {
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
@@ -230,5 +231,6 @@ struct ScenesSettingsView: View {
             }
         }
         .navigationTitle("Scenes")
+        .showWidgetOutlines(model: model)
     }
 }

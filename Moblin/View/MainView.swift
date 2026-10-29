@@ -525,6 +525,10 @@ struct MainView: View {
                     }
                 StreamOverlayTapGridView(camera: model.camera, size: layout.size)
                 browserWidgets(streamSize: layout.size)
+                WidgetOutlinesView(widgetOutlines: model.widgetOutlines,
+                                   database: model.database,
+                                   streamOverlay: model.streamOverlay,
+                                   size: layout.size)
             }
             .frame(width: layout.size.width, height: layout.size.height)
             .offset(layout.offset)

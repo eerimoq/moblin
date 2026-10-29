@@ -29,6 +29,12 @@ class CreateWidgetWizard: ObservableObject {
     }
 }
 
+struct DrawnSceneWidget {
+    let scene: SettingsScene
+    let sceneWidget: SettingsSceneWidget
+    let widget: SettingsWidget
+}
+
 struct WidgetInScene: Identifiable {
     var id: UUID {
         widget.id
@@ -242,6 +248,7 @@ extension Model {
     func sceneUpdated(attachCamera: Bool = false, updateRemoteScene: Bool = true) {
         guard let scene = getSelectedScene() else {
             sceneUpdatedOff()
+            updateWidgetOutlines()
             return
         }
         for browserEffect in browserEffects.values {
@@ -256,6 +263,7 @@ extension Model {
         }
         updateStatusCameraText()
         updateSpeechToText()
+        updateWidgetOutlines()
     }
 
     func getSceneName(id: UUID?) -> String? {
@@ -1200,6 +1208,43 @@ extension Model {
                 addSceneBingoCardEffects(sceneWidget, widget, &effects)
             case .pomodoroTimer:
                 addScenePomodoroTimerEffects(sceneWidget, widget, &effects)
+            }
+        }
+    }
+
+    func getDrawnSceneWidgets(scene: SettingsScene) -> [DrawnSceneWidget] {
+        var drawnWidgets: [DrawnSceneWidget] = []
+        var addedScenes: [SettingsScene] = []
+        getDrawnSceneWidgetsInternal(scene, &drawnWidgets, &addedScenes)
+        if let remoteSceneWidget = remoteSceneWidgets.first,
+           let remoteScene = getLocalAndRemoteScenes()
+               .first(where: { $0.id == remoteSceneWidget.scene.sceneId })
+        {
+            getDrawnSceneWidgetsInternal(remoteScene, &drawnWidgets, &addedScenes)
+        }
+        return drawnWidgets
+    }
+
+    private func getDrawnSceneWidgetsInternal(_ scene: SettingsScene,
+                                              _ drawnWidgets: inout [DrawnSceneWidget],
+                                              _ addedScenes: inout [SettingsScene])
+    {
+        guard !addedScenes.contains(scene) else {
+            return
+        }
+        addedScenes.append(scene)
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
+                continue
+            }
+            if widget.type == .scene {
+                if let nestedScene = getLocalAndRemoteScenes()
+                    .first(where: { $0.id == widget.scene.sceneId })
+                {
+                    getDrawnSceneWidgetsInternal(nestedScene, &drawnWidgets, &addedScenes)
+                }
+            } else if !drawnWidgets.contains(where: { $0.widget.id == widget.id }) {
+                drawnWidgets.append(DrawnSceneWidget(scene: scene, sceneWidget: sceneWidget, widget: widget))
             }
         }
     }

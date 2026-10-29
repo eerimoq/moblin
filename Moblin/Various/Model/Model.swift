@@ -356,6 +356,26 @@ class StreamOverlay: ObservableObject {
     @Published var isTorchOn = false
 }
 
+struct WidgetOutline: Identifiable {
+    var id: UUID {
+        sceneWidget.id
+    }
+
+    let sceneWidget: SettingsSceneWidget
+    let widget: SettingsWidget
+    let rect: CGRect
+    let sized: Bool
+    let inScene: Bool
+}
+
+@MainActor
+class WidgetOutlines: ObservableObject {
+    @Published var enabled = false
+    @Published var outlines: [WidgetOutline] = []
+    @Published var canvasSize: CGSize = .init(width: 1920, height: 1080)
+    var imageSizes: [UUID: CGSize?] = [:]
+}
+
 @MainActor
 class Store: ObservableObject {
     @Published var myIcons: [Icon] = []
@@ -461,7 +481,12 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    @Published var showingPanel: ShowingPanel = .none
+    @Published var showingPanel: ShowingPanel = .none {
+        didSet {
+            hideWidgetOutlines()
+        }
+    }
+
     @Published var panelHidden = false
     @Published var showStealthMode = false
     @Published var lockScreen = false
@@ -534,6 +559,7 @@ final class Model: NSObject, ObservableObject {
     let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
+    let widgetOutlines = WidgetOutlines()
     let sceneSelector = SceneSelector()
     let toast = Toast()
     let statusOther = StatusOther()

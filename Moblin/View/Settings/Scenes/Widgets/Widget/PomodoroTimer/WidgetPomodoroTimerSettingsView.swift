@@ -149,6 +149,9 @@ struct WidgetPomodoroTimerSettingsView: View {
             HStack {
                 Text("Width")
                 Slider(value: $pomodoroTimer.width, in: 1 ... 5, step: 0.05)
+                    .onChange(of: pomodoroTimer.width) { _ in
+                        model.updateWidgetOutlines()
+                    }
             }
         }
         Section {
