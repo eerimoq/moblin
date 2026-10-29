@@ -51,6 +51,16 @@ class MoblinSettingsUrlStreamKick: Codable {
     }
 }
 
+class MoblinSettingsUrlStreamPreviewStream: Codable {
+    var url: String
+    var resolution: SettingsStreamResolution?
+    var bitrate: UInt32?
+
+    init(url: String) {
+        self.url = url
+    }
+}
+
 class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
@@ -63,6 +73,7 @@ class MoblinSettingsUrlStream: Codable {
     var obs: MoblinSettingsUrlStreamObs?
     var twitch: MoblinSettingsUrlStreamTwitch?
     var kick: MoblinSettingsUrlStreamKick?
+    var previewStream: MoblinSettingsUrlStreamPreviewStream?
 
     init(name: String, url: String) {
         self.name = name
@@ -152,6 +163,13 @@ class MoblinSettingsUrl: Codable {
             }
             if let obs = stream.obs {
                 if let message = isValidWebSocketUrl(url: cleanUrl(url: obs.webSocketUrl)) {
+                    throw message
+                }
+            }
+            if let previewStream = stream.previewStream {
+                if let message = isValidUrl(url: cleanUrl(url: previewStream.url),
+                                            allowedSchemes: ["whip", "whips"])
+                {
                     throw message
                 }
             }

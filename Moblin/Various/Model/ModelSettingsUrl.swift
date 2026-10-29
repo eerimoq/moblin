@@ -88,6 +88,17 @@ extension Model {
             if let kick = stream.kick {
                 targetStream.kickChannelName = kick.channelName.trim()
             }
+            if let previewStream = stream.previewStream {
+                targetStream.previewStream.url = previewStream.url.trim()
+                if let resolution = previewStream.resolution,
+                   [SettingsStreamResolution.r854x480, .r640x360, .r426x240].contains(resolution)
+                {
+                    targetStream.previewStream.resolution = resolution
+                }
+                if let bitrate = previewStream.bitrate, bitrate >= 250_000, bitrate <= 2_000_000 {
+                    targetStream.previewStream.bitrate = bitrate
+                }
+            }
         }
         if let newSelectedStream {
             setCurrentStream(stream: newSelectedStream)

@@ -391,6 +391,43 @@ where the URL decoded pretty printed JSON blob is
 }
 ```
 
+### New stream with preview stream
+
+An example creating a new stream that also sends a preview stream to a
+WHIP server is
+
+```
+moblin://?{"streams":[{"name":"My%20studio","url":"srt://example.com:5000?streamid=foo","previewStream":{"url":"whip://example.com:5000/whip/foo","resolution":"854x480","bitrate":1000000}}],"quickButtons":{"buttons":[{"type":"Preview%20stream","enabled":true}]}}
+```
+
+where the URL decoded pretty printed JSON blob is
+
+``` json
+{
+  "streams": [
+    {
+      "name": "My studio",
+      "url": "srt://example.com:5000?streamid=foo",
+      "previewStream": {
+        "url": "whip://example.com:5000/whip/foo",
+        "resolution": "854x480",
+        "bitrate": 1000000
+      }
+    }
+  ],
+  "quickButtons": {
+    "buttons": [
+      {
+        "type": "Preview stream",
+        "enabled": true
+      }
+    ]
+  }
+}
+```
+
+The preview stream is started with the Preview stream quick button.
+
 ### Quick button settings
 
 An example with only two quick buttons enabled is
