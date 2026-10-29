@@ -25,10 +25,10 @@ just web-remote-control-frontend-build     # tsc --noEmit + vite build → Mobli
 just machine-translate                     # fill missing translations in Localizable.xcstrings
 ```
 
-CI (`.github/workflows/all.yml`) runs `style-check`, `lint`, `spell-check`, the web frontend build followed
-by `git diff --exit-code`, and an `xcodebuild build` of the `Moblin` scheme. Two consequences: **the built
-web assets in `Moblin/RemoteControl/Web/` are committed and must be regenerated whenever
-`WebRemoteControlFrontend/` changes**, and **CI never runs the unit tests** — run them yourself.
+CI (`.github/workflows/all.yml`) runs `style-check`, `lint`, `spell-check`, and the web frontend build followed
+by `git diff --exit-code`. Two consequences: **the built web assets in `Moblin/RemoteControl/Web/` are
+committed and must be regenerated whenever `WebRemoteControlFrontend/` changes**, and **CI never compiles
+the app or runs the unit tests** — build and run them yourself.
 
 ### Unit tests
 
