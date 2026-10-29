@@ -100,6 +100,7 @@ func uploadImage(
     fileName: String,
     image: Data,
     message: String?,
+    maximumBytesPerSecond: (@MainActor () -> Int?)? = nil,
     onCompleted: (@MainActor (Bool) -> Void)? = nil
 ) {
     let boundary = UUID().uuidString
@@ -119,7 +120,7 @@ func uploadImage(
     data.append("content-type: image/jpeg\r\n\r\n".utf8Data)
     data.append(image)
     data.append("\r\n--\(boundary)--\r\n".utf8Data)
-    httpCall(request: request, body: data) { data in
+    httpCall(request: request, body: data, maximumBytesPerSecond: maximumBytesPerSecond) { data in
         onCompleted?(data != nil)
     }
 }

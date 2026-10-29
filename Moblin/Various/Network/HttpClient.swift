@@ -78,31 +78,79 @@ private class InterfaceTypeHttpClient {
         connection = nil
     }
 
+    private func startTimer() {
+        timer.startSingleShot(timeout: 60) {
+            self.completed(data: nil)
+        }
+    }
+
     private func completed(data: Data?) {
         completion?(data)
         stop()
     }
 
-    func call(request: URLRequest, body: Data?, completion: @escaping (Data?) -> Void) {
+    func call(request: URLRequest,
+              body: Data?,
+              maximumBytesPerSecond: (@MainActor () -> Int?)?,
+              completion: @escaping (Data?) -> Void)
+    {
         guard let (host, port, useTls, content) = createRequest(request: request, body: body) else {
             completion(nil)
             return
         }
         let endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: NWEndpoint.Port(integer: port))
         self.completion = completion
-        timer.startSingleShot(timeout: 60) {
-            self.completed(data: nil)
-        }
+        startTimer()
         connect(endpoint, useTls) { interfaceTypeIndex in
-            self.connection?.send(content: content, completion: .contentProcessed { error in
-                MainActor.assumeIsolated {
-                    if error != nil {
-                        self.completed(data: nil)
-                        return
-                    }
+            if let maximumBytesPerSecond {
+                self.sendPaced(content, 0, .now, maximumBytesPerSecond, interfaceTypeIndex)
+            } else {
+                self.send(content, interfaceTypeIndex) {
                     self.receiveData(interfaceTypeIndex)
                 }
-            })
+            }
+        }
+    }
+
+    private func send(_ content: Data, _ interfaceTypeIndex: Int, _ onSent: @escaping @MainActor () -> Void) {
+        connection?.send(content: content, completion: .contentProcessed { error in
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
+                if error != nil {
+                    self.completed(data: nil)
+                    return
+                }
+                onSent()
+            }
+        })
+    }
+
+    private func sendPaced(_ content: Data,
+                           _ offset: Int,
+                           _ sendTime: ContinuousClock.Instant,
+                           _ maximumBytesPerSecond: @escaping @MainActor () -> Int?,
+                           _ interfaceTypeIndex: Int)
+    {
+        let end = min(offset + 16384, content.count)
+        send(content.subdata(in: offset ..< end), interfaceTypeIndex) {
+            guard end < content.count else {
+                self.receiveData(interfaceTypeIndex)
+                return
+            }
+            self.startTimer()
+            var nextSendTime = max(sendTime, .now)
+            if let maximumBytesPerSecond = maximumBytesPerSecond() {
+                nextSendTime += .seconds(Double(end - offset) / Double(maximumBytesPerSecond))
+            }
+            let delay = max(ContinuousClock.now.duration(to: nextSendTime).seconds, 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                guard self.connection != nil, self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
+                self.sendPaced(content, end, nextSendTime, maximumBytesPerSecond, interfaceTypeIndex)
+            }
         }
     }
 
@@ -215,8 +263,15 @@ private class InterfaceTypeHttpClient {
 }
 
 @MainActor
-func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor (Data?) -> Void) {
-    InterfaceTypeHttpClient().call(request: request, body: body) { data in
+func httpCall(request: URLRequest,
+              body: Data?,
+              maximumBytesPerSecond: (@MainActor () -> Int?)? = nil,
+              completion: @escaping @MainActor (Data?) -> Void)
+{
+    InterfaceTypeHttpClient().call(request: request,
+                                   body: body,
+                                   maximumBytesPerSecond: maximumBytesPerSecond)
+    { data in
         if let data {
             completion(data)
         } else {

@@ -189,10 +189,10 @@ extension Model {
                     paramName: "snapshot",
                     fileName: "snapshot.jpg",
                     image: image,
-                    message: stream.goLiveNotificationDiscordMessage)
-        { _ in
-            onCompleted()
-        }
+                    message: stream.goLiveNotificationDiscordMessage,
+                    onCompleted: { _ in
+                        onCompleted()
+                    })
     }
 
     func startNetStream() {

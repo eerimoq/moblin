@@ -2,7 +2,9 @@ import logging
 import socket
 import sys
 import threading
+import time
 from collections import Counter
+from dataclasses import dataclass
 from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from http.server import ThreadingHTTPServer
@@ -10,6 +12,20 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class Post:
+    path: str
+    body: bytes
+    receive_times: list[tuple[float, int]]
+
+    def bytes_per_second(self, skipped_bytes: int = 16384) -> float:
+        start_time, start_size = next(
+            (receive_time, size) for receive_time, size in self.receive_times if size >= skipped_bytes
+        )
+        end_time, end_size = self.receive_times[-1]
+        return (end_size - start_size) / (end_time - start_time)
 
 
 class RequestHandler(SimpleHTTPRequestHandler):
@@ -65,8 +81,16 @@ class CountingRequestHandler(RequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
-        self._on_post((urlsplit(self.path).path, body))
+        size = int(self.headers.get("Content-Length", "0"))
+        body = bytearray()
+        receive_times = []
+        while len(body) < size:
+            data = self.rfile.read1(size - len(body))
+            if not data:
+                break
+            body += data
+            receive_times.append((time.monotonic(), len(body)))
+        self._on_post(Post(urlsplit(self.path).path, bytes(body), receive_times))
         self.send_response(204)
         self.send_header("Content-Length", "0")
         self.end_headers()
@@ -77,7 +101,7 @@ class HttpServer:
         self.host = host
         self.port = port
         self._request_paths: list[str] = []
-        self._posts: list[tuple[str, bytes]] = []
+        self._posts: list[Post] = []
         self._server = ThreadingServer(
             ("0.0.0.0", port),
             partial(
@@ -104,5 +128,5 @@ class HttpServer:
     def request_counts(self) -> dict[str, int]:
         return Counter(self._request_paths)
 
-    def posts(self) -> list[tuple[str, bytes]]:
+    def posts(self) -> list[Post]:
         return list(self._posts)

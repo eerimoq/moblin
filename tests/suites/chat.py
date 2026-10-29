@@ -21,6 +21,8 @@ from ..utils.generate_device_settings import chat_widget_settings
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.http_server import HttpServer
+from ..utils.http_server import Post
+from ..utils.mediamtx import MediaMtx
 from ..utils.moblin import Moblin
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
@@ -39,6 +41,7 @@ ALERTS_WIDGET_ID = uuid()
 ALERT_IMAGE_ID = uuid()
 ALERT_SOUND_ID = uuid()
 RAIDED_CHANNEL_NAME = "Oscar"
+LIVE_SNAPSHOT_UPLOAD_BYTES_PER_SECOND = 312_500
 
 
 class ChatTestCase(TestCase):
@@ -212,11 +215,92 @@ class ChatBotSnapshotFromWebRemoteControl(TestCase):
         with HttpServer(WEB_SERVER_PORT, FILES_DIR, self.moblin.config.tester_ip_address()) as server:
             self.moblin.send_chat_message("!moblin snapshot")
             self.wait_until(lambda: len(server.posts()) == 1)
-            path, body = server.posts()[0]
-            self.assert_equal(path, "/webhook")
-            self.assert_in(b'filename="snapshot.jpg"', body)
-            self.assert_in(b"\xff\xd8\xff", body)
-            self.assert_greater(len(body), 10_000)
+            post = server.posts()[0]
+            self.assert_equal(post.path, "/webhook")
+            self.assert_in(b'filename="snapshot.jpg"', post.body)
+            self.assert_in(b"\xff\xd8\xff", post.body)
+            self.assert_greater(len(post.body), 10_000)
+
+
+class ChatBotSnapshotUploadTestCase(TestCase):
+    def setup(self):
+        tester_ip_address = self.moblin.config.tester_ip_address()
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    RECORD_STREAM_SETTINGS
+                    | {
+                        "url": self.moblin.tester_rtmp_url("test"),
+                        "rtmp": {"adaptiveBitrateEnabled": False},
+                        "discordChatBotSnapshotWebhook": f"http://{tester_ip_address}:{WEB_SERVER_PORT}/webhook",
+                        "discordSnapshotWebhookOnlyWhenLive": False,
+                    }
+                ],
+                "chat": {"botEnabled": True},
+            }
+        )
+
+    def upload_snapshots(self, server: HttpServer, count: int) -> list[Post]:
+        for _ in range(count):
+            self.moblin.send_chat_message("!moblin snapshot")
+        self.wait_until(lambda: len(server.posts()) == count)
+        posts = server.posts()
+        for post in posts:
+            self.assert_in(b'filename="snapshot.jpg"', post.body)
+            self.assert_greater(len(post.body), 200_000)
+            LOGGER.info(
+                "Snapshot of %d bytes uploaded at %d bytes/s.",
+                len(post.body),
+                post.bytes_per_second(),
+            )
+        return posts
+
+    def upload_snapshot(self, server: HttpServer) -> Post:
+        return self.upload_snapshots(server, 1)[0]
+
+
+class ChatBotSnapshotUploadRateLimitedWhenLive(ChatBotSnapshotUploadTestCase):
+    """Upload a chat bot snapshot to a Discord webhook at a limited rate while live."""
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        with (
+            MediaMtx(),
+            HttpServer(WEB_SERVER_PORT, FILES_DIR, self.moblin.config.tester_ip_address()) as server,
+        ):
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_500_000, 5_500_000, None, 10_000_000)
+            post = self.upload_snapshot(server)
+        self.assert_less(post.bytes_per_second(), 1.2 * LIVE_SNAPSHOT_UPLOAD_BYTES_PER_SECOND)
+        self.assert_greater(post.bytes_per_second(), 0.8 * LIVE_SNAPSHOT_UPLOAD_BYTES_PER_SECOND)
+
+
+class ChatBotSnapshotUploadsQueuedWhenLive(ChatBotSnapshotUploadTestCase):
+    """Upload three chat bot snapshots to a Discord webhook one at a time while live."""
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        with (
+            MediaMtx(),
+            HttpServer(WEB_SERVER_PORT, FILES_DIR, self.moblin.config.tester_ip_address()) as server,
+        ):
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_500_000, 5_500_000, None, 10_000_000)
+            posts = self.upload_snapshots(server, 3)
+        for previous_post, post in zip(posts, posts[1:]):
+            self.assert_greater(post.receive_times[0][0], previous_post.receive_times[-1][0])
+        for post in posts:
+            self.assert_less(post.bytes_per_second(), 1.2 * LIVE_SNAPSHOT_UPLOAD_BYTES_PER_SECOND)
+
+
+class ChatBotSnapshotUploadNotRateLimitedWhenNotLive(ChatBotSnapshotUploadTestCase):
+    """Upload a chat bot snapshot to a Discord webhook without rate limit when not live."""
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        with HttpServer(WEB_SERVER_PORT, FILES_DIR, self.moblin.config.tester_ip_address()) as server:
+            post = self.upload_snapshot(server)
+        self.assert_greater(post.bytes_per_second(), 2 * LIVE_SNAPSHOT_UPLOAD_BYTES_PER_SECOND)
 
 
 class ChatEmotes(TestCase):
@@ -669,6 +753,9 @@ def tests(moblin: Moblin):
         ChatBotMuteAndUnmute(moblin),
         ChatBotNotAllowedToSwitchScene(moblin),
         ChatBotSnapshotFromWebRemoteControl(moblin),
+        ChatBotSnapshotUploadRateLimitedWhenLive(moblin),
+        ChatBotSnapshotUploadsQueuedWhenLive(moblin),
+        ChatBotSnapshotUploadNotRateLimitedWhenNotLive(moblin),
         ChatEmotes(moblin),
         ChatTwitchFollows(moblin),
         ChatTwitchSubscriptions(moblin),

@@ -9,6 +9,12 @@ struct SnapshotJob {
     let takeSnapshot: (String) -> Void
 }
 
+struct DiscordSnapshotUpload {
+    let url: URL
+    let image: Data
+    let message: String?
+}
+
 extension Model {
     func takeSnapshot(age: Float, isChatBot: Bool, message: String?) {
         guard !isChatPhone() else {
@@ -171,33 +177,6 @@ extension Model {
         tryTakeNextSnapshot()
     }
 
-    private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
-        if isChatBot {
-            URL(string: stream.discordChatBotSnapshotWebhook)
-        } else {
-            URL(string: stream.discordSnapshotWebhook)
-        }
-    }
-
-    private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
-        guard let url = getDiscordWebhookUrl(isChatBot) else {
-            return
-        }
-        uploadImage(
-            url: url,
-            paramName: "snapshot",
-            fileName: "snapshot.jpg",
-            image: image,
-            message: message
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
-            }
-        }
-    }
-
     func takeVideoSourcePreviewImage(widget: SettingsWidget,
                                      onComplete: @escaping @MainActor (UIImage?) -> Void)
     {
@@ -212,6 +191,59 @@ extension Model {
 
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
+    }
+
+    private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
+        if isChatBot {
+            URL(string: stream.discordChatBotSnapshotWebhook)
+        } else {
+            URL(string: stream.discordSnapshotWebhook)
+        }
+    }
+
+    private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
+        guard let url = getDiscordWebhookUrl(isChatBot) else {
+            return
+        }
+        if discordSnapshotUploads.count == 20 {
+            logger.info("snapshot: Discord upload queue full, dropping oldest snapshot")
+            discordSnapshotUploads.removeFirst()
+        }
+        discordSnapshotUploads.append(DiscordSnapshotUpload(url: url, image: image, message: message))
+        tryUploadNextSnapshotToDiscord()
+    }
+
+    private func tryUploadNextSnapshotToDiscord() {
+        guard !isUploadingSnapshotToDiscord, !discordSnapshotUploads.isEmpty else {
+            return
+        }
+        let upload = discordSnapshotUploads.removeFirst()
+        isUploadingSnapshotToDiscord = true
+        uploadImage(
+            url: upload.url,
+            paramName: "snapshot",
+            fileName: "snapshot.jpg",
+            image: upload.image,
+            message: upload.message,
+            maximumBytesPerSecond: getDiscordSnapshotUploadMaximumBytesPerSecond
+        ) { ok in
+            self.isUploadingSnapshotToDiscord = false
+            if ok {
+                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
+            }
+            self.tryUploadNextSnapshotToDiscord()
+        }
+    }
+
+    private func getDiscordSnapshotUploadMaximumBytesPerSecond() -> Int? {
+        guard isLive else {
+            return nil
+        }
+        let bitrate = media.getVideoStreamBitrate(bitrate: stream.bitrate)
+        let divisor = bitrate >= stream.bitrate ? 2 : 4
+        return (Int(bitrate) / 8 / divisor).clamped(to: 16000 ... 1_000_000)
     }
 }
 

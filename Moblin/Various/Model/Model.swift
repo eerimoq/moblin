@@ -767,6 +767,8 @@ final class Model: NSObject, ObservableObject {
     var bluetoothCentralManger: CBCentralManager?
     var sceneSettingsPanelScene = SettingsScene(name: "")
     var snapshotJobs: Deque<SnapshotJob> = []
+    var discordSnapshotUploads: Deque<DiscordSnapshotUpload> = []
+    var isUploadingSnapshotToDiscord = false
     var gameControllers: [GCController?] = []
     var moveToGimbalPresetQueue: Deque<UUID> = []
     var moveToGimbalPresetQueueRunning = false
