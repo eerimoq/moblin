@@ -516,7 +516,6 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
         setRequestingStatus(false)
         setRequestingPreview(false)
-        model?.makeToast(title: String(localized: "Moblin Cloud connected"))
         model?.updateMoblinCloudStatus()
         model?.moblinCloudSendWheelOfLuck()
         model?.moblinCloudSendIcon()
@@ -525,7 +524,6 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerDisconnected() {
         setRequestingStatus(false)
         setRequestingPreview(false)
-        model?.makeToast(title: String(localized: "Moblin Cloud disconnected"))
         model?.updateMoblinCloudStatus()
     }
 
