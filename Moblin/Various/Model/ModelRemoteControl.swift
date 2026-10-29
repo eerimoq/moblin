@@ -1054,6 +1054,10 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSendMessage(text: String) {
+        remoteControlSendMessage(text: text)
+    }
+
+    func remoteControlSendMessage(text: String) {
         let user = String(localized: "Mom")
         appendChatMessage(platform: nil,
                           messageId: nil,
