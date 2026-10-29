@@ -1232,7 +1232,12 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
     }
 
     func makeVideoFilename() -> String? {
-        guard let fileExtension = URL(string: "file:///\(videoName)")?.pathExtension else {
+        Self.makeVideoFilename(id: id, videoName: videoName)
+    }
+
+    static func makeVideoFilename(id: UUID, videoName: String) -> String? {
+        guard let fileExtension = URL(string: "file:///\(videoName)")?.pathExtension, !fileExtension.isEmpty
+        else {
             return nil
         }
         return "\(id).\(fileExtension)"

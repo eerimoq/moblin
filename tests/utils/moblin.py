@@ -160,6 +160,10 @@ class AssistantEvents:
                 LOGGER_EVENTS.debug("%s: %s", kind, data)
 
 
+def _read_base64(path: Path) -> str:
+    return b64encode(path.read_bytes()).decode("utf-8")
+
+
 class Moblin:
     def __init__(
         self,
@@ -250,8 +254,72 @@ class Moblin:
         )
         return response["result"]
 
+    def get_scenes(self) -> list[dict]:
+        return self._request({"getScenes": {}})["data"]["getScenes"]["scenes"]
+
+    def get_widgets(self) -> list[dict]:
+        return self._request({"getWidgets": {}})["data"]["getWidgets"]["widgets"]
+
+    def create_scene(self, scene: dict) -> dict:
+        return self._request({"createScene": {"scene": scene}})["result"]
+
+    def update_scene(self, scene: dict) -> dict:
+        return self._request({"updateScene": {"scene": scene}})["result"]
+
+    def delete_scene(self, scene_id: str) -> dict:
+        return self._request({"deleteScene": {"id": scene_id}})["result"]
+
+    def reorder_scenes(self, scene_ids: list[str]) -> dict:
+        return self._request({"reorderScenes": {"ids": scene_ids}})["result"]
+
+    def create_widget(self, widget: dict) -> dict:
+        return self._request({"createWidget": {"widget": widget}})["result"]
+
+    def update_widget(self, widget: dict) -> dict:
+        return self._request({"updateWidget": {"widget": widget}})["result"]
+
+    def delete_widget(self, widget_id: str) -> dict:
+        return self._request({"deleteWidget": {"id": widget_id}})["result"]
+
+    def reorder_widgets(self, widget_ids: list[str]) -> dict:
+        return self._request({"reorderWidgets": {"ids": widget_ids}})["result"]
+
+    def set_widget_image(self, widget_id: str, path: Path) -> dict:
+        return self._request({"setWidgetImage": {"id": widget_id, "image": _read_base64(path)}})["result"]
+
+    def get_video_sources(self) -> list[dict]:
+        return self._request({"getVideoSources": {}})["data"]["getVideoSources"]["videoSources"]
+
+    def get_alerts_media_gallery(self) -> dict:
+        return self._request({"getAlertsMediaGallery": {}})["data"]["getAlertsMediaGallery"]["gallery"]
+
+    def set_alert_image(self, media: dict, path: Path) -> dict:
+        return self._request({"setAlertImage": {"media": media, "image": _read_base64(path)}})["result"]
+
+    def set_alert_sound(self, media: dict, path: Path) -> dict:
+        return self._request({"setAlertSound": {"media": media, "sound": _read_base64(path)}})["result"]
+
+    def delete_alert_media(self, media_id: str) -> dict:
+        return self._request({"deleteAlertMedia": {"id": media_id}})["result"]
+
+    def set_alert_video(self, alert_id: str, video_name: str, path: Path) -> dict:
+        return self._request(
+            {"setAlertVideo": {"alertId": alert_id, "videoName": video_name, "video": _read_base64(path)}}
+        )["result"]
+
+    def set_vtuber_model(self, model_id: str, model_type: str, path: Path) -> dict:
+        return self._request(
+            {"setVTuberModel": {"id": model_id, "type": model_type, "model": _read_base64(path)}}
+        )["result"]
+
+    def set_png_tuber_model(self, model_id: str, path: Path) -> dict:
+        return self._request({"setPngTuberModel": {"id": model_id, "model": _read_base64(path)}})["result"]
+
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
+
+    def set_scene_id(self, scene_id: str):
+        self._request({"setScene": {"id": scene_id}})
 
     def set_mic(self, name):
         self._request({"setMic": {"id": self._get_settings_id("mics", name)}})

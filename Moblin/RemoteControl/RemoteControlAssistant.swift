@@ -204,6 +204,172 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
+    func getScenes(onSuccess: @escaping ([SettingsScene]) -> Void) {
+        performRequest(data: .getScenes) { response in
+            guard case let .getScenes(scenes: scenes) = response else {
+                return
+            }
+            onSuccess(scenes)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get scenes failed with \(error)")
+        }
+    }
+
+    func getWidgets(onSuccess: @escaping ([SettingsWidget]) -> Void) {
+        performRequest(data: .getWidgets) { response in
+            guard case let .getWidgets(widgets: widgets) = response else {
+                return
+            }
+            onSuccess(widgets)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get widgets failed with \(error)")
+        }
+    }
+
+    func createScene(
+        scene: SettingsScene,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestNoResponseData(data: .createScene(scene: scene), onSuccess: onSuccess, onError: onError)
+    }
+
+    func updateScene(
+        scene: SettingsScene,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestNoResponseData(data: .updateScene(scene: scene), onSuccess: onSuccess, onError: onError)
+    }
+
+    func deleteScene(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteScene(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func reorderScenes(ids: [UUID], onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .reorderScenes(ids: ids), onSuccess: onSuccess, onError: onError)
+    }
+
+    func createWidget(widget: SettingsWidget,
+                      onSuccess: @escaping () -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(
+            data: .createWidget(widget: widget),
+            onSuccess: onSuccess,
+            onError: onError
+        )
+    }
+
+    func updateWidget(widget: SettingsWidget,
+                      onSuccess: @escaping () -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(
+            data: .updateWidget(widget: widget),
+            onSuccess: onSuccess,
+            onError: onError
+        )
+    }
+
+    func deleteWidget(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteWidget(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func reorderWidgets(ids: [UUID], onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .reorderWidgets(ids: ids), onSuccess: onSuccess, onError: onError)
+    }
+
+    func setWidgetImage(id: UUID,
+                        image: Data,
+                        onSuccess: @escaping () -> Void,
+                        onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setWidgetImage(id: id, image: image),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
+    func getAlertsMediaGallery(onSuccess: @escaping (SettingsAlertsMediaGallery) -> Void) {
+        performRequest(data: .getAlertsMediaGallery) { response in
+            guard case let .getAlertsMediaGallery(gallery: gallery) = response else {
+                return
+            }
+            onSuccess(gallery)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get alerts media gallery failed with \(error)")
+        }
+    }
+
+    func getVideoSources(onSuccess: @escaping ([RemoteControlVideoSource]) -> Void) {
+        performRequest(data: .getVideoSources) { response in
+            guard case let .getVideoSources(videoSources: videoSources) = response else {
+                return
+            }
+            onSuccess(videoSources)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get video sources failed with \(error)")
+        }
+    }
+
+    func setAlertImage(media: SettingsAlertsMediaGalleryItem,
+                       image: Data,
+                       onSuccess: @escaping () -> Void,
+                       onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setAlertImage(media: media, image: image),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
+    func setAlertSound(media: SettingsAlertsMediaGalleryItem,
+                       sound: Data,
+                       onSuccess: @escaping () -> Void,
+                       onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setAlertSound(media: media, sound: sound),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
+    func deleteAlertMedia(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteAlertMedia(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func setAlertVideo(alertId: UUID,
+                       videoName: String,
+                       video: Data,
+                       onSuccess: @escaping () -> Void,
+                       onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(
+            data: .setAlertVideo(alertId: alertId, videoName: videoName, video: video),
+            onSuccess: onSuccess,
+            onError: onError
+        )
+    }
+
+    func setVTuberModel(id: UUID,
+                        type: SettingsWidgetVTuberType,
+                        model: Data,
+                        onSuccess: @escaping () -> Void,
+                        onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setVTuberModel(id: id, type: type, model: model),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
+    func setPngTuberModel(id: UUID,
+                          model: Data,
+                          onSuccess: @escaping () -> Void,
+                          onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setPngTuberModel(id: id, model: model),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
     func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
@@ -661,6 +827,17 @@ class RemoteControlAssistant: NSObject {
         performRequest(data: data) { _ in
             onSuccess()
         } onError: { _ in
+        }
+    }
+
+    private func performRequestNoResponseData(data: RemoteControlRequest,
+                                              onSuccess: @escaping () -> Void,
+                                              onError: @escaping (String) -> Void)
+    {
+        performRequest(data: data) { _ in
+            onSuccess()
+        } onError: { error in
+            onError(error)
         }
     }
 

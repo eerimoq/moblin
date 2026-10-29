@@ -76,6 +76,25 @@ enum RemoteControlRequest: Codable {
     case sendMessage(name: String?, text: String)
     case music(command: RemoteControlMusicCommand)
     case tip(name: String, message: String, kind: RemoteControlTipKind, requestId: String)
+    case getScenes
+    case getWidgets
+    case createScene(scene: SettingsScene)
+    case updateScene(scene: SettingsScene)
+    case deleteScene(id: UUID)
+    case reorderScenes(ids: [UUID])
+    case createWidget(widget: SettingsWidget)
+    case updateWidget(widget: SettingsWidget)
+    case deleteWidget(id: UUID)
+    case reorderWidgets(ids: [UUID])
+    case setWidgetImage(id: UUID, image: Data)
+    case getAlertsMediaGallery
+    case getVideoSources
+    case setAlertImage(media: SettingsAlertsMediaGalleryItem, image: Data)
+    case setAlertSound(media: SettingsAlertsMediaGalleryItem, sound: Data)
+    case deleteAlertMedia(id: UUID)
+    case setAlertVideo(alertId: UUID, videoName: String, video: Data)
+    case setVTuberModel(id: UUID, type: SettingsWidgetVTuberType, model: Data)
+    case setPngTuberModel(id: UUID, model: Data)
 }
 
 enum RemoteControlTipKind: Codable {
@@ -96,6 +115,10 @@ enum RemoteControlResponse: Codable {
     case getGolfScoreboard(data: RemoteControlGolfScoreboard)
     case music(status: RemoteControlMusicStatus)
     case musicFind(song: RemoteControlMusicFoundSong?)
+    case getScenes(scenes: [SettingsScene])
+    case getWidgets(widgets: [SettingsWidget])
+    case getAlertsMediaGallery(gallery: SettingsAlertsMediaGallery)
+    case getVideoSources(videoSources: [RemoteControlVideoSource])
 }
 
 enum RemoteControlEvent: Codable {
@@ -979,6 +1002,12 @@ struct RemoteControlSettingsSrt: Codable {
 struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
     let id: UUID
     let name: String
+}
+
+struct RemoteControlVideoSource: Codable {
+    let id: String
+    let name: String
+    let position: SettingsSceneCameraPosition
 }
 
 struct RemoteControlSettings: Codable {

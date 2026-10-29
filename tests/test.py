@@ -9,6 +9,7 @@ from .suites import macros
 from .suites import mic
 from .suites import music
 from .suites import record
+from .suites import scene_configuration
 from .suites import scenes
 from .suites import settings
 from .suites import stream
@@ -25,6 +26,7 @@ def create_suites(moblin, _):
         record.tests(moblin),
         mic.tests(moblin),
         scenes.tests(moblin),
+        scene_configuration.tests(moblin),
         colors.tests(moblin),
         settings.tests(moblin),
         stream.tests(moblin),

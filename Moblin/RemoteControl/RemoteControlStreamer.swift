@@ -56,6 +56,28 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerAnimateGimbal(motion: SettingsGimbalMotion)
     func remoteControlStreamerSaveGimbalPreset()
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
+    func remoteControlStreamerGetScenes() -> [SettingsScene]
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget]
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool
+    func remoteControlStreamerReorderScenes(ids: [UUID]) -> Bool
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool
+    func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool
+    func remoteControlStreamerSetWidgetImage(id: UUID, image: Data) -> Bool
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource]
+    func remoteControlStreamerSetAlertImage(media: SettingsAlertsMediaGalleryItem, image: Data) -> Bool
+    func remoteControlStreamerSetAlertSound(media: SettingsAlertsMediaGalleryItem, sound: Data) -> Bool
+    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool
+    func remoteControlStreamerSetAlertVideo(alertId: UUID, videoName: String, video: Data) -> Bool
+    func remoteControlStreamerSetVTuberModel(id: UUID,
+                                             type: SettingsWidgetVTuberType,
+                                             model: Data,
+                                             onCompleted: @escaping @MainActor (Bool) -> Void)
+    func remoteControlStreamerSetPngTuberModel(id: UUID, model: Data) -> Bool
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -250,7 +272,20 @@ class RemoteControlStreamer {
         } catch {
             logger.info("remote-control-streamer: Decode failed")
             connectionErrorMessage = error.localizedDescription
+            if let id = undecodableRequestId(message: message) {
+                send(message: .response(id: id, result: .unknownRequest, data: nil))
+            }
         }
+    }
+
+    private func undecodableRequestId(message: String) -> Int? {
+        guard let data = message.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let request = json["request"] as? [String: Any]
+        else {
+            return nil
+        }
+        return request["id"] as? Int
     }
 
     private func handleHello(apiVersion _: String, authentication: RemoteControlAuthentication) {
@@ -474,11 +509,73 @@ class RemoteControlStreamer {
         case let .tip(name: name, message: message, kind: kind, requestId: requestId):
             delegate.remoteControlStreamerTip(name: name, message: message, kind: kind, requestId: requestId)
             sendEmptyOkResponse(id: id)
+        case .getScenes:
+            let scenes = delegate.remoteControlStreamerGetScenes()
+            send(message: .response(id: id, result: .ok, data: .getScenes(scenes: scenes)))
+        case .getWidgets:
+            let widgets = delegate.remoteControlStreamerGetWidgets()
+            send(message: .response(id: id, result: .ok, data: .getWidgets(widgets: widgets)))
+        case let .createScene(scene: scene):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateScene(scene: scene))
+        case let .updateScene(scene: scene):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateScene(scene: scene))
+        case let .deleteScene(id: sceneId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteScene(id: sceneId))
+        case let .reorderScenes(ids: ids):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerReorderScenes(ids: ids))
+        case let .createWidget(widget: widget):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateWidget(widget: widget))
+        case let .updateWidget(widget: widget):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateWidget(widget: widget))
+        case let .deleteWidget(id: widgetId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteWidget(id: widgetId))
+        case let .reorderWidgets(ids: ids):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerReorderWidgets(ids: ids))
+        case let .setWidgetImage(id: widgetId, image: image):
+            sendResultResponse(
+                id: id,
+                ok: delegate.remoteControlStreamerSetWidgetImage(id: widgetId, image: image)
+            )
+        case .getAlertsMediaGallery:
+            let gallery = delegate.remoteControlStreamerGetAlertsMediaGallery()
+            send(message: .response(id: id, result: .ok, data: .getAlertsMediaGallery(gallery: gallery)))
+        case .getVideoSources:
+            let videoSources = delegate.remoteControlStreamerGetVideoSources()
+            send(message: .response(id: id, result: .ok, data: .getVideoSources(videoSources: videoSources)))
+        case let .setAlertImage(media: media, image: image):
+            sendResultResponse(
+                id: id,
+                ok: delegate.remoteControlStreamerSetAlertImage(media: media, image: image)
+            )
+        case let .setAlertSound(media: media, sound: sound):
+            sendResultResponse(
+                id: id,
+                ok: delegate.remoteControlStreamerSetAlertSound(media: media, sound: sound)
+            )
+        case let .deleteAlertMedia(id: mediaId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteAlertMedia(id: mediaId))
+        case let .setAlertVideo(alertId: alertId, videoName: videoName, video: video):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerSetAlertVideo(alertId: alertId,
+                                                                                       videoName: videoName,
+                                                                                       video: video))
+        case let .setVTuberModel(id: vTuberId, type: type, model: model):
+            delegate.remoteControlStreamerSetVTuberModel(id: vTuberId, type: type, model: model) { ok in
+                self.sendResultResponse(id: id, ok: ok)
+            }
+        case let .setPngTuberModel(id: pngTuberId, model: model):
+            sendResultResponse(
+                id: id,
+                ok: delegate.remoteControlStreamerSetPngTuberModel(id: pngTuberId, model: model)
+            )
         }
     }
 
     private func sendEmptyOkResponse(id: Int) {
         send(message: .response(id: id, result: .ok, data: nil))
+    }
+
+    private func sendResultResponse(id: Int, ok: Bool) {
+        send(message: .response(id: id, result: ok ? .ok : .error, data: nil))
     }
 }
 

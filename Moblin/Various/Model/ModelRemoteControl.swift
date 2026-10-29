@@ -1285,6 +1285,86 @@ extension Model: RemoteControlStreamerDelegate {
             onCompleted($0)
         }
     }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        remoteControlGetScenes()
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        remoteControlGetWidgets()
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        remoteControlCreateScene(scene: scene)
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        remoteControlUpdateScene(scene: scene)
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        remoteControlDeleteScene(id: id)
+    }
+
+    func remoteControlStreamerReorderScenes(ids: [UUID]) -> Bool {
+        remoteControlReorderScenes(ids: ids)
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlCreateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlUpdateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        remoteControlDeleteWidget(id: id)
+    }
+
+    func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool {
+        remoteControlReorderWidgets(ids: ids)
+    }
+
+    func remoteControlStreamerSetWidgetImage(id: UUID, image: Data) -> Bool {
+        remoteControlSetWidgetImage(id: id, image: image)
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        remoteControlGetAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        remoteControlGetVideoSources()
+    }
+
+    func remoteControlStreamerSetAlertImage(media: SettingsAlertsMediaGalleryItem, image: Data) -> Bool {
+        remoteControlSetAlertImage(media: media, image: image)
+    }
+
+    func remoteControlStreamerSetAlertSound(media: SettingsAlertsMediaGalleryItem, sound: Data) -> Bool {
+        remoteControlSetAlertSound(media: media, sound: sound)
+    }
+
+    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
+        remoteControlDeleteAlertMedia(id: id)
+    }
+
+    func remoteControlStreamerSetAlertVideo(alertId: UUID, videoName: String, video: Data) -> Bool {
+        remoteControlSetAlertVideo(alertId: alertId, videoName: videoName, video: video)
+    }
+
+    func remoteControlStreamerSetVTuberModel(id: UUID,
+                                             type: SettingsWidgetVTuberType,
+                                             model: Data,
+                                             onCompleted: @escaping @MainActor (Bool) -> Void)
+    {
+        remoteControlSetVTuberModel(id: id, type: type, model: model, onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerSetPngTuberModel(id: UUID, model: Data) -> Bool {
+        remoteControlSetPngTuberModel(id: id, model: model)
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {

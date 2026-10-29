@@ -1,5 +1,4 @@
 import SwiftUI
-import ZipArchive
 
 private struct PickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -14,13 +13,6 @@ private struct PickerView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
-}
-
-private func unzipLive2DModel(from url: URL, to directory: URL) throws {
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    try ZipArchiveReader.withFile(url.path) { reader in
-        try reader.extract(to: .init(directory.path))
-    }
 }
 
 struct WidgetVTuberPickerView: View {

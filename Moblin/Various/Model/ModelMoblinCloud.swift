@@ -730,4 +730,88 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     ) {
         model?.moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
     }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        model?.remoteControlGetScenes() ?? []
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        model?.remoteControlGetWidgets() ?? []
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlCreateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlUpdateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        model?.remoteControlDeleteScene(id: id) ?? false
+    }
+
+    func remoteControlStreamerReorderScenes(ids: [UUID]) -> Bool {
+        model?.remoteControlReorderScenes(ids: ids) ?? false
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlCreateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlUpdateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        model?.remoteControlDeleteWidget(id: id) ?? false
+    }
+
+    func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool {
+        model?.remoteControlReorderWidgets(ids: ids) ?? false
+    }
+
+    func remoteControlStreamerSetWidgetImage(id: UUID, image: Data) -> Bool {
+        model?.remoteControlSetWidgetImage(id: id, image: image) ?? false
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        model?.remoteControlGetAlertsMediaGallery() ?? SettingsAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        model?.remoteControlGetVideoSources() ?? []
+    }
+
+    func remoteControlStreamerSetAlertImage(media: SettingsAlertsMediaGalleryItem, image: Data) -> Bool {
+        model?.remoteControlSetAlertImage(media: media, image: image) ?? false
+    }
+
+    func remoteControlStreamerSetAlertSound(media: SettingsAlertsMediaGalleryItem, sound: Data) -> Bool {
+        model?.remoteControlSetAlertSound(media: media, sound: sound) ?? false
+    }
+
+    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
+        model?.remoteControlDeleteAlertMedia(id: id) ?? false
+    }
+
+    func remoteControlStreamerSetAlertVideo(alertId: UUID, videoName: String, video: Data) -> Bool {
+        model?.remoteControlSetAlertVideo(alertId: alertId, videoName: videoName, video: video) ?? false
+    }
+
+    func remoteControlStreamerSetVTuberModel(id: UUID,
+                                             type: SettingsWidgetVTuberType,
+                                             model: Data,
+                                             onCompleted: @escaping @MainActor (Bool) -> Void)
+    {
+        guard let streamerModel = self.model else {
+            onCompleted(false)
+            return
+        }
+        streamerModel.remoteControlSetVTuberModel(id: id, type: type, model: model, onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerSetPngTuberModel(id: UUID, model: Data) -> Bool {
+        self.model?.remoteControlSetPngTuberModel(id: id, model: model) ?? false
+    }
 }
