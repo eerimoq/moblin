@@ -3,11 +3,18 @@ import ImageIO
 
 extension Model {
     func showWidgetOutlines() {
+        guard showingPanel == .settings else {
+            return
+        }
         setWidgetOutlinesEnabled(true)
     }
 
     func hideWidgetOutlines() {
         setWidgetOutlinesEnabled(false)
+    }
+
+    func updateWidgetOutlinesForShowingPanel() {
+        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings].contains(showingPanel))
     }
 
     private func setWidgetOutlinesEnabled(_ enabled: Bool) {

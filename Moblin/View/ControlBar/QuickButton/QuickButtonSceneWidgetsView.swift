@@ -72,6 +72,5 @@ struct QuickButtonSceneWidgetsView: View {
             }
         }
         .navigationTitle("Scene widgets")
-        .showWidgetOutlines(model: model)
     }
 }

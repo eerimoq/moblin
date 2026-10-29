@@ -231,6 +231,8 @@ struct ScenesSettingsView: View {
             }
         }
         .navigationTitle("Scenes")
-        .showWidgetOutlines(model: model)
+        .onAppear {
+            model.showWidgetOutlines()
+        }
     }
 }

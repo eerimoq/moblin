@@ -389,6 +389,5 @@ struct SceneSettingsView: View {
             SceneColorView(model: model, scene: scene)
         }
         .navigationTitle("Scene")
-        .showWidgetOutlines(model: model)
     }
 }

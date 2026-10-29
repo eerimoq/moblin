@@ -88,31 +88,6 @@ private struct WidgetOutlineView: View {
     }
 }
 
-private struct WidgetOutlinesModifier: ViewModifier {
-    let model: Model
-    let show: Bool
-
-    func body(content: Content) -> some View {
-        content.onAppear {
-            if show {
-                model.showWidgetOutlines()
-            } else {
-                model.hideWidgetOutlines()
-            }
-        }
-    }
-}
-
-extension View {
-    func showWidgetOutlines(model: Model) -> some View {
-        modifier(WidgetOutlinesModifier(model: model, show: true))
-    }
-
-    func hideWidgetOutlines(model: Model) -> some View {
-        modifier(WidgetOutlinesModifier(model: model, show: false))
-    }
-}
-
 struct WidgetOutlinesView: View {
     @ObservedObject var widgetOutlines: WidgetOutlines
     @ObservedObject var database: Database

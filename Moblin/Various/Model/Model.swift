@@ -481,11 +481,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    @Published var showingPanel: ShowingPanel = .none {
-        didSet {
-            hideWidgetOutlines()
-        }
-    }
+    @Published var showingPanel: ShowingPanel = .none
 
     @Published var panelHidden = false
     @Published var showStealthMode = false
@@ -954,6 +950,7 @@ final class Model: NSObject, ObservableObject {
         } else {
             showingPanel = panel
         }
+        updateWidgetOutlinesForShowingPanel()
         panelHidden = false
         for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
