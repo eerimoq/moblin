@@ -473,9 +473,12 @@ extension Model {
             // Use 540p camera and downscale to 240p.
             .init(width: 960, height: 540)
         }
+        let canvasSize = resolution.dimensions(portrait: stream.portrait).toSize()
         media.setVideoSize(capture: captureSize,
-                           canvas: resolution.dimensions(portrait: stream.portrait).toSize(),
+                           canvas: canvasSize,
                            stream: stream.resolution.dimensions(portrait: stream.portrait))
+        remoteControlStateChanged(state: .init(canvasSize: .init(width: canvasSize.width,
+                                                                 height: canvasSize.height)))
     }
 
     private func setStreamCodec() {

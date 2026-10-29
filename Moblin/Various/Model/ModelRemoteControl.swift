@@ -631,6 +631,9 @@ extension Model {
         state.gimbalTracking = database.gimbal.tracking
         state.gimbalPresets = getRemoteControlGimbalPresets()
         state.macros = getRemoteControlMacros()
+        let canvasSize = media.getCanvasSize()
+        state.canvasSize = RemoteControlSize(width: canvasSize.width, height: canvasSize.height)
+        state.mirrorFrontCameraOnStream = database.mirrorFrontCameraOnStream
         return state
     }
 
@@ -638,6 +641,28 @@ extension Model {
         remoteControlStreamer?.stateChanged(state: state)
         remoteControlWeb?.stateChanged(state: state)
         moblinCloud?.stateChanged(state: state)
+    }
+
+    func remoteControlScenesChanged() {
+        if remoteControlScenesChangedThrottled {
+            remoteControlScenesChangedPending = true
+        } else {
+            sendRemoteControlScenesChanged()
+        }
+    }
+
+    private func sendRemoteControlScenesChanged() {
+        remoteControlScenesChangedThrottled = true
+        remoteControlScenesChangedPending = false
+        remoteControlStreamer?.sendScenesChanged()
+        moblinCloud?.sendScenesChanged()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if self.remoteControlScenesChangedPending {
+                self.sendRemoteControlScenesChanged()
+            } else {
+                self.remoteControlScenesChangedThrottled = false
+            }
+        }
     }
 
     func remoteControlLog(entry: String) {
@@ -1284,6 +1309,74 @@ extension Model: RemoteControlStreamerDelegate {
         importSettingsFromData(settings: settings) {
             onCompleted($0)
         }
+    }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        remoteControlGetScenes()
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        remoteControlGetWidgets()
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        remoteControlCreateScene(scene: scene)
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        remoteControlUpdateScene(scene: scene)
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        remoteControlDeleteScene(id: id)
+    }
+
+    func remoteControlStreamerReorderScenes(ids: [UUID]) -> Bool {
+        remoteControlReorderScenes(ids: ids)
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlCreateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        remoteControlUpdateWidget(widget: widget)
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        remoteControlDeleteWidget(id: id)
+    }
+
+    func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool {
+        remoteControlReorderWidgets(ids: ids)
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        remoteControlGetAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        remoteControlGetVideoSources()
+    }
+
+    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
+        remoteControlDeleteAlertMedia(id: id)
+    }
+
+    func remoteControlStreamerGetWidgetImage(id: UUID) -> Data? {
+        remoteControlGetWidgetImage(id: id)
+    }
+
+    func remoteControlStreamerGetAlertMedia(id: UUID) -> Data? {
+        remoteControlGetAlertMedia(id: id)
+    }
+
+    func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
+        remoteControlGetEditorOptions()
+    }
+
+    func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
+        remoteControlSetScoreboardPlayers(players: players)
     }
 }
 

@@ -269,6 +269,7 @@ extension Model {
             sceneUpdatedOff()
             startTextVariableManagers()
             updateWidgetOutlines()
+            remoteControlScenesChanged()
             return
         }
         for browserEffect in browserEffects.values {
@@ -284,6 +285,7 @@ extension Model {
         updateSpeechToText(drawnWidgets: resolver.resolve(scene, includeRemote: true).localDrawnWidgets()
             .map(\.widget))
         updateWidgetOutlines(resolver: resolver)
+        remoteControlScenesChanged()
     }
 
     func getSceneName(id: UUID?) -> String? {

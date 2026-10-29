@@ -8,6 +8,9 @@ struct MirrorFrontCameraOnStreamView: View {
         Toggle("Mirror front camera on stream", isOn: $database.mirrorFrontCameraOnStream)
             .onChange(of: database.mirrorFrontCameraOnStream) { _ in
                 model.attachCamera()
+                model.remoteControlStateChanged(state: .init(
+                    mirrorFrontCameraOnStream: database.mirrorFrontCameraOnStream
+                ))
             }
     }
 }

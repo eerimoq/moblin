@@ -204,6 +204,150 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
+    func getScenes(onSuccess: @escaping ([SettingsScene]) -> Void) {
+        performRequest(data: .getScenes) { response in
+            guard case let .getScenes(scenes: scenes) = response else {
+                return
+            }
+            onSuccess(scenes)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get scenes failed with \(error)")
+        }
+    }
+
+    func getWidgets(onSuccess: @escaping ([SettingsWidget]) -> Void) {
+        performRequest(data: .getWidgets) { response in
+            guard case let .getWidgets(widgets: widgets) = response else {
+                return
+            }
+            onSuccess(widgets)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get widgets failed with \(error)")
+        }
+    }
+
+    func createScene(
+        scene: SettingsScene,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestNoResponseData(data: .createScene(scene: scene), onSuccess: onSuccess, onError: onError)
+    }
+
+    func updateScene(
+        scene: SettingsScene,
+        onSuccess: @escaping () -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        performRequestNoResponseData(data: .updateScene(scene: scene), onSuccess: onSuccess, onError: onError)
+    }
+
+    func deleteScene(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteScene(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func reorderScenes(ids: [UUID], onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .reorderScenes(ids: ids), onSuccess: onSuccess, onError: onError)
+    }
+
+    func createWidget(widget: SettingsWidget,
+                      onSuccess: @escaping () -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(
+            data: .createWidget(widget: widget),
+            onSuccess: onSuccess,
+            onError: onError
+        )
+    }
+
+    func updateWidget(widget: SettingsWidget,
+                      onSuccess: @escaping () -> Void,
+                      onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(
+            data: .updateWidget(widget: widget),
+            onSuccess: onSuccess,
+            onError: onError
+        )
+    }
+
+    func deleteWidget(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteWidget(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func reorderWidgets(ids: [UUID], onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .reorderWidgets(ids: ids), onSuccess: onSuccess, onError: onError)
+    }
+
+    func getAlertsMediaGallery(onSuccess: @escaping (SettingsAlertsMediaGallery) -> Void) {
+        performRequest(data: .getAlertsMediaGallery) { response in
+            guard case let .getAlertsMediaGallery(gallery: gallery) = response else {
+                return
+            }
+            onSuccess(gallery)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get alerts media gallery failed with \(error)")
+        }
+    }
+
+    func getVideoSources(onSuccess: @escaping ([RemoteControlVideoSource]) -> Void) {
+        performRequest(data: .getVideoSources) { response in
+            guard case let .getVideoSources(videoSources: videoSources) = response else {
+                return
+            }
+            onSuccess(videoSources)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get video sources failed with \(error)")
+        }
+    }
+
+    func deleteAlertMedia(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
+        performRequestNoResponseData(data: .deleteAlertMedia(id: id), onSuccess: onSuccess, onError: onError)
+    }
+
+    func getWidgetImage(id: UUID, onSuccess: @escaping (Data?) -> Void) {
+        performRequest(data: .getWidgetImage(id: id)) { response in
+            guard case let .getWidgetImage(image: image) = response else {
+                return
+            }
+            onSuccess(image)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get widget image failed with \(error)")
+        }
+    }
+
+    func getAlertMedia(id: UUID, onSuccess: @escaping (Data?) -> Void) {
+        performRequest(data: .getAlertMedia(id: id)) { response in
+            guard case let .getAlertMedia(data: data) = response else {
+                return
+            }
+            onSuccess(data)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get alert media failed with \(error)")
+        }
+    }
+
+    func getEditorOptions(onSuccess: @escaping (RemoteControlEditorOptions) -> Void) {
+        performRequest(data: .getEditorOptions) { response in
+            guard case let .getEditorOptions(options: options) = response else {
+                return
+            }
+            onSuccess(options)
+        } onError: { error in
+            logger.info("remote-control-assistant: Get editor options failed with \(error)")
+        }
+    }
+
+    func setScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer],
+                              onSuccess: @escaping () -> Void,
+                              onError: @escaping (String) -> Void)
+    {
+        performRequestNoResponseData(data: .setScoreboardPlayers(players: players),
+                                     onSuccess: onSuccess,
+                                     onError: onError)
+    }
+
     func reloadBrowserWidgets(onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .reloadBrowserWidgets, onSuccess: onSuccess)
     }
@@ -539,6 +683,8 @@ class RemoteControlAssistant: NSObject {
             break
         case .icon:
             break
+        case .scenesChanged:
+            break
         case let .stats(data: data):
             delegate?.remoteControlAssistantStats(data: data)
         }
@@ -661,6 +807,17 @@ class RemoteControlAssistant: NSObject {
         performRequest(data: data) { _ in
             onSuccess()
         } onError: { _ in
+        }
+    }
+
+    private func performRequestNoResponseData(data: RemoteControlRequest,
+                                              onSuccess: @escaping () -> Void,
+                                              onError: @escaping (String) -> Void)
+    {
+        performRequest(data: data) { _ in
+            onSuccess()
+        } onError: { error in
+            onError(error)
         }
     }
 

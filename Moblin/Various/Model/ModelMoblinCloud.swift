@@ -473,6 +473,13 @@ class MoblinCloud {
         streamer?.stateChanged(state: state)
     }
 
+    func sendScenesChanged() {
+        guard requestingStatus else {
+            return
+        }
+        streamer?.sendScenesChanged()
+    }
+
     func isRequestingPreview() -> Bool {
         requestingPreview
     }
@@ -729,5 +736,73 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         requestId: String
     ) {
         model?.moblinCloudTip(name: name, message: message, kind: kind, requestId: requestId)
+    }
+
+    func remoteControlStreamerGetScenes() -> [SettingsScene] {
+        model?.remoteControlGetScenes() ?? []
+    }
+
+    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
+        model?.remoteControlGetWidgets() ?? []
+    }
+
+    func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlCreateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool {
+        model?.remoteControlUpdateScene(scene: scene) ?? false
+    }
+
+    func remoteControlStreamerDeleteScene(id: UUID) -> Bool {
+        model?.remoteControlDeleteScene(id: id) ?? false
+    }
+
+    func remoteControlStreamerReorderScenes(ids: [UUID]) -> Bool {
+        model?.remoteControlReorderScenes(ids: ids) ?? false
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlCreateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
+        model?.remoteControlUpdateWidget(widget: widget) ?? false
+    }
+
+    func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {
+        model?.remoteControlDeleteWidget(id: id) ?? false
+    }
+
+    func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool {
+        model?.remoteControlReorderWidgets(ids: ids) ?? false
+    }
+
+    func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery {
+        model?.remoteControlGetAlertsMediaGallery() ?? SettingsAlertsMediaGallery()
+    }
+
+    func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource] {
+        model?.remoteControlGetVideoSources() ?? []
+    }
+
+    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
+        model?.remoteControlDeleteAlertMedia(id: id) ?? false
+    }
+
+    func remoteControlStreamerGetWidgetImage(id: UUID) -> Data? {
+        model?.remoteControlGetWidgetImage(id: id)
+    }
+
+    func remoteControlStreamerGetAlertMedia(id: UUID) -> Data? {
+        model?.remoteControlGetAlertMedia(id: id)
+    }
+
+    func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
+        model?.remoteControlGetEditorOptions() ?? RemoteControlEditorOptions.empty()
+    }
+
+    func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
+        model?.remoteControlSetScoreboardPlayers(players: players) ?? false
     }
 }

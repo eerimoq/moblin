@@ -7,6 +7,7 @@ import sys
 import tempfile
 import threading
 import time
+from base64 import b64decode
 from base64 import b64encode
 from collections import defaultdict
 from collections.abc import Callable
@@ -255,6 +256,59 @@ class Moblin:
         )
         return response["result"]
 
+    def get_scenes(self) -> list[dict]:
+        return self._request({"getScenes": {}})["data"]["getScenes"]["scenes"]
+
+    def get_widgets(self) -> list[dict]:
+        return self._request({"getWidgets": {}})["data"]["getWidgets"]["widgets"]
+
+    def create_scene(self, scene: dict) -> dict:
+        return self._request({"createScene": {"scene": scene}})["result"]
+
+    def update_scene(self, scene: dict) -> dict:
+        return self._request({"updateScene": {"scene": scene}})["result"]
+
+    def delete_scene(self, scene_id: str) -> dict:
+        return self._request({"deleteScene": {"id": scene_id}})["result"]
+
+    def reorder_scenes(self, scene_ids: list[str]) -> dict:
+        return self._request({"reorderScenes": {"ids": scene_ids}})["result"]
+
+    def create_widget(self, widget: dict) -> dict:
+        return self._request({"createWidget": {"widget": widget}})["result"]
+
+    def update_widget(self, widget: dict) -> dict:
+        return self._request({"updateWidget": {"widget": widget}})["result"]
+
+    def delete_widget(self, widget_id: str) -> dict:
+        return self._request({"deleteWidget": {"id": widget_id}})["result"]
+
+    def reorder_widgets(self, widget_ids: list[str]) -> dict:
+        return self._request({"reorderWidgets": {"ids": widget_ids}})["result"]
+
+    def get_video_sources(self) -> list[dict]:
+        return self._request({"getVideoSources": {}})["data"]["getVideoSources"]["videoSources"]
+
+    def get_alerts_media_gallery(self) -> dict:
+        return self._request({"getAlertsMediaGallery": {}})["data"]["getAlertsMediaGallery"]["gallery"]
+
+    def delete_alert_media(self, media_id: str) -> dict:
+        return self._request({"deleteAlertMedia": {"id": media_id}})["result"]
+
+    def get_widget_image(self, widget_id: str) -> bytes | None:
+        image = self._request({"getWidgetImage": {"id": widget_id}})["data"]["getWidgetImage"].get("image")
+        return b64decode(image) if image is not None else None
+
+    def get_alert_media(self, media_id: str) -> bytes | None:
+        data = self._request({"getAlertMedia": {"id": media_id}})["data"]["getAlertMedia"].get("data")
+        return b64decode(data) if data is not None else None
+
+    def get_editor_options(self) -> dict:
+        return self._request({"getEditorOptions": {}})["data"]["getEditorOptions"]["options"]
+
+    def set_scoreboard_players(self, players: list[dict]) -> dict:
+        return self._request({"setScoreboardPlayers": {"players": players}})["result"]
+
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 
@@ -315,6 +369,9 @@ class Moblin:
         response = self._request({"setRemoteSceneData": {"data": {"location": location}}})
         if "ok" not in response["result"]:
             raise Exception(f"Set remote scene data failed: {response['result']}")
+
+    def set_scene_id(self, scene_id: str):
+        self._request({"setScene": {"id": scene_id}})
 
     def set_mic(self, name):
         self._request({"setMic": {"id": self._get_settings_id("mics", name)}})

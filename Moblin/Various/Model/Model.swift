@@ -723,6 +723,8 @@ final class Model: NSObject, ObservableObject {
     private var relaxedBitrateStartTime: ContinuousClock.Instant?
     var relaxedBitrate = false
     var remoteControlAssistantStreamerState = RemoteControlAssistantStreamerState()
+    var remoteControlScenesChangedThrottled = false
+    var remoteControlScenesChangedPending = false
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlHandledRequestIds: [String] = []
     var remoteControlAssistant: RemoteControlAssistant?
