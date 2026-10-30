@@ -60,7 +60,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
     func remoteControlStreamerStopMacro(id: UUID)
-    func remoteControlStreamerSendMessage(text: String)
+    func remoteControlStreamerSendMessage(name: String?, text: String)
     func remoteControlStreamerMusic(command: RemoteControlMusicCommand,
                                     onCompleted: @escaping (RemoteControlResult, RemoteControlResponse?)
                                         -> Void)
@@ -464,8 +464,8 @@ class RemoteControlStreamer {
         case let .stopMacro(id: macroId):
             delegate.remoteControlStreamerStopMacro(id: macroId)
             sendEmptyOkResponse(id: id)
-        case let .sendMessage(text: text):
-            delegate.remoteControlStreamerSendMessage(text: text)
+        case let .sendMessage(name: name, text: text):
+            delegate.remoteControlStreamerSendMessage(name: name, text: text)
             sendEmptyOkResponse(id: id)
         case let .music(command: command):
             delegate.remoteControlStreamerMusic(command: command) { result, response in

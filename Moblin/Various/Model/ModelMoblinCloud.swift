@@ -707,8 +707,8 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.stopMacro(id: id)
     }
 
-    func remoteControlStreamerSendMessage(text: String) {
-        model?.remoteControlSendMessage(text: text)
+    func remoteControlStreamerSendMessage(name: String?, text: String) {
+        model?.remoteControlSendMessage(name: name, text: text)
     }
 
     func remoteControlStreamerMusic(command: RemoteControlMusicCommand,

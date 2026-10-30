@@ -20,7 +20,19 @@ struct RemoteControlSuite {
 
     @Test
     func sendMessageRequest() throws {
-        #expect(try encode(.sendMessage(text: "Hello")) == #"{"sendMessage":{"text":"Hello"}}"#)
+        #expect(try encode(.sendMessage(name: nil, text: "Hello")) == #"{"sendMessage":{"text":"Hello"}}"#)
+        #expect(try encode(.sendMessage(name: "Erik", text: "Hello")) ==
+            #"{"sendMessage":{"name":"Erik","text":"Hello"}}"#)
+        let request = try JSONDecoder().decode(
+            RemoteControlRequest.self,
+            from: Data(#"{"sendMessage":{"text":"Hello"}}"#.utf8)
+        )
+        guard case let .sendMessage(name: name, text: text) = request else {
+            Issue.record("not a message")
+            return
+        }
+        #expect(name == nil)
+        #expect(text == "Hello")
     }
 
     @Test

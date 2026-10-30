@@ -277,7 +277,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     func sendMessage(text: String) {
-        performRequestNoResponseData(data: .sendMessage(text: text), onSuccess: {})
+        performRequestNoResponseData(data: .sendMessage(name: nil, text: text), onSuccess: {})
     }
 
     func music(command: RemoteControlMusicCommand, onSuccess: @escaping (RemoteControlMusicStatus) -> Void) {

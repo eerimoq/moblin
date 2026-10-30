@@ -73,7 +73,7 @@ enum RemoteControlRequest: Codable {
     case stopStats
     case startMacro(id: UUID)
     case stopMacro(id: UUID)
-    case sendMessage(text: String)
+    case sendMessage(name: String?, text: String)
     case music(command: RemoteControlMusicCommand)
     case tip(name: String, message: String, kind: RemoteControlTipKind, requestId: String)
 }

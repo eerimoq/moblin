@@ -1053,12 +1053,12 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlMusic(command: command, onCompleted: onCompleted)
     }
 
-    func remoteControlStreamerSendMessage(text: String) {
-        remoteControlSendMessage(text: text)
+    func remoteControlStreamerSendMessage(name: String?, text: String) {
+        remoteControlSendMessage(name: name, text: text)
     }
 
-    func remoteControlSendMessage(text: String) {
-        let user = String(localized: "Mom")
+    func remoteControlSendMessage(name: String?, text: String) {
+        let user = name ?? String(localized: "Mom")
         appendChatMessage(platform: nil,
                           messageId: nil,
                           displayName: user,
