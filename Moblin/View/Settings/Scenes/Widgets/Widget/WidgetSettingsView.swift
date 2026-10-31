@@ -16,6 +16,30 @@ struct AlignmentOptionView: View {
     }
 }
 
+struct AlignmentPickerView: View {
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        VStack(spacing: 5) {
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .topLeft)
+                AlignmentOptionView(layout: $layout, alignment: .topCenter)
+                AlignmentOptionView(layout: $layout, alignment: .topRight)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
+                AlignmentOptionView(layout: $layout, alignment: .center)
+                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
+                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
+                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
+            }
+        }
+    }
+}
+
 struct SaveLoadLayoutView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
@@ -96,26 +120,10 @@ struct WidgetLayoutView: View {
             }
             if widget.hasAlignment() {
                 Divider()
-                VStack(spacing: 5) {
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .topRight)
+                AlignmentPickerView(layout: $layout)
+                    .onChange(of: layout.alignment) { _ in
+                        model.sceneUpdated()
                     }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .center)
-                        AlignmentOptionView(layout: $layout, alignment: .rightCenter)
-                    }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomRight)
-                    }
-                }
-                .onChange(of: layout.alignment) { _ in
-                    model.sceneUpdated()
-                }
             }
         }
     }

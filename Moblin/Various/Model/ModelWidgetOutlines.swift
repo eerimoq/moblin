@@ -14,7 +14,8 @@ extension Model {
     }
 
     func updateWidgetOutlinesForShowingPanel() {
-        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings].contains(showingPanel))
+        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings]
+            .contains(showingPanel) || presentingSceneEditor)
     }
 
     private func setWidgetOutlinesEnabled(_ enabled: Bool) {
@@ -34,7 +35,7 @@ extension Model {
         guard widgetOutlines.enabled else {
             return
         }
-        guard let scene = getSelectedScene() else {
+        guard let scene = presentingSceneEditor ? sceneEditorScene() : getSelectedScene() else {
             widgetOutlines.outlines = []
             return
         }
@@ -43,7 +44,7 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        for drawnWidget in getDrawnSceneWidgets(scene: scene) {
+        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: presentingSceneEditor) {
             let widget = drawnWidget.widget
             guard widget.hasPosition() else {
                 continue
@@ -57,7 +58,8 @@ extension Model {
                                               size: size ?? .zero
                                           ),
                                           sized: size != nil,
-                                          inScene: drawnWidget.scene === scene))
+                                          inScene: drawnWidget.scene === scene,
+                                          enabled: widget.enabled))
         }
         if !widgetOutlinesEqual(outlines, widgetOutlines.outlines) {
             widgetOutlines.outlines = outlines
@@ -154,6 +156,7 @@ extension Model {
                 && $0.rect == $1.rect
                 && $0.sized == $1.sized
                 && $0.inScene == $1.inScene
+                && $0.enabled == $1.enabled
         }
     }
 }

@@ -101,6 +101,8 @@ extension Model {
             return false
         case .photoShoot:
             return false
+        case .sceneEditor:
+            return false
         default:
             return true
         }

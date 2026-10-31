@@ -1212,10 +1212,10 @@ extension Model {
         }
     }
 
-    func getDrawnSceneWidgets(scene: SettingsScene) -> [DrawnSceneWidget] {
+    func getDrawnSceneWidgets(scene: SettingsScene, includeDisabled: Bool = false) -> [DrawnSceneWidget] {
         var drawnWidgets: [DrawnSceneWidget] = []
         var addedScenes: [SettingsScene] = []
-        getDrawnSceneWidgetsInternal(scene, &drawnWidgets, &addedScenes)
+        getDrawnSceneWidgetsInternal(scene, &drawnWidgets, &addedScenes, includeDisabled)
         if let remoteSceneWidget = remoteSceneWidgets.first,
            let remoteScene = getLocalAndRemoteScenes()
                .first(where: { $0.id == remoteSceneWidget.scene.sceneId })
@@ -1227,14 +1227,17 @@ extension Model {
 
     private func getDrawnSceneWidgetsInternal(_ scene: SettingsScene,
                                               _ drawnWidgets: inout [DrawnSceneWidget],
-                                              _ addedScenes: inout [SettingsScene])
+                                              _ addedScenes: inout [SettingsScene],
+                                              _ includeDisabled: Bool = false)
     {
         guard !addedScenes.contains(scene) else {
             return
         }
         addedScenes.append(scene)
         for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
+            guard let widget = findWidget(id: sceneWidget.widgetId),
+                  widget.enabled || (includeDisabled && widget.type != .scene)
+            else {
                 continue
             }
             if widget.type == .scene {

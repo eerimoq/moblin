@@ -67,6 +67,7 @@ struct QuickButtonSceneWidgetsView: View {
                     }
                 }
             }
+            OpenSceneEditorButtonView(model: model)
             ShortcutSectionView {
                 ScenesShortcutView(model: model, database: model.database)
             }

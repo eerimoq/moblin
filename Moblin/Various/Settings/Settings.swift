@@ -1888,6 +1888,11 @@ private func addMissingQuickButtonsPageOne(database: Database) {
                                  imageOff: "photo.on.rectangle",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .sceneEditor,
+                                 imageOn: "rectangle.3.group.fill",
+                                 imageOff: "rectangle.3.group",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .localOverlays,
                                  imageOn: "square.stack.3d.up.slash.fill",
                                  imageOff: "square.stack.3d.up.slash",

@@ -77005,6 +77005,9 @@
         }
       }
     },
+    "Create widget" : {
+
+    },
     "Create widget wizard" : {
       "localizations" : {
         "de" : {
@@ -85416,6 +85419,9 @@
           }
         }
       }
+    },
+    "Disabled scene" : {
+
     },
     "Disconnect protection" : {
       "localizations" : {
@@ -203824,6 +203830,9 @@
         }
       }
     },
+    "Remove" : {
+
+    },
     "Remove background" : {
       "localizations" : {
         "de" : {
@@ -204116,6 +204125,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在Tesla的螢幕 控制 → 鎖 以移除鑰匙"
+          }
+        }
+      }
+    },
+    "Remove widget %@ from scene %@?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Remove widget %1$@ from scene %2$@?"
           }
         }
       }
@@ -216075,6 +216094,9 @@
           }
         }
       }
+    },
+    "Scene editor" : {
+
     },
     "Scene media sources" : {
       "comment" : "A heading for the list of media sources for a scene.",

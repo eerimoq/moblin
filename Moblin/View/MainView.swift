@@ -716,6 +716,17 @@ struct MainView: View {
                                        filter: model.database.chat.predefinedMessagesFilter,
                                        presentingPredefinedMessages: $model.presentingPredefinedMessages)
             }
+            .fullScreenCover(isPresented: $model.presentingSceneEditor, onDismiss: {
+                model.sceneEditorDismissed()
+            }, content: {
+                SceneEditorView(model: model,
+                                database: model.database,
+                                sceneSelector: model.sceneSelector,
+                                widgetOutlines: model.widgetOutlines,
+                                streamOverlay: model.streamOverlay,
+                                sceneEditor: model.sceneEditor)
+                    .environmentObject(model)
+            })
             .confirmationDialog(
                 "Are you sure you want to import settings? This will replace your current settings.",
                 isPresented: $model.presentingSettingsImportConfirmation,
