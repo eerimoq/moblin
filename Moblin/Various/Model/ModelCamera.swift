@@ -546,7 +546,7 @@ extension Model {
     }
 
     func updateShowCameraPreview() -> Bool {
-        let show = shouldShowCameraPreview()
+        let show = shouldShowCameraPreview() && !presentingSceneEditor
         if show != self.show.cameraPreview {
             self.show.cameraPreview = show
         }
@@ -561,7 +561,7 @@ extension Model {
         }
     }
 
-    private func shouldShowCameraPreview() -> Bool {
+    func shouldShowCameraPreview() -> Bool {
         if !(getQuickButton(type: .cameraPreview)?.isOn ?? false) {
             return false
         }

@@ -2978,7 +2978,7 @@ final class Model: NSObject, ObservableObject {
         let isMirrored = getVideoMirroredOnScreen()
         let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
         let showCameraPreview = updateShowCameraPreview()
-        let attachCameraPreview = showCameraPreview || database.alwaysAttachCameraPreview
+        let attachCameraPreview = shouldShowCameraPreview() || database.alwaysAttachCameraPreview
         if attachCameraPreview {
             cameraPreviewView.setDevices(ids: getCameraPreviewDeviceIds(
                 scene: scene,
