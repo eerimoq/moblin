@@ -1,6 +1,15 @@
 import SwiftUI
 
-private struct WidgetOutlineLabelView: View {
+func widgetOutlineViewRect(_ rect: CGRect, _ canvasSize: CGSize, _ mirror: Bool, _ size: CGSize) -> CGRect {
+    let scale = canvasSize.width / size.width
+    let x = mirror ? canvasSize.width - rect.maxX : rect.minX
+    return CGRect(x: x / scale,
+                  y: rect.minY / scale,
+                  width: rect.width / scale,
+                  height: rect.height / scale)
+}
+
+struct WidgetOutlineLabelView: View {
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {
@@ -10,6 +19,7 @@ private struct WidgetOutlineLabelView: View {
                 .lineLimit(1)
         }
         .font(.caption2)
+        .foregroundStyle(.white)
         .padding(.horizontal, 4)
         .padding(.vertical, 1)
         .background(.black.opacity(0.6))
@@ -71,12 +81,7 @@ private struct WidgetOutlineView: View {
     }
 
     var body: some View {
-        let scale = canvasSize.width / size.width
-        let x = mirror ? canvasSize.width - outline.rect.maxX : outline.rect.minX
-        let rect = CGRect(x: x / scale,
-                          y: outline.rect.minY / scale,
-                          width: outline.rect.width / scale,
-                          height: outline.rect.height / scale)
+        let rect = widgetOutlineViewRect(outline.rect, canvasSize, mirror, size)
         Group {
             if outline.sized {
                 sizedView(rect)

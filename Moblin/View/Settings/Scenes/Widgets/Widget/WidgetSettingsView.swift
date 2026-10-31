@@ -8,11 +8,38 @@ struct AlignmentOptionView: View {
     var body: some View {
         Button {
             layout.alignment = alignment
+            if alignment.isHorizontalOrVerticalCenter() {
+                layout.positioningLock = false
+            }
         } label: {
             Image(systemName: layout.alignment == alignment ? "square.fill" : "square")
         }
         .buttonStyle(.borderless)
         .font(.title)
+    }
+}
+
+struct AlignmentPickerView: View {
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        VStack(spacing: 5) {
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .topLeft)
+                AlignmentOptionView(layout: $layout, alignment: .topCenter)
+                AlignmentOptionView(layout: $layout, alignment: .topRight)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
+                AlignmentOptionView(layout: $layout, alignment: .center)
+                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
+                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
+                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
+            }
+        }
     }
 }
 
@@ -96,26 +123,10 @@ struct WidgetLayoutView: View {
             }
             if widget.hasAlignment() {
                 Divider()
-                VStack(spacing: 5) {
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .topRight)
+                AlignmentPickerView(layout: $layout)
+                    .onChange(of: layout.alignment) { _ in
+                        model.sceneUpdated()
                     }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .center)
-                        AlignmentOptionView(layout: $layout, alignment: .rightCenter)
-                    }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomRight)
-                    }
-                }
-                .onChange(of: layout.alignment) { _ in
-                    model.sceneUpdated()
-                }
             }
         }
     }
@@ -128,7 +139,7 @@ struct WidgetLayoutView: View {
                     value: $layout.xString,
                     onSubmit: {
                         setYBasedOnXIfLocked()
-                        model.sceneUpdated()
+                        model.sceneUpdatedThrottled()
                     },
                     numericInput: $numericInput,
                     incrementImageName: "arrow.forward.circle",
@@ -142,7 +153,7 @@ struct WidgetLayoutView: View {
                     value: $layout.yString,
                     onSubmit: {
                         setXBasedOnYIfLocked()
-                        model.sceneUpdated()
+                        model.sceneUpdatedThrottled()
                     },
                     numericInput: $numericInput,
                     incrementImageName: "arrow.down.circle",
@@ -168,7 +179,7 @@ struct WidgetLayoutView: View {
             number: $layout.x,
             value: $layout.xString,
             onSubmit: {
-                model.sceneUpdated()
+                model.sceneUpdatedThrottled()
             },
             numericInput: $numericInput,
             incrementImageName: "arrow.forward.circle",
@@ -183,7 +194,7 @@ struct WidgetLayoutView: View {
             number: $layout.y,
             value: $layout.yString,
             onSubmit: {
-                model.sceneUpdated()
+                model.sceneUpdatedThrottled()
             },
             numericInput: $numericInput,
             incrementImageName: "arrow.down.circle",
@@ -211,7 +222,7 @@ struct WidgetLayoutView: View {
                         number: $layout.size,
                         value: $layout.sizeString,
                         onSubmit: {
-                            model.sceneUpdated()
+                            model.sceneUpdatedThrottled()
                         },
                         numericInput: $numericInput
                     )

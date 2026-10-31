@@ -3,6 +3,8 @@ import SwiftUI
 
 class SharedUiViewContainerView: UIView {
     private let sharedView: UIView
+    private weak var previousOwner: SharedUiViewContainerView?
+    var canAttach: () -> Bool = { true }
 
     init(sharedView: UIView) {
         self.sharedView = sharedView
@@ -15,30 +17,42 @@ class SharedUiViewContainerView: UIView {
     }
 
     func attachSharedView() {
-        guard window != nil, sharedView.superview !== self else {
+        guard window != nil, sharedView.superview !== self, canAttach() else {
             return
         }
+        previousOwner = sharedView.superview as? SharedUiViewContainerView
         sharedView.frame = bounds
         addSubview(sharedView)
     }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        attachSharedView()
+        if window == nil, sharedView.superview === self {
+            previousOwner?.attachSharedView()
+        } else {
+            attachSharedView()
+        }
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         attachSharedView()
-        sharedView.frame = bounds
+        if sharedView.superview === self {
+            sharedView.frame = bounds
+        }
     }
 }
 
 struct StreamPreviewView: UIViewRepresentable {
     let model: Model
+    var sceneEditor = false
 
     func makeUIView(context _: Context) -> SharedUiViewContainerView {
-        SharedUiViewContainerView(sharedView: model.streamPreviewView)
+        let view = SharedUiViewContainerView(sharedView: model.streamPreviewView)
+        view.canAttach = { [weak model, sceneEditor] in
+            model?.presentingSceneEditor == sceneEditor
+        }
+        return view
     }
 
     func updateUIView(_ uiView: SharedUiViewContainerView, context _: Context) {

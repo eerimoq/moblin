@@ -414,6 +414,10 @@ struct QuickButtonsInnerView: View {
         model.togglePhotoShoot()
     }
 
+    private func sceneEditorAction() {
+        model.presentingSceneEditor = true
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -988,6 +992,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             photoShootAction()
+                        }
+                    case .sceneEditor:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         button: button,
+                                         buttonSize: size)
+                        {
+                            sceneEditorAction()
                         }
                     }
                 }

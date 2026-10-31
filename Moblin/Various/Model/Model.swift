@@ -366,6 +366,12 @@ struct WidgetOutline: Identifiable {
     let rect: CGRect
     let sized: Bool
     let inScene: Bool
+    let enabled: Bool
+}
+
+@MainActor
+class SceneEditor: ObservableObject {
+    @Published var sceneId: UUID?
 }
 
 @MainActor
@@ -500,6 +506,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
+    @Published var presentingSceneEditor: Bool = false
     @Published var presentingSettingsImportConfirmation = false
     var pendingSettingsImportAction: (() -> Void)?
     @Published var presentingStreamImportCollisionConfirmation = false
@@ -556,6 +563,7 @@ final class Model: NSObject, ObservableObject {
     let show = Show()
     let streamOverlay = StreamOverlay()
     let widgetOutlines = WidgetOutlines()
+    let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
     let toast = Toast()
     let statusOther = StatusOther()
@@ -615,6 +623,8 @@ final class Model: NSObject, ObservableObject {
     var youTubePlatformStatus: PlatformStatus = .unknown
     var youTubeStreamUpdateTimePollDelta: ContinuousClock.Duration = .seconds(15)
     var youTubeStreamUpdateTime = ContinuousClock.now
+    var sceneUpdateThrottled = false
+    var throttledSceneUpdatePending = false
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
     let chat = ChatProvider()

@@ -664,6 +664,10 @@ enum SettingsAlignment: String, Codable, CaseIterable {
         self == .leftCenter || self == .rightCenter || self == .center
     }
 
+    func isHorizontalOrVerticalCenter() -> Bool {
+        isHorizontalCenter() || isVerticalCenter()
+    }
+
     func isTop() -> Bool {
         self == .topLeft || self == .topRight || self == .topCenter
     }

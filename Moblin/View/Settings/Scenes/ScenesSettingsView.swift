@@ -205,6 +205,18 @@ private struct GraphicsView: View {
     }
 }
 
+struct OpenSceneEditorButtonView: View {
+    let model: Model
+
+    var body: some View {
+        Section {
+            TextButtonView("Scene editor") {
+                model.presentingSceneEditor = true
+            }
+        }
+    }
+}
+
 struct SceneNameView: View {
     @ObservedObject var scene: SettingsScene
 
@@ -220,6 +232,7 @@ struct ScenesSettingsView: View {
     var body: some View {
         Form {
             ScenesListView(database: database)
+            OpenSceneEditorButtonView(model: model)
             WidgetsSettingsView(database: database)
             if database.showAllSettings {
                 SceneSwitching(database: database, debug: database.debug)
