@@ -1,40 +1,5 @@
 import Foundation
 
-private func makeAlignment(left: Bool?, top: Bool?) -> SettingsAlignment {
-    switch (left, top) {
-    case (true, true):
-        .topLeft
-    case (false, true):
-        .topRight
-    case (true, false):
-        .bottomLeft
-    case (false, false):
-        .bottomRight
-    case (nil, true):
-        .topCenter
-    case (nil, false):
-        .bottomCenter
-    case (true, nil):
-        .leftCenter
-    case (false, nil):
-        .rightCenter
-    case (nil, nil):
-        .center
-    }
-}
-
-private func layoutOffsetFromPosition(_ position: Double,
-                                      _ size: Double,
-                                      _ streamSize: Double,
-                                      _ isNear: Bool) -> Double
-{
-    if isNear {
-        position * 100 / streamSize
-    } else {
-        (streamSize - position - size) * 100 / streamSize
-    }
-}
-
 extension Model {
     func sceneEditorPresentationChanged() {
         sceneEditor.sceneId = nil
@@ -63,41 +28,18 @@ extension Model {
         updateWidgetOutlines()
     }
 
+    func isSceneEditorOutlineEditable(outline: WidgetOutline) -> Bool {
+        database.scenes.contains(where: { $0 === outline.scene })
+    }
+
     func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget,
-                               position: CGPoint,
-                               size: CGSize,
+                               rect: CGRect,
                                centered: (horizontal: Bool, vertical: Bool))
     {
-        let canvasSize = sceneEditorWidgetOutlines.canvasSize
-        var layout = sceneWidget.layout
-        let alignment = layout.alignment
-        if alignment.isHorizontalOrVerticalCenter() {
-            layout.positioningLock = false
-        }
-        let left: Bool? = if centered.horizontal {
-            nil
-        } else if alignment.isHorizontalCenter() {
-            position.x + size.width / 2 < canvasSize.width / 2
-        } else {
-            alignment.isLeft()
-        }
-        let top: Bool? = if centered.vertical {
-            nil
-        } else if alignment.isVerticalCenter() {
-            position.y + size.height / 2 < canvasSize.height / 2
-        } else {
-            alignment.isTop()
-        }
-        layout.alignment = makeAlignment(left: left, top: top)
-        if let left {
-            layout.x = layoutOffsetFromPosition(position.x, size.width, canvasSize.width, left)
-            layout.updateXString()
-        }
-        if let top {
-            layout.y = layoutOffsetFromPosition(position.y, size.height, canvasSize.height, top)
-            layout.updateYString()
-        }
-        sceneWidget.layout = layout
+        sceneWidget.layout = sceneEditorLayout(sceneWidget.layout,
+                                               rect,
+                                               sceneEditorWidgetOutlines.canvasSize,
+                                               centered)
         sceneUpdatedThrottled()
     }
 
@@ -124,14 +66,23 @@ extension Model {
     }
 
     func sceneEditorMoveWidgetInDrawOrder(scene: SettingsScene, sceneWidget: SettingsSceneWidget, up: Bool) {
-        guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }) else {
+        guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }),
+              let editorScene = sceneEditorScene()
+        else {
             return
         }
-        let newIndex = up ? index + 1 : index - 1
+        let shownSceneWidgetIds = Set(resolveScene(editorScene, includeRemote: true).firstWidgets().map(\.id))
+        let step = up ? 1 : -1
+        var newIndex = index + step
+        while scene.widgets.indices.contains(newIndex),
+              !shownSceneWidgetIds.contains(scene.widgets[newIndex].id)
+        {
+            newIndex += step
+        }
         guard scene.widgets.indices.contains(newIndex) else {
             return
         }
-        scene.widgets.swapAt(index, newIndex)
+        scene.widgets.insert(scene.widgets.remove(at: index), at: newIndex)
         sceneUpdated()
         sceneSettingsPanelSceneId += 1
     }

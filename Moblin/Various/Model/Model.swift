@@ -361,6 +361,7 @@ struct WidgetOutline: Identifiable {
         sceneWidget.id
     }
 
+    let scene: SettingsScene
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
     let rect: CGRect
@@ -1353,14 +1354,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func isGForceManagerNeeded() -> Bool {
-        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+            switch widget.type {
             case .text:
-                if widget.widget.text.needsGForce {
+                if widget.text.needsGForce {
                     return true
                 }
             case .slideshow:
-                for slide in widget.widget.slideshow.slides
+                for slide in widget.slideshow.slides
                     where getTextWidget(id: slide.widgetId)?.text.needsGForce == true
                 {
                     return true
@@ -1427,14 +1428,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func isWeatherNeeded() -> Bool {
-        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+            switch widget.type {
             case .text:
-                if widget.widget.text.needsWeather {
+                if widget.text.needsWeather {
                     return true
                 }
             case .slideshow:
-                for slide in widget.widget.slideshow.slides
+                for slide in widget.slideshow.slides
                     where getTextWidget(id: slide.widgetId)?.text.needsWeather == true
                 {
                     return true
@@ -1461,14 +1462,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func isGeographyNeeded() -> Bool {
-        for widget in widgetsInCurrentSceneOrRemoteScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+            switch widget.type {
             case .text:
-                if widget.widget.text.needsGeography {
+                if widget.text.needsGeography {
                     return true
                 }
             case .slideshow:
-                for slide in widget.widget.slideshow.slides
+                for slide in widget.slideshow.slides
                     where getTextWidget(id: slide.widgetId)?.text.needsGeography == true
                 {
                     return true

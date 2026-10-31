@@ -281,7 +281,7 @@ private struct WidgetsView: View {
     @State private var presentingCreateWizard = false
 
     private var widgets: [SettingsWidget] {
-        database.widgets
+        model.addableWidgets(scene: scene)
     }
 
     private func deleteSceneWidget(at offsets: IndexSet) {

@@ -29,21 +29,6 @@ class CreateWidgetWizard: ObservableObject {
     }
 }
 
-struct DrawnSceneWidget {
-    let scene: SettingsScene
-    let sceneWidget: SettingsSceneWidget
-    let widget: SettingsWidget
-}
-
-struct WidgetInScene: Identifiable {
-    var id: UUID {
-        widget.id
-    }
-
-    let widget: SettingsWidget
-    let sceneWidget: SettingsSceneWidget
-}
-
 let defaultScoreboardSize = 18.52
 
 extension Model {
@@ -382,51 +367,29 @@ extension Model {
         enabledScenes.firstIndex(where: { $0.id == id })
     }
 
-    func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
-        var addedSceneIds: Set<UUID> = []
-        return isCaptureDeviceWidgetInternal(widget: widget, addedSceneIds: &addedSceneIds)
-    }
-
     func getFillFrame(scene: SettingsScene) -> Bool {
         scene.fillFrame
     }
 
-    func widgetsInCurrentSceneOrRemoteScene(onlyEnabled: Bool) -> [WidgetInScene] {
-        var widgets: [WidgetInScene] = []
-        if let scene = getSelectedScene() {
-            widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
+    func drawnWidgetsInSelectedAndRemoteScene() -> [SettingsWidget] {
+        let remoteScene = database.scenes.first(where: { $0.id == database.remoteSceneId })
+        var widgets: [SettingsWidget] = []
+        var widgetIds: Set<UUID> = []
+        for scene in [getSelectedScene(), remoteScene].compactMap({ $0 }) {
+            for widget in resolveScene(scene).drawnWidgets().map(\.widget)
+                where widgetIds.insert(widget.id).inserted
+            {
+                widgets.append(widget)
+            }
         }
-        if let remoteSceneId = database.remoteSceneId,
-           let scene = database.scenes.first(where: { $0.id == remoteSceneId })
-        {
-            widgets += getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
-        }
-        return removeDuplicatedWidgets(widgets: widgets)
+        return widgets
     }
 
-    func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
+    func sceneWidgetsInSelectedScene() -> [ResolvedSceneWidget] {
         guard let scene = getSelectedScene() else {
             return []
         }
-        let widgets = getSceneWidgets(scene: scene, onlyEnabled: onlyEnabled)
-        return removeDuplicatedWidgets(widgets: widgets)
-    }
-
-    private func removeDuplicatedWidgets(widgets: [WidgetInScene]) -> [WidgetInScene] {
-        var found: [UUID] = []
-        return widgets.filter {
-            if found.contains($0.widget.id) {
-                return false
-            } else {
-                found.append($0.widget.id)
-                return true
-            }
-        }
-    }
-
-    func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
-        var addedSceneIds: Set<UUID> = []
-        return getSceneWidgetsInternal(scene, onlyEnabled, &addedSceneIds)
+        return resolveScene(scene, includeDisabledSceneWidgets: true).firstWidgets()
     }
 
     func switchToNextSceneRoundRobin() {
@@ -441,6 +404,9 @@ extension Model {
     }
 
     func appendWidgetToScene(scene: SettingsScene, widget: SettingsWidget) {
+        guard addableWidgets(scene: scene).contains(where: { $0 === widget }) else {
+            return
+        }
         scene.widgets.append(SettingsSceneWidget(widget: widget))
         var attachCamera = false
         if scene.id == getSelectedScene()?.id {
@@ -563,18 +529,13 @@ extension Model {
             devices.hasSceneDevice = true
             devices.devices.append(makeCaptureDevice(device: sceneDevice))
         }
-        var addedSceneIds: Set<UUID> = []
         if let quickSwitchGroup = scene.quickSwitchGroup {
             for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
                 getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices.devices)
-                getBuiltinCameraDevicesInScene(scene: otherScene,
-                                               devices: &devices.devices,
-                                               addedSceneIds: &addedSceneIds)
+                getBuiltinCameraDevicesInScene(scene: otherScene, devices: &devices.devices)
             }
         }
-        getBuiltinCameraDevicesInScene(scene: scene,
-                                       devices: &devices.devices,
-                                       addedSceneIds: &addedSceneIds)
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
         return devices
     }
 
@@ -607,16 +568,13 @@ extension Model {
     private func getSceneBuiltinCameraDeviceIds(scene: SettingsScene) -> Set<UUID> {
         var devices: [CaptureDevice] = []
         getBuiltinCameraDevices(videoSource: scene.videoSource, devices: &devices)
-        var addedSceneIds: Set<UUID> = []
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices, addedSceneIds: &addedSceneIds)
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
         return Set(devices.map(\.id))
     }
 
     func getCameraPreviewWidgets(scene: SettingsScene) -> [CameraPreviewWidget] {
         var widgets: [CameraPreviewWidget] = []
-        for widget in removeDuplicatedWidgets(widgets: getSceneWidgets(scene: scene, onlyEnabled: true))
-            where widget.widget.type == .videoSource
-        {
+        for widget in resolveScene(scene).drawnWidgets() where widget.widget.type == .videoSource {
             let videoSource = widget.widget.videoSource
             guard let cameraId = videoSource.videoSource.getCaptureDeviceCameraId(),
                   let device = AVCaptureDevice(uniqueID: cameraId)
@@ -1109,10 +1067,6 @@ extension Model {
         }
     }
 
-    private func findSceneWidget(scene: SettingsScene, widgetId: UUID) -> SettingsSceneWidget? {
-        scene.widgets.first(where: { $0.widgetId == widgetId })
-    }
-
     private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
         var effects: [VideoEffect] = []
         if database.color.lutEnabled, database.color.space == .appleLog {
@@ -1125,18 +1079,12 @@ extension Model {
             effects.append(lutEffect)
         }
         effects += registerGlobalVideoEffects(scene: scene)
-        var addedScenes: [SettingsScene] = []
         var needsSpeechToText = false
         enabledAlertsEffects.removeAll()
         enabledSnapshotEffects.removeAll()
         enabledChatEffects.removeAll()
         enabledChatEmoteComboEffects.removeAll()
-        var scene = scene
-        if let remoteSceneWidget = remoteSceneWidgets.first {
-            scene = scene.clone()
-            scene.widgets.append(SettingsSceneWidget(widgetId: remoteSceneWidget.id))
-        }
-        addSceneEffects(scene, &effects, &addedScenes, &needsSpeechToText)
+        addSceneEffects(resolveScene(scene, includeRemote: true).drawnWidgets(), &effects, &needsSpeechToText)
         if !drawOnStream.lines.isEmpty {
             effects.append(drawOnStreamEffect)
         }
@@ -1177,32 +1125,26 @@ extension Model {
     }
 
     private func addSceneEffects(
-        _ scene: SettingsScene,
+        _ drawnWidgets: [ResolvedSceneWidget],
         _ effects: inout [VideoEffect],
-        _ addedScenes: inout [SettingsScene],
         _ needsSpeechToText: inout Bool
     ) {
-        guard !addedScenes.contains(scene) else {
-            return
-        }
-        addedScenes.append(scene)
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
-                continue
-            }
+        for drawnWidget in drawnWidgets {
+            let sceneWidget = drawnWidget.sceneWidget
+            let widget = drawnWidget.widget
             switch widget.type {
             case .image:
                 addSceneImageEffects(sceneWidget, widget, &effects)
             case .text:
                 addSceneTextEffects(sceneWidget, widget, &effects, &needsSpeechToText)
             case .browser:
-                addSceneBrowserEffects(sceneWidget, widget, scene, &effects, &needsSpeechToText)
+                addSceneBrowserEffects(sceneWidget, widget, drawnWidgets, &effects, &needsSpeechToText)
             case .crop:
-                addSceneCropEffects(widget, scene, &effects)
+                addSceneCropEffects(widget, drawnWidgets, &effects)
             case .map:
                 addSceneMapEffects(sceneWidget, widget, &effects)
             case .scene:
-                addSceneSceneEffects(widget, &effects, &addedScenes, &needsSpeechToText)
+                break
             case .slideshow:
                 addSceneSlideshowEffects(sceneWidget, widget, &effects)
             case .qrCode:
@@ -1229,46 +1171,6 @@ extension Model {
                 addSceneBingoCardEffects(sceneWidget, widget, &effects)
             case .pomodoroTimer:
                 addScenePomodoroTimerEffects(sceneWidget, widget, &effects)
-            }
-        }
-    }
-
-    func getDrawnSceneWidgets(scene: SettingsScene, includeDisabled: Bool = false) -> [DrawnSceneWidget] {
-        var drawnWidgets: [DrawnSceneWidget] = []
-        var addedScenes: [SettingsScene] = []
-        getDrawnSceneWidgetsInternal(scene, &drawnWidgets, &addedScenes, includeDisabled)
-        if let remoteSceneWidget = remoteSceneWidgets.first,
-           let remoteScene = getLocalAndRemoteScenes()
-               .first(where: { $0.id == remoteSceneWidget.scene.sceneId })
-        {
-            getDrawnSceneWidgetsInternal(remoteScene, &drawnWidgets, &addedScenes)
-        }
-        return drawnWidgets
-    }
-
-    private func getDrawnSceneWidgetsInternal(_ scene: SettingsScene,
-                                              _ drawnWidgets: inout [DrawnSceneWidget],
-                                              _ addedScenes: inout [SettingsScene],
-                                              _ includeDisabled: Bool = false)
-    {
-        guard !addedScenes.contains(scene) else {
-            return
-        }
-        addedScenes.append(scene)
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId),
-                  widget.enabled || (includeDisabled && widget.type != .scene)
-            else {
-                continue
-            }
-            if widget.type == .scene {
-                if let nestedScene = getLocalAndRemoteScenes()
-                    .first(where: { $0.id == widget.scene.sceneId })
-                {
-                    getDrawnSceneWidgetsInternal(nestedScene, &drawnWidgets, &addedScenes)
-                }
-            } else if !drawnWidgets.contains(where: { $0.widget.id == widget.id }) {
-                drawnWidgets.append(DrawnSceneWidget(scene: scene, sceneWidget: sceneWidget, widget: widget))
             }
         }
     }
@@ -1303,7 +1205,7 @@ extension Model {
     private func addSceneBrowserEffects(
         _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
-        _ scene: SettingsScene,
+        _ drawnWidgets: [ResolvedSceneWidget],
         _ effects: inout [VideoEffect],
         _ needsSpeechToText: inout Bool
     ) {
@@ -1312,7 +1214,7 @@ extension Model {
         }
         effect.setSceneWidget(
             sceneWidget: sceneWidget.clone(),
-            crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
+            crops: findWidgetCrops(drawnWidgets, widget.id)
         )
         effects.append(effect)
         if widget.browser.moblinAccess, widget.browser.speechToText {
@@ -1322,22 +1224,17 @@ extension Model {
 
     private func addSceneCropEffects(
         _ widget: SettingsWidget,
-        _ scene: SettingsScene,
+        _ drawnWidgets: [ResolvedSceneWidget],
         _ effects: inout [VideoEffect]
     ) {
-        guard let effect = browserEffects[widget.crop.sourceWidgetId], !effects.contains(effect) else {
+        let sourceWidgetId = widget.crop.sourceWidgetId
+        guard let effect = browserEffects[sourceWidgetId], !effects.contains(effect) else {
             return
         }
-        let sceneWidget: SettingsSceneWidget? = if findWidget(id: widget.crop.sourceWidgetId)?
-            .enabled == true
-        {
-            findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
-        } else {
-            nil
-        }
+        let sceneWidget = drawnWidgets.first(where: { $0.widget.id == sourceWidgetId })?.sceneWidget
         effect.setSceneWidget(
             sceneWidget: sceneWidget?.clone(),
-            crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.crop.sourceWidgetId)
+            crops: findWidgetCrops(drawnWidgets, sourceWidgetId)
         )
         effects.append(effect)
     }
@@ -1352,20 +1249,6 @@ extension Model {
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effects.append(effect)
-    }
-
-    private func addSceneSceneEffects(
-        _ widget: SettingsWidget,
-        _ effects: inout [VideoEffect],
-        _ addedScenes: inout [SettingsScene],
-        _ needsSpeechToText: inout Bool
-    ) {
-        guard let sceneWidgetScene = getLocalAndRemoteScenes()
-            .first(where: { $0.id == widget.scene.sceneId })
-        else {
-            return
-        }
-        addSceneEffects(sceneWidgetScene, &effects, &addedScenes, &needsSpeechToText)
     }
 
     private func addSceneSlideshowEffects(
@@ -1583,46 +1466,27 @@ extension Model {
         }
     }
 
-    private func getLocalAndRemoteScenes() -> [SettingsScene] {
-        database.scenes + remoteSceneScenes
-    }
-
     private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
         database.widgets + remoteSceneWidgets
     }
 
-    private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
-        var crops: [WidgetCrop] = []
-        for widget in getSceneWidgets(scene: scene, onlyEnabled: true) {
-            guard widget.widget.type == .crop else {
-                continue
-            }
-            let crop = widget.widget.crop
-            guard crop.sourceWidgetId == sourceWidgetId else {
-                continue
-            }
-            crops.append(WidgetCrop(crop: crop.clone(), sceneWidget: widget.sceneWidget.clone()))
-        }
-        return crops
+    private func findWidgetCrops(_ drawnWidgets: [ResolvedSceneWidget],
+                                 _ sourceWidgetId: UUID) -> [WidgetCrop]
+    {
+        drawnWidgets
+            .filter { $0.widget.type == .crop && $0.widget.crop.sourceWidgetId == sourceWidgetId }
+            .map { WidgetCrop(crop: $0.widget.crop.clone(), sceneWidget: $0.sceneWidget.clone()) }
     }
 
-    private func isCaptureDeviceWidgetInternal(widget: SettingsWidget,
-                                               addedSceneIds: inout Set<UUID>) -> Bool
-    {
+    func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
         switch widget.type {
         case .scene:
-            if addedSceneIds.contains(widget.scene.sceneId) {
+            guard let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) else {
                 return false
             }
-            addedSceneIds.insert(widget.scene.sceneId)
-            if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
-                    isCaptureDeviceWidgetInternal(widget: widget.widget, addedSceneIds: &addedSceneIds)
-                {
-                    return true
-                }
+            return resolveScene(scene, includeDisabledSceneWidgets: true).widgets.contains {
+                $0.widget.type != .scene && isCaptureDeviceWidget(widget: $0.widget)
             }
-            return false
         case .videoSource:
             return widget.videoSource.videoSource.isCaptureDevice()
         case .vTuber:
@@ -1632,31 +1496,6 @@ extension Model {
         default:
             return false
         }
-    }
-
-    private func getSceneWidgetsInternal(_ scene: SettingsScene,
-                                         _ onlyEnabled: Bool,
-                                         _ addedSceneIds: inout Set<UUID>) -> [WidgetInScene]
-    {
-        var widgets: [WidgetInScene] = []
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId), !onlyEnabled || widget.enabled else {
-                continue
-            }
-            if widget.type == .scene {
-                if addedSceneIds.contains(widget.scene.sceneId) {
-                    continue
-                }
-                widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
-                addedSceneIds.insert(widget.scene.sceneId)
-                if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                    widgets += getSceneWidgetsInternal(scene, onlyEnabled, &addedSceneIds)
-                }
-            } else {
-                widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
-            }
-        }
-        return widgets
     }
 
     private func updateTextWidgetsLapTimes(now: Date) {
@@ -1702,18 +1541,9 @@ extension Model {
         }
     }
 
-    private func getBuiltinCameraDevicesInScene(scene: SettingsScene,
-                                                devices: inout [CaptureDevice],
-                                                addedSceneIds: inout Set<UUID>)
-    {
-        guard !addedSceneIds.contains(scene.id) else {
-            return
-        }
-        addedSceneIds.insert(scene.id)
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
-                continue
-            }
+    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
+        for drawnWidget in resolveScene(scene).drawnWidgets() {
+            let widget = drawnWidget.widget
             switch widget.type {
             case .videoSource:
                 getBuiltinCameraDevices(videoSource: widget.videoSource.videoSource, devices: &devices)
@@ -1721,10 +1551,6 @@ extension Model {
                 getBuiltinCameraDevices(videoSource: widget.vTuber.videoSource, devices: &devices)
             case .pngTuber:
                 getBuiltinCameraDevices(videoSource: widget.pngTuber.videoSource, devices: &devices)
-            case .scene:
-                getBuiltinCameraDevicesForSceneWidget(scene: widget.scene,
-                                                      devices: &devices,
-                                                      addedSceneIds: &addedSceneIds)
             default:
                 break
             }
@@ -1737,17 +1563,6 @@ extension Model {
            !devices.contains(where: { $0.device == device })
         {
             devices.append(makeCaptureDevice(device: device))
-        }
-    }
-
-    private func getBuiltinCameraDevicesForSceneWidget(scene: SettingsWidgetScene,
-                                                       devices: inout [CaptureDevice],
-                                                       addedSceneIds: inout Set<UUID>)
-    {
-        if let scene = database.scenes.first(where: { $0.id == scene.sceneId }) {
-            getBuiltinCameraDevicesInScene(scene: scene,
-                                           devices: &devices,
-                                           addedSceneIds: &addedSceneIds)
         }
     }
 

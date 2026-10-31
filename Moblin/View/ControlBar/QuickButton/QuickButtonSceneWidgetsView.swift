@@ -59,7 +59,7 @@ struct QuickButtonSceneWidgetsView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in
+                    ForEach(model.sceneWidgetsInSelectedScene()) { widget in
                         WidgetView(model: model,
                                    database: model.database,
                                    widget: widget.widget,

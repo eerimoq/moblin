@@ -15,10 +15,10 @@ extension Model {
         speechToText?.start { message in
             self.makeErrorToast(title: message)
         }
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgetsInSelectedScene() {
+            switch widget.type {
             case .text:
-                let languageIdentifiers = Set(widget.widget.text.subtitles.map(\.identifier))
+                let languageIdentifiers = Set(widget.text.subtitles.map(\.identifier))
                 for languageIdentifier in languageIdentifiers {
                     if let languageIdentifier {
                         addTranslator(targetIdentifier: languageIdentifier)
@@ -54,18 +54,18 @@ extension Model {
     }
 
     func isSpeechToTextNeeded() -> Bool {
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgetsInSelectedScene() {
+            switch widget.type {
             case .text:
-                if widget.widget.text.needsSubtitles {
+                if widget.text.needsSubtitles {
                     return true
                 }
             case .alerts:
-                if widget.widget.alerts.needsSubtitles {
+                if widget.alerts.needsSubtitles {
                     return true
                 }
             case .browser:
-                if widget.widget.browser.moblinAccess, widget.widget.browser.speechToText {
+                if widget.browser.moblinAccess, widget.browser.speechToText {
                     return true
                 }
             default:

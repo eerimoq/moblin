@@ -15,6 +15,7 @@ private struct SceneEditorEdit {
 }
 
 private struct SceneEditorSelectedWidget {
+    let scene: SettingsScene
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
 }
@@ -29,66 +30,6 @@ private class SceneEditorSelection: ObservableObject {
     }
 
     @Published var showingSettings = false
-}
-
-private struct SceneEditorSnap {
-    var position: Double
-    var centered = false
-    var guide: Double?
-}
-
-private func snapAxis(_ position: Double,
-                      _ length: Double,
-                      _ total: Double,
-                      _ threshold: Double,
-                      _ canCenter: Bool,
-                      _ targets: [Double]) -> SceneEditorSnap
-{
-    let maximum = max(total - length, 0)
-    let position = position.clamped(to: 0 ... maximum)
-    var candidates = [SceneEditorSnap(position: 0), SceneEditorSnap(position: maximum)]
-    if canCenter {
-        candidates.append(SceneEditorSnap(position: maximum / 2, centered: true, guide: total / 2))
-    }
-    for target in targets {
-        for anchor in [0, length / 2, length] where (0 ... maximum).contains(target - anchor) {
-            candidates.append(SceneEditorSnap(position: target - anchor, guide: target))
-        }
-    }
-    let closest = candidates.min { abs($0.position - position) < abs($1.position - position) }
-    if let closest, abs(closest.position - position) < threshold {
-        return closest
-    }
-    return SceneEditorSnap(position: position)
-}
-
-private struct SceneEditorResizeSnap {
-    let factor: Double
-    let distance: Double
-    let guide: Double
-}
-
-private func snapResizeAxis(_ edges: [Double],
-                            _ fixed: Double,
-                            _ factor: Double,
-                            _ factors: ClosedRange<Double>,
-                            _ threshold: Double,
-                            _ targets: [Double]) -> SceneEditorResizeSnap?
-{
-    var closest: SceneEditorResizeSnap?
-    for edge in edges where abs(edge - fixed) > 1 {
-        for target in targets {
-            let snapFactor = (target - fixed) / (edge - fixed)
-            let distance = abs(snapFactor - factor)
-            if distance < threshold,
-               factors.contains(snapFactor),
-               distance < (closest?.distance ?? .infinity) - 1e-9
-            {
-                closest = SceneEditorResizeSnap(factor: snapFactor, distance: distance, guide: target)
-            }
-        }
-    }
-    return closest
 }
 
 private func distance(_ first: CGPoint, _ second: CGPoint) -> Double {
@@ -128,7 +69,7 @@ private struct SceneEditorCanvasView: View {
     }
 
     private var editableOutlines: [WidgetOutline] {
-        widgetOutlines.outlines.filter(\.inScene)
+        widgetOutlines.outlines.filter { model.isSceneEditorOutlineEditable(outline: $0) }
     }
 
     private var selectedOutline: WidgetOutline? {
@@ -204,18 +145,11 @@ private struct SceneEditorCanvasView: View {
     }
 
     private func fixedPoint(_ outline: WidgetOutline) -> CGPoint {
-        let rect = outline.rect
-        let alignment = outline.sceneWidget.layout.alignment
-        let x = alignment.isHorizontalCenter() ? rect.midX : alignment.isLeft() ? rect.minX : rect.maxX
-        let y = alignment.isVerticalCenter() ? rect.midY : alignment.isTop() ? rect.minY : rect.maxY
-        return CGPoint(x: x, y: y)
+        sceneEditorFixedPoint(outline.rect, outline.sceneWidget.layout.alignment)
     }
 
     private func handlePoint(_ outline: WidgetOutline, _ rect: CGRect) -> CGPoint {
-        let alignment = outline.sceneWidget.layout.alignment
-        let x = alignment.mirrorPositionHorizontally() ? rect.minX : rect.maxX
-        let y = alignment.mirrorPositionVertically() ? rect.minY : rect.maxY
-        return CGPoint(x: x, y: y)
+        sceneEditorHandlePoint(rect, outline.sceneWidget.layout.alignment)
     }
 
     private func startEdit(_ outline: WidgetOutline, _ mode: SceneEditorEditMode) {
@@ -269,26 +203,25 @@ private struct SceneEditorCanvasView: View {
             edit.rect.origin = diagonalPosition(layout.alignment, rect.size, position, snapThreshold)
         } else {
             let others = editableOutlines.filter { $0.id != edit.outline.id }
-            let x = snapAxis(position.x,
-                             rect.width,
-                             canvasSize.width,
-                             snapThreshold,
-                             edit.outline.sized,
-                             others.flatMap(snapTargetsX))
-            let y = snapAxis(position.y,
-                             rect.height,
-                             canvasSize.height,
-                             snapThreshold,
-                             edit.outline.sized,
-                             others.flatMap(snapTargetsY))
+            let x = sceneEditorSnapAxis(position.x,
+                                        rect.width,
+                                        canvasSize.width,
+                                        snapThreshold,
+                                        edit.outline.sized,
+                                        others.flatMap(snapTargetsX))
+            let y = sceneEditorSnapAxis(position.y,
+                                        rect.height,
+                                        canvasSize.height,
+                                        snapThreshold,
+                                        edit.outline.sized,
+                                        others.flatMap(snapTargetsY))
             edit.rect.origin = CGPoint(x: x.position, y: y.position)
             edit.snapX = x
             edit.snapY = y
         }
         self.edit = edit
         model.sceneEditorMoveWidget(sceneWidget: edit.outline.sceneWidget,
-                                    position: edit.rect.origin,
-                                    size: rect.size,
+                                    rect: edit.rect,
                                     centered: (edit.snapX?.centered ?? false, edit.snapY?.centered ?? false))
     }
 
@@ -296,24 +229,27 @@ private struct SceneEditorCanvasView: View {
         guard var edit, edit.mode == .resize else {
             return
         }
-        let factors = 1 / edit.startSize ... 100 / edit.startSize
-        var factor = factor.clamped(to: factors)
         let rect = edit.outline.rect
         let fixed = fixedPoint(edit.outline)
+        let insideFactor = max(sceneEditorMaximumInsideFactor(rect, fixed, canvasSize), 1)
+        let factors = 1 / edit.startSize ... min(100 / edit.startSize, insideFactor)
+        var factor = factor.clamped(to: factors)
         let others = editableOutlines.filter { $0.id != edit.outline.id }
         let threshold = snapThreshold / distance(handlePoint(edit.outline, rect), fixed)
-        let x = snapResizeAxis([rect.minX, rect.maxX, rect.midX],
-                               fixed.x,
-                               factor,
-                               factors,
-                               threshold,
-                               [0, canvasSize.width / 2, canvasSize.width] + others.flatMap(snapTargetsX))
-        let y = snapResizeAxis([rect.minY, rect.maxY, rect.midY],
-                               fixed.y,
-                               factor,
-                               factors,
-                               threshold,
-                               [0, canvasSize.height / 2, canvasSize.height] + others.flatMap(snapTargetsY))
+        let x = sceneEditorSnapResizeAxis([rect.minX, rect.maxX, rect.midX],
+                                          fixed.x,
+                                          factor,
+                                          factors,
+                                          threshold,
+                                          [0, canvasSize.width / 2, canvasSize.width] + others
+                                              .flatMap(snapTargetsX))
+        let y = sceneEditorSnapResizeAxis([rect.minY, rect.maxY, rect.midY],
+                                          fixed.y,
+                                          factor,
+                                          factors,
+                                          threshold,
+                                          [0, canvasSize.height / 2, canvasSize.height] + others
+                                              .flatMap(snapTargetsY))
         edit.snapX = nil
         edit.snapY = nil
         if let x, x.distance < y?.distance ?? .infinity {
@@ -323,10 +259,7 @@ private struct SceneEditorCanvasView: View {
             factor = y.factor
             edit.snapY = SceneEditorSnap(position: y.guide, guide: y.guide)
         }
-        edit.rect = CGRect(x: fixed.x + (rect.minX - fixed.x) * factor,
-                           y: fixed.y + (rect.minY - fixed.y) * factor,
-                           width: rect.width * factor,
-                           height: rect.height * factor)
+        edit.rect = sceneEditorResizedRect(rect, fixed, factor)
         self.edit = edit
         model.sceneEditorResizeWidget(sceneWidget: edit.outline.sceneWidget, size: edit.startSize * factor)
     }
@@ -354,7 +287,7 @@ private struct SceneEditorCanvasView: View {
         let rect = viewRect(currentRect(outline))
         let color: Color = selected ? .accentColor : .white
         let selectedFill = Color.accentColor.opacity(0.25)
-        let dash: [CGFloat] = outline.inScene && outline.enabled ? [] : [4, 4]
+        let dash: [CGFloat] = outline.enabled ? [] : [4, 4]
         let dotSize = selected ? 12.0 : 8.0
         return ZStack(alignment: .topLeading) {
             if outline.sized {
@@ -561,9 +494,11 @@ private struct SceneEditorScenesButtonView: View {
                                               text: scene.name,
                                               checked: scene === self.scene)
                     {
-                        let widgetId = self.scene?.widgets
-                            .first(where: { $0.id == selection.sceneWidgetId })?.widgetId
-                        selection.sceneWidgetId = scene.widgets.first(where: { $0.widgetId == widgetId })?.id
+                        let widgetId = model.sceneEditorWidgetOutlines.outlines
+                            .first(where: { $0.id == selection.sceneWidgetId })?.widget.id
+                        selection.sceneWidgetId = model.resolveScene(scene, includeRemote: true)
+                            .firstWidgets()
+                            .first(where: { $0.widget.id == widgetId })?.id
                         model.sceneEditorSelectScene(id: scene.id)
                         presentingScenes = false
                     }
@@ -597,7 +532,7 @@ private struct SceneEditorAddWidgetButtonView: View {
                     presentingCreateWizard = true
                 }
                 Divider()
-                ForEach(database.widgets) { widget in
+                ForEach(model.addableWidgets(scene: scene)) { widget in
                     SceneEditorPopoverRowView(image: widget.image(), text: widget.name) {
                         model.appendWidgetToScene(scene: scene, widget: widget)
                         model.sceneSettingsPanelSceneId += 1
@@ -626,7 +561,8 @@ private struct SceneEditorToolbarView: View {
     @State private var presentingRemoveWidgetConfirmation = false
 
     @ViewBuilder
-    private func widgetButtons(_ scene: SettingsScene, _ selected: SceneEditorSelectedWidget) -> some View {
+    private func widgetButtons(_ selected: SceneEditorSelectedWidget) -> some View {
+        let scene = selected.scene
         let sceneWidget = selected.sceneWidget
         let widget = selected.widget
         SceneEditorEnableButtonView(model: model, widget: widget)
@@ -668,16 +604,14 @@ private struct SceneEditorToolbarView: View {
         }
         divider()
         SceneEditorScenesButtonView(model: model, database: database, scene: scene, selection: selection)
-        if let scene {
-            if let selected {
-                divider()
-                widgetButtons(scene, selected)
-            } else {
-                SceneEditorAddWidgetButtonView(model: model,
-                                               database: database,
-                                               scene: scene,
-                                               selection: selection)
-            }
+        if let selected {
+            divider()
+            widgetButtons(selected)
+        } else if let scene {
+            SceneEditorAddWidgetButtonView(model: model,
+                                           database: database,
+                                           scene: scene,
+                                           selection: selection)
         }
     }
 
@@ -720,13 +654,15 @@ struct SceneEditorView: View {
         return CGSize(width: canvasSize.width * scale, height: canvasSize.height * scale)
     }
 
-    private func selectedWidget(_ scene: SettingsScene?) -> SceneEditorSelectedWidget? {
-        guard let sceneWidget = scene?.widgets.first(where: { $0.id == selection.sceneWidgetId }),
-              let widget = model.findWidget(id: sceneWidget.widgetId)
+    private func selectedWidget() -> SceneEditorSelectedWidget? {
+        guard let outline = widgetOutlines.outlines.first(where: { $0.id == selection.sceneWidgetId }),
+              model.isSceneEditorOutlineEditable(outline: outline)
         else {
             return nil
         }
-        return SceneEditorSelectedWidget(sceneWidget: sceneWidget, widget: widget)
+        return SceneEditorSelectedWidget(scene: outline.scene,
+                                         sceneWidget: outline.sceneWidget,
+                                         widget: outline.widget)
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {
@@ -777,7 +713,7 @@ struct SceneEditorView: View {
     var body: some View {
         GeometryReader { metrics in
             let scene = model.sceneEditorScene()
-            let selected = selectedWidget(scene)
+            let selected = selectedWidget()
             let landscape = metrics.size.width > metrics.size.height
             let layout = landscape ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
             layout {

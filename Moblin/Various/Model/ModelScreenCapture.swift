@@ -15,56 +15,33 @@ extension Model {
         if scene.videoSource.cameraPosition == .screenCapture {
             return true
         }
-        var addedSceneIds: Set<UUID> = []
         if let quickSwitchGroup = scene.quickSwitchGroup {
             for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
                 if otherScene.videoSource.cameraPosition == .screenCapture {
                     return true
                 }
-                if sceneWidgetsNeedMacScreenCapture(scene: otherScene, addedSceneIds: &addedSceneIds) {
+                if sceneWidgetsNeedMacScreenCapture(scene: otherScene) {
                     return true
                 }
             }
         }
-        return sceneWidgetsNeedMacScreenCapture(scene: scene, addedSceneIds: &addedSceneIds)
+        return sceneWidgetsNeedMacScreenCapture(scene: scene)
     }
 
-    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene,
-                                                  addedSceneIds: inout Set<UUID>) -> Bool
-    {
-        for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
-                continue
-            }
-            switch widget.type {
+    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene) -> Bool {
+        resolveScene(scene).drawnWidgets().contains { drawnWidget in
+            let widget = drawnWidget.widget
+            return switch widget.type {
             case .videoSource:
-                if widget.videoSource.videoSource.cameraPosition == .screenCapture {
-                    return true
-                }
+                widget.videoSource.videoSource.cameraPosition == .screenCapture
             case .vTuber:
-                if widget.vTuber.videoSource.cameraPosition == .screenCapture {
-                    return true
-                }
+                widget.vTuber.videoSource.cameraPosition == .screenCapture
             case .pngTuber:
-                if widget.pngTuber.videoSource.cameraPosition == .screenCapture {
-                    return true
-                }
-            case .scene:
-                if !addedSceneIds.contains(widget.scene.sceneId) {
-                    addedSceneIds.insert(widget.scene.sceneId)
-                    if let nestedScene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                        if sceneWidgetsNeedMacScreenCapture(scene: nestedScene,
-                                                            addedSceneIds: &addedSceneIds)
-                        {
-                            return true
-                        }
-                    }
-                }
+                widget.pngTuber.videoSource.cameraPosition == .screenCapture
             default:
-                break
+                false
             }
         }
-        return false
     }
     #else
     func sceneNeedsMacScreenCapture(scene _: SettingsScene) -> Bool {

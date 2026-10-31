@@ -8,7 +8,7 @@ struct WidgetSceneSettingsView: View {
     var body: some View {
         Section {
             Picker("", selection: $selectedSceneId) {
-                ForEach(model.database.scenes) { scene in
+                ForEach(model.selectableScenes(widget: widget)) { scene in
                     SceneNameView(scene: scene)
                         .tag(scene.id)
                 }

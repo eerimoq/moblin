@@ -324,13 +324,7 @@ extension Model {
     }
 
     func getEnabledScoreboardWidgetsInSelectedScene() -> [SettingsWidget] {
-        if let scene = getSelectedScene() {
-            getSceneWidgets(scene: scene, onlyEnabled: true)
-                .filter { $0.widget.type == .scoreboard }
-                .map(\.widget)
-        } else {
-            []
-        }
+        drawnWidgetsInSelectedScene().filter { $0.type == .scoreboard }
     }
 
     func updateScoreboardEffects() {

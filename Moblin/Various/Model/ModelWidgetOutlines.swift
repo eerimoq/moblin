@@ -56,14 +56,15 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: includeDisabled) {
+        for drawnWidget in resolveScene(scene, includeRemote: true).firstWidgets() {
             let widget = drawnWidget.widget
-            guard widget.hasPosition() else {
+            guard includeDisabled || widget.enabled, widget.hasPosition() else {
                 continue
             }
             let layout = drawnWidget.sceneWidget.layout
             let size = widgetOutlineSize(widgetOutlines, widget, layout, canvasSize)
-            outlines.append(WidgetOutline(sceneWidget: drawnWidget.sceneWidget,
+            outlines.append(WidgetOutline(scene: drawnWidget.scene,
+                                          sceneWidget: drawnWidget.sceneWidget,
                                           widget: widget,
                                           rect: CGRect(
                                               origin: layoutPosition(layout, size ?? .zero, canvasSize),
@@ -165,7 +166,8 @@ extension Model {
             return false
         }
         return zip(first, second).allSatisfy {
-            $0.sceneWidget === $1.sceneWidget
+            $0.scene === $1.scene
+                && $0.sceneWidget === $1.sceneWidget
                 && $0.widget === $1.widget
                 && $0.rect == $1.rect
                 && $0.sized == $1.sized
