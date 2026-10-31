@@ -68,7 +68,7 @@ extension Model {
                                size: CGSize,
                                centered: (horizontal: Bool, vertical: Bool))
     {
-        let canvasSize = widgetOutlines.canvasSize
+        let canvasSize = sceneEditorWidgetOutlines.canvasSize
         var layout = sceneWidget.layout
         let alignment = layout.alignment
         if alignment.isHorizontalOrVerticalCenter() {

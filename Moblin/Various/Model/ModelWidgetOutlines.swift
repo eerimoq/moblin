@@ -6,36 +6,28 @@ extension Model {
         guard showingPanel == .settings else {
             return
         }
-        setWidgetOutlinesEnabled(true)
+        setWidgetOutlinesEnabled(widgetOutlines, true)
     }
 
     func hideWidgetOutlines() {
-        setWidgetOutlinesEnabled(false)
+        setWidgetOutlinesEnabled(widgetOutlines, false)
     }
 
     func updateWidgetOutlinesForShowingPanel() {
-        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings].contains(showingPanel))
+        setWidgetOutlinesEnabled(widgetOutlines, [.sceneWidgets, .sceneSettings].contains(showingPanel))
     }
 
     func setSceneEditorWidgetOutlinesEnabled(_ enabled: Bool) {
-        guard enabled != widgetOutlines.sceneEditorEnabled else {
-            return
-        }
-        widgetOutlines.sceneEditorEnabled = enabled
-        widgetOutlinesEnabledChanged()
+        setWidgetOutlinesEnabled(sceneEditorWidgetOutlines, enabled)
     }
 
-    private func setWidgetOutlinesEnabled(_ enabled: Bool) {
+    private func setWidgetOutlinesEnabled(_ widgetOutlines: WidgetOutlines, _ enabled: Bool) {
         guard enabled != widgetOutlines.enabled else {
             return
         }
         widgetOutlines.enabled = enabled
-        widgetOutlinesEnabledChanged()
-    }
-
-    private func widgetOutlinesEnabledChanged() {
         widgetOutlines.imageSizes = [:]
-        if widgetOutlines.enabled || widgetOutlines.sceneEditorEnabled {
+        if enabled {
             updateWidgetOutlines()
         } else {
             widgetOutlines.outlines = []
@@ -43,11 +35,19 @@ extension Model {
     }
 
     func updateWidgetOutlines() {
-        guard widgetOutlines.enabled || widgetOutlines.sceneEditorEnabled else {
-            return
+        if widgetOutlines.enabled {
+            updateWidgetOutlines(widgetOutlines, getSelectedScene(), false)
         }
-        let sceneEditorEnabled = widgetOutlines.sceneEditorEnabled
-        guard let scene = sceneEditorEnabled ? sceneEditorScene() : getSelectedScene() else {
+        if sceneEditorWidgetOutlines.enabled {
+            updateWidgetOutlines(sceneEditorWidgetOutlines, sceneEditorScene(), true)
+        }
+    }
+
+    private func updateWidgetOutlines(_ widgetOutlines: WidgetOutlines,
+                                      _ scene: SettingsScene?,
+                                      _ includeDisabled: Bool)
+    {
+        guard let scene else {
             widgetOutlines.outlines = []
             return
         }
@@ -56,13 +56,13 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: sceneEditorEnabled) {
+        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: includeDisabled) {
             let widget = drawnWidget.widget
             guard widget.hasPosition() else {
                 continue
             }
             let layout = drawnWidget.sceneWidget.layout
-            let size = widgetOutlineSize(widget: widget, layout: layout, canvasSize: canvasSize)
+            let size = widgetOutlineSize(widgetOutlines, widget, layout, canvasSize)
             outlines.append(WidgetOutline(sceneWidget: drawnWidget.sceneWidget,
                                           widget: widget,
                                           rect: CGRect(
@@ -78,9 +78,10 @@ extension Model {
         }
     }
 
-    private func widgetOutlineSize(widget: SettingsWidget,
-                                   layout: SettingsWidgetLayout,
-                                   canvasSize: CGSize) -> CGSize?
+    private func widgetOutlineSize(_ widgetOutlines: WidgetOutlines,
+                                   _ widget: SettingsWidget,
+                                   _ layout: SettingsWidgetLayout,
+                                   _ canvasSize: CGSize) -> CGSize?
     {
         let box = CGSize(width: toPixels(layout.size, canvasSize.width),
                          height: toPixels(layout.size, canvasSize.height))
@@ -97,7 +98,7 @@ extension Model {
                 canvasSize
             ) ?? box
         case .image:
-            guard let imageSize = widgetImageSize(widget: widget) else {
+            guard let imageSize = widgetImageSize(widgetOutlines, widget) else {
                 return box
             }
             return fitInLayout(imageSize, layout, canvasSize) ?? box
@@ -130,10 +131,11 @@ extension Model {
 
     func imageWidgetUpdated(id: UUID) {
         widgetOutlines.imageSizes.removeValue(forKey: id)
+        sceneEditorWidgetOutlines.imageSizes.removeValue(forKey: id)
         updateWidgetOutlines()
     }
 
-    private func widgetImageSize(widget: SettingsWidget) -> CGSize? {
+    private func widgetImageSize(_ widgetOutlines: WidgetOutlines, _ widget: SettingsWidget) -> CGSize? {
         if let size = widgetOutlines.imageSizes[widget.id] {
             return size
         }
