@@ -14,8 +14,15 @@ extension Model {
     }
 
     func updateWidgetOutlinesForShowingPanel() {
-        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings]
-            .contains(showingPanel) || presentingSceneEditor)
+        setWidgetOutlinesEnabled([.sceneWidgets, .sceneSettings].contains(showingPanel))
+    }
+
+    func setSceneEditorWidgetOutlinesEnabled(_ enabled: Bool) {
+        guard enabled != widgetOutlines.sceneEditorEnabled else {
+            return
+        }
+        widgetOutlines.sceneEditorEnabled = enabled
+        widgetOutlinesEnabledChanged()
     }
 
     private func setWidgetOutlinesEnabled(_ enabled: Bool) {
@@ -23,8 +30,12 @@ extension Model {
             return
         }
         widgetOutlines.enabled = enabled
+        widgetOutlinesEnabledChanged()
+    }
+
+    private func widgetOutlinesEnabledChanged() {
         widgetOutlines.imageSizes = [:]
-        if enabled {
+        if widgetOutlines.enabled || widgetOutlines.sceneEditorEnabled {
             updateWidgetOutlines()
         } else {
             widgetOutlines.outlines = []
@@ -32,10 +43,11 @@ extension Model {
     }
 
     func updateWidgetOutlines() {
-        guard widgetOutlines.enabled else {
+        guard widgetOutlines.enabled || widgetOutlines.sceneEditorEnabled else {
             return
         }
-        guard let scene = presentingSceneEditor ? sceneEditorScene() : getSelectedScene() else {
+        let sceneEditorEnabled = widgetOutlines.sceneEditorEnabled
+        guard let scene = sceneEditorEnabled ? sceneEditorScene() : getSelectedScene() else {
             widgetOutlines.outlines = []
             return
         }
@@ -44,7 +56,7 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: presentingSceneEditor) {
+        for drawnWidget in getDrawnSceneWidgets(scene: scene, includeDisabled: sceneEditorEnabled) {
             let widget = drawnWidget.widget
             guard widget.hasPosition() else {
                 continue

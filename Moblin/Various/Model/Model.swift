@@ -377,6 +377,7 @@ class SceneEditor: ObservableObject {
 @MainActor
 class WidgetOutlines: ObservableObject {
     @Published var enabled = false
+    var sceneEditorEnabled = false
     @Published var outlines: [WidgetOutline] = []
     @Published var canvasSize: CGSize = .init(width: 1920, height: 1080)
     var imageSizes: [UUID: CGSize?] = [:]

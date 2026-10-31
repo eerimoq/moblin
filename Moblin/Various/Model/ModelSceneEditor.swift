@@ -39,7 +39,7 @@ extension Model {
     func sceneEditorPresentationChanged() {
         sceneEditor.sceneId = nil
         media.setShowCameraPreview(updateShowCameraPreview())
-        updateWidgetOutlinesForShowingPanel()
+        setSceneEditorWidgetOutlinesEnabled(presentingSceneEditor)
         updateWidgetOutlines()
     }
 
