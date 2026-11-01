@@ -327,6 +327,7 @@ extension Model {
             ostream.enabled = false
         }
         currentStreamId = stream.id
+        updateIsPortrait()
         updateOrientationLock()
         updateStatusStreamText()
         reloadCameraLevel()
