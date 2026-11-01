@@ -10,12 +10,16 @@ extension Model {
     }
 
     func startSpeechToText() {
+        startSpeechToText(drawnWidgets: drawnWidgetsInSelectedScene())
+    }
+
+    private func startSpeechToText(drawnWidgets: [SettingsWidget]) {
         speechToText = SpeechToText()
         speechToText?.delegate = self
         speechToText?.start { message in
             self.makeErrorToast(title: message)
         }
-        for widget in drawnWidgetsInSelectedScene() {
+        for widget in drawnWidgets {
             switch widget.type {
             case .text:
                 let languageIdentifiers = Set(widget.text.subtitles.map(\.identifier))
@@ -44,9 +48,13 @@ extension Model {
     }
 
     func updateSpeechToText() {
-        if isSpeechToTextNeeded() {
+        updateSpeechToText(drawnWidgets: drawnWidgetsInSelectedScene())
+    }
+
+    func updateSpeechToText(drawnWidgets: [SettingsWidget]) {
+        if isSpeechToTextNeeded(drawnWidgets: drawnWidgets) {
             if speechToText == nil {
-                startSpeechToText()
+                startSpeechToText(drawnWidgets: drawnWidgets)
             }
         } else if speechToText != nil {
             stopSpeechToText()
@@ -54,7 +62,11 @@ extension Model {
     }
 
     func isSpeechToTextNeeded() -> Bool {
-        for widget in drawnWidgetsInSelectedScene() {
+        isSpeechToTextNeeded(drawnWidgets: drawnWidgetsInSelectedScene())
+    }
+
+    private func isSpeechToTextNeeded(drawnWidgets: [SettingsWidget]) -> Bool {
+        for widget in drawnWidgets {
             switch widget.type {
             case .text:
                 if widget.text.needsSubtitles {

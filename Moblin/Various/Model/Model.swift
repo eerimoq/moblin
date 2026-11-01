@@ -1348,15 +1348,19 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startGForceManager() {
-        if isGForceManagerNeeded() {
+        startGForceManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
+    }
+
+    func startGForceManager(drawnWidgets: [SettingsWidget]) {
+        if isGForceManagerNeeded(drawnWidgets: drawnWidgets) {
             gForceManager?.start()
         } else {
             gForceManager?.stop()
         }
     }
 
-    private func isGForceManagerNeeded() -> Bool {
-        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+    private func isGForceManagerNeeded(drawnWidgets: [SettingsWidget]) -> Bool {
+        for widget in drawnWidgets {
             switch widget.type {
             case .text:
                 if widget.text.needsGForce {
@@ -1429,8 +1433,8 @@ final class Model: NSObject, ObservableObject {
         TrueTimeClient.sharedInstance.pause()
     }
 
-    private func isWeatherNeeded() -> Bool {
-        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+    private func isWeatherNeeded(drawnWidgets: [SettingsWidget]) -> Bool {
+        for widget in drawnWidgets {
             switch widget.type {
             case .text:
                 if widget.text.needsWeather {
@@ -1459,12 +1463,16 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startWeatherManager() {
-        weatherManager.setEnabled(value: isWeatherNeeded())
+        startWeatherManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
+    }
+
+    func startWeatherManager(drawnWidgets: [SettingsWidget]) {
+        weatherManager.setEnabled(value: isWeatherNeeded(drawnWidgets: drawnWidgets))
         weatherManager.start()
     }
 
-    private func isGeographyNeeded() -> Bool {
-        for widget in drawnWidgetsInSelectedAndRemoteScene() {
+    private func isGeographyNeeded(drawnWidgets: [SettingsWidget]) -> Bool {
+        for widget in drawnWidgets {
             switch widget.type {
             case .text:
                 if widget.text.needsGeography {
@@ -1493,7 +1501,11 @@ final class Model: NSObject, ObservableObject {
     }
 
     func startGeographyManager() {
-        geographyManager.setEnabled(value: isGeographyNeeded())
+        startGeographyManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
+    }
+
+    func startGeographyManager(drawnWidgets: [SettingsWidget]) {
+        geographyManager.setEnabled(value: isGeographyNeeded(drawnWidgets: drawnWidgets))
         geographyManager.start()
     }
 

@@ -273,15 +273,17 @@ extension Model {
         for browserEffect in browserEffects.values {
             browserEffect.stop()
         }
-        sceneUpdatedOn(scene: scene, attachCamera: attachCamera)
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        let resolvedScene = resolveScene(scene)
+        sceneUpdatedOn(scene: scene, resolvedScene: resolvedScene, attachCamera: attachCamera)
+        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene()
+        startWeatherManager(drawnWidgets: drawnWidgets)
+        startGeographyManager(drawnWidgets: drawnWidgets)
+        startGForceManager(drawnWidgets: drawnWidgets)
         if updateRemoteScene {
             remoteSceneSettingsUpdated()
         }
         updateStatusCameraText()
-        updateSpeechToText()
+        updateSpeechToText(drawnWidgets: resolvedScene.drawnWidgets().map(\.widget))
         updateWidgetOutlines()
     }
 
@@ -615,8 +617,12 @@ extension Model {
     }
 
     func getCameraPreviewWidgets(scene: SettingsScene) -> [CameraPreviewWidget] {
+        getCameraPreviewWidgets(resolvedScene: resolveScene(scene))
+    }
+
+    private func getCameraPreviewWidgets(resolvedScene: ResolvedScene) -> [CameraPreviewWidget] {
         var widgets: [CameraPreviewWidget] = []
-        for widget in resolveScene(scene).drawnWidgets() where widget.widget.type == .videoSource {
+        for widget in resolvedScene.drawnWidgets() where widget.widget.type == .videoSource {
             let videoSource = widget.widget.videoSource
             guard let cameraId = videoSource.videoSource.getCaptureDeviceCameraId(),
                   let device = AVCaptureDevice(uniqueID: cameraId)
@@ -643,7 +649,11 @@ extension Model {
         guard let scene = getSelectedScene() else {
             return
         }
-        cameraPreviewView.setWidgets(widgets: getCameraPreviewWidgets(scene: scene),
+        updateCameraPreviewWidgets(resolvedScene: resolveScene(scene))
+    }
+
+    private func updateCameraPreviewWidgets(resolvedScene: ResolvedScene) {
+        cameraPreviewView.setWidgets(widgets: getCameraPreviewWidgets(resolvedScene: resolvedScene),
                                      canvasSize: media.getCanvasSize())
     }
 
@@ -1111,7 +1121,7 @@ extension Model {
         }
     }
 
-    private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
+    private func sceneUpdatedOn(scene: SettingsScene, resolvedScene: ResolvedScene, attachCamera: Bool) {
         var effects: [VideoEffect] = []
         if database.color.lutEnabled, database.color.space == .appleLog {
             effects.append(lutEffect)
@@ -1155,7 +1165,7 @@ extension Model {
             attachSingleLayout(scene: scene)
         } else {
             media.usePendingAfterAttachEffects()
-            updateCameraPreviewWidgets()
+            updateCameraPreviewWidgets(resolvedScene: resolvedScene)
         }
         // To do: Should update on first frame in draw effect instead.
         if !drawOnStream.lines.isEmpty {
