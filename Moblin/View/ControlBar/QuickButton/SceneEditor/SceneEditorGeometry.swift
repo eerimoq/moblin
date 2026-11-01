@@ -16,9 +16,9 @@ func sceneEditorSnapAxis(_ position: Double,
 {
     let positions = near ? 0 ... total : -length ... total - length
     let position = position.clamped(to: positions)
-    var candidates = [SceneEditorSnap(position: 0), SceneEditorSnap(position: positions.upperBound)]
+    var candidates = [SceneEditorSnap(position: 0), SceneEditorSnap(position: total - length)]
     if canCenter {
-        candidates.append(SceneEditorSnap(position: positions.upperBound / 2, guide: total / 2))
+        candidates.append(SceneEditorSnap(position: (total - length) / 2, guide: total / 2))
     }
     for target in targets {
         for anchor in [0, length / 2, length] {
