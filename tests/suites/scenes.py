@@ -44,6 +44,7 @@ from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import manual_confirmation
+from ..utils.utils import read_text_in_video_frame
 from ..utils.utils import read_video_frames_sharpness
 from ..utils.utils import write_png
 
@@ -60,6 +61,7 @@ LARGE_MAP_CROP = Crop(x=576, y=0, width=432, height=432)
 TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
 BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
 IMAGE_CROP = Crop(x=20, y=20, width=40, height=40)
+REMOTE_TEXT_CROP = Crop(x=0, y=0, width=1200, height=120)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
 FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
@@ -70,6 +72,8 @@ MAP_LARGE_WIDGET_ID = uuid()
 PNG_TUBER_WIDGET_ID = uuid()
 V_TUBER_WIDGET_ID = uuid()
 IMAGE_WIDGET_ID = uuid()
+REMOTE_SCENE_ID = uuid()
+REMOTE_TEXT_WIDGET_ID = uuid()
 LUT_ID = uuid()
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
@@ -721,6 +725,89 @@ class SceneImageWidgetLut(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
+class RemoteSceneTestCase(WidgetTestCase):
+    def setup(self):
+        self.import_settings(scene_widgets=[], widgets=[])
+
+    def teardown(self):
+        self.moblin.clear_remote_scene_settings()
+        super().teardown()
+
+    def set_remote_scene_with_text_widget(self, format_string: str):
+        self.moblin.set_remote_scene_settings(
+            scenes=[
+                {
+                    "id": REMOTE_SCENE_ID,
+                    "widgets": [
+                        {
+                            "id": REMOTE_TEXT_WIDGET_ID,
+                            "layout": {"x": 0, "y": 0, "size": 100, "alignment": Alignment.TOP_LEFT},
+                        }
+                    ],
+                }
+            ],
+            widgets=[
+                {
+                    "id": REMOTE_TEXT_WIDGET_ID,
+                    "enabled": True,
+                    "type": {
+                        "text": {
+                            "data": {
+                                "formatString": format_string,
+                                "backgroundColor": {"red": 255, "green": 255, "blue": 255},
+                                "clearBackgroundColor": False,
+                                "foregroundColor": {"red": 0, "green": 0, "blue": 0},
+                                "clearForegroundColor": False,
+                                "fontSize": 80,
+                                "fontDesign": "Default",
+                                "fontWeight": "Regular",
+                                "fontMonospacedDigits": False,
+                                "horizontalAlignment": {"leading": {}},
+                                "delay": 0,
+                            }
+                        }
+                    },
+                }
+            ],
+            selected_scene_id=REMOTE_SCENE_ID,
+        )
+
+    def record_and_assert_text(self, filename: str, text: str):
+        recording_file = self.record(filename)
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP), text)
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteScene(RemoteSceneTestCase):
+    """Set a remote scene with a text widget over remote control, as an assistant does,
+    on top of a scene without video source. Validate that the text is rendered. Clear
+    the remote scene and validate that the text widget is gone.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("Remote scene")
+        self.record_and_assert_text(f"{self.name}Set.mp4", "Remote scene")
+        self.moblin.clear_remote_scene_settings()
+        recording_file = self.record(f"{self.name}Cleared.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP))
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteSceneData(RemoteSceneTestCase):
+    """Set a remote scene with a text widget showing the bitrate and total variable over
+    remote control, as an assistant does. Send remote scene data with two different
+    values of the variable and validate that each value is rendered.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{bitrateAndTotal}")
+        for number, text in enumerate(["4.2 Mbps (12.3 MB)", "1.5 Mbps (20.1 MB)"]):
+            self.moblin.set_remote_scene_text_stats({"bitrateAndTotal": text})
+            self.record_and_assert_text(f"{self.name}{number}.mp4", text)
+
+
 def tests(moblin: Moblin):
     test_cases = [
         SceneSwitchMultipleTimes(moblin),
@@ -728,6 +815,8 @@ def tests(moblin: Moblin):
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
         SceneSwitchSwappedCameras(moblin, camera_preview=False),
         SceneSwitchSwappedCameras(moblin, camera_preview=True),
+        SceneRemoteScene(moblin, GraphicsImplementation.CORE_IMAGE),
+        SceneRemoteSceneData(moblin, GraphicsImplementation.CORE_IMAGE),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [

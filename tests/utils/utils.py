@@ -4,6 +4,7 @@ import select
 import struct
 import subprocess
 import sys
+import tempfile
 import time
 import zlib
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ from logging import Logger
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from systest_moblin.ffmpeg import Crop
 from systest_moblin.ffmpeg import ffmpeg_run
 
 TEST_DIR = Path(__file__).parent.parent.resolve()
@@ -72,6 +74,24 @@ def write_png(path: Path, width: int, height: int, rgba: bytes):
         + chunk(b"IDAT", zlib.compress(scanlines))
         + chunk(b"IEND", b"")
     )
+
+
+def read_text_in_video_frame(path: Path, timestamp: float, crop: Crop) -> str:
+    with tempfile.TemporaryDirectory() as directory:
+        image = Path(directory) / "frame.png"
+        ffmpeg_run(
+            "-ss",
+            str(timestamp),
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-vf",
+            f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
+            str(image),
+        )
+        command = ["tesseract", str(image), "-", "--psm", "7"]
+        return subprocess.run(command, check=True, capture_output=True, text=True).stdout.strip()
 
 
 def read_video_frames_sharpness(path: Path) -> list[tuple[float, float]]:

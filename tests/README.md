@@ -6,7 +6,7 @@ Install Python dependencies and various tools. You might have to add ffmpeg to P
 
 ```bash
 pip install -r requirements.txt
-brew install mediamtx ffmpeg-full qrtool ltc-tools
+brew install mediamtx ffmpeg-full qrtool ltc-tools tesseract
 ```
 
 # Configuration

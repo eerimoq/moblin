@@ -253,6 +253,58 @@ class Moblin:
     def set_scene(self, name: SceneName):
         self._request({"setScene": {"id": self._get_settings_id("scenes", name)}})
 
+    def set_remote_scene_settings(
+        self,
+        scenes: list[dict],
+        widgets: list[dict],
+        selected_scene_id: str | None,
+    ):
+        data: dict = {"scenes": scenes, "widgets": widgets}
+        if selected_scene_id is not None:
+            data["selectedSceneId"] = selected_scene_id
+        response = self._request({"setRemoteSceneSettings": {"data": data}})
+        if "ok" not in response["result"]:
+            raise Exception(f"Set remote scene settings failed: {response['result']}")
+
+    def clear_remote_scene_settings(self):
+        self.set_remote_scene_settings([], [], None)
+
+    def set_remote_scene_text_stats(self, text_stats: dict):
+        data = {
+            "bitrate": "",
+            "bitrateAndTotal": "",
+            "bonding": "",
+            "date": time.time() - 978307200,
+            "debugOverlayLines": [],
+            "speed": 0,
+            "averageSpeed": 0,
+            "altitude": 0,
+            "distance": 0,
+            "splitDistance": 0,
+            "altitudeAscent": 0,
+            "altitudeDescent": 0,
+            "splitAltitudeAscent": 0,
+            "splitAltitudeDescent": 0,
+            "slope": "",
+            "muted": False,
+            "heartRates": {},
+            "teslaBatteryLevel": "",
+            "teslaDrive": "",
+            "teslaMedia": "",
+            "cyclingPower": "",
+            "cyclingCadence": "",
+            "cyclingSpeed": 0,
+            "runningMetrics": {},
+            "browserTitle": "",
+            "latestSubscriber": "",
+            "latestFollower": "",
+            "systemMonitor": "",
+            **text_stats,
+        }
+        response = self._request({"setRemoteSceneData": {"data": {"textStats": data}}})
+        if "ok" not in response["result"]:
+            raise Exception(f"Set remote scene data failed: {response['result']}")
+
     def set_mic(self, name):
         self._request({"setMic": {"id": self._get_settings_id("mics", name)}})
 
