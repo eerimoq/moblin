@@ -70,7 +70,7 @@ private struct WidgetOutlineView: View {
     }
 
     private func anchorView(_ rect: CGRect) -> some View {
-        let leading = outline.sceneWidget.layout.alignment.isLeft() != mirror
+        let leading = outline.alignment.isLeft() != mirror
         return Circle()
             .fill(.white)
             .frame(width: 8, height: 8)

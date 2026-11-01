@@ -65,6 +65,7 @@ extension Model {
                 outlines.append(WidgetOutline(sceneWidget: drawnWidget.sceneWidget,
                                               widget: drawnWidget.widget,
                                               rect: CGRect(origin: .zero, size: canvasSize),
+                                              alignment: drawnWidget.sceneWidget.layout.alignment,
                                               sized: true,
                                               inScene: true,
                                               enabled: drawnWidget.widget.enabled))
@@ -83,6 +84,7 @@ extension Model {
                                               origin: layoutPosition(layout, size ?? .zero, canvasSize),
                                               size: size ?? .zero
                                           ),
+                                          alignment: layout.alignment,
                                           sized: size != nil,
                                           inScene: drawnWidget.scene === scene,
                                           enabled: drawnWidget.enabled))
@@ -182,6 +184,7 @@ extension Model {
             $0.sceneWidget === $1.sceneWidget
                 && $0.widget === $1.widget
                 && $0.rect == $1.rect
+                && $0.alignment == $1.alignment
                 && $0.sized == $1.sized
                 && $0.inScene == $1.inScene
                 && $0.enabled == $1.enabled

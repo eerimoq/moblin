@@ -95,7 +95,7 @@ private struct SceneEditorCanvasView: View {
         if outline.sized {
             return rect.insetBy(dx: min(0, (rect.width - 44) / 2), dy: min(0, (rect.height - 44) / 2))
         }
-        let alignment = outline.sceneWidget.layout.alignment
+        let alignment = outline.alignment
         let width = 120.0
         let height = 60.0
         let x = if alignment.isHorizontalCenter() {
@@ -137,11 +137,11 @@ private struct SceneEditorCanvasView: View {
     }
 
     private func fixedPoint(_ outline: WidgetOutline) -> CGPoint {
-        sceneEditorFixedPoint(outline.rect, outline.sceneWidget.layout.alignment)
+        sceneEditorFixedPoint(outline.rect, outline.alignment)
     }
 
     private func handlePoint(_ outline: WidgetOutline, _ rect: CGRect) -> CGPoint {
-        sceneEditorHandlePoint(rect, outline.sceneWidget.layout.alignment)
+        sceneEditorHandlePoint(rect, outline.alignment)
     }
 
     private func startEdit(_ outline: WidgetOutline, _ mode: SceneEditorEditMode) {

@@ -364,6 +364,7 @@ struct WidgetOutline: Identifiable {
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
     let rect: CGRect
+    let alignment: SettingsAlignment
     let sized: Bool
     let inScene: Bool
     let enabled: Bool
