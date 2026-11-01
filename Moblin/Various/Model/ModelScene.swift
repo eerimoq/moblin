@@ -273,9 +273,10 @@ extension Model {
         for browserEffect in browserEffects.values {
             browserEffect.stop()
         }
-        let resolvedScene = resolveScene(scene, includeRemote: true)
+        let resolver = makeSceneResolver()
+        let resolvedScene = resolver.resolve(scene, includeRemote: true)
         sceneUpdatedOn(scene: scene, resolvedScene: resolvedScene, attachCamera: attachCamera)
-        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: resolvedScene)
+        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolver: resolver)
         startWeatherManager(drawnWidgets: drawnWidgets)
         startGeographyManager(drawnWidgets: drawnWidgets)
         startGForceManager(drawnWidgets: drawnWidgets)
@@ -284,7 +285,7 @@ extension Model {
         }
         updateStatusCameraText()
         updateSpeechToText(drawnWidgets: resolvedScene.localDrawnWidgets().map(\.widget))
-        updateWidgetOutlines(resolvedSelectedScene: resolvedScene)
+        updateWidgetOutlines(resolver: resolver)
     }
 
     func getSceneName(id: UUID?) -> String? {
@@ -419,19 +420,19 @@ extension Model {
     }
 
     func drawnWidgetsInSelectedAndRemoteScene() -> [SettingsWidget] {
-        drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: getSelectedScene()
-            .map { resolveScene($0) })
+        drawnWidgetsInSelectedAndRemoteScene(resolver: makeSceneResolver())
     }
 
-    private func drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: ResolvedScene?)
-        -> [SettingsWidget]
-    {
-        var widgets = resolvedSelectedScene?.localDrawnWidgets().map(\.widget) ?? []
+    private func drawnWidgetsInSelectedAndRemoteScene(resolver: SceneResolver) -> [SettingsWidget] {
+        var widgets: [SettingsWidget] = []
+        if let scene = getSelectedScene() {
+            widgets = resolver.resolve(scene, includeRemote: true).localDrawnWidgets().map(\.widget)
+        }
         guard let remoteScene = database.scenes.first(where: { $0.id == database.remoteSceneId }) else {
             return widgets
         }
         var widgetIds = Set(widgets.map(\.id))
-        for widget in resolveScene(remoteScene).drawnWidgets().map(\.widget)
+        for widget in resolver.resolve(remoteScene).drawnWidgets().map(\.widget)
             where widgetIds.insert(widget.id).inserted
         {
             widgets.append(widget)

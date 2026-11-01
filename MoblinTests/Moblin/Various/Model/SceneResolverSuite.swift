@@ -99,9 +99,14 @@ struct SceneResolverSuite {
         let remoteScene = makeScene("Remote", [remoteImage])
         let remoteWidget = makeSceneWidget("Remote scene", scene: remoteScene)
         let main = makeScene("Main", [text])
-        let resolver = SceneResolver(scenes: [main, remoteScene], widgets: [text, remoteImage, remoteWidget])
-        let resolved = resolver.resolve(main, remoteWidgetId: remoteWidget.id)
+        let resolver = SceneResolver(scenes: [main, remoteScene],
+                                     widgets: [text, remoteImage, remoteWidget],
+                                     remoteWidgetId: remoteWidget.id)
+        #expect(resolver.resolve(main).widgets.map(\.widget.name) == ["Text"])
+        let resolved = resolver.resolve(main, includeRemote: true)
         #expect(resolved.widgets.map(\.widget.name) == ["Text", "Remote scene", "Remote image"])
+        #expect(resolved.widgets.map(\.remote) == [false, true, true])
+        #expect(resolved.localDrawnWidgets().map(\.widget.name) == ["Text"])
     }
 
     @Test

@@ -49,24 +49,41 @@ private enum SceneWidgetsChange {
     case setScene(widgetId: UUID, sceneId: UUID)
 }
 
-struct SceneResolver {
+private struct SceneResolveKey: Hashable {
+    let sceneId: UUID
+    let includeRemote: Bool
+    let includeDisabledSceneWidgets: Bool
+}
+
+final class SceneResolver {
     private let scenes: [SettingsScene]
     private let widgets: [SettingsWidget]
     private let scenesById: [UUID: SettingsScene]
     private let widgetsById: [UUID: SettingsWidget]
+    private let remoteWidgetId: UUID?
+    private var resolved: [SceneResolveKey: ResolvedScene] = [:]
 
-    init(scenes: [SettingsScene], widgets: [SettingsWidget]) {
+    init(scenes: [SettingsScene], widgets: [SettingsWidget], remoteWidgetId: UUID? = nil) {
         self.scenes = scenes
         self.widgets = widgets
+        self.remoteWidgetId = remoteWidgetId
         scenesById = Dictionary(scenes.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         widgetsById = Dictionary(widgets.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
     }
 
     func resolve(_ scene: SettingsScene,
-                 remoteWidgetId: UUID? = nil,
+                 includeRemote: Bool = false,
                  includeDisabledSceneWidgets: Bool = false) -> ResolvedScene
     {
-        resolve(scene, remoteWidgetId, includeDisabledSceneWidgets, nil)
+        let key = SceneResolveKey(sceneId: scene.id,
+                                  includeRemote: includeRemote,
+                                  includeDisabledSceneWidgets: includeDisabledSceneWidgets)
+        if let resolved = resolved[key] {
+            return resolved
+        }
+        let resolved = resolve(scene, includeRemote ? remoteWidgetId : nil, includeDisabledSceneWidgets, nil)
+        self.resolved[key] = resolved
+        return resolved
     }
 
     func addableWidgets(scene: SettingsScene) -> [SettingsWidget] {
@@ -184,17 +201,19 @@ private struct SceneWalk {
 }
 
 extension Model {
+    func makeSceneResolver() -> SceneResolver {
+        SceneResolver(scenes: database.scenes + remoteSceneScenes,
+                      widgets: database.widgets + remoteSceneWidgets,
+                      remoteWidgetId: remoteSceneWidgets.first?.id)
+    }
+
     func resolveScene(_ scene: SettingsScene,
                       includeRemote: Bool = false,
                       includeDisabledSceneWidgets: Bool = false) -> ResolvedScene
     {
-        SceneResolver(
-            scenes: database.scenes + remoteSceneScenes,
-            widgets: database.widgets + remoteSceneWidgets
-        )
-        .resolve(scene,
-                 remoteWidgetId: includeRemote ? remoteSceneWidgets.first?.id : nil,
-                 includeDisabledSceneWidgets: includeDisabledSceneWidgets)
+        makeSceneResolver().resolve(scene,
+                                    includeRemote: includeRemote,
+                                    includeDisabledSceneWidgets: includeDisabledSceneWidgets)
     }
 
     func drawnWidgetsInSelectedScene() -> [SettingsWidget] {
