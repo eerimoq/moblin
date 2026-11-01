@@ -75,7 +75,12 @@ struct WidgetVTuberPickerView: View {
         } header: {
             Text("Model")
         } footer: {
-            Text("Most VRM 0.0 files and zipped Live2D Cubism models are supported.")
+            VStack(alignment: .leading) {
+                Text("Most VRM 0.x and 1.0 files and zipped Live2D Cubism models are supported.")
+                if #unavailable(iOS 18) {
+                    Text("VRM models require iOS 18 or later.")
+                }
+            }
         }
     }
 }

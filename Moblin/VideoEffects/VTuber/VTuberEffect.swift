@@ -14,7 +14,7 @@ class VTuberEffect: VideoEffect, @unchecked Sendable {
     private var videoSourceId: UUID = .init()
     private var mirror: Bool = false
     private var sensitivity = SettingsSensitivity()
-    private var sceneWidget: SettingsSceneWidget?
+    private(set) var sceneWidget: SettingsSceneWidget?
     private var timeStampRebaser = TimeStampRebaser()
     private var previousPresentationTimeStamp = 0.0
     private var face = VTuberFace()

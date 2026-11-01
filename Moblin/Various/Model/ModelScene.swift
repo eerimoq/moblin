@@ -941,11 +941,13 @@ extension Model {
             let path = vTuberStorage.makePath(id: widget.vTuber.id)
             switch widget.vTuber.type {
             case .vrm:
-                vTuberEffects[widget.id] = VTuberVrmEffect(
-                    vrm: path,
-                    cameraFieldOfView: widget.vTuber.cameraFieldOfView,
-                    cameraPositionY: widget.vTuber.cameraPositionY
-                )
+                if #available(iOS 18, *) {
+                    vTuberEffects[widget.id] = VTuberVrmEffect(
+                        vrm: path,
+                        cameraFieldOfView: widget.vTuber.cameraFieldOfView,
+                        cameraPositionY: widget.vTuber.cameraPositionY
+                    )
+                }
             case .live2D:
                 vTuberEffects[widget.id] = VTuberLive2DEffect(directory: path)
             }

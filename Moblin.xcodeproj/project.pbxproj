@@ -25,7 +25,7 @@
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0377239A2DE35191007D040D /* VRMKit in Frameworks */ = {isa = PBXBuildFile; productRef = 037723992DE35191007D040D /* VRMKit */; };
-		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
+		0377239C2DE35191007D040D /* VRMRealityKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMRealityKit */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
 		03A7A6A130D00000000000A1 /* Ayagami in Frameworks */ = {isa = PBXBuildFile; productRef = 03A7A6A130D00000000000A2 /* Ayagami */; };
@@ -344,7 +344,7 @@
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */,
-				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
+				0377239C2DE35191007D040D /* VRMRealityKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
 			);
@@ -497,7 +497,7 @@
 				03AC6B942D17786700832A7E /* TrueTime */,
 				03B279822D45EB9C007DEDB2 /* SwiftCube */,
 				037723992DE35191007D040D /* VRMKit */,
-				0377239B2DE35191007D040D /* VRMSceneKit */,
+				0377239B2DE35191007D040D /* VRMRealityKit */,
 				882D0C152DF76F5B0035BFAF /* BlackSharkLib */,
 				035351932F1C271700428DAC /* AppAuthCore */,
 				035351952F1C27A500428DAC /* AppAuth */,
@@ -1659,10 +1659,10 @@
 		};
 		037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eerimoq/VRMKit";
+			repositoryURL = "https://github.com/tattn/VRMKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = ec1ffe15d7da956c18cc699d34cb293ccc3e5703;
 			};
 		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
@@ -1822,10 +1822,10 @@
 			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
 			productName = VRMKit;
 		};
-		0377239B2DE35191007D040D /* VRMSceneKit */ = {
+		0377239B2DE35191007D040D /* VRMRealityKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
-			productName = VRMSceneKit;
+			productName = VRMRealityKit;
 		};
 		03A08B7B2AC295620018BA95 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;

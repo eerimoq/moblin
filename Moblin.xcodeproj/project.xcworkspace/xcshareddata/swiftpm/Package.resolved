@@ -1,5 +1,5 @@
 {
-  "originHash" : "da3a2aed6960d3b492f6adecb6841772c8a3789840f22a6e2f9a3a38a2bf52a7",
+  "originHash" : "ee052b306b2eeaf244e96feb16b29b1f60d19614fa6e79caab48bc4ae24cfe8a",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -155,6 +155,15 @@
       }
     },
     {
+      "identity" : "swift-simd-compat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tattn/swift-simd-compat",
+      "state" : {
+        "revision" : "f1d3f322c47831eef56ffca29791d719575201ee",
+        "version" : "0.1.1"
+      }
+    },
+    {
       "identity" : "swift-system",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system.git",
@@ -193,10 +202,9 @@
     {
       "identity" : "vrmkit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/VRMKit",
+      "location" : "https://github.com/tattn/VRMKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "444d9403754d7cff3bdcd7283c2db8fb330ac619"
+        "revision" : "ec1ffe15d7da956c18cc699d34cb293ccc3e5703"
       }
     },
     {

@@ -1,8 +1,6 @@
 import MetalPetal
-import SceneKit
 import SwiftUI
 import Vision
-import VRMSceneKit
 
 private class PngCoordinate: Decodable {
     // periphery:ignore
