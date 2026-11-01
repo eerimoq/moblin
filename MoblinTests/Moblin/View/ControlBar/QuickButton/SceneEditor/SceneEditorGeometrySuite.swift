@@ -79,9 +79,9 @@ struct SceneEditorGeometrySuite {
 
     @Test
     func snapAxisKeepsInside() {
-        #expect(sceneEditorSnapAxis(-300, 400, 1920, 10, true, []).position == 0)
-        #expect(sceneEditorSnapAxis(1800, 400, 1920, 10, true, []).position == 1520)
-        #expect(sceneEditorSnapAxis(300, 2000, 1920, 10, true, []).position == 0)
+        #expect(sceneEditorSnapAxis(-300, 400, 1920, 10, []).position == 0)
+        #expect(sceneEditorSnapAxis(1800, 400, 1920, 10, []).position == 1520)
+        #expect(sceneEditorSnapAxis(300, 2000, 1920, 10, []).position == 0)
     }
 
     @Test
@@ -104,17 +104,19 @@ struct SceneEditorGeometrySuite {
 
     @Test
     func snapAxisSnapsToEdgesAndCenter() {
-        #expect(sceneEditorSnapAxis(-5, 400, 1920, 10, true, []).position == 0)
-        #expect(sceneEditorSnapAxis(1525, 400, 1920, 10, true, []).position == 1520)
-        let center = sceneEditorSnapAxis(765, 400, 1920, 10, true, [])
+        #expect(sceneEditorSnapAxis(-5, 400, 1920, 10, []).position == 0)
+        #expect(sceneEditorSnapAxis(1525, 400, 1920, 10, []).position == 1520)
+        let center = sceneEditorSnapAxis(765, 400, 1920, 10, [])
         #expect(center.position == 760)
         #expect(center.centered)
-        #expect(!sceneEditorSnapAxis(765, 400, 1920, 10, false, []).centered)
+        let unsizedCenter = sceneEditorSnapAxis(955, 0, 1920, 10, [])
+        #expect(unsizedCenter.position == 960)
+        #expect(unsizedCenter.centered)
     }
 
     @Test
     func snapAxisSnapsToOtherWidgets() {
-        let snap = sceneEditorSnapAxis(1003, 400, 1920, 10, true, [1000])
+        let snap = sceneEditorSnapAxis(1003, 400, 1920, 10, [1000])
         #expect(snap.position == 1000)
         #expect(snap.guide == 1000)
     }

@@ -198,13 +198,11 @@ private struct SceneEditorCanvasView: View {
                                         rect.width,
                                         canvasSize.width,
                                         snapThreshold,
-                                        edit.outline.sized,
                                         others.flatMap(snapTargetsX))
             let y = sceneEditorSnapAxis(position.y,
                                         rect.height,
                                         canvasSize.height,
                                         snapThreshold,
-                                        edit.outline.sized,
                                         others.flatMap(snapTargetsY))
             edit.rect.origin = CGPoint(x: x.position, y: y.position)
             edit.snapX = x
@@ -639,6 +637,9 @@ private struct SceneEditorToolbarView: View {
                                                database: database,
                                                scene: scene,
                                                selection: selection)
+                SceneEditorButtonView(image: "slider.horizontal.3") {
+                    selection.showingSettings.toggle()
+                }
                 SceneEditorDeleteSceneButtonView(model: model, scene: scene, selection: selection)
             }
         }
@@ -717,7 +718,9 @@ struct SceneEditorView: View {
         }
     }
 
-    private func settingsPanel(_ selected: SceneEditorSelectedWidget?) -> some View {
+    private func settingsPanel(_ scene: SettingsScene?,
+                               _ selected: SceneEditorSelectedWidget?) -> some View
+    {
         NavigationStack {
             Group {
                 if let selected {
@@ -725,6 +728,8 @@ struct SceneEditorView: View {
                                             database: database,
                                             sceneWidget: selected.sceneWidget,
                                             widget: selected.widget)
+                } else if let scene {
+                    SceneSettingsView(database: database, scene: scene)
                 } else {
                     Text("No widget selected")
                         .foregroundStyle(.secondary)
@@ -742,7 +747,7 @@ struct SceneEditorView: View {
                 }
             }
         }
-        .id(selected?.sceneWidget.id)
+        .id(selected?.sceneWidget.id ?? scene?.id)
     }
 
     var body: some View {
@@ -754,7 +759,7 @@ struct SceneEditorView: View {
             layout {
                 videoArea(scene)
                 if selection.showingSettings {
-                    settingsPanel(selected)
+                    settingsPanel(scene, selected)
                         .frame(width: landscape ? settingsHalfWidth : nil,
                                height: landscape ? nil : metrics.size.height * 0.45)
                 }
