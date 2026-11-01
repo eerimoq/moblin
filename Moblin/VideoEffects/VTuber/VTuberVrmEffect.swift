@@ -260,7 +260,7 @@ final class VTuberVrmEffect: VTuberEffect, @unchecked Sendable {
             self.pose.timeDelta = 0
             let layoutSize = sceneWidget.layout.size
             let side = min(toPixels(layoutSize, size.width), toPixels(layoutSize, size.height))
-            let size = 2 * Int(min(max(side, 64), 2048) / 2)
+            let size = 2 * Int(side.clamped(to: 64 ... 2048) / 2)
             DispatchQueue.main.async {
                 renderer.render(pose: pose, size: size) { pixelBuffer in
                     processorPipelineQueue.async {
