@@ -378,7 +378,10 @@ private struct SceneEditorCanvasView: View {
                 .onTapGesture(coordinateSpace: .local) { location in
                     selectOutline(at: location)
                 }
-            ForEach(widgetOutlines.outlines) { outline in
+            ForEach(widgetOutlines.outlines.filter { $0.id != selectedId }) { outline in
+                outlineView(outline)
+            }
+            if let outline = widgetOutlines.outlines.first(where: { $0.id == selectedId }) {
                 outlineView(outline)
             }
             guidesView()
