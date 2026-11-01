@@ -513,21 +513,18 @@ extension Model {
         guard !mapEffects.isEmpty else {
             return
         }
-        let location: CLLocation
-        if let remoteSceneLocation = remoteSceneData.location {
-            location = remoteSceneLocation.toLocation()
-        } else {
-            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
-                return
-            }
-            if isLocationInPrivacyRegion(location: latestKnownLocation) {
-                latestKnownLocation = .init()
-            }
-            remoteControlAssistantSetRemoteSceneDataLocation(location: latestKnownLocation)
-            location = latestKnownLocation
+        var location = locationManager.getLatestKnownLocation()
+        if let latestKnownLocation = location, isLocationInPrivacyRegion(location: latestKnownLocation) {
+            location = CLLocation()
         }
-        for mapEffect in mapEffects.values {
-            mapEffect.updateLocation(location: location)
+        if let location {
+            remoteControlAssistantSetRemoteSceneDataLocation(location: location)
+        }
+        let remoteLocation = remoteSceneData.location?.toLocation()
+        for (widgetId, mapEffect) in mapEffects {
+            if let location = isRemoteSceneWidget(id: widgetId) ? remoteLocation : location {
+                mapEffect.updateLocation(location: location)
+            }
         }
     }
 
@@ -1511,6 +1508,10 @@ extension Model {
         }
     }
 
+    private func isRemoteSceneWidget(id: UUID) -> Bool {
+        remoteSceneWidgets.contains { $0.id == id }
+    }
+
     private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
         database.widgets + remoteSceneWidgets
     }
@@ -1566,20 +1567,20 @@ extension Model {
         guard !textEffects.isEmpty else {
             return
         }
-        let variables: Variables
-        if let textStats = remoteSceneData.textStats {
-            variables = textStats.toVariables()
-        } else {
-            updateTextWidgetsLapTimes(now: now)
-            variables = createVariables(now: now, timestamp: timestamp)
-            remoteControlAssistantSetRemoteSceneDataVariables(variables: variables)
-        }
-        for effect in textEffects.values {
-            effect.updateVariables(variables: variables)
+        updateTextWidgetsLapTimes(now: now)
+        let variables = createVariables(now: now, timestamp: timestamp)
+        remoteControlAssistantSetRemoteSceneDataVariables(variables: variables)
+        let remoteVariables = remoteSceneData.textStats?.toVariables()
+        for (widgetId, effect) in textEffects {
+            if let variables = isRemoteSceneWidget(id: widgetId) ? remoteVariables : variables {
+                effect.updateVariables(variables: variables)
+            }
         }
         for effect in slideshowEffects.values {
             for slide in effect.slides {
-                if let textEffect = slide.effect as? TextEffect {
+                if let textEffect = slide.effect as? TextEffect,
+                   let variables = isRemoteSceneWidget(id: slide.widgetId) ? remoteVariables : variables
+                {
                     textEffect.updateVariables(variables: variables)
                 }
             }

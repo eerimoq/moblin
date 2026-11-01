@@ -12,6 +12,7 @@ from systest_moblin.ffmpeg import Pixel
 from systest_moblin.ffmpeg import ffprobe_format
 from systest_moblin.ffmpeg import read_unique_frame_presentation_time_stamps
 from systest_moblin.ffmpeg import read_video_frame
+from systest_moblin.ffmpeg import read_video_region_colors
 
 from ..utils.config import RTMP_SERVER_PORT
 from ..utils.config import Capability
@@ -58,10 +59,12 @@ SCENE_SWITCH_INTERVAL = 6
 SCENE_SWITCH_TRANSITION_MARGIN = 2.5
 SMALL_MAP_CROP = Crop(x=0, y=0, width=216, height=216)
 LARGE_MAP_CROP = Crop(x=576, y=0, width=432, height=432)
+REMOTE_MAP_CROP = Crop(x=576, y=0, width=216, height=216)
 TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
 BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
 IMAGE_CROP = Crop(x=20, y=20, width=40, height=40)
 REMOTE_TEXT_CROP = Crop(x=0, y=0, width=1200, height=120)
+LOCAL_TEXT_CROP = Crop(x=0, y=216, width=1200, height=120)
 MAP_DOT_SIDE = 22
 ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
 FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
@@ -74,6 +77,8 @@ V_TUBER_WIDGET_ID = uuid()
 IMAGE_WIDGET_ID = uuid()
 REMOTE_SCENE_ID = uuid()
 REMOTE_TEXT_WIDGET_ID = uuid()
+LOCAL_TEXT_WIDGET_ID = uuid()
+REMOTE_MAP_WIDGET_ID = uuid()
 LUT_ID = uuid()
 PNG_TUBER_MODEL_ID = uuid()
 V_TUBER_MODEL_ID = uuid()
@@ -100,6 +105,21 @@ PNG_LUT_DIMENSION = 196
 
 def is_map_dot(pixel: Pixel) -> bool:
     return pixel.blue > 180 and pixel.blue - pixel.red > 80 and pixel.blue - pixel.green > 60
+
+
+def corner_colored_ratio(image: Image) -> float:
+    corner = image.pixel(image.width - 10, 10)
+    count = 0
+    for y in range(image.height):
+        for x in range(image.width):
+            pixel = image.pixel(x, y)
+            if (
+                abs(pixel.red - corner.red) <= 16
+                and abs(pixel.green - corner.green) <= 16
+                and abs(pixel.blue - corner.blue) <= 16
+            ):
+                count += 1
+    return count / (image.width * image.height)
 
 
 def lut_levels(dimension: int) -> list[int]:
@@ -491,12 +511,11 @@ class SceneWidgetsInBackground(GraphicsImplementationTestCase):
             )
 
 
-class WidgetTestCase(GraphicsImplementationTestCase):
+class WidgetTestCase(TestCase):
     def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None, **overrides):
         self.moblin.import_settings(
             overrides={
                 **overrides,
-                "graphicsImplementation": self.graphics_implementation,
                 "streams": [RECORD_STREAM_SETTINGS],
                 "scenes": [
                     {
@@ -523,7 +542,18 @@ class WidgetTestCase(GraphicsImplementationTestCase):
         self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP))
 
 
-class SceneMapWidget(WidgetTestCase):
+class GraphicsImplementationWidgetTestCase(GraphicsImplementationTestCase, WidgetTestCase):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None, **overrides):
+        super().import_settings(
+            scene_widgets,
+            widgets,
+            files,
+            graphicsImplementation=self.graphics_implementation,
+            **overrides,
+        )
+
+
+class SceneMapWidget(GraphicsImplementationWidgetTestCase):
     """One small and one large map widget on top of a scene without video source.
     Validate that both maps are rendered and that their blue dots are equally big.
 
@@ -568,7 +598,7 @@ class SceneMapWidget(WidgetTestCase):
         self.assert_in(height, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot height")
 
 
-class ScenePngTuberWidget(WidgetTestCase):
+class ScenePngTuberWidget(GraphicsImplementationWidgetTestCase):
     """A PNGTuber widget on top of a scene without video source. Validate that the model
     is rendered.
 
@@ -597,7 +627,7 @@ class ScenePngTuberWidget(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
-class SceneVTuberWidget(WidgetTestCase):
+class SceneVTuberWidget(GraphicsImplementationWidgetTestCase):
     """A VTuber widget with a VRM model on top of a scene without video source. Validate
     that the model is rendered.
 
@@ -626,7 +656,7 @@ class SceneVTuberWidget(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
-class SceneVTuberLive2DWidget(WidgetTestCase):
+class SceneVTuberLive2DWidget(GraphicsImplementationWidgetTestCase):
     """A VTuber widget with a Live2D model on top of a scene without video source.
     Validate that the model is rendered.
 
@@ -656,7 +686,7 @@ class SceneVTuberLive2DWidget(WidgetTestCase):
         self.assert_black_background(recording_file)
 
 
-class SceneImageWidgetLut(WidgetTestCase):
+class SceneImageWidgetLut(GraphicsImplementationWidgetTestCase):
     """A red image widget with a LUT effect that swaps red and blue. Validate that the
     image is rendered blue. The PNG LUT is 196x196x196 and must be downsampled.
 
@@ -733,43 +763,34 @@ class RemoteSceneTestCase(WidgetTestCase):
         self.moblin.clear_remote_scene_settings()
         super().teardown()
 
-    def set_remote_scene_with_text_widget(self, format_string: str):
+    def set_remote_scene_with_widget(self, widget_id: str, layout: dict, widget_type: dict):
         self.moblin.set_remote_scene_settings(
-            scenes=[
-                {
-                    "id": REMOTE_SCENE_ID,
-                    "widgets": [
-                        {
-                            "id": REMOTE_TEXT_WIDGET_ID,
-                            "layout": {"x": 0, "y": 0, "size": 100, "alignment": Alignment.TOP_LEFT},
-                        }
-                    ],
-                }
-            ],
-            widgets=[
-                {
-                    "id": REMOTE_TEXT_WIDGET_ID,
-                    "enabled": True,
-                    "type": {
-                        "text": {
-                            "data": {
-                                "formatString": format_string,
-                                "backgroundColor": {"red": 255, "green": 255, "blue": 255},
-                                "clearBackgroundColor": False,
-                                "foregroundColor": {"red": 0, "green": 0, "blue": 0},
-                                "clearForegroundColor": False,
-                                "fontSize": 80,
-                                "fontDesign": "Default",
-                                "fontWeight": "Regular",
-                                "fontMonospacedDigits": False,
-                                "horizontalAlignment": {"leading": {}},
-                                "delay": 0,
-                            }
-                        }
-                    },
-                }
-            ],
+            scenes=[{"id": REMOTE_SCENE_ID, "widgets": [{"id": widget_id, "layout": layout}]}],
+            widgets=[{"id": widget_id, "enabled": True, "type": widget_type}],
             selected_scene_id=REMOTE_SCENE_ID,
+        )
+
+    def set_remote_scene_with_text_widget(self, format_string: str):
+        self.set_remote_scene_with_widget(
+            REMOTE_TEXT_WIDGET_ID,
+            {"x": 0, "y": 0, "size": 100, "alignment": Alignment.TOP_LEFT},
+            {
+                "text": {
+                    "data": {
+                        "formatString": format_string,
+                        "backgroundColor": {"red": 255, "green": 255, "blue": 255},
+                        "clearBackgroundColor": False,
+                        "foregroundColor": {"red": 0, "green": 0, "blue": 0},
+                        "clearForegroundColor": False,
+                        "fontSize": 80,
+                        "fontDesign": "Default",
+                        "fontWeight": "Regular",
+                        "fontMonospacedDigits": False,
+                        "horizontalAlignment": {"leading": {}},
+                        "delay": 0,
+                    }
+                }
+            },
         )
 
     def record_and_assert_text(self, filename: str, text: str):
@@ -779,14 +800,15 @@ class RemoteSceneTestCase(WidgetTestCase):
 
 
 class SceneRemoteScene(RemoteSceneTestCase):
-    """Set a remote scene with a text widget over remote control, as an assistant does,
-    on top of a scene without video source. Validate that the text is rendered. Clear
-    the remote scene and validate that the text widget is gone.
+    """Set a remote scene with a text widget over remote control and send remote scene
+    data, as an assistant does, on top of a scene without video source. Validate that the
+    text is rendered. Clear the remote scene and validate that the text widget is gone.
 
     """
 
     def run(self):
         self.set_remote_scene_with_text_widget("Remote scene")
+        self.moblin.set_remote_scene_text_stats({})
         self.record_and_assert_text(f"{self.name}Set.mp4", "Remote scene")
         self.moblin.clear_remote_scene_settings()
         recording_file = self.record(f"{self.name}Cleared.mp4")
@@ -808,6 +830,148 @@ class SceneRemoteSceneData(RemoteSceneTestCase):
             self.record_and_assert_text(f"{self.name}{number}.mp4", text)
 
 
+class LocalTextWidgetRemoteSceneTestCase(RemoteSceneTestCase):
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(LOCAL_TEXT_WIDGET_ID, x=0, y=20, size=100)],
+            widgets=[
+                text_widget_settings(
+                    "Resolution",
+                    LOCAL_TEXT_WIDGET_ID,
+                    {
+                        "formatString": "{resolution}",
+                        "backgroundColor": {"red": 255, "green": 255, "blue": 255},
+                        "foregroundColor": {"red": 0, "green": 0, "blue": 0},
+                        "fontSize": 80,
+                    },
+                )
+            ],
+        )
+
+
+class SceneRemoteSceneDataAndLocalStats(LocalTextWidgetRemoteSceneTestCase):
+    """A text widget showing the resolution on top of a scene without video source, and a
+    remote scene with a text widget showing the resolution set over remote control, as an
+    assistant does. Send remote scene data with another resolution than the recorded one.
+    Validate that the remote scene text widget renders the resolution from the remote scene
+    data and that the local text widget renders the resolution of the recording. Clear and
+    set the remote scene again without sending remote scene data. Validate that the remote
+    scene text widget renders nothing, neither the old remote scene data nor local stats.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{resolution}")
+        self.moblin.set_remote_scene_text_stats({"resolution": "720p"})
+        recording_file = self.record(f"{self.name}Data.mp4")
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP), "720p")
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+        self.moblin.clear_remote_scene_settings()
+        self.set_remote_scene_with_text_widget("{resolution}")
+        recording_file = self.record(f"{self.name}NoData.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP))
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteSceneAssistantReconnect(LocalTextWidgetRemoteSceneTestCase):
+    """A text widget showing the resolution on top of a scene without video source, and a
+    remote scene with a text widget showing the resolution set over remote control and
+    remote scene data sent, as an assistant does. Restart the assistant while recording
+    and set the same remote scene again once the streamer has reconnected, as an assistant
+    does when connected. Validate that both text widgets are rendered in every frame, that
+    is, that they do not flicker, and that they still show their resolutions.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{resolution}")
+        self.moblin.set_remote_scene_text_stats({"resolution": "720p"})
+        time.sleep(WARM_UP_TIME)
+        with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
+            time.sleep(2)
+            self.moblin.restart_assistant()
+            self.set_remote_scene_with_text_widget("{resolution}")
+            time.sleep(3)
+        recording_file = recorder.recording
+        duration = ffprobe_format(recording_file).duration
+        self.assert_rendered_in_every_frame(recording_file, duration, REMOTE_TEXT_CROP, "remote")
+        self.assert_rendered_in_every_frame(recording_file, duration, LOCAL_TEXT_CROP, "local")
+        self.assert_equal(read_text_in_video_frame(recording_file, duration - 1, REMOTE_TEXT_CROP), "720p")
+        self.assert_equal(read_text_in_video_frame(recording_file, duration - 1, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+
+    def assert_rendered_in_every_frame(self, recording_file: Path, duration: float, crop: Crop, name: str):
+        crop = Crop(x=crop.x, y=crop.y, width=80, height=80)
+        frames = read_video_region_colors(recording_file, crop, 1, 1, 0, duration)
+        self.assert_greater(len(frames), 0, f"Number of frames with the {name} text widget")
+        self.assert_equal(
+            [frame.pts for frame in frames if frame.colors[0].is_black()],
+            [],
+            f"Presentation time stamps of frames without the {name} text widget",
+        )
+
+
+class SceneRemoteSceneLocationAndLocalLocation(RemoteSceneTestCase):
+    """A small map widget on top of a scene without video source, and a remote scene with
+    an equally small map widget set over remote control, as an assistant does. Send remote
+    scene data with a location in the middle of the Atlantic Ocean. Validate that both maps
+    are rendered, that the remote scene map widget shows almost only water and that the
+    local map widget, showing the device's location, does not. Clear and set the remote
+    scene again without sending remote scene data. Validate that the remote scene map
+    widget renders nothing, neither the old remote scene location nor the local location.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20)],
+            widgets=[
+                {
+                    "id": MAP_SMALL_WIDGET_ID,
+                    "name": "Map",
+                    "type": WidgetType.MAP,
+                    "map": {"northUp": True},
+                }
+            ],
+        )
+
+    def run(self):
+        self.set_remote_scene_with_map_widget()
+        self.moblin.set_remote_scene_location(30, -40)
+        recording_file = self.record(f"{self.name}Data.mp4")
+        remote_map = read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_MAP_CROP)
+        self.assert_map_dot_in_middle(remote_map, "remote")
+        self.assert_greater(corner_colored_ratio(remote_map), 0.9, "Remote map water ratio")
+        self.assert_local_map(recording_file)
+        self.assert_black_background(recording_file)
+        self.moblin.clear_remote_scene_settings()
+        self.set_remote_scene_with_map_widget()
+        recording_file = self.record(f"{self.name}NoData.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_MAP_CROP))
+        self.assert_local_map(recording_file)
+        self.assert_black_background(recording_file)
+
+    def set_remote_scene_with_map_widget(self):
+        self.set_remote_scene_with_widget(
+            REMOTE_MAP_WIDGET_ID,
+            {"x": 30, "y": 0, "size": 20, "alignment": Alignment.TOP_LEFT},
+            {"map": {"data": {"northUp": True}}},
+        )
+
+    def assert_local_map(self, recording_file: Path):
+        local_map = read_video_frame(recording_file, FRAME_TIMESTAMP, SMALL_MAP_CROP)
+        self.assert_map_dot_in_middle(local_map, "local")
+        self.assert_less(corner_colored_ratio(local_map), 0.8, "Local map water ratio")
+
+    def assert_map_dot_in_middle(self, image: Image, name: str):
+        self.assert_true(
+            is_map_dot(image.pixel(image.width // 2, image.height // 2)),
+            f"No blue dot in the middle of the {name} map",
+        )
+
+
 def tests(moblin: Moblin):
     test_cases = [
         SceneSwitchMultipleTimes(moblin),
@@ -815,8 +979,11 @@ def tests(moblin: Moblin):
         SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
         SceneSwitchSwappedCameras(moblin, camera_preview=False),
         SceneSwitchSwappedCameras(moblin, camera_preview=True),
-        SceneRemoteScene(moblin, GraphicsImplementation.CORE_IMAGE),
-        SceneRemoteSceneData(moblin, GraphicsImplementation.CORE_IMAGE),
+        SceneRemoteScene(moblin),
+        SceneRemoteSceneData(moblin),
+        SceneRemoteSceneDataAndLocalStats(moblin),
+        SceneRemoteSceneLocationAndLocalLocation(moblin),
+        SceneRemoteSceneAssistantReconnect(moblin),
     ]
     for graphics_implementation in GraphicsImplementation:
         test_cases += [

@@ -804,6 +804,7 @@ final class Model: NSObject, ObservableObject {
     let faxReceiver = FaxReceiver()
     var twitchStreamUpdateTime = ContinuousClock.now
     var externalDisplayPreview = false
+    var remoteSceneSettings: RemoteControlRemoteSceneSettings?
     var remoteSceneScenes: [SettingsScene] = []
     var remoteSceneWidgets: [SettingsWidget] = []
     var remoteSceneData = RemoteControlRemoteSceneData(textStats: nil, location: nil)

@@ -214,6 +214,10 @@ class Moblin:
         self._events.stop()
         self._server.stop()
 
+    def restart_assistant(self):
+        self._server.stop()
+        self._server.start()
+
     def _handle_log_entry(self, entry: str):
         self.video_decode_errors.handle_log_entry(entry)
         self.buffered_video_buffers.handle_log_entry(entry)
@@ -302,6 +306,12 @@ class Moblin:
             **text_stats,
         }
         response = self._request({"setRemoteSceneData": {"data": {"textStats": data}}})
+        if "ok" not in response["result"]:
+            raise Exception(f"Set remote scene data failed: {response['result']}")
+
+    def set_remote_scene_location(self, latitude: float, longitude: float):
+        location = {"latitude": latitude, "longitude": longitude, "course": 0, "speed": 0}
+        response = self._request({"setRemoteSceneData": {"data": {"location": location}}})
         if "ok" not in response["result"]:
             raise Exception(f"Set remote scene data failed: {response['result']}")
 

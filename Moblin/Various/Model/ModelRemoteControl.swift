@@ -1089,6 +1089,10 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetRemoteSceneSettings(data: RemoteControlRemoteSceneSettings) {
+        guard data != remoteSceneSettings else {
+            return
+        }
+        remoteSceneSettings = data
         let (scenes, widgets, selectedSceneId) = data.toSettings()
         if let selectedSceneId {
             let widget = SettingsWidget(name: "")
@@ -1098,8 +1102,7 @@ extension Model: RemoteControlStreamerDelegate {
             remoteSceneWidgets = [widget] + widgets
             resetSelectedScene(changeScene: false)
         } else if !remoteSceneScenes.isEmpty {
-            remoteSceneScenes = []
-            remoteSceneWidgets = []
+            clearRemoteSceneSettingsAndData()
             resetSelectedScene(changeScene: false)
         }
     }
@@ -1122,6 +1125,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func clearRemoteSceneSettingsAndData() {
+        remoteSceneSettings = nil
         remoteSceneScenes = []
         remoteSceneWidgets = []
         remoteSceneData.textStats = nil

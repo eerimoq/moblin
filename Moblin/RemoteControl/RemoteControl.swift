@@ -379,7 +379,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
     }
 }
 
-struct RemoteControlRemoteSceneSettings: Codable {
+struct RemoteControlRemoteSceneSettings: Codable, Equatable {
     var scenes: [RemoteControlRemoteSceneSettingsScene]
     var widgets: [RemoteControlRemoteSceneSettingsWidget]
     var selectedSceneId: UUID?
@@ -403,7 +403,7 @@ struct RemoteControlRemoteSceneSettings: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsScene: Codable {
+struct RemoteControlRemoteSceneSettingsScene: Codable, Equatable {
     var id: UUID
     var widgets: [RemoteControlRemoteSceneSettingsSceneWidget]
 
@@ -420,14 +420,14 @@ struct RemoteControlRemoteSceneSettingsScene: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsSceneWidgetLayout: Codable {
+struct RemoteControlRemoteSceneSettingsSceneWidgetLayout: Codable, Equatable {
     let x: Double
     let y: Double
     let size: Double
     let alignment: SettingsAlignment
 }
 
-struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
+struct RemoteControlRemoteSceneSettingsSceneWidget: Codable, Equatable {
     let id: UUID
     let layout: RemoteControlRemoteSceneSettingsSceneWidgetLayout
 
@@ -449,7 +449,7 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsWidget: Codable {
+struct RemoteControlRemoteSceneSettingsWidget: Codable, Equatable {
     let id: UUID
     let enabled: Bool
     let type: RemoteControlRemoteSceneSettingsWidgetType
@@ -521,14 +521,14 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
     }
 }
 
-enum RemoteControlRemoteSceneSettingsWidgetType: Codable {
+enum RemoteControlRemoteSceneSettingsWidgetType: Codable, Equatable {
     case browser(data: RemoteControlRemoteSceneSettingsWidgetTypeBrowser)
     case text(data: RemoteControlRemoteSceneSettingsWidgetTypeText)
     case map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap)
     case scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene)
 }
 
-struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
+struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable, Equatable {
     let url: String
     let width: Int
     let height: Int
@@ -557,7 +557,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
+struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable, Equatable {
     let formatString: String
     let backgroundColor: RgbColor
     let clearBackgroundColor: Bool
@@ -606,7 +606,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     }
 }
 
-enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
+enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable, Equatable {
     case leading
     case trailing
     case center
@@ -634,7 +634,7 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
+struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable, Equatable {
     let northUp: Bool
 
     init(map: SettingsWidgetMap) {
@@ -648,7 +648,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
     }
 }
 
-struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable {
+struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable, Equatable {
     let sceneId: UUID
 
     init(scene: SettingsWidgetScene) {
