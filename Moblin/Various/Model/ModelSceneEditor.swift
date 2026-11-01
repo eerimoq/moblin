@@ -34,11 +34,9 @@ extension Model {
     }
 
     func sceneEditorSetWidgetAlignment(sceneWidget: SettingsSceneWidget,
-                                       widget: SettingsWidget,
-                                       size: CGSize?,
+                                       size: CGSize,
                                        alignment: SettingsAlignment)
     {
-        let size = size ?? textEffects[widget.id]?.overlaySize ?? .zero
         sceneWidget.layout = sceneEditorAlignedLayout(sceneWidget.layout,
                                                       alignment,
                                                       size,

@@ -17,7 +17,7 @@ private struct SceneEditorEdit {
 private struct SceneEditorSelectedWidget {
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
-    let size: CGSize?
+    let size: CGSize
 }
 
 private class SceneEditorSelection: ObservableObject {
@@ -464,16 +464,12 @@ private func alignmentImage(_ alignment: SettingsAlignment) -> String {
 private struct SceneEditorAlignmentButtonView: View {
     let model: Model
     @ObservedObject var sceneWidget: SettingsSceneWidget
-    let widget: SettingsWidget
-    let size: CGSize?
+    let size: CGSize
     @State private var presentingAlignment = false
 
     private func option(_ alignment: SettingsAlignment) -> some View {
         Button {
-            model.sceneEditorSetWidgetAlignment(sceneWidget: sceneWidget,
-                                                widget: widget,
-                                                size: size,
-                                                alignment: alignment)
+            model.sceneEditorSetWidgetAlignment(sceneWidget: sceneWidget, size: size, alignment: alignment)
         } label: {
             Image(systemName: sceneWidget.layout.alignment == alignment ? "square.fill" : "square")
                 .font(.title)
@@ -671,7 +667,6 @@ private struct SceneEditorToolbarView: View {
         if widget.hasAlignment() {
             SceneEditorAlignmentButtonView(model: model,
                                            sceneWidget: sceneWidget,
-                                           widget: widget,
                                            size: selected.size)
         }
         SceneEditorButtonView(image: "square.2.layers.3d.top.filled") {
@@ -780,7 +775,7 @@ struct SceneEditorView: View {
         }
         return SceneEditorSelectedWidget(sceneWidget: outline.sceneWidget,
                                          widget: outline.widget,
-                                         size: outline.sized ? outline.rect.size : nil)
+                                         size: outline.rect.size)
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {
