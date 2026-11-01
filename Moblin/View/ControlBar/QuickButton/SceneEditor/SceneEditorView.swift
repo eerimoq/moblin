@@ -796,33 +796,29 @@ struct SceneEditorView: View {
     }
 
     private func settingsPanel(_ scene: SettingsScene?, _ selected: WidgetOutline?) -> some View {
-        NavigationStack {
-            Group {
-                if let selected {
-                    SceneWidgetSettingsView(model: model,
-                                            database: database,
-                                            sceneWidget: selected.sceneWidget,
-                                            widget: selected.widget)
-                } else if let scene {
-                    SceneSettingsView(database: database, scene: scene)
-                } else {
-                    Text("No widget selected")
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        selection.showingSettings = false
-                    } label: {
-                        Image(systemName: "xmark")
+        ZStack(alignment: .topTrailing) {
+            NavigationStack {
+                Group {
+                    if let selected {
+                        SceneWidgetSettingsView(model: model,
+                                                database: database,
+                                                sceneWidget: selected.sceneWidget,
+                                                widget: selected.widget)
+                    } else if let scene {
+                        SceneSettingsView(database: database, scene: scene)
+                    } else {
+                        Text("No widget selected")
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .id(selected?.sceneWidget.id ?? scene?.id)
+            CloseButtonView {
+                selection.showingSettings = false
             }
         }
-        .id(selected?.sceneWidget.id ?? scene?.id)
     }
 
     var body: some View {
