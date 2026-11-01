@@ -273,9 +273,9 @@ extension Model {
         for browserEffect in browserEffects.values {
             browserEffect.stop()
         }
-        let resolvedScene = resolveScene(scene)
+        let resolvedScene = resolveScene(scene, includeRemote: true)
         sceneUpdatedOn(scene: scene, resolvedScene: resolvedScene, attachCamera: attachCamera)
-        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene()
+        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: resolvedScene)
         startWeatherManager(drawnWidgets: drawnWidgets)
         startGeographyManager(drawnWidgets: drawnWidgets)
         startGForceManager(drawnWidgets: drawnWidgets)
@@ -283,8 +283,8 @@ extension Model {
             remoteSceneSettingsUpdated()
         }
         updateStatusCameraText()
-        updateSpeechToText(drawnWidgets: resolvedScene.drawnWidgets().map(\.widget))
-        updateWidgetOutlines()
+        updateSpeechToText(drawnWidgets: resolvedScene.localDrawnWidgets().map(\.widget))
+        updateWidgetOutlines(resolvedSelectedScene: resolvedScene)
     }
 
     func getSceneName(id: UUID?) -> String? {
@@ -419,15 +419,22 @@ extension Model {
     }
 
     func drawnWidgetsInSelectedAndRemoteScene() -> [SettingsWidget] {
-        let remoteScene = database.scenes.first(where: { $0.id == database.remoteSceneId })
-        var widgets: [SettingsWidget] = []
-        var widgetIds: Set<UUID> = []
-        for scene in [getSelectedScene(), remoteScene].compactMap({ $0 }) {
-            for widget in resolveScene(scene).drawnWidgets().map(\.widget)
-                where widgetIds.insert(widget.id).inserted
-            {
-                widgets.append(widget)
-            }
+        drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: getSelectedScene()
+            .map { resolveScene($0) })
+    }
+
+    private func drawnWidgetsInSelectedAndRemoteScene(resolvedSelectedScene: ResolvedScene?)
+        -> [SettingsWidget]
+    {
+        var widgets = resolvedSelectedScene?.localDrawnWidgets().map(\.widget) ?? []
+        guard let remoteScene = database.scenes.first(where: { $0.id == database.remoteSceneId }) else {
+            return widgets
+        }
+        var widgetIds = Set(widgets.map(\.id))
+        for widget in resolveScene(remoteScene).drawnWidgets().map(\.widget)
+            where widgetIds.insert(widget.id).inserted
+        {
+            widgets.append(widget)
         }
         return widgets
     }
@@ -622,7 +629,7 @@ extension Model {
 
     private func getCameraPreviewWidgets(resolvedScene: ResolvedScene) -> [CameraPreviewWidget] {
         var widgets: [CameraPreviewWidget] = []
-        for widget in resolvedScene.drawnWidgets() where widget.widget.type == .videoSource {
+        for widget in resolvedScene.localDrawnWidgets() where widget.widget.type == .videoSource {
             let videoSource = widget.widget.videoSource
             guard let cameraId = videoSource.videoSource.getCaptureDeviceCameraId(),
                   let device = AVCaptureDevice(uniqueID: cameraId)
@@ -1138,7 +1145,7 @@ extension Model {
         enabledSnapshotEffects.removeAll()
         enabledChatEffects.removeAll()
         enabledChatEmoteComboEffects.removeAll()
-        addSceneEffects(resolveScene(scene, includeRemote: true).drawnWidgets(), &effects, &needsSpeechToText)
+        addSceneEffects(resolvedScene.drawnWidgets(), &effects, &needsSpeechToText)
         if !drawOnStream.lines.isEmpty {
             effects.append(drawOnStreamEffect)
         }

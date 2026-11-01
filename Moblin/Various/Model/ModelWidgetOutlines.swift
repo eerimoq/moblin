@@ -34,17 +34,23 @@ extension Model {
         }
     }
 
-    func updateWidgetOutlines() {
+    func updateWidgetOutlines(resolvedSelectedScene: ResolvedScene? = nil) {
         if widgetOutlines.enabled {
-            updateWidgetOutlines(widgetOutlines, getSelectedScene(), sceneEditor: false)
+            updateWidgetOutlines(
+                widgetOutlines,
+                getSelectedScene(),
+                resolvedSelectedScene,
+                sceneEditor: false
+            )
         }
         if sceneEditorWidgetOutlines.enabled {
-            updateWidgetOutlines(sceneEditorWidgetOutlines, sceneEditorScene(), sceneEditor: true)
+            updateWidgetOutlines(sceneEditorWidgetOutlines, sceneEditorScene(), nil, sceneEditor: true)
         }
     }
 
     private func updateWidgetOutlines(_ widgetOutlines: WidgetOutlines,
                                       _ scene: SettingsScene?,
+                                      _ resolvedScene: ResolvedScene?,
                                       sceneEditor: Bool)
     {
         guard let scene else {
@@ -56,7 +62,8 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        let resolved = resolveScene(scene, includeRemote: true, includeDisabledSceneWidgets: sceneEditor)
+        let resolved = resolvedScene
+            ?? resolveScene(scene, includeRemote: true, includeDisabledSceneWidgets: sceneEditor)
         if sceneEditor {
             for drawnWidget in resolved.firstWidgets() where drawnWidget.widget.type == .scene {
                 guard scene.widgets.contains(where: { $0 === drawnWidget.sceneWidget }) else {

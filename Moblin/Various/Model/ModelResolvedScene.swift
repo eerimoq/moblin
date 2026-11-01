@@ -10,6 +10,7 @@ struct ResolvedSceneWidget: Identifiable {
     let widget: SettingsWidget
     let parentsEnabled: Bool
     let first: Bool
+    let remote: Bool
 
     var enabled: Bool {
         parentsEnabled && widget.enabled
@@ -30,6 +31,10 @@ struct ResolvedScene {
 
     func drawnWidgets() -> [ResolvedSceneWidget] {
         widgets.filter(\.drawn)
+    }
+
+    func localDrawnWidgets() -> [ResolvedSceneWidget] {
+        widgets.filter { $0.drawn && !$0.remote }
     }
 
     func duplicatedWidgetCounts() -> [UUID: Int] {
@@ -110,11 +115,10 @@ struct SceneResolver {
     {
         var walk = SceneWalk(includeDisabledSceneWidgets: includeDisabledSceneWidgets, change: change)
         walk.resolved.sceneIds.insert(scene.id)
-        var sceneWidgets = sceneWidgets(scene, change)
+        walk.visit(scene, sceneWidgets(scene, change), true, false, self)
         if let remoteWidgetId {
-            sceneWidgets.append(SettingsSceneWidget(widgetId: remoteWidgetId))
+            walk.visit(scene, [SettingsSceneWidget(widgetId: remoteWidgetId)], true, true, self)
         }
-        walk.visit(scene, sceneWidgets, true, self)
         return walk.resolved
     }
 
@@ -145,6 +149,7 @@ private struct SceneWalk {
     mutating func visit(_ scene: SettingsScene,
                         _ sceneWidgets: [SettingsSceneWidget],
                         _ parentsEnabled: Bool,
+                        _ remote: Bool,
                         _ resolver: SceneResolver)
     {
         for sceneWidget in sceneWidgets {
@@ -155,7 +160,8 @@ private struct SceneWalk {
                                                         sceneWidget: sceneWidget,
                                                         widget: widget,
                                                         parentsEnabled: parentsEnabled,
-                                                        first: widgetIds.insert(widget.id).inserted))
+                                                        first: widgetIds.insert(widget.id).inserted,
+                                                        remote: remote))
             guard widget.type == .scene, widget.enabled || includeDisabledSceneWidgets else {
                 continue
             }
@@ -171,6 +177,7 @@ private struct SceneWalk {
             visit(nestedScene,
                   resolver.sceneWidgets(nestedScene, change),
                   parentsEnabled && widget.enabled,
+                  remote,
                   resolver)
         }
     }
