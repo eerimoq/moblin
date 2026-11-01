@@ -55,6 +55,7 @@ private struct SceneItemView: View {
 private struct ScenesListView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @State private var presentingCreateWizard = false
 
     var body: some View {
         Section {
@@ -67,7 +68,13 @@ private struct ScenesListView: View {
                 }
             }
             CreateButtonView {
-                _ = model.createScene()
+                model.createSceneWizard.reset()
+                presentingCreateWizard = true
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                SceneWizardSheetView(model: model,
+                                     database: database,
+                                     presentingCreateWizard: $presentingCreateWizard)
             }
         } header: {
             Text("Scenes")

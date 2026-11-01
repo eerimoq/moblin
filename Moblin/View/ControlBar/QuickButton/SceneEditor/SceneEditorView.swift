@@ -549,6 +549,7 @@ private struct SceneEditorScenesButtonView: View {
     let scene: SettingsScene?
     let selection: SceneEditorSelection
     @State private var presentingScenes = false
+    @State private var presentingCreateWizard = false
 
     var body: some View {
         SceneEditorButtonView(image: "photo.on.rectangle") {
@@ -560,10 +561,9 @@ private struct SceneEditorScenesButtonView: View {
                     image: "plus.square.dashed",
                     text: String(localized: "Create scene")
                 ) {
-                    let scene = model.createScene()
-                    selection.sceneWidgetId = nil
-                    model.sceneEditorSelectScene(id: scene.id)
                     presentingScenes = false
+                    model.createSceneWizard.reset()
+                    presentingCreateWizard = true
                 }
                 Divider()
                 ForEach(database.scenes) { scene in
@@ -579,6 +579,15 @@ private struct SceneEditorScenesButtonView: View {
                     }
                     .foregroundStyle(.primary)
                 }
+            }
+        }
+        .sheet(isPresented: $presentingCreateWizard) {
+            SceneWizardSheetView(model: model,
+                                 database: database,
+                                 presentingCreateWizard: $presentingCreateWizard)
+            { scene in
+                selection.sceneWidgetId = nil
+                model.sceneEditorSelectScene(id: scene.id)
             }
         }
     }

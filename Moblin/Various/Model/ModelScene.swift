@@ -29,6 +29,19 @@ class CreateWidgetWizard: ObservableObject {
     }
 }
 
+@MainActor
+class CreateSceneWizard: ObservableObject {
+    @Published var name: String = ""
+    @Published var widgetIds: Set<UUID> = []
+    var scene: SettingsScene = .init(name: "")
+
+    func reset() {
+        name = ""
+        widgetIds = []
+        scene = .init(name: "")
+    }
+}
+
 let defaultScoreboardSize = 18.52
 
 extension Model {
@@ -281,9 +294,16 @@ extension Model {
     }
 
     func createScene() -> SettingsScene {
-        let scene = SettingsScene(name: makeUniqueName(name: SettingsScene.baseName,
-                                                       existingNames: database.scenes))
+        let scene = createSceneWizard.scene
+        scene.name = if createSceneWizard.name.isEmpty {
+            makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
+        } else {
+            createSceneWizard.name
+        }
         database.scenes.append(scene)
+        for widget in database.widgets where createSceneWizard.widgetIds.contains(widget.id) {
+            appendWidgetToScene(scene: scene, widget: widget)
+        }
         return scene
     }
 

@@ -576,6 +576,7 @@ final class Model: NSObject, ObservableObject {
     let remoteControl = RemoteControl()
     let createStreamWizard = CreateStreamWizard()
     let createWidgetWizard = CreateWidgetWizard()
+    let createSceneWizard = CreateSceneWizard()
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
