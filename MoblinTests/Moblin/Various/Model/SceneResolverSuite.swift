@@ -47,7 +47,24 @@ struct SceneResolverSuite {
         #expect(resolver.resolve(main).drawnWidgets().isEmpty)
         let resolved = resolver.resolve(main, includeDisabledSceneWidgets: true)
         #expect(resolved.widgets.map(\.widget.name) == ["Scene", "Image"])
-        #expect(resolved.drawnWidgets().map(\.widget.name) == ["Image"])
+        #expect(resolved.widgets.map(\.enabled) == [false, false])
+        #expect(resolved.drawnWidgets().isEmpty)
+    }
+
+    @Test
+    func disabledNestedSceneWidgetDisablesItsContent() {
+        let image = makeWidget("Image")
+        let innerScene = makeScene("Inner", [image])
+        let innerWidget = makeSceneWidget("Inner scene", scene: innerScene, enabled: false)
+        let outerScene = makeScene("Outer", [innerWidget])
+        let outerWidget = makeSceneWidget("Outer scene", scene: outerScene)
+        let main = makeScene("Main", [outerWidget])
+        let resolver = SceneResolver(scenes: [main, outerScene, innerScene],
+                                     widgets: [image, innerWidget, outerWidget])
+        let resolved = resolver.resolve(main, includeDisabledSceneWidgets: true)
+        #expect(resolved.widgets.map(\.widget.name) == ["Outer scene", "Inner scene", "Image"])
+        #expect(resolved.widgets.map(\.enabled) == [true, false, false])
+        #expect(resolved.drawnWidgets().map(\.widget.name) == ["Outer scene"])
     }
 
     @Test

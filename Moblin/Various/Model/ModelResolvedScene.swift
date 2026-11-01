@@ -8,10 +8,15 @@ struct ResolvedSceneWidget: Identifiable {
     let scene: SettingsScene
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
+    let parentsEnabled: Bool
     let first: Bool
 
+    var enabled: Bool {
+        parentsEnabled && widget.enabled
+    }
+
     var drawn: Bool {
-        first && widget.enabled
+        first && enabled
     }
 }
 
@@ -109,7 +114,7 @@ struct SceneResolver {
         if let remoteWidgetId {
             sceneWidgets.append(SettingsSceneWidget(widgetId: remoteWidgetId))
         }
-        walk.visit(scene, sceneWidgets, self)
+        walk.visit(scene, sceneWidgets, true, self)
         return walk.resolved
     }
 
@@ -139,6 +144,7 @@ private struct SceneWalk {
 
     mutating func visit(_ scene: SettingsScene,
                         _ sceneWidgets: [SettingsSceneWidget],
+                        _ parentsEnabled: Bool,
                         _ resolver: SceneResolver)
     {
         for sceneWidget in sceneWidgets {
@@ -148,6 +154,7 @@ private struct SceneWalk {
             resolved.widgets.append(ResolvedSceneWidget(scene: scene,
                                                         sceneWidget: sceneWidget,
                                                         widget: widget,
+                                                        parentsEnabled: parentsEnabled,
                                                         first: widgetIds.insert(widget.id).inserted))
             guard widget.type == .scene, widget.enabled || includeDisabledSceneWidgets else {
                 continue
@@ -161,7 +168,10 @@ private struct SceneWalk {
             else {
                 continue
             }
-            visit(nestedScene, resolver.sceneWidgets(nestedScene, change), resolver)
+            visit(nestedScene,
+                  resolver.sceneWidgets(nestedScene, change),
+                  parentsEnabled && widget.enabled,
+                  resolver)
         }
     }
 }

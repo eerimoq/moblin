@@ -36,16 +36,16 @@ extension Model {
 
     func updateWidgetOutlines() {
         if widgetOutlines.enabled {
-            updateWidgetOutlines(widgetOutlines, getSelectedScene(), false)
+            updateWidgetOutlines(widgetOutlines, getSelectedScene(), sceneEditor: false)
         }
         if sceneEditorWidgetOutlines.enabled {
-            updateWidgetOutlines(sceneEditorWidgetOutlines, sceneEditorScene(), true)
+            updateWidgetOutlines(sceneEditorWidgetOutlines, sceneEditorScene(), sceneEditor: true)
         }
     }
 
     private func updateWidgetOutlines(_ widgetOutlines: WidgetOutlines,
                                       _ scene: SettingsScene?,
-                                      _ includeDisabled: Bool)
+                                      sceneEditor: Bool)
     {
         guard let scene else {
             widgetOutlines.outlines = []
@@ -56,15 +56,28 @@ extension Model {
             widgetOutlines.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
-        for drawnWidget in resolveScene(scene, includeRemote: true).firstWidgets() {
+        let resolved = resolveScene(scene, includeRemote: true, includeDisabledSceneWidgets: sceneEditor)
+        if sceneEditor {
+            for drawnWidget in resolved.firstWidgets() where drawnWidget.widget.type == .scene {
+                guard scene.widgets.contains(where: { $0 === drawnWidget.sceneWidget }) else {
+                    continue
+                }
+                outlines.append(WidgetOutline(sceneWidget: drawnWidget.sceneWidget,
+                                              widget: drawnWidget.widget,
+                                              rect: CGRect(origin: .zero, size: canvasSize),
+                                              sized: true,
+                                              inScene: true,
+                                              enabled: drawnWidget.widget.enabled))
+            }
+        }
+        for drawnWidget in resolved.firstWidgets() {
             let widget = drawnWidget.widget
-            guard includeDisabled || widget.enabled, widget.hasPosition() else {
+            guard sceneEditor || drawnWidget.enabled, widget.hasPosition() else {
                 continue
             }
             let layout = drawnWidget.sceneWidget.layout
             let size = widgetOutlineSize(widgetOutlines, widget, layout, canvasSize)
-            outlines.append(WidgetOutline(scene: drawnWidget.scene,
-                                          sceneWidget: drawnWidget.sceneWidget,
+            outlines.append(WidgetOutline(sceneWidget: drawnWidget.sceneWidget,
                                           widget: widget,
                                           rect: CGRect(
                                               origin: layoutPosition(layout, size ?? .zero, canvasSize),
@@ -72,7 +85,7 @@ extension Model {
                                           ),
                                           sized: size != nil,
                                           inScene: drawnWidget.scene === scene,
-                                          enabled: widget.enabled))
+                                          enabled: drawnWidget.enabled))
         }
         if !widgetOutlinesEqual(outlines, widgetOutlines.outlines) {
             widgetOutlines.outlines = outlines
@@ -166,8 +179,7 @@ extension Model {
             return false
         }
         return zip(first, second).allSatisfy {
-            $0.scene === $1.scene
-                && $0.sceneWidget === $1.sceneWidget
+            $0.sceneWidget === $1.sceneWidget
                 && $0.widget === $1.widget
                 && $0.rect == $1.rect
                 && $0.sized == $1.sized

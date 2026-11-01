@@ -15,19 +15,12 @@ private struct SceneEditorEdit {
 }
 
 private struct SceneEditorSelectedWidget {
-    let scene: SettingsScene
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
 }
 
 private class SceneEditorSelection: ObservableObject {
-    @Published var sceneWidgetId: UUID? {
-        didSet {
-            if sceneWidgetId == nil {
-                showingSettings = false
-            }
-        }
-    }
+    @Published var sceneWidgetId: UUID?
 
     @Published var showingSettings = false
 }
@@ -51,6 +44,7 @@ private struct SceneEditorCanvasView: View {
     let size: CGSize
     @ObservedObject var selection: SceneEditorSelection
     @State private var edit: SceneEditorEdit?
+    @State private var lastTapLocation: CGPoint?
 
     private var selectedId: UUID? {
         selection.sceneWidgetId
@@ -69,7 +63,7 @@ private struct SceneEditorCanvasView: View {
     }
 
     private var editableOutlines: [WidgetOutline] {
-        widgetOutlines.outlines.filter { model.isSceneEditorOutlineEditable(outline: $0) }
+        widgetOutlines.outlines.filter(\.inScene)
     }
 
     private var selectedOutline: WidgetOutline? {
@@ -129,15 +123,12 @@ private struct SceneEditorCanvasView: View {
             .map(\.0)
     }
 
-    private func outlineForTap(at location: CGPoint) -> WidgetOutline? {
-        let hits = outlines(at: location)
-        guard let index = hits.firstIndex(where: { $0.id == selectedId }) else {
-            return hits.first
-        }
-        guard index + 1 < hits.count else {
-            return nil
-        }
-        return hits[index + 1]
+    private func selectOutline(at location: CGPoint) {
+        let sameLocation = lastTapLocation.map { distance($0, location) < 10 } ?? false
+        lastTapLocation = location
+        selection.sceneWidgetId = sceneEditorTapSelection(outlines(at: location).map(\.id),
+                                                          selectedId,
+                                                          sameLocation)
     }
 
     private func isResizable(_ outline: WidgetOutline) -> Bool {
@@ -187,7 +178,7 @@ private struct SceneEditorCanvasView: View {
 
     private func moveChanged(_ value: DragGesture.Value) {
         if edit == nil {
-            guard let outline = selectedOutline else {
+            guard let outline = selectedOutline, outline.widget.hasPosition() else {
                 return
             }
             startEdit(outline, .move)
@@ -202,7 +193,7 @@ private struct SceneEditorCanvasView: View {
         if movesDiagonally(layout) {
             edit.rect.origin = diagonalPosition(layout.alignment, rect.size, position, snapThreshold)
         } else {
-            let others = editableOutlines.filter { $0.id != edit.outline.id }
+            let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
             let x = sceneEditorSnapAxis(position.x,
                                         rect.width,
                                         canvasSize.width,
@@ -234,7 +225,7 @@ private struct SceneEditorCanvasView: View {
         let insideFactor = max(sceneEditorMaximumInsideFactor(rect, fixed, canvasSize), 1)
         let factors = 1 / edit.startSize ... min(100 / edit.startSize, insideFactor)
         var factor = factor.clamped(to: factors)
-        let others = editableOutlines.filter { $0.id != edit.outline.id }
+        let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
         let threshold = snapThreshold / distance(handlePoint(edit.outline, rect), fixed)
         let x = sceneEditorSnapResizeAxis([rect.minX, rect.maxX, rect.midX],
                                           fixed.x,
@@ -285,14 +276,15 @@ private struct SceneEditorCanvasView: View {
     private func outlineView(_ outline: WidgetOutline) -> some View {
         let selected = outline.id == selectedId
         let rect = viewRect(currentRect(outline))
-        let color: Color = selected ? .accentColor : .white
+        let color: Color = selected ? .accentColor : outline.inScene ? .white : .gray
         let selectedFill = Color.accentColor.opacity(0.25)
-        let dash: [CGFloat] = outline.enabled ? [] : [4, 4]
+        let dash: [CGFloat] = outline.inScene && outline.enabled ? [] : [4, 4]
         let dotSize = selected ? 12.0 : 8.0
         return ZStack(alignment: .topLeading) {
             if outline.sized {
                 Rectangle()
-                    .fill(selected ? selectedFill : .clear)
+                    .fill(selected ? selectedFill : outline.widget.type == .scene ? .white
+                        .opacity(0.1) : .clear)
                     .overlay {
                         Rectangle()
                             .stroke(color, style: StrokeStyle(lineWidth: selected ? 2 : 1, dash: dash))
@@ -304,8 +296,7 @@ private struct SceneEditorCanvasView: View {
                     .fill(selected ? selectedFill : .clear)
                     .overlay {
                         Circle()
-                            .stroke(color, style: StrokeStyle(lineWidth: selected ? 2 : 1,
-                                                              dash: selected ? dash : [4, 4]))
+                            .stroke(color, style: StrokeStyle(lineWidth: selected ? 2 : 1, dash: dash))
                     }
                     .frame(width: 32, height: 32)
                     .offset(x: rect.minX - 16, y: rect.minY - 16)
@@ -387,7 +378,7 @@ private struct SceneEditorCanvasView: View {
             Color.clear
                 .contentShape(Rectangle())
                 .onTapGesture(coordinateSpace: .local) { location in
-                    selection.sceneWidgetId = outlineForTap(at: location)?.id
+                    selectOutline(at: location)
                 }
             ForEach(widgetOutlines.outlines) { outline in
                 outlineView(outline)
@@ -489,21 +480,53 @@ private struct SceneEditorScenesButtonView: View {
         }
         .popover(isPresented: $presentingScenes) {
             SceneEditorPopoverListView {
+                SceneEditorPopoverRowView(
+                    image: "plus.square.dashed",
+                    text: String(localized: "Create scene")
+                ) {
+                    let scene = model.createScene()
+                    selection.sceneWidgetId = nil
+                    model.sceneEditorSelectScene(id: scene.id)
+                    presentingScenes = false
+                }
+                Divider()
                 ForEach(database.scenes) { scene in
                     SceneEditorPopoverRowView(image: scene.enabled ? "photo.on.rectangle" : "eye.slash",
                                               text: scene.name,
                                               checked: scene === self.scene)
                     {
-                        let widgetId = model.sceneEditorWidgetOutlines.outlines
-                            .first(where: { $0.id == selection.sceneWidgetId })?.widget.id
-                        selection.sceneWidgetId = model.resolveScene(scene, includeRemote: true)
-                            .firstWidgets()
-                            .first(where: { $0.widget.id == widgetId })?.id
+                        let widgetId = self.scene?.widgets
+                            .first(where: { $0.id == selection.sceneWidgetId })?.widgetId
+                        selection.sceneWidgetId = scene.widgets.first(where: { $0.widgetId == widgetId })?.id
                         model.sceneEditorSelectScene(id: scene.id)
                         presentingScenes = false
                     }
                     .foregroundStyle(.primary)
                 }
+            }
+        }
+    }
+}
+
+private struct SceneEditorDeleteSceneButtonView: View {
+    let model: Model
+    let scene: SettingsScene
+    let selection: SceneEditorSelection
+    @State private var presentingDeleteSceneConfirmation = false
+
+    var body: some View {
+        SceneEditorButtonView(image: "trash", role: .destructive) {
+            presentingDeleteSceneConfirmation = true
+        }
+        .foregroundStyle(.red)
+        .confirmationDialog(
+            String(localized: "Delete scene \(scene.name)?"),
+            isPresented: $presentingDeleteSceneConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                selection.sceneWidgetId = nil
+                model.deleteScene(scene: scene)
             }
         }
     }
@@ -561,8 +584,7 @@ private struct SceneEditorToolbarView: View {
     @State private var presentingRemoveWidgetConfirmation = false
 
     @ViewBuilder
-    private func widgetButtons(_ selected: SceneEditorSelectedWidget) -> some View {
-        let scene = selected.scene
+    private func widgetButtons(_ scene: SettingsScene, _ selected: SceneEditorSelectedWidget) -> some View {
         let sceneWidget = selected.sceneWidget
         let widget = selected.widget
         SceneEditorEnableButtonView(model: model, widget: widget)
@@ -580,13 +602,17 @@ private struct SceneEditorToolbarView: View {
         }
         .foregroundStyle(.red)
         .confirmationDialog(
-            String(localized: "Remove widget \(widget.name) from scene \(scene.name)?"),
+            widget.name,
             isPresented: $presentingRemoveWidgetConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Remove", role: .destructive) {
+            Button("Remove widget from scene", role: .destructive) {
                 model.sceneEditorRemoveWidget(scene: scene, sceneWidget: sceneWidget)
                 selection.sceneWidgetId = nil
+            }
+            Button("Delete widget", role: .destructive) {
+                selection.sceneWidgetId = nil
+                model.deleteWidget(widget: widget)
             }
         }
     }
@@ -604,14 +630,17 @@ private struct SceneEditorToolbarView: View {
         }
         divider()
         SceneEditorScenesButtonView(model: model, database: database, scene: scene, selection: selection)
-        if let selected {
-            divider()
-            widgetButtons(selected)
-        } else if let scene {
-            SceneEditorAddWidgetButtonView(model: model,
-                                           database: database,
-                                           scene: scene,
-                                           selection: selection)
+        if let scene {
+            if let selected {
+                divider()
+                widgetButtons(scene, selected)
+            } else {
+                SceneEditorAddWidgetButtonView(model: model,
+                                               database: database,
+                                               scene: scene,
+                                               selection: selection)
+                SceneEditorDeleteSceneButtonView(model: model, scene: scene, selection: selection)
+            }
         }
     }
 
@@ -656,13 +685,11 @@ struct SceneEditorView: View {
 
     private func selectedWidget() -> SceneEditorSelectedWidget? {
         guard let outline = widgetOutlines.outlines.first(where: { $0.id == selection.sceneWidgetId }),
-              model.isSceneEditorOutlineEditable(outline: outline)
+              outline.inScene
         else {
             return nil
         }
-        return SceneEditorSelectedWidget(scene: outline.scene,
-                                         sceneWidget: outline.sceneWidget,
-                                         widget: outline.widget)
+        return SceneEditorSelectedWidget(sceneWidget: outline.sceneWidget, widget: outline.widget)
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {
@@ -690,24 +717,32 @@ struct SceneEditorView: View {
         }
     }
 
-    private func settingsPanel(_ selected: SceneEditorSelectedWidget) -> some View {
+    private func settingsPanel(_ selected: SceneEditorSelectedWidget?) -> some View {
         NavigationStack {
-            SceneWidgetSettingsView(model: model,
-                                    database: database,
-                                    sceneWidget: selected.sceneWidget,
-                                    widget: selected.widget)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            selection.showingSettings = false
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+            Group {
+                if let selected {
+                    SceneWidgetSettingsView(model: model,
+                                            database: database,
+                                            sceneWidget: selected.sceneWidget,
+                                            widget: selected.widget)
+                } else {
+                    Text("No widget selected")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        selection.showingSettings = false
+                    } label: {
+                        Image(systemName: "xmark")
                     }
                 }
+            }
         }
-        .id(selected.sceneWidget.id)
+        .id(selected?.sceneWidget.id)
     }
 
     var body: some View {
@@ -718,7 +753,7 @@ struct SceneEditorView: View {
             let layout = landscape ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
             layout {
                 videoArea(scene)
-                if selection.showingSettings, let selected {
+                if selection.showingSettings {
                     settingsPanel(selected)
                         .frame(width: landscape ? settingsHalfWidth : nil,
                                height: landscape ? nil : metrics.size.height * 0.45)

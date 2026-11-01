@@ -280,6 +280,31 @@ extension Model {
         database.widgets.first { $0.id == id }?.name
     }
 
+    func createScene() -> SettingsScene {
+        let scene = SettingsScene(name: makeUniqueName(name: SettingsScene.baseName,
+                                                       existingNames: database.scenes))
+        database.scenes.append(scene)
+        return scene
+    }
+
+    func deleteScene(scene: SettingsScene) {
+        let deletedSelectedScene = getSelectedScene() === scene
+        database.scenes.removeAll { $0 === scene }
+        if sceneEditor.sceneId == scene.id {
+            sceneEditor.sceneId = nil
+        }
+        if deletedSelectedScene {
+            resetSelectedScene()
+        }
+        updateWidgetOutlines()
+    }
+
+    func deleteWidget(widget: SettingsWidget) {
+        database.widgets.removeAll(where: { $0 === widget })
+        removeDeadWidgetsFromScenes()
+        resetSelectedScene()
+    }
+
     func removeDeadWidgetsFromScenes() {
         for scene in database.scenes {
             scene.widgets = scene.widgets.filter { findWidget(id: $0.widgetId) != nil }

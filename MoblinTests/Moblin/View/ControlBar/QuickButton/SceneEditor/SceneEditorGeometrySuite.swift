@@ -118,4 +118,33 @@ struct SceneEditorGeometrySuite {
         #expect(snap.position == 1000)
         #expect(snap.guide == 1000)
     }
+
+    @Test
+    func tapSelectsTopWidget() {
+        let small = UUID()
+        let big = UUID()
+        #expect(sceneEditorTapSelection([small, big], nil, false) == small)
+        #expect(sceneEditorTapSelection([small, big], big, false) == small)
+        #expect(sceneEditorTapSelection([], big, false) == nil)
+    }
+
+    @Test
+    func tapOnSelectedInFrontDeselects() {
+        let small = UUID()
+        let big = UUID()
+        #expect(sceneEditorTapSelection([small, big], small, false) == nil)
+        #expect(sceneEditorTapSelection([big], big, false) == nil)
+    }
+
+    @Test
+    func tapAtSameLocationCycles() {
+        let small = UUID()
+        let medium = UUID()
+        let big = UUID()
+        let hits = [small, medium, big]
+        #expect(sceneEditorTapSelection(hits, small, true) == medium)
+        #expect(sceneEditorTapSelection(hits, medium, true) == big)
+        #expect(sceneEditorTapSelection(hits, big, true) == nil)
+        #expect(sceneEditorTapSelection(hits, nil, true) == small)
+    }
 }

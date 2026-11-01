@@ -361,7 +361,6 @@ struct WidgetOutline: Identifiable {
         sceneWidget.id
     }
 
-    let scene: SettingsScene
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
     let rect: CGRect

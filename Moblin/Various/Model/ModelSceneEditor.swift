@@ -28,10 +28,6 @@ extension Model {
         updateWidgetOutlines()
     }
 
-    func isSceneEditorOutlineEditable(outline: WidgetOutline) -> Bool {
-        database.scenes.contains(where: { $0 === outline.scene })
-    }
-
     func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget,
                                rect: CGRect,
                                centered: (horizontal: Bool, vertical: Bool))

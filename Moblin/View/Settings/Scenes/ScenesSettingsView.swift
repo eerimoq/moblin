@@ -12,11 +12,7 @@ private struct SceneItemView: View {
     }
 
     private func delete() {
-        let deletedCurrentScene = model.getSelectedScene() === scene
-        database.scenes.removeAll { $0 === scene }
-        if deletedCurrentScene {
-            model.resetSelectedScene()
-        }
+        model.deleteScene(scene: scene)
     }
 
     var body: some View {
@@ -57,6 +53,7 @@ private struct SceneItemView: View {
 }
 
 private struct ScenesListView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
     var body: some View {
@@ -70,9 +67,7 @@ private struct ScenesListView: View {
                 }
             }
             CreateButtonView {
-                let name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
-                let scene = SettingsScene(name: name)
-                database.scenes.append(scene)
+                _ = model.createScene()
             }
         } header: {
             Text("Scenes")

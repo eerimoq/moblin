@@ -76709,6 +76709,9 @@
         }
       }
     },
+    "Create scene" : {
+
+    },
     "Create stream marker" : {
       "localizations" : {
         "de" : {
@@ -82759,6 +82762,12 @@
           }
         }
       }
+    },
+    "Delete scene %@?" : {
+
+    },
+    "Delete widget" : {
+
     },
     "Design" : {
       "localizations" : {
@@ -174015,6 +174024,9 @@
         }
       }
     },
+    "No widget selected" : {
+
+    },
     "No widgets, LUTs or other image effects" : {
       "localizations" : {
         "de" : {
@@ -203830,9 +203842,6 @@
         }
       }
     },
-    "Remove" : {
-
-    },
     "Remove background" : {
       "localizations" : {
         "de" : {
@@ -204129,15 +204138,8 @@
         }
       }
     },
-    "Remove widget %@ from scene %@?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Remove widget %1$@ from scene %2$@?"
-          }
-        }
-      }
+    "Remove widget from scene" : {
+
     },
     "Repeat" : {
       "localizations" : {

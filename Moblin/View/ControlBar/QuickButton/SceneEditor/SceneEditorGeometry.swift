@@ -171,3 +171,14 @@ func sceneEditorLayout(_ layout: SettingsWidgetLayout,
     }
     return layout
 }
+
+func sceneEditorTapSelection(_ hitIds: [UUID], _ selectedId: UUID?, _ sameLocation: Bool) -> UUID? {
+    guard let index = hitIds.firstIndex(where: { $0 == selectedId }) else {
+        return hitIds.first
+    }
+    if sameLocation {
+        return index + 1 < hitIds.count ? hitIds[index + 1] : nil
+    } else {
+        return index == 0 ? nil : hitIds.first
+    }
+}
