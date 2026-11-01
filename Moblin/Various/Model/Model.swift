@@ -2845,7 +2845,7 @@ final class Model: NSObject, ObservableObject {
         guard let scene = getSelectedScene() else {
             return
         }
-        attachSingleLayout(scene: scene)
+        attachSingleLayout(scene: scene, resolver: makeSceneResolver())
     }
 
     private func updateCameraPreviewRotation() {
@@ -2907,7 +2907,7 @@ final class Model: NSObject, ObservableObject {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-        attachCameraFinalize(scene: scene)
+        attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
     }
 
     func attachBackDualLowEnergyCamera(force: Bool = true) {
@@ -2936,7 +2936,7 @@ final class Model: NSObject, ObservableObject {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-        attachCameraFinalize(scene: scene)
+        attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
     }
 
     func attachBackWideDualLowEnergyCamera(force: Bool = true) {
@@ -2965,10 +2965,10 @@ final class Model: NSObject, ObservableObject {
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-        attachCameraFinalize(scene: scene)
+        attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
     }
 
-    func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position) {
+    func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position, resolver: SceneResolver) {
         cameraDevice = preferredCamera(position: position)
         setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?
@@ -2986,20 +2986,19 @@ final class Model: NSObject, ObservableObject {
         default:
             break
         }
-        attachCameraFinalize(scene: scene)
+        attachCameraFinalize(scene: scene, resolver: resolver)
     }
 
-    private func attachCameraFinalize(scene: SettingsScene) {
+    private func attachCameraFinalize(scene: SettingsScene, resolver: SceneResolver) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
-        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice, resolver: resolver)
         let showCameraPreview = updateShowCameraPreview()
         let attachCameraPreview = shouldShowCameraPreview() || database.alwaysAttachCameraPreview
         if attachCameraPreview {
-            cameraPreviewView.setDevices(ids: getCameraPreviewDeviceIds(
-                scene: scene,
-                sceneDevice: cameraDevice
-            ))
+            cameraPreviewView.setDevices(ids: getCameraPreviewDeviceIds(scene: scene,
+                                                                        sceneDevice: cameraDevice,
+                                                                        resolver: resolver))
         } else {
             cameraPreviewView.setDevices(ids: [])
         }
@@ -3016,7 +3015,7 @@ final class Model: NSObject, ObservableObject {
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
-            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene),
+            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene, resolver: resolver),
             attachPhotoShoot: photoShootEnabled || database.alwaysAttachPhotoShoot
         )
         media.attachCamera(
@@ -3060,7 +3059,7 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func attachBufferedCamera(cameraId: UUID, scene: SettingsScene) {
+    func attachBufferedCamera(cameraId: UUID, scene: SettingsScene, resolver: SceneResolver) {
         cameraDevice = nil
         cameraPosition = nil
         streamPreviewView.isMirrored = false
@@ -3068,7 +3067,7 @@ final class Model: NSObject, ObservableObject {
         zoom.hasZoom = false
         cameraPreviewView.setDevices(ids: [])
         media.attachBufferedCamera(
-            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
+            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil, resolver: resolver),
             builtinDelay: database.debug.builtinAudioAndVideoDelay,
             cameraPreviewLayers: cameraPreviewView.previewLayers,
             attachCameraPreview: false,
@@ -3080,7 +3079,7 @@ final class Model: NSObject, ObservableObject {
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
-            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene),
+            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene, resolver: resolver),
             attachPhotoShoot: photoShootEnabled || database.alwaysAttachPhotoShoot,
             onSuccess: {
                 self.activatePhotoShoot()
@@ -3091,8 +3090,8 @@ final class Model: NSObject, ObservableObject {
         zoomPresetsMayHaveChanged()
     }
 
-    func attachExternalCamera(scene: SettingsScene) {
-        attachCamera(scene: scene, position: .unspecified)
+    func attachExternalCamera(scene: SettingsScene, resolver: SceneResolver) {
+        attachCamera(scene: scene, position: .unspecified, resolver: resolver)
     }
 
     private func getVideoStabilizationMode(scene: SettingsScene) -> AVCaptureVideoStabilizationMode {

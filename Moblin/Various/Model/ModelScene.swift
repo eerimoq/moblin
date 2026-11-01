@@ -274,8 +274,7 @@ extension Model {
             browserEffect.stop()
         }
         let resolver = makeSceneResolver()
-        let resolvedScene = resolver.resolve(scene, includeRemote: true)
-        sceneUpdatedOn(scene: scene, resolvedScene: resolvedScene, attachCamera: attachCamera)
+        sceneUpdatedOn(scene: scene, resolver: resolver, attachCamera: attachCamera)
         let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolver: resolver)
         startWeatherManager(drawnWidgets: drawnWidgets)
         startGeographyManager(drawnWidgets: drawnWidgets)
@@ -284,7 +283,8 @@ extension Model {
             remoteSceneSettingsUpdated()
         }
         updateStatusCameraText()
-        updateSpeechToText(drawnWidgets: resolvedScene.localDrawnWidgets().map(\.widget))
+        updateSpeechToText(drawnWidgets: resolver.resolve(scene, includeRemote: true).localDrawnWidgets()
+            .map(\.widget))
         updateWidgetOutlines(resolver: resolver)
     }
 
@@ -339,7 +339,7 @@ extension Model {
         updateRemoteSceneSettings()
     }
 
-    func attachSingleLayout(scene: SettingsScene) {
+    func attachSingleLayout(scene: SettingsScene, resolver: SceneResolver) {
         guard !isChatPhone() else {
             return
         }
@@ -347,31 +347,39 @@ extension Model {
         deactivateAllMediaPlayers()
         switch scene.videoSource.cameraPosition {
         case .back:
-            attachCamera(scene: scene, position: .back)
+            attachCamera(scene: scene, position: .back, resolver: resolver)
         case .front:
-            attachCamera(scene: scene, position: .front)
+            attachCamera(scene: scene, position: .front, resolver: resolver)
             streamOverlay.isFrontCameraSelected = true
         case .rtmp:
-            attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene, resolver: resolver)
         case .srtla:
-            attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene, resolver: resolver)
         case .srtClient:
-            attachBufferedCamera(cameraId: scene.videoSource.srtClientCameraId, scene: scene)
+            attachBufferedCamera(
+                cameraId: scene.videoSource.srtClientCameraId,
+                scene: scene,
+                resolver: resolver
+            )
         case .rist:
-            attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene, resolver: resolver)
         case .rtsp:
-            attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene, resolver: resolver)
         case .whip:
-            attachBufferedCamera(cameraId: scene.videoSource.whipCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.whipCameraId, scene: scene, resolver: resolver)
         case .whep:
-            attachBufferedCamera(cameraId: scene.videoSource.whepCameraId, scene: scene)
+            attachBufferedCamera(cameraId: scene.videoSource.whepCameraId, scene: scene, resolver: resolver)
         case .mediaPlayer:
             mediaPlayers[scene.videoSource.mediaPlayerCameraId]?.activate()
-            attachBufferedCamera(cameraId: scene.videoSource.mediaPlayerCameraId, scene: scene)
+            attachBufferedCamera(
+                cameraId: scene.videoSource.mediaPlayerCameraId,
+                scene: scene,
+                resolver: resolver
+            )
         case .external:
-            attachExternalCamera(scene: scene)
+            attachExternalCamera(scene: scene, resolver: resolver)
         case .screenCapture:
-            attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene)
+            attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene, resolver: resolver)
         case .backTripleLowEnergy:
             attachBackTripleLowEnergyCamera()
         case .backDualLowEnergy:
@@ -379,7 +387,7 @@ extension Model {
         case .backWideDualLowEnergy:
             attachBackWideDualLowEnergyCamera()
         case .none:
-            attachBufferedCamera(cameraId: noneCameraId, scene: scene)
+            attachBufferedCamera(cameraId: noneCameraId, scene: scene, resolver: resolver)
         }
     }
 
@@ -575,7 +583,10 @@ extension Model {
         return isSceneVideoSourceActive(scene: scene)
     }
 
-    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+    func getBuiltinCameraDevices(scene: SettingsScene,
+                                 sceneDevice: AVCaptureDevice?,
+                                 resolver: SceneResolver) -> CaptureDevices
+    {
         var devices = CaptureDevices(hasSceneDevice: false, devices: [])
         if let sceneDevice {
             devices.hasSceneDevice = true
@@ -584,48 +595,52 @@ extension Model {
         if let quickSwitchGroup = scene.quickSwitchGroup {
             for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
                 getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices.devices)
-                getBuiltinCameraDevicesInScene(scene: otherScene, devices: &devices.devices)
+                getBuiltinCameraDevicesInScene(
+                    scene: otherScene,
+                    devices: &devices.devices,
+                    resolver: resolver
+                )
             }
         }
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices)
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices, resolver: resolver)
         return devices
     }
 
-    func getCameraPreviewDeviceIds(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> [UUID] {
+    func getCameraPreviewDeviceIds(scene: SettingsScene,
+                                   sceneDevice: AVCaptureDevice?,
+                                   resolver: SceneResolver) -> [UUID]
+    {
         var deviceIds: Set<UUID> = []
         if let sceneDevice {
             deviceIds.insert(makeCaptureDevice(device: sceneDevice).id)
         }
-        for otherScene in getQuickSwitchScenes(scene: scene) {
+        for otherScene in getQuickSwitchScenes(scene: scene, resolver: resolver) {
             var devices: [CaptureDevice] = []
             getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices)
             deviceIds.formUnion(devices.map(\.id))
-            deviceIds.formUnion(getCameraPreviewWidgets(scene: otherScene).map(\.deviceId))
+            deviceIds.formUnion(getCameraPreviewWidgets(resolvedScene: resolver.resolve(otherScene))
+                .map(\.deviceId))
         }
         return Array(deviceIds)
     }
 
-    private func getQuickSwitchScenes(scene: SettingsScene) -> [SettingsScene] {
-        let deviceIds = getSceneBuiltinCameraDeviceIds(scene: scene)
+    private func getQuickSwitchScenes(scene: SettingsScene, resolver: SceneResolver) -> [SettingsScene] {
+        let deviceIds = getSceneBuiltinCameraDeviceIds(scene: scene, resolver: resolver)
         return enabledScenes.filter { otherScene in
             if let quickSwitchGroup = scene.quickSwitchGroup,
                otherScene.quickSwitchGroup == quickSwitchGroup
             {
                 return true
             }
-            return getSceneBuiltinCameraDeviceIds(scene: otherScene) == deviceIds
+            return getSceneBuiltinCameraDeviceIds(scene: otherScene, resolver: resolver) == deviceIds
         }
     }
 
-    private func getSceneBuiltinCameraDeviceIds(scene: SettingsScene) -> Set<UUID> {
+    private func getSceneBuiltinCameraDeviceIds(scene: SettingsScene, resolver: SceneResolver) -> Set<UUID> {
         var devices: [CaptureDevice] = []
         getBuiltinCameraDevices(videoSource: scene.videoSource, devices: &devices)
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices)
+        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices, resolver: resolver)
         return Set(devices.map(\.id))
-    }
-
-    func getCameraPreviewWidgets(scene: SettingsScene) -> [CameraPreviewWidget] {
-        getCameraPreviewWidgets(resolvedScene: resolveScene(scene))
     }
 
     private func getCameraPreviewWidgets(resolvedScene: ResolvedScene) -> [CameraPreviewWidget] {
@@ -1129,7 +1144,8 @@ extension Model {
         }
     }
 
-    private func sceneUpdatedOn(scene: SettingsScene, resolvedScene: ResolvedScene, attachCamera: Bool) {
+    private func sceneUpdatedOn(scene: SettingsScene, resolver: SceneResolver, attachCamera: Bool) {
+        let resolvedScene = resolver.resolve(scene, includeRemote: true)
         var effects: [VideoEffect] = []
         if database.color.lutEnabled, database.color.space == .appleLog {
             effects.append(lutEffect)
@@ -1170,7 +1186,7 @@ extension Model {
         }
         media.setSpeechToText(enabled: needsSpeechToText)
         if attachCamera {
-            attachSingleLayout(scene: scene)
+            attachSingleLayout(scene: scene, resolver: resolver)
         } else {
             media.usePendingAfterAttachEffects()
             updateCameraPreviewWidgets(resolvedScene: resolvedScene)
@@ -1607,8 +1623,11 @@ extension Model {
         }
     }
 
-    private func getBuiltinCameraDevicesInScene(scene: SettingsScene, devices: inout [CaptureDevice]) {
-        for drawnWidget in resolveScene(scene).drawnWidgets() {
+    private func getBuiltinCameraDevicesInScene(scene: SettingsScene,
+                                                devices: inout [CaptureDevice],
+                                                resolver: SceneResolver)
+    {
+        for drawnWidget in resolver.resolve(scene).drawnWidgets() {
             let widget = drawnWidget.widget
             switch widget.type {
             case .videoSource:

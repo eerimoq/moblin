@@ -28,7 +28,9 @@ extension Model {
             guard let scene = getSelectedScene() else {
                 return
             }
-            let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+            let devices = getBuiltinCameraDevices(scene: scene,
+                                                  sceneDevice: cameraDevice,
+                                                  resolver: makeSceneResolver())
             for camera in videoSources.all() {
                 if let device = devices.devices.first(where: { $0.device.uniqueID == camera.id }) {
                     appendVideoPreviewIfNeeded(cameraId: device.id,

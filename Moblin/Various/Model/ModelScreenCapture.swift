@@ -11,7 +11,7 @@ extension Model {
     }
 
     #if targetEnvironment(macCatalyst)
-    func sceneNeedsMacScreenCapture(scene: SettingsScene) -> Bool {
+    func sceneNeedsMacScreenCapture(scene: SettingsScene, resolver: SceneResolver) -> Bool {
         if scene.videoSource.cameraPosition == .screenCapture {
             return true
         }
@@ -20,16 +20,16 @@ extension Model {
                 if otherScene.videoSource.cameraPosition == .screenCapture {
                     return true
                 }
-                if sceneWidgetsNeedMacScreenCapture(scene: otherScene) {
+                if sceneWidgetsNeedMacScreenCapture(scene: otherScene, resolver: resolver) {
                     return true
                 }
             }
         }
-        return sceneWidgetsNeedMacScreenCapture(scene: scene)
+        return sceneWidgetsNeedMacScreenCapture(scene: scene, resolver: resolver)
     }
 
-    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene) -> Bool {
-        resolveScene(scene).drawnWidgets().contains { drawnWidget in
+    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene, resolver: SceneResolver) -> Bool {
+        resolver.resolve(scene).drawnWidgets().contains { drawnWidget in
             let widget = drawnWidget.widget
             return switch widget.type {
             case .videoSource:
@@ -44,7 +44,7 @@ extension Model {
         }
     }
     #else
-    func sceneNeedsMacScreenCapture(scene _: SettingsScene) -> Bool {
+    func sceneNeedsMacScreenCapture(scene _: SettingsScene, resolver _: SceneResolver) -> Bool {
         false
     }
     #endif

@@ -695,9 +695,12 @@ extension Model {
         guard let scene = getSelectedScene() else {
             return
         }
-        for device in getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice).devices
-            where device.device.availableReactionTypes.contains(reaction)
-        {
+        for device in getBuiltinCameraDevices(
+            scene: scene,
+            sceneDevice: cameraDevice,
+            resolver: makeSceneResolver()
+        )
+        .devices where device.device.availableReactionTypes.contains(reaction) {
             device.device.performEffect(for: reaction)
         }
     }
