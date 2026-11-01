@@ -67,12 +67,10 @@ extension Model {
     }
 
     func sceneEditorMoveWidgetInDrawOrder(scene: SettingsScene, sceneWidget: SettingsSceneWidget, up: Bool) {
-        guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }),
-              let editorScene = sceneEditorScene()
-        else {
+        guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }) else {
             return
         }
-        let shownSceneWidgetIds = Set(resolveScene(editorScene, includeRemote: true).firstWidgets().map(\.id))
+        let shownSceneWidgetIds = Set(sceneEditorWidgetOutlines.outlines.filter(\.inScene).map(\.id))
         let step = up ? 1 : -1
         var newIndex = index + step
         while scene.widgets.indices.contains(newIndex),

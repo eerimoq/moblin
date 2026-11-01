@@ -10,14 +10,8 @@ private struct SceneEditorEdit {
     let mode: SceneEditorEditMode
     let startSize: Double
     var rect: CGRect
-    var snapX: SceneEditorSnap?
-    var snapY: SceneEditorSnap?
-}
-
-private struct SceneEditorSelectedWidget {
-    let sceneWidget: SettingsSceneWidget
-    let widget: SettingsWidget
-    let size: CGSize
+    var guideX: Double?
+    var guideY: Double?
 }
 
 private class SceneEditorSelection: ObservableObject {
@@ -218,8 +212,8 @@ private struct SceneEditorCanvasView: View {
                                     others.flatMap(snapTargetsY))
             }
             edit.rect.origin = CGPoint(x: x.position, y: y.position)
-            edit.snapX = x
-            edit.snapY = y
+            edit.guideX = x.guide
+            edit.guideY = y.guide
         }
         self.edit = edit
         model.sceneEditorMoveWidget(sceneWidget: edit.outline.sceneWidget, rect: edit.rect)
@@ -249,14 +243,14 @@ private struct SceneEditorCanvasView: View {
                                           threshold,
                                           [0, canvasSize.height / 2, canvasSize.height] + others
                                               .flatMap(snapTargetsY))
-        edit.snapX = nil
-        edit.snapY = nil
+        edit.guideX = nil
+        edit.guideY = nil
         if let x, x.distance < y?.distance ?? .infinity {
             factor = x.factor
-            edit.snapX = SceneEditorSnap(position: x.guide, guide: x.guide)
+            edit.guideX = x.guide
         } else if let y {
             factor = y.factor
-            edit.snapY = SceneEditorSnap(position: y.guide, guide: y.guide)
+            edit.guideY = y.guide
         }
         edit.rect = sceneEditorResizedRect(rect, fixed, factor)
         self.edit = edit
@@ -321,39 +315,35 @@ private struct SceneEditorCanvasView: View {
         .allowsHitTesting(false)
     }
 
-    private func diagonalGuidePath(_ alignment: SettingsAlignment) -> Path {
+    private func guideLine(_ start: CGPoint, _ end: CGPoint) -> some View {
+        Path { path in
+            path.move(to: viewPoint(start))
+            path.addLine(to: viewPoint(end))
+        }
+        .stroke(.yellow, lineWidth: 1)
+    }
+
+    private func diagonalGuideLine(_ alignment: SettingsAlignment) -> some View {
         let direction = diagonalDirection(alignment)
         let length = min(canvasSize.width, canvasSize.height)
         let corner = CGPoint(x: alignment.isLeft() ? 0 : canvasSize.width,
                              y: alignment.isTop() ? 0 : canvasSize.height)
         let end = CGPoint(x: corner.x + direction.width * length, y: corner.y + direction.height * length)
-        return Path { path in
-            path.move(to: viewPoint(corner))
-            path.addLine(to: viewPoint(end))
-        }
+        return guideLine(corner, end)
     }
 
     private func guidesView() -> some View {
         ZStack {
             if let edit {
-                if let guideX = edit.snapX?.guide {
-                    Path { path in
-                        path.move(to: viewPoint(CGPoint(x: guideX, y: 0)))
-                        path.addLine(to: viewPoint(CGPoint(x: guideX, y: canvasSize.height)))
-                    }
-                    .stroke(.yellow, lineWidth: 1)
+                if let guideX = edit.guideX {
+                    guideLine(CGPoint(x: guideX, y: 0), CGPoint(x: guideX, y: canvasSize.height))
                 }
-                if let guideY = edit.snapY?.guide {
-                    Path { path in
-                        path.move(to: viewPoint(CGPoint(x: 0, y: guideY)))
-                        path.addLine(to: viewPoint(CGPoint(x: canvasSize.width, y: guideY)))
-                    }
-                    .stroke(.yellow, lineWidth: 1)
+                if let guideY = edit.guideY {
+                    guideLine(CGPoint(x: 0, y: guideY), CGPoint(x: canvasSize.width, y: guideY))
                 }
                 let layout = edit.outline.sceneWidget.layout
                 if edit.mode == .move, movesDiagonally(layout) {
-                    diagonalGuidePath(layout.alignment)
-                        .stroke(.yellow, lineWidth: 1)
+                    diagonalGuideLine(layout.alignment)
                 }
             }
         }
@@ -663,20 +653,20 @@ private struct SceneEditorToolbarView: View {
     let model: Model
     let database: Database
     let scene: SettingsScene?
-    let selected: SceneEditorSelectedWidget?
+    let selected: WidgetOutline?
     let selection: SceneEditorSelection
     let vertical: Bool
     @State private var presentingRemoveWidgetConfirmation = false
 
     @ViewBuilder
-    private func widgetButtons(_ scene: SettingsScene, _ selected: SceneEditorSelectedWidget) -> some View {
+    private func widgetButtons(_ scene: SettingsScene, _ selected: WidgetOutline) -> some View {
         let sceneWidget = selected.sceneWidget
         let widget = selected.widget
         SceneEditorEnableButtonView(model: model, widget: widget)
         if widget.hasAlignment() {
             SceneEditorAlignmentButtonView(model: model,
                                            sceneWidget: sceneWidget,
-                                           size: selected.size)
+                                           size: selected.rect.size)
         }
         SceneEditorButtonView(image: "square.2.layers.3d.top.filled") {
             model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: true)
@@ -776,15 +766,8 @@ struct SceneEditorView: View {
         return CGSize(width: canvasSize.width * scale, height: canvasSize.height * scale)
     }
 
-    private func selectedWidget() -> SceneEditorSelectedWidget? {
-        guard let outline = widgetOutlines.outlines.first(where: { $0.id == selection.sceneWidgetId }),
-              outline.inScene
-        else {
-            return nil
-        }
-        return SceneEditorSelectedWidget(sceneWidget: outline.sceneWidget,
-                                         widget: outline.widget,
-                                         size: outline.rect.size)
+    private func selectedOutline() -> WidgetOutline? {
+        widgetOutlines.outlines.first(where: { $0.id == selection.sceneWidgetId && $0.inScene })
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {
@@ -812,9 +795,7 @@ struct SceneEditorView: View {
         }
     }
 
-    private func settingsPanel(_ scene: SettingsScene?,
-                               _ selected: SceneEditorSelectedWidget?) -> some View
-    {
+    private func settingsPanel(_ scene: SettingsScene?, _ selected: WidgetOutline?) -> some View {
         NavigationStack {
             Group {
                 if let selected {
@@ -847,7 +828,7 @@ struct SceneEditorView: View {
     var body: some View {
         GeometryReader { metrics in
             let scene = model.sceneEditorScene()
-            let selected = selectedWidget()
+            let selected = selectedOutline()
             let landscape = metrics.size.width > metrics.size.height
             let layout = landscape ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
             layout {
