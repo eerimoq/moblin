@@ -28,15 +28,22 @@ extension Model {
         updateWidgetOutlines()
     }
 
-    func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget,
-                               rect: CGRect,
-                               centered: (horizontal: Bool, vertical: Bool))
-    {
-        sceneWidget.layout = sceneEditorLayout(sceneWidget.layout,
-                                               rect,
-                                               sceneEditorWidgetOutlines.canvasSize,
-                                               centered)
+    func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget, rect: CGRect) {
+        sceneWidget.layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditorWidgetOutlines.canvasSize)
         sceneUpdatedThrottled()
+    }
+
+    func sceneEditorSetWidgetAlignment(sceneWidget: SettingsSceneWidget,
+                                       widget: SettingsWidget,
+                                       size: CGSize?,
+                                       alignment: SettingsAlignment)
+    {
+        let size = size ?? textEffects[widget.id]?.overlaySize ?? .zero
+        sceneWidget.layout = sceneEditorAlignedLayout(sceneWidget.layout,
+                                                      alignment,
+                                                      size,
+                                                      sceneEditorWidgetOutlines.canvasSize)
+        sceneUpdated()
     }
 
     func sceneEditorResizeWidget(sceneWidget: SettingsSceneWidget, size: Double) {

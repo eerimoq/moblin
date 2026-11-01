@@ -17,6 +17,7 @@ private struct SceneEditorEdit {
 private struct SceneEditorSelectedWidget {
     let sceneWidget: SettingsSceneWidget
     let widget: SettingsWidget
+    let size: CGSize?
 }
 
 private class SceneEditorSelection: ObservableObject {
@@ -158,7 +159,7 @@ private struct SceneEditorCanvasView: View {
         let direction = diagonalDirection(alignment)
         let start = CGPoint(x: alignment.isLeft() ? 0 : canvasSize.width - size.width,
                             y: alignment.isTop() ? 0 : canvasSize.height - size.height)
-        let maximum = max(min(canvasSize.width - size.width, canvasSize.height - size.height), 0)
+        let maximum = min(canvasSize.width, canvasSize.height)
         var offset = ((position.x - start.x) * direction.width + (position.y - start.y) * direction.height) /
             2
         offset = offset.clamped(to: 0 ... maximum)
@@ -194,24 +195,34 @@ private struct SceneEditorCanvasView: View {
             edit.rect.origin = diagonalPosition(layout.alignment, rect.size, position, snapThreshold)
         } else {
             let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
-            let x = sceneEditorSnapAxis(position.x,
-                                        rect.width,
-                                        canvasSize.width,
-                                        snapThreshold,
-                                        others.flatMap(snapTargetsX))
-            let y = sceneEditorSnapAxis(position.y,
-                                        rect.height,
-                                        canvasSize.height,
-                                        snapThreshold,
-                                        others.flatMap(snapTargetsY))
+            let x = if layout.alignment.isHorizontalCenter() {
+                SceneEditorSnap(position: rect.minX)
+            } else {
+                sceneEditorSnapAxis(position.x,
+                                    rect.width,
+                                    canvasSize.width,
+                                    snapThreshold,
+                                    edit.outline.sized,
+                                    layout.alignment.isLeft(),
+                                    others.flatMap(snapTargetsX))
+            }
+            let y = if layout.alignment.isVerticalCenter() {
+                SceneEditorSnap(position: rect.minY)
+            } else {
+                sceneEditorSnapAxis(position.y,
+                                    rect.height,
+                                    canvasSize.height,
+                                    snapThreshold,
+                                    edit.outline.sized,
+                                    layout.alignment.isTop(),
+                                    others.flatMap(snapTargetsY))
+            }
             edit.rect.origin = CGPoint(x: x.position, y: y.position)
             edit.snapX = x
             edit.snapY = y
         }
         self.edit = edit
-        model.sceneEditorMoveWidget(sceneWidget: edit.outline.sceneWidget,
-                                    rect: edit.rect,
-                                    centered: (edit.snapX?.centered ?? false, edit.snapY?.centered ?? false))
+        model.sceneEditorMoveWidget(sceneWidget: edit.outline.sceneWidget, rect: edit.rect)
     }
 
     private func resize(factor: Double) {
@@ -220,8 +231,7 @@ private struct SceneEditorCanvasView: View {
         }
         let rect = edit.outline.rect
         let fixed = fixedPoint(edit.outline)
-        let insideFactor = max(sceneEditorMaximumInsideFactor(rect, fixed, canvasSize), 1)
-        let factors = 1 / edit.startSize ... min(100 / edit.startSize, insideFactor)
+        let factors = 1 / edit.startSize ... 100 / edit.startSize
         var factor = factor.clamped(to: factors)
         let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
         let threshold = snapThreshold / distance(handlePoint(edit.outline, rect), fixed)
@@ -428,6 +438,78 @@ private struct SceneEditorEnableButtonView: View {
     }
 }
 
+private func alignmentImage(_ alignment: SettingsAlignment) -> String {
+    switch alignment {
+    case .topLeft:
+        "square.grid.3x3.topleft.filled"
+    case .topCenter:
+        "square.grid.3x3.topmiddle.filled"
+    case .topRight:
+        "square.grid.3x3.topright.filled"
+    case .leftCenter:
+        "square.grid.3x3.middleleft.filled"
+    case .center:
+        "square.grid.3x3.middle.filled"
+    case .rightCenter:
+        "square.grid.3x3.middleright.filled"
+    case .bottomLeft:
+        "square.grid.3x3.bottomleft.filled"
+    case .bottomCenter:
+        "square.grid.3x3.bottommiddle.filled"
+    case .bottomRight:
+        "square.grid.3x3.bottomright.filled"
+    }
+}
+
+private struct SceneEditorAlignmentButtonView: View {
+    let model: Model
+    @ObservedObject var sceneWidget: SettingsSceneWidget
+    let widget: SettingsWidget
+    let size: CGSize?
+    @State private var presentingAlignment = false
+
+    private func option(_ alignment: SettingsAlignment) -> some View {
+        Button {
+            model.sceneEditorSetWidgetAlignment(sceneWidget: sceneWidget,
+                                                widget: widget,
+                                                size: size,
+                                                alignment: alignment)
+        } label: {
+            Image(systemName: sceneWidget.layout.alignment == alignment ? "square.fill" : "square")
+                .font(.title)
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.borderless)
+    }
+
+    var body: some View {
+        SceneEditorButtonView(image: alignmentImage(sceneWidget.layout.alignment)) {
+            presentingAlignment = true
+        }
+        .popover(isPresented: $presentingAlignment) {
+            Grid(horizontalSpacing: 0, verticalSpacing: 0) {
+                GridRow {
+                    option(.topLeft)
+                    option(.topCenter)
+                    option(.topRight)
+                }
+                GridRow {
+                    option(.leftCenter)
+                    option(.center)
+                    option(.rightCenter)
+                }
+                GridRow {
+                    option(.bottomLeft)
+                    option(.bottomCenter)
+                    option(.bottomRight)
+                }
+            }
+            .padding(10)
+            .presentationCompactAdaptation(.none)
+        }
+    }
+}
+
 private struct SceneEditorPopoverRowView: View {
     let image: String
     let text: String
@@ -586,6 +668,12 @@ private struct SceneEditorToolbarView: View {
         let sceneWidget = selected.sceneWidget
         let widget = selected.widget
         SceneEditorEnableButtonView(model: model, widget: widget)
+        if widget.hasAlignment() {
+            SceneEditorAlignmentButtonView(model: model,
+                                           sceneWidget: sceneWidget,
+                                           widget: widget,
+                                           size: selected.size)
+        }
         SceneEditorButtonView(image: "square.2.layers.3d.top.filled") {
             model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: true)
         }
@@ -690,7 +778,9 @@ struct SceneEditorView: View {
         else {
             return nil
         }
-        return SceneEditorSelectedWidget(sceneWidget: outline.sceneWidget, widget: outline.widget)
+        return SceneEditorSelectedWidget(sceneWidget: outline.sceneWidget,
+                                         widget: outline.widget,
+                                         size: outline.sized ? outline.rect.size : nil)
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {

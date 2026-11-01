@@ -122,6 +122,7 @@ private struct TextView: View {
 final class TextEffect: VideoEffect, @unchecked Sendable {
     private var variables: Deque<Variables> = []
     private var overlay: EffectImageCgImage?
+    private(set) var overlaySize: CGSize?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
     private let formatter: TextEffectFormatter
@@ -390,6 +391,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setOverlay(image: CGImage?) {
+        overlaySize = image.map { CGSize(width: $0.width, height: $0.height) }
         let overlay = image?.toEffectImage()
         processorPipelineQueue.async {
             self.overlay = overlay
