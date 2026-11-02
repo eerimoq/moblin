@@ -5,6 +5,8 @@ from pathlib import Path
 
 from systest_moblin.ffmpeg import FfmpegServer
 
+from ..utils.config import SRT_SERVER_PORT
+from ..utils.config import SRTLA_SERVER_PORT
 from ..utils.config import TESTER_SRTLA_PORT
 from ..utils.config import TESTER_SRTLA_SRT_PORT
 from ..utils.config import WEB_REMOTE_CONTROL_PORT
@@ -224,6 +226,72 @@ class StreamRistToFfmpeg(StreamTestCase):
         self.assert_live_stream(filename)
 
 
+class StreamRistBondingToFfmpeg(StreamTestCase):
+    """RIST stream with bonding from Moblin to ffmpeg, checking the bonding bytes per second."""
+
+    def setup(self):
+        self.import_stream_settings(
+            url=self.moblin.tester_rist_url(),
+            rist={"adaptiveBitrateEnabled": False, "bonding": True},
+            bitrate=5_000_000,
+        )
+
+    def run(self):
+        filename = FILES_DIR / f"{self.name}.ts"
+        self.moblin.set_scene(SceneName.FRONT)
+        with FfmpegServer(url=rist_listener_url(), filename=filename):
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+            self.moblin.wait_for_bitrate_info(Range(4_000_000, 6_000_000), 10_000_000)
+            self.moblin.wait_for_bonding_bytes_per_second(Range(500_000, 750_000))
+            self.moblin.end()
+        self.assert_live_stream(filename)
+
+
+class StreamSrtlaToSelf(StreamTestCase):
+    """SRTLA stream from Moblin to its own SRTLA server ingest, checking the bitrate and bonding info."""
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.ingest_srtla_url(SRTLA_STREAM_ID),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                    }
+                ],
+                "srtlaServer": {
+                    "enabled": True,
+                    "srtPort": SRT_SERVER_PORT,
+                    "srtlaPort": SRTLA_SERVER_PORT,
+                    "streams": [
+                        {
+                            "id": SRTLA_INGEST_ID,
+                            "name": "Test",
+                            "streamId": SRTLA_STREAM_ID,
+                        }
+                    ],
+                },
+            }
+        )
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        self.moblin.go_live()
+        self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 10_000_000)
+        self.moblin.wait_for_bitrate_info(Range(4_000_000, 6_000_000), 10_000_000)
+        self.moblin.wait_for_bonding_bytes_per_second(Range(500_000, 750_000))
+        self.moblin.wait_for_ingests(
+            bitrate=Range(4_000_000, 6_000_000),
+            total_bytes=10_000_000,
+            number_of_ingests=1,
+        )
+        self.moblin.end()
+
+
 class StreamSrtlaBondingToMoblin(StreamTestCase):
     """SRTLA stream from Moblin over two network interfaces to Moblin on the tester machine."""
 
@@ -361,6 +429,8 @@ def tests(moblin: Moblin):
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.CBR),
         StreamSrtToFfmpegVideoRateControl(moblin, BitrateRateControl.VBR),
         StreamRistToFfmpeg(moblin),
+        StreamRistBondingToFfmpeg(moblin),
+        StreamSrtlaToSelf(moblin),
         StreamSrtlaBondingToMoblin(moblin),
         StreamWhipToMediaMtx(moblin),
         StreamMultiRtmpToMediaMtx(moblin),

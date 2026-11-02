@@ -163,7 +163,7 @@ class RistStream: @unchecked Sendable {
             for peer in peers {
                 var connection = BondingConnection(name: peer.bondingConnectionName(), usage: 0, rtt: nil)
                 if let stats = peer.stats {
-                    connection.usage = stats.bandwidth + stats.retryBandwidth
+                    connection.usage = (stats.bandwidth + stats.retryBandwidth) / 8
                     connection.rtt = Int(stats.rtt)
                 }
                 connections.append(connection)

@@ -27,6 +27,7 @@ from .config import REMOTE_CONTROL_PASSWORD
 from .config import RIST_SERVER_PORT
 from .config import RTMP_SERVER_PORT
 from .config import SRT_SERVER_PORT
+from .config import SRTLA_SERVER_PORT
 from .config import TESTER_RIST_PORT
 from .config import TESTER_RTMP_PORT
 from .config import TESTER_RTSP_PORT
@@ -507,6 +508,9 @@ class Moblin:
             url += f"&latency={latency}"
         return url
 
+    def ingest_srtla_url(self, stream_id: str = "1") -> str:
+        return f"srtla://{self.ip_address}:{SRTLA_SERVER_PORT}?streamid={stream_id}"
+
     def ingest_whip_url(self, stream_key: str = "1") -> str:
         return f"http://{self.ip_address}:{WHIP_SERVER_PORT}/whip/stream/{stream_key}"
 
@@ -580,6 +584,28 @@ class Moblin:
             return status is not None and len(status["message"].split(",")) == number_of_connections
 
         wait_until(check, "bonding connections to be established")
+
+    def wait_for_bonding_bytes_per_second(self, bytes_per_second: Range):
+        def check() -> bool:
+            connections = self.get_status_top_right().get("bondingInfo")
+            if not connections:
+                return False
+            total = sum(connection["bytesPerSecond"] for connection in connections)
+            LOGGER.info("Bonding bytes per second: %d", total)
+            return bytes_per_second.minimum <= total <= bytes_per_second.maximum
+
+        wait_until(check, "bonding bytes per second to reach wanted value")
+
+    def wait_for_bitrate_info(self, bits_per_second: Range, total_bytes: int):
+        def check() -> bool:
+            info = self.get_status_top_right().get("bitrateInfo")
+            return (
+                info is not None
+                and bits_per_second.minimum <= info["bitsPerSecond"] <= bits_per_second.maximum
+                and info["totalBytes"] >= total_bytes
+            )
+
+        wait_until(check, "bitrate info to reach wanted values")
 
     def wait_for_bitrate(self, minimum_bitrate, maximum_bitrate, multi_streaming, total_bytes):
         def check() -> bool:
