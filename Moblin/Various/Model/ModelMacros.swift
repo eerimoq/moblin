@@ -141,9 +141,7 @@ extension Model {
             action.needsGeography = parts.isGeographyVariable()
             action.needsGForce = parts.isGForceVariable()
         }
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        startTextVariableManagers()
     }
 
     private func macrosTextFormatActions() -> [SettingsMacrosAction] {

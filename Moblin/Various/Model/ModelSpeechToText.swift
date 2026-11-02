@@ -4,13 +4,10 @@ import Translation
 extension Model {
     func reloadSpeechToText() {
         stopSpeechToText()
-        if isSpeechToTextNeeded() {
-            startSpeechToText()
+        let drawnWidgets = drawnWidgetsInSelectedScene()
+        if isSpeechToTextNeeded(drawnWidgets: drawnWidgets) {
+            startSpeechToText(drawnWidgets: drawnWidgets)
         }
-    }
-
-    func startSpeechToText() {
-        startSpeechToText(drawnWidgets: drawnWidgetsInSelectedScene())
     }
 
     private func startSpeechToText(drawnWidgets: [SettingsWidget]) {
@@ -47,10 +44,6 @@ extension Model {
         speechToTextTextAligners.removeAll()
     }
 
-    func updateSpeechToText() {
-        updateSpeechToText(drawnWidgets: drawnWidgetsInSelectedScene())
-    }
-
     func updateSpeechToText(drawnWidgets: [SettingsWidget]) {
         if isSpeechToTextNeeded(drawnWidgets: drawnWidgets) {
             if speechToText == nil {
@@ -59,10 +52,6 @@ extension Model {
         } else if speechToText != nil {
             stopSpeechToText()
         }
-    }
-
-    func isSpeechToTextNeeded() -> Bool {
-        isSpeechToTextNeeded(drawnWidgets: drawnWidgetsInSelectedScene())
     }
 
     private func isSpeechToTextNeeded(drawnWidgets: [SettingsWidget]) -> Bool {

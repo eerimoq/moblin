@@ -1145,17 +1145,13 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?) {
         isRemoteControlAssistantRequestingStats = true
         remoteControlAssistantRequestingStatsFilter = filter ?? remoteControlStartStatsFilterAllEnabled
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        startTextVariableManagers()
     }
 
     func remoteControlStreamerStopStats() {
         isRemoteControlAssistantRequestingStats = false
         remoteControlAssistantRequestingStatsFilter = RemoteControlStartStatsFilter()
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        startTextVariableManagers()
     }
 
     func remoteControlStreamerStartMacro(id: UUID) {

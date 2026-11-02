@@ -524,9 +524,7 @@ extension Model {
             customCommand.needsGeography = parts.isGeographyVariable()
             customCommand.needsGForce = parts.isGForceVariable()
         }
-        startWeatherManager()
-        startGeographyManager()
-        startGForceManager()
+        startTextVariableManagers()
     }
 
     private func handleChatBotMessageCustom(command: ChatBotCommand) {

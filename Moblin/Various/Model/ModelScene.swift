@@ -267,6 +267,7 @@ extension Model {
     func sceneUpdated(attachCamera: Bool = false, updateRemoteScene: Bool = true) {
         guard let scene = getSelectedScene() else {
             sceneUpdatedOff()
+            startTextVariableManagers()
             updateWidgetOutlines()
             return
         }
@@ -275,10 +276,7 @@ extension Model {
         }
         let resolver = makeSceneResolver()
         sceneUpdatedOn(scene: scene, resolver: resolver, attachCamera: attachCamera)
-        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolver: resolver)
-        startWeatherManager(drawnWidgets: drawnWidgets)
-        startGeographyManager(drawnWidgets: drawnWidgets)
-        startGForceManager(drawnWidgets: drawnWidgets)
+        startTextVariableManagers(resolver: resolver)
         if updateRemoteScene {
             remoteSceneSettingsUpdated()
         }
@@ -427,11 +425,8 @@ extension Model {
         scene.fillFrame
     }
 
-    func drawnWidgetsInSelectedAndRemoteScene() -> [SettingsWidget] {
-        drawnWidgetsInSelectedAndRemoteScene(resolver: makeSceneResolver())
-    }
-
-    private func drawnWidgetsInSelectedAndRemoteScene(resolver: SceneResolver) -> [SettingsWidget] {
+    func drawnWidgetsInSelectedAndRemoteScene(resolver: SceneResolver? = nil) -> [SettingsWidget] {
+        let resolver = resolver ?? makeSceneResolver()
         var widgets: [SettingsWidget] = []
         if let scene = getSelectedScene() {
             widgets = resolver.resolve(scene, includeRemote: true).localDrawnWidgets().map(\.widget)
@@ -489,9 +484,9 @@ extension Model {
             updateLapTimes(widget.text, effect, parts)
             updateSubtitles(widget.text, effect, parts)
         }
-        updateNeedsWeather(widget.text, parts)
-        updateNeedsGeography(widget.text, parts)
-        updateNeedsGForce(widget.text, parts)
+        widget.text.needsWeather = parts.isWeatherVariable()
+        widget.text.needsGeography = parts.isGeographyVariable()
+        widget.text.needsGForce = parts.isGForceVariable()
         sceneUpdated()
     }
 
@@ -1717,20 +1712,5 @@ extension Model {
         }
         text.needsSubtitles = !text.subtitles.isEmpty
         reloadSpeechToText()
-    }
-
-    private func updateNeedsWeather(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsWeather = parts.isWeatherVariable()
-        startWeatherManager()
-    }
-
-    private func updateNeedsGeography(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGeography = parts.isGeographyVariable()
-        startGeographyManager()
-    }
-
-    private func updateNeedsGForce(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGForce = parts.isGForceVariable()
-        startGForceManager()
     }
 }

@@ -1270,8 +1270,6 @@ final class Model: NSObject, ObservableObject {
         autoStartCatPrinters()
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
-        startWeatherManager()
-        startGeographyManager()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
@@ -1296,7 +1294,7 @@ final class Model: NSObject, ObservableObject {
         goPro.rtmpUrlSelection = database.goPro.selectedRtmpUrl
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
-        startGForceManager()
+        startTextVariableManagers()
         chatBotCustomCommandsTextChanged()
         macrosTextFormatChanged()
         autoStartMacros()
@@ -1347,8 +1345,11 @@ final class Model: NSObject, ObservableObject {
         }
     }
 
-    func startGForceManager() {
-        startGForceManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
+    func startTextVariableManagers(resolver: SceneResolver? = nil) {
+        let drawnWidgets = drawnWidgetsInSelectedAndRemoteScene(resolver: resolver)
+        startWeatherManager(drawnWidgets: drawnWidgets)
+        startGeographyManager(drawnWidgets: drawnWidgets)
+        startGForceManager(drawnWidgets: drawnWidgets)
     }
 
     func startGForceManager(drawnWidgets: [SettingsWidget]) {
@@ -1462,10 +1463,6 @@ final class Model: NSObject, ObservableObject {
         return false
     }
 
-    func startWeatherManager() {
-        startWeatherManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
-    }
-
     func startWeatherManager(drawnWidgets: [SettingsWidget]) {
         weatherManager.setEnabled(value: isWeatherNeeded(drawnWidgets: drawnWidgets))
         weatherManager.start()
@@ -1498,10 +1495,6 @@ final class Model: NSObject, ObservableObject {
             return true
         }
         return false
-    }
-
-    func startGeographyManager() {
-        startGeographyManager(drawnWidgets: drawnWidgetsInSelectedAndRemoteScene())
     }
 
     func startGeographyManager(drawnWidgets: [SettingsWidget]) {
@@ -1657,9 +1650,7 @@ final class Model: NSObject, ObservableObject {
             reloadDjiDevices()
             reloadBrowserWidgets()
             chatTextToSpeech.reset(running: true)
-            startWeatherManager()
-            startGeographyManager()
-            startGForceManager()
+            startTextVariableManagers()
             if isRecording {
                 _ = resumeRecording()
             }
@@ -2239,9 +2230,7 @@ final class Model: NSObject, ObservableObject {
                 .isEmpty
             getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts.clone())
         }
-        if isSpeechToTextNeeded() {
-            reloadSpeechToText()
-        }
+        reloadSpeechToText()
         sceneUpdated()
     }
 
