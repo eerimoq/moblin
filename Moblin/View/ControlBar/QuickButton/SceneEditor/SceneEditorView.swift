@@ -406,6 +406,7 @@ private struct SceneEditorCanvasView: View {
 private struct SceneEditorButtonView: View {
     let image: String
     var role: ButtonRole?
+    var disabled = false
     let action: () -> Void
 
     var body: some View {
@@ -417,6 +418,7 @@ private struct SceneEditorButtonView: View {
                 .frame(width: 44, height: 44)
         }
         .buttonStyle(.borderless)
+        .disabled(disabled)
     }
 }
 
@@ -427,6 +429,29 @@ private struct SceneEditorEnableButtonView: View {
     var body: some View {
         SceneEditorButtonView(image: widget.enabled ? "eye" : "eye.slash") {
             model.sceneEditorToggleWidgetEnabled(widget: widget)
+        }
+    }
+}
+
+private struct SceneEditorDrawOrderButtonsView: View {
+    let model: Model
+    @ObservedObject var scene: SettingsScene
+    let sceneWidget: SettingsSceneWidget
+
+    var body: some View {
+        SceneEditorButtonView(image: "square.2.layers.3d.top.filled",
+                              disabled: !model.sceneEditorCanMoveWidgetInDrawOrder(scene: scene,
+                                                                                   sceneWidget: sceneWidget,
+                                                                                   up: true))
+        {
+            model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: true)
+        }
+        SceneEditorButtonView(image: "square.2.layers.3d.bottom.filled",
+                              disabled: !model.sceneEditorCanMoveWidgetInDrawOrder(scene: scene,
+                                                                                   sceneWidget: sceneWidget,
+                                                                                   up: false))
+        {
+            model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: false)
         }
     }
 }
@@ -671,12 +696,7 @@ private struct SceneEditorToolbarView: View {
                                            sceneWidget: sceneWidget,
                                            size: selected.rect.size)
         }
-        SceneEditorButtonView(image: "square.2.layers.3d.top.filled") {
-            model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: true)
-        }
-        SceneEditorButtonView(image: "square.2.layers.3d.bottom.filled") {
-            model.sceneEditorMoveWidgetInDrawOrder(scene: scene, sceneWidget: sceneWidget, up: false)
-        }
+        SceneEditorDrawOrderButtonsView(model: model, scene: scene, sceneWidget: sceneWidget)
         SceneEditorButtonView(image: "slider.horizontal.3") {
             selection.showingSettings.toggle()
         }

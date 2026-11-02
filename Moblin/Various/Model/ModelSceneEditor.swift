@@ -66,9 +66,12 @@ extension Model {
         sceneSettingsPanelSceneId += 1
     }
 
-    func sceneEditorMoveWidgetInDrawOrder(scene: SettingsScene, sceneWidget: SettingsSceneWidget, up: Bool) {
+    private func sceneEditorDrawOrderTargetIndex(scene: SettingsScene,
+                                                 sceneWidget: SettingsSceneWidget,
+                                                 up: Bool) -> Int?
+    {
         guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }) else {
-            return
+            return nil
         }
         let shownSceneWidgetIds = Set(sceneEditorWidgetOutlines.outlines.filter(\.inScene).map(\.id))
         let step = up ? 1 : -1
@@ -79,6 +82,22 @@ extension Model {
             newIndex += step
         }
         guard scene.widgets.indices.contains(newIndex) else {
+            return nil
+        }
+        return newIndex
+    }
+
+    func sceneEditorCanMoveWidgetInDrawOrder(scene: SettingsScene,
+                                             sceneWidget: SettingsSceneWidget,
+                                             up: Bool) -> Bool
+    {
+        sceneEditorDrawOrderTargetIndex(scene: scene, sceneWidget: sceneWidget, up: up) != nil
+    }
+
+    func sceneEditorMoveWidgetInDrawOrder(scene: SettingsScene, sceneWidget: SettingsSceneWidget, up: Bool) {
+        guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }),
+              let newIndex = sceneEditorDrawOrderTargetIndex(scene: scene, sceneWidget: sceneWidget, up: up)
+        else {
             return
         }
         scene.widgets.insert(scene.widgets.remove(at: index), at: newIndex)
