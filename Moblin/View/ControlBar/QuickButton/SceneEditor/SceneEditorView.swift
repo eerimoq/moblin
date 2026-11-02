@@ -307,7 +307,7 @@ private struct SceneEditorCanvasView: View {
                     .frame(width: dotSize, height: dotSize)
                     .offset(x: rect.minX - dotSize / 2, y: rect.minY - dotSize / 2)
             }
-            WidgetOutlineLabelView(widget: outline.widget)
+            WidgetOutlineLabelView(widget: outline.widget, selected: selected)
                 .offset(x: rect.minX + 4,
                         y: rect.minY > 24 && !outline.sized ? rect.minY - 24 : rect.minY + 4)
         }
@@ -781,7 +781,7 @@ struct SceneEditorView: View {
                 if let scene, !scene.enabled {
                     Color.black
                     Text("Disabled scene")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(.white)
                         .padding(4)
                         .frame(width: size.width, height: size.height, alignment: .bottomTrailing)
