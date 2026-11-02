@@ -196,7 +196,6 @@ private struct SceneEditorCanvasView: View {
                                     rect.width,
                                     canvasSize.width,
                                     snapThreshold,
-                                    edit.outline.sized,
                                     layout.alignment.isLeft(),
                                     others.flatMap(snapTargetsX))
             }
@@ -207,7 +206,6 @@ private struct SceneEditorCanvasView: View {
                                     rect.height,
                                     canvasSize.height,
                                     snapThreshold,
-                                    edit.outline.sized,
                                     layout.alignment.isTop(),
                                     others.flatMap(snapTargetsY))
             }

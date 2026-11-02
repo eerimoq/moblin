@@ -10,16 +10,16 @@ func sceneEditorSnapAxis(_ position: Double,
                          _ length: Double,
                          _ total: Double,
                          _ threshold: Double,
-                         _ canCenter: Bool,
                          _ near: Bool,
                          _ targets: [Double]) -> SceneEditorSnap
 {
     let positions = near ? 0 ... total : -length ... total - length
     let position = position.clamped(to: positions)
-    var candidates = [SceneEditorSnap(position: 0), SceneEditorSnap(position: total - length)]
-    if canCenter {
-        candidates.append(SceneEditorSnap(position: (total - length) / 2, guide: total / 2))
-    }
+    var candidates = [
+        SceneEditorSnap(position: 0),
+        SceneEditorSnap(position: total - length),
+        SceneEditorSnap(position: (total - length) / 2, guide: total / 2),
+    ]
     for target in targets {
         for anchor in [0, length / 2, length] {
             candidates.append(SceneEditorSnap(position: target - anchor, guide: target))
