@@ -317,12 +317,22 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.name, name)
         try container.encode(.text, text)
         try container.encode(.function, function)
-        try container.encode(.sceneId, functionData.sceneId)
-        try container.encode(.widgetId, functionData.widgetId)
-        try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
-        try container.encode(.gimbalMotion, functionData.gimbalMotion)
-        try container.encode(.macroId, functionData.macroId)
-        try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        switch function {
+        case .scene:
+            try container.encode(.sceneId, functionData.sceneId)
+        case .widget:
+            try container.encode(.widgetId, functionData.widgetId)
+        case .gimbalPreset:
+            try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
+        case .gimbalAnimate:
+            try container.encode(.gimbalMotion, functionData.gimbalMotion)
+        case .macro:
+            try container.encode(.macroId, functionData.macroId)
+        case .streamDeckLayout:
+            try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        default:
+            break
+        }
     }
 
     required init(from decoder: any Decoder) throws {
