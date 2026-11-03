@@ -35,8 +35,20 @@ extension Model {
         guard !database.scenes.contains(where: { $0.id == scene.id }) else {
             return false
         }
-        database.scenes.append(scene)
-        removeDeadWidgetsFromScenes()
+        if scene.name.isEmpty {
+            scene.name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
+        }
+        let newScene = SettingsScene(name: scene.name)
+        newScene.id = scene.id
+        guard isValidRemoteControlScene(scene: scene,
+                                        scenes: database.scenes + [scene],
+                                        widgets: database.widgets),
+            remoteControlIsValidSceneUpdate(scene: newScene, new: scene)
+        else {
+            return false
+        }
+        database.scenes.append(newScene)
+        remoteControlApplySceneUpdate(scene: newScene, new: scene)
         remoteControlScenesChanged(sceneId: scene.id)
         return true
     }
@@ -45,17 +57,24 @@ extension Model {
         guard let index = database.scenes.firstIndex(where: { $0.id == scene.id }) else {
             return false
         }
-        database.scenes[index] = scene
-        removeDeadWidgetsFromScenes()
+        let oldScene = database.scenes[index]
+        var scenes = database.scenes
+        scenes[index] = scene
+        guard isValidRemoteControlScene(scene: scene, scenes: scenes, widgets: database.widgets),
+              remoteControlIsValidSceneUpdate(scene: oldScene, new: scene)
+        else {
+            return false
+        }
+        remoteControlApplySceneUpdate(scene: oldScene, new: scene)
         remoteControlScenesChanged(sceneId: scene.id)
         return true
     }
 
     func remoteControlDeleteScene(id: UUID) -> Bool {
-        guard database.scenes.contains(where: { $0.id == id }) else {
+        guard let scene = database.scenes.first(where: { $0.id == id }) else {
             return false
         }
-        database.scenes.removeAll { $0.id == id }
+        deleteScene(scene: scene)
         remoteControlScenesChanged(sceneId: id)
         return true
     }
@@ -70,20 +89,30 @@ extension Model {
     }
 
     func remoteControlCreateWidget(widget: SettingsWidget) -> Bool {
-        guard !database.widgets.contains(where: { $0.id == widget.id }) else {
+        guard !database.widgets.contains(where: { $0.id == widget.id }),
+              let newWidget = remoteControlMakeWidget(widget: widget),
+              isValidName(newWidget, database.widgets + [newWidget], database.widgets)
+        else {
             return false
         }
-        database.widgets.append(widget)
-        remoteControlWidgetsChanged(widget: widget)
+        database.widgets.append(newWidget)
+        fixAlertMedias()
+        resetSelectedScene(changeScene: false, attachCamera: false)
+        if newWidget.type == .text {
+            textWidgetTextChanged(widget: newWidget)
+        }
         return true
     }
 
     func remoteControlUpdateWidget(widget: SettingsWidget) -> Bool {
-        guard let index = database.widgets.firstIndex(where: { $0.id == widget.id }) else {
+        guard let oldWidget = database.widgets.first(where: { $0.id == widget.id }),
+              isValidName(widget, database.widgets, database.widgets),
+              remoteControlIsValidWidgetUpdate(widget: oldWidget, new: widget)
+        else {
             return false
         }
-        database.widgets[index] = widget
-        remoteControlWidgetsChanged(widget: widget)
+        let changes = remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget)
+        remoteControlWidgetUpdated(widget: oldWidget, changes: changes)
         return true
     }
 
@@ -94,7 +123,6 @@ extension Model {
         database.widgets.removeAll { $0.id == id }
         removeDeadWidgetsFromScenes()
         resetSelectedScene(changeScene: false)
-        storeSettings()
         remoteControlScenesChanged()
         return true
     }
@@ -104,7 +132,6 @@ extension Model {
             return false
         }
         database.widgets = widgets
-        storeSettings()
         remoteControlScenesChanged()
         return true
     }
@@ -183,7 +210,8 @@ extension Model {
             locationEnabled: database.location.enabled,
             workoutActive: workoutType != nil,
             numericInput: database.sceneNumericInput,
-            inactiveVideoSourceSceneIds: database.scenes.filter { !isSceneVideoSourceActive(scene: $0) }.map(\.id)
+            inactiveVideoSourceSceneIds: database.scenes.filter { !isSceneVideoSourceActive(scene: $0) }
+                .map(\.id)
         )
     }
 
@@ -230,22 +258,22 @@ extension Model {
 
     func remoteControlSetNumericInput(enabled: Bool) {
         database.sceneNumericInput = enabled
-        storeSettings()
     }
 
     func remoteControlSetLocationEnabled(enabled: Bool) {
         database.location.enabled = enabled
         reloadLocation()
-        storeSettings()
     }
 
     func remoteControlSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
-        guard Set(players.map(\.id)).count == players.count else {
+        guard hasUniqueIds(players),
+              players.allSatisfy({ isValidName($0, players, database.scoreboardPlayers) })
+        else {
             return false
         }
         database.scoreboardPlayers = players
+        sceneUpdated()
         sendScoreboardPlayersToWatch()
-        storeSettings()
         return true
     }
 
@@ -274,7 +302,6 @@ extension Model {
         gallery.customSounds.removeAll { $0.id == id }
         alertMediaStorage.remove(id: id)
         fixAlertMedias()
-        storeSettings()
         return true
     }
 
@@ -290,21 +317,42 @@ extension Model {
                 switchMicIfNeededAfterSceneSwitch()
             }
         }
-        storeSettings()
     }
 
-    private func remoteControlWidgetsChanged(widget: SettingsWidget) {
-        fixAlertMedias()
-        resetSelectedScene(changeScene: false, attachCamera: isCaptureDeviceWidget(widget: widget))
-        switch widget.type {
-        case .text:
-            textWidgetTextChanged(widget: widget)
-        case .wheelOfLuck:
-            updateWheelOfLuckEffect(widget: widget)
-        default:
-            break
+    private func isValidRemoteControlScene(scene: SettingsScene,
+                                           scenes: [SettingsScene],
+                                           widgets: [SettingsWidget]) -> Bool
+    {
+        isValidName(scene, scenes, database.scenes)
+            && hasUniqueIds(scene.widgets)
+            && !introducesDuplicatedWidgets(scenes: scenes, widgets: widgets)
+    }
+
+    private func introducesDuplicatedWidgets(scenes: [SettingsScene], widgets: [SettingsWidget]) -> Bool {
+        let before = SceneResolver(scenes: database.scenes, widgets: database.widgets)
+        let after = SceneResolver(scenes: scenes, widgets: widgets)
+        return scenes.contains { scene in
+            let beforeCounts = database.scenes.first(where: { $0.id == scene.id }).map {
+                before.resolve($0, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
+            } ?? [:]
+            return after.resolve(scene, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
+                .contains { widgetId, count in
+                    count > beforeCounts[widgetId, default: 0]
+                }
         }
-        storeSettings()
+    }
+
+    private func isValidName<T: Named & Identifiable>(_ item: T, _ items: [T], _ oldItems: [T]) -> Bool
+        where T.ID == UUID
+    {
+        if oldItems.first(where: { $0.id == item.id })?.name == item.name {
+            return true
+        }
+        return !item.name.isEmpty && !items.contains { $0.id != item.id && $0.name == item.name }
+    }
+
+    private func hasUniqueIds<T: Identifiable>(_ items: [T]) -> Bool where T.ID == UUID {
+        Set(items.map(\.id)).count == items.count
     }
 
     private func reorder<T: Identifiable>(items: [T], ids: [UUID]) -> [T]? where T.ID == UUID {

@@ -563,7 +563,11 @@ class RemoteControlStreamer {
             )
         case let .getVideoSourceSnapshot(id: widgetId):
             delegate.remoteControlStreamerGetVideoSourceSnapshot(id: widgetId) { image in
-                self.send(message: .response(id: id, result: .ok, data: .getVideoSourceSnapshot(image: image)))
+                self.send(message: .response(
+                    id: id,
+                    result: .ok,
+                    data: .getVideoSourceSnapshot(image: image)
+                ))
             }
         case .getTranslationLanguages:
             delegate.remoteControlStreamerGetTranslationLanguages { languages in
