@@ -872,17 +872,22 @@ extension KeyedEncodingContainer {
 }
 
 extension KeyedDecodingContainer {
-    func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T {
-        (try? decode(type, forKey: key)) ?? defaultValue
+    func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key,
+                              _ type: T.Type,
+                              _ defaultValue: @autoclosure () -> T) -> T
+    {
+        (try? decode(type, forKey: key)) ?? defaultValue()
     }
 
     func decode<T: Decodable>(
         _ key: KeyedDecodingContainer<K>.Key,
         _ type: T.Type,
-        _ defaultValue: T,
+        _ defaultValue: @autoclosure () -> T,
         _ isValid: (T) -> Bool
     ) -> T {
-        let value = decode(key, type, defaultValue)
-        return isValid(value) ? value : defaultValue
+        guard let value = try? decode(type, forKey: key), isValid(value) else {
+            return defaultValue()
+        }
+        return value
     }
 }
