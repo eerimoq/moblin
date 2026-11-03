@@ -278,10 +278,13 @@ extension Model {
     }
 
     func getMoblinCloudWheelOfLuckWidget() -> SettingsWidget? {
-        guard let id = database.moblinCloud.wheelOfLuckWidgetId else {
+        guard let id = database.moblinCloud.wheelOfLuckWidgetId,
+              let widget = database.findWidget(id: id),
+              widget.type == .wheelOfLuck
+        else {
             return nil
         }
-        return database.widgets.first(where: { $0.id == id && $0.type == .wheelOfLuck })
+        return widget
     }
 
     func isMoblinCloudWheelOfLuckWidget(widget: SettingsWidget) -> Bool {

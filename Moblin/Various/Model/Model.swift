@@ -2076,10 +2076,10 @@ final class Model: NSObject, ObservableObject {
     }
 
     func fixAlert(alert: SettingsWidgetAlertsAlert) {
-        if getAllAlertImages().first(where: { $0.id == alert.imageId }) == nil {
+        if database.alertsMediaGallery.allImages().first(where: { $0.id == alert.imageId }) == nil {
             alert.imageId = database.alertsMediaGallery.bundledImages[0].id
         }
-        if getAllAlertSounds().first(where: { $0.id == alert.soundId }) == nil {
+        if database.alertsMediaGallery.allSounds().first(where: { $0.id == alert.soundId }) == nil {
             alert.soundId = database.alertsMediaGallery.bundledSounds[0].id
         }
     }
@@ -2138,14 +2138,6 @@ final class Model: NSObject, ObservableObject {
                 pngTuberStorage.remove(id: pngTuberId)
             }
         }
-    }
-
-    func getAllAlertImages() -> [SettingsAlertsMediaGalleryItem] {
-        database.alertsMediaGallery.bundledImages + database.alertsMediaGallery.customImages
-    }
-
-    func getAllAlertSounds() -> [SettingsAlertsMediaGalleryItem] {
-        database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
     }
 
     func getAlertSoundUrl(soundId: UUID) -> URL? {

@@ -60,7 +60,7 @@ private struct SceneWidgetView: View {
     let sceneWidget: SettingsSceneWidget
 
     var body: some View {
-        if let widget = database.widgets.first(where: { $0.id == sceneWidget.widgetId }) {
+        if let widget = database.findWidget(id: sceneWidget.widgetId) {
             NavigationLink {
                 SceneWidgetSettingsView(
                     model: model,

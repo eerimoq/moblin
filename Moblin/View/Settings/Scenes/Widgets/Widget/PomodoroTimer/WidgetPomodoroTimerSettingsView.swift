@@ -3,7 +3,8 @@ import SwiftUI
 
 @MainActor
 private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
-    model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "-- None --")
+    model.database.alertsMediaGallery.allSounds().first(where: { $0.id == soundId })?
+        .name ?? String(localized: "-- None --")
 }
 
 private struct PomodoroSoundSelectorView: View {
@@ -15,7 +16,7 @@ private struct PomodoroSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(model.getAllAlertSounds()) { sound in
+                    ForEach(model.database.alertsMediaGallery.allSounds()) { sound in
                         HStack {
                             Text(sound.name)
                             Spacer()

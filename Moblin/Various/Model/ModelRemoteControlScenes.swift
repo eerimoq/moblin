@@ -38,10 +38,14 @@ extension Model {
         }
         let newScene = SettingsScene(name: scene.name)
         newScene.id = scene.id
-        guard isValidRemoteControlScene(scene: scene,
-                                        scenes: database.scenes + [scene],
-                                        widgets: database.widgets),
-            remoteControlIsValidSceneUpdate(scene: newScene, new: scene)
+        let cameras = remoteControlCameras()
+        guard isValidRemoteControlScene(scene: scene, scenes: database.scenes + [scene], database: database),
+              isValidRemoteControlSceneUpdate(
+                  scene: newScene,
+                  new: scene,
+                  database: database,
+                  cameras: cameras
+              )
         else {
             return false
         }
@@ -58,8 +62,14 @@ extension Model {
         let oldScene = database.scenes[index]
         var scenes = database.scenes
         scenes[index] = scene
-        guard isValidRemoteControlScene(scene: scene, scenes: scenes, widgets: database.widgets),
-              remoteControlIsValidSceneUpdate(scene: oldScene, new: scene)
+        let cameras = remoteControlCameras()
+        guard isValidRemoteControlScene(scene: scene, scenes: scenes, database: database),
+              isValidRemoteControlSceneUpdate(
+                  scene: oldScene,
+                  new: scene,
+                  database: database,
+                  cameras: cameras
+              )
         else {
             return false
         }
@@ -69,7 +79,7 @@ extension Model {
     }
 
     func remoteControlDeleteScene(id: UUID) -> Bool {
-        guard let scene = database.scenes.first(where: { $0.id == id }) else {
+        guard let scene = database.findScene(id: id) else {
             return false
         }
         deleteScene(scene: scene)
@@ -80,7 +90,7 @@ extension Model {
     func remoteControlCreateWidget(widget: SettingsWidget) -> Bool {
         guard !database.widgets.contains(where: { $0.id == widget.id }),
               let newWidget = remoteControlMakeWidget(widget: widget),
-              isValidName(newWidget, database.widgets + [newWidget], database.widgets)
+              isValidRemoteControlName(newWidget, database.widgets + [newWidget], database.widgets)
         else {
             return false
         }
@@ -94,8 +104,8 @@ extension Model {
     }
 
     func remoteControlUpdateWidget(widget: SettingsWidget) -> Bool {
-        guard let oldWidget = database.widgets.first(where: { $0.id == widget.id }),
-              isValidName(widget, database.widgets, database.widgets),
+        guard let oldWidget = database.findWidget(id: widget.id),
+              isValidRemoteControlName(widget, database.widgets, database.widgets),
               let update = remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget, creating: false)
         else {
             return false
@@ -163,7 +173,7 @@ extension Model {
     }
 
     func remoteControlGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
-        guard let widget = database.widgets.first(where: { $0.id == id }) else {
+        guard let widget = database.findWidget(id: id) else {
             onCompleted(nil)
             return
         }
@@ -173,8 +183,8 @@ extension Model {
     }
 
     func remoteControlSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
-        guard hasUniqueIds(players),
-              players.allSatisfy({ isValidName($0, players, database.scoreboardPlayers) })
+        guard hasUniqueRemoteControlIds(players),
+              players.allSatisfy({ isValidRemoteControlName($0, players, database.scoreboardPlayers) })
         else {
             return false
         }
@@ -210,41 +220,5 @@ extension Model {
                 switchMicIfNeededAfterSceneSwitch()
             }
         }
-    }
-
-    private func isValidRemoteControlScene(scene: SettingsScene,
-                                           scenes: [SettingsScene],
-                                           widgets: [SettingsWidget]) -> Bool
-    {
-        isValidName(scene, scenes, database.scenes)
-            && hasUniqueIds(scene.widgets)
-            && !introducesDuplicatedWidgets(scenes: scenes, widgets: widgets)
-    }
-
-    private func introducesDuplicatedWidgets(scenes: [SettingsScene], widgets: [SettingsWidget]) -> Bool {
-        let before = SceneResolver(scenes: database.scenes, widgets: database.widgets)
-        let after = SceneResolver(scenes: scenes, widgets: widgets)
-        return scenes.contains { scene in
-            let beforeCounts = database.scenes.first(where: { $0.id == scene.id }).map {
-                before.resolve($0, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
-            } ?? [:]
-            return after.resolve(scene, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()
-                .contains { widgetId, count in
-                    count > beforeCounts[widgetId, default: 0]
-                }
-        }
-    }
-
-    private func isValidName<T: Named & Identifiable>(_ item: T, _ items: [T], _ oldItems: [T]) -> Bool
-        where T.ID == UUID
-    {
-        if oldItems.first(where: { $0.id == item.id })?.name == item.name {
-            return true
-        }
-        return !item.name.isEmpty && !items.contains { $0.id != item.id && $0.name == item.name }
-    }
-
-    private func hasUniqueIds<T: Identifiable>(_ items: [T]) -> Bool where T.ID == UUID {
-        Set(items.map(\.id)).count == items.count
     }
 }

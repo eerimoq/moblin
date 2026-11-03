@@ -968,6 +968,34 @@ class SettingsWidgetCrop: Codable {
     var width: Int = 200
     var height: Int = 200
 
+    enum CodingKeys: CodingKey {
+        case sourceWidgetId
+        case x
+        case y
+        case width
+        case height
+    }
+
+    init() {}
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.sourceWidgetId, sourceWidgetId)
+        try container.encode(.x, x)
+        try container.encode(.y, y)
+        try container.encode(.width, width)
+        try container.encode(.height, height)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sourceWidgetId = container.decode(.sourceWidgetId, UUID.self, .init())
+        x = container.decode(.x, Int.self, 0)
+        y = container.decode(.y, Int.self, 0)
+        width = container.decode(.width, Int.self, 200)
+        height = container.decode(.height, Int.self, 200)
+    }
+
     func clone() -> SettingsWidgetCrop {
         let new = SettingsWidgetCrop()
         new.sourceWidgetId = sourceWidgetId

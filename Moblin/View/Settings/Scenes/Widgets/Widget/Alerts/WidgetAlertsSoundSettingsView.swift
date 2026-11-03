@@ -135,7 +135,7 @@ struct AlertSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(gallery.bundledSounds + gallery.customSounds) { sound in
+                    ForEach(gallery.allSounds()) { sound in
                         HStack {
                             Text(sound.name)
                             Spacer()

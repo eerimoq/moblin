@@ -16,7 +16,7 @@ struct SceneWidgetSettingsView: View {
             ShortcutSectionView {
                 WidgetShortcutView(model: model, database: model.database, widget: widget)
                 if widget.type == .scene,
-                   let scene = model.database.scenes.first(where: { $0.id == widget.scene.sceneId })
+                   let scene = model.database.findScene(id: widget.scene.sceneId)
                 {
                     SceneShortcutView(database: model.database, scene: scene)
                 }

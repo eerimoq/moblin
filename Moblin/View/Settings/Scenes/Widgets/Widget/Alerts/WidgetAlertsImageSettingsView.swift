@@ -143,7 +143,7 @@ struct AlertImageSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $imageId) {
-                    ForEach(gallery.bundledImages + gallery.customImages) { image in
+                    ForEach(gallery.allImages()) { image in
                         HStack {
                             Text(image.name)
                             Spacer()

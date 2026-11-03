@@ -38,16 +38,24 @@ class CameraPosition(StrEnum):
 
 class WidgetType(StrEnum):
     ALERTS = "Alerts"
+    BINGO_CARD = "Bingo card"
     BROWSER = "Browser"
     CHAT = "Chat"
+    CHAT_EMOTE_COMBO = "Chat emote combo"
+    CROP = "Crop"
     IMAGE = "Image"
     MAP = "Map"
     PNG_TUBER = "PNGTuber"
+    POMODORO_TIMER = "Pomodoro timer"
+    QR_CODE = "QR code"
+    SCENE = "Scene"
     SCOREBOARD = "Scoreboard"
+    SLIDESHOW = "Slideshow"
     SNAPSHOT = "Snapshot"
     TEXT = "Text"
     VIDEO_SOURCE = "Video source"
     V_TUBER = "VTuber"
+    WHEEL_OF_LUCK = "Wheel of luck"
 
 
 class VTuberType(StrEnum):

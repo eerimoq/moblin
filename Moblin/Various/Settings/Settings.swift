@@ -992,6 +992,14 @@ class SettingsAlertsMediaGallery: Codable, ObservableObject {
     func getGlassesImageId() -> UUID {
         bundledImages[5].id
     }
+
+    func allImages() -> [SettingsAlertsMediaGalleryItem] {
+        bundledImages + customImages
+    }
+
+    func allSounds() -> [SettingsAlertsMediaGalleryItem] {
+        bundledSounds + customSounds
+    }
 }
 
 class SettingsDisconnectProtection: Codable, ObservableObject {
@@ -1712,6 +1720,14 @@ class Database: Codable, ObservableObject {
         let httpProxyDefault = SettingsHttpProxy()
         httpProxyDefault.enabled = debug.httpProxyToBeRemoved
         httpProxy = container.decode(.httpProxy, SettingsHttpProxy.self, httpProxyDefault)
+    }
+
+    func findScene(id: UUID) -> SettingsScene? {
+        scenes.first { $0.id == id }
+    }
+
+    func findWidget(id: UUID) -> SettingsWidget? {
+        widgets.first { $0.id == id }
     }
 }
 

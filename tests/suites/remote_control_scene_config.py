@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -27,6 +28,7 @@ from ..utils.generate_device_settings import video_source_widget_settings
 from ..utils.moblin import Moblin
 from ..utils.moblin import Recorder
 from ..utils.test_case import TestCase
+from ..utils.utils import read_qr_code_in_video_frame
 from ..utils.utils import read_text_in_video_frame
 
 LOGGER = logging.getLogger(__name__)
@@ -44,6 +46,16 @@ CREATED_WIDGET_ID = uuid()
 VIDEO_SOURCE_WIDGET_ID = uuid()
 SCOREBOARD_WIDGET_ID = uuid()
 SNAPSHOT_WIDGET_ID = uuid()
+RENDER_SCENE_ID = uuid()
+INNER_SCENE_ID = uuid()
+OTHER_INNER_SCENE_ID = uuid()
+RENDER_TEXT_WIDGET_ID = uuid()
+INNER_TEXT_WIDGET_ID = uuid()
+OTHER_INNER_TEXT_WIDGET_ID = uuid()
+NESTED_SCENE_WIDGET_ID = uuid()
+QR_CODE_WIDGET_ID = uuid()
+TEXT_BOX_WIDTH = 235
+TEXT_BOX_HEIGHT = 95
 STEP_INTERVAL = 2
 STEP_MARGIN = 0.25
 FROZEN_FRAMES = 5
@@ -173,6 +185,14 @@ def find_black_frames(recording: Path, crop: Crop, duration: float) -> list[floa
     return [frame.pts for frame in frames if frame.colors[0].is_black()]
 
 
+def scenes_by_id(moblin: Moblin) -> dict[str, dict]:
+    return {scene["id"].upper(): scene for scene in moblin.get_scenes()}
+
+
+def widgets_by_id(moblin: Moblin) -> dict[str, dict]:
+    return {widget["id"].upper(): widget for widget in moblin.get_widgets()}
+
+
 def text_widget(name: str, widget_id: str, format_string: str) -> dict:
     return text_widget_settings(
         name,
@@ -187,16 +207,10 @@ def text_widget(name: str, widget_id: str, format_string: str) -> dict:
 
 
 class RemoteControlSceneConfig(TestCase):
-    """Create, update, reorder and delete scenes and widgets, and read alerts media, over remote control."""
+    """Create, update and delete scenes and widgets, and read editor options and alerts media, over remote control."""
 
     def setup(self):
         self.moblin.import_settings(overrides={})
-
-    def _scenes(self) -> dict[str, dict]:
-        return {scene["id"].upper(): scene for scene in self.moblin.get_scenes()}
-
-    def _widgets(self) -> dict[str, dict]:
-        return {widget["id"].upper(): widget for widget in self.moblin.get_widgets()}
 
     def _front_scene_id(self) -> str:
         for scene in self.moblin.get_scenes():
@@ -208,13 +222,13 @@ class RemoteControlSceneConfig(TestCase):
         self.video_sources()
         self.editor_options()
         self.scenes_and_widgets()
+        self.scoreboard_widget()
         self.alert_media()
 
     def editor_options(self):
         options = self.moblin.get_editor_options()
         self.assert_true(options["canvasSize"]["width"] > 0 and options["canvasSize"]["height"] > 0)
         self.assert_true(len(options["fonts"]) > 0)
-        self.assert_in("System", [font["family"] for font in options["fonts"]] + ["System"])
         for key in [
             "luts",
             "scoreboardPlayers",
@@ -252,26 +266,40 @@ class RemoteControlSceneConfig(TestCase):
         }
         self.assert_in("ok", self.moblin.create_scene(scene))
         self.assert_in("error", self.moblin.create_scene(scene))
-        self.assert_equal(self._scenes()[scene_id]["name"], "Remote")
-        self.assert_equal(self._scenes()[scene_id]["widgets"][0]["widgetId"].upper(), widget_id)
-        self.assert_equal(self._widgets()[widget_id]["text"]["formatString"], "{time}")
+        self.assert_equal(scenes_by_id(self.moblin)[scene_id]["name"], "Remote")
+        self.assert_equal(scenes_by_id(self.moblin)[scene_id]["widgets"][0]["widgetId"].upper(), widget_id)
+        self.assert_equal(widgets_by_id(self.moblin)[widget_id]["text"]["formatString"], "{time}")
         self.moblin.set_scene_id(scene_id)
         self.moblin.wait_for_scene(scene_id)
         self.assert_in("ok", self.moblin.update_scene({**scene, "name": "Renamed"}))
-        self.assert_equal(self._scenes()[scene_id]["name"], "Renamed")
+        self.assert_equal(scenes_by_id(self.moblin)[scene_id]["name"], "Renamed")
         self.assert_in("error", self.moblin.update_scene({**scene, "id": uuid()}))
         widget["text"] = {"formatString": "{date}"}
         self.assert_in("ok", self.moblin.update_widget(widget))
-        self.assert_equal(self._widgets()[widget_id]["text"]["formatString"], "{date}")
+        self.assert_equal(widgets_by_id(self.moblin)[widget_id]["text"]["formatString"], "{date}")
         self.assert_in("error", self.moblin.update_widget({**widget, "id": uuid()}))
         self.assert_in("ok", self.moblin.delete_widget(widget_id))
-        self.assert_not_in(widget_id, self._widgets())
-        self.assert_equal(self._scenes()[scene_id]["widgets"], [])
+        self.assert_not_in(widget_id, widgets_by_id(self.moblin))
+        self.assert_equal(scenes_by_id(self.moblin)[scene_id]["widgets"], [])
         self.assert_in("error", self.moblin.delete_widget(widget_id))
         self.assert_in("ok", self.moblin.delete_scene(scene_id))
-        self.assert_not_in(scene_id, self._scenes())
+        self.assert_not_in(scene_id, scenes_by_id(self.moblin))
         self.assert_in("error", self.moblin.delete_scene(scene_id))
         self.moblin.wait_for_scene(self._front_scene_id())
+
+    def scoreboard_widget(self):
+        widget_id = uuid()
+        widget: dict = {
+            "id": widget_id,
+            "name": "Remote scoreboard",
+            "type": WidgetType.SCOREBOARD,
+            "enabled": True,
+            "scoreboard": {"padel": {"homePlayer1": uuid()}},
+        }
+        self.assert_in("ok", self.moblin.create_widget(widget))
+        widget = widgets_by_id(self.moblin)[widget_id]
+        self.assert_in("ok", self.moblin.update_widget(widget))
+        self.assert_in("ok", self.moblin.delete_widget(widget_id))
 
     def alert_media(self):
         gallery = self.moblin.get_alerts_media_gallery()
@@ -364,10 +392,8 @@ class RemoteControlSceneConfigWhileRecording(TestCase):
             FfmpegColorStream(self.moblin.ingest_rtmp_url("4"), "yellow"),
         ):
             self.wait_for_ingest_stream_started(number_of_ingests=4)
-            self.scene = next(
-                scene for scene in self.moblin.get_scenes() if scene["id"].upper() == INGEST_SCENE_ID
-            )
-            self.widgets = {widget["id"].upper(): widget for widget in self.moblin.get_widgets()}
+            self.scene = scenes_by_id(self.moblin)[INGEST_SCENE_ID]
+            self.widgets = widgets_by_id(self.moblin)
             steps = self.configuration_steps()
             step_times = []
             with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
@@ -677,5 +703,256 @@ class RemoteControlSceneConfigWhileRecording(TestCase):
         return offset
 
 
+def text_crop(x: int, y: int) -> Crop:
+    return Crop(x=x, y=y + 5, width=TEXT_BOX_WIDTH, height=TEXT_BOX_HEIGHT)
+
+
+def is_white(pixel) -> bool:
+    return min(pixel.red, pixel.green, pixel.blue) > 200
+
+
+@dataclass
+class RenderStep:
+    description: str
+    change: Callable[[], dict]
+    checks: list[Callable[[Path, float], str | None]]
+
+
+class RemoteControlSceneConfigRendering(TestCase):
+    """Configure scenes and widgets over remote control and check that every change is rendered."""
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        "id": RENDER_SCENE_ID,
+                        "name": "Render",
+                        "cameraPosition": CameraPosition.NONE,
+                        "enabled": True,
+                        "widgets": [],
+                    },
+                ],
+                "widgets": [],
+            }
+        )
+        self.moblin.set_scene_id(RENDER_SCENE_ID)
+        self.moblin.wait_for_scene(RENDER_SCENE_ID)
+
+    def run(self):
+        self.prepare()
+        steps = self.steps()
+        step_times = []
+        failures = []
+        with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
+            recording_start = time.monotonic()
+            time.sleep(STEP_INTERVAL)
+            for step in steps:
+                LOGGER.info("Rendering step: %s", step.description)
+                step_times.append(time.monotonic() - recording_start)
+                result = step.change()
+                if "ok" not in result:
+                    failures.append(f"{step.description}: expected ok, got {result}")
+                time.sleep(STEP_INTERVAL)
+            time.sleep(STEP_INTERVAL)
+        offset = self.recording_offset(recorder.recording, step_times[0])
+        for step, step_time in zip(steps, step_times):
+            for check in step.checks:
+                failure = check(recorder.recording, step_time + offset + STEP_INTERVAL - STEP_MARGIN)
+                if failure is not None:
+                    failures.append(f"{step.description}: {failure}")
+        for failure in failures:
+            LOGGER.info("FAILURE: %s", failure)
+        self.assert_equal(failures, [])
+
+    def recording_offset(self, recording: Path, first_step_time: float) -> float:
+        frames = read_video_region_colors(recording, Crop(x=0, y=270, width=80, height=80), 1, 1, 0, 30)
+        shown = [frame.pts for frame in frames if not frame.colors[0].is_black()]
+        self.assert_true(len(shown) > 0, "The first text widget never appeared")
+        offset = shown[0] - first_step_time
+        LOGGER.info("Recording offset: %.3f seconds", offset)
+        self.assert_true(-1 < offset < 1, f"Recording offset {offset:.3f} seconds")
+        return offset
+
+    def prepare(self):
+        self.assert_in(
+            "ok", self.moblin.create_widget(text_widget("Render text", RENDER_TEXT_WIDGET_ID, "AAAA"))
+        )
+        self.assert_in("ok", self.create_inner_scenes())
+        self.assert_in(
+            "ok",
+            self.moblin.create_widget(
+                {
+                    "id": NESTED_SCENE_WIDGET_ID,
+                    "name": "Nested",
+                    "type": WidgetType.SCENE,
+                    "enabled": True,
+                    "scene": {"sceneId": INNER_SCENE_ID},
+                }
+            ),
+        )
+        self.assert_in(
+            "ok",
+            self.moblin.create_widget(
+                {
+                    "id": QR_CODE_WIDGET_ID,
+                    "name": "QR code",
+                    "type": WidgetType.QR_CODE,
+                    "enabled": True,
+                    "qrCode": {"message": "Moblin"},
+                }
+            ),
+        )
+
+    def text_at(self, x: int, y: int, expected: str) -> Callable[[Path, float], str | None]:
+        def check(recording: Path, timestamp: float) -> str | None:
+            text = re.sub("[^A-Z]", "", read_text_in_video_frame(recording, timestamp, text_crop(x, y)))
+            if text != expected:
+                return f"text at ({x}, {y}) is {text!r}, not {expected!r}"
+            return None
+
+        return check
+
+    def pixel_at(self, x: int, y: int, name: str, predicate: Callable) -> Callable[[Path, float], str | None]:
+        def check(recording: Path, timestamp: float) -> str | None:
+            pixel = read_video_frame(recording, timestamp, Crop(x=x, y=y, width=2, height=2)).pixel(0, 0)
+            if not predicate(pixel):
+                return f"pixel at ({x}, {y}) is {pixel}, not {name}"
+            return None
+
+        return check
+
+    def black_at(self, x: int, y: int) -> Callable[[Path, float], str | None]:
+        return self.pixel_at(x, y, "black", lambda pixel: pixel.is_black())
+
+    def qr_code_at(self, crop: Crop, expected: str) -> Callable[[Path, float], str | None]:
+        def check(recording: Path, timestamp: float) -> str | None:
+            message = read_qr_code_in_video_frame(recording, timestamp, crop)
+            if message != expected:
+                return f"QR code in {crop} is {message!r}, not {expected!r}"
+            return None
+
+        return check
+
+    def update_scene(self, scene_id: str, change: Callable[[dict], None]) -> Callable[[], dict]:
+        def update() -> dict:
+            scene = scenes_by_id(self.moblin)[scene_id]
+            change(scene)
+            return self.moblin.update_scene(scene)
+
+        return update
+
+    def update_widget(self, widget_id: str, change: Callable[[dict], None]) -> Callable[[], dict]:
+        def update() -> dict:
+            widget = widgets_by_id(self.moblin)[widget_id]
+            change(widget)
+            return self.moblin.update_widget(widget)
+
+        return update
+
+    def add_to_scene(
+        self, scene_id: str, widget_id: str, x: float, y: float, size: float = 100
+    ) -> Callable[[], dict]:
+        def add(scene: dict):
+            scene["widgets"].append(scene_widget_settings(widget_id, x=x, y=y, size=size))
+
+        return self.update_scene(scene_id, add)
+
+    def create_scene_with_text(self, scene_id: str, name: str, widget_id: str, text: str) -> dict:
+        result = self.moblin.create_widget(text_widget(f"{name} text", widget_id, text))
+        if "ok" not in result:
+            return result
+        return self.moblin.create_scene(
+            {
+                "id": scene_id,
+                "name": name,
+                "cameraPosition": CameraPosition.NONE,
+                "enabled": True,
+                "widgets": [scene_widget_settings(widget_id, x=0, y=50, size=100)],
+            }
+        )
+
+    def create_inner_scenes(self) -> dict:
+        result = self.create_scene_with_text(INNER_SCENE_ID, "Inner", INNER_TEXT_WIDGET_ID, "CCCC")
+        if "ok" not in result:
+            return result
+        return self.create_scene_with_text(
+            OTHER_INNER_SCENE_ID, "Other inner", OTHER_INNER_TEXT_WIDGET_ID, "DDDD"
+        )
+
+    def steps(self) -> list[RenderStep]:
+        def set_layout(**layout):
+            def change(scene: dict):
+                scene["widgets"][0].update(layout)
+
+            return change
+
+        def set_text(format_string: str):
+            def change(widget: dict):
+                widget["text"]["formatString"] = format_string
+
+            return change
+
+        def show_other_inner_scene(widget: dict):
+            widget["scene"]["sceneId"] = OTHER_INNER_SCENE_ID
+
+        def set_qr_code_message(widget: dict):
+            widget["qrCode"]["message"] = "Remote"
+
+        qr_code_crop = Crop(x=920, y=500, width=520, height=520)
+        return [
+            RenderStep(
+                "Add text widget to scene",
+                self.add_to_scene(RENDER_SCENE_ID, RENDER_TEXT_WIDGET_ID, 0, 25),
+                [self.text_at(0, 270, "AAAA")],
+            ),
+            RenderStep(
+                "Align text widget bottom right",
+                self.update_scene(RENDER_SCENE_ID, set_layout(x=0, y=0, alignment="BottomRight")),
+                [self.pixel_at(1910, 1040, "white", is_white), self.black_at(10, 310)],
+            ),
+            RenderStep(
+                "Add scene widget to scene",
+                self.add_to_scene(RENDER_SCENE_ID, NESTED_SCENE_WIDGET_ID, 0, 0),
+                [self.text_at(0, 540, "CCCC")],
+            ),
+            RenderStep(
+                "Move widget in nested scene",
+                self.update_scene(INNER_SCENE_ID, set_layout(x=50, y=0)),
+                [self.text_at(960, 0, "CCCC"), self.black_at(10, 580)],
+            ),
+            RenderStep(
+                "Change text in nested scene",
+                self.update_widget(INNER_TEXT_WIDGET_ID, set_text("EEEE")),
+                [self.text_at(960, 0, "EEEE")],
+            ),
+            RenderStep(
+                "Show other scene in scene widget",
+                self.update_widget(NESTED_SCENE_WIDGET_ID, show_other_inner_scene),
+                [self.text_at(0, 540, "DDDD"), self.black_at(970, 40)],
+            ),
+            RenderStep(
+                "Delete widget in nested scene",
+                lambda: self.moblin.delete_widget(OTHER_INNER_TEXT_WIDGET_ID),
+                [self.black_at(10, 580)],
+            ),
+            RenderStep(
+                "Add QR code widget to scene",
+                self.add_to_scene(RENDER_SCENE_ID, QR_CODE_WIDGET_ID, 50, 50, 40),
+                [self.qr_code_at(qr_code_crop, "Moblin")],
+            ),
+            RenderStep(
+                "Change QR code message",
+                self.update_widget(QR_CODE_WIDGET_ID, set_qr_code_message),
+                [self.qr_code_at(qr_code_crop, "Remote")],
+            ),
+        ]
+
+
 def tests(moblin: Moblin):
-    return [RemoteControlSceneConfig(moblin), RemoteControlSceneConfigWhileRecording(moblin)]
+    return [
+        RemoteControlSceneConfig(moblin),
+        RemoteControlSceneConfigRendering(moblin),
+        RemoteControlSceneConfigWhileRecording(moblin),
+    ]

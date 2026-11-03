@@ -1,35 +1,5 @@
 import Foundation
 
-private let videoSourceRotations: [Double] = [0, 90, 180, 270]
-
-private func isValidChange<T: Equatable>(_ old: T, _ new: T, _ isValid: (T) -> Bool) -> Bool {
-    old == new || isValid(new)
-}
-
-private func isValidLayoutChange(_ old: SettingsWidgetLayout, _ new: SettingsWidgetLayout) -> Bool {
-    isValidChange(old.x, new.x) { (0 ... 100).contains($0) }
-        && isValidChange(old.y, new.y) { (0 ... 100).contains($0) }
-        && isValidChange(old.size, new.size) { (1 ... 100).contains($0) }
-}
-
-private func allAlerts(_ alerts: SettingsWidgetAlerts) -> [SettingsWidgetAlertsAlert] {
-    var all: [SettingsWidgetAlertsAlert] = [
-        alerts.twitch.follows,
-        alerts.twitch.subscriptions,
-        alerts.twitch.raids,
-        alerts.kick.subscriptions,
-        alerts.kick.giftedSubscriptions,
-        alerts.kick.hosts,
-        alerts.kick.rewards,
-        alerts.moblinCloud.tips,
-    ]
-    all += alerts.twitch.cheerBits.map(\.alert)
-    all += alerts.kick.kickGifts.map(\.alert)
-    all += alerts.chatBot.commands.map(\.alert)
-    all += alerts.speechToText.strings.map(\.alert)
-    return all
-}
-
 struct RemoteControlWidgetUpdate {
     var reloadEffects = false
     var updateScene = false
@@ -76,11 +46,19 @@ extension Model {
                                         new: SettingsWidget,
                                         creating: Bool) -> RemoteControlWidgetUpdate?
     {
-        guard new.type == widget.type,
-              var update = applyWidgetTypeUpdate(widget: widget, new: new, creating: creating)
+        guard isValidRemoteControlWidgetUpdate(widget: widget,
+                                               new: new,
+                                               creating: creating,
+                                               editableTextTimers: remoteControlEditableTextTimers(
+                                                   widget: widget,
+                                                   new: new
+                                               ),
+                                               database: database,
+                                               cameras: remoteControlCameras())
         else {
             return nil
         }
+        var update = applyWidgetTypeUpdate(widget: widget, new: new)
         widget.name = new.name
         if widget.enabled != new.enabled {
             widget.enabled = new.enabled
@@ -99,13 +77,23 @@ extension Model {
         update.updateEffects()
     }
 
+    private func remoteControlEditableTextTimers(widget: SettingsWidget, new: SettingsWidget) -> Int {
+        guard widget.type == .text, !getTextEffects(id: widget.id).isEmpty else {
+            return 0
+        }
+        return loadTextFormat(format: new.text.formatString).count(where: { $0 == .timer })
+    }
+
+    func remoteControlCameras() -> RemoteControlCameras {
+        RemoteControlCameras(ids: Set(videoSources.all().map(\.id)), cameraId: { self.cameraId($0) })
+    }
+
     private func applyWidgetTypeUpdate(widget: SettingsWidget,
-                                       new: SettingsWidget,
-                                       creating: Bool) -> RemoteControlWidgetUpdate?
+                                       new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         switch widget.type {
         case .text:
-            updateTextWidget(widget, new, creating: creating)
+            updateTextWidget(widget, new)
         case .browser:
             updateBrowserWidget(widget, new)
         case .crop:
@@ -125,7 +113,7 @@ extension Model {
         case .chatEmoteCombo:
             updateChatEmoteComboWidget(widget, new)
         case .slideshow:
-            updateSlideshowWidget(widget, new, creating: creating)
+            updateSlideshowWidget(widget, new)
         case .wheelOfLuck:
             updateWheelOfLuckWidget(widget, new)
         case .bingoCard:
@@ -146,22 +134,10 @@ extension Model {
     }
 
     private func updateTextWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget,
-                                  creating: Bool) -> RemoteControlWidgetUpdate?
+                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let text = widget.text
         let newText = new.text
-        guard !creating || !newText.formatString.isEmpty,
-              isValidChange(text.fontSize, newText.fontSize, { (10 ... 200).contains($0) }),
-              isValidChange(text.width, newText.width, { $0 > 0 && $0 < 4000 }),
-              isValidChange(text.cornerRadius, newText.cornerRadius, { $0 >= 0 && $0 < 1000 }),
-              isValidChange(text.delay, newText.delay, { (0 ... 10).contains($0) }),
-              zip(text.timers, newText.timers).allSatisfy({ timer, newTimer in
-                  isValidChange(timer.delta, newTimer.delta) { [1, 2, 5, 15, 60].contains($0) }
-              })
-        else {
-            return nil
-        }
         let formatChanged = text.formatString != newText.formatString
         text.formatString = newText.formatString
         var style = ChangeTracker()
@@ -185,9 +161,6 @@ extension Model {
         let styleChanged = style.changed
         let delayChanged = text.delay != newText.delay
         text.delay = newText.delay
-        for (timer, newTimer) in zip(text.timers, newText.timers) {
-            timer.delta = newTimer.delta
-        }
         return RemoteControlWidgetUpdate(reloadEffects: delayChanged) {
             if styleChanged {
                 for effect in self.getTextEffects(id: widget.id) {
@@ -207,22 +180,17 @@ extension Model {
             if formatChanged {
                 self.textWidgetTextChanged(widget: widget)
             }
+            for (timer, newTimer) in zip(text.timers, newText.timers) {
+                timer.delta = newTimer.delta
+            }
         }
     }
 
     private func updateBrowserWidget(_ widget: SettingsWidget,
-                                     _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                     _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let browser = widget.browser
         let newBrowser = new.browser
-        guard isValidEffectsUpdate(widget: widget, new: new),
-              isValidChange(browser.url, newBrowser.url, { isValidHttpUrl(url: $0.trim()) == nil }),
-              isValidChange(browser.width, newBrowser.width, { $0 > 0 && $0 < 4000 }),
-              isValidChange(browser.height, newBrowser.height, { $0 > 0 && $0 < 4000 }),
-              isValidChange(browser.baseFps, newBrowser.baseFps, { (1 ... 15).contains($0) })
-        else {
-            return nil
-        }
         var changes = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&browser.url, newBrowser.url.trim())
@@ -238,20 +206,10 @@ extension Model {
     }
 
     private func updateCropWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let crop = widget.crop
         let newCrop = new.crop
-        guard isValidChange(crop.sourceWidgetId, newCrop.sourceWidgetId, { sourceWidgetId in
-                  database.widgets.contains { $0.id == sourceWidgetId && $0.type == .browser }
-              }),
-              isValidChange(crop.x, newCrop.x, { $0 >= 0 }),
-              isValidChange(crop.y, newCrop.y, { $0 >= 0 }),
-              isValidChange(crop.width, newCrop.width, { $0 > 0 }),
-              isValidChange(crop.height, newCrop.height, { $0 > 0 })
-        else {
-            return nil
-        }
         var changes = ChangeTracker()
         changes.apply(&crop.sourceWidgetId, newCrop.sourceWidgetId)
         changes.apply(&crop.x, newCrop.x)
@@ -262,16 +220,10 @@ extension Model {
     }
 
     private func updateMapWidget(_ widget: SettingsWidget,
-                                 _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                 _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let map = widget.map
         let newMap = new.map
-        guard isValidEffectsUpdate(widget: widget, new: new),
-              isValidChange(map.size, newMap.size, { (500 ... 10000).contains($0) }),
-              isValidChange(map.delay, newMap.delay, { (0 ... 10).contains($0) })
-        else {
-            return nil
-        }
         var changes = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&map.northUp, newMap.northUp)
@@ -281,13 +233,8 @@ extension Model {
     }
 
     private func updateSceneWidget(_ widget: SettingsWidget,
-                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
-        guard isValidChange(widget.scene.sceneId, new.scene.sceneId, { sceneId in
-            selectableScenes(widget: widget).contains { $0.id == sceneId }
-        }) else {
-            return nil
-        }
         var changes = ChangeTracker()
         changes.apply(&widget.scene.sceneId, new.scene.sceneId)
         return RemoteControlWidgetUpdate(reloadEffects: changes.changed,
@@ -295,11 +242,8 @@ extension Model {
     }
 
     private func updateQrCodeWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
-        guard isValidEffectsUpdate(widget: widget, new: new) else {
-            return nil
-        }
         var changes = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&widget.qrCode.message, new.qrCode.message)
@@ -307,26 +251,16 @@ extension Model {
     }
 
     private func updateImageWidget(_ widget: SettingsWidget,
-                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
-        guard isValidEffectsUpdate(widget: widget, new: new) else {
-            return nil
-        }
         var changes = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
     }
 
     private func updateSnapshotWidget(_ widget: SettingsWidget,
-                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
-        guard isValidEffectsUpdate(widget: widget, new: new),
-              isValidChange(widget.snapshot.showtime, new.snapshot.showtime, {
-                  [3, 5, 10, 15, 30, 60, 120].contains($0)
-              })
-        else {
-            return nil
-        }
         var effects = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &effects)
         let showtimeChanged = widget.snapshot.showtime != new.snapshot.showtime
@@ -339,18 +273,10 @@ extension Model {
     }
 
     private func updateChatWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let chat = widget.chat
         let newChat = new.chat
-        guard isValidChange(chat.fontSize, newChat.fontSize, { (10 ... 50).contains($0) }),
-              isValidChange(chat.maximumNumberOfMessages, newChat.maximumNumberOfMessages, {
-                  (1 ... 5).contains($0)
-              }),
-              isValidChange(chat.height, newChat.height, { (0.1 ... 1).contains($0) })
-        else {
-            return nil
-        }
         chat.fontSize = newChat.fontSize
         chat.font = newChat.font
         chat.usernameColor = newChat.usernameColor
@@ -377,21 +303,10 @@ extension Model {
     }
 
     private func updateChatEmoteComboWidget(_ widget: SettingsWidget,
-                                            _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                            _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let chatEmoteCombo = widget.chatEmoteCombo
         let newChatEmoteCombo = new.chatEmoteCombo
-        guard isValidChange(chatEmoteCombo.minimumCombo, newChatEmoteCombo.minimumCombo, {
-                  (2 ... 10).contains($0)
-              }),
-              isValidChange(
-                  chatEmoteCombo.resetAfter,
-                  newChatEmoteCombo.resetAfter,
-                  { (3 ... 10).contains($0) }
-              )
-        else {
-            return nil
-        }
         chatEmoteCombo.minimumCombo = newChatEmoteCombo.minimumCombo
         chatEmoteCombo.resetAfter = newChatEmoteCombo.resetAfter
         return RemoteControlWidgetUpdate {
@@ -400,26 +315,9 @@ extension Model {
     }
 
     private func updateSlideshowWidget(_ widget: SettingsWidget,
-                                       _ new: SettingsWidget,
-                                       creating: Bool) -> RemoteControlWidgetUpdate?
+                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let slideshow = widget.slideshow
-        let isValidSlide = { (slide: SettingsWidgetSlideshowSlide) in
-            let oldSlide = slideshow.slides.first { $0.id == slide.id } ?? SettingsWidgetSlideshowSlide()
-            return isValidChange(oldSlide.widgetId, slide.widgetId) { widgetId in
-                guard let widgetId else {
-                    return true
-                }
-                return self.database.widgets
-                    .contains { $0.id == widgetId && [.text, .image].contains($0.type) }
-            }
-                && isValidChange(oldSlide.time, slide.time) {
-                    [5, 10, 15, 30, 45, 60, 90, 120, 180, 240, 300].contains($0)
-                }
-        }
-        guard !creating || !new.slideshow.slides.isEmpty, new.slideshow.slides.allSatisfy(isValidSlide) else {
-            return nil
-        }
         var changes = ChangeTracker()
         let slides = new.slideshow.slides.map { slide in
             guard let oldSlide = slideshow.slides.first(where: { $0.id == slide.id }) else {
@@ -434,33 +332,10 @@ extension Model {
     }
 
     private func updateWheelOfLuckWidget(_ widget: SettingsWidget,
-                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let wheelOfLuck = widget.wheelOfLuck
         let newWheelOfLuck = new.wheelOfLuck
-        guard !newWheelOfLuck.options.isEmpty,
-              newWheelOfLuck.options.allSatisfy({ option in
-                  let oldOption = wheelOfLuck.options.first { $0.id == option.id }
-                      ?? SettingsWidgetWheelOfLuckOption()
-                  return isValidChange(oldOption.weight, option.weight) {
-                      wheelOfLuckOptionWeights.contains($0)
-                  }
-                      && isValidChange(oldOption.function, option.function) {
-                          ![
-                              .zoomIn,
-                              .zoomOut,
-                              .gimbalUp,
-                              .gimbalDown,
-                              .gimbalLeft,
-                              .gimbalRight,
-                              .gimbalPreset,
-                          ]
-                          .contains($0)
-                      }
-              })
-        else {
-            return nil
-        }
         wheelOfLuck.advanced = newWheelOfLuck.advanced
         wheelOfLuck.onlyShowWhenSpinning = newWheelOfLuck.onlyShowWhenSpinning
         wheelOfLuck.options = newWheelOfLuck.options.map { option in
@@ -481,7 +356,7 @@ extension Model {
     }
 
     private func updateBingoCardWidget(_ widget: SettingsWidget,
-                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let bingoCard = widget.bingoCard
         let newBingoCard = new.bingoCard
@@ -497,25 +372,10 @@ extension Model {
     }
 
     private func updateVideoSourceWidget(_ widget: SettingsWidget,
-                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let videoSource = widget.videoSource
         let newVideoSource = new.videoSource
-        guard isValidEffectsUpdate(widget: widget, new: new),
-              isValidCameraChange(videoSource.videoSource, newVideoSource.videoSource),
-              isValidChange(
-                  videoSource.rotation,
-                  newVideoSource.rotation,
-                  { videoSourceRotations.contains($0) }
-              ),
-              isValidChange(
-                  videoSource.trackFaceZoom,
-                  newVideoSource.trackFaceZoom,
-                  { (0 ... 1).contains($0) }
-              )
-        else {
-            return nil
-        }
         var effects = ChangeTracker()
         applyEffectsUpdate(widget: widget, new: new, changes: &effects)
         let cameraChanged = cameraId(videoSource.videoSource) != cameraId(newVideoSource.videoSource)
@@ -541,22 +401,10 @@ extension Model {
     }
 
     private func updateVTuberWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let vTuber = widget.vTuber
         let newVTuber = new.vTuber
-        guard isValidCameraChange(vTuber.videoSource, newVTuber.videoSource),
-              isValidChange(vTuber.cameraPositionY, newVTuber.cameraPositionY, { (1 ... 2).contains($0) }),
-              isValidChange(
-                  vTuber.cameraFieldOfView,
-                  newVTuber.cameraFieldOfView,
-                  { (10 ... 30).contains($0) }
-              ),
-              isValidChange(vTuber.armsAngle, newVTuber.armsAngle, { (20 ... 90).contains($0) }),
-              isValidSensitivityUpdate(vTuber.sensitivity, newVTuber.sensitivity)
-        else {
-            return nil
-        }
         let cameraChanged = cameraId(vTuber.videoSource) != cameraId(newVTuber.videoSource)
         if cameraChanged {
             vTuber.updateCameraId(settingsCameraId: newVTuber.videoSource.toCameraId())
@@ -582,15 +430,10 @@ extension Model {
     }
 
     private func updatePngTuberWidget(_ widget: SettingsWidget,
-                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let pngTuber = widget.pngTuber
         let newPngTuber = new.pngTuber
-        guard isValidCameraChange(pngTuber.videoSource, newPngTuber.videoSource),
-              isValidSensitivityUpdate(pngTuber.sensitivity, newPngTuber.sensitivity)
-        else {
-            return nil
-        }
         let cameraChanged = cameraId(pngTuber.videoSource) != cameraId(newPngTuber.videoSource)
         if cameraChanged {
             pngTuber.updateCameraId(settingsCameraId: newPngTuber.videoSource.toCameraId())
@@ -608,26 +451,10 @@ extension Model {
     }
 
     private func updatePomodoroTimerWidget(_ widget: SettingsWidget,
-                                           _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                           _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let pomodoroTimer = widget.pomodoroTimer
         let newPomodoroTimer = new.pomodoroTimer
-        guard isValidChange(pomodoroTimer.focusDuration, newPomodoroTimer.focusDuration, {
-                  [1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120].contains($0)
-              }),
-              isValidChange(pomodoroTimer.breakDuration, newPomodoroTimer.breakDuration, {
-                  [1, 2, 3, 5, 7, 10, 15, 20, 25, 30].contains($0)
-              }),
-              isValidChange(pomodoroTimer.width, newPomodoroTimer.width, { (1 ... 5).contains($0) }),
-              isValidChange(pomodoroTimer.focusToBreakSoundId, newPomodoroTimer.focusToBreakSoundId, {
-                  isValidAlertSoundId($0)
-              }),
-              isValidChange(pomodoroTimer.breakToFocusSoundId, newPomodoroTimer.breakToFocusSoundId, {
-                  isValidAlertSoundId($0)
-              })
-        else {
-            return nil
-        }
         if pomodoroTimer.focusDuration != newPomodoroTimer.focusDuration {
             pomodoroTimer.focusDuration = newPomodoroTimer.focusDuration
             if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
@@ -663,13 +490,10 @@ extension Model {
     }
 
     private func updateScoreboardWidget(_ widget: SettingsWidget,
-                                        _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                        _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let scoreboard = widget.scoreboard
         let newScoreboard = new.scoreboard
-        let isValidPlayerId = { (playerId: UUID) in
-            self.database.scoreboardPlayers.contains { $0.id == playerId }
-        }
         let padel = scoreboard.padel
         let newPadel = newScoreboard.padel
         let generic = scoreboard.generic
@@ -678,20 +502,6 @@ extension Model {
         let newGolf = newScoreboard.golf
         let modular = scoreboard.modular
         let newModular = newScoreboard.modular
-        guard isValidChange(padel.homePlayer1, newPadel.homePlayer1, isValidPlayerId),
-              isValidChange(padel.homePlayer2, newPadel.homePlayer2, isValidPlayerId),
-              isValidChange(padel.awayPlayer1, newPadel.awayPlayer1, isValidPlayerId),
-              isValidChange(padel.awayPlayer2, newPadel.awayPlayer2, isValidPlayerId),
-              isValidChange(generic.clock.maximum, newGeneric.clock.maximum, { (1 ... 180).contains($0) }),
-              isValidChange(golf.numberOfHoles, newGolf.numberOfHoles, { [9, 18].contains($0) }),
-              isValidChange(golf.pars, newGolf.pars, { $0.allSatisfy { (1 ... 9).contains($0) } }),
-              isValidChange(golf.players.count, newGolf.players.count, { $0 <= 4 }),
-              isValidChange(modular.clock.maximum, newModular.clock.maximum, { (1 ... 180).contains($0) }),
-              isValidChange(modular.width, newModular.width, { (100 ... 1000).contains($0) }),
-              isValidChange(modular.rowHeight, newModular.rowHeight, { (10 ... 150).contains($0) })
-        else {
-            return nil
-        }
         if scoreboard.sport != newScoreboard.sport {
             scoreboard.sport = newScoreboard.sport
             modular.config = nil
@@ -742,23 +552,12 @@ extension Model {
     }
 
     private func updateAlertsWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate?
+                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         let alerts = widget.alerts
         let newAlerts = new.alerts
-        let oldAlerts = allAlerts(alerts)
-        guard allAlerts(newAlerts).allSatisfy({ alert in
-                  guard let oldAlert = oldAlerts.first(where: { $0.id == alert.id }) else {
-                      return isValidAlertUpdate(SettingsWidgetAlertsAlert(), alert, checkMedia: false)
-                  }
-                  return isValidAlertUpdate(oldAlert, alert, checkMedia: true)
-              }),
-              isValidChange(alerts.aiEnabled, newAlerts.aiEnabled, { !$0 || newAlerts.ai.isConfigured() }),
-              isValidChange(alerts.ai.baseUrl, newAlerts.ai.baseUrl, { isValidHttpUrl(url: $0) == nil })
-        else {
-            return nil
-        }
-        for alert in allAlerts(newAlerts) {
+        let oldAlerts = remoteControlAllAlerts(alerts)
+        for alert in remoteControlAllAlerts(newAlerts) {
             if let oldAlert = oldAlerts.first(where: { $0.id == alert.id }) {
                 alert.videoName = oldAlert.videoName
             } else {
@@ -779,37 +578,6 @@ extension Model {
         return RemoteControlWidgetUpdate {
             self.fixAlertMedias()
         }
-    }
-
-    func remoteControlIsValidSceneUpdate(scene: SettingsScene, new: SettingsScene) -> Bool {
-        for sceneWidget in new.widgets {
-            if let oldSceneWidget = scene.widgets.first(where: { $0.id == sceneWidget.id }) {
-                guard oldSceneWidget.widgetId == sceneWidget.widgetId,
-                      isValidLayoutChange(oldSceneWidget.layout, sceneWidget.layout)
-                else {
-                    return false
-                }
-            } else {
-                guard findWidget(id: sceneWidget.widgetId) != nil,
-                      isValidLayoutChange(SettingsWidgetLayout(), sceneWidget.layout)
-                else {
-                    return false
-                }
-            }
-        }
-        return isValidCameraChange(scene.videoSource, new.videoSource)
-            && isValidChange(scene.videoSourceRotation, new.videoSourceRotation) {
-                videoSourceRotations.contains($0)
-            }
-            && isValidChange(scene.videoStabilizationMode, new.videoStabilizationMode) {
-                videoStabilizationModes.contains($0)
-            }
-            && isValidChange(scene.quickSwitchGroup, new.quickSwitchGroup) { group in
-                group.map { (1 ... 4).contains($0) } ?? true
-            }
-            && isValidChange(scene.micId, new.micId) { micId in
-                database.mics.mics.contains { $0.id == micId }
-            }
     }
 
     func remoteControlApplySceneUpdate(scene: SettingsScene, new: SettingsScene) -> Bool {
@@ -837,21 +605,7 @@ extension Model {
         scene.micId = new.micId
         scene.backgroundColor = new.backgroundColor
         scene.backgroundColorColor = new.backgroundColor.color()
-        scene.widgets = new.widgets.map { sceneWidget in
-            let oldSceneWidget = scene.widgets.first { $0.id == sceneWidget.id }
-            var layout = sceneWidget.layout
-            if layout.alignment != (oldSceneWidget?.layout.alignment ?? SettingsWidgetLayout().alignment),
-               layout.alignment.isHorizontalOrVerticalCenter()
-            {
-                layout.positioningLock = false
-            }
-            guard let oldSceneWidget else {
-                sceneWidget.layout = layout
-                return sceneWidget
-            }
-            oldSceneWidget.layout = layout
-            return oldSceneWidget
-        }
+        scene.widgets = remoteControlMergeSceneWidgets(scene.widgets, new.widgets)
         sceneSelector.objectWillChange.send()
         if quickSwitchGroupChanged, selected {
             resetSelectedScene(changeScene: false, attachCamera: true)
@@ -891,26 +645,6 @@ extension Model {
 
     private func cameraId(_ videoSource: SettingsVideoSource) -> CameraId {
         getCameraId(settingsCameraId: videoSource.toCameraId())
-    }
-
-    private func isValidCameraChange(_ old: SettingsVideoSource, _ new: SettingsVideoSource) -> Bool {
-        isValidChange(cameraId(old), cameraId(new)) { cameraId in
-            videoSources.all().contains { $0.id == cameraId }
-        }
-    }
-
-    private func isValidEffectsUpdate(widget: SettingsWidget, new: SettingsWidget) -> Bool {
-        guard Set(new.effects.map(\.id)).count == new.effects.count else {
-            return false
-        }
-        return new.effects.allSatisfy { effect in
-            if let oldEffect = widget.effects.first(where: { $0.id == effect.id }) {
-                return oldEffect.type == effect.type && isValidEffectUpdate(oldEffect, effect)
-            }
-            let defaultEffect = SettingsVideoEffect()
-            defaultEffect.type = effect.type
-            return isValidEffectUpdate(defaultEffect, effect)
-        }
     }
 
     private func applyEffectsUpdate(
@@ -983,54 +717,6 @@ extension Model {
         }
     }
 
-    private func isValidEffectUpdate(_ old: SettingsVideoEffect, _ new: SettingsVideoEffect) -> Bool {
-        switch new.type {
-        case .shape:
-            let oldShape = old.shape
-            let newShape = new.shape
-            return isValidChange(oldShape.cornerRadius, newShape.cornerRadius) { (0 ... 1).contains($0) }
-                && isValidChange(oldShape.borderWidth, newShape.borderWidth) { (0 ... 1).contains($0) }
-                && isValidChange(oldShape.cropX, newShape.cropX) { (0 ... 1).contains($0) }
-                && isValidChange(oldShape.cropY, newShape.cropY) { (0 ... 1).contains($0) }
-                && isValidChange(oldShape.cropWidth, newShape.cropWidth) { (0 ... 1).contains($0) }
-                && isValidChange(oldShape.cropHeight, newShape.cropHeight) { (0 ... 1).contains($0) }
-        case .dewarp360:
-            let oldDewarp = old.dewarp360
-            let newDewarp = new.dewarp360
-            return isValidChange(oldDewarp.pan, newDewarp.pan) { (-180 ... 180).contains($0) }
-                && isValidChange(oldDewarp.tilt, newDewarp.tilt) { (-90 ... 90).contains($0) }
-                && isValidChange(oldDewarp.inverseFieldOfView, newDewarp.inverseFieldOfView) {
-                    (30 ... 170).contains($0)
-                }
-        case .anamorphicLens:
-            return isValidChange(old.anamorphicLens.scale, new.anamorphicLens.scale) { $0 > 0 && $0 <= 10 }
-        case .lut:
-            return isValidChange(old.lut.lut, new.lut.lut) { lutId in
-                lutId.map { lutId in database.color.allLuts().contains { $0.id == lutId } } ?? true
-            }
-        case .opacity:
-            return isValidChange(old.opacity.opacity, new.opacity.opacity) { (0 ... 1).contains($0) }
-        case .mask:
-            let oldPoints = old.mask.points.map { [$0.x, $0.y] }
-            let newPoints = new.mask.points.map { [$0.x, $0.y] }
-            return isValidChange(oldPoints, newPoints) { points in
-                points.count >= 3 && points.allSatisfy { $0.allSatisfy { (0 ... 100).contains($0) } }
-            }
-                && isValidChange(old.mask.tension, new.mask.tension) { (0 ... 0.5).contains($0) }
-        case .removeBackground, .grayScale, .sepia, .whirlpool, .pinch:
-            return true
-        }
-    }
-
-    private func isValidSensitivityUpdate(_ old: SettingsSensitivity, _ new: SettingsSensitivity) -> Bool {
-        isValidChange(old.mouth, new.mouth) { (0.05 ... 3).contains($0) }
-            && isValidChange(old.eyes, new.eyes) { (0.05 ... 5).contains($0) }
-    }
-
-    private func isValidAlertSoundId(_ soundId: UUID?) -> Bool {
-        soundId.map { soundId in getAllAlertSounds().contains { $0.id == soundId } } ?? true
-    }
-
     private func applyScoreboardClockUpdate(_ clock: SettingsWidgetScoreboardClock,
                                             _ new: SettingsWidgetScoreboardClock)
     {
@@ -1049,23 +735,5 @@ extension Model {
         team.textColor = new.textColor
         team.backgroundColor = new.backgroundColor
         team.loadColors()
-    }
-
-    private func isValidAlertUpdate(_ old: SettingsWidgetAlertsAlert,
-                                    _ new: SettingsWidgetAlertsAlert,
-                                    checkMedia: Bool) -> Bool
-    {
-        if checkMedia {
-            guard isValidChange(old.imageId, new.imageId, { imageId in
-                getAllAlertImages().contains { $0.id == imageId }
-            }), isValidChange(old.soundId, new.soundId, { soundId in
-                getAllAlertSounds().contains { $0.id == soundId }
-            }) else {
-                return false
-            }
-        }
-        return isValidChange(old.imageLoopCount, new.imageLoopCount) { (1 ... 10).contains($0) }
-            && isValidChange(old.fontSize, new.fontSize) { (10 ... 80).contains($0) }
-            && isValidChange(old.textToSpeechDelay, new.textToSpeechDelay) { (0 ... 5).contains($0) }
     }
 }

@@ -9,14 +9,14 @@ extension Model {
     }
 
     func sceneEditorScene() -> SettingsScene? {
-        if let sceneId = sceneEditor.sceneId, let scene = database.scenes.first(where: { $0.id == sceneId }) {
+        if let sceneId = sceneEditor.sceneId, let scene = database.findScene(id: sceneId) {
             return scene
         }
         return getSelectedScene()
     }
 
     func sceneEditorSelectScene(id: UUID) {
-        guard let scene = database.scenes.first(where: { $0.id == id }) else {
+        guard let scene = database.findScene(id: id) else {
             return
         }
         if scene.enabled {

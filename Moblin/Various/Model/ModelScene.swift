@@ -287,11 +287,17 @@ extension Model {
     }
 
     func getSceneName(id: UUID?) -> String? {
-        database.scenes.first { $0.id == id }?.name
+        guard let id else {
+            return nil
+        }
+        return database.findScene(id: id)?.name
     }
 
     func getWidgetName(id: UUID?) -> String? {
-        database.widgets.first { $0.id == id }?.name
+        guard let id else {
+            return nil
+        }
+        return database.findWidget(id: id)?.name
     }
 
     func createScene() -> SettingsScene {
@@ -431,7 +437,9 @@ extension Model {
         if let scene = getSelectedScene() {
             widgets = resolver.resolve(scene, includeRemote: true).localDrawnWidgets().map(\.widget)
         }
-        guard let remoteScene = database.scenes.first(where: { $0.id == database.remoteSceneId }) else {
+        guard let remoteSceneId = database.remoteSceneId,
+              let remoteScene = database.findScene(id: remoteSceneId)
+        else {
             return widgets
         }
         var widgetIds = Set(widgets.map(\.id))
@@ -1558,7 +1566,7 @@ extension Model {
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
         switch widget.type {
         case .scene:
-            guard let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) else {
+            guard let scene = database.findScene(id: widget.scene.sceneId) else {
                 return false
             }
             return resolveScene(scene, includeDisabledSceneWidgets: true).widgets.contains {

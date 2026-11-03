@@ -62,6 +62,24 @@ def create_qr_code_image(text: str, output_image: Path):
     subprocess.run(command, check=True)
 
 
+def read_qr_code_in_video_frame(path: Path, timestamp: float, crop: Crop) -> str:
+    with tempfile.TemporaryDirectory() as directory:
+        image = Path(directory) / "frame.png"
+        ffmpeg_run(
+            "-ss",
+            str(timestamp),
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-vf",
+            f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
+            str(image),
+        )
+        command = ["qrtool", "decode", str(image)]
+        return subprocess.run(command, check=False, capture_output=True, text=True).stdout.strip()
+
+
 def write_png(path: Path, width: int, height: int, rgba: bytes):
     def chunk(kind: bytes, data: bytes) -> bytes:
         return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
