@@ -73,6 +73,12 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerGetAlertMedia(id: UUID) -> Data?
     func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions
     func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void)
+    func remoteControlStreamerGetTranslationLanguages(
+        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
+    )
+    func remoteControlStreamerSetNumericInput(enabled: Bool)
+    func remoteControlStreamerSetLocationEnabled(enabled: Bool)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -555,6 +561,22 @@ class RemoteControlStreamer {
                 id: id,
                 ok: delegate.remoteControlStreamerSetScoreboardPlayers(players: players)
             )
+        case let .getVideoSourceSnapshot(id: widgetId):
+            delegate.remoteControlStreamerGetVideoSourceSnapshot(id: widgetId) { image in
+                self.send(message: .response(id: id, result: .ok, data: .getVideoSourceSnapshot(image: image)))
+            }
+        case .getTranslationLanguages:
+            delegate.remoteControlStreamerGetTranslationLanguages { languages in
+                self.send(message: .response(id: id,
+                                             result: .ok,
+                                             data: .getTranslationLanguages(languages: languages)))
+            }
+        case let .setNumericInput(enabled: enabled):
+            delegate.remoteControlStreamerSetNumericInput(enabled: enabled)
+            sendEmptyOkResponse(id: id)
+        case let .setLocationEnabled(enabled: enabled):
+            delegate.remoteControlStreamerSetLocationEnabled(enabled: enabled)
+            sendEmptyOkResponse(id: id)
         }
     }
 

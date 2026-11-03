@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+@preconcurrency import Translation
 import UIKit
 
 extension RemoteControlEditorOptions {
@@ -11,7 +12,13 @@ extension RemoteControlEditorOptions {
                                    workoutDevices: [],
                                    streamDeckLayouts: [],
                                    appleVoices: [],
-                                   showAllSettings: false)
+                                   showAllSettings: false,
+                                   isPhone: false,
+                                   forceSceneSwitchTransition: false,
+                                   locationEnabled: false,
+                                   workoutActive: false,
+                                   numericInput: false,
+                                   inactiveVideoSourceSceneIds: [])
     }
 }
 
@@ -150,7 +157,9 @@ extension Model {
         .map { language, voices in
             RemoteControlAppleVoices(language: language,
                                      voices: voices
-                                         .map { .init(name: $0.name, identifier: $0.identifier) })
+                                         .map { .init(name: $0.name,
+                                                      identifier: $0.identifier,
+                                                      language: $0.language) })
         }
         .sorted { $0.language < $1.language }
         return RemoteControlEditorOptions(
@@ -168,8 +177,66 @@ extension Model {
             workoutDevices: database.workoutDevices.devices.map { .init(id: $0.id, name: $0.name) },
             streamDeckLayouts: database.streamDecks.layouts.map { .init(id: $0.id, name: $0.name) },
             appleVoices: appleVoices,
-            showAllSettings: database.showAllSettings
+            showAllSettings: database.showAllSettings,
+            isPhone: isPhone(),
+            forceSceneSwitchTransition: database.forceSceneSwitchTransition,
+            locationEnabled: database.location.enabled,
+            workoutActive: workoutType != nil,
+            numericInput: database.sceneNumericInput,
+            inactiveVideoSourceSceneIds: database.scenes.filter { !isSceneVideoSourceActive(scene: $0) }.map(\.id)
         )
+    }
+
+    func remoteControlGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        guard let widget = database.widgets.first(where: { $0.id == id }) else {
+            onCompleted(nil)
+            return
+        }
+        takeVideoSourcePreviewImage(widget: widget) { image in
+            onCompleted(image?.jpegData(compressionQuality: 0.8))
+        }
+    }
+
+    func remoteControlGetTranslationLanguages(
+        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
+    ) {
+        guard #available(iOS 26, *) else {
+            onCompleted([])
+            return
+        }
+        Task {
+            let availability = LanguageAvailability()
+            var languages: [RemoteControlTranslationLanguage] = []
+            for language in await availability.supportedLanguages {
+                switch await availability.status(from: Locale.current.language, to: language) {
+                case .installed:
+                    languages.append(.init(identifier: language.minimalIdentifier,
+                                           name: language.name(),
+                                           installed: true))
+                case .supported:
+                    languages.append(.init(identifier: language.minimalIdentifier,
+                                           name: language.name(),
+                                           installed: false))
+                default:
+                    break
+                }
+            }
+            let sorted = languages.sorted { $0.identifier < $1.identifier }
+            await MainActor.run {
+                onCompleted(sorted)
+            }
+        }
+    }
+
+    func remoteControlSetNumericInput(enabled: Bool) {
+        database.sceneNumericInput = enabled
+        storeSettings()
+    }
+
+    func remoteControlSetLocationEnabled(enabled: Bool) {
+        database.location.enabled = enabled
+        reloadLocation()
+        storeSettings()
     }
 
     func remoteControlSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {

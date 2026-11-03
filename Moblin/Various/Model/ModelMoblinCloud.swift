@@ -805,4 +805,30 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
         model?.remoteControlSetScoreboardPlayers(players: players) ?? false
     }
+
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        guard let model else {
+            onCompleted(nil)
+            return
+        }
+        model.remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerGetTranslationLanguages(
+        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
+    ) {
+        guard let model else {
+            onCompleted([])
+            return
+        }
+        model.remoteControlGetTranslationLanguages(onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerSetNumericInput(enabled: Bool) {
+        model?.remoteControlSetNumericInput(enabled: enabled)
+    }
+
+    func remoteControlStreamerSetLocationEnabled(enabled: Bool) {
+        model?.remoteControlSetLocationEnabled(enabled: enabled)
+    }
 }

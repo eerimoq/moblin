@@ -1378,6 +1378,24 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
         remoteControlSetScoreboardPlayers(players: players)
     }
+
+    func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
+        remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerGetTranslationLanguages(
+        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
+    ) {
+        remoteControlGetTranslationLanguages(onCompleted: onCompleted)
+    }
+
+    func remoteControlStreamerSetNumericInput(enabled: Bool) {
+        remoteControlSetNumericInput(enabled: enabled)
+    }
+
+    func remoteControlStreamerSetLocationEnabled(enabled: Bool) {
+        remoteControlSetLocationEnabled(enabled: enabled)
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {

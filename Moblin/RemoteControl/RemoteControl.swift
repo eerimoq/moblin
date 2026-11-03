@@ -93,6 +93,10 @@ enum RemoteControlRequest: Codable {
     case getAlertMedia(id: UUID)
     case getEditorOptions
     case setScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer])
+    case getVideoSourceSnapshot(id: UUID)
+    case getTranslationLanguages
+    case setNumericInput(enabled: Bool)
+    case setLocationEnabled(enabled: Bool)
 }
 
 enum RemoteControlTipKind: Codable {
@@ -120,6 +124,8 @@ enum RemoteControlResponse: Codable {
     case getWidgetImage(image: Data?)
     case getAlertMedia(data: Data?)
     case getEditorOptions(options: RemoteControlEditorOptions)
+    case getVideoSourceSnapshot(image: Data?)
+    case getTranslationLanguages(languages: [RemoteControlTranslationLanguage])
 }
 
 enum RemoteControlEvent: Codable {
@@ -1037,6 +1043,13 @@ struct RemoteControlWebRemote: Codable {
 struct RemoteControlAppleVoice: Codable {
     let name: String
     let identifier: String
+    let language: String
+}
+
+struct RemoteControlTranslationLanguage: Codable {
+    let identifier: String
+    let name: String
+    let installed: Bool
 }
 
 struct RemoteControlAppleVoices: Codable {
@@ -1053,6 +1066,12 @@ struct RemoteControlEditorOptions: Codable {
     let streamDeckLayouts: [RemoteControlNamedItem]
     let appleVoices: [RemoteControlAppleVoices]
     let showAllSettings: Bool
+    let isPhone: Bool
+    let forceSceneSwitchTransition: Bool
+    let locationEnabled: Bool
+    let workoutActive: Bool
+    let numericInput: Bool
+    let inactiveVideoSourceSceneIds: [UUID]
 }
 
 struct RemoteControlSettings: Codable {
