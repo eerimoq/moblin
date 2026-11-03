@@ -273,7 +273,9 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.isOn, isOn)
+        if Self.isOnStored(type: type) {
+            try container.encode(.isOn, isOn)
+        }
         try container.encode(.enabled, enabled)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.page, page)
@@ -286,11 +288,19 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
         name = type.toString()
         imageOn = ""
         imageOff = ""
-        isOn = container.decode(.isOn, Bool.self, false)
+        if Self.isOnStored(type: type) {
+            isOn = container.decode(.isOn, Bool.self, false)
+        } else {
+            isOn = false
+        }
         enabled = container.decode(.enabled, Bool.self, true)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)
         color = backgroundColor.color()
         page = container.decode(.page, Int.self, 1)
+    }
+
+    private static func isOnStored(type: SettingsQuickButtonType) -> Bool {
+        type == .interactiveChat || type == .cameraPreview || type == .interactiveBrowserWidgets
     }
 }
 

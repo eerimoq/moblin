@@ -1363,12 +1363,6 @@ class Database: Codable, ObservableObject {
             addDefaultBitratePresets(database: database)
         }
         addMissingQuickButtons(database: database)
-        for button in database.quickButtons
-            where button.type != .interactiveChat && button.type != .cameraPreview && button
-            .type != .interactiveBrowserWidgets
-        {
-            button.isOn = false
-        }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         addMissingGoPro(database: database)
