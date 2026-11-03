@@ -299,7 +299,6 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id
         case name
         case text
         case function
@@ -313,7 +312,6 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.text, text)
         try container.encode(.function, function)
@@ -337,7 +335,6 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
         text = container.decode(.text, String.self, "")
         function = container.decode(.function, SettingsControllerFunction.self, .unused)
