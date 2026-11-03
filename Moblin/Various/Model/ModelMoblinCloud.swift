@@ -786,18 +786,6 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlGetVideoSources() ?? []
     }
 
-    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
-        model?.remoteControlDeleteAlertMedia(id: id) ?? false
-    }
-
-    func remoteControlStreamerGetWidgetImage(id: UUID) -> Data? {
-        model?.remoteControlGetWidgetImage(id: id)
-    }
-
-    func remoteControlStreamerGetAlertMedia(id: UUID) -> Data? {
-        model?.remoteControlGetAlertMedia(id: id)
-    }
-
     func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
         model?.remoteControlGetEditorOptions() ?? RemoteControlEditorOptions.empty()
     }
@@ -812,23 +800,5 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
             return
         }
         model.remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
-    }
-
-    func remoteControlStreamerGetTranslationLanguages(
-        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
-    ) {
-        guard let model else {
-            onCompleted([])
-            return
-        }
-        model.remoteControlGetTranslationLanguages(onCompleted: onCompleted)
-    }
-
-    func remoteControlStreamerSetNumericInput(enabled: Bool) {
-        model?.remoteControlSetNumericInput(enabled: enabled)
-    }
-
-    func remoteControlStreamerSetLocationEnabled(enabled: Bool) {
-        model?.remoteControlSetLocationEnabled(enabled: enabled)
     }
 }

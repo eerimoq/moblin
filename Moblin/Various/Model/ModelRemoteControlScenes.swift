@@ -1,6 +1,5 @@
 import AVFoundation
 import Foundation
-@preconcurrency import Translation
 import UIKit
 
 extension RemoteControlEditorOptions {
@@ -15,9 +14,7 @@ extension RemoteControlEditorOptions {
                                    showAllSettings: false,
                                    isPhone: false,
                                    forceSceneSwitchTransition: false,
-                                   locationEnabled: false,
                                    workoutActive: false,
-                                   numericInput: false,
                                    inactiveVideoSourceSceneIds: [])
     }
 }
@@ -136,37 +133,6 @@ extension Model {
         return true
     }
 
-    func remoteControlGetWidgetImage(id: UUID) -> Data? {
-        guard database.widgets.contains(where: { $0.id == id && $0.type == .image }) else {
-            return nil
-        }
-        return imageStorage.tryRead(id: id)
-    }
-
-    func remoteControlGetAlertMedia(id: UUID) -> Data? {
-        let gallery = database.alertsMediaGallery
-        if let image = gallery.bundledImages.first(where: { $0.id == id }) {
-            guard let url = Bundle.main.url(forResource: "Alerts.bundle/\(image.name)", withExtension: "gif")
-            else {
-                return nil
-            }
-            return try? Data(contentsOf: url)
-        }
-        if let sound = gallery.bundledSounds.first(where: { $0.id == id }) {
-            guard let url = Bundle.main.url(forResource: "Alerts.bundle/\(sound.name)", withExtension: "mp3")
-            else {
-                return nil
-            }
-            return try? Data(contentsOf: url)
-        }
-        guard gallery.customImages.contains(where: { $0.id == id })
-            || gallery.customSounds.contains(where: { $0.id == id })
-        else {
-            return nil
-        }
-        return alertMediaStorage.tryRead(id: id)
-    }
-
     func remoteControlGetEditorOptions() -> RemoteControlEditorOptions {
         let web = database.remoteControl.web
         var addresses: [String] = []
@@ -207,9 +173,7 @@ extension Model {
             showAllSettings: database.showAllSettings,
             isPhone: isPhone(),
             forceSceneSwitchTransition: database.forceSceneSwitchTransition,
-            locationEnabled: database.location.enabled,
             workoutActive: workoutType != nil,
-            numericInput: database.sceneNumericInput,
             inactiveVideoSourceSceneIds: database.scenes.filter { !isSceneVideoSourceActive(scene: $0) }
                 .map(\.id)
         )
@@ -223,46 +187,6 @@ extension Model {
         takeVideoSourcePreviewImage(widget: widget) { image in
             onCompleted(image?.jpegData(compressionQuality: 0.8))
         }
-    }
-
-    func remoteControlGetTranslationLanguages(
-        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
-    ) {
-        guard #available(iOS 26, *) else {
-            onCompleted([])
-            return
-        }
-        Task {
-            let availability = LanguageAvailability()
-            var languages: [RemoteControlTranslationLanguage] = []
-            for language in await availability.supportedLanguages {
-                switch await availability.status(from: Locale.current.language, to: language) {
-                case .installed:
-                    languages.append(.init(identifier: language.minimalIdentifier,
-                                           name: language.name(),
-                                           installed: true))
-                case .supported:
-                    languages.append(.init(identifier: language.minimalIdentifier,
-                                           name: language.name(),
-                                           installed: false))
-                default:
-                    break
-                }
-            }
-            let sorted = languages.sorted { $0.identifier < $1.identifier }
-            await MainActor.run {
-                onCompleted(sorted)
-            }
-        }
-    }
-
-    func remoteControlSetNumericInput(enabled: Bool) {
-        database.sceneNumericInput = enabled
-    }
-
-    func remoteControlSetLocationEnabled(enabled: Bool) {
-        database.location.enabled = enabled
-        reloadLocation()
     }
 
     func remoteControlSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool {
@@ -289,20 +213,6 @@ extension Model {
                                             name: camera.name,
                                             position: videoSource.cameraPosition)
         }
-    }
-
-    func remoteControlDeleteAlertMedia(id: UUID) -> Bool {
-        let gallery = database.alertsMediaGallery
-        guard gallery.customImages.contains(where: { $0.id == id })
-            || gallery.customSounds.contains(where: { $0.id == id })
-        else {
-            return false
-        }
-        gallery.customImages.removeAll { $0.id == id }
-        gallery.customSounds.removeAll { $0.id == id }
-        alertMediaStorage.remove(id: id)
-        fixAlertMedias()
-        return true
     }
 
     private func remoteControlScenesChanged(sceneId: UUID?) {

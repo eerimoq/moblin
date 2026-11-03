@@ -302,32 +302,6 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
-    func deleteAlertMedia(id: UUID, onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoResponseData(data: .deleteAlertMedia(id: id), onSuccess: onSuccess, onError: onError)
-    }
-
-    func getWidgetImage(id: UUID, onSuccess: @escaping (Data?) -> Void) {
-        performRequest(data: .getWidgetImage(id: id)) { response in
-            guard case let .getWidgetImage(image: image) = response else {
-                return
-            }
-            onSuccess(image)
-        } onError: { error in
-            logger.info("remote-control-assistant: Get widget image failed with \(error)")
-        }
-    }
-
-    func getAlertMedia(id: UUID, onSuccess: @escaping (Data?) -> Void) {
-        performRequest(data: .getAlertMedia(id: id)) { response in
-            guard case let .getAlertMedia(data: data) = response else {
-                return
-            }
-            onSuccess(data)
-        } onError: { error in
-            logger.info("remote-control-assistant: Get alert media failed with \(error)")
-        }
-    }
-
     func getEditorOptions(onSuccess: @escaping (RemoteControlEditorOptions) -> Void) {
         performRequest(data: .getEditorOptions) { response in
             guard case let .getEditorOptions(options: options) = response else {

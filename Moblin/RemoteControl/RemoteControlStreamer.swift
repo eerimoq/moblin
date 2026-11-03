@@ -68,17 +68,9 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerReorderWidgets(ids: [UUID]) -> Bool
     func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery
     func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource]
-    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool
-    func remoteControlStreamerGetWidgetImage(id: UUID) -> Data?
-    func remoteControlStreamerGetAlertMedia(id: UUID) -> Data?
     func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions
     func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool
     func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void)
-    func remoteControlStreamerGetTranslationLanguages(
-        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
-    )
-    func remoteControlStreamerSetNumericInput(enabled: Bool)
-    func remoteControlStreamerSetLocationEnabled(enabled: Bool)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -545,14 +537,6 @@ class RemoteControlStreamer {
         case .getVideoSources:
             let videoSources = delegate.remoteControlStreamerGetVideoSources()
             send(message: .response(id: id, result: .ok, data: .getVideoSources(videoSources: videoSources)))
-        case let .deleteAlertMedia(id: mediaId):
-            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteAlertMedia(id: mediaId))
-        case let .getWidgetImage(id: widgetId):
-            let image = delegate.remoteControlStreamerGetWidgetImage(id: widgetId)
-            send(message: .response(id: id, result: .ok, data: .getWidgetImage(image: image)))
-        case let .getAlertMedia(id: mediaId):
-            let data = delegate.remoteControlStreamerGetAlertMedia(id: mediaId)
-            send(message: .response(id: id, result: .ok, data: .getAlertMedia(data: data)))
         case .getEditorOptions:
             let options = delegate.remoteControlStreamerGetEditorOptions()
             send(message: .response(id: id, result: .ok, data: .getEditorOptions(options: options)))
@@ -569,18 +553,6 @@ class RemoteControlStreamer {
                     data: .getVideoSourceSnapshot(image: image)
                 ))
             }
-        case .getTranslationLanguages:
-            delegate.remoteControlStreamerGetTranslationLanguages { languages in
-                self.send(message: .response(id: id,
-                                             result: .ok,
-                                             data: .getTranslationLanguages(languages: languages)))
-            }
-        case let .setNumericInput(enabled: enabled):
-            delegate.remoteControlStreamerSetNumericInput(enabled: enabled)
-            sendEmptyOkResponse(id: id)
-        case let .setLocationEnabled(enabled: enabled):
-            delegate.remoteControlStreamerSetLocationEnabled(enabled: enabled)
-            sendEmptyOkResponse(id: id)
         }
     }
 

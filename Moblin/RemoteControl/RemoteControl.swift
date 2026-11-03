@@ -88,15 +88,9 @@ enum RemoteControlRequest: Codable {
     case reorderWidgets(ids: [UUID])
     case getAlertsMediaGallery
     case getVideoSources
-    case deleteAlertMedia(id: UUID)
-    case getWidgetImage(id: UUID)
-    case getAlertMedia(id: UUID)
     case getEditorOptions
     case setScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer])
     case getVideoSourceSnapshot(id: UUID)
-    case getTranslationLanguages
-    case setNumericInput(enabled: Bool)
-    case setLocationEnabled(enabled: Bool)
 }
 
 enum RemoteControlTipKind: Codable {
@@ -121,11 +115,8 @@ enum RemoteControlResponse: Codable {
     case getWidgets(widgets: [SettingsWidget])
     case getAlertsMediaGallery(gallery: SettingsAlertsMediaGallery)
     case getVideoSources(videoSources: [RemoteControlVideoSource])
-    case getWidgetImage(image: Data?)
-    case getAlertMedia(data: Data?)
     case getEditorOptions(options: RemoteControlEditorOptions)
     case getVideoSourceSnapshot(image: Data?)
-    case getTranslationLanguages(languages: [RemoteControlTranslationLanguage])
 }
 
 enum RemoteControlEvent: Codable {
@@ -1046,12 +1037,6 @@ struct RemoteControlAppleVoice: Codable {
     let language: String
 }
 
-struct RemoteControlTranslationLanguage: Codable {
-    let identifier: String
-    let name: String
-    let installed: Bool
-}
-
 struct RemoteControlAppleVoices: Codable {
     let language: String
     let voices: [RemoteControlAppleVoice]
@@ -1068,9 +1053,7 @@ struct RemoteControlEditorOptions: Codable {
     let showAllSettings: Bool
     let isPhone: Bool
     let forceSceneSwitchTransition: Bool
-    let locationEnabled: Bool
     let workoutActive: Bool
-    let numericInput: Bool
     let inactiveVideoSourceSceneIds: [UUID]
 }
 

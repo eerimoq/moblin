@@ -1,6 +1,5 @@
 from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import SceneName
-from ..utils.generate_device_settings import WidgetType
 from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import text_widget_settings
 from ..utils.generate_device_settings import uuid
@@ -9,7 +8,7 @@ from ..utils.test_case import TestCase
 
 
 class SceneConfiguration(TestCase):
-    """Create, update, reorder and delete scenes and widgets, and read media, over remote control."""
+    """Create, update, reorder and delete scenes and widgets, and read the alerts media gallery, over remote control."""
 
     def setup(self):
         self.moblin.import_settings(overrides={})
@@ -30,7 +29,6 @@ class SceneConfiguration(TestCase):
         self.video_sources()
         self.editor_options()
         self.scenes_and_widgets()
-        self.widget_image()
         self.alert_media()
 
     def editor_options(self):
@@ -57,18 +55,6 @@ class SceneConfiguration(TestCase):
         )
         self.assert_in("error", self.moblin.set_scoreboard_players([{"id": player_id}, {"id": player_id}]))
         self.assert_in("ok", self.moblin.set_scoreboard_players([]))
-
-    def widget_image(self):
-        widget_id = uuid()
-        self.assert_in(
-            "ok",
-            self.moblin.create_widget(
-                {"id": widget_id, "name": "Remote image", "type": WidgetType.IMAGE, "enabled": True}
-            ),
-        )
-        self.assert_equal(self.moblin.get_widget_image(widget_id), None)
-        self.assert_equal(self.moblin.get_widget_image(uuid()), None)
-        self.assert_in("ok", self.moblin.delete_widget(widget_id))
 
     def video_sources(self):
         video_sources = self.moblin.get_video_sources()
@@ -119,10 +105,8 @@ class SceneConfiguration(TestCase):
 
     def alert_media(self):
         gallery = self.moblin.get_alerts_media_gallery()
-        self.assert_true(self.moblin.get_alert_media(gallery["bundledSounds"][0]["id"]) is not None)
-        self.assert_equal(self.moblin.get_alert_media(uuid()), None)
-        self.assert_in("error", self.moblin.delete_alert_media(gallery["bundledImages"][0]["id"]))
-        self.assert_in("error", self.moblin.delete_alert_media(uuid()))
+        self.assert_true(len(gallery["bundledImages"]) > 0)
+        self.assert_true(len(gallery["bundledSounds"]) > 0)
 
 
 def tests(moblin: Moblin):

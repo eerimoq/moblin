@@ -7,7 +7,6 @@ import sys
 import tempfile
 import threading
 import time
-from base64 import b64decode
 from base64 import b64encode
 from collections import defaultdict
 from collections.abc import Callable
@@ -291,17 +290,6 @@ class Moblin:
 
     def get_alerts_media_gallery(self) -> dict:
         return self._request({"getAlertsMediaGallery": {}})["data"]["getAlertsMediaGallery"]["gallery"]
-
-    def delete_alert_media(self, media_id: str) -> dict:
-        return self._request({"deleteAlertMedia": {"id": media_id}})["result"]
-
-    def get_widget_image(self, widget_id: str) -> bytes | None:
-        image = self._request({"getWidgetImage": {"id": widget_id}})["data"]["getWidgetImage"].get("image")
-        return b64decode(image) if image is not None else None
-
-    def get_alert_media(self, media_id: str) -> bytes | None:
-        data = self._request({"getAlertMedia": {"id": media_id}})["data"]["getAlertMedia"].get("data")
-        return b64decode(data) if data is not None else None
 
     def get_editor_options(self) -> dict:
         return self._request({"getEditorOptions": {}})["data"]["getEditorOptions"]["options"]

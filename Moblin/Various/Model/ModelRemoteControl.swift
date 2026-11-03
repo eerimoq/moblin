@@ -1359,18 +1359,6 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlGetVideoSources()
     }
 
-    func remoteControlStreamerDeleteAlertMedia(id: UUID) -> Bool {
-        remoteControlDeleteAlertMedia(id: id)
-    }
-
-    func remoteControlStreamerGetWidgetImage(id: UUID) -> Data? {
-        remoteControlGetWidgetImage(id: id)
-    }
-
-    func remoteControlStreamerGetAlertMedia(id: UUID) -> Data? {
-        remoteControlGetAlertMedia(id: id)
-    }
-
     func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions {
         remoteControlGetEditorOptions()
     }
@@ -1381,20 +1369,6 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void) {
         remoteControlGetVideoSourceSnapshot(id: id, onCompleted: onCompleted)
-    }
-
-    func remoteControlStreamerGetTranslationLanguages(
-        onCompleted: @escaping ([RemoteControlTranslationLanguage]) -> Void
-    ) {
-        remoteControlGetTranslationLanguages(onCompleted: onCompleted)
-    }
-
-    func remoteControlStreamerSetNumericInput(enabled: Bool) {
-        remoteControlSetNumericInput(enabled: enabled)
-    }
-
-    func remoteControlStreamerSetLocationEnabled(enabled: Bool) {
-        remoteControlSetLocationEnabled(enabled: enabled)
     }
 }
 
