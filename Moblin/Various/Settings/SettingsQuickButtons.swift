@@ -260,7 +260,6 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id
         case type
         case imageType
         case isOn
@@ -271,7 +270,6 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.id, id)
         try container.encode(.type, type)
         if Self.isOnStored(type: type) {
             try container.encode(.isOn, isOn)
@@ -283,7 +281,6 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
         name = type.toString()
         imageOn = ""
