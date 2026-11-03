@@ -419,13 +419,24 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
         try container.encode(.type, type)
-        try container.encode(.removeBackground, removeBackground)
-        try container.encode(.shape, shape)
-        try container.encode(.dewarp360, dewarp360)
-        try container.encode(.anamorphicLens, anamorphicLens)
-        try container.encode(.lut, lut)
-        try container.encode(.opacity, opacity)
-        try container.encode(.mask, mask)
+        switch type {
+        case .removeBackground:
+            try container.encode(.removeBackground, removeBackground)
+        case .shape:
+            try container.encode(.shape, shape)
+        case .dewarp360:
+            try container.encode(.dewarp360, dewarp360)
+        case .anamorphicLens:
+            try container.encode(.anamorphicLens, anamorphicLens)
+        case .lut:
+            try container.encode(.lut, lut)
+        case .opacity:
+            try container.encode(.opacity, opacity)
+        case .mask:
+            try container.encode(.mask, mask)
+        case .grayScale, .sepia, .whirlpool, .pinch:
+            break
+        }
     }
 
     required init(from decoder: any Decoder) throws {
