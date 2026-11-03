@@ -2984,18 +2984,33 @@ struct SettingsVideoSource {
 
     func encode(to container: inout KeyedEncodingContainer<some SettingsVideoSourceCodingKeys>) throws {
         try container.encode(.cameraPosition, cameraPosition)
-        try container.encode(.backCameraId, backCameraId)
-        try container.encode(.frontCameraId, frontCameraId)
-        try container.encode(.rtmpCameraId, rtmpCameraId)
-        try container.encode(.srtlaCameraId, srtlaCameraId)
-        try container.encode(.srtClientCameraId, srtClientCameraId)
-        try container.encode(.ristCameraId, ristCameraId)
-        try container.encode(.rtspCameraId, rtspCameraId)
-        try container.encode(.whipCameraId, whipCameraId)
-        try container.encode(.whepCameraId, whepCameraId)
-        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
-        try container.encode(.externalCameraId, externalCameraId)
-        try container.encode(.externalCameraName, externalCameraName)
+        switch cameraPosition {
+        case .back:
+            try container.encode(.backCameraId, backCameraId)
+        case .front:
+            try container.encode(.frontCameraId, frontCameraId)
+        case .rtmp:
+            try container.encode(.rtmpCameraId, rtmpCameraId)
+        case .srtla:
+            try container.encode(.srtlaCameraId, srtlaCameraId)
+        case .srtClient:
+            try container.encode(.srtClientCameraId, srtClientCameraId)
+        case .rist:
+            try container.encode(.ristCameraId, ristCameraId)
+        case .rtsp:
+            try container.encode(.rtspCameraId, rtspCameraId)
+        case .whip:
+            try container.encode(.whipCameraId, whipCameraId)
+        case .whep:
+            try container.encode(.whepCameraId, whepCameraId)
+        case .mediaPlayer:
+            try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        case .external:
+            try container.encode(.externalCameraId, externalCameraId)
+            try container.encode(.externalCameraName, externalCameraName)
+        case .screenCapture, .backTripleLowEnergy, .backDualLowEnergy, .backWideDualLowEnergy, .none:
+            break
+        }
     }
 
     func toCameraId() -> SettingsCameraId {
