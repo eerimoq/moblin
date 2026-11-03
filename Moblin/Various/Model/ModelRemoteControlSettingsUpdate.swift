@@ -2,6 +2,7 @@ import Foundation
 
 struct RemoteControlWidgetUpdate {
     var reloadEffects = false
+    var reloadEffectsAttachCamera = true
     var updateScene = false
     var attachCamera = false
     var updateEffects: () -> Void = {}
@@ -70,7 +71,8 @@ extension Model {
 
     func remoteControlWidgetUpdated(update: RemoteControlWidgetUpdate) {
         if update.reloadEffects {
-            resetSelectedScene(changeScene: false, attachCamera: update.attachCamera)
+            resetSelectedScene(changeScene: false,
+                               attachCamera: update.reloadEffectsAttachCamera || update.attachCamera)
         } else if update.updateScene {
             sceneUpdated(attachCamera: update.attachCamera)
         }
@@ -192,7 +194,7 @@ extension Model {
         let browser = widget.browser
         let newBrowser = new.browser
         var changes = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&browser.url, newBrowser.url.trim())
         changes.apply(&browser.styleSheet, newBrowser.styleSheet.trim())
         changes.apply(&browser.width, newBrowser.width)
@@ -202,7 +204,7 @@ extension Model {
         changes.apply(&browser.baseFps, newBrowser.baseFps)
         changes.apply(&browser.moblinAccess, newBrowser.moblinAccess)
         changes.apply(&browser.speechToText, newBrowser.speechToText)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
     }
 
     private func updateCropWidget(_ widget: SettingsWidget,
@@ -225,11 +227,11 @@ extension Model {
         let map = widget.map
         let newMap = new.map
         var changes = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&map.northUp, newMap.northUp)
         changes.apply(&map.size, newMap.size)
         changes.apply(&map.delay, newMap.delay)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
     }
 
     private func updateSceneWidget(_ widget: SettingsWidget,
@@ -237,35 +239,35 @@ extension Model {
     {
         var changes = ChangeTracker()
         changes.apply(&widget.scene.sceneId, new.scene.sceneId)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed,
-                                         attachCamera: isCaptureDeviceWidget(widget: widget))
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
     }
 
     private func updateQrCodeWidget(_ widget: SettingsWidget,
                                     _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         var changes = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&widget.qrCode.message, new.qrCode.message)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
     }
 
     private func updateImageWidget(_ widget: SettingsWidget,
                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         var changes = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
     }
 
     private func updateSnapshotWidget(_ widget: SettingsWidget,
                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate
     {
         var effects = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &effects)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &effects)
         let showtimeChanged = widget.snapshot.showtime != new.snapshot.showtime
         widget.snapshot.showtime = new.snapshot.showtime
         return RemoteControlWidgetUpdate(reloadEffects: effects.changed) {
+            updateVideoEffects()
             if showtimeChanged {
                 self.getSnapshotEffect(id: widget.id)?.setSettings(showtime: widget.snapshot.showtime)
             }
@@ -328,7 +330,7 @@ extension Model {
             return oldSlide
         }
         changes.applyItems(&slideshow.slides, slides)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, reloadEffectsAttachCamera: false)
     }
 
     private func updateWheelOfLuckWidget(_ widget: SettingsWidget,
@@ -377,7 +379,7 @@ extension Model {
         let videoSource = widget.videoSource
         let newVideoSource = new.videoSource
         var effects = ChangeTracker()
-        applyEffectsUpdate(widget: widget, new: new, changes: &effects)
+        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &effects)
         let cameraChanged = cameraId(videoSource.videoSource) != cameraId(newVideoSource.videoSource)
         if cameraChanged {
             videoSource.updateCameraId(settingsCameraId: newVideoSource.videoSource.toCameraId())
@@ -390,8 +392,9 @@ extension Model {
         let settingsChanged = settings.changed
         return RemoteControlWidgetUpdate(reloadEffects: effects.changed,
                                          updateScene: cameraChanged,
-                                         attachCamera: cameraChanged || isCaptureDeviceWidget(widget: widget))
+                                         attachCamera: cameraChanged)
         {
+            updateVideoEffects()
             if settingsChanged {
                 self.getVideoSourceEffect(id: widget.id)?
                     .setSettings(settings: videoSource.toEffectSettings())
@@ -580,19 +583,32 @@ extension Model {
         }
     }
 
-    func remoteControlApplySceneUpdate(scene: SettingsScene, new: SettingsScene) -> Bool {
-        let selected = getSelectedScene() === scene
-        let overrideMicChanged = scene.overrideMic != new.overrideMic
-        let quickSwitchGroupChanged = scene.quickSwitchGroup != new.quickSwitchGroup
-        let attachCamera = cameraId(scene.videoSource) != cameraId(new.videoSource)
+    func remoteControlApplySceneUpdate(scene: SettingsScene, new: SettingsScene, creating: Bool) {
+        let enabledChanged = scene.enabled != new.enabled
+        let cameraChanged = cameraId(scene.videoSource) != cameraId(new.videoSource)
+        let attachCameraChanged = !creating && cameraChanged
             || scene.mirror != new.mirror
             || scene.overrideVideoStabilizationMode != new.overrideVideoStabilizationMode
             || scene.videoStabilizationMode != new.videoStabilizationMode
             || scene.fillFrame != new.fillFrame
-            || captureDeviceWidgetIds(scene.widgets) != captureDeviceWidgetIds(new.widgets)
+        let rotationChanged = scene.videoSourceRotation != new.videoSourceRotation
+        let quickSwitchGroupChanged = scene.quickSwitchGroup != new.quickSwitchGroup
+        let overrideMicChanged = scene.overrideMic != new.overrideMic
+        let micIdChanged = scene.micId != new.micId
+        let backgroundColorChanged = scene.backgroundColor != new.backgroundColor
+        let oldWidgetIds = scene.widgets.map(\.id)
+        let newWidgetIds = new.widgets.map(\.id)
+        let widgetsRemovedOrMoved = oldWidgetIds.contains { !newWidgetIds.contains($0) }
+            || oldWidgetIds.filter(newWidgetIds.contains) != newWidgetIds.filter(oldWidgetIds.contains)
+        let widgetsAdded = newWidgetIds.contains { !oldWidgetIds.contains($0) }
+        let layoutsChanged = new.widgets.contains { sceneWidget in
+            scene.widgets.first { $0.id == sceneWidget.id }.map { $0.layout != sceneWidget.layout } ?? false
+        }
+        let captureDeviceWidgetsChanged = captureDeviceWidgetIds(scene.widgets) !=
+            captureDeviceWidgetIds(new.widgets)
         scene.name = new.name
         scene.enabled = new.enabled
-        if cameraId(scene.videoSource) != cameraId(new.videoSource) {
+        if cameraChanged {
             scene.updateCameraId(settingsCameraId: new.videoSource.toCameraId())
         }
         scene.videoSourceRotation = new.videoSourceRotation
@@ -606,14 +622,28 @@ extension Model {
         scene.backgroundColor = new.backgroundColor
         scene.backgroundColorColor = new.backgroundColor.color()
         scene.widgets = remoteControlMergeSceneWidgets(scene.widgets, new.widgets)
-        sceneSelector.objectWillChange.send()
-        if quickSwitchGroupChanged, selected {
+        let selected = getSelectedScene() === scene
+        let widgetsChanged = widgetsRemovedOrMoved || widgetsAdded || layoutsChanged
+        if enabledChanged, selected {
+            resetSelectedScene()
+        } else if quickSwitchGroupChanged, selected {
             resetSelectedScene(changeScene: false, attachCamera: true)
+        } else if attachCameraChanged || rotationChanged || widgetsChanged {
+            sceneUpdated(attachCamera: attachCameraChanged || selected && captureDeviceWidgetsChanged,
+                         updateRemoteScene: widgetsChanged)
         }
-        if overrideMicChanged {
+        if enabledChanged, !selected {
+            sceneSelector.sceneIndex += 0
+        }
+        if overrideMicChanged || micIdChanged && selected {
             switchMicIfNeededAfterSceneSwitch()
         }
-        return attachCamera
+        if backgroundColorChanged {
+            sceneSelector.objectWillChange.send()
+        }
+        if widgetsRemovedOrMoved {
+            sceneSettingsPanelSceneId += 1
+        }
     }
 
     private func captureDeviceWidgetIds(_ sceneWidgets: [SettingsSceneWidget]) -> Set<UUID> {
@@ -651,22 +681,30 @@ extension Model {
         widget: SettingsWidget,
         new: SettingsWidget,
         changes: inout ChangeTracker
-    ) {
+    ) -> () -> Void {
+        var updatedEffects: [SettingsVideoEffect] = []
         let effects = new.effects.map { effect in
             guard let oldEffect = widget.effects.first(where: { $0.id == effect.id }) else {
                 return effect
             }
-            applyEffectUpdate(oldEffect, effect, &changes)
+            changes.apply(&oldEffect.enabled, effect.enabled)
+            if applyEffectSettingsUpdate(oldEffect, effect) {
+                updatedEffects.append(oldEffect)
+            }
             return oldEffect
         }
         changes.applyItems(&widget.effects, effects)
+        return {
+            for effect in updatedEffects {
+                self.updateWidgetVideoEffect(widget, effect)
+            }
+        }
     }
 
-    private func applyEffectUpdate(_ effect: SettingsVideoEffect,
-                                   _ new: SettingsVideoEffect,
-                                   _ changes: inout ChangeTracker)
+    private func applyEffectSettingsUpdate(_ effect: SettingsVideoEffect,
+                                           _ new: SettingsVideoEffect) -> Bool
     {
-        changes.apply(&effect.enabled, new.enabled)
+        var changes = ChangeTracker()
         switch effect.type {
         case .removeBackground:
             let removeBackground = effect.removeBackground
@@ -692,8 +730,9 @@ extension Model {
             let dewarp360 = effect.dewarp360
             changes.apply(&dewarp360.pan, new.dewarp360.pan)
             changes.apply(&dewarp360.tilt, new.dewarp360.tilt)
-            changes.apply(&dewarp360.zoom, new.dewarp360.zoom)
-            changes.apply(&dewarp360.inverseFieldOfView, new.dewarp360.inverseFieldOfView)
+            if changes.apply(&dewarp360.inverseFieldOfView, new.dewarp360.inverseFieldOfView) {
+                dewarp360.updateZoomFromInverseFieldOfView()
+            }
         case .anamorphicLens:
             changes.apply(&effect.anamorphicLens.scale, new.anamorphicLens.scale)
         case .lut:
@@ -712,6 +751,37 @@ extension Model {
             if changes.apply(&mask.backgroundColor2, new.mask.backgroundColor2) {
                 mask.backgroundColorColor2 = mask.backgroundColor2.color()
             }
+        case .grayScale, .sepia, .whirlpool, .pinch:
+            break
+        }
+        return changes.changed
+    }
+
+    private func updateWidgetVideoEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) {
+        switch effect.type {
+        case .removeBackground:
+            getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
+                from: effect.removeBackground.from,
+                to: effect.removeBackground.to
+            )
+        case .shape:
+            getWidgetShapeEffect(widget, effect)?.setSettings(settings: effect.shape.toSettings())
+            updateCameraPreviewWidgets()
+        case .dewarp360:
+            getWidgetDewarp360Effect(widget, effect)?.setSettings(settings: effect.dewarp360.toSettings())
+        case .anamorphicLens:
+            getWidgetAnamorphicLensEffect(widget, effect)?
+                .setSettings(settings: effect.anamorphicLens.clone())
+        case .lut:
+            getWidgetLutEffect(widget, effect)?.setLut(lut: getLogLutById(id: effect.lut.lut),
+                                                       imageStorage: imageStorage)
+            {
+                self.makeErrorToast(title: $0, subTitle: $1)
+            }
+        case .opacity:
+            getWidgetOpacityEffect(widget, effect)?.setOpacity(opacity: effect.opacity.opacity)
+        case .mask:
+            getWidgetMaskEffect(widget, effect)?.setSettings(settings: effect.mask.toEffectSettings())
         case .grayScale, .sepia, .whirlpool, .pinch:
             break
         }

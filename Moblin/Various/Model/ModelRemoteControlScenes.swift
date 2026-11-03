@@ -50,8 +50,7 @@ extension Model {
             return false
         }
         database.scenes.append(newScene)
-        let attachCamera = remoteControlApplySceneUpdate(scene: newScene, new: scene)
-        remoteControlScenesChanged(sceneId: scene.id, attachCamera: attachCamera)
+        remoteControlApplySceneUpdate(scene: newScene, new: scene, creating: true)
         return true
     }
 
@@ -73,8 +72,7 @@ extension Model {
         else {
             return false
         }
-        let attachCamera = remoteControlApplySceneUpdate(scene: oldScene, new: scene)
-        remoteControlScenesChanged(sceneId: scene.id, attachCamera: attachCamera)
+        remoteControlApplySceneUpdate(scene: oldScene, new: scene, creating: false)
         return true
     }
 
@@ -83,7 +81,6 @@ extension Model {
             return false
         }
         deleteScene(scene: scene)
-        remoteControlScenesChanged(sceneId: id, attachCamera: false)
         return true
     }
 
@@ -115,12 +112,10 @@ extension Model {
     }
 
     func remoteControlDeleteWidget(id: UUID) -> Bool {
-        guard database.widgets.contains(where: { $0.id == id }) else {
+        guard let widget = database.findWidget(id: id) else {
             return false
         }
-        database.widgets.removeAll { $0.id == id }
-        removeDeadWidgetsFromScenes()
-        resetSelectedScene(changeScene: false)
+        deleteWidget(widget: widget)
         return true
     }
 
@@ -205,20 +200,6 @@ extension Model {
             return RemoteControlVideoSource(id: camera.id,
                                             name: camera.name,
                                             position: videoSource.cameraPosition)
-        }
-    }
-
-    private func remoteControlScenesChanged(sceneId: UUID, attachCamera: Bool) {
-        let selectedSceneId = sceneSelector.selectedSceneId
-        if findEnabledScene(id: selectedSceneId) == nil {
-            sceneSelector.sceneIndex = 0
-            resetSelectedScene()
-        } else {
-            sceneSelector.sceneIndex = findEnabledSceneIndex(id: selectedSceneId) ?? 0
-            sceneUpdated(attachCamera: sceneId == selectedSceneId && attachCamera)
-            if sceneId == selectedSceneId {
-                switchMicIfNeededAfterSceneSwitch()
-            }
         }
     }
 }
