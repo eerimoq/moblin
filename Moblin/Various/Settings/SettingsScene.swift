@@ -1774,7 +1774,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var sensitivity: SettingsSensitivity = .init()
     @Published var armsAngle: Double = 72.0
 
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: SettingsVideoSourceCodingKeys {
         case id
         case type
         case cameraPosition
@@ -1804,19 +1804,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.cameraPosition, videoSource.cameraPosition)
-        try container.encode(.backCameraId, videoSource.backCameraId)
-        try container.encode(.frontCameraId, videoSource.frontCameraId)
-        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
-        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
-        try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
-        try container.encode(.ristCameraId, videoSource.ristCameraId)
-        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
-        try container.encode(.whipCameraId, videoSource.whipCameraId)
-        try container.encode(.whepCameraId, videoSource.whepCameraId)
-        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
-        try container.encode(.externalCameraId, videoSource.externalCameraId)
-        try container.encode(.externalCameraName, videoSource.externalCameraName)
+        try videoSource.encode(to: &container)
         try container.encode(.cameraPositionY, cameraPositionY)
         try container.encode(.cameraFieldOfView, cameraFieldOfView)
         try container.encode(.modelName, modelName)
@@ -1829,19 +1817,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsWidgetVTuberType.self, .vrm)
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
-        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
-        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
-        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
-        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
-        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource = SettingsVideoSource(from: container, defaultCameraPosition: .none)
         cameraPositionY = container.decode(.cameraPositionY, Double.self, 1.37)
         cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
         modelName = container.decode(.modelName, String.self, "")
@@ -1866,7 +1842,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     @Published var mirror: Bool = false
     @Published var sensitivity: SettingsSensitivity = .init()
 
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: SettingsVideoSourceCodingKeys {
         case id
         case cameraPosition
         case backCameraId
@@ -1891,19 +1867,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
-        try container.encode(.cameraPosition, videoSource.cameraPosition)
-        try container.encode(.backCameraId, videoSource.backCameraId)
-        try container.encode(.frontCameraId, videoSource.frontCameraId)
-        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
-        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
-        try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
-        try container.encode(.ristCameraId, videoSource.ristCameraId)
-        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
-        try container.encode(.whipCameraId, videoSource.whipCameraId)
-        try container.encode(.whepCameraId, videoSource.whepCameraId)
-        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
-        try container.encode(.externalCameraId, videoSource.externalCameraId)
-        try container.encode(.externalCameraName, videoSource.externalCameraName)
+        try videoSource.encode(to: &container)
         try container.encode(.modelName, modelName)
         try container.encode(.mirror, mirror)
         try container.encode(.sensitivity, sensitivity)
@@ -1912,19 +1876,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
-        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
-        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
-        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
-        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
-        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource = SettingsVideoSource(from: container, defaultCameraPosition: .none)
         modelName = container.decode(.modelName, String.self, "")
         mirror = container.decode(.mirror, Bool.self, false)
         sensitivity = container.decode(.sensitivity, SettingsSensitivity.self, .init())
@@ -2979,6 +2931,22 @@ private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
     .backWideDualLowEnergy,
 ]
 
+protocol SettingsVideoSourceCodingKeys: CodingKey {
+    static var cameraPosition: Self { get }
+    static var backCameraId: Self { get }
+    static var frontCameraId: Self { get }
+    static var rtmpCameraId: Self { get }
+    static var srtlaCameraId: Self { get }
+    static var srtClientCameraId: Self { get }
+    static var ristCameraId: Self { get }
+    static var rtspCameraId: Self { get }
+    static var whipCameraId: Self { get }
+    static var whepCameraId: Self { get }
+    static var mediaPlayerCameraId: Self { get }
+    static var externalCameraId: Self { get }
+    static var externalCameraName: Self { get }
+}
+
 struct SettingsVideoSource {
     var cameraPosition: SettingsSceneCameraPosition = .none
     var backCameraId: CameraId = bestBackCameraId
@@ -2993,6 +2961,42 @@ struct SettingsVideoSource {
     var mediaPlayerCameraId: UUID = .init()
     var externalCameraId: CameraId = ""
     var externalCameraName: String = ""
+
+    init() {}
+
+    init(from container: KeyedDecodingContainer<some SettingsVideoSourceCodingKeys>,
+         defaultCameraPosition: SettingsSceneCameraPosition)
+    {
+        cameraPosition = decodeCameraPosition(container, .cameraPosition, defaultCameraPosition)
+        backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
+        frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
+        rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
+        srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
+        srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
+        ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
+        rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
+        whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
+        whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
+        mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
+        externalCameraId = container.decode(.externalCameraId, String.self, "")
+        externalCameraName = container.decode(.externalCameraName, String.self, "")
+    }
+
+    func encode(to container: inout KeyedEncodingContainer<some SettingsVideoSourceCodingKeys>) throws {
+        try container.encode(.cameraPosition, cameraPosition)
+        try container.encode(.backCameraId, backCameraId)
+        try container.encode(.frontCameraId, frontCameraId)
+        try container.encode(.rtmpCameraId, rtmpCameraId)
+        try container.encode(.srtlaCameraId, srtlaCameraId)
+        try container.encode(.srtClientCameraId, srtClientCameraId)
+        try container.encode(.ristCameraId, ristCameraId)
+        try container.encode(.rtspCameraId, rtspCameraId)
+        try container.encode(.whipCameraId, whipCameraId)
+        try container.encode(.whepCameraId, whepCameraId)
+        try container.encode(.mediaPlayerCameraId, mediaPlayerCameraId)
+        try container.encode(.externalCameraId, externalCameraId)
+        try container.encode(.externalCameraName, externalCameraName)
+    }
 
     func toCameraId() -> SettingsCameraId {
         switch cameraPosition {
@@ -3150,7 +3154,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     var borderColor: RgbColor = .init(red: 0, green: 0, blue: 0)
     @Published var borderColorColor: Color = .clear
 
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: SettingsVideoSourceCodingKeys {
         case cornerRadius
         case cameraPosition
         case backCameraId
@@ -3185,19 +3189,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.cornerRadius, cornerRadius)
-        try container.encode(.cameraPosition, videoSource.cameraPosition)
-        try container.encode(.backCameraId, videoSource.backCameraId)
-        try container.encode(.frontCameraId, videoSource.frontCameraId)
-        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
-        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
-        try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
-        try container.encode(.ristCameraId, videoSource.ristCameraId)
-        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
-        try container.encode(.whipCameraId, videoSource.whipCameraId)
-        try container.encode(.whepCameraId, videoSource.whepCameraId)
-        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
-        try container.encode(.externalCameraId, videoSource.externalCameraId)
-        try container.encode(.externalCameraName, videoSource.externalCameraName)
+        try videoSource.encode(to: &container)
         try container.encode(.cropEnabled, cropEnabled)
         try container.encode(.cropX, cropX)
         try container.encode(.cropY, cropY)
@@ -3214,19 +3206,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0)
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .none)
-        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
-        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
-        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
-        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
-        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource = SettingsVideoSource(from: container, defaultCameraPosition: .none)
         cropEnabled = container.decode(.cropEnabled, Bool.self, false)
         cropX = container.decode(.cropX, Double.self, 0.25)
         cropY = container.decode(.cropY, Double.self, 0.0)
@@ -4107,7 +4087,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         lhs.id == rhs.id
     }
 
-    enum CodingKeys: CodingKey {
+    enum CodingKeys: SettingsVideoSourceCodingKeys {
         case name
         case id
         case enabled
@@ -4142,19 +4122,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
-        try container.encode(.cameraPosition, videoSource.cameraPosition)
-        try container.encode(.backCameraId, videoSource.backCameraId)
-        try container.encode(.frontCameraId, videoSource.frontCameraId)
-        try container.encode(.rtmpCameraId, videoSource.rtmpCameraId)
-        try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
-        try container.encode(.srtClientCameraId, videoSource.srtClientCameraId)
-        try container.encode(.ristCameraId, videoSource.ristCameraId)
-        try container.encode(.rtspCameraId, videoSource.rtspCameraId)
-        try container.encode(.whipCameraId, videoSource.whipCameraId)
-        try container.encode(.whepCameraId, videoSource.whepCameraId)
-        try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
-        try container.encode(.externalCameraId, videoSource.externalCameraId)
-        try container.encode(.externalCameraName, videoSource.externalCameraName)
+        try videoSource.encode(to: &container)
         try container.encode(.widgets, widgets)
         try container.encode(.videoSourceRotation, videoSourceRotation)
         try container.encode(.videoStabilizationMode, videoStabilizationMode)
@@ -4172,23 +4140,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
-        videoSource.cameraPosition = decodeCameraPosition(
-            container,
-            .cameraPosition,
-            defaultBackCameraPosition
-        )
-        videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
-        videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
-        videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
-        videoSource.srtlaCameraId = container.decode(.srtlaCameraId, UUID.self, .init())
-        videoSource.srtClientCameraId = container.decode(.srtClientCameraId, UUID.self, .init())
-        videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
-        videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
-        videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
-        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
-        videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
-        videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
-        videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
+        videoSource = SettingsVideoSource(from: container, defaultCameraPosition: defaultBackCameraPosition)
         widgets = container.decode(.widgets, [SettingsSceneWidget].self, [])
         videoSourceRotation = container.decode(.videoSourceRotation, Double.self, 0.0)
         videoStabilizationMode = container.decode(
