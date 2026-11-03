@@ -2617,24 +2617,46 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.name, name)
         try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.text, text)
-        try container.encode(.browser, browser)
-        try container.encode(.crop, crop)
-        try container.encode(.map, map)
-        try container.encode(.scene, scene)
-        try container.encode(.qrCode, qrCode)
-        try container.encode(.alerts, alerts)
-        try container.encode(.videoSource, videoSource)
-        try container.encode(.scoreboard, scoreboard)
-        try container.encode(.vTuber, vTuber)
-        try container.encode(.pngTuber, pngTuber)
-        try container.encode(.snapshot, snapshot)
-        try container.encode(.chat, chat)
-        try container.encode(.chatEmoteCombo, chatEmoteCombo)
-        try container.encode(.slideshow, slideshow)
-        try container.encode(.wheelOfLuck, wheelOfLuck)
-        try container.encode(.bingoCard, bingoCard)
-        try container.encode(.pomodoroTimer, pomodoroTimer)
+        switch type {
+        case .text:
+            try container.encode(.text, text)
+        case .browser:
+            try container.encode(.browser, browser)
+        case .crop:
+            try container.encode(.crop, crop)
+        case .map:
+            try container.encode(.map, map)
+        case .scene:
+            try container.encode(.scene, scene)
+        case .qrCode:
+            try container.encode(.qrCode, qrCode)
+        case .alerts:
+            try container.encode(.alerts, alerts)
+        case .videoSource:
+            try container.encode(.videoSource, videoSource)
+        case .scoreboard:
+            try container.encode(.scoreboard, scoreboard)
+        case .vTuber:
+            try container.encode(.vTuber, vTuber)
+        case .pngTuber:
+            try container.encode(.pngTuber, pngTuber)
+        case .snapshot:
+            try container.encode(.snapshot, snapshot)
+        case .chat:
+            try container.encode(.chat, chat)
+        case .chatEmoteCombo:
+            try container.encode(.chatEmoteCombo, chatEmoteCombo)
+        case .slideshow:
+            try container.encode(.slideshow, slideshow)
+        case .wheelOfLuck:
+            try container.encode(.wheelOfLuck, wheelOfLuck)
+        case .bingoCard:
+            try container.encode(.bingoCard, bingoCard)
+        case .pomodoroTimer:
+            try container.encode(.pomodoroTimer, pomodoroTimer)
+        case .image:
+            break
+        }
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
