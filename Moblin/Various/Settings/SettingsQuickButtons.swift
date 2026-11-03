@@ -260,12 +260,9 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case name
         case id
         case type
         case imageType
-        case systemImageNameOn
-        case systemImageNameOff
         case isOn
         case enabled
         case backgroundColor
@@ -274,11 +271,8 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.name, name)
         try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.systemImageNameOn, imageOn)
-        try container.encode(.systemImageNameOff, imageOff)
         try container.encode(.isOn, isOn)
         try container.encode(.enabled, enabled)
         try container.encode(.backgroundColor, backgroundColor)
@@ -287,11 +281,11 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
-        imageOn = container.decode(.systemImageNameOn, String.self, "")
-        imageOff = container.decode(.systemImageNameOff, String.self, "")
+        name = type.toString()
+        imageOn = ""
+        imageOff = ""
         isOn = container.decode(.isOn, Bool.self, false)
         enabled = container.decode(.enabled, Bool.self, true)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)
