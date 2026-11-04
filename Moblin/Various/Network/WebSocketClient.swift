@@ -62,12 +62,11 @@ final class WebSocketClient {
         connected
     }
 
-    func send(string: String, onProcessed: (@MainActor () -> Void)? = nil) {
+    func send(string: String) {
         guard let connection else {
-            onProcessed?()
             return
         }
-        send(connection, string.utf8Data, NWProtocolWebSocket.Metadata(opcode: .text), onProcessed)
+        send(connection, string.utf8Data, NWProtocolWebSocket.Metadata(opcode: .text))
     }
 
     private func startInternal() {
@@ -213,18 +212,14 @@ final class WebSocketClient {
         receiveMessage(connection)
     }
 
-    private func send(_ connection: NWConnection,
-                      _ data: Data?,
-                      _ metadata: NWProtocolWebSocket.Metadata,
-                      _ onProcessed: (@MainActor () -> Void)? = nil)
-    {
+    private func send(_ connection: NWConnection, _ data: Data?, _ metadata: NWProtocolWebSocket.Metadata) {
         let context = NWConnection.ContentContext(identifier: "websocket", metadata: [metadata])
         let completion = NWConnection.SendCompletion.contentProcessed { [weak self] error in
+            guard let self, let error else {
+                return
+            }
             MainActor.assumeIsolated {
-                onProcessed?()
-                if let error {
-                    self?.handleSendError(connection, error)
-                }
+                handleSendError(connection, error)
             }
         }
         connection.send(content: data, contentContext: context, isComplete: true, completion: completion)
