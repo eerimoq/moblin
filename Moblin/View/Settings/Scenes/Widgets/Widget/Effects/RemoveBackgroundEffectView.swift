@@ -7,10 +7,7 @@ struct RemoveBackgroundEffectView: View {
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
 
     private func updateWidget() {
-        model.getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
-            from: removeBackground.from,
-            to: removeBackground.to
-        )
+        model.removeBackgroundEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     var body: some View {

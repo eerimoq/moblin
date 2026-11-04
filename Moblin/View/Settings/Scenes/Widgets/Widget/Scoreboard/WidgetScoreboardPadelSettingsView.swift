@@ -8,8 +8,7 @@ private struct PlayersPlayerView: View {
     var body: some View {
         NameEditView(name: $player.name, existingNames: database.scoreboardPlayers)
             .onChange(of: player.name) { _ in
-                model.sceneUpdated()
-                model.sendScoreboardPlayersToWatch()
+                model.scoreboardPlayersChanged()
             }
     }
 }

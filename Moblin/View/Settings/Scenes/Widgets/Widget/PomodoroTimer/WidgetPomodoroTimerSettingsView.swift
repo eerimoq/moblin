@@ -95,9 +95,7 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
             }
             .onChange(of: pomodoroTimer.focusDuration) { _ in
-                if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
-                    pomodoroTimer.secondsRemaining = pomodoroTimer.focusDuration * 60
-                }
+                pomodoroTimer.focusDurationChanged()
             }
             Picker("Break", selection: $pomodoroTimer.breakDuration) {
                 ForEach([1, 2, 3, 5, 7, 10, 15, 20, 25, 30], id: \.self) {
@@ -105,9 +103,7 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
             }
             .onChange(of: pomodoroTimer.breakDuration) { _ in
-                if pomodoroTimer.phase == .shortBreak, !pomodoroTimer.isRunning {
-                    pomodoroTimer.secondsRemaining = pomodoroTimer.breakDuration * 60
-                }
+                pomodoroTimer.breakDurationChanged()
             }
         } header: {
             Text("Durations")

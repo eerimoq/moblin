@@ -139,8 +139,9 @@ struct WidgetVideoSourceSettingsView: View {
     @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
-        videoSource.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.videoSourceWidgetSetCamera(widget: widget,
+                                         settingsCameraId: model
+                                             .cameraIdToSettingsCameraId(cameraId: cameraId))
         #if !targetEnvironment(macCatalyst)
         if model.isScreenCaptureCamera(cameraId: cameraId) {
             presentingScreenCaptureAlert = true
@@ -149,9 +150,7 @@ struct WidgetVideoSourceSettingsView: View {
     }
 
     private func setEffectSettings() {
-        model.getVideoSourceEffect(id: widget.id)?
-            .setSettings(settings: videoSource.toEffectSettings())
-        model.updateCameraPreviewWidgets()
+        model.videoSourceWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

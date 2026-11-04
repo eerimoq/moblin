@@ -65,21 +65,7 @@ struct WidgetScoreboardSettingsView: View {
     @ObservedObject var web: SettingsRemoteControlWeb
 
     private func updated() {
-        switch scoreboard.sport {
-        case .generic:
-            model.sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
-        case .padel:
-            model.sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
-        default:
-            break
-        }
-        model.remoteControlScoreboardUpdate(scoreboard: scoreboard)
-        model.getScoreboardEffect(id: widget.id)?
-            .update(
-                scoreboard: scoreboard,
-                config: model.getModularScoreboardConfig(scoreboard: scoreboard),
-                players: model.database.scoreboardPlayers
-            )
+        model.scoreboardWidgetUpdated(widget: widget)
     }
 
     var body: some View {
@@ -90,7 +76,7 @@ struct WidgetScoreboardSettingsView: View {
                 }
             }
             .onChange(of: scoreboard.sport) { _ in
-                scoreboard.modular.config = nil
+                scoreboard.sportChanged()
                 updated()
             }
             switch scoreboard.sport {

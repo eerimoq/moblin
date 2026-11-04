@@ -6,7 +6,7 @@ struct WidgetSnapshotSettingsView: View {
     @ObservedObject var snapshot: SettingsWidgetSnapshot
 
     private func setEffectSettings() {
-        model.getSnapshotEffect(id: widget.id)?.setSettings(showtime: snapshot.showtime)
+        model.snapshotWidgetShowtimeChanged(widget: widget)
     }
 
     var body: some View {

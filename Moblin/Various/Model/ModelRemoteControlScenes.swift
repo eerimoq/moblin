@@ -102,11 +102,10 @@ extension Model {
     func remoteControlUpdateWidget(widget: SettingsWidget) -> Bool {
         guard let oldWidget = database.findWidget(id: widget.id),
               isValidRemoteControlName(widget, database.widgets, database.widgets),
-              let update = remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget, creating: false)
+              remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget, creating: false)
         else {
             return false
         }
-        remoteControlWidgetUpdated(update: update)
         return true
     }
 
@@ -183,8 +182,7 @@ extension Model {
             return false
         }
         database.scoreboardPlayers = players
-        sceneUpdated()
-        sendScoreboardPlayersToWatch()
+        scoreboardPlayersChanged()
         return true
     }
 

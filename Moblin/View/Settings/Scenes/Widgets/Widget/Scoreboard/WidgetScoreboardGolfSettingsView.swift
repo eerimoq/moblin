@@ -38,7 +38,7 @@ struct WidgetScoreboardGolfSettingsView: View {
                 }
             }
             .onChange(of: golf.numberOfHoles) { _ in
-                golf.currentHole = 0
+                golf.numberOfHolesChanged()
                 updated()
             }
             NavigationLink {

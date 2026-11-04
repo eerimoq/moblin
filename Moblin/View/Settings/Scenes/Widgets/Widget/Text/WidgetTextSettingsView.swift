@@ -1452,12 +1452,7 @@ struct WidgetTextSettingsView: View {
     }
 
     private func setLayout() {
-        for effect in model.getTextEffects(id: widget.id) {
-            effect.setLayout(alignment: text.horizontalAlignment.toSystem(),
-                             width: text.widthEnabled ? text.width : nil,
-                             cornerRadius: Double(text.cornerRadius))
-        }
-        model.remoteSceneSettingsUpdated()
+        model.textWidgetLayoutChanged(widget: widget)
     }
 
     var body: some View {
@@ -1558,17 +1553,11 @@ struct WidgetTextSettingsView: View {
         Section {
             RgbColorPickerView(title: "Background", color: $text.backgroundColorColor, opacity: true) {
                 text.backgroundColor = $0
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setBackgroundColor(color: $0)
-                }
-                model.remoteSceneSettingsUpdated()
+                model.textWidgetBackgroundColorChanged(widget: widget)
             }
             RgbColorPickerView(title: "Foreground", color: $text.foregroundColorColor, opacity: true) {
                 text.foregroundColor = $0
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setForegroundColor(color: $0)
-                }
-                model.remoteSceneSettingsUpdated()
+                model.textWidgetForegroundColorChanged(widget: widget)
             }
         } header: {
             Text("Colors")
@@ -1586,19 +1575,13 @@ struct WidgetTextSettingsView: View {
                 )
                 .onChange(of: text.fontSizeFloat) { _ in
                     text.fontSize = Int(text.fontSizeFloat)
-                    for effect in model.getTextEffects(id: widget.id) {
-                        effect.setFontSize(size: CGFloat(text.fontSizeFloat))
-                    }
-                    model.remoteSceneSettingsUpdated()
+                    model.textWidgetFontSizeChanged(widget: widget)
                 }
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
             FontSettingsView(font: $text.font) {
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setFont(font: text.font)
-                }
-                model.remoteSceneSettingsUpdated()
+                model.textWidgetFontChanged(widget: widget)
             }
             if text.font.family == nil {
                 Picker("Design", selection: $text.fontDesign) {
@@ -1608,10 +1591,7 @@ struct WidgetTextSettingsView: View {
                     }
                 }
                 .onChange(of: text.fontDesign) { _ in
-                    for effect in model.getTextEffects(id: widget.id) {
-                        effect.setFontDesign(design: text.fontDesign.toSystem())
-                    }
-                    model.remoteSceneSettingsUpdated()
+                    model.textWidgetFontDesignChanged(widget: widget)
                 }
                 Picker("Weight", selection: $text.fontWeight) {
                     ForEach(SettingsFontWeight.allCases, id: \.self) {
@@ -1620,17 +1600,11 @@ struct WidgetTextSettingsView: View {
                     }
                 }
                 .onChange(of: text.fontWeight) { _ in
-                    for effect in model.getTextEffects(id: widget.id) {
-                        effect.setFontWeight(weight: text.fontWeight.toSystem())
-                    }
-                    model.remoteSceneSettingsUpdated()
+                    model.textWidgetFontWeightChanged(widget: widget)
                 }
                 Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
                     .onChange(of: text.fontMonospacedDigits) { _ in
-                        for effect in model.getTextEffects(id: widget.id) {
-                            effect.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
-                        }
-                        model.remoteSceneSettingsUpdated()
+                        model.textWidgetFontMonospacedDigitsChanged(widget: widget)
                     }
             }
         } header: {

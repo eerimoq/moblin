@@ -74,13 +74,12 @@ struct WidgetPngTuberSettingsView: View {
     @ObservedObject var videoSources: VideoSources
 
     private func onCameraChange(cameraId: String) {
-        pngTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.pngTuberWidgetSetCamera(widget: widget,
+                                      settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
     }
 
     private func setEffectSettings() {
-        model.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror,
-                                                            sensitivity: pngTuber.sensitivity)
+        model.pngTuberWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

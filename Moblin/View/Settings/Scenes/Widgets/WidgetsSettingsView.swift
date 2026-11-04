@@ -21,7 +21,7 @@ private struct WidgetsSettingsItemView: View {
                 }
             }
             .onChange(of: widget.enabled) { _ in
-                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+                model.widgetEnabledChanged(widget: widget)
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {

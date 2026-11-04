@@ -144,8 +144,7 @@ struct ShapeEffectView: View {
     @State private var previewImage: UIImage?
 
     private func updateWidget() {
-        model.getWidgetShapeEffect(widget, effect)?.setSettings(settings: shape.toSettings())
-        model.updateCameraPreviewWidgets()
+        model.shapeEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     var body: some View {

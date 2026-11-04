@@ -366,6 +366,30 @@ extension Model {
         }
     }
 
+    func scoreboardPlayersChanged() {
+        sceneUpdated()
+        sendScoreboardPlayersToWatch()
+    }
+
+    func scoreboardWidgetUpdated(widget: SettingsWidget) {
+        let scoreboard = widget.scoreboard
+        switch scoreboard.sport {
+        case .generic:
+            sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
+        case .padel:
+            sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
+        default:
+            break
+        }
+        remoteControlScoreboardUpdate(scoreboard: scoreboard)
+        getScoreboardEffect(id: widget.id)?
+            .update(
+                scoreboard: scoreboard,
+                config: getModularScoreboardConfig(scoreboard: scoreboard),
+                players: database.scoreboardPlayers
+            )
+    }
+
     func getModularScoreboardConfig(scoreboard: SettingsWidgetScoreboard?)
         -> RemoteControlScoreboardMatchConfig
     {

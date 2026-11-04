@@ -92,19 +92,12 @@ struct WidgetVTuberSettingsView: View {
     @ObservedObject var videoSources: VideoSources
 
     private func onCameraChange(cameraId: String) {
-        vTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.vTuberWidgetSetCamera(widget: widget,
+                                    settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
     }
 
     private func setEffectSettings() {
-        model.getVTuberEffect(id: widget.id)?
-            .setSettings(
-                cameraFieldOfView: vTuber.cameraFieldOfView,
-                cameraPositionY: vTuber.cameraPositionY,
-                mirror: vTuber.mirror,
-                sensitivity: vTuber.sensitivity,
-                armsAngle: vTuber.armsAngle
-            )
+        model.vTuberWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

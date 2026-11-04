@@ -173,6 +173,41 @@ extension Model {
         getWidgetVideoEffect(widget, effect)
     }
 
+    func shapeEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetShapeEffect(widget, effect)?.setSettings(settings: effect.shape.toSettings())
+        updateCameraPreviewWidgets()
+    }
+
+    func anamorphicLensEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetAnamorphicLensEffect(widget, effect)?.setSettings(settings: effect.anamorphicLens.clone())
+    }
+
+    func dewarp360EffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetDewarp360Effect(widget, effect)?.setSettings(settings: effect.dewarp360.toSettings())
+    }
+
+    func lutEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        let lut = getLogLutById(id: effect.lut.lut)
+        getWidgetLutEffect(widget, effect)?.setLut(lut: lut, imageStorage: imageStorage) {
+            self.makeErrorToast(title: $0, subTitle: $1)
+        }
+    }
+
+    func opacityEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetOpacityEffect(widget, effect)?.setOpacity(opacity: effect.opacity.opacity)
+    }
+
+    func maskEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetMaskEffect(widget, effect)?.setSettings(settings: effect.mask.toEffectSettings())
+    }
+
+    func removeBackgroundEffectSettingsChanged(widget: SettingsWidget, effect: SettingsVideoEffect) {
+        getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
+            from: effect.removeBackground.from,
+            to: effect.removeBackground.to
+        )
+    }
+
     private func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
         getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
@@ -501,6 +536,159 @@ extension Model {
             attachCamera = isCaptureDeviceWidget(widget: widget)
         }
         sceneUpdated(attachCamera: attachCamera)
+    }
+
+    func sceneEnabledChanged(scene: SettingsScene) {
+        if getSelectedScene() === scene {
+            resetSelectedScene()
+        } else {
+            sceneSelector.sceneIndex += 0
+        }
+    }
+
+    func sceneSetCamera(scene: SettingsScene, settingsCameraId: SettingsCameraId) {
+        scene.updateCameraId(settingsCameraId: settingsCameraId)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    func sceneVideoSourceRotationChanged() {
+        sceneUpdated(updateRemoteScene: false)
+    }
+
+    func sceneVideoSourceSettingsChanged() {
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    func sceneQuickSwitchGroupChanged(scene: SettingsScene) {
+        if getSelectedScene() === scene {
+            resetSelectedScene(changeScene: false, attachCamera: true)
+        }
+    }
+
+    func sceneMicChanged(scene: SettingsScene) {
+        if getSelectedScene() === scene {
+            switchMicIfNeededAfterSceneSwitch()
+        }
+    }
+
+    func sceneBackgroundColorChanged() {
+        sceneSelector.objectWillChange.send()
+    }
+
+    func widgetEnabledChanged(widget: SettingsWidget) {
+        sceneUpdated(attachCamera: isCaptureDeviceWidget(widget: widget))
+    }
+
+    func chatWidgetSettingsChanged(widget: SettingsWidget) {
+        getChatEffect(id: widget.id)?.setSettings(settings: widget.chat)
+        updateWidgetOutlines()
+    }
+
+    func bingoCardWidgetSettingsChanged(widget: SettingsWidget) {
+        getBingoCardEffect(id: widget.id)?.setSettings(settings: widget.bingoCard)
+    }
+
+    func vTuberWidgetSettingsChanged(widget: SettingsWidget) {
+        let vTuber = widget.vTuber
+        getVTuberEffect(id: widget.id)?.setSettings(
+            cameraFieldOfView: vTuber.cameraFieldOfView,
+            cameraPositionY: vTuber.cameraPositionY,
+            mirror: vTuber.mirror,
+            sensitivity: vTuber.sensitivity,
+            armsAngle: vTuber.armsAngle
+        )
+    }
+
+    func pngTuberWidgetSettingsChanged(widget: SettingsWidget) {
+        getPngTuberEffect(id: widget.id)?.setSettings(mirror: widget.pngTuber.mirror,
+                                                      sensitivity: widget.pngTuber.sensitivity)
+    }
+
+    func videoSourceWidgetSetCamera(widget: SettingsWidget, settingsCameraId: SettingsCameraId) {
+        widget.videoSource.updateCameraId(settingsCameraId: settingsCameraId)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    func vTuberWidgetSetCamera(widget: SettingsWidget, settingsCameraId: SettingsCameraId) {
+        widget.vTuber.updateCameraId(settingsCameraId: settingsCameraId)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    func pngTuberWidgetSetCamera(widget: SettingsWidget, settingsCameraId: SettingsCameraId) {
+        widget.pngTuber.updateCameraId(settingsCameraId: settingsCameraId)
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
+    func videoSourceWidgetSettingsChanged(widget: SettingsWidget) {
+        getVideoSourceEffect(id: widget.id)?.setSettings(settings: widget.videoSource.toEffectSettings())
+        updateCameraPreviewWidgets()
+    }
+
+    func chatEmoteComboWidgetSettingsChanged(widget: SettingsWidget) {
+        getChatEmoteComboEffect(id: widget.id)?.setSettings(settings: widget.chatEmoteCombo)
+    }
+
+    func snapshotWidgetShowtimeChanged(widget: SettingsWidget) {
+        getSnapshotEffect(id: widget.id)?.setSettings(showtime: widget.snapshot.showtime)
+    }
+
+    func textWidgetBackgroundColorChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setBackgroundColor(color: widget.text.backgroundColor)
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetForegroundColorChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setForegroundColor(color: widget.text.foregroundColor)
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetFontSizeChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFontSize(size: CGFloat(widget.text.fontSize))
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetFontChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFont(font: widget.text.font)
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetFontDesignChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFontDesign(design: widget.text.fontDesign.toSystem())
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetFontWeightChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFontWeight(weight: widget.text.fontWeight.toSystem())
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetFontMonospacedDigitsChanged(widget: SettingsWidget) {
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFontMonospacedDigits(enabled: widget.text.fontMonospacedDigits)
+        }
+        remoteSceneSettingsUpdated()
+    }
+
+    func textWidgetLayoutChanged(widget: SettingsWidget) {
+        let text = widget.text
+        for effect in getTextEffects(id: widget.id) {
+            effect.setLayout(alignment: text.horizontalAlignment.toSystem(),
+                             width: text.widthEnabled ? text.width : nil,
+                             cornerRadius: Double(text.cornerRadius))
+        }
+        remoteSceneSettingsUpdated()
     }
 
     func textWidgetTextChanged(widget: SettingsWidget) {

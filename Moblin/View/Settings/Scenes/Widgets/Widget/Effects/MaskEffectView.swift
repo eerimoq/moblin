@@ -430,7 +430,7 @@ struct MaskEffectView: View {
     @State private var selectedEdgeIndex: Int?
 
     private func updateWidget() {
-        model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toEffectSettings())
+        model.maskEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     private func refreshPreviewImage() {

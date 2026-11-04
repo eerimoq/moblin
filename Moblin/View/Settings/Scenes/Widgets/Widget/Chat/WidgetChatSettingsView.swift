@@ -7,8 +7,7 @@ struct WidgetChatSettingsView: View {
     @ObservedObject var chat: SettingsWidgetChat
 
     private func setEffectSettings() {
-        model.getChatEffect(id: widget.id)?.setSettings(settings: chat)
-        model.updateWidgetOutlines()
+        model.chatWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

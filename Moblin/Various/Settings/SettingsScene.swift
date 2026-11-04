@@ -2234,7 +2234,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     }
 }
 
-struct SettingsBingoCardSquare: Codable, Identifiable {
+struct SettingsBingoCardSquare: Codable, Identifiable, Equatable {
     var id: UUID = .init()
     var text: String
     var checked: Bool
@@ -2487,6 +2487,18 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         pause()
         phase = .focus
         secondsRemaining = focusDuration * 60
+    }
+
+    func focusDurationChanged() {
+        if phase == .focus, !isRunning {
+            secondsRemaining = focusDuration * 60
+        }
+    }
+
+    func breakDurationChanged() {
+        if phase == .shortBreak, !isRunning {
+            secondsRemaining = breakDuration * 60
+        }
     }
 
     func totalSecondsForCurrentPhase() -> Int {
@@ -3547,6 +3559,10 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
             self.pars.append(Self.defaultPars[self.pars.count])
         }
     }
+
+    func numberOfHolesChanged() {
+        currentHole = 0
+    }
 }
 
 enum SettingsWidgetGenericScoreboardClockDirection: Codable, CaseIterable {
@@ -3909,6 +3925,10 @@ class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
         textColorColor = textColor.color()
         primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
+
+    func sportChanged() {
+        modular.config = nil
     }
 
     func setModularSport(sportId: String) {

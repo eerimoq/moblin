@@ -79,7 +79,7 @@ struct WidgetBingoCardSettingsView: View {
     @ObservedObject var bingoCard: SettingsWidgetBingoCard
 
     private func updateEffect() {
-        model.getBingoCardEffect(id: widget.id)?.setSettings(settings: bingoCard)
+        model.bingoCardWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

@@ -12,7 +12,7 @@ private struct VideoStabilizationView: View {
             }
         }
         .onChange(of: scene.videoStabilizationMode) { _ in
-            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+            model.sceneVideoSourceSettingsChanged()
         }
     }
 }
@@ -24,9 +24,7 @@ private struct MicView: View {
 
     private func onMicChange(micId: String) {
         scene.micId = micId
-        if model.getSelectedScene() === scene {
-            model.switchMicIfNeededAfterSceneSwitch()
-        }
+        model.sceneMicChanged(scene: scene)
     }
 
     var body: some View {
@@ -73,7 +71,7 @@ private struct SceneWidgetView: View {
                     widget.enabled
                 }, set: { value in
                     widget.enabled = value
-                    model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+                    model.widgetEnabledChanged(widget: widget)
                 })) {
                     HStack {
                         DraggableItemPrefixView()
@@ -102,8 +100,8 @@ private struct VideoSourceView: View {
     @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
-        scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.sceneSetCamera(scene: scene,
+                             settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         #if !targetEnvironment(macCatalyst)
         if model.isScreenCaptureCamera(cameraId: cameraId) {
             presentingScreenCaptureAlert = true
@@ -157,16 +155,16 @@ private struct VideoSourceView: View {
                 if scene.videoSource.cameraPosition != .none {
                     VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
                         .onChange(of: scene.videoSourceRotation) { _ in
-                            model.sceneUpdated(updateRemoteScene: false)
+                            model.sceneVideoSourceRotationChanged()
                         }
                 }
                 Toggle("Mirror", isOn: $scene.mirror)
                     .onChange(of: scene.mirror) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                        model.sceneVideoSourceSettingsChanged()
                     }
                 Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
                     .onChange(of: scene.overrideVideoStabilizationMode) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                        model.sceneVideoSourceSettingsChanged()
                     }
                 if scene.overrideVideoStabilizationMode {
                     VideoStabilizationView(model: model, scene: scene)
@@ -174,7 +172,7 @@ private struct VideoSourceView: View {
                 if scene.videoSource.cameraPosition != .none {
                     Toggle("Fill frame", isOn: $scene.fillFrame)
                         .onChange(of: scene.fillFrame) { _ in
-                            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                            model.sceneVideoSourceSettingsChanged()
                         }
                 }
             }
@@ -207,9 +205,7 @@ private struct QuickSwitchGroupView: View {
                 }
             }
             .onChange(of: scene.quickSwitchGroup) { _ in
-                if model.getSelectedScene() === scene {
-                    model.resetSelectedScene(changeScene: false, attachCamera: true)
-                }
+                model.sceneQuickSwitchGroupChanged(scene: scene)
             }
         } footer: {
             VStack(alignment: .leading) {
@@ -231,12 +227,12 @@ private struct SceneColorView: View {
         Section {
             RgbColorPickerView(title: "Background", color: $scene.backgroundColorColor, opacity: true) {
                 scene.backgroundColor = $0
-                model.sceneSelector.objectWillChange.send()
+                model.sceneBackgroundColorChanged()
             }
             TextButtonView("Reset") {
                 scene.backgroundColor = defaultSegmentedPickerSelectedColor
                 scene.backgroundColorColor = scene.backgroundColor.color()
-                model.sceneSelector.objectWillChange.send()
+                model.sceneBackgroundColorChanged()
             }
         } header: {
             Text("Color")

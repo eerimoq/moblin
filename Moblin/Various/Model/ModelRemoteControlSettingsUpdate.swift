@@ -1,13 +1,5 @@
 import Foundation
 
-struct RemoteControlWidgetUpdate {
-    var reloadEffects = false
-    var reloadEffectsAttachCamera = true
-    var updateScene = false
-    var attachCamera = false
-    var updateEffects: () -> Void = {}
-}
-
 private struct ChangeTracker {
     private(set) var changed = false
 
@@ -37,16 +29,13 @@ extension Model {
         let newWidget = SettingsWidget(name: widget.name)
         newWidget.id = widget.id
         newWidget.type = widget.type
-        guard remoteControlApplyWidgetUpdate(widget: newWidget, new: widget, creating: true) != nil else {
+        guard remoteControlApplyWidgetUpdate(widget: newWidget, new: widget, creating: true) else {
             return nil
         }
         return newWidget
     }
 
-    func remoteControlApplyWidgetUpdate(widget: SettingsWidget,
-                                        new: SettingsWidget,
-                                        creating: Bool) -> RemoteControlWidgetUpdate?
-    {
+    func remoteControlApplyWidgetUpdate(widget: SettingsWidget, new: SettingsWidget, creating: Bool) -> Bool {
         guard isValidRemoteControlWidgetUpdate(widget: widget,
                                                new: new,
                                                creating: creating,
@@ -57,26 +46,17 @@ extension Model {
                                                database: database,
                                                cameras: remoteControlCameras())
         else {
-            return nil
+            return false
         }
-        var update = applyWidgetTypeUpdate(widget: widget, new: new)
+        applyWidgetTypeUpdate(widget: widget, new: new, creating: creating)
         widget.name = new.name
         if widget.enabled != new.enabled {
             widget.enabled = new.enabled
-            update.updateScene = true
-            update.attachCamera = update.attachCamera || isCaptureDeviceWidget(widget: widget)
+            if !creating {
+                widgetEnabledChanged(widget: widget)
+            }
         }
-        return update
-    }
-
-    func remoteControlWidgetUpdated(update: RemoteControlWidgetUpdate) {
-        if update.reloadEffects {
-            resetSelectedScene(changeScene: false,
-                               attachCamera: update.reloadEffectsAttachCamera || update.attachCamera)
-        } else if update.updateScene {
-            sceneUpdated(attachCamera: update.attachCamera)
-        }
-        update.updateEffects()
+        return true
     }
 
     private func remoteControlEditableTextTimers(widget: SettingsWidget, new: SettingsWidget) -> Int {
@@ -90,111 +70,122 @@ extension Model {
         RemoteControlCameras(ids: Set(videoSources.all().map(\.id)), cameraId: { self.cameraId($0) })
     }
 
-    private func applyWidgetTypeUpdate(widget: SettingsWidget,
-                                       new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func applyWidgetTypeUpdate(widget: SettingsWidget, new: SettingsWidget, creating: Bool) {
         switch widget.type {
         case .text:
-            updateTextWidget(widget, new)
+            updateTextWidget(widget, new, creating)
         case .browser:
-            updateBrowserWidget(widget, new)
+            updateBrowserWidget(widget, new, creating)
         case .crop:
-            updateCropWidget(widget, new)
+            updateCropWidget(widget, new, creating)
         case .map:
-            updateMapWidget(widget, new)
+            updateMapWidget(widget, new, creating)
         case .scene:
-            updateSceneWidget(widget, new)
+            updateSceneWidget(widget, new, creating)
         case .qrCode:
-            updateQrCodeWidget(widget, new)
+            updateQrCodeWidget(widget, new, creating)
         case .image:
-            updateImageWidget(widget, new)
+            updateImageWidget(widget, new, creating)
         case .snapshot:
-            updateSnapshotWidget(widget, new)
+            updateSnapshotWidget(widget, new, creating)
         case .chat:
-            updateChatWidget(widget, new)
+            updateChatWidget(widget, new, creating)
         case .chatEmoteCombo:
-            updateChatEmoteComboWidget(widget, new)
+            updateChatEmoteComboWidget(widget, new, creating)
         case .slideshow:
-            updateSlideshowWidget(widget, new)
+            updateSlideshowWidget(widget, new, creating)
         case .wheelOfLuck:
-            updateWheelOfLuckWidget(widget, new)
+            updateWheelOfLuckWidget(widget, new, creating)
         case .bingoCard:
-            updateBingoCardWidget(widget, new)
+            updateBingoCardWidget(widget, new, creating)
         case .videoSource:
-            updateVideoSourceWidget(widget, new)
+            updateVideoSourceWidget(widget, new, creating)
         case .vTuber:
-            updateVTuberWidget(widget, new)
+            updateVTuberWidget(widget, new, creating)
         case .pngTuber:
-            updatePngTuberWidget(widget, new)
+            updatePngTuberWidget(widget, new, creating)
         case .pomodoroTimer:
-            updatePomodoroTimerWidget(widget, new)
+            updatePomodoroTimerWidget(widget, new, creating)
         case .scoreboard:
-            updateScoreboardWidget(widget, new)
+            updateScoreboardWidget(widget, new, creating)
         case .alerts:
-            updateAlertsWidget(widget, new)
+            updateAlertsWidget(widget, new, creating)
         }
     }
 
-    private func updateTextWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateTextWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let text = widget.text
         let newText = new.text
         let formatChanged = text.formatString != newText.formatString
         text.formatString = newText.formatString
-        var style = ChangeTracker()
-        if style.apply(&text.backgroundColor, newText.backgroundColor) {
+        var changes = ChangeTracker()
+        let backgroundColorChanged = changes.apply(&text.backgroundColor, newText.backgroundColor)
+        if backgroundColorChanged {
             text.backgroundColorColor = text.backgroundColor.color()
         }
-        if style.apply(&text.foregroundColor, newText.foregroundColor) {
+        let foregroundColorChanged = changes.apply(&text.foregroundColor, newText.foregroundColor)
+        if foregroundColorChanged {
             text.foregroundColorColor = text.foregroundColor.color()
         }
-        if style.apply(&text.fontSize, newText.fontSize) {
+        let fontSizeChanged = changes.apply(&text.fontSize, newText.fontSize)
+        if fontSizeChanged {
             text.fontSizeFloat = Float(text.fontSize)
         }
-        style.apply(&text.font, newText.font)
-        style.apply(&text.fontDesign, newText.fontDesign)
-        style.apply(&text.fontWeight, newText.fontWeight)
-        style.apply(&text.fontMonospacedDigits, newText.fontMonospacedDigits)
-        style.apply(&text.horizontalAlignment, newText.horizontalAlignment)
-        style.apply(&text.widthEnabled, newText.widthEnabled)
-        style.apply(&text.width, newText.width)
-        style.apply(&text.cornerRadius, newText.cornerRadius)
-        let styleChanged = style.changed
+        let fontChanged = changes.apply(&text.font, newText.font)
+        let fontDesignChanged = changes.apply(&text.fontDesign, newText.fontDesign)
+        let fontWeightChanged = changes.apply(&text.fontWeight, newText.fontWeight)
+        let fontMonospacedDigitsChanged = changes.apply(&text.fontMonospacedDigits,
+                                                        newText.fontMonospacedDigits)
+        var layout = ChangeTracker()
+        layout.apply(&text.horizontalAlignment, newText.horizontalAlignment)
+        layout.apply(&text.widthEnabled, newText.widthEnabled)
+        layout.apply(&text.width, newText.width)
+        layout.apply(&text.cornerRadius, newText.cornerRadius)
         let delayChanged = text.delay != newText.delay
         text.delay = newText.delay
-        return RemoteControlWidgetUpdate(reloadEffects: delayChanged) {
-            if styleChanged {
-                for effect in self.getTextEffects(id: widget.id) {
-                    effect.setBackgroundColor(color: text.backgroundColor)
-                    effect.setForegroundColor(color: text.foregroundColor)
-                    effect.setFontSize(size: CGFloat(text.fontSize))
-                    effect.setFont(font: text.font)
-                    effect.setFontDesign(design: text.fontDesign.toSystem())
-                    effect.setFontWeight(weight: text.fontWeight.toSystem())
-                    effect.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
-                    effect.setLayout(alignment: text.horizontalAlignment.toSystem(),
-                                     width: text.widthEnabled ? text.width : nil,
-                                     cornerRadius: Double(text.cornerRadius))
-                }
-                self.remoteSceneSettingsUpdated()
-            }
-            if formatChanged {
-                self.textWidgetTextChanged(widget: widget)
-            }
-            for (timer, newTimer) in zip(text.timers, newText.timers) {
-                timer.delta = newTimer.delta
-            }
+        guard !creating else {
+            return
+        }
+        if delayChanged {
+            resetSelectedScene(changeScene: false)
+        }
+        if backgroundColorChanged {
+            textWidgetBackgroundColorChanged(widget: widget)
+        }
+        if foregroundColorChanged {
+            textWidgetForegroundColorChanged(widget: widget)
+        }
+        if fontSizeChanged {
+            textWidgetFontSizeChanged(widget: widget)
+        }
+        if fontChanged {
+            textWidgetFontChanged(widget: widget)
+        }
+        if fontDesignChanged {
+            textWidgetFontDesignChanged(widget: widget)
+        }
+        if fontWeightChanged {
+            textWidgetFontWeightChanged(widget: widget)
+        }
+        if fontMonospacedDigitsChanged {
+            textWidgetFontMonospacedDigitsChanged(widget: widget)
+        }
+        if layout.changed {
+            textWidgetLayoutChanged(widget: widget)
+        }
+        if formatChanged {
+            textWidgetTextChanged(widget: widget)
+        }
+        for (timer, newTimer) in zip(text.timers, newText.timers) {
+            timer.delta = newTimer.delta
         }
     }
 
-    private func updateBrowserWidget(_ widget: SettingsWidget,
-                                     _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateBrowserWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let browser = widget.browser
         let newBrowser = new.browser
         var changes = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&browser.url, newBrowser.url.trim())
         changes.apply(&browser.styleSheet, newBrowser.styleSheet.trim())
         changes.apply(&browser.width, newBrowser.width)
@@ -204,12 +195,12 @@ extension Model {
         changes.apply(&browser.baseFps, newBrowser.baseFps)
         changes.apply(&browser.moblinAccess, newBrowser.moblinAccess)
         changes.apply(&browser.speechToText, newBrowser.speechToText)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
+        }
     }
 
-    private func updateCropWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateCropWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let crop = widget.crop
         let newCrop = new.crop
         var changes = ChangeTracker()
@@ -218,107 +209,113 @@ extension Model {
         changes.apply(&crop.y, newCrop.y)
         changes.apply(&crop.width, newCrop.width)
         changes.apply(&crop.height, newCrop.height)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
+        }
     }
 
-    private func updateMapWidget(_ widget: SettingsWidget,
-                                 _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateMapWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let map = widget.map
         let newMap = new.map
         var changes = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
         changes.apply(&map.northUp, newMap.northUp)
         changes.apply(&map.size, newMap.size)
         changes.apply(&map.delay, newMap.delay)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
+        }
     }
 
-    private func updateSceneWidget(_ widget: SettingsWidget,
-                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateSceneWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         var changes = ChangeTracker()
         changes.apply(&widget.scene.sceneId, new.scene.sceneId)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed)
-    }
-
-    private func updateQrCodeWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
-        var changes = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
-        changes.apply(&widget.qrCode.message, new.qrCode.message)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
-    }
-
-    private func updateImageWidget(_ widget: SettingsWidget,
-                                   _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
-        var changes = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &changes)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, updateEffects: updateVideoEffects)
-    }
-
-    private func updateSnapshotWidget(_ widget: SettingsWidget,
-                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
-        var effects = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &effects)
-        let showtimeChanged = widget.snapshot.showtime != new.snapshot.showtime
-        widget.snapshot.showtime = new.snapshot.showtime
-        return RemoteControlWidgetUpdate(reloadEffects: effects.changed) {
-            updateVideoEffects()
-            if showtimeChanged {
-                self.getSnapshotEffect(id: widget.id)?.setSettings(showtime: widget.snapshot.showtime)
-            }
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
         }
     }
 
-    private func updateChatWidget(_ widget: SettingsWidget,
-                                  _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateQrCodeWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
+        var changes = ChangeTracker()
+        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        changes.apply(&widget.qrCode.message, new.qrCode.message)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
+        }
+    }
+
+    private func updateImageWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
+        var changes = ChangeTracker()
+        applyEffectsUpdate(widget: widget, new: new, changes: &changes)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false)
+        }
+    }
+
+    private func updateSnapshotWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
+        var effects = ChangeTracker()
+        applyEffectsUpdate(widget: widget, new: new, changes: &effects)
+        var settings = ChangeTracker()
+        settings.apply(&widget.snapshot.showtime, new.snapshot.showtime)
+        guard !creating else {
+            return
+        }
+        if effects.changed {
+            resetSelectedScene(changeScene: false)
+        }
+        if settings.changed {
+            snapshotWidgetShowtimeChanged(widget: widget)
+        }
+    }
+
+    private func updateChatWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let chat = widget.chat
         let newChat = new.chat
-        chat.fontSize = newChat.fontSize
-        chat.font = newChat.font
-        chat.usernameColor = newChat.usernameColor
-        chat.usernameColorColor = newChat.usernameColor.color()
-        chat.messageColor = newChat.messageColor
-        chat.messageColorColor = newChat.messageColor.color()
-        chat.backgroundColor = newChat.backgroundColor
-        chat.backgroundColorColor = newChat.backgroundColor.color()
-        chat.backgroundColorEnabled = newChat.backgroundColorEnabled
-        chat.shadowColor = newChat.shadowColor
-        chat.shadowColorColor = newChat.shadowColor.color()
-        chat.shadowColorEnabled = newChat.shadowColorEnabled
-        chat.boldUsername = newChat.boldUsername
-        chat.boldMessage = newChat.boldMessage
-        chat.badges = newChat.badges
-        chat.displayStyle = newChat.displayStyle
-        chat.sharedChatIcons = newChat.sharedChatIcons
-        chat.height = newChat.height
-        chat.maximumNumberOfMessages = newChat.maximumNumberOfMessages
-        return RemoteControlWidgetUpdate {
-            self.getChatEffect(id: widget.id)?.setSettings(settings: chat)
-            self.updateWidgetOutlines()
+        var changes = ChangeTracker()
+        changes.apply(&chat.fontSize, newChat.fontSize)
+        changes.apply(&chat.font, newChat.font)
+        if changes.apply(&chat.usernameColor, newChat.usernameColor) {
+            chat.usernameColorColor = chat.usernameColor.color()
+        }
+        if changes.apply(&chat.messageColor, newChat.messageColor) {
+            chat.messageColorColor = chat.messageColor.color()
+        }
+        if changes.apply(&chat.backgroundColor, newChat.backgroundColor) {
+            chat.backgroundColorColor = chat.backgroundColor.color()
+        }
+        changes.apply(&chat.backgroundColorEnabled, newChat.backgroundColorEnabled)
+        if changes.apply(&chat.shadowColor, newChat.shadowColor) {
+            chat.shadowColorColor = chat.shadowColor.color()
+        }
+        changes.apply(&chat.shadowColorEnabled, newChat.shadowColorEnabled)
+        changes.apply(&chat.boldUsername, newChat.boldUsername)
+        changes.apply(&chat.boldMessage, newChat.boldMessage)
+        changes.apply(&chat.badges, newChat.badges)
+        changes.apply(&chat.displayStyle, newChat.displayStyle)
+        changes.apply(&chat.sharedChatIcons, newChat.sharedChatIcons)
+        changes.apply(&chat.height, newChat.height)
+        changes.apply(&chat.maximumNumberOfMessages, newChat.maximumNumberOfMessages)
+        if changes.changed, !creating {
+            chatWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updateChatEmoteComboWidget(_ widget: SettingsWidget,
-                                            _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateChatEmoteComboWidget(
+        _ widget: SettingsWidget,
+        _ new: SettingsWidget,
+        _ creating: Bool
+    ) {
         let chatEmoteCombo = widget.chatEmoteCombo
         let newChatEmoteCombo = new.chatEmoteCombo
-        chatEmoteCombo.minimumCombo = newChatEmoteCombo.minimumCombo
-        chatEmoteCombo.resetAfter = newChatEmoteCombo.resetAfter
-        return RemoteControlWidgetUpdate {
-            self.getChatEmoteComboEffect(id: widget.id)?.setSettings(settings: chatEmoteCombo)
+        var changes = ChangeTracker()
+        changes.apply(&chatEmoteCombo.minimumCombo, newChatEmoteCombo.minimumCombo)
+        changes.apply(&chatEmoteCombo.resetAfter, newChatEmoteCombo.resetAfter)
+        if changes.changed, !creating {
+            chatEmoteComboWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updateSlideshowWidget(_ widget: SettingsWidget,
-                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateSlideshowWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let slideshow = widget.slideshow
         var changes = ChangeTracker()
         let slides = new.slideshow.slides.map { slide in
@@ -330,87 +327,87 @@ extension Model {
             return oldSlide
         }
         changes.applyItems(&slideshow.slides, slides)
-        return RemoteControlWidgetUpdate(reloadEffects: changes.changed, reloadEffectsAttachCamera: false)
+        if changes.changed, !creating {
+            resetSelectedScene(changeScene: false, attachCamera: false)
+        }
     }
 
-    private func updateWheelOfLuckWidget(_ widget: SettingsWidget,
-                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateWheelOfLuckWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let wheelOfLuck = widget.wheelOfLuck
         let newWheelOfLuck = new.wheelOfLuck
+        var changes = ChangeTracker()
         wheelOfLuck.advanced = newWheelOfLuck.advanced
-        wheelOfLuck.onlyShowWhenSpinning = newWheelOfLuck.onlyShowWhenSpinning
-        wheelOfLuck.options = newWheelOfLuck.options.map { option in
+        changes.apply(&wheelOfLuck.onlyShowWhenSpinning, newWheelOfLuck.onlyShowWhenSpinning)
+        let options = newWheelOfLuck.options.map { option in
             guard let oldOption = wheelOfLuck.options.first(where: { $0.id == option.id }) else {
                 return option
             }
-            oldOption.text = option.text
-            oldOption.weight = option.weight
+            changes.apply(&oldOption.text, option.text)
+            changes.apply(&oldOption.weight, option.weight)
             oldOption.function = option.function
             oldOption.functionData = option.functionData
             return oldOption
         }
+        changes.applyItems(&wheelOfLuck.options, options)
         wheelOfLuck.updateText()
         wheelOfLuck.updateTotalWeight()
-        return RemoteControlWidgetUpdate {
-            self.updateWheelOfLuckEffect(widget: widget)
+        if changes.changed, !creating {
+            updateWheelOfLuckEffect(widget: widget)
         }
     }
 
-    private func updateBingoCardWidget(_ widget: SettingsWidget,
-                                       _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateBingoCardWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let bingoCard = widget.bingoCard
         let newBingoCard = new.bingoCard
-        bingoCard.backgroundColor = newBingoCard.backgroundColor
-        bingoCard.backgroundColorColor = newBingoCard.backgroundColor.color()
-        bingoCard.foregroundColor = newBingoCard.foregroundColor
-        bingoCard.foregroundColorColor = newBingoCard.foregroundColor.color()
-        bingoCard.squares = newBingoCard.squares
-        bingoCard.squaresText = newBingoCard.squaresText
-        return RemoteControlWidgetUpdate {
-            self.getBingoCardEffect(id: widget.id)?.setSettings(settings: bingoCard)
+        var changes = ChangeTracker()
+        if changes.apply(&bingoCard.backgroundColor, newBingoCard.backgroundColor) {
+            bingoCard.backgroundColorColor = bingoCard.backgroundColor.color()
+        }
+        if changes.apply(&bingoCard.foregroundColor, newBingoCard.foregroundColor) {
+            bingoCard.foregroundColorColor = bingoCard.foregroundColor.color()
+        }
+        changes.apply(&bingoCard.squares, newBingoCard.squares)
+        changes.apply(&bingoCard.squaresText, newBingoCard.squaresText)
+        if changes.changed, !creating {
+            bingoCardWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updateVideoSourceWidget(_ widget: SettingsWidget,
-                                         _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateVideoSourceWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let videoSource = widget.videoSource
         let newVideoSource = new.videoSource
         var effects = ChangeTracker()
-        let updateVideoEffects = applyEffectsUpdate(widget: widget, new: new, changes: &effects)
+        applyEffectsUpdate(widget: widget, new: new, changes: &effects)
         let cameraChanged = cameraId(videoSource.videoSource) != cameraId(newVideoSource.videoSource)
+        let settingsCameraId = newVideoSource.videoSource.toCameraId()
         if cameraChanged {
-            videoSource.updateCameraId(settingsCameraId: newVideoSource.videoSource.toCameraId())
+            videoSource.updateCameraId(settingsCameraId: settingsCameraId)
         }
         var settings = ChangeTracker()
         settings.apply(&videoSource.rotation, newVideoSource.rotation)
         settings.apply(&videoSource.mirror, newVideoSource.mirror)
         settings.apply(&videoSource.trackFaceEnabled, newVideoSource.trackFaceEnabled)
         settings.apply(&videoSource.trackFaceZoom, newVideoSource.trackFaceZoom)
-        let settingsChanged = settings.changed
-        return RemoteControlWidgetUpdate(reloadEffects: effects.changed,
-                                         updateScene: cameraChanged,
-                                         attachCamera: cameraChanged)
-        {
-            updateVideoEffects()
-            if settingsChanged {
-                self.getVideoSourceEffect(id: widget.id)?
-                    .setSettings(settings: videoSource.toEffectSettings())
-                self.updateCameraPreviewWidgets()
-            }
+        guard !creating else {
+            return
+        }
+        if effects.changed {
+            resetSelectedScene(changeScene: false)
+        } else if cameraChanged {
+            videoSourceWidgetSetCamera(widget: widget, settingsCameraId: settingsCameraId)
+        }
+        if settings.changed {
+            videoSourceWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updateVTuberWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateVTuberWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let vTuber = widget.vTuber
         let newVTuber = new.vTuber
         let cameraChanged = cameraId(vTuber.videoSource) != cameraId(newVTuber.videoSource)
+        let settingsCameraId = newVTuber.videoSource.toCameraId()
         if cameraChanged {
-            vTuber.updateCameraId(settingsCameraId: newVTuber.videoSource.toCameraId())
+            vTuber.updateCameraId(settingsCameraId: settingsCameraId)
         }
         var settings = ChangeTracker()
         settings.apply(&vTuber.cameraPositionY, newVTuber.cameraPositionY)
@@ -418,59 +415,52 @@ extension Model {
         settings.apply(&vTuber.mirror, newVTuber.mirror)
         settings.apply(&vTuber.sensitivity, newVTuber.sensitivity)
         settings.apply(&vTuber.armsAngle, newVTuber.armsAngle)
-        let settingsChanged = settings.changed
-        return RemoteControlWidgetUpdate(updateScene: cameraChanged, attachCamera: cameraChanged) {
-            if settingsChanged {
-                self.getVTuberEffect(id: widget.id)?.setSettings(
-                    cameraFieldOfView: vTuber.cameraFieldOfView,
-                    cameraPositionY: vTuber.cameraPositionY,
-                    mirror: vTuber.mirror,
-                    sensitivity: vTuber.sensitivity,
-                    armsAngle: vTuber.armsAngle
-                )
-            }
+        guard !creating else {
+            return
+        }
+        if cameraChanged {
+            vTuberWidgetSetCamera(widget: widget, settingsCameraId: settingsCameraId)
+        }
+        if settings.changed {
+            vTuberWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updatePngTuberWidget(_ widget: SettingsWidget,
-                                      _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updatePngTuberWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let pngTuber = widget.pngTuber
         let newPngTuber = new.pngTuber
         let cameraChanged = cameraId(pngTuber.videoSource) != cameraId(newPngTuber.videoSource)
+        let settingsCameraId = newPngTuber.videoSource.toCameraId()
         if cameraChanged {
-            pngTuber.updateCameraId(settingsCameraId: newPngTuber.videoSource.toCameraId())
+            pngTuber.updateCameraId(settingsCameraId: settingsCameraId)
         }
         var settings = ChangeTracker()
         settings.apply(&pngTuber.mirror, newPngTuber.mirror)
         settings.apply(&pngTuber.sensitivity, newPngTuber.sensitivity)
-        let settingsChanged = settings.changed
-        return RemoteControlWidgetUpdate(updateScene: cameraChanged, attachCamera: cameraChanged) {
-            if settingsChanged {
-                self.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror,
-                                                                   sensitivity: pngTuber.sensitivity)
-            }
+        guard !creating else {
+            return
+        }
+        if cameraChanged {
+            pngTuberWidgetSetCamera(widget: widget, settingsCameraId: settingsCameraId)
+        }
+        if settings.changed {
+            pngTuberWidgetSettingsChanged(widget: widget)
         }
     }
 
-    private func updatePomodoroTimerWidget(_ widget: SettingsWidget,
-                                           _ new: SettingsWidget) -> RemoteControlWidgetUpdate
+    private func updatePomodoroTimerWidget(_ widget: SettingsWidget, _ new: SettingsWidget,
+                                           _ creating: Bool)
     {
         let pomodoroTimer = widget.pomodoroTimer
         let newPomodoroTimer = new.pomodoroTimer
-        if pomodoroTimer.focusDuration != newPomodoroTimer.focusDuration {
-            pomodoroTimer.focusDuration = newPomodoroTimer.focusDuration
-            if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
-                pomodoroTimer.secondsRemaining = pomodoroTimer.focusDuration * 60
-            }
+        var changes = ChangeTracker()
+        if changes.apply(&pomodoroTimer.focusDuration, newPomodoroTimer.focusDuration) {
+            pomodoroTimer.focusDurationChanged()
         }
-        if pomodoroTimer.breakDuration != newPomodoroTimer.breakDuration {
-            pomodoroTimer.breakDuration = newPomodoroTimer.breakDuration
-            if pomodoroTimer.phase == .shortBreak, !pomodoroTimer.isRunning {
-                pomodoroTimer.secondsRemaining = pomodoroTimer.breakDuration * 60
-            }
+        if changes.apply(&pomodoroTimer.breakDuration, newPomodoroTimer.breakDuration) {
+            pomodoroTimer.breakDurationChanged()
         }
-        pomodoroTimer.width = newPomodoroTimer.width
+        let widthChanged = changes.apply(&pomodoroTimer.width, newPomodoroTimer.width)
         pomodoroTimer.focusName = newPomodoroTimer.focusName
         pomodoroTimer.breakName = newPomodoroTimer.breakName
         pomodoroTimer.focusIcon = newPomodoroTimer.focusIcon
@@ -487,14 +477,12 @@ extension Model {
         pomodoroTimer.breakToFocusSoundId = newPomodoroTimer.breakToFocusSoundId
         pomodoroTimer.focusToBreakChatMessage = newPomodoroTimer.focusToBreakChatMessage
         pomodoroTimer.breakToFocusChatMessage = newPomodoroTimer.breakToFocusChatMessage
-        return RemoteControlWidgetUpdate {
-            self.updateWidgetOutlines()
+        if widthChanged, !creating {
+            updateWidgetOutlines()
         }
     }
 
-    private func updateScoreboardWidget(_ widget: SettingsWidget,
-                                        _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateScoreboardWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let scoreboard = widget.scoreboard
         let newScoreboard = new.scoreboard
         let padel = scoreboard.padel
@@ -507,7 +495,7 @@ extension Model {
         let newModular = newScoreboard.modular
         if scoreboard.sport != newScoreboard.sport {
             scoreboard.sport = newScoreboard.sport
-            modular.config = nil
+            scoreboard.sportChanged()
         }
         scoreboard.textColor = newScoreboard.textColor
         scoreboard.primaryBackgroundColor = newScoreboard.primaryBackgroundColor
@@ -525,7 +513,7 @@ extension Model {
         golf.title = newGolf.title
         if golf.numberOfHoles != newGolf.numberOfHoles {
             golf.numberOfHoles = newGolf.numberOfHoles
-            golf.currentHole = 0
+            golf.numberOfHolesChanged()
         }
         golf.setPars(newGolf.pars)
         golf.players = newGolf.players.map { player in
@@ -549,14 +537,12 @@ extension Model {
         modular.showMoreStats = newModular.showMoreStats
         modular.showGlobalStatsBlock = newModular.showGlobalStatsBlock
         modular.showClock = newModular.showClock
-        return RemoteControlWidgetUpdate {
-            self.remoteControlScoreboardWidgetUpdated(widget: widget)
+        if !creating {
+            scoreboardWidgetUpdated(widget: widget)
         }
     }
 
-    private func updateAlertsWidget(_ widget: SettingsWidget,
-                                    _ new: SettingsWidget) -> RemoteControlWidgetUpdate
-    {
+    private func updateAlertsWidget(_ widget: SettingsWidget, _ new: SettingsWidget, _ creating: Bool) {
         let alerts = widget.alerts
         let newAlerts = new.alerts
         let oldAlerts = remoteControlAllAlerts(alerts)
@@ -578,70 +564,106 @@ extension Model {
         newAlerts.needsSubtitles = alerts.needsSubtitles
         newAlerts.ttsMonster = alerts.ttsMonster
         widget.alerts = newAlerts
-        return RemoteControlWidgetUpdate {
-            self.fixAlertMedias()
+        if !creating {
+            fixAlertMedias()
         }
     }
 
     func remoteControlApplySceneUpdate(scene: SettingsScene, new: SettingsScene, creating: Bool) {
-        let enabledChanged = scene.enabled != new.enabled
+        scene.name = new.name
+        applySceneEnabledUpdate(scene, new, creating)
+        applySceneVideoSourceUpdate(scene, new, creating)
+        applySceneQuickSwitchGroupUpdate(scene, new, creating)
+        applySceneMicUpdate(scene, new, creating)
+        applySceneBackgroundColorUpdate(scene, new, creating)
+        applySceneWidgetsUpdate(scene, new)
+    }
+
+    private func applySceneEnabledUpdate(_ scene: SettingsScene, _ new: SettingsScene, _ creating: Bool) {
+        var changes = ChangeTracker()
+        if changes.apply(&scene.enabled, new.enabled), !creating {
+            sceneEnabledChanged(scene: scene)
+        }
+    }
+
+    private func applySceneVideoSourceUpdate(_ scene: SettingsScene, _ new: SettingsScene, _ creating: Bool) {
         let cameraChanged = cameraId(scene.videoSource) != cameraId(new.videoSource)
-        let attachCameraChanged = !creating && cameraChanged
-            || scene.mirror != new.mirror
-            || scene.overrideVideoStabilizationMode != new.overrideVideoStabilizationMode
-            || scene.videoStabilizationMode != new.videoStabilizationMode
-            || scene.fillFrame != new.fillFrame
-        let rotationChanged = scene.videoSourceRotation != new.videoSourceRotation
-        let quickSwitchGroupChanged = scene.quickSwitchGroup != new.quickSwitchGroup
-        let overrideMicChanged = scene.overrideMic != new.overrideMic
-        let micIdChanged = scene.micId != new.micId
-        let backgroundColorChanged = scene.backgroundColor != new.backgroundColor
+        let settingsCameraId = new.videoSource.toCameraId()
+        if cameraChanged {
+            scene.updateCameraId(settingsCameraId: settingsCameraId)
+        }
+        var changes = ChangeTracker()
+        changes.apply(&scene.mirror, new.mirror)
+        changes.apply(&scene.overrideVideoStabilizationMode, new.overrideVideoStabilizationMode)
+        changes.apply(&scene.videoStabilizationMode, new.videoStabilizationMode)
+        changes.apply(&scene.fillFrame, new.fillFrame)
+        let settingsChanged = changes.changed
+        let rotationChanged = changes.apply(&scene.videoSourceRotation, new.videoSourceRotation)
+        guard !creating else {
+            return
+        }
+        if cameraChanged {
+            sceneSetCamera(scene: scene, settingsCameraId: settingsCameraId)
+        } else if settingsChanged {
+            sceneVideoSourceSettingsChanged()
+        } else if rotationChanged {
+            sceneVideoSourceRotationChanged()
+        }
+    }
+
+    private func applySceneQuickSwitchGroupUpdate(_ scene: SettingsScene,
+                                                  _ new: SettingsScene,
+                                                  _ creating: Bool)
+    {
+        var changes = ChangeTracker()
+        if changes.apply(&scene.quickSwitchGroup, new.quickSwitchGroup), !creating {
+            sceneQuickSwitchGroupChanged(scene: scene)
+        }
+    }
+
+    private func applySceneMicUpdate(_ scene: SettingsScene, _ new: SettingsScene, _ creating: Bool) {
+        var changes = ChangeTracker()
+        let overrideMicChanged = changes.apply(&scene.overrideMic, new.overrideMic)
+        let micIdChanged = changes.apply(&scene.micId, new.micId)
+        guard !creating else {
+            return
+        }
+        if overrideMicChanged {
+            switchMicIfNeededAfterSceneSwitch()
+        } else if micIdChanged {
+            sceneMicChanged(scene: scene)
+        }
+    }
+
+    private func applySceneBackgroundColorUpdate(_ scene: SettingsScene,
+                                                 _ new: SettingsScene,
+                                                 _ creating: Bool)
+    {
+        var changes = ChangeTracker()
+        if changes.apply(&scene.backgroundColor, new.backgroundColor) {
+            scene.backgroundColorColor = scene.backgroundColor.color()
+            if !creating {
+                sceneBackgroundColorChanged()
+            }
+        }
+    }
+
+    private func applySceneWidgetsUpdate(_ scene: SettingsScene, _ new: SettingsScene) {
         let oldWidgetIds = scene.widgets.map(\.id)
         let newWidgetIds = new.widgets.map(\.id)
-        let widgetsRemovedOrMoved = oldWidgetIds.contains { !newWidgetIds.contains($0) }
+        let removedOrMoved = oldWidgetIds.contains { !newWidgetIds.contains($0) }
             || oldWidgetIds.filter(newWidgetIds.contains) != newWidgetIds.filter(oldWidgetIds.contains)
-        let widgetsAdded = newWidgetIds.contains { !oldWidgetIds.contains($0) }
+        let added = newWidgetIds.contains { !oldWidgetIds.contains($0) }
         let layoutsChanged = new.widgets.contains { sceneWidget in
             scene.widgets.first { $0.id == sceneWidget.id }.map { $0.layout != sceneWidget.layout } ?? false
         }
         let captureDeviceWidgetsChanged = captureDeviceWidgetIds(scene.widgets) !=
             captureDeviceWidgetIds(new.widgets)
-        scene.name = new.name
-        scene.enabled = new.enabled
-        if cameraChanged {
-            scene.updateCameraId(settingsCameraId: new.videoSource.toCameraId())
-        }
-        scene.videoSourceRotation = new.videoSourceRotation
-        scene.mirror = new.mirror
-        scene.overrideVideoStabilizationMode = new.overrideVideoStabilizationMode
-        scene.videoStabilizationMode = new.videoStabilizationMode
-        scene.fillFrame = new.fillFrame
-        scene.quickSwitchGroup = new.quickSwitchGroup
-        scene.overrideMic = new.overrideMic
-        scene.micId = new.micId
-        scene.backgroundColor = new.backgroundColor
-        scene.backgroundColorColor = new.backgroundColor.color()
         scene.widgets = remoteControlMergeSceneWidgets(scene.widgets, new.widgets)
-        let selected = getSelectedScene() === scene
-        let widgetsChanged = widgetsRemovedOrMoved || widgetsAdded || layoutsChanged
-        if enabledChanged, selected {
-            resetSelectedScene()
-        } else if quickSwitchGroupChanged, selected {
-            resetSelectedScene(changeScene: false, attachCamera: true)
-        } else if attachCameraChanged || rotationChanged || widgetsChanged {
-            sceneUpdated(attachCamera: attachCameraChanged || selected && captureDeviceWidgetsChanged,
-                         updateRemoteScene: widgetsChanged)
+        if removedOrMoved || added || layoutsChanged {
+            sceneUpdated(attachCamera: getSelectedScene() === scene && captureDeviceWidgetsChanged)
         }
-        if enabledChanged, !selected {
-            sceneSelector.sceneIndex += 0
-        }
-        if overrideMicChanged || micIdChanged && selected {
-            switchMicIfNeededAfterSceneSwitch()
-        }
-        if backgroundColorChanged {
-            sceneSelector.objectWillChange.send()
-        }
-        if widgetsRemovedOrMoved {
+        if removedOrMoved {
             sceneSettingsPanelSceneId += 1
         }
     }
@@ -654,25 +676,6 @@ extension Model {
             .map(\.widgetId))
     }
 
-    private func remoteControlScoreboardWidgetUpdated(widget: SettingsWidget) {
-        let scoreboard = widget.scoreboard
-        switch scoreboard.sport {
-        case .generic:
-            sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
-        case .padel:
-            sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
-        default:
-            break
-        }
-        remoteControlScoreboardUpdate(scoreboard: scoreboard)
-        getScoreboardEffect(id: widget.id)?
-            .update(
-                scoreboard: scoreboard,
-                config: getModularScoreboardConfig(scoreboard: scoreboard),
-                players: database.scoreboardPlayers
-            )
-    }
-
     private func cameraId(_ videoSource: SettingsVideoSource) -> CameraId {
         getCameraId(settingsCameraId: videoSource.toCameraId())
     }
@@ -681,7 +684,7 @@ extension Model {
         widget: SettingsWidget,
         new: SettingsWidget,
         changes: inout ChangeTracker
-    ) -> () -> Void {
+    ) {
         var updatedEffects: [SettingsVideoEffect] = []
         let effects = new.effects.map { effect in
             guard let oldEffect = widget.effects.first(where: { $0.id == effect.id }) else {
@@ -694,10 +697,8 @@ extension Model {
             return oldEffect
         }
         changes.applyItems(&widget.effects, effects)
-        return {
-            for effect in updatedEffects {
-                self.updateWidgetVideoEffect(widget, effect)
-            }
+        for effect in updatedEffects {
+            updateWidgetVideoEffect(widget, effect)
         }
     }
 
@@ -760,28 +761,19 @@ extension Model {
     private func updateWidgetVideoEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) {
         switch effect.type {
         case .removeBackground:
-            getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
-                from: effect.removeBackground.from,
-                to: effect.removeBackground.to
-            )
+            removeBackgroundEffectSettingsChanged(widget: widget, effect: effect)
         case .shape:
-            getWidgetShapeEffect(widget, effect)?.setSettings(settings: effect.shape.toSettings())
-            updateCameraPreviewWidgets()
+            shapeEffectSettingsChanged(widget: widget, effect: effect)
         case .dewarp360:
-            getWidgetDewarp360Effect(widget, effect)?.setSettings(settings: effect.dewarp360.toSettings())
+            dewarp360EffectSettingsChanged(widget: widget, effect: effect)
         case .anamorphicLens:
-            getWidgetAnamorphicLensEffect(widget, effect)?
-                .setSettings(settings: effect.anamorphicLens.clone())
+            anamorphicLensEffectSettingsChanged(widget: widget, effect: effect)
         case .lut:
-            getWidgetLutEffect(widget, effect)?.setLut(lut: getLogLutById(id: effect.lut.lut),
-                                                       imageStorage: imageStorage)
-            {
-                self.makeErrorToast(title: $0, subTitle: $1)
-            }
+            lutEffectSettingsChanged(widget: widget, effect: effect)
         case .opacity:
-            getWidgetOpacityEffect(widget, effect)?.setOpacity(opacity: effect.opacity.opacity)
+            opacityEffectSettingsChanged(widget: widget, effect: effect)
         case .mask:
-            getWidgetMaskEffect(widget, effect)?.setSettings(settings: effect.mask.toEffectSettings())
+            maskEffectSettingsChanged(widget: widget, effect: effect)
         case .grayScale, .sepia, .whirlpool, .pinch:
             break
         }

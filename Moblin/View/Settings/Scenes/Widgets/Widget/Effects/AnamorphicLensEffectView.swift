@@ -7,7 +7,7 @@ struct AnamorphicLensEffectView: View {
     @ObservedObject var anamorphicLens: SettingsVideoEffectAnamorphicLens
 
     private func updateWidget() {
-        model.getWidgetAnamorphicLensEffect(widget, effect)?.setSettings(settings: anamorphicLens.clone())
+        model.anamorphicLensEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     private func changeScale(value: String) -> String? {
