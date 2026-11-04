@@ -92,15 +92,10 @@ extension Model {
         else {
             return false
         }
-        database.widgets.append(newWidget)
-        fixAlertMedias()
-        resetSelectedScene(changeScene: false, attachCamera: false)
-        for scene in database.scenes where sceneIds.contains(scene.id) {
-            appendWidgetToScene(scene: scene, widget: newWidget)
-        }
-        if newWidget.type == .text {
-            textWidgetTextChanged(widget: newWidget)
-        }
+        widgetWizardCreate(type: newWidget.type,
+                           name: newWidget.name,
+                           widget: newWidget,
+                           scenes: database.scenes.filter { sceneIds.contains($0.id) })
         return true
     }
 

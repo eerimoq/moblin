@@ -47,23 +47,10 @@ private struct SelectScenesView: View {
 
     private func create() {
         presentingCreateWizard = false
-        let name: String = if createWidgetWizard.name.isEmpty {
-            makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
-        } else {
-            createWidgetWizard.name
-        }
-        let widget = createWidgetWizard.widget
-        widget.type = createWidgetWizard.type
-        widget.name = name
-        database.widgets.append(widget)
-        model.fixAlertMedias()
-        model.resetSelectedScene(changeScene: false, attachCamera: false)
-        for sceneToAddWidgetTo in scenesToAddWidgetTo where sceneToAddWidgetTo.enabled {
-            model.appendWidgetToScene(scene: sceneToAddWidgetTo.scene, widget: widget)
-        }
-        if widget.type == .text {
-            model.textWidgetTextChanged(widget: widget)
-        }
+        model.widgetWizardCreate(type: createWidgetWizard.type,
+                                 name: createWidgetWizard.name,
+                                 widget: createWidgetWizard.widget,
+                                 scenes: scenesToAddWidgetTo.filter(\.enabled).map(\.scene))
     }
 
     var body: some View {

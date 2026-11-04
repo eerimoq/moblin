@@ -45,6 +45,28 @@ class CreateSceneWizard: ObservableObject {
 let defaultScoreboardSize = 18.52
 
 extension Model {
+    func widgetWizardCreate(type: SettingsWidgetType,
+                            name: String,
+                            widget: SettingsWidget,
+                            scenes: [SettingsScene])
+    {
+        widget.type = type
+        widget.name = if name.isEmpty {
+            makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
+        } else {
+            name
+        }
+        database.widgets.append(widget)
+        fixAlertMedias()
+        resetSelectedScene(changeScene: false, attachCamera: false)
+        for scene in scenes {
+            appendWidgetToScene(scene: scene, widget: widget)
+        }
+        if widget.type == .text {
+            textWidgetTextChanged(widget: widget)
+        }
+    }
+
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
         if let effect = textEffects[id] {
