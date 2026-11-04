@@ -12,6 +12,8 @@ extension AVCaptureColorSpace: @retroactive CustomStringConvertible {
             "HLG_BT2020"
         case .appleLog:
             "Apple Log"
+        case .appleLog2:
+            "Apple Log 2"
         default:
             "Unknown"
         }

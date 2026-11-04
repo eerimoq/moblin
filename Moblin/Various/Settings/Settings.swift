@@ -82,6 +82,16 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     case p3D65 = "P3 D65"
     case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
+    case appleLog2 = "Apple Log 2"
+
+    func isAppleLog() -> Bool {
+        switch self {
+        case .appleLog, .appleLog2:
+            true
+        default:
+            false
+        }
+    }
 }
 
 private let allBundledLuts = [

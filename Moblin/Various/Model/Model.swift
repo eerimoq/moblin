@@ -843,6 +843,7 @@ final class Model: NSObject, ObservableObject {
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
     var supportsAppleLog: Bool = false
+    var supportsAppleLog2: Bool = false
     var supportsHlg: Bool = false
     let weatherManager = WeatherManager()
     let geographyManager = GeographyManager()
@@ -1149,6 +1150,7 @@ final class Model: NSObject, ObservableObject {
         quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
+        supportsAppleLog2 = hasAppleLog2()
         supportsHlg = hasHlg()
         chat.interactiveChat = getQuickButton(type: .interactiveChat)?.isOn ?? false
         chatActivityFeed.interactiveChat = chat.interactiveChat

@@ -244,6 +244,8 @@ struct CameraSettingsView: View {
                 model.supportsHlg
             case .appleLog:
                 model.supportsAppleLog
+            case .appleLog2:
+                model.supportsAppleLog2
             default:
                 true
             }
@@ -305,7 +307,7 @@ struct CameraSettingsView: View {
                         model.colorSpaceUpdated()
                     }
                     .disabled(model.isLive || model.isRecording)
-                    if model.supportsAppleLog {
+                    if model.supportsAppleLog || model.supportsAppleLog2 {
                         NavigationLink {
                             CameraSettingsAppleLogLutView(model: model, color: color)
                         } label: {
@@ -313,7 +315,7 @@ struct CameraSettingsView: View {
                         }
                     }
                 } footer: {
-                    if model.supportsAppleLog {
+                    if model.supportsAppleLog || model.supportsAppleLog2 {
                         Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                     }
                 }

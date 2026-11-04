@@ -480,7 +480,7 @@ extension Model {
     }
 
     func lutEnabledUpdated() {
-        if database.color.lutEnabled, database.color.space == .appleLog {
+        if database.color.lutEnabled, database.color.space.isAppleLog() {
             media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
@@ -856,6 +856,12 @@ extension Model {
         case .appleLog:
             if #available(iOS 17.0, *) {
                 .appleLog
+            } else {
+                .sRGB
+            }
+        case .appleLog2:
+            if #available(iOS 26.0, *) {
+                .appleLog2
             } else {
                 .sRGB
             }

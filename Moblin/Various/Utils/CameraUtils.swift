@@ -185,6 +185,17 @@ func hasAppleLog() -> Bool {
     return false
 }
 
+func hasAppleLog2() -> Bool {
+    if #available(iOS 26.0, *) {
+        for format in bestBackCameraDevice?.formats ?? []
+            where format.supportedColorSpaces.contains(.appleLog2)
+        {
+            return true
+        }
+    }
+    return false
+}
+
 func hasHlg() -> Bool {
     for format in bestBackCameraDevice?.formats ?? []
         where format.supportedColorSpaces.contains(.HLG_BT2020)

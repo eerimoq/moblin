@@ -1360,7 +1360,7 @@ extension Model {
     private func sceneUpdatedOn(scene: SettingsScene, resolver: SceneResolver, attachCamera: Bool) {
         let resolvedScene = resolver.resolve(scene, includeRemote: true)
         var effects: [VideoEffect] = []
-        if database.color.lutEnabled, database.color.space == .appleLog {
+        if database.color.lutEnabled, database.color.space.isAppleLog() {
             effects.append(lutEffect)
         }
         for lut in database.color.allLuts() {
