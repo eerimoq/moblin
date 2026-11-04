@@ -879,16 +879,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateIsPortrait() {
-        orientation.isPortrait = isPortraitUi() || (showingPanel != .none && isDevicePortrait)
+        orientation.isPortrait = isPortraitUi() || isDevicePortrait
     }
 
     private func orientationLock() -> UIInterfaceOrientationMask {
         if isPortraitUi() {
             .portrait
-        } else if showingPanel != .none {
-            .allButUpsideDown
         } else {
-            .landscape
+            .allButUpsideDown
         }
     }
 
@@ -972,15 +970,10 @@ final class Model: NSObject, ObservableObject {
         if showingPanel == .quickButtonSettings {
             quickButtons.selectedButtonType = nil
         }
-        let wasShowingPanel = showingPanel != .none
         if showingPanel == panel {
             showingPanel = .none
         } else {
             showingPanel = panel
-        }
-        if wasShowingPanel != (showingPanel != .none) {
-            updateIsPortrait()
-            updateOrientationLock()
         }
         updateWidgetOutlinesForShowingPanel()
         panelHidden = false
