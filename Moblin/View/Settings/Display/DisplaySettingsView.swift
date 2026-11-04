@@ -225,6 +225,16 @@ struct DisplaySettingsView: View {
                     Text("Make sure silent mode is off for vibrations to work.")
                 }
             }
+            if !isMac() {
+                Section {
+                    Toggle("Auto rotate to portrait", isOn: $database.autoRotateToPortrait)
+                        .onChange(of: database.autoRotateToPortrait) { _ in
+                            model.updateAutoRotateToPortrait()
+                        }
+                } footer: {
+                    Text("Rotate the user interface to portrait when the device is held in portrait.")
+                }
+            }
             if database.showAllSettings {
                 if !isMac() {
                     Section {

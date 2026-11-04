@@ -879,14 +879,16 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateIsPortrait() {
-        orientation.isPortrait = isPortraitUi() || isDevicePortrait
+        orientation.isPortrait = isPortraitUi() || (database.autoRotateToPortrait && isDevicePortrait)
     }
 
     private func orientationLock() -> UIInterfaceOrientationMask {
         if isPortraitUi() {
             .portrait
-        } else {
+        } else if database.autoRotateToPortrait {
             .allButUpsideDown
+        } else {
+            .landscape
         }
     }
 
@@ -2366,6 +2368,11 @@ final class Model: NSObject, ObservableObject {
         database.portrait = portrait
         updateIsPortrait()
         setQuickButton(type: .portrait, isOn: portrait)
+        updateOrientationLock()
+    }
+
+    func updateAutoRotateToPortrait() {
+        updateIsPortrait()
         updateOrientationLock()
     }
 
