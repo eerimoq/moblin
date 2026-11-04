@@ -69,6 +69,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerGetEditorOptions() -> RemoteControlEditorOptions
     func remoteControlStreamerSetScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer]) -> Bool
     func remoteControlStreamerGetVideoSourceSnapshot(id: UUID, onCompleted: @escaping (Data?) -> Void)
+    func remoteControlStreamerSetMoblinCloudAlertsWidget(id: UUID?)
+    func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?)
     func remoteControlStreamerStartStats(filter: RemoteControlStartStatsFilter?)
     func remoteControlStreamerStopStats()
     func remoteControlStreamerStartMacro(id: UUID)
@@ -386,6 +388,12 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
             delegate.remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled)
+            sendEmptyOkResponse(id: id)
+        case let .setMoblinCloudAlertsWidget(id: widgetId):
+            delegate.remoteControlStreamerSetMoblinCloudAlertsWidget(id: widgetId)
+            sendEmptyOkResponse(id: id)
+        case let .setMoblinCloudWheelOfLuckWidget(id: widgetId):
+            delegate.remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: widgetId)
             sendEmptyOkResponse(id: id)
         case let .twitchEventSubNotification(message: message):
             delegate.remoteControlStreamerTwitchEventSubNotification(message: message)

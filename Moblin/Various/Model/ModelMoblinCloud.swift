@@ -294,6 +294,21 @@ extension Model {
         widget.id == database.moblinCloud.wheelOfLuckWidgetId
     }
 
+    func remoteControlSetMoblinCloudAlertsWidget(id: UUID?) {
+        guard id == nil || database.widgets.contains(where: { $0.id == id && $0.type == .alerts }) else {
+            return
+        }
+        database.moblinCloud.alertsWidgetId = id
+    }
+
+    func remoteControlSetMoblinCloudWheelOfLuckWidget(id: UUID?) {
+        guard id == nil || database.widgets.contains(where: { $0.id == id && $0.type == .wheelOfLuck }) else {
+            return
+        }
+        database.moblinCloud.wheelOfLuckWidgetId = id
+        moblinCloudSendWheelOfLuck()
+    }
+
     func moblinCloudSendWheelOfLuck() {
         let wheel = getMoblinCloudWheelOfLuckWidget().map {
             RemoteControlWheelOfLuck(options: $0.wheelOfLuck.options.map {
@@ -618,6 +633,14 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
         model?.remoteControlSetSrtConnectionPrioritiesEnabled(enabled: enabled)
+    }
+
+    func remoteControlStreamerSetMoblinCloudAlertsWidget(id: UUID?) {
+        model?.remoteControlSetMoblinCloudAlertsWidget(id: id)
+    }
+
+    func remoteControlStreamerSetMoblinCloudWheelOfLuckWidget(id: UUID?) {
+        model?.remoteControlSetMoblinCloudWheelOfLuckWidget(id: id)
     }
 
     func remoteControlStreamerTwitchEventSubNotification(message _: String) {}

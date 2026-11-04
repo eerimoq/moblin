@@ -89,6 +89,8 @@ enum RemoteControlRequest: Codable {
     case getEditorOptions
     case setScoreboardPlayers(players: [SettingsWidgetScoreboardPlayer])
     case getVideoSourceSnapshot(id: UUID)
+    case setMoblinCloudAlertsWidget(id: UUID?)
+    case setMoblinCloudWheelOfLuckWidget(id: UUID?)
 }
 
 enum RemoteControlTipKind: Codable {
@@ -1055,6 +1057,11 @@ struct RemoteControlEditorOptions: Codable {
     let canvasSize: RemoteControlSize
 }
 
+struct RemoteControlSettingsMoblinCloud: Codable {
+    let alertsWidgetId: UUID?
+    let wheelOfLuckWidgetId: UUID?
+}
+
 struct RemoteControlSettings: Codable {
     var streams: [RemoteControlSettingsStream]
     var scenes: [RemoteControlSettingsScene]
@@ -1062,6 +1069,7 @@ struct RemoteControlSettings: Codable {
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
+    var moblinCloud: RemoteControlSettingsMoblinCloud?
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {
