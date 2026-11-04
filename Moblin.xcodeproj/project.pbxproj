@@ -1614,7 +1614,7 @@
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 3.0.0;
 			};
 		};
 		035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */ = {
@@ -1693,8 +1693,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adam-fowler/swift-zip-archive";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.0;
 			};
 		};
 		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {
