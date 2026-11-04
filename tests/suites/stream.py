@@ -1,10 +1,18 @@
+import logging
+import time
 from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import UTC
 from datetime import datetime
 from pathlib import Path
 
 from systest_moblin.ffmpeg import FfmpegServer
 
+from ..utils.audio_video_sync import alert_chat_message
+from ..utils.audio_video_sync import alert_media_files
+from ..utils.audio_video_sync import alerts_media_gallery_settings
+from ..utils.audio_video_sync import alerts_widget_settings
+from ..utils.audio_video_sync import measure_alert_synchronization
 from ..utils.config import SRT_SERVER_PORT
 from ..utils.config import SRTLA_SERVER_PORT
 from ..utils.config import TESTER_SRTLA_PORT
@@ -13,24 +21,44 @@ from ..utils.config import WEB_REMOTE_CONTROL_PORT
 from ..utils.config import Capability
 from ..utils.config import rist_listener_url
 from ..utils.config import srt_listener_url
+from ..utils.generate_device_settings import BACK_SCENE_SETTINGS
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
 from ..utils.generate_device_settings import AudioCodec
 from ..utils.generate_device_settings import BitrateRateControl
 from ..utils.generate_device_settings import CameraPosition
 from ..utils.generate_device_settings import Resolution
 from ..utils.generate_device_settings import SceneName
 from ..utils.generate_device_settings import VideoCodec
+from ..utils.generate_device_settings import VideoStabilizationMode
 from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import scene_widget_settings
 from ..utils.generate_device_settings import uuid
 from ..utils.mediamtx import MediaMtx
 from ..utils.moblin import Moblin
+from ..utils.moblin import Recorder
 from ..utils.moblin import create_receiver
 from ..utils.test_case import TestCase
 from ..utils.utils import FILES_DIR
 from ..utils.utils import Range
 from ..utils.utils import format_generic_stream_url_stream_name
+from ..utils.utils import manual_volume_requirement
 
+LOGGER = logging.getLogger(__name__)
 SRTLA_INGEST_ID = uuid()
 SRTLA_STREAM_ID = "1"
+ALERT_WIDGET_ID = uuid()
+ALERT_WIDGET_X = 40.0
+ALERT_WIDGET_Y = 40.0
+ALERT_DELAY = 5
+ALERT_INTERVAL = 7
+NUMBER_OF_ALERTS = 3
+MAXIMUM_OFFSET_SPREAD = 0.15
+MAXIMUM_OFFSET_ERROR = 0.15
+VIDEO_STABILIZATION_OFFSETS = {
+    VideoStabilizationMode.OFF: 0.0,
+    VideoStabilizationMode.STANDARD: 0.1,
+    VideoStabilizationMode.CINEMATIC: 0.5,
+}
 
 
 class StreamTestCase(TestCase):
@@ -393,6 +421,118 @@ class StreamMultiRtmpToMediaMtx(StreamTestCase):
             mediamtx.wait_for_rtmp_stream("test3", 10_000_000)
 
 
+@dataclass
+class Offsets:
+    recording: float
+    stream: float
+
+
+class StreamSrtToFfmpegVideoStabilizationSync(StreamTestCase):
+    """Record and stream over SRT to the test runner computer with the back camera and video
+    stabilization off, standard and cinematic, triggering a few alerts in each run. Validate that
+    the alert audio is late relative to the alert video by roughly 0, 100 and 500 ms, respectively,
+    in both the recording and the stream. The offset with video stabilization off is the reference,
+    as it is not zero. Video stabilization delays the camera frames, and the alert is drawn on the
+    delayed frame that is current when the alert fires, so the audio captured by the mic at that
+    time is late relative to it by the video stabilization latency.
+
+    """
+
+    def __init__(self, moblin: Moblin):
+        super().__init__(moblin)
+        self._alert_times: list[float] = []
+
+    def run(self):
+        manual_volume_requirement(LOGGER)
+        offsets = {mode: self._measure_offsets(mode) for mode in VIDEO_STABILIZATION_OFFSETS}
+        reference = offsets[VideoStabilizationMode.OFF]
+        for mode, measured in offsets.items():
+            self._assert_offset(mode, "recording", measured.recording - reference.recording)
+            self._assert_offset(mode, "stream", measured.stream - reference.stream)
+
+    def _measure_offsets(self, video_stabilization_mode: VideoStabilizationMode) -> Offsets:
+        self._import_settings(video_stabilization_mode)
+        self.moblin.set_scene(SceneName.BACK)
+        LOGGER.info("Recording and streaming with video stabilization '%s'.", video_stabilization_mode)
+        file_name = f"{self.name}-{video_stabilization_mode.name.lower()}"
+        stream_file = FILES_DIR / f"{file_name}.ts"
+        recorder = Recorder(self.moblin, f"{file_name}.mp4")
+        with FfmpegServer(url=srt_listener_url(), filename=stream_file):
+            self.moblin.go_live()
+            self.moblin.wait_for_bitrate(4_000_000, 6_000_000, None, 2_000_000)
+            with recorder:
+                self._trigger_alerts()
+            self.moblin.end()
+        return Offsets(
+            recording=self._measure_offset(recorder.recording),
+            stream=self._measure_offset(stream_file),
+        )
+
+    def _import_settings(self, video_stabilization_mode: VideoStabilizationMode):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        **RECORD_STREAM_SETTINGS,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                    }
+                ],
+                "scenes": [
+                    {
+                        **BACK_SCENE_SETTINGS,
+                        "widgets": [
+                            scene_widget_settings(
+                                ALERT_WIDGET_ID,
+                                x=ALERT_WIDGET_X,
+                                y=ALERT_WIDGET_Y,
+                                size=100,
+                            )
+                        ],
+                    }
+                ],
+                "widgets": [alerts_widget_settings("Alert", ALERT_WIDGET_ID)],
+                "alertsMediaGallery": alerts_media_gallery_settings(),
+                "videoStabilizationMode": video_stabilization_mode,
+                "chat": {
+                    "botEnabled": True,
+                    "botCommandPermissions": {"alert": {"moderatorsEnabled": True}, "migrated": True},
+                    "timestampColorEnabled": True,
+                },
+            },
+            files=alert_media_files(),
+        )
+
+    def _trigger_alerts(self):
+        self._alert_times = []
+        time.sleep(ALERT_DELAY)
+        for _ in range(NUMBER_OF_ALERTS):
+            self.moblin.send_chat_message(alert_chat_message())
+            self._alert_times.append(time.monotonic())
+            time.sleep(ALERT_INTERVAL)
+
+    def _measure_offset(self, path: Path) -> float:
+        report = measure_alert_synchronization(path, self._alert_times, ALERT_WIDGET_X, ALERT_WIDGET_Y)
+        report.log()
+        self.assert_equal(len(report.missing), 0)
+        self.assert_less(report.spread(), MAXIMUM_OFFSET_SPREAD)
+        offsets = report.offsets()
+        return sum(offsets) / len(offsets)
+
+    def _assert_offset(self, video_stabilization_mode: VideoStabilizationMode, kind: str, offset: float):
+        LOGGER.debug(
+            "Video stabilization '%s': the audio is %.0f ms later in the %s than without video "
+            "stabilization.",
+            video_stabilization_mode,
+            1000 * offset,
+            kind,
+        )
+        expected = VIDEO_STABILIZATION_OFFSETS[video_stabilization_mode]
+        self.assert_less(abs(offset - expected), MAXIMUM_OFFSET_ERROR)
+
+
 class StreamToGenericUrls(StreamTestCase):
     """Stream to each generic URL for a few seconds."""
 
@@ -434,6 +574,7 @@ def tests(moblin: Moblin):
         StreamSrtlaBondingToMoblin(moblin),
         StreamWhipToMediaMtx(moblin),
         StreamMultiRtmpToMediaMtx(moblin),
+        StreamSrtToFfmpegVideoStabilizationSync(moblin),
     ] + [
         StreamToGenericUrls(moblin, number, generic_stream_url)
         for number, generic_stream_url in enumerate(moblin.config.generic_stream_urls(), 1)
