@@ -115,6 +115,7 @@ class MoblinSettingsRemoteControl: Codable {
 class MoblinSettingsMoblinCloud: Codable {
     var enabled: Bool
     var key: String
+    var url: String?
 }
 
 class MoblinSettingsUrl: Codable {
@@ -155,6 +156,9 @@ class MoblinSettingsUrl: Codable {
                     throw message
                 }
             }
+        }
+        if let url = query.moblinCloud?.url, let message = isValidHttpUrl(url: url.trim()) {
+            throw message
         }
         return query
     }
