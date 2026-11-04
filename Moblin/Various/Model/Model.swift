@@ -489,7 +489,6 @@ final class Model: NSObject, ObservableObject {
     }
 
     @Published var showingPanel: ShowingPanel = .none
-
     @Published var panelHidden = false
     @Published var showStealthMode = false
     @Published var lockScreen = false
@@ -546,6 +545,7 @@ final class Model: NSObject, ObservableObject {
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
+    private var isDevicePortrait = false
     let snapshot = Snapshot()
     let quickButtons = QuickButtons()
     let mic = Mic()
@@ -871,15 +871,25 @@ final class Model: NSObject, ObservableObject {
         replaysStorage.load()
         setCurrentStream()
         updateIsPortrait()
-        if orientation.isPortrait {
-            AppDelegate.orientationLock = .portrait
-        } else {
-            AppDelegate.orientationLock = .landscape
-        }
+        AppDelegate.orientationLock = orientationLock()
+    }
+
+    private func isPortraitUi() -> Bool {
+        stream.portrait || database.portrait || isChatPhone()
     }
 
     func updateIsPortrait() {
-        orientation.isPortrait = stream.portrait || database.portrait || isChatPhone()
+        orientation.isPortrait = isPortraitUi() || (showingPanel != .none && isDevicePortrait)
+    }
+
+    private func orientationLock() -> UIInterfaceOrientationMask {
+        if isPortraitUi() {
+            .portrait
+        } else if showingPanel != .none {
+            .allButUpsideDown
+        } else {
+            .landscape
+        }
     }
 
     func isLandscapeStreamAndPortraitUi() -> Bool {
@@ -962,10 +972,15 @@ final class Model: NSObject, ObservableObject {
         if showingPanel == .quickButtonSettings {
             quickButtons.selectedButtonType = nil
         }
+        let wasShowingPanel = showingPanel != .none
         if showingPanel == panel {
             showingPanel = .none
         } else {
             showingPanel = panel
+        }
+        if wasShowingPanel != (showingPanel != .none) {
+            updateIsPortrait()
+            updateOrientationLock()
         }
         updateWidgetOutlinesForShowingPanel()
         panelHidden = false
@@ -1802,6 +1817,14 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientation() {
+        switch UIDevice.current.orientation {
+        case .portrait:
+            isDevicePortrait = true
+        case .landscapeLeft, .landscapeRight:
+            isDevicePortrait = false
+        default:
+            break
+        }
         updateIsPortrait()
         if stream.portrait {
             media.setVideoOrientation(value: .portrait)
@@ -2229,11 +2252,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientationLock() {
-        if orientation.isPortrait {
-            AppDelegate.orientationLock = .portrait
-        } else {
-            AppDelegate.orientationLock = .landscape
-        }
+        AppDelegate.orientationLock = orientationLock()
         updateCameraPreviewRotation()
     }
 
