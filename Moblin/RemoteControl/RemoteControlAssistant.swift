@@ -247,11 +247,12 @@ class RemoteControlAssistant: NSObject {
     }
 
     func createWidget(widget: SettingsWidget,
+                      sceneIds: [UUID],
                       onSuccess: @escaping () -> Void,
                       onError: @escaping (String) -> Void)
     {
         performRequestNoResponseData(
-            data: .createWidget(widget: widget),
+            data: .createWidget(widget: widget, sceneIds: sceneIds),
             onSuccess: onSuccess,
             onError: onError
         )

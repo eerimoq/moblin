@@ -754,8 +754,8 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlDeleteScene(id: id) ?? false
     }
 
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
-        model?.remoteControlCreateWidget(widget: widget) ?? false
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
+        model?.remoteControlCreateWidget(widget: widget, sceneIds: sceneIds) ?? false
     }
 
     func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {

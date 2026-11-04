@@ -158,6 +158,20 @@ struct RemoteControlSceneConfigValidationSuite {
         }
     }
 
+    struct WidgetScenesCase: CustomTestStringConvertible {
+        let testDescription: String
+        let type: SettingsWidgetType
+        let scenes: [String]
+        let valid: Bool
+
+        init(_ description: String, _ type: SettingsWidgetType, _ scenes: [String], _ valid: Bool) {
+            testDescription = description
+            self.type = type
+            self.scenes = scenes
+            self.valid = valid
+        }
+    }
+
     @Test(arguments: SettingsWidgetType.allCases)
     func createAndEchoEveryWidgetType(type: SettingsWidgetType) {
         let fixture = Fixture()
@@ -719,5 +733,31 @@ struct RemoteControlSceneConfigValidationSuite {
         #expect(crop.y == 0)
         #expect(crop.width == 200)
         #expect(crop.height == 200)
+    }
+
+    @Test(arguments: [
+        WidgetScenesCase("No scenes", .text, [], true),
+        WidgetScenesCase("One scene", .text, ["Main"], true),
+        WidgetScenesCase("Nested scene only", .browser, ["Target"], true),
+        WidgetScenesCase("Scene and its nested scene", .text, ["Main", "Target"], false),
+        WidgetScenesCase("Same scene twice", .text, ["Target", "Target"], false),
+        WidgetScenesCase("Scene widget into scene already nesting it", .scene, ["Main"], true),
+        WidgetScenesCase("Scene widget into its own scene", .scene, ["Target"], true),
+    ])
+    func createWidgetInScenes(widgetScenesCase: WidgetScenesCase) {
+        let fixture = Fixture()
+        #expect(isValidRemoteControlWidgetScenes(
+            widget: fixture.makeWidget(widgetScenesCase.type),
+            sceneIds: widgetScenesCase.scenes.map { fixture.scene($0).id },
+            database: fixture.database
+        ) == widgetScenesCase.valid)
+    }
+
+    @Test
+    func createWidgetInUnknownScene() {
+        let fixture = Fixture()
+        #expect(!isValidRemoteControlWidgetScenes(widget: fixture.makeWidget(.text),
+                                                  sceneIds: [UUID()],
+                                                  database: fixture.database))
     }
 }

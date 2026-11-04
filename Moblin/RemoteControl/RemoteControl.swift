@@ -81,7 +81,7 @@ enum RemoteControlRequest: Codable {
     case createScene(scene: SettingsScene)
     case updateScene(scene: SettingsScene)
     case deleteScene(id: UUID)
-    case createWidget(widget: SettingsWidget)
+    case createWidget(widget: SettingsWidget, sceneIds: [UUID])
     case updateWidget(widget: SettingsWidget)
     case deleteWidget(id: UUID)
     case getAlertsMediaGallery

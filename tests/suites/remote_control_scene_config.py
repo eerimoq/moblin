@@ -255,8 +255,8 @@ class RemoteControlSceneConfig(TestCase):
         widget_id = uuid()
         scene_id = uuid()
         widget = text_widget_settings("Remote text", widget_id, {"formatString": "{time}"})
-        self.assert_in("ok", self.moblin.create_widget(widget))
-        self.assert_in("error", self.moblin.create_widget(widget))
+        self.assert_in("ok", self.moblin.create_widget(widget, []))
+        self.assert_in("error", self.moblin.create_widget(widget, []))
         scene = {
             "id": scene_id,
             "name": "Remote",
@@ -269,6 +269,15 @@ class RemoteControlSceneConfig(TestCase):
         self.assert_equal(scenes_by_id(self.moblin)[scene_id]["name"], "Remote")
         self.assert_equal(scenes_by_id(self.moblin)[scene_id]["widgets"][0]["widgetId"].upper(), widget_id)
         self.assert_equal(widgets_by_id(self.moblin)[widget_id]["text"]["formatString"], "{time}")
+        added_widget_id = uuid()
+        added_widget = text_widget_settings("Remote added text", added_widget_id, {"formatString": "{date}"})
+        self.assert_in("error", self.moblin.create_widget(added_widget, [uuid()]))
+        self.assert_in("ok", self.moblin.create_widget(added_widget, [scene_id]))
+        self.assert_equal(
+            [widget["widgetId"].upper() for widget in scenes_by_id(self.moblin)[scene_id]["widgets"]],
+            [widget_id, added_widget_id],
+        )
+        self.assert_in("ok", self.moblin.delete_widget(added_widget_id))
         self.moblin.set_scene_id(scene_id)
         self.moblin.wait_for_scene(scene_id)
         self.assert_in("ok", self.moblin.update_scene({**scene, "name": "Renamed"}))
@@ -296,7 +305,7 @@ class RemoteControlSceneConfig(TestCase):
             "enabled": True,
             "scoreboard": {"padel": {"homePlayer1": uuid()}},
         }
-        self.assert_in("ok", self.moblin.create_widget(widget))
+        self.assert_in("ok", self.moblin.create_widget(widget, []))
         widget = widgets_by_id(self.moblin)[widget_id]
         self.assert_in("ok", self.moblin.update_widget(widget))
         self.assert_in("ok", self.moblin.delete_widget(widget_id))
@@ -528,7 +537,7 @@ class RemoteControlSceneConfigWhileRecording(TestCase):
             ),
             ConfigurationStep(
                 "Create widget",
-                lambda: self.moblin.create_widget(text_widget("Created", CREATED_WIDGET_ID, "Created")),
+                lambda: self.moblin.create_widget(text_widget("Created", CREATED_WIDGET_ID, "Created"), []),
                 True,
                 False,
             ),
@@ -777,7 +786,7 @@ class RemoteControlSceneConfigRendering(TestCase):
 
     def prepare(self):
         self.assert_in(
-            "ok", self.moblin.create_widget(text_widget("Render text", RENDER_TEXT_WIDGET_ID, "AAAA"))
+            "ok", self.moblin.create_widget(text_widget("Render text", RENDER_TEXT_WIDGET_ID, "AAAA"), [])
         )
         self.assert_in("ok", self.create_inner_scenes())
         self.assert_in(
@@ -789,7 +798,8 @@ class RemoteControlSceneConfigRendering(TestCase):
                     "type": WidgetType.SCENE,
                     "enabled": True,
                     "scene": {"sceneId": INNER_SCENE_ID},
-                }
+                },
+                [],
             ),
         )
         self.assert_in(
@@ -801,7 +811,8 @@ class RemoteControlSceneConfigRendering(TestCase):
                     "type": WidgetType.QR_CODE,
                     "enabled": True,
                     "qrCode": {"message": "Moblin"},
-                }
+                },
+                [],
             ),
         )
 
@@ -860,7 +871,7 @@ class RemoteControlSceneConfigRendering(TestCase):
         return self.update_scene(scene_id, add)
 
     def create_scene_with_text(self, scene_id: str, name: str, widget_id: str, text: str) -> dict:
-        result = self.moblin.create_widget(text_widget(f"{name} text", widget_id, text))
+        result = self.moblin.create_widget(text_widget(f"{name} text", widget_id, text), [])
         if "ok" not in result:
             return result
         return self.moblin.create_scene(

@@ -270,8 +270,8 @@ class Moblin:
     def delete_scene(self, scene_id: str) -> dict:
         return self._request({"deleteScene": {"id": scene_id}})["result"]
 
-    def create_widget(self, widget: dict) -> dict:
-        return self._request({"createWidget": {"widget": widget}})["result"]
+    def create_widget(self, widget: dict, scene_ids: list[str]) -> dict:
+        return self._request({"createWidget": {"widget": widget, "sceneIds": scene_ids}})["result"]
 
     def update_widget(self, widget: dict) -> dict:
         return self._request({"updateWidget": {"widget": widget}})["result"]

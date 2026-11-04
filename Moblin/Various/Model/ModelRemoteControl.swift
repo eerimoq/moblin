@@ -1306,8 +1306,8 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlDeleteScene(id: id)
     }
 
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool {
-        remoteControlCreateWidget(widget: widget)
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
+        remoteControlCreateWidget(widget: widget, sceneIds: sceneIds)
     }
 
     func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {

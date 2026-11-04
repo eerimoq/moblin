@@ -84,16 +84,20 @@ extension Model {
         return true
     }
 
-    func remoteControlCreateWidget(widget: SettingsWidget) -> Bool {
+    func remoteControlCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
         guard !database.widgets.contains(where: { $0.id == widget.id }),
               let newWidget = remoteControlMakeWidget(widget: widget),
-              isValidRemoteControlName(newWidget, database.widgets + [newWidget], database.widgets)
+              isValidRemoteControlName(newWidget, database.widgets + [newWidget], database.widgets),
+              isValidRemoteControlWidgetScenes(widget: newWidget, sceneIds: sceneIds, database: database)
         else {
             return false
         }
         database.widgets.append(newWidget)
         fixAlertMedias()
         resetSelectedScene(changeScene: false, attachCamera: false)
+        for scene in database.scenes where sceneIds.contains(scene.id) {
+            appendWidgetToScene(scene: scene, widget: newWidget)
+        }
         if newWidget.type == .text {
             textWidgetTextChanged(widget: newWidget)
         }

@@ -147,7 +147,29 @@ func isValidRemoteControlSceneUpdate(scene: SettingsScene,
 func isValidRemoteControlScene(scene: SettingsScene, scenes: [SettingsScene], database: Database) -> Bool {
     isValidRemoteControlName(scene, scenes, database.scenes)
         && hasUniqueRemoteControlIds(scene.widgets)
-        && !introducesDuplicatedWidgets(scenes: scenes, database: database)
+        && !introducesDuplicatedWidgets(scenes: scenes, widgets: database.widgets, database: database)
+}
+
+func isValidRemoteControlWidgetScenes(widget: SettingsWidget, sceneIds: [UUID], database: Database) -> Bool {
+    guard Set(sceneIds).count == sceneIds.count,
+          sceneIds.allSatisfy({ database.findScene(id: $0) != nil })
+    else {
+        return false
+    }
+    let scenes = database.scenes.map { scene in
+        guard sceneIds.contains(scene.id) else {
+            return scene
+        }
+        let newScene = SettingsScene(name: scene.name)
+        newScene.id = scene.id
+        newScene.widgets = scene.widgets + [SettingsSceneWidget(widgetId: widget.id)]
+        return newScene
+    }
+    return !introducesDuplicatedWidgets(
+        scenes: scenes,
+        widgets: database.widgets + [widget],
+        database: database
+    )
 }
 
 func remoteControlMergeSceneWidgets(_ sceneWidgets: [SettingsSceneWidget],
@@ -171,10 +193,11 @@ func remoteControlMergeSceneWidgets(_ sceneWidgets: [SettingsSceneWidget],
 }
 
 private func introducesDuplicatedWidgets(scenes: [SettingsScene],
+                                         widgets: [SettingsWidget],
                                          database: Database) -> Bool
 {
-    let before = SceneResolver(scenes: database.scenes, widgets: database.widgets)
-    let after = SceneResolver(scenes: scenes, widgets: database.widgets)
+    let before = SceneResolver(scenes: database.scenes, widgets: widgets)
+    let after = SceneResolver(scenes: scenes, widgets: widgets)
     return scenes.contains { scene in
         let beforeCounts = database.findScene(id: scene.id).map {
             before.resolve($0, includeDisabledSceneWidgets: true).duplicatedWidgetCounts()

@@ -61,7 +61,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool
     func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool
     func remoteControlStreamerDeleteScene(id: UUID) -> Bool
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool
     func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool
     func remoteControlStreamerDeleteWidget(id: UUID) -> Bool
     func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery
@@ -512,8 +512,9 @@ class RemoteControlStreamer {
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateScene(scene: scene))
         case let .deleteScene(id: sceneId):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteScene(id: sceneId))
-        case let .createWidget(widget: widget):
-            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateWidget(widget: widget))
+        case let .createWidget(widget: widget, sceneIds: sceneIds):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateWidget(widget: widget,
+                                                                                      sceneIds: sceneIds))
         case let .updateWidget(widget: widget):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateWidget(widget: widget))
         case let .deleteWidget(id: widgetId):
