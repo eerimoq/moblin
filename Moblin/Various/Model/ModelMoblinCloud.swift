@@ -3,7 +3,7 @@ import DeviceCheck
 import Foundation
 
 let moblinWebsiteApiUrl = Bundle.main.object(forInfoDictionaryKey: "MoblinWebsiteApiUrl") as! String
-private let moblinCloudApiUrl = Bundle.main.object(forInfoDictionaryKey: "MoblinCloudApiUrl") as! String
+let moblinCloudApiUrl = Bundle.main.object(forInfoDictionaryKey: "MoblinCloudApiUrl") as! String
 private let liveUrl = URL(string: "\(moblinWebsiteApiUrl)/streamers/live")!
 private let challengeUrl = URL(string: "\(moblinWebsiteApiUrl)/streamers/live/challenge")!
 private let appAttestStorage = SimpleStringStorage(key: "moblinWebsiteAppAttest")
@@ -180,8 +180,8 @@ private func sendLive(channels: [MoblinCloudChannel]) async {
     }
 }
 
-private func makeMoblinCloudUrl(key: String) -> URL? {
-    guard var components = URLComponents(string: moblinCloudApiUrl) else {
+private func makeMoblinCloudUrl(url: String, key: String) -> URL? {
+    guard var components = URLComponents(string: url) else {
         return nil
     }
     switch components.scheme {
@@ -247,7 +247,10 @@ extension Model {
         stopMoblinCloud()
         let settings = database.moblinCloud
         let key = settings.key.trim()
-        guard !isMac(), settings.enabled, !key.isEmpty, let url = makeMoblinCloudUrl(key: key) else {
+        guard !isMac(), settings.enabled, !key.isEmpty, let url = makeMoblinCloudUrl(
+            url: settings.url,
+            key: key
+        ) else {
             updateMoblinCloudStatus()
             return
         }

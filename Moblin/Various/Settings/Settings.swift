@@ -1236,6 +1236,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
     @Published var key: String = ""
     @Published var wheelOfLuckWidgetId: UUID?
     @Published var alertsWidgetId: UUID?
+    @Published var url: String = moblinCloudApiUrl
 
     init() {}
 
@@ -1244,6 +1245,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         case key
         case wheelOfLuckWidgetId
         case alertsWidgetId
+        case url
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1252,6 +1254,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         try container.encode(.key, key)
         try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
         try container.encode(.alertsWidgetId, alertsWidgetId)
+        try container.encode(.url, url)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1260,6 +1263,7 @@ class SettingsMoblinCloud: Codable, ObservableObject {
         key = container.decode(.key, String.self, "")
         wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
         alertsWidgetId = container.decode(.alertsWidgetId, UUID?.self, nil)
+        url = container.decode(.url, String.self, moblinCloudApiUrl)
     }
 }
 

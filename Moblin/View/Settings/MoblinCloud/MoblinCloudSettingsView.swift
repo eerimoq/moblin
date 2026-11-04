@@ -66,6 +66,19 @@ struct MoblinCloudSettingsView: View {
                 Create one in Settings → Scenes and add it to the scenes you stream with.
                 """)
             }
+            Section {
+                TextEditNavigationView(
+                    title: String(localized: "URL"),
+                    value: moblinCloud.url,
+                    onChange: isValidHttpUrl,
+                    onSubmit: {
+                        moblinCloud.url = $0
+                        model.reloadMoblinCloud()
+                    }
+                )
+            } footer: {
+                Text("Moblin Cloud API server. Default is \(moblinCloudApiUrl).")
+            }
         }
         .navigationTitle("Moblin Cloud")
     }
