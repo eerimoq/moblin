@@ -535,125 +535,105 @@ struct MainView: View {
         }
     }
 
-    private func portrait() -> some View {
-        VStack(spacing: 0) {
-            ZStack {
-                streamViewWithWidgets()
-                GeometryReader { metrics in
-                    StreamOverlayView(streamOverlay: model.streamOverlay,
-                                      chatSettings: model.database.chat,
-                                      orientation: orientation,
-                                      width: metrics.size.width)
-                        .padding(.bottom, orientation.isPortrait ? 5 : 0)
-                        .opacity(model.showLocalOverlays ? 1 : 0)
-                }
-                if model.showDrawOnStream, model.stream.portrait {
-                    DrawOnStreamView(model: model)
-                }
-                MutedView(audio: model.audio)
-                PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
-                if model.showBrowser {
-                    WebBrowserView(model: model,
-                                   database: model.database,
-                                   orientation: orientation,
-                                   webBrowserState: model.webBrowserState)
-                }
-                if model.showNavigation {
-                    if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(model: model,
-                                                    database: model.database,
-                                                    navigation: model.navigation())
-                    }
-                }
-                if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model,
-                                                         remoteControlSettings: model.database.remoteControl)
-                }
-                if model.showingPanel != .none {
-                    MenuView()
-                        .opacity(model.panelHidden ? 0 : 1)
-                    let backgroundColor = model.panelHidden ? model.showingPanel
-                        .buttonsBackgroundColor() : .clear
-                    PanelButtonsView(model: model, backgroundColor: backgroundColor)
-                        .padding(.trailing, 10)
-                        .padding(.top, -7)
+    private func streamArea() -> some View {
+        ZStack {
+            streamViewWithWidgets()
+            GeometryReader { metrics in
+                StreamOverlayView(streamOverlay: model.streamOverlay,
+                                  chatSettings: model.database.chat,
+                                  orientation: orientation,
+                                  width: metrics.size.width)
+                    .padding(.bottom, orientation.isPortrait ? 5 : 0)
+                    .opacity(model.showLocalOverlays ? 1 : 0)
+            }
+            if model.showDrawOnStream, model.stream.portrait || !orientation.isPortrait {
+                DrawOnStreamView(model: model)
+            }
+            MutedView(audio: model.audio)
+            PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
+            if model.showBrowser {
+                WebBrowserView(model: model,
+                               database: model.database,
+                               orientation: orientation,
+                               webBrowserState: model.webBrowserState)
+            }
+            if model.showNavigation {
+                if #available(iOS 26, *) {
+                    StreamOverlayNavigationView(model: model,
+                                                database: model.database,
+                                                navigation: model.navigation())
                 }
             }
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { amount in
-                        model.changeZoomX(amount: Float(amount))
-                    }
-                    .onEnded { amount in
-                        model.commitZoomX(amount: Float(amount))
-                    }
-            )
-            ControlBarPortraitView(model: model, quickButtons: quickButtons)
+            if model.showingRemoteControl {
+                ControlBarRemoteControlAssistantView(model: model,
+                                                     remoteControlSettings: model.database.remoteControl)
+            }
+            if !orientation.isPortrait, model.showingPanel != .none, model.panelHidden {
+                PanelButtonsView(
+                    model: model,
+                    backgroundColor: model.showingPanel.buttonsBackgroundColor()
+                )
+                .padding(.trailing, -1)
+            }
+        }
+        .gesture(
+            MagnificationGesture()
+                .onChanged { amount in
+                    model.changeZoomX(amount: Float(amount))
+                }
+                .onEnded { amount in
+                    model.commitZoomX(amount: Float(amount))
+                }
+        )
+    }
+
+    private func panel() -> some View {
+        ZStack {
+            MenuView()
+                .background(.black)
+                .opacity(model.panelHidden ? 0 : 1)
+            if orientation.isPortrait {
+                let backgroundColor = model.panelHidden ? model.showingPanel
+                    .buttonsBackgroundColor() : .clear
+                PanelButtonsView(model: model, backgroundColor: backgroundColor)
+                    .padding(.trailing, 10)
+                    .padding(.top, -7)
+            } else if !model.panelHidden {
+                PanelButtonsView(model: model, backgroundColor: .clear)
+            }
         }
     }
 
-    private func landscape() -> some View {
-        HStack(spacing: 0) {
-            ZStack {
-                streamViewWithWidgets()
-                GeometryReader { metrics in
-                    StreamOverlayView(streamOverlay: model.streamOverlay,
-                                      chatSettings: model.database.chat,
-                                      orientation: orientation,
-                                      width: metrics.size.width)
-                        .opacity(model.showLocalOverlays ? 1 : 0)
-                }
-                if model.showDrawOnStream {
-                    DrawOnStreamView(model: model)
-                }
-                MutedView(audio: model.audio)
-                PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
-                if model.showBrowser {
-                    WebBrowserView(model: model,
-                                   database: model.database,
-                                   orientation: orientation,
-                                   webBrowserState: model.webBrowserState)
-                }
-                if model.showNavigation {
-                    if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(model: model,
-                                                    database: model.database,
-                                                    navigation: model.navigation())
-                    }
-                }
-                if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model,
-                                                         remoteControlSettings: model.database.remoteControl)
-                }
-                if model.showingPanel != .none, model.panelHidden {
-                    PanelButtonsView(
-                        model: model,
-                        backgroundColor: model.showingPanel.buttonsBackgroundColor()
-                    )
-                    .padding(.trailing, -1)
-                }
-            }
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { amount in
-                        model.changeZoomX(amount: Float(amount))
-                    }
-                    .onEnded { amount in
-                        model.commitZoomX(amount: Float(amount))
-                    }
-            )
+    private func streamAreaTrailingPadding(panelWidth: CGFloat) -> CGFloat {
+        if orientation.isPortrait || model.showingPanel == .none {
+            0
+        } else {
+            panelWidth
+        }
+    }
+
+    private func streamAndPanel() -> some View {
+        let panelWidth = model.panelHidden ? 1 : settingsHalfWidth
+        return ZStack(alignment: .trailing) {
+            streamArea()
+                .padding(.trailing, streamAreaTrailingPadding(panelWidth: panelWidth))
             if model.showingPanel != .none {
-                ZStack {
-                    MenuView()
-                        .opacity(model.panelHidden ? 0 : 1)
-                        .background(.black)
-                    if !model.panelHidden {
-                        PanelButtonsView(model: model, backgroundColor: .clear)
-                    }
-                }
-                .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
+                panel()
+                    .frame(width: orientation.isPortrait ? nil : panelWidth)
             }
-            ControlBarLandscapeView(model: model, quickButtons: quickButtons)
+        }
+    }
+
+    private func main() -> some View {
+        let layout = orientation.isPortrait ? AnyLayout(VStackLayout(spacing: 0)) :
+            AnyLayout(HStackLayout(spacing: 0))
+        return layout {
+            streamAndPanel()
+            if orientation.isPortrait {
+                ControlBarPortraitView(model: model, quickButtons: quickButtons)
+            } else {
+                ControlBarLandscapeView(model: model, quickButtons: quickButtons)
+            }
         }
     }
 
@@ -678,11 +658,7 @@ struct MainView: View {
     var body: some View {
         VStack(spacing: 0) {
             let all = ZStack {
-                if orientation.isPortrait {
-                    portrait()
-                } else {
-                    landscape()
-                }
+                main()
                 WebBrowserAlertsView(model: model)
                     .opacity(webBrowserController.showAlert ? 1 : 0)
                 if model.showStealthMode {
