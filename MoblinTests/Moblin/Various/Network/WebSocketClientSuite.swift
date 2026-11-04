@@ -210,6 +210,29 @@ struct WebSocketClientSuite {
     }
 
     @Test
+    func sendReportsProcessed() async throws {
+        let connection = try await Connection.makeConnected()
+        let processed = MessageQueue<Bool>()
+        connection.client.send(string: "hello") {
+            processed.put(true)
+        }
+        #expect(await processed.get())
+        await connection.expectServerEvent(.text("hello"))
+        connection.client.stop()
+    }
+
+    @Test
+    func sendReportsProcessedWhenNotConnected() async throws {
+        let connection = try await Connection.makeConnected()
+        connection.client.stop()
+        var processed = false
+        connection.client.send(string: "ignored") {
+            processed = true
+        }
+        #expect(processed)
+    }
+
+    @Test
     func closeWithHandshake() async throws {
         let connection = try await Connection.makeConnected()
         connection.client.stop(closeCode: .privateCode(4001))

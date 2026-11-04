@@ -102,6 +102,8 @@ class RemoteControlStreamer {
     private var gotPong = true
     private var wrongPassword = false
     private let streamerId: String
+    private var sendingPreview = false
+    private var sendingStatus = false
 
     init(clientUrl: URL,
          password: String,
@@ -143,6 +145,8 @@ class RemoteControlStreamer {
 
     private func handleDisconnected() {
         stopKeepAlive()
+        sendingPreview = false
+        sendingStatus = false
         let wasConnected = connected
         connected = false
         if !wrongPassword {
@@ -197,7 +201,13 @@ class RemoteControlStreamer {
     }
 
     func sendPreview(preview: Data) {
-        send(message: .preview(preview: preview))
+        guard !sendingPreview else {
+            return
+        }
+        sendingPreview = true
+        send(message: .preview(preview: preview)) { [weak self] in
+            self?.sendingPreview = false
+        }
     }
 
     func sendStatus(
@@ -205,7 +215,14 @@ class RemoteControlStreamer {
         topLeft: RemoteControlStatusTopLeft?,
         topRight: RemoteControlStatusTopRight?
     ) {
-        send(message: .event(data: .status(general: general, topLeft: topLeft, topRight: topRight)))
+        guard !sendingStatus else {
+            return
+        }
+        sendingStatus = true
+        let status = RemoteControlEvent.status(general: general, topLeft: topLeft, topRight: topRight)
+        send(message: .event(data: status)) { [weak self] in
+            self?.sendingStatus = false
+        }
     }
 
     func twitchStart(channelName: String?, channelId: String, accessToken: String) {
@@ -236,12 +253,13 @@ class RemoteControlStreamer {
         keepAliveTimer.stop()
     }
 
-    private func send(message: RemoteControlMessageToAssistant) {
+    private func send(message: RemoteControlMessageToAssistant, onProcessed: (@MainActor () -> Void)? = nil) {
         do {
             let message = try message.toJson()
-            webSocket.send(string: message)
+            webSocket.send(string: message, onProcessed: onProcessed)
         } catch {
             logger.info("remote-control-streamer: Encode failed")
+            onProcessed?()
         }
     }
 
