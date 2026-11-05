@@ -47,14 +47,8 @@ private struct ZoomPresetView: View {
                     height: height()
                 )
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: min(segmentWidth() * Double(presets.count), max(width - 20, 1)))
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }
@@ -97,14 +91,8 @@ private struct ZoomPresetVView: View {
                     height: height()
                 )
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: segmentWidth())
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }

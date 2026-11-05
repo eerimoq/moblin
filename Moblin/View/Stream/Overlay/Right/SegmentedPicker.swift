@@ -67,6 +67,7 @@ struct SegmentedHPicker<T: Equatable, Content: View>: View {
     let items: [T]
     @Binding var selectedItem: T?
     var selectedColor: Color = defaultSegmentedPickerSelectedColor.color()
+    var backgroundColor: Color = pickerBackgroundColor
     var onLongPress: ((Int) -> Void)?
     let content: (T) -> Content
 
@@ -79,6 +80,12 @@ struct SegmentedHPicker<T: Equatable, Content: View>: View {
                             onLongPress: onLongPress)
         }
         .fixedSize(horizontal: false, vertical: true)
+        .background(backgroundColor)
+        .cornerRadius(7)
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(pickerBorderColor)
+        )
     }
 }
 
@@ -86,6 +93,7 @@ struct SegmentedVPicker<T: Equatable, Content: View>: View {
     let items: [T]
     @Binding var selectedItem: T?
     var selectedColor: Color = defaultSegmentedPickerSelectedColor.color()
+    var backgroundColor: Color = pickerBackgroundColor
     var onLongPress: ((Int) -> Void)?
     let content: (T) -> Content
 
@@ -98,5 +106,11 @@ struct SegmentedVPicker<T: Equatable, Content: View>: View {
                             onLongPress: onLongPress)
         }
         .fixedSize(horizontal: false, vertical: true)
+        .background(backgroundColor)
+        .cornerRadius(7)
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(pickerBorderColor)
+        )
     }
 }

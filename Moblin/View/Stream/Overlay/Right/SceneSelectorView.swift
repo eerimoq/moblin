@@ -75,14 +75,8 @@ struct StreamOverlayRightSceneSelectorView: View {
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), max(width - 20, 1)))
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
     }
 }
 
@@ -123,14 +117,8 @@ struct StreamOverlayRightSceneVSelectorView: View {
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: sceneSegmentWidth)
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }

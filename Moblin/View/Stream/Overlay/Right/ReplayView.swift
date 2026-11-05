@@ -82,16 +82,15 @@ private struct ReplayControlsSpeedPicker: View {
     @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        SegmentedHPicker(items: SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
+        SegmentedHPicker(
+            items: SettingsReplaySpeed.allCases,
+            selectedItem: $replay.speed,
+            backgroundColor: .clear
+        ) {
             Text($0.rawValue)
                 .font(.subheadline)
                 .frame(height: 35)
         }
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .frame(width: 90)
         .onChange(of: replay.speed) { _ in
             model.replaySpeedChanged()
