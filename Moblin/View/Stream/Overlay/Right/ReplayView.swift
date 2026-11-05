@@ -173,6 +173,10 @@ private struct ControlRowView<Content: View>: View {
         .frame(height: 45)
         .background(backgroundColor)
         .cornerRadius(5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(pickerBorderColor)
+        )
     }
 }
 
@@ -286,6 +290,10 @@ private struct ReplayHistory: View {
         .padding(4)
         .background(backgroundColor)
         .cornerRadius(5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(pickerBorderColor)
+        )
     }
 }
 

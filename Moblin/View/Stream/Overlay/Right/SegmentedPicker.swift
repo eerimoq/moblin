@@ -8,7 +8,7 @@ let sceneSegmentWidth = 70.0
 let sliderWidth = 250.0
 let sliderHeight = 40.0
 let cameraButtonWidth = 70.0
-let pickerBorderColor = Color.gray
+let pickerBorderColor = Color.gray.opacity(0.3)
 let pickerBackgroundColor = Color.black.opacity(0.4)
 let pickerLabelMinimumScaleFactor = 0.7
 

@@ -111,6 +111,10 @@ private struct DrawOnStreamControlsView: View {
                 .padding(8)
                 .background(backgroundColor)
                 .cornerRadius(5)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(pickerBorderColor)
+                )
             }
             .padding(.trailing, 15)
         }

@@ -64,6 +64,10 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
             .background(backgroundColor)
             .foregroundStyle(.white)
             .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(pickerBorderColor)
+            )
         }
     }
 }

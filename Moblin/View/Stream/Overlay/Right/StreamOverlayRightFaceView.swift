@@ -20,6 +20,10 @@ struct EffectSlider: View {
             .frame(width: sliderWidth, height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
+            .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(pickerBorderColor)
+            )
             .padding(.bottom, 5)
         }
     }
