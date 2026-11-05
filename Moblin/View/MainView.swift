@@ -655,6 +655,14 @@ struct MainView: View {
         }
     }
 
+    private func safeAreaRegionsToIgnore() -> SafeAreaRegions {
+        if orientation.isPortrait, model.showingPanel != .none, !model.panelHidden {
+            .keyboard
+        } else {
+            []
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             let all = ZStack {
@@ -759,5 +767,6 @@ struct MainView: View {
                 .frame(width: 0, height: 0)
         }
         .ignoresSafeArea(.container, edges: edgesToIgnore())
+        .ignoresSafeArea(safeAreaRegionsToIgnore(), edges: .bottom)
     }
 }
