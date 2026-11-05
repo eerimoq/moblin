@@ -12,11 +12,12 @@ let pickerBorderColor = Color.gray.opacity(0.3)
 let pickerBackgroundColor = Color.black.opacity(0.4)
 let pickerLabelMinimumScaleFactor = 0.7
 
-private struct SegmentedPicker<T: Equatable, Content: View>: View {
+private struct SegmentedPicker<T: Equatable, Content: View, Separator: View>: View {
     @Namespace private var selectionAnimation
     @Binding var selectedItem: T?
     private let items: [T]
     private let selectedColor: Color
+    private let separator: Separator
     private let content: (T) -> Content
     private let onLongPress: ((Int) -> Void)?
 
@@ -24,12 +25,14 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
         _ items: [T],
         selectedItem: Binding<T?>,
         selectedColor: Color,
+        separator: Separator,
         @ViewBuilder content: @escaping (T) -> Content,
         onLongPress: ((Int) -> Void)? = nil
     ) {
         _selectedItem = selectedItem
         self.items = items
         self.selectedColor = selectedColor
+        self.separator = separator
         self.content = content
         self.onLongPress = onLongPress
     }
@@ -51,14 +54,17 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
                 content(items[index])
                     .contentShape(Rectangle())
             }
+            .overlay {
+                if index < items.count - 1 {
+                    separator
+                }
+            }
             .onTapGesture {
                 selectedItem = items[index]
             }
             .onLongPressGesture {
                 onLongPress?(index)
             }
-            Divider()
-                .background(pickerBorderColor)
         }
     }
 }
@@ -71,11 +77,19 @@ struct SegmentedHPicker<T: Equatable, Content: View>: View {
     var onLongPress: ((Int) -> Void)?
     let content: (T) -> Content
 
+    private func separator() -> some View {
+        Rectangle()
+            .fill(pickerBorderColor)
+            .frame(width: 1)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             SegmentedPicker(items,
                             selectedItem: $selectedItem,
                             selectedColor: selectedColor,
+                            separator: separator(),
                             content: content,
                             onLongPress: onLongPress)
         }
@@ -97,11 +111,19 @@ struct SegmentedVPicker<T: Equatable, Content: View>: View {
     var onLongPress: ((Int) -> Void)?
     let content: (T) -> Content
 
+    private func separator() -> some View {
+        Rectangle()
+            .fill(pickerBorderColor)
+            .frame(height: 1)
+            .frame(maxHeight: .infinity, alignment: .bottom)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             SegmentedPicker(items,
                             selectedItem: $selectedItem,
                             selectedColor: selectedColor,
+                            separator: separator(),
                             content: content,
                             onLongPress: onLongPress)
         }
