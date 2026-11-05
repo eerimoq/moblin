@@ -217,16 +217,11 @@ private func fetchKickProfilePictureWithUsername(_ username: String) async -> UI
 }
 
 @MainActor
-protocol KickApiDelegate: AnyObject {
-    func kickApiUnauthorized()
-}
-
-@MainActor
 class KickApi {
     private let channelId: String
     private let slug: String
     private let accessToken: String
-    weak var delegate: (any KickApiDelegate)?
+    var onUnauthorized: (() -> Void)?
 
     init(channelId: String, slug: String, accessToken: String) {
         self.channelId = channelId
@@ -579,7 +574,7 @@ class KickApi {
                     logger.info("kick-api: Error response body: \(data)")
                 }
                 if response?.http?.isUnauthorized == true {
-                    self.delegate?.kickApiUnauthorized()
+                    self.onUnauthorized?()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

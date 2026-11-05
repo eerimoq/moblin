@@ -98,9 +98,20 @@ extension Model {
                 return
             }
             let youTubeApi = YouTubeApi(accessToken: accessToken)
-            youTubeApi.delegate = self
+            youTubeApi.onUnauthorized = { [weak self] in
+                self?.youTubeApiUnauthorized(stream: stream)
+            }
             onCompleted(youTubeApi)
         }
+    }
+
+    private func youTubeApiUnauthorized(stream: SettingsStream) {
+        guard stream.isYouTubeAuthorized() else {
+            return
+        }
+        stream.youTubeAuthState = nil
+        removeYouTubeAuthStateInKeychain(streamId: stream.id)
+        makeNotLoggedInToToast(platform: .youTube)
     }
 
     func startFetchingYouTubeChatVideoId() {
@@ -305,17 +316,6 @@ extension Model {
                 }
             }
         }
-    }
-}
-
-extension Model: YouTubeApiDelegate {
-    func youTubeApiUnauthorized() {
-        guard stream.isYouTubeAuthorized() else {
-            return
-        }
-        stream.youTubeAuthState = nil
-        removeYouTubeAuthStateInKeychain(streamId: stream.id)
-        makeNotLoggedInToToast(platform: .youTube)
     }
 }
 

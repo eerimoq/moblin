@@ -327,8 +327,18 @@ extension Model {
         let kickApi = KickApi(channelId: stream.kickChannelId ?? "",
                               slug: stream.kickSlug ?? "",
                               accessToken: stream.kickAccessToken)
-        kickApi.delegate = self
+        kickApi.onUnauthorized = { [weak self] in
+            self?.kickApiUnauthorized(stream: stream)
+        }
         return kickApi
+    }
+
+    private func kickApiUnauthorized(stream: SettingsStream) {
+        guard stream.kickLoggedIn else {
+            return
+        }
+        stream.kickLoggedIn = false
+        makeNotLoggedInToToast(platform: .kick)
     }
 
     private func appendKickChatAlertMessage(
@@ -541,15 +551,5 @@ extension Model: KickPusherDelegate {
         playAlert(alert: .kickKicks(event: event))
         printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
         macrosEventOccurred(MacroEvent(event: .kickKicks, amount: event.gift.amount))
-    }
-}
-
-extension Model: KickApiDelegate {
-    func kickApiUnauthorized() {
-        guard stream.kickLoggedIn else {
-            return
-        }
-        stream.kickLoggedIn = false
-        makeNotLoggedInToToast(platform: .kick)
     }
 }
