@@ -276,11 +276,15 @@ private struct PagesView: View {
         }
     }
 
+    private func extraPages() -> [Int] {
+        (2 ... controlBarPages).filter { !quickButtons.pairs[$0 - 1].isEmpty }
+    }
+
     var body: some View {
         if #available(iOS 17, *) {
             VStack {
                 ScrollView(.horizontal) {
-                    HStack {
+                    LazyHStack {
                         Group {
                             MainPageView(model: model,
                                          quickButtons: quickButtons,
@@ -288,15 +292,12 @@ private struct PagesView: View {
                                          store: model.store,
                                          width: width)
                                 .id(1)
-                            ForEach(1 ..< controlBarPages, id: \.self) { page in
-                                if !quickButtons.pairs[page].isEmpty {
-                                    PageView(model: model,
-                                             quickButtons: quickButtons,
-                                             quickButtonsSettings: quickButtonsSettings,
-                                             page: page,
-                                             width: width)
-                                        .id(page + 1)
-                                }
+                            ForEach(extraPages(), id: \.self) { page in
+                                PageView(model: model,
+                                         quickButtons: quickButtons,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         page: page - 1,
+                                         width: width)
                             }
                         }
                         .padding(.leading, 5)
