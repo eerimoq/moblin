@@ -132,14 +132,22 @@ private struct BookmarksView: View {
 }
 
 private struct WebBrowserSmallView: View {
+    private struct Border: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path(rect)
+            path.addRect(rect.insetBy(dx: 12, dy: 12))
+            return path
+        }
+    }
+
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var webBrowser: WebBrowserSettings
     @ObservedObject var webBrowserState: WebBrowserState
-    @State private var isEditing = true
-    @State private var hasShownHint = false
+    @State private var isEditing = false
     @GestureState private var moveTranslation = CGSize.zero
     @GestureState private var resizeTranslation = CGSize.zero
+    @GestureState private var resizeCorner = WebBrowserResizeCorner.bottomTrailing
 
     private func save(frame: CGRect, in size: CGSize) {
         webBrowser.smallWindow = WebBrowserWindowLayout(frame: frame, in: size)
@@ -156,92 +164,89 @@ private struct WebBrowserSmallView: View {
             }
     }
 
-    private func resizeGesture(frame: CGRect, size: CGSize) -> some Gesture {
+    private func resizeGesture(frame: CGRect, size: CGSize, corner: WebBrowserResizeCorner) -> some Gesture {
         DragGesture(coordinateSpace: .global)
+            .updating($resizeCorner) { _, selected, _ in selected = corner }
             .updating($resizeTranslation) { value, translation, _ in
                 translation = value.translation
             }
             .onEnded { value in
-                save(frame: WebBrowserWindowLayout.resized(frame, by: value.translation, in: size), in: size)
+                save(frame: WebBrowserWindowLayout.resized(frame, by: value.translation,
+                                                           in: size, corner: corner), in: size)
             }
     }
 
-    private func finishEditing() {
-        isEditing = false
-        if !hasShownHint {
-            hasShownHint = true
-            model.makeToast(title: String(localized: "Hold the browser to adjust it"))
-        }
+    private func resizeHandle(frame: CGRect, size: CGSize, corner: WebBrowserResizeCorner) -> some View {
+        Circle()
+            .fill(.white)
+            .frame(width: 10, height: 10)
+            .overlay(Circle().stroke(.blue, lineWidth: 2))
+            .frame(width: 32, height: 32)
+            .contentShape(Rectangle())
+            .gesture(resizeGesture(frame: frame, size: size, corner: corner))
+            .accessibilityLabel("Resize browser")
+            .accessibilityAdjustableAction { direction in
+                let delta = direction == .increment ? 20.0 : -20.0
+                save(frame: WebBrowserWindowLayout.resized(frame,
+                                                           by: CGSize(
+                                                               width: corner.isLeading ? -delta : delta,
+                                                               height: corner.isTop ? -delta : delta
+                                                           ),
+                                                           in: size, corner: corner), in: size)
+            }
     }
 
-    private func controls(frame: CGRect, displayed: CGRect, size: CGSize) -> some View {
-        ZStack {
-            Color.black.opacity(0.35)
-                .contentShape(Rectangle())
-                .gesture(moveGesture(frame: frame, size: size))
-                .accessibilityLabel("Move browser")
-                .overlay {
-                    VStack(spacing: 8) {
-                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                            .font(.title2)
-                        if displayed.width >= 200, displayed.height >= 160 {
-                            Text("Drag to move")
-                                .font(.headline)
-                            Text("Drag the corner to resize")
-                                .font(.caption)
-                        }
-                    }
-                    .shadow(radius: 2)
-                    .allowsHitTesting(false)
-                }
-            RoundedRectangle(cornerRadius: 7)
-                .strokeBorder(.white, lineWidth: 2)
-                .allowsHitTesting(false)
+    private var expandButton: some View {
+        Button {
+            webBrowserState.isSmall = false
+        } label: {
+            if #available(iOS 26, *) {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding([.trailing, .bottom], 10)
+            } else {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .padding([.trailing, .bottom], 10)
+            }
         }
-        .overlay(alignment: .topLeading) {
-            Menu {
-                Button("Expand browser", systemImage: "arrow.up.left.and.arrow.down.right") {
-                    webBrowserState.isSmall = false
-                }
-                Button("Reset layout", systemImage: "arrow.counterclockwise") {
+        .accessibilityLabel("Expand browser")
+    }
+
+    private func controls(frame: CGRect, size: CGSize) -> some View {
+        Color.clear
+            .contentShape(Rectangle())
+            .gesture(moveGesture(frame: frame, size: size))
+            .accessibilityLabel("Move browser")
+            .overlay {
+                RoundedRectangle(cornerRadius: 7)
+                    .strokeBorder(.blue, lineWidth: 2)
+                    .allowsHitTesting(false)
+            }
+            .overlay(alignment: .topLeading) {
+                resizeHandle(frame: frame, size: size, corner: .topLeading)
+            }
+            .overlay(alignment: .topTrailing) {
+                resizeHandle(frame: frame, size: size, corner: .topTrailing)
+            }
+            .overlay(alignment: .bottomLeading) {
+                resizeHandle(frame: frame, size: size, corner: .bottomLeading)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                resizeHandle(frame: frame, size: size, corner: .bottomTrailing)
+            }
+            .accessibilityAction(named: Text("Done")) { isEditing = false }
+            .contextMenu {
+                Button("Reset layout") {
                     webBrowser.smallWindow = nil
                     model.storeSettings()
                 }
-            } label: {
-                Image(systemName: "ellipsis")
-                    .frame(width: 44, height: 44)
-                    .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 7))
             }
-            .accessibilityLabel("Browser options")
-        }
-        .overlay(alignment: .topTrailing) {
-            Button(action: finishEditing) {
-                Text("Done")
-                    .font(.callout.bold())
-                    .padding(.horizontal, 10)
-                    .frame(minHeight: 44)
-                    .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 7))
-            }
-            .buttonStyle(.plain)
-        }
-        .overlay(alignment: .bottomTrailing) {
-            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                .font(.title3.bold())
-                .frame(width: 44, height: 44)
-                .background(.black.opacity(0.8), in: RoundedRectangle(cornerRadius: 7))
-                .contentShape(Rectangle())
-                .gesture(resizeGesture(frame: frame, size: size))
-                .accessibilityLabel("Resize browser")
-                .accessibilityAdjustableAction { direction in
-                    let delta = direction == .increment ? 20.0 : -20.0
-                    save(frame: WebBrowserWindowLayout.resized(frame,
-                                                               by: CGSize(width: delta, height: delta),
-                                                               in: size),
-                         in: size)
-                }
-                .help("Drag the corner to resize")
-        }
-        .foregroundStyle(.white)
     }
 
     var body: some View {
@@ -250,25 +255,43 @@ private struct WebBrowserSmallView: View {
             let frame = webBrowser.smallWindow?.frame(in: metrics.size)
                 ?? WebBrowserWindowLayout.defaultFrame(in: metrics.size, bottomInset: bottomInset)
             let moved = WebBrowserWindowLayout.moved(frame, by: moveTranslation, in: metrics.size)
-            let displayed = WebBrowserWindowLayout.resized(moved, by: resizeTranslation, in: metrics.size)
-            WebView(model: model)
-                .allowsHitTesting(!isEditing)
-                .simultaneousGesture(
-                    LongPressGesture(minimumDuration: 0.6)
-                        .onEnded { _ in isEditing = true },
-                    including: isEditing ? .none : .all
-                )
-                .frame(width: displayed.width, height: displayed.height)
-                .overlay {
-                    if isEditing {
-                        controls(frame: frame, displayed: displayed, size: metrics.size)
+            let displayed = WebBrowserWindowLayout.resized(moved, by: resizeTranslation,
+                                                           in: metrics.size, corner: resizeCorner)
+            ZStack(alignment: .topLeading) {
+                if isEditing {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { isEditing = false }
+                }
+                WebView(model: model)
+                    .allowsHitTesting(!isEditing)
+                    .frame(width: displayed.width, height: displayed.height)
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    .overlay {
+                        if isEditing {
+                            controls(frame: frame, size: metrics.size)
+                        } else {
+                            Border()
+                                .fill(.clear, style: FillStyle(eoFill: true))
+                                .contentShape(Border(), eoFill: true)
+                                .onTapGesture { isEditing = true }
+                                .accessibilityLabel("Adjust browser")
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 7)
+                                        .strokeBorder(.white.opacity(0.4), lineWidth: 1)
+                                        .allowsHitTesting(false)
+                                }
+                        }
                     }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 7))
-                .accessibilityAction(named: Text("Adjust browser")) {
-                    isEditing = true
-                }
-                .position(x: displayed.midX, y: displayed.midY)
+                    .overlay(alignment: .bottomTrailing) {
+                        if !isEditing {
+                            expandButton
+                        }
+                    }
+                    .accessibilityAction(named: Text("Adjust browser")) { isEditing = true }
+                    .position(x: displayed.midX, y: displayed.midY)
+            }
+            .frame(width: metrics.size.width, height: metrics.size.height)
         }
     }
 }

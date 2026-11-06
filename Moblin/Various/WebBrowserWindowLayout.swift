@@ -1,5 +1,17 @@
 import Foundation
 
+enum WebBrowserResizeCorner: CaseIterable {
+    case topLeading, topTrailing, bottomLeading, bottomTrailing
+
+    var isLeading: Bool {
+        self == .topLeading || self == .bottomLeading
+    }
+
+    var isTop: Bool {
+        self == .topLeading || self == .topTrailing
+    }
+}
+
 struct WebBrowserWindowLayout: Codable {
     var x: Double
     var y: Double
@@ -42,14 +54,21 @@ struct WebBrowserWindowLayout: Codable {
                height: frame.height)
     }
 
-    static func resized(_ frame: CGRect, by translation: CGSize, in size: CGSize) -> CGRect {
-        CGRect(x: frame.minX,
-               y: frame.minY,
-               width: limit(frame.width + translation.width, minimum: 120, maximum: size.width - frame.minX),
-               height: limit(
-                   frame.height + translation.height,
-                   minimum: 90,
-                   maximum: size.height - frame.minY
-               ))
+    static func resized(_ frame: CGRect, by translation: CGSize, in size: CGSize,
+                        corner: WebBrowserResizeCorner = .bottomTrailing) -> CGRect
+    {
+        let left = corner.isLeading
+            ? limit(frame.minX + translation.width, minimum: 0, maximum: frame.maxX - min(120, size.width))
+            : frame.minX
+        let top = corner.isTop
+            ? limit(frame.minY + translation.height, minimum: 0, maximum: frame.maxY - min(90, size.height))
+            : frame.minY
+        let width = corner.isLeading
+            ? frame.maxX - left
+            : limit(frame.width + translation.width, minimum: 120, maximum: size.width - left)
+        let height = corner.isTop
+            ? frame.maxY - top
+            : limit(frame.height + translation.height, minimum: 90, maximum: size.height - top)
+        return CGRect(x: left, y: top, width: width, height: height)
     }
 }

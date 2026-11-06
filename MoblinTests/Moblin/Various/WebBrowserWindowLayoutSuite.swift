@@ -31,6 +31,29 @@ struct WebBrowserWindowLayoutSuite {
             == CGRect(x: 20, y: 30, width: 780, height: 370))
     }
 
+    @Test(arguments: WebBrowserResizeCorner.allCases)
+    func cornerResizeKeepsOppositeCornerFixed(corner: WebBrowserResizeCorner) {
+        let frame = CGRect(x: 100, y: 100, width: 240, height: 180)
+        let result = WebBrowserWindowLayout.resized(frame, by: CGSize(width: 20, height: 30),
+                                                    in: CGSize(width: 800, height: 600), corner: corner)
+        #expect(result.width == (corner.isLeading ? 220 : 260))
+        #expect(result.height == (corner.isTop ? 150 : 210))
+        #expect(corner.isLeading ? result.maxX == frame.maxX : result.minX == frame.minX)
+        #expect(corner.isTop ? result.maxY == frame.maxY : result.minY == frame.minY)
+    }
+
+    @Test
+    func topLeftResizeStopsAtScreenAndMinimumSize() {
+        let frame = CGRect(x: 100, y: 100, width: 240, height: 180)
+        let size = CGSize(width: 800, height: 600)
+        #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: -1000, height: -1000),
+                                               in: size, corner: .topLeading)
+                == CGRect(x: 0, y: 0, width: 340, height: 280))
+        #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: 1000, height: 1000),
+                                               in: size, corner: .topLeading)
+                == CGRect(x: 220, y: 190, width: 120, height: 90))
+    }
+
     @Test
     func rotationPreservesPlacementAndPreferredSize() {
         let landscape = CGSize(width: 800, height: 400)
