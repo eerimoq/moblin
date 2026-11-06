@@ -867,9 +867,7 @@ extension Model {
         var widgets: [CameraPreviewWidget] = []
         for widget in resolvedScene.localDrawnWidgets() where widget.widget.type == .videoSource {
             let videoSource = widget.widget.videoSource
-            guard let cameraId = videoSource.videoSource.getCaptureDeviceCameraId(),
-                  let device = AVCaptureDevice(uniqueID: cameraId)
-            else {
+            guard let device = getBuiltinCameraDevice(videoSource: videoSource.videoSource) else {
                 continue
             }
             var previewWidget = CameraPreviewWidget(
@@ -1863,12 +1861,19 @@ extension Model {
     }
 
     private func getBuiltinCameraDevices(videoSource: SettingsVideoSource, devices: inout [CaptureDevice]) {
-        if let cameraId = videoSource.getCaptureDeviceCameraId(),
-           let device = AVCaptureDevice(uniqueID: cameraId),
-           !devices.contains(where: { $0.device == device })
-        {
-            devices.append(makeCaptureDevice(device: device))
+        guard let device = getBuiltinCameraDevice(videoSource: videoSource),
+              !devices.contains(where: { $0.device == device })
+        else {
+            return
         }
+        devices.append(makeCaptureDevice(device: device))
+    }
+
+    func getBuiltinCameraDevice(videoSource: SettingsVideoSource) -> AVCaptureDevice? {
+        if let cameraId = videoSource.getCaptureDeviceCameraId() {
+            return AVCaptureDevice(uniqueID: cameraId)
+        }
+        return getBackLowEnergyCamera(cameraPosition: videoSource.cameraPosition)?.device
     }
 
     private func updateTimers(

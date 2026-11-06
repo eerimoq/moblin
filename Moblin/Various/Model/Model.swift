@@ -551,6 +551,7 @@ final class Model: NSObject, ObservableObject {
     let createSceneWizard = CreateSceneWizard()
     let zoom = Zoom()
     let camera = CameraState()
+    let cameraControls = CameraControls()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let musicPlaylist = MusicPlaylist()
     nonisolated(unsafe) var media: Media!
@@ -2852,83 +2853,76 @@ final class Model: NSObject, ObservableObject {
         return false
     }
 
-    func attachBackTripleLowEnergyCamera(force: Bool = true) {
-        cameraPosition = .back
-        lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.x = zoom.backX
-        guard let bestDevice = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back),
-              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+    func getBackLowEnergyCamera(
+        cameraPosition: SettingsSceneCameraPosition
+    ) -> (device: AVCaptureDevice, zoomRangeDevice: AVCaptureDevice)? {
+        let deviceType: AVCaptureDevice.DeviceType
+        switch cameraPosition {
+        case .backTripleLowEnergy:
+            deviceType = .builtInTripleCamera
+        case .backDualLowEnergy:
+            deviceType = .builtInDualCamera
+        case .backWideDualLowEnergy:
+            deviceType = .builtInDualWideCamera
+        default:
+            return nil
+        }
+        guard let zoomRangeDevice = AVCaptureDevice.default(deviceType, for: .video, position: .back),
+              let lastZoomFactor = zoomRangeDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
-            return
+            return nil
         }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        let device: AVCaptureDevice? = if zoom.backX < 1.0 {
-            AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
-        } else if zoom.backX < x {
-            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
-        } else {
-            AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+        let scale = zoomRangeDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
+        let switchOverX = (Float(truncating: lastZoomFactor) * scale).rounded()
+        let device: AVCaptureDevice? = switch cameraPosition {
+        case .backTripleLowEnergy:
+            if zoom.backX < 1.0 {
+                AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+            } else if zoom.backX < switchOverX {
+                AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+            } else {
+                AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+            }
+        case .backDualLowEnergy:
+            if zoom.backX < switchOverX {
+                AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+            } else {
+                AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+            }
+        case .backWideDualLowEnergy:
+            if zoom.backX < switchOverX {
+                AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+            } else {
+                AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+            }
+        default:
+            nil
         }
-        guard let device, let scene = getSelectedScene() else {
-            return
+        guard let device else {
+            return nil
         }
-        if !force, device == cameraDevice {
-            return
-        }
-        cameraDevice = device
-        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-        attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
+        return (device, zoomRangeDevice)
+    }
+
+    func attachBackTripleLowEnergyCamera(force: Bool = true) {
+        attachBackLowEnergyCamera(cameraPosition: .backTripleLowEnergy, force: force)
     }
 
     func attachBackDualLowEnergyCamera(force: Bool = true) {
-        cameraPosition = .back
-        lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.x = zoom.backX
-        guard let bestDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back),
-              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
-        else {
-            return
-        }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        let device: AVCaptureDevice? = if zoom.backX < x {
-            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
-        } else {
-            AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
-        }
-        guard let device, let scene = getSelectedScene() else {
-            return
-        }
-        if !force, device == cameraDevice {
-            return
-        }
-        cameraDevice = device
-        cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
-            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
-        attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
+        attachBackLowEnergyCamera(cameraPosition: .backDualLowEnergy, force: force)
     }
 
     func attachBackWideDualLowEnergyCamera(force: Bool = true) {
-        cameraPosition = .back
+        attachBackLowEnergyCamera(cameraPosition: .backWideDualLowEnergy, force: force)
+    }
+
+    private func attachBackLowEnergyCamera(cameraPosition: SettingsSceneCameraPosition, force: Bool) {
+        self.cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
         zoom.x = zoom.backX
-        guard let bestDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back),
-              let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
+        guard let (device, zoomRangeDevice) = getBackLowEnergyCamera(cameraPosition: cameraPosition),
+              let scene = getSelectedScene()
         else {
-            return
-        }
-        let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        let device: AVCaptureDevice? = if zoom.backX < x {
-            AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
-        } else {
-            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
-        }
-        guard let device, let scene = getSelectedScene() else {
             return
         }
         if !force, device == cameraDevice {
@@ -2936,14 +2930,13 @@ final class Model: NSObject, ObservableObject {
         }
         cameraDevice = device
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+        (cameraZoomXMinimum, cameraZoomXMaximum) = zoomRangeDevice
             .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene, resolver: makeSceneResolver())
     }
 
     func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position, resolver: SceneResolver) {
         cameraDevice = preferredCamera(position: position)
-        setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?
             .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
@@ -2955,7 +2948,10 @@ final class Model: NSObject, ObservableObject {
             zoom.x = zoom.backX
         case .front:
             updateFrontZoomSwitchTo()
-            zoom.x = zoom.frontX
+            zoom.x = database.zoom.switchToFront.enabled
+                ? zoom.frontX
+                : cameraDevice.flatMap { cameraControls.control(cameraId: $0.uniqueID).zoomX } ?? zoom.frontX
+            zoom.frontX = zoom.x
         default:
             break
         }
@@ -2996,13 +2992,8 @@ final class Model: NSObject, ObservableObject {
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoom.x) {
-                    self.setZoomXWhenInRange(x: x)
-                }
-                if let device = self.cameraDevice {
-                    self.setExposureAndIsoAfterCameraAttach(device: device)
-                    self.setWhiteBalanceAfterCameraAttach(device: device)
-                    self.updateImageButtonState()
+                for captureDevice in devices.devices {
+                    self.restoreCameraControls(device: captureDevice.device)
                 }
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime

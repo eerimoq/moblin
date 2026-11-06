@@ -107,6 +107,9 @@ extension Model {
     }
 
     func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
+        if let cameraDevice, cameraDevice.position != .back {
+            cameraControls.control(cameraId: cameraDevice.uniqueID).zoomX = x
+        }
         switch cameraPosition {
         case .back:
             zoom.backX = x
@@ -125,6 +128,12 @@ extension Model {
         if setPinch {
             zoom.xPinch = zoom.x
         }
+    }
+
+    func restoreCameraZoom(device: AVCaptureDevice, x: Float) {
+        let scale = device
+            .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera(position: device.position))
+        _ = media.setCameraZoomLevel(device: device, level: x / scale, rate: nil)
     }
 
     private func remoteControlZoomChanged() {
