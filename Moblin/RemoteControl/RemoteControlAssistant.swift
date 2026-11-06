@@ -132,6 +132,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setLive(on: on), onSuccess: onSuccess)
     }
 
+    func setTally(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setTally(on: on), onSuccess: onSuccess)
+    }
+
     func setPreviewStream(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setPreviewStream(on: on), onSuccess: onSuccess)
     }

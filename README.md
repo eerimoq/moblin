@@ -493,6 +493,35 @@ Messages passed to `onmessage` are defined by `Message` in
 
 # Development environment setup
 
+## Remote tally
+
+A studio or switcher integration can show a red border and an **ON AIR** label
+around the streamer's camera preview using the existing remote control API.
+The indicator is local to Moblin's screen and is not added to the outgoing video
+or recording. It represents the studio's use of this camera, independently of
+whether Moblin is streaming or recording.
+
+After connecting through the existing remote control protocol, check that
+`getSettings` returns `supportsTally: true`. Older versions omit this field.
+Send this request when the camera is on the studio's program output:
+
+```json
+{"request":{"id":1,"data":{"setTally":{"on":true}}}}
+```
+
+Refresh the request every 3 seconds while the camera remains on air. Each
+request has a 10-second lease. Send `on: false` as soon as the camera leaves
+program. A disconnected controller or expired lease clears that controller's
+assertion. If multiple controllers assert tally, the border remains visible
+until all assertions have cleared or expired. Tally is not saved across app
+launches. An absent indicator does not confirm that the camera is off air;
+the controller may also be disconnected.
+
+Both the streamer/assistant connection (including its existing authentication)
+and the existing web remote control WebSocket accept the request. This provides
+the API and on-device indicator; automatic mapping from a switcher's program
+sources is the responsibility of the external integration.
+
 ## Build the project
 
 Roughly the steps to setup Moblin's developement environment.

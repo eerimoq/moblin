@@ -745,7 +745,8 @@ extension Model {
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
             ),
-            moblinCloud: moblinCloud
+            moblinCloud: moblinCloud,
+            supportsTally: true
         )
     }
 }
@@ -887,6 +888,10 @@ extension Model {
 }
 
 extension Model: RemoteControlStreamerDelegate {
+    func remoteControlStreamerSetTally(on: Bool, sourceId: UUID) {
+        remoteControlTally.set(on: on, sourceId: sourceId)
+    }
+
     func remoteControlStreamerConnected() {
         useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
         let subTitle: String?
@@ -1550,6 +1555,10 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetLive(on: Bool) {
         remoteControlStreamerSetLive(on: on)
+    }
+
+    func remoteControlWebSetTally(on: Bool, sourceId: UUID) {
+        remoteControlTally.set(on: on, sourceId: sourceId)
     }
 
     func remoteControlWebSetPreviewStream(on: Bool) {

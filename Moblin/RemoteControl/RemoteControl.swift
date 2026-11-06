@@ -26,6 +26,7 @@ enum RemoteControlRequest: Codable {
     case getSettings
     case setRecord(on: Bool)
     case setLive(on: Bool)
+    case setTally(on: Bool)
     case setPreviewStream(on: Bool)
     case setZoom(x: Float)
     case setZoomPreset(id: UUID)
@@ -1070,6 +1071,7 @@ struct RemoteControlSettings: Codable {
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
     var moblinCloud: RemoteControlSettingsMoblinCloud?
+    var supportsTally: Bool?
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {

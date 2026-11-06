@@ -575,6 +575,7 @@ struct MainView: View {
                 )
                 .padding(.trailing, -1)
             }
+            RemoteControlTallyView(tally: model.remoteControlTally)
         }
         .gesture(
             MagnificationGesture()

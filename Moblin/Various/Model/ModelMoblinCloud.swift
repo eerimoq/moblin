@@ -525,6 +525,10 @@ class MoblinCloud {
 }
 
 extension MoblinCloud: RemoteControlStreamerDelegate {
+    func remoteControlStreamerSetTally(on: Bool, sourceId: UUID) {
+        model?.remoteControlTally.set(on: on, sourceId: sourceId)
+    }
+
     func remoteControlStreamerAppAttest(
         challenge: Data,
         onCompleted: @escaping (RemoteControlAppAttest?) -> Void

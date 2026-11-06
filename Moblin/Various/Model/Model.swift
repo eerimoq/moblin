@@ -563,6 +563,7 @@ final class Model: NSObject, ObservableObject {
     let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
+    let remoteControlTally = RemoteControlTally()
     let widgetOutlines = WidgetOutlines()
     let sceneEditorWidgetOutlines = WidgetOutlines()
     let sceneEditor = SceneEditor()
