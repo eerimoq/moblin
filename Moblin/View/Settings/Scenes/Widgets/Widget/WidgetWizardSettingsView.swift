@@ -194,12 +194,14 @@ struct WidgetWizardSettingsView: View {
                         WidgetWizardVTuberSettingsView(model: model,
                                                        database: database,
                                                        vTuber: createWidgetWizard.widget.vTuber,
+                                                       videoSources: model.videoSources,
                                                        createWidgetWizard: createWidgetWizard,
                                                        presentingCreateWizard: $presentingCreateWizard)
                     case .pngTuber:
                         WidgetWizardPngTuberSettingsView(model: model,
                                                          database: database,
                                                          pngTuber: createWidgetWizard.widget.pngTuber,
+                                                         videoSources: model.videoSources,
                                                          createWidgetWizard: createWidgetWizard,
                                                          presentingCreateWizard: $presentingCreateWizard)
                     case .wheelOfLuck:

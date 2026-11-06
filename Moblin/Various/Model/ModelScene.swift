@@ -15,6 +15,10 @@ class CreateWidgetWizard: ObservableObject {
         type = .text
         widget = .init(name: "")
         widget.text.formatString = ""
+        if !bestFrontCameraId.isEmpty {
+            widget.vTuber.videoSource.cameraPosition = .front
+            widget.pngTuber.videoSource.cameraPosition = .front
+        }
         let yes = SettingsWidgetWheelOfLuckOption()
         yes.text = String(localized: "Yes")
         let no = SettingsWidgetWheelOfLuckOption()
