@@ -26,19 +26,6 @@ struct WidgetShortcutView: View {
     }
 }
 
-struct ScenesShortcutView: View {
-    let model: Model
-    let database: Database
-
-    var body: some View {
-        NavigationLink {
-            ScenesSettingsView(model: model, database: database)
-        } label: {
-            Label("Scenes", systemImage: "photo.on.rectangle")
-        }
-    }
-}
-
 struct StreamingPlatformsShortcutView: View {
     let model: Model
     let stream: SettingsStream

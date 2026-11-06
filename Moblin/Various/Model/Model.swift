@@ -563,7 +563,6 @@ final class Model: NSObject, ObservableObject {
     let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
-    let widgetOutlines = WidgetOutlines()
     let sceneEditorWidgetOutlines = WidgetOutlines()
     let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
@@ -977,7 +976,6 @@ final class Model: NSObject, ObservableObject {
         } else {
             showingPanel = panel
         }
-        updateWidgetOutlinesForShowingPanel()
         panelHidden = false
         for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {

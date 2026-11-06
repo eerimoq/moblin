@@ -32,6 +32,38 @@ private func diagonalDirection(_ alignment: SettingsAlignment) -> CGSize {
     CGSize(width: alignment.isLeft() ? 1 : -1, height: alignment.isTop() ? 1 : -1)
 }
 
+private func widgetOutlineViewRect(_ rect: CGRect, _ canvasSize: CGSize, _ mirror: Bool,
+                                   _ size: CGSize) -> CGRect
+{
+    let scale = canvasSize.width / size.width
+    let x = mirror ? canvasSize.width - rect.maxX : rect.minX
+    return CGRect(x: x / scale,
+                  y: rect.minY / scale,
+                  width: rect.width / scale,
+                  height: rect.height / scale)
+}
+
+private struct WidgetOutlineLabelView: View {
+    @ObservedObject var widget: SettingsWidget
+    var selected = false
+
+    var body: some View {
+        HStack(spacing: 3) {
+            Image(systemName: widget.image())
+            Text(widget.name)
+                .lineLimit(1)
+        }
+        .font(.footnote)
+        .fontWeight(selected ? .semibold : .regular)
+        .foregroundStyle(.white)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 2)
+        .background(selected ? Color.accentColor : .black.opacity(0.6))
+        .cornerRadius(3)
+        .fixedSize()
+    }
+}
+
 private struct SceneEditorCanvasView: View {
     let model: Model
     @ObservedObject var widgetOutlines: WidgetOutlines

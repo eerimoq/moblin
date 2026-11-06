@@ -3,30 +3,19 @@ import SwiftUI
 
 private struct WidgetView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
-    @ObservedObject var sceneWidget: SettingsSceneWidget
 
     var body: some View {
-        NavigationLink {
-            SceneWidgetSettingsView(
-                model: model,
-                database: database,
-                sceneWidget: sceneWidget,
-                widget: widget
+        Toggle(isOn: $widget.enabled) {
+            IconAndTextView(
+                image: widget.image(),
+                text: widget.name,
+                longDivider: true
             )
-        } label: {
-            Toggle(isOn: $widget.enabled) {
-                IconAndTextView(
-                    image: widget.image(),
-                    text: widget.name,
-                    longDivider: true
-                )
-            }
-            .onChange(of: widget.enabled) { _ in
-                model.reloadSpeechToText()
-                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
-            }
+        }
+        .onChange(of: widget.enabled) { _ in
+            model.reloadSpeechToText()
+            model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
         }
         switch widget.type {
         case .text:
@@ -56,20 +45,18 @@ struct QuickButtonSceneWidgetsView: View {
     @ObservedObject var sceneSelector: SceneSelector
 
     var body: some View {
+        let widgets = model.sceneWidgetsInSelectedScene()
         Form {
             Section {
-                List {
-                    ForEach(model.sceneWidgetsInSelectedScene()) { widget in
-                        WidgetView(model: model,
-                                   database: model.database,
-                                   widget: widget.widget,
-                                   sceneWidget: widget.sceneWidget)
+                if widgets.isEmpty {
+                    Text("No widgets in this scene")
+                } else {
+                    List {
+                        ForEach(widgets) {
+                            WidgetView(model: model, widget: $0.widget)
+                        }
                     }
                 }
-            }
-            OpenSceneEditorButtonView(model: model)
-            ShortcutSectionView {
-                ScenesShortcutView(model: model, database: model.database)
             }
         }
         .navigationTitle("Scene widgets")
