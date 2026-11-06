@@ -17,6 +17,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetBitratePreset(id: UUID)
     func remoteControlStreamerSetRecord(on: Bool)
     func remoteControlStreamerSetLive(on: Bool)
+    func remoteControlStreamerSetTally(on: Bool, sourceId: UUID)
     func remoteControlStreamerSetPreviewStream(on: Bool)
     func remoteControlStreamerSetDebugLogging(on: Bool)
     func remoteControlStreamerSetZoom(x: Float)
@@ -104,6 +105,7 @@ class RemoteControlStreamer {
     private var gotPong = true
     private var wrongPassword = false
     private let streamerId: String
+    private let tallySourceId = UUID()
 
     init(clientUrl: URL,
          password: String,
@@ -145,6 +147,7 @@ class RemoteControlStreamer {
 
     private func handleDisconnected() {
         stopKeepAlive()
+        delegate?.remoteControlStreamerSetTally(on: false, sourceId: tallySourceId)
         let wasConnected = connected
         connected = false
         if !wrongPassword {
@@ -357,6 +360,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setLive(on: on):
             delegate.remoteControlStreamerSetLive(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setTally(on: on):
+            delegate.remoteControlStreamerSetTally(on: on, sourceId: tallySourceId)
             sendEmptyOkResponse(id: id)
         case let .setPreviewStream(on: on):
             delegate.remoteControlStreamerSetPreviewStream(on: on)

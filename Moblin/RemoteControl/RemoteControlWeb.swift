@@ -14,6 +14,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetLive(on: Bool)
+    func remoteControlWebSetTally(on: Bool, sourceId: UUID)
     func remoteControlWebSetPreviewStream(on: Bool)
     func remoteControlWebSetZoom(x: Float)
     func remoteControlWebSetZoomPreset(id: UUID)
@@ -103,6 +104,7 @@ class RemoteControlWeb {
     private weak let delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
     private var connectionsRequestingPreview: Set<ObjectIdentifier> = []
+    private var tallySources: [ObjectIdentifier: UUID] = [:]
 
     init(delegate: any RemoteControlWebDelegate) {
         self.delegate = delegate
@@ -207,6 +209,10 @@ class RemoteControlWeb {
     }
 
     private func stopWebsocketServer() {
+        for sourceId in tallySources.values {
+            delegate?.remoteControlWebSetTally(on: false, sourceId: sourceId)
+        }
+        tallySources.removeAll()
         for connection in connections {
             connection.cancel()
         }
@@ -361,6 +367,9 @@ class RemoteControlWeb {
         connections.removeAll(where: { $0 === connection })
         delegate?.remoteControlWebDisconnected()
         let id = ObjectIdentifier(connection)
+        if let sourceId = tallySources.removeValue(forKey: id) {
+            delegate?.remoteControlWebSetTally(on: false, sourceId: sourceId)
+        }
         if connectionsRequestingPreview.contains(id) {
             connectionsRequestingPreview.remove(id)
             if connectionsRequestingPreview.isEmpty {
@@ -419,6 +428,12 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setLive(on: on):
             delegate.remoteControlWebSetLive(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setTally(on: on):
+            let connectionId = ObjectIdentifier(connection)
+            let sourceId = tallySources[connectionId] ?? UUID()
+            tallySources[connectionId] = sourceId
+            delegate.remoteControlWebSetTally(on: on, sourceId: sourceId)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setPreviewStream(on: on):
             delegate.remoteControlWebSetPreviewStream(on: on)
