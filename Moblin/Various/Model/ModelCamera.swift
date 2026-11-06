@@ -549,6 +549,8 @@ extension Model {
                 startObservingWhiteBalance()
             }
             updateImageButtonState()
+        } else if device.position == .back {
+            restoreCameraZoom(device: device, x: zoom.backX)
         } else if let zoomX = control.zoomX {
             restoreCameraZoom(device: device, x: zoomX)
         }
@@ -1047,11 +1049,14 @@ extension Model {
         case let .external(id: id, name: _):
             getBuiltinCameraId(deviceUniqueId: id)
         case .backDualLowEnergy:
-            nil
+            getBackLowEnergyCamera(cameraPosition: .backDualLowEnergy)
+                .flatMap { getBuiltinCameraId(deviceUniqueId: $0.device.uniqueID) }
         case .backTripleLowEnergy:
-            nil
+            getBackLowEnergyCamera(cameraPosition: .backTripleLowEnergy)
+                .flatMap { getBuiltinCameraId(deviceUniqueId: $0.device.uniqueID) }
         case .backWideDualLowEnergy:
-            nil
+            getBackLowEnergyCamera(cameraPosition: .backWideDualLowEnergy)
+                .flatMap { getBuiltinCameraId(deviceUniqueId: $0.device.uniqueID) }
         case .none:
             noneCameraId
         }

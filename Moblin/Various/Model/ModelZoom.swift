@@ -107,7 +107,7 @@ extension Model {
     }
 
     func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
-        if let cameraDevice {
+        if let cameraDevice, cameraDevice.position != .back {
             cameraControls.control(cameraId: cameraDevice.uniqueID).zoomX = x
         }
         switch cameraPosition {
