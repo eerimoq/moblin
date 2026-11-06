@@ -136,6 +136,8 @@ private struct WebBrowserSmallView: View {
     @ObservedObject var database: Database
     @ObservedObject var webBrowser: WebBrowserSettings
     @ObservedObject var webBrowserState: WebBrowserState
+    @State private var isEditing = true
+    @State private var hasShownHint = false
     @GestureState private var moveTranslation = CGSize.zero
     @GestureState private var resizeTranslation = CGSize.zero
 
@@ -164,17 +166,69 @@ private struct WebBrowserSmallView: View {
             }
     }
 
-    private func controls(frame: CGRect, size: CGSize) -> some View {
-        HStack(spacing: 0) {
-            Image(systemName: "line.3.horizontal")
-                .frame(maxWidth: .infinity)
-                .frame(height: 32)
+    private func finishEditing() {
+        isEditing = false
+        if !hasShownHint {
+            hasShownHint = true
+            model.makeToast(title: String(localized: "Hold the browser to adjust it"))
+        }
+    }
+
+    private func controls(frame: CGRect, displayed: CGRect, size: CGSize) -> some View {
+        ZStack {
+            Color.black.opacity(0.35)
                 .contentShape(Rectangle())
                 .gesture(moveGesture(frame: frame, size: size))
                 .accessibilityLabel("Move browser")
-                .help("Move browser")
-            Image(systemName: "arrow.down.right")
-                .frame(width: 32, height: 32)
+                .overlay {
+                    VStack(spacing: 8) {
+                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                            .font(.title2)
+                        if displayed.width >= 200, displayed.height >= 160 {
+                            Text("Drag to move")
+                                .font(.headline)
+                            Text("Drag the corner to resize")
+                                .font(.caption)
+                        }
+                    }
+                    .shadow(radius: 2)
+                    .allowsHitTesting(false)
+                }
+            RoundedRectangle(cornerRadius: 7)
+                .strokeBorder(.white, lineWidth: 2)
+                .allowsHitTesting(false)
+        }
+        .overlay(alignment: .topLeading) {
+            Menu {
+                Button("Expand browser", systemImage: "arrow.up.left.and.arrow.down.right") {
+                    webBrowserState.isSmall = false
+                }
+                Button("Reset layout", systemImage: "arrow.counterclockwise") {
+                    webBrowser.smallWindow = nil
+                    model.storeSettings()
+                }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .frame(width: 44, height: 44)
+                    .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 7))
+            }
+            .accessibilityLabel("Browser options")
+        }
+        .overlay(alignment: .topTrailing) {
+            Button(action: finishEditing) {
+                Text("Done")
+                    .font(.callout.bold())
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 44)
+                    .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 7))
+            }
+            .buttonStyle(.plain)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                .font(.title3.bold())
+                .frame(width: 44, height: 44)
+                .background(.black.opacity(0.8), in: RoundedRectangle(cornerRadius: 7))
                 .contentShape(Rectangle())
                 .gesture(resizeGesture(frame: frame, size: size))
                 .accessibilityLabel("Resize browser")
@@ -185,25 +239,9 @@ private struct WebBrowserSmallView: View {
                                                                in: size),
                          in: size)
                 }
-                .help("Resize browser")
-            Button {
-                webBrowserState.isSmall = false
-            } label: {
-                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                    .frame(width: 32, height: 32)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Expand browser")
-            .help("Expand browser")
+                .help("Drag the corner to resize")
         }
-        .foregroundStyle(.primary)
-        .background(.regularMaterial)
-        .contextMenu {
-            Button("Reset layout") {
-                webBrowser.smallWindow = nil
-                model.storeSettings()
-            }
-        }
+        .foregroundStyle(.white)
     }
 
     var body: some View {
@@ -213,14 +251,24 @@ private struct WebBrowserSmallView: View {
                 ?? WebBrowserWindowLayout.defaultFrame(in: metrics.size, bottomInset: bottomInset)
             let moved = WebBrowserWindowLayout.moved(frame, by: moveTranslation, in: metrics.size)
             let displayed = WebBrowserWindowLayout.resized(moved, by: resizeTranslation, in: metrics.size)
-            VStack(spacing: 0) {
-                controls(frame: frame, size: metrics.size)
-                WebView(model: model)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .frame(width: displayed.width, height: displayed.height)
-            .clipShape(RoundedRectangle(cornerRadius: 7))
-            .position(x: displayed.midX, y: displayed.midY)
+            WebView(model: model)
+                .allowsHitTesting(!isEditing)
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.6)
+                        .onEnded { _ in isEditing = true },
+                    including: isEditing ? .none : .all
+                )
+                .frame(width: displayed.width, height: displayed.height)
+                .overlay {
+                    if isEditing {
+                        controls(frame: frame, displayed: displayed, size: metrics.size)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 7))
+                .accessibilityAction(named: Text("Adjust browser")) {
+                    isEditing = true
+                }
+                .position(x: displayed.midX, y: displayed.midY)
         }
     }
 }
