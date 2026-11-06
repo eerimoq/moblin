@@ -2943,7 +2943,6 @@ final class Model: NSObject, ObservableObject {
 
     func attachCamera(scene: SettingsScene, position: AVCaptureDevice.Position, resolver: SceneResolver) {
         cameraDevice = preferredCamera(position: position)
-        setFocusAfterCameraAttach()
         cameraZoomLevelToXScale = cameraDevice?
             .getZoomFactorScale(hasUltraWideCamera: hasUltraWideCamera(position: position)) ?? 1.0
         (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice?
@@ -3002,19 +3001,7 @@ final class Model: NSObject, ObservableObject {
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoom.x) {
-                    self.setZoomXWhenInRange(x: x)
-                }
-                self.setFocusAfterCameraAttach()
-                if let device = self.cameraDevice {
-                    self.setExposureAndIsoAfterCameraAttach(device: device)
-                    self.setWhiteBalanceAfterCameraAttach(device: device)
-                    self.updateImageButtonState()
-                    self.restoreCameraControls(device: device)
-                }
-                for captureDevice in devices.devices
-                    where captureDevice.device.uniqueID != self.cameraDevice?.uniqueID
-                {
+                for captureDevice in devices.devices {
                     self.restoreCameraControls(device: captureDevice.device)
                 }
                 self.lastAttachCompletedTime = .now
