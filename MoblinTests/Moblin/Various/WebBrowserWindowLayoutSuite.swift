@@ -26,16 +26,16 @@ struct WebBrowserWindowLayoutSuite {
         #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: 50, height: -100), in: size)
             == CGRect(x: 20, y: 30, width: 300, height: 150))
         #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: -1000, height: -1000), in: size)
-            == CGRect(x: 20, y: 30, width: 120, height: 90))
+            == CGRect(x: 20, y: 30, width: 120, height: 100))
         #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: 1000, height: 1000), in: size)
             == CGRect(x: 20, y: 30, width: 780, height: 370))
     }
 
-    @Test(arguments: WebBrowserResizeCorner.allCases)
-    func cornerResizeKeepsOppositeCornerFixed(corner: WebBrowserResizeCorner) {
+    @Test(arguments: [WebBrowserResizeHandle.topLeading, .topTrailing, .bottomLeading, .bottomTrailing])
+    func cornerResizeKeepsOppositeCornerFixed(corner: WebBrowserResizeHandle) {
         let frame = CGRect(x: 100, y: 100, width: 240, height: 180)
         let result = WebBrowserWindowLayout.resized(frame, by: CGSize(width: 20, height: 30),
-                                                    in: CGSize(width: 800, height: 600), corner: corner)
+                                                    in: CGSize(width: 800, height: 600), handle: corner)
         #expect(result.width == (corner.isLeading ? 220 : 260))
         #expect(result.height == (corner.isTop ? 150 : 210))
         #expect(corner.isLeading ? result.maxX == frame.maxX : result.minX == frame.minX)
@@ -47,11 +47,40 @@ struct WebBrowserWindowLayoutSuite {
         let frame = CGRect(x: 100, y: 100, width: 240, height: 180)
         let size = CGSize(width: 800, height: 600)
         #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: -1000, height: -1000),
-                                               in: size, corner: .topLeading)
+                                               in: size, handle: .topLeading)
                 == CGRect(x: 0, y: 0, width: 340, height: 280))
         #expect(WebBrowserWindowLayout.resized(frame, by: CGSize(width: 1000, height: 1000),
-                                               in: size, corner: .topLeading)
-                == CGRect(x: 220, y: 190, width: 120, height: 90))
+                                               in: size, handle: .topLeading)
+                == CGRect(x: 220, y: 180, width: 120, height: 100))
+    }
+
+    @Test(arguments: [WebBrowserResizeHandle.leading, .trailing, .top, .bottom])
+    func edgeResizeChangesOnlyOneDimension(handle: WebBrowserResizeHandle) {
+        let frame = CGRect(x: 100, y: 100, width: 240, height: 180)
+        let result = WebBrowserWindowLayout.resized(frame, by: CGSize(width: 20, height: 30),
+                                                    in: CGSize(width: 800, height: 600), handle: handle)
+        if handle == .leading || handle == .trailing {
+            #expect(result.minY == frame.minY && result.height == frame.height)
+            #expect(result.width == (handle.isLeading ? 220 : 260))
+            #expect(handle.isLeading ? result.maxX == frame.maxX : result.minX == frame.minX)
+        } else {
+            #expect(result.minX == frame.minX && result.width == frame.width)
+            #expect(result.height == (handle.isTop ? 150 : 210))
+            #expect(handle.isTop ? result.maxY == frame.maxY : result.minY == frame.minY)
+        }
+    }
+
+    @Test
+    func borderHitRegionsSelectEdgesAndCorners() {
+        let size = CGSize(width: 240, height: 180)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 5, y: 5), in: size) == .topLeading)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 235, y: 5), in: size) == .topTrailing)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 5, y: 175), in: size) == .bottomLeading)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 235, y: 175), in: size) == .bottomTrailing)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 5, y: 90), in: size) == .leading)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 235, y: 90), in: size) == .trailing)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 120, y: 5), in: size) == .top)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 120, y: 175), in: size) == .bottom)
     }
 
     @Test
