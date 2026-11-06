@@ -252,6 +252,73 @@ struct WidgetNameView: View {
     }
 }
 
+struct WidgetSettingsSectionsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        Section {
+            NameEditView(name: $widget.name, existingNames: database.widgets)
+        }
+        switch widget.type {
+        case .image:
+            WidgetImageSettingsView(model: model, widget: widget)
+        case .browser:
+            WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
+        case .text:
+            WidgetTextSettingsView(widget: widget, text: widget.text)
+        case .crop:
+            WidgetCropSettingsView(widget: widget)
+        case .map:
+            WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
+        case .scene:
+            WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
+        case .slideshow:
+            WidgetSlideshowSettingsView(widget: widget)
+        case .qrCode:
+            WidgetQrCodeSettingsView(model: model, widget: widget)
+        case .alerts:
+            WidgetAlertsSettingsView(model: model, widget: widget)
+        case .videoSource:
+            WidgetVideoSourceSettingsView(widget: widget,
+                                          videoSource: widget.videoSource,
+                                          videoSources: model.videoSources)
+        case .scoreboard:
+            WidgetScoreboardSettingsView(model: model,
+                                         widget: widget,
+                                         scoreboard: widget.scoreboard,
+                                         web: database.remoteControl.web)
+        case .vTuber:
+            WidgetVTuberSettingsView(model: model,
+                                     widget: widget,
+                                     vTuber: widget.vTuber,
+                                     videoSources: model.videoSources)
+        case .pngTuber:
+            WidgetPngTuberSettingsView(model: model,
+                                       widget: widget,
+                                       pngTuber: widget.pngTuber,
+                                       videoSources: model.videoSources)
+        case .snapshot:
+            WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
+        case .chat:
+            WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
+        case .chatEmoteCombo:
+            WidgetChatEmoteComboSettingsView(
+                model: model,
+                widget: widget,
+                chatEmoteCombo: widget.chatEmoteCombo
+            )
+        case .wheelOfLuck:
+            WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
+        case .bingoCard:
+            WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
+        case .pomodoroTimer:
+            WidgetPomodoroTimerSettingsView(model: model, pomodoroTimer: widget.pomodoroTimer)
+        }
+    }
+}
+
 struct WidgetSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -259,64 +326,7 @@ struct WidgetSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                NameEditView(name: $widget.name, existingNames: database.widgets)
-            }
-            switch widget.type {
-            case .image:
-                WidgetImageSettingsView(model: model, widget: widget)
-            case .browser:
-                WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
-            case .text:
-                WidgetTextSettingsView(widget: widget, text: widget.text)
-            case .crop:
-                WidgetCropSettingsView(widget: widget)
-            case .map:
-                WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
-            case .scene:
-                WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
-            case .slideshow:
-                WidgetSlideshowSettingsView(widget: widget)
-            case .qrCode:
-                WidgetQrCodeSettingsView(model: model, widget: widget)
-            case .alerts:
-                WidgetAlertsSettingsView(model: model, widget: widget)
-            case .videoSource:
-                WidgetVideoSourceSettingsView(widget: widget,
-                                              videoSource: widget.videoSource,
-                                              videoSources: model.videoSources)
-            case .scoreboard:
-                WidgetScoreboardSettingsView(model: model,
-                                             widget: widget,
-                                             scoreboard: widget.scoreboard,
-                                             web: database.remoteControl.web)
-            case .vTuber:
-                WidgetVTuberSettingsView(model: model,
-                                         widget: widget,
-                                         vTuber: widget.vTuber,
-                                         videoSources: model.videoSources)
-            case .pngTuber:
-                WidgetPngTuberSettingsView(model: model,
-                                           widget: widget,
-                                           pngTuber: widget.pngTuber,
-                                           videoSources: model.videoSources)
-            case .snapshot:
-                WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
-            case .chat:
-                WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
-            case .chatEmoteCombo:
-                WidgetChatEmoteComboSettingsView(
-                    model: model,
-                    widget: widget,
-                    chatEmoteCombo: widget.chatEmoteCombo
-                )
-            case .wheelOfLuck:
-                WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
-            case .bingoCard:
-                WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
-            case .pomodoroTimer:
-                WidgetPomodoroTimerSettingsView(model: model, pomodoroTimer: widget.pomodoroTimer)
-            }
+            WidgetSettingsSectionsView(model: model, database: database, widget: widget)
         }
         .navigationTitle("\(widget.type.toString()) widget")
     }

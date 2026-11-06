@@ -4,7 +4,7 @@ struct SceneWidgetSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var sceneWidget: SettingsSceneWidget
-    let widget: SettingsWidget
+    @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         Form {
@@ -13,14 +13,7 @@ struct SceneWidgetSettingsView: View {
                              layout: $sceneWidget.layout,
                              widget: widget,
                              numericInput: $database.sceneNumericInput)
-            ShortcutSectionView {
-                WidgetShortcutView(model: model, database: model.database, widget: widget)
-                if widget.type == .scene,
-                   let scene = model.database.findScene(id: widget.scene.sceneId)
-                {
-                    SceneShortcutView(database: model.database, scene: scene)
-                }
-            }
+            WidgetSettingsSectionsView(model: model, database: database, widget: widget)
         }
         .navigationTitle(widget.name)
     }
