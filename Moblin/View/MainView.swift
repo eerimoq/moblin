@@ -525,6 +525,7 @@ struct MainView: View {
                     }
                 StreamOverlayTapGridView(camera: model.camera, size: layout.size)
                 browserWidgets(streamSize: layout.size)
+                TallyView(tally: model.tally)
             }
             .frame(width: layout.size.width, height: layout.size.height)
             .offset(layout.offset)
@@ -534,7 +535,6 @@ struct MainView: View {
     private func streamArea() -> some View {
         ZStack {
             streamViewWithWidgets()
-            TallyView(tally: model.tally)
             GeometryReader { metrics in
                 StreamOverlayView(streamOverlay: model.streamOverlay,
                                   chatSettings: model.database.chat,
