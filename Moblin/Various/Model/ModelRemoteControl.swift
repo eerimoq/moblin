@@ -910,6 +910,7 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerDisconnected() {
         makeToast(title: String(localized: "Remote control assistant disconnected"))
         setGimbalMovement(x: 0, y: 0)
+        tally.hide()
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
         remoteControlStreamerStopStats()
@@ -962,6 +963,14 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetLive(on: Bool) {
         remoteControlSetLive(on: on)
+    }
+
+    func remoteControlStreamerShowTally(message: String, background: RgbColor, foreground: RgbColor) {
+        tally.show(message: message, background: background, foreground: foreground)
+    }
+
+    func remoteControlStreamerHideTally() {
+        tally.hide()
     }
 
     func remoteControlStreamerSetPreviewStream(on: Bool) {
@@ -1509,6 +1518,7 @@ extension Model: RemoteControlAssistantDelegate {
 extension Model: RemoteControlWebDelegate {
     func remoteControlWebDisconnected() {
         setGimbalMovement(x: 0, y: 0)
+        tally.hide()
     }
 
     func remoteControlWebConnected() {
@@ -1550,6 +1560,14 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetLive(on: Bool) {
         remoteControlStreamerSetLive(on: on)
+    }
+
+    func remoteControlWebShowTally(message: String, background: RgbColor, foreground: RgbColor) {
+        remoteControlStreamerShowTally(message: message, background: background, foreground: foreground)
+    }
+
+    func remoteControlWebHideTally() {
+        remoteControlStreamerHideTally()
     }
 
     func remoteControlWebSetPreviewStream(on: Bool) {

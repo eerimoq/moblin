@@ -545,6 +545,7 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
     func remoteControlStreamerDisconnected() {
         setRequestingStatus(false)
         setRequestingPreview(false)
+        model?.tally.hide()
         model?.updateMoblinCloudStatus()
     }
 
@@ -595,6 +596,14 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetLive(on: Bool) {
         model?.remoteControlSetLive(on: on)
+    }
+
+    func remoteControlStreamerShowTally(message: String, background: RgbColor, foreground: RgbColor) {
+        model?.tally.show(message: message, background: background, foreground: foreground)
+    }
+
+    func remoteControlStreamerHideTally() {
+        model?.tally.hide()
     }
 
     func remoteControlStreamerSetPreviewStream(on: Bool) {

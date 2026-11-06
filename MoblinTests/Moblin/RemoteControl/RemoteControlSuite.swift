@@ -19,6 +19,51 @@ struct RemoteControlSuite {
     }
 
     @Test
+    func tallyRequests() throws {
+        #expect(try encode(.showTally(
+            message: "On air",
+            background: RgbColor(red: 255, green: 0, blue: 0),
+            foreground: .white
+        )) == """
+        {"showTally":{"background":{"blue":0,"green":0,"red":255},\
+        "foreground":{"blue":255,"green":255,"red":255},"message":"On air"}}
+        """)
+        #expect(try encode(.hideTally) == #"{"hideTally":{}}"#)
+        let request = try JSONDecoder().decode(
+            RemoteControlRequest.self,
+            from: Data("""
+            {"showTally":{"message":"Hi","background":{"red":1,"green":2,"blue":3},
+            "foreground":{"red":4,"green":5,"blue":6}}}
+            """.utf8)
+        )
+        guard case let .showTally(message: message, background: background, foreground: foreground) = request
+        else {
+            Issue.record("not a tally")
+            return
+        }
+        #expect(background == RgbColor(red: 1, green: 2, blue: 3))
+        #expect(foreground == RgbColor(red: 4, green: 5, blue: 6))
+        #expect(message == "Hi")
+    }
+
+    @Test
+    @MainActor
+    func tallyShowAndHide() {
+        let tally = Tally()
+        #expect(tally.state == nil)
+        tally.show(message: "Preview", background: .white, foreground: .black)
+        #expect(tally.state?.background == .white)
+        #expect(tally.state?.foreground == .black)
+        #expect(tally.state?.message == "Preview")
+        tally.show(message: "Program", background: .black, foreground: .white)
+        #expect(tally.state?.background == .black)
+        #expect(tally.state?.foreground == .white)
+        #expect(tally.state?.message == "Program")
+        tally.hide()
+        #expect(tally.state == nil)
+    }
+
+    @Test
     func sendMessageRequest() throws {
         #expect(try encode(.sendMessage(name: nil, text: "Hello")) == #"{"sendMessage":{"text":"Hello"}}"#)
         #expect(try encode(.sendMessage(name: "Erik", text: "Hello")) ==

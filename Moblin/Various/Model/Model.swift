@@ -536,6 +536,7 @@ final class Model: NSObject, ObservableObject {
     let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
+    let tally = Tally()
     let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
     let toast = Toast()

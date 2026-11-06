@@ -14,6 +14,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetLive(on: Bool)
+    func remoteControlWebShowTally(message: String, background: RgbColor, foreground: RgbColor)
+    func remoteControlWebHideTally()
     func remoteControlWebSetPreviewStream(on: Bool)
     func remoteControlWebSetZoom(x: Float)
     func remoteControlWebSetZoomPreset(id: UUID)
@@ -208,6 +210,7 @@ class RemoteControlWeb {
 
     private func stopWebsocketServer() {
         for connection in connections {
+            delegate?.remoteControlWebDisconnected()
             connection.cancel()
         }
         connections.removeAll()
@@ -419,6 +422,14 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setLive(on: on):
             delegate.remoteControlWebSetLive(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .showTally(message: message, background: background, foreground: foreground):
+            delegate.remoteControlWebShowTally(message: message,
+                                               background: background,
+                                               foreground: foreground)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .hideTally:
+            delegate.remoteControlWebHideTally()
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setPreviewStream(on: on):
             delegate.remoteControlWebSetPreviewStream(on: on)

@@ -91,6 +91,8 @@ enum RemoteControlRequest: Codable {
     case getVideoSourceSnapshot(id: UUID)
     case setMoblinCloudAlertsWidget(id: UUID?)
     case setMoblinCloudWheelOfLuckWidget(id: UUID?)
+    case showTally(message: String, background: RgbColor, foreground: RgbColor)
+    case hideTally
 }
 
 enum RemoteControlTipKind: Codable {

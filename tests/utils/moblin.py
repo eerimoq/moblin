@@ -448,6 +448,14 @@ class Moblin:
     def end(self):
         self._request({"setLive": {"on": False}})
 
+    def show_tally(self, message: str, background: dict[str, int], foreground: dict[str, int]) -> dict:
+        return self._request(
+            {"showTally": {"message": message, "background": background, "foreground": foreground}}
+        )["result"]
+
+    def hide_tally(self) -> dict:
+        return self._request({"hideTally": {}})["result"]
+
     def start_recording(self):
         self._request({"setRecord": {"on": True}})
 

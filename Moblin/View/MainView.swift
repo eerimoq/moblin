@@ -534,6 +534,7 @@ struct MainView: View {
     private func streamArea() -> some View {
         ZStack {
             streamViewWithWidgets()
+            TallyView(tally: model.tally)
             GeometryReader { metrics in
                 StreamOverlayView(streamOverlay: model.streamOverlay,
                                   chatSettings: model.database.chat,

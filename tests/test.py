@@ -14,6 +14,7 @@ from .suites import scenes
 from .suites import settings
 from .suites import stream
 from .suites import talkback
+from .suites import tally
 from .suites import web_remote_control
 from .utils.runner import create_parser
 from .utils.runner import run
@@ -30,6 +31,7 @@ def create_suites(moblin, _):
         colors.tests(moblin),
         settings.tests(moblin),
         stream.tests(moblin),
+        tally.tests(moblin),
         browser_widget.tests(moblin),
         chat.tests(moblin),
         dji_camera.tests(moblin),
