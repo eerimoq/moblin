@@ -66,7 +66,7 @@ private struct WidgetOutlineLabelView: View {
 
 private struct SceneEditorCanvasView: View {
     let model: Model
-    @ObservedObject var widgetOutlines: WidgetOutlines
+    @ObservedObject var sceneEditor: SceneEditor
     let mirror: Bool
     let size: CGSize
     @ObservedObject var selection: SceneEditorSelection
@@ -78,7 +78,7 @@ private struct SceneEditorCanvasView: View {
     }
 
     private var canvasSize: CGSize {
-        widgetOutlines.canvasSize
+        sceneEditor.canvasSize
     }
 
     private var scale: Double {
@@ -90,7 +90,7 @@ private struct SceneEditorCanvasView: View {
     }
 
     private var editableOutlines: [WidgetOutline] {
-        widgetOutlines.outlines.filter(\.inScene)
+        sceneEditor.outlines.filter(\.inScene)
     }
 
     private var selectedOutline: WidgetOutline? {
@@ -220,7 +220,7 @@ private struct SceneEditorCanvasView: View {
         if movesDiagonally(layout) {
             edit.rect.origin = diagonalPosition(layout.alignment, rect.size, position, snapThreshold)
         } else {
-            let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
+            let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
             let x = if layout.alignment.isHorizontalCenter() {
                 SceneEditorSnap(position: rect.minX)
             } else {
@@ -257,7 +257,7 @@ private struct SceneEditorCanvasView: View {
         let fixed = fixedPoint(edit.outline)
         let factors = 1 / edit.startSize ... 100 / edit.startSize
         var factor = factor.clamped(to: factors)
-        let others = widgetOutlines.outlines.filter { $0.id != edit.outline.id }
+        let others = sceneEditor.outlines.filter { $0.id != edit.outline.id }
         let threshold = snapThreshold / distance(handlePoint(edit.outline, rect), fixed)
         let x = sceneEditorSnapResizeAxis([rect.minX, rect.maxX, rect.midX],
                                           fixed.x,
@@ -408,10 +408,10 @@ private struct SceneEditorCanvasView: View {
                 .onTapGesture(coordinateSpace: .local) { location in
                     selectOutline(at: location)
                 }
-            ForEach(widgetOutlines.outlines.filter { $0.id != selectedId }) { outline in
+            ForEach(sceneEditor.outlines.filter { $0.id != selectedId }) { outline in
                 outlineView(outline)
             }
-            if let outline = widgetOutlines.outlines.first(where: { $0.id == selectedId }) {
+            if let outline = sceneEditor.outlines.first(where: { $0.id == selectedId }) {
                 outlineView(outline)
             }
             guidesView()
@@ -795,7 +795,6 @@ struct SceneEditorView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var sceneSelector: SceneSelector
-    @ObservedObject var widgetOutlines: WidgetOutlines
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var sceneEditor: SceneEditor
     @StateObject private var selection = SceneEditorSelection()
@@ -811,7 +810,7 @@ struct SceneEditorView: View {
     }
 
     private func fitSize(_ available: CGSize) -> CGSize {
-        let canvasSize = widgetOutlines.canvasSize
+        let canvasSize = sceneEditor.canvasSize
         guard available.width > 0, available.height > 0, canvasSize.width > 0, canvasSize.height > 0 else {
             return .zero
         }
@@ -820,7 +819,7 @@ struct SceneEditorView: View {
     }
 
     private func selectedOutline() -> WidgetOutline? {
-        widgetOutlines.outlines.first(where: { $0.id == selection.sceneWidgetId && $0.inScene })
+        sceneEditor.outlines.first(where: { $0.id == selection.sceneWidgetId && $0.inScene })
     }
 
     private func videoArea(_ scene: SettingsScene?) -> some View {
@@ -837,7 +836,7 @@ struct SceneEditorView: View {
                         .frame(width: size.width, height: size.height, alignment: .bottomTrailing)
                 }
                 SceneEditorCanvasView(model: model,
-                                      widgetOutlines: widgetOutlines,
+                                      sceneEditor: sceneEditor,
                                       mirror: mirror(scene),
                                       size: size,
                                       selection: selection)

@@ -3,29 +3,29 @@ import ImageIO
 
 extension Model {
     func setSceneEditorWidgetOutlinesEnabled(_ enabled: Bool) {
-        guard enabled != sceneEditorWidgetOutlines.enabled else {
+        guard enabled != sceneEditor.enabled else {
             return
         }
-        sceneEditorWidgetOutlines.enabled = enabled
-        sceneEditorWidgetOutlines.imageSizes = [:]
+        sceneEditor.enabled = enabled
+        sceneEditor.imageSizes = [:]
         if enabled {
             updateWidgetOutlines()
         } else {
-            sceneEditorWidgetOutlines.outlines = []
+            sceneEditor.outlines = []
         }
     }
 
     func updateWidgetOutlines(resolver: SceneResolver? = nil) {
-        guard sceneEditorWidgetOutlines.enabled else {
+        guard sceneEditor.enabled else {
             return
         }
         guard let scene = sceneEditorScene() else {
-            sceneEditorWidgetOutlines.outlines = []
+            sceneEditor.outlines = []
             return
         }
         let canvasSize = media.getCanvasSize()
-        if canvasSize != sceneEditorWidgetOutlines.canvasSize {
-            sceneEditorWidgetOutlines.canvasSize = canvasSize
+        if canvasSize != sceneEditor.canvasSize {
+            sceneEditor.canvasSize = canvasSize
         }
         var outlines: [WidgetOutline] = []
         let resolver = resolver ?? makeSceneResolver()
@@ -60,8 +60,8 @@ extension Model {
                                           inScene: drawnWidget.scene === scene,
                                           enabled: drawnWidget.enabled))
         }
-        if !widgetOutlinesEqual(outlines, sceneEditorWidgetOutlines.outlines) {
-            sceneEditorWidgetOutlines.outlines = outlines
+        if !widgetOutlinesEqual(outlines, sceneEditor.outlines) {
+            sceneEditor.outlines = outlines
         }
     }
 
@@ -116,16 +116,16 @@ extension Model {
     }
 
     func imageWidgetUpdated(id: UUID) {
-        sceneEditorWidgetOutlines.imageSizes.removeValue(forKey: id)
+        sceneEditor.imageSizes.removeValue(forKey: id)
         updateWidgetOutlines()
     }
 
     private func widgetImageSize(_ widget: SettingsWidget) -> CGSize? {
-        if let size = sceneEditorWidgetOutlines.imageSizes[widget.id] {
+        if let size = sceneEditor.imageSizes[widget.id] {
             return size
         }
         let size = readImageSize(url: imageStorage.makePath(id: widget.id))
-        sceneEditorWidgetOutlines.imageSizes[widget.id] = size
+        sceneEditor.imageSizes[widget.id] = size
         return size
     }
 

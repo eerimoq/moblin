@@ -373,10 +373,6 @@ struct WidgetOutline: Identifiable {
 @MainActor
 class SceneEditor: ObservableObject {
     @Published var sceneId: UUID?
-}
-
-@MainActor
-class WidgetOutlines: ObservableObject {
     @Published var enabled = false
     @Published var outlines: [WidgetOutline] = []
     @Published var canvasSize: CGSize = .init(width: 1920, height: 1080)
@@ -563,7 +559,6 @@ final class Model: NSObject, ObservableObject {
     let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
-    let sceneEditorWidgetOutlines = WidgetOutlines()
     let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
     let toast = Toast()

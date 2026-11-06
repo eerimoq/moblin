@@ -702,7 +702,6 @@ struct MainView: View {
                 SceneEditorView(model: model,
                                 database: model.database,
                                 sceneSelector: model.sceneSelector,
-                                widgetOutlines: model.sceneEditorWidgetOutlines,
                                 streamOverlay: model.streamOverlay,
                                 sceneEditor: model.sceneEditor)
                     .environmentObject(model)

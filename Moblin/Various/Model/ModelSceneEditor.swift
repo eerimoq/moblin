@@ -29,7 +29,7 @@ extension Model {
     }
 
     func sceneEditorMoveWidget(sceneWidget: SettingsSceneWidget, rect: CGRect) {
-        sceneWidget.layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditorWidgetOutlines.canvasSize)
+        sceneWidget.layout = sceneEditorLayout(sceneWidget.layout, rect, sceneEditor.canvasSize)
         sceneUpdatedThrottled()
     }
 
@@ -40,7 +40,7 @@ extension Model {
         sceneWidget.layout = sceneEditorAlignedLayout(sceneWidget.layout,
                                                       alignment,
                                                       size,
-                                                      sceneEditorWidgetOutlines.canvasSize)
+                                                      sceneEditor.canvasSize)
         sceneUpdated()
     }
 
@@ -73,7 +73,7 @@ extension Model {
         guard let index = scene.widgets.firstIndex(where: { $0.id == sceneWidget.id }) else {
             return nil
         }
-        let shownSceneWidgetIds = Set(sceneEditorWidgetOutlines.outlines.filter(\.inScene).map(\.id))
+        let shownSceneWidgetIds = Set(sceneEditor.outlines.filter(\.inScene).map(\.id))
         let step = up ? 1 : -1
         var newIndex = index + step
         while scene.widgets.indices.contains(newIndex),
