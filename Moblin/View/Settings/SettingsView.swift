@@ -284,8 +284,5 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .onAppear {
-            model.hideWidgetOutlines()
-        }
     }
 }

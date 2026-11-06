@@ -92,7 +92,7 @@ extension Model {
     }
 
     func getYouTubeApi(stream: SettingsStream, onCompleted: @escaping (YouTubeApi?) -> Void) {
-        getYouTubeAccesssToken(stream: stream) {
+        getYouTubeAccesssToken(stream: stream) { [weak self] in
             guard let accessToken = $0 else {
                 onCompleted(nil)
                 return

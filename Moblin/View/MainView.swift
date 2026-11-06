@@ -525,10 +525,6 @@ struct MainView: View {
                     }
                 StreamOverlayTapGridView(camera: model.camera, size: layout.size)
                 browserWidgets(streamSize: layout.size)
-                WidgetOutlinesView(widgetOutlines: model.widgetOutlines,
-                                   database: model.database,
-                                   streamOverlay: model.streamOverlay,
-                                   size: layout.size)
             }
             .frame(width: layout.size.width, height: layout.size.height)
             .offset(layout.offset)
@@ -707,7 +703,6 @@ struct MainView: View {
                 SceneEditorView(model: model,
                                 database: model.database,
                                 sceneSelector: model.sceneSelector,
-                                widgetOutlines: model.sceneEditorWidgetOutlines,
                                 streamOverlay: model.streamOverlay,
                                 sceneEditor: model.sceneEditor)
                     .environmentObject(model)

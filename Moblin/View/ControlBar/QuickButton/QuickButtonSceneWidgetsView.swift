@@ -3,18 +3,11 @@ import SwiftUI
 
 private struct WidgetView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
-    @ObservedObject var sceneWidget: SettingsSceneWidget
 
     var body: some View {
         NavigationLink {
-            SceneWidgetSettingsView(
-                model: model,
-                database: database,
-                sceneWidget: sceneWidget,
-                widget: widget
-            )
+            WidgetSettingsView(model: model, database: model.database, widget: widget)
         } label: {
             Toggle(isOn: $widget.enabled) {
                 IconAndTextView(
@@ -56,20 +49,18 @@ struct QuickButtonSceneWidgetsView: View {
     @ObservedObject var sceneSelector: SceneSelector
 
     var body: some View {
+        let widgets = model.sceneWidgetsInSelectedScene()
         Form {
             Section {
-                List {
-                    ForEach(model.sceneWidgetsInSelectedScene()) { widget in
-                        WidgetView(model: model,
-                                   database: model.database,
-                                   widget: widget.widget,
-                                   sceneWidget: widget.sceneWidget)
+                if widgets.isEmpty {
+                    Text("No widgets in this scene")
+                } else {
+                    List {
+                        ForEach(widgets) {
+                            WidgetView(model: model, widget: $0.widget)
+                        }
                     }
                 }
-            }
-            OpenSceneEditorButtonView(model: model)
-            ShortcutSectionView {
-                ScenesShortcutView(model: model, database: model.database)
             }
         }
         .navigationTitle("Scene widgets")
