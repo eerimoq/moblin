@@ -886,15 +886,19 @@ class WebBrowserSettings: Codable, ObservableObject {
     @Published var home: String = "https://google.com"
     @Published var bookmarks: [WebBrowserBookmarkSettings] = []
 
+    @Published var smallWindow: WebBrowserWindowLayout?
+
     enum CodingKeys: CodingKey {
         case home
         case bookmarks
+        case smallWindow
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.home, home)
         try container.encode(.bookmarks, bookmarks)
+        try container.encodeIfPresent(smallWindow, forKey: .smallWindow)
     }
 
     init() {}
@@ -903,6 +907,7 @@ class WebBrowserSettings: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         home = container.decode(.home, String.self, "https://google.com")
         bookmarks = container.decode(.bookmarks, [WebBrowserBookmarkSettings].self, [])
+        smallWindow = container.decode(.smallWindow, WebBrowserWindowLayout?.self, nil)
     }
 }
 
