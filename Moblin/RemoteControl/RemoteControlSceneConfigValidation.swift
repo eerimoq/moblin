@@ -260,6 +260,9 @@ private func isValidSceneWidgetUpdate(_ widget: SettingsWidget,
                                       _ database: Database) -> Bool
 {
     isValidChange(widget.scene.sceneId, new.scene.sceneId) { sceneId in
+        guard let sceneId else {
+            return true
+        }
         guard database.scenes.contains(where: { $0.id == sceneId }) else {
             return creating
         }

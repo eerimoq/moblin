@@ -669,16 +669,18 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable, Equatable {
     }
 }
 
+private let noSceneId = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
+
 struct RemoteControlRemoteSceneSettingsWidgetTypeScene: Codable, Equatable {
     let sceneId: UUID
 
     init(scene: SettingsWidgetScene) {
-        sceneId = scene.sceneId
+        sceneId = scene.sceneId ?? noSceneId
     }
 
     func toSettings() -> SettingsWidgetScene {
         let scene = SettingsWidgetScene()
-        scene.sceneId = sceneId
+        scene.sceneId = sceneId == noSceneId ? nil : sceneId
         return scene
     }
 }

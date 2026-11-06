@@ -401,4 +401,26 @@ struct RemoteControlSuite {
                   latestFollower: "Follower",
                   systemMonitor: "12% 300 MB")
     }
+
+    @Test
+    func sceneWidgetWithoutSceneOverRemoteControl() throws {
+        let data = try JSONEncoder().encode(RemoteControlRemoteSceneSettingsWidgetTypeScene(
+            scene: SettingsWidgetScene()
+        ))
+        #expect(String(bytes: data, encoding: .utf8) ==
+            #"{"sceneId":"00000000-0000-0000-0000-000000000000"}"#)
+        let decoded = try JSONDecoder().decode(
+            RemoteControlRemoteSceneSettingsWidgetTypeScene.self,
+            from: data
+        )
+        #expect(decoded.toSettings().sceneId == nil)
+    }
+
+    @Test
+    func sceneWidgetWithSceneOverRemoteControl() {
+        let scene = SettingsWidgetScene()
+        scene.sceneId = UUID()
+        let wire = RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: scene)
+        #expect(wire.toSettings().sceneId == scene.sceneId)
+    }
 }

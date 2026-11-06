@@ -143,4 +143,15 @@ struct SceneResolverSuite {
         let resolver = SceneResolver(scenes: [main, withText, withImage], widgets: [text, image, sceneWidget])
         #expect(resolver.selectableScenes(widget: sceneWidget).map(\.name) == ["Main", "With image"])
     }
+
+    @Test
+    func sceneWidgetWithoutScene() {
+        let sceneWidget = makeWidget("Scene")
+        sceneWidget.type = .scene
+        let main = makeScene("Main", [sceneWidget])
+        let resolver = SceneResolver(scenes: [main], widgets: [sceneWidget])
+        let resolved = resolver.resolve(main)
+        #expect(resolved.widgets.map(\.widget.name) == ["Scene"])
+        #expect(resolved.sceneIds == [main.id])
+    }
 }

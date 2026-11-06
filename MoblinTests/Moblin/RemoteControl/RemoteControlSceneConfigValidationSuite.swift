@@ -361,6 +361,7 @@ struct RemoteControlSceneConfigValidationSuite {
             $1.crop.sourceWidgetId = browser.id
         },
         WidgetCase("Other scene", .scene) { $1.scene.sceneId = $0.mainScene.id },
+        WidgetCase("No scene", .scene) { $1.scene.sceneId = nil },
         WidgetCase("Known padel player", .scoreboard) {
             let player = SettingsWidgetScoreboardPlayer()
             $0.database.scoreboardPlayers = [player]

@@ -186,7 +186,8 @@ private struct SceneWalk {
             if case let .setScene(widgetId, sceneId) = change, widgetId == widget.id {
                 nestedSceneId = sceneId
             }
-            guard let nestedScene = resolver.findScene(id: nestedSceneId),
+            guard let nestedSceneId,
+                  let nestedScene = resolver.findScene(id: nestedSceneId),
                   resolved.sceneIds.insert(nestedScene.id).inserted
             else {
                 continue

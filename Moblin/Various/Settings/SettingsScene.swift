@@ -1118,8 +1118,24 @@ class SettingsWidgetMap: Codable {
     }
 }
 
-class SettingsWidgetScene: Codable {
-    var sceneId: UUID = .init()
+class SettingsWidgetScene: Codable, ObservableObject {
+    @Published var sceneId: UUID?
+
+    enum CodingKeys: CodingKey {
+        case sceneId
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.sceneId, sceneId)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+    }
 }
 
 class SettingsWidgetQrCode: Codable {

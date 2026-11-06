@@ -3,18 +3,19 @@ import SwiftUI
 struct WidgetSceneSettingsView: View {
     @EnvironmentObject var model: Model
     let widget: SettingsWidget
-    @State var selectedSceneId: UUID
+    @ObservedObject var scene: SettingsWidgetScene
 
     var body: some View {
         Section {
-            Picker("", selection: $selectedSceneId) {
-                ForEach(model.selectableScenes(widget: widget)) { scene in
-                    SceneNameView(scene: scene)
-                        .tag(scene.id)
+            Picker("", selection: $scene.sceneId) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(model.selectableScenes(widget: widget)) { selectableScene in
+                    SceneNameView(scene: selectableScene)
+                        .tag(selectableScene.id as UUID?)
                 }
             }
-            .onChange(of: selectedSceneId) { sceneId in
-                widget.scene.sceneId = sceneId
+            .onChange(of: scene.sceneId) { _ in
                 model.resetSelectedScene(changeScene: false)
             }
             .pickerStyle(.inline)

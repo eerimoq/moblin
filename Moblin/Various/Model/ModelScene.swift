@@ -374,6 +374,9 @@ extension Model {
     func deleteScene(scene: SettingsScene) {
         let deletedSelectedScene = getSelectedScene() === scene
         database.scenes.removeAll { $0 === scene }
+        for widget in database.widgets where widget.scene.sceneId == scene.id {
+            widget.scene.sceneId = nil
+        }
         if sceneEditor.sceneId == scene.id {
             sceneEditor.sceneId = nil
         }
@@ -1776,7 +1779,7 @@ extension Model {
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
         switch widget.type {
         case .scene:
-            guard let scene = database.findScene(id: widget.scene.sceneId) else {
+            guard let sceneId = widget.scene.sceneId, let scene = database.findScene(id: sceneId) else {
                 return false
             }
             return resolveScene(scene, includeDisabledSceneWidgets: true).widgets.contains {

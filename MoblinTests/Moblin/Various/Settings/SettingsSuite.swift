@@ -84,4 +84,17 @@ struct SettingsSuite {
         let decoded = try JSONDecoder().decode(SettingsChat.self, from: JSONEncoder().encode(chat))
         #expect(decoded.textToSpeechSayEmotes)
     }
+
+    @Test
+    func widgetSceneId() throws {
+        let scene = SettingsWidgetScene()
+        #expect(scene.sceneId == nil)
+        var decoded = try JSONDecoder().decode(SettingsWidgetScene.self, from: JSONEncoder().encode(scene))
+        #expect(decoded.sceneId == nil)
+        scene.sceneId = UUID()
+        decoded = try JSONDecoder().decode(SettingsWidgetScene.self, from: JSONEncoder().encode(scene))
+        #expect(decoded.sceneId == scene.sceneId)
+        decoded = try JSONDecoder().decode(SettingsWidgetScene.self, from: Data("{}".utf8))
+        #expect(decoded.sceneId == nil)
+    }
 }
