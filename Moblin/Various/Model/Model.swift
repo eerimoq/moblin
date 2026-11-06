@@ -356,29 +356,6 @@ class StreamOverlay: ObservableObject {
     @Published var isTorchOn = false
 }
 
-struct WidgetOutline: Identifiable {
-    var id: UUID {
-        sceneWidget.id
-    }
-
-    let sceneWidget: SettingsSceneWidget
-    let widget: SettingsWidget
-    let rect: CGRect
-    let alignment: SettingsAlignment
-    let sized: Bool
-    let inScene: Bool
-    let enabled: Bool
-}
-
-@MainActor
-class SceneEditor: ObservableObject {
-    @Published var sceneId: UUID?
-    @Published var enabled = false
-    @Published var outlines: [WidgetOutline] = []
-    @Published var canvasSize: CGSize = .init(width: 1920, height: 1080)
-    var imageSizes: [UUID: CGSize?] = [:]
-}
-
 @MainActor
 class Store: ObservableObject {
     @Published var myIcons: [Icon] = []
