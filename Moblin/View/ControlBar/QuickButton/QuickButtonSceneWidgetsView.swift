@@ -6,16 +6,20 @@ private struct WidgetView: View {
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {
-        Toggle(isOn: $widget.enabled) {
-            IconAndTextView(
-                image: widget.image(),
-                text: widget.name,
-                longDivider: true
-            )
-        }
-        .onChange(of: widget.enabled) { _ in
-            model.reloadSpeechToText()
-            model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+        NavigationLink {
+            WidgetSettingsView(model: model, database: model.database, widget: widget)
+        } label: {
+            Toggle(isOn: $widget.enabled) {
+                IconAndTextView(
+                    image: widget.image(),
+                    text: widget.name,
+                    longDivider: true
+                )
+            }
+            .onChange(of: widget.enabled) { _ in
+                model.reloadSpeechToText()
+                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+            }
         }
         switch widget.type {
         case .text:
