@@ -135,7 +135,7 @@ private struct WebBrowserSmallView: View {
     private struct Border: Shape {
         func path(in rect: CGRect) -> Path {
             var path = Path(rect)
-            path.addRect(rect.insetBy(dx: 14, dy: 14))
+            path.addRect(rect.insetBy(dx: 26, dy: 26))
             return path
         }
     }
@@ -235,25 +235,12 @@ private struct WebBrowserSmallView: View {
             .accessibilityLabel("Move browser")
             .overlay {
                 RoundedRectangle(cornerRadius: 7)
-                    .strokeBorder(.regularMaterial, lineWidth: 12)
+                    .strokeBorder(.blue.opacity(0.35), lineWidth: 12)
                     .overlay {
                         RoundedRectangle(cornerRadius: 7)
-                            .strokeBorder(.white.opacity(0.8), lineWidth: 1)
+                            .strokeBorder(.blue, lineWidth: 2)
                     }
                     .allowsHitTesting(false)
-            }
-            .overlay {
-                Border()
-                    .fill(.clear, style: FillStyle(eoFill: true))
-                    .contentShape(Border(), eoFill: true)
-                    .gesture(resizeGesture(frame: frame, size: size))
-                    .accessibilityLabel("Resize browser")
-                    .accessibilityAdjustableAction { direction in
-                        let delta = direction == .increment ? 20.0 : -20.0
-                        save(frame: WebBrowserWindowLayout.resized(frame,
-                                                                   by: CGSize(width: delta, height: delta),
-                                                                   in: size), in: size)
-                    }
             }
             .accessibilityAction(named: Text("Done")) { isEditing = false }
             .contextMenu {
@@ -261,6 +248,20 @@ private struct WebBrowserSmallView: View {
                     webBrowser.smallWindow = nil
                     model.storeSettings()
                 }
+            }
+    }
+
+    private func resizeBorder(frame: CGRect, size: CGSize) -> some View {
+        Border()
+            .fill(.clear, style: FillStyle(eoFill: true))
+            .contentShape(Border(), eoFill: true)
+            .gesture(resizeGesture(frame: frame, size: size))
+            .accessibilityLabel("Resize browser")
+            .accessibilityAdjustableAction { direction in
+                let delta = direction == .increment ? 20.0 : -20.0
+                save(frame: WebBrowserWindowLayout.resized(frame,
+                                                           by: CGSize(width: delta, height: delta),
+                                                           in: size), in: size)
             }
     }
 
@@ -297,6 +298,11 @@ private struct WebBrowserSmallView: View {
                     }
                     .accessibilityAction(named: Text("Adjust browser")) { isEditing = true }
                     .position(x: displayed.midX, y: displayed.midY)
+                if isEditing {
+                    resizeBorder(frame: frame, size: metrics.size)
+                        .frame(width: displayed.width + 24, height: displayed.height + 24)
+                        .position(x: displayed.midX, y: displayed.midY)
+                }
             }
             .frame(width: metrics.size.width, height: metrics.size.height)
             .coordinateSpace(name: "webBrowserWindowLayout")

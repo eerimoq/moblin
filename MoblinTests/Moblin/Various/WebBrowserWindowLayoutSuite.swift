@@ -84,6 +84,17 @@ struct WebBrowserWindowLayoutSuite {
     }
 
     @Test
+    func resizeCanStartOutsideTheVisibleFrame() {
+        let size = CGSize(width: 240, height: 180)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: -12, y: 90), in: size) == .leading)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 252, y: 90), in: size) == .trailing)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 120, y: -12), in: size) == .top)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 120, y: 192), in: size) == .bottom)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: -12, y: -12), in: size) == .topLeading)
+        #expect(WebBrowserResizeHandle.at(CGPoint(x: 252, y: 192), in: size) == .bottomTrailing)
+    }
+
+    @Test
     func rotationPreservesPlacementAndPreferredSize() {
         let landscape = CGSize(width: 800, height: 400)
         let layout = WebBrowserWindowLayout(
