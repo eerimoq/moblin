@@ -551,6 +551,7 @@ final class Model: NSObject, ObservableObject {
     let createSceneWizard = CreateSceneWizard()
     let zoom = Zoom()
     let camera = CameraState()
+    let cameraControls = CameraControls()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let musicPlaylist = MusicPlaylist()
     nonisolated(unsafe) var media: Media!
@@ -2931,10 +2932,16 @@ final class Model: NSObject, ObservableObject {
         switch position {
         case .back:
             updateBackZoomSwitchTo()
-            zoom.x = zoom.backX
+            zoom.x = database.zoom.switchToBack.enabled
+                ? zoom.backX
+                : cameraDevice.flatMap { cameraControls.control(cameraId: $0.uniqueID).zoomX } ?? zoom.backX
+            zoom.backX = zoom.x
         case .front:
             updateFrontZoomSwitchTo()
-            zoom.x = zoom.frontX
+            zoom.x = database.zoom.switchToFront.enabled
+                ? zoom.frontX
+                : cameraDevice.flatMap { cameraControls.control(cameraId: $0.uniqueID).zoomX } ?? zoom.frontX
+            zoom.frontX = zoom.x
         default:
             break
         }
@@ -2978,10 +2985,17 @@ final class Model: NSObject, ObservableObject {
                 if let x = self.setCameraZoomX(x: self.zoom.x) {
                     self.setZoomXWhenInRange(x: x)
                 }
+                self.setFocusAfterCameraAttach()
                 if let device = self.cameraDevice {
                     self.setExposureAndIsoAfterCameraAttach(device: device)
                     self.setWhiteBalanceAfterCameraAttach(device: device)
                     self.updateImageButtonState()
+                    self.restoreCameraControls(device: device)
+                }
+                for captureDevice in devices.devices
+                    where captureDevice.device.uniqueID != self.cameraDevice?.uniqueID
+                {
+                    self.restoreCameraControls(device: captureDevice.device)
                 }
                 self.lastAttachCompletedTime = .now
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
