@@ -1,8 +1,6 @@
 import SwiftUI
 import WebKit
 
-private let smallBrowserSide = 250.0
-
 struct WebView: UIViewRepresentable {
     let model: Model
 
@@ -136,60 +134,93 @@ private struct BookmarksView: View {
 private struct WebBrowserSmallView: View {
     let model: Model
     @ObservedObject var database: Database
+    @ObservedObject var webBrowser: WebBrowserSettings
     @ObservedObject var webBrowserState: WebBrowserState
+    @GestureState private var moveTranslation = CGSize.zero
+    @GestureState private var resizeTranslation = CGSize.zero
 
-    private func offset(metrics _: GeometryProxy) -> Double {
-        if database.bigButtons {
-            -(2 * segmentHeightBig + 10)
-        } else {
-            -(2 * segmentHeight + 10)
-        }
+    private func save(frame: CGRect, in size: CGSize) {
+        webBrowser.smallWindow = WebBrowserWindowLayout(frame: frame, in: size)
+        model.storeSettings()
     }
 
-    private func mapSide(maximum: Double) -> Double {
-        min(maximum - 130, smallBrowserSide)
+    private func moveGesture(frame: CGRect, size: CGSize) -> some Gesture {
+        DragGesture(coordinateSpace: .global)
+            .updating($moveTranslation) { value, translation, _ in
+                translation = value.translation
+            }
+            .onEnded { value in
+                save(frame: WebBrowserWindowLayout.moved(frame, by: value.translation, in: size), in: size)
+            }
+    }
+
+    private func resizeGesture(frame: CGRect, size: CGSize) -> some Gesture {
+        DragGesture(coordinateSpace: .global)
+            .updating($resizeTranslation) { value, translation, _ in
+                translation = value.translation
+            }
+            .onEnded { value in
+                save(frame: WebBrowserWindowLayout.resized(frame, by: value.translation, in: size), in: size)
+            }
+    }
+
+    private func controls(frame: CGRect, size: CGSize) -> some View {
+        HStack(spacing: 0) {
+            Image(systemName: "line.3.horizontal")
+                .frame(maxWidth: .infinity)
+                .frame(height: 32)
+                .contentShape(Rectangle())
+                .gesture(moveGesture(frame: frame, size: size))
+                .accessibilityLabel("Move browser")
+                .help("Move browser")
+            Image(systemName: "arrow.down.right")
+                .frame(width: 32, height: 32)
+                .contentShape(Rectangle())
+                .gesture(resizeGesture(frame: frame, size: size))
+                .accessibilityLabel("Resize browser")
+                .accessibilityAdjustableAction { direction in
+                    let delta = direction == .increment ? 20.0 : -20.0
+                    save(frame: WebBrowserWindowLayout.resized(frame,
+                                                               by: CGSize(width: delta, height: delta),
+                                                               in: size),
+                         in: size)
+                }
+                .help("Resize browser")
+            Button {
+                webBrowserState.isSmall = false
+            } label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Expand browser")
+            .help("Expand browser")
+        }
+        .foregroundStyle(.primary)
+        .background(.regularMaterial)
+        .contextMenu {
+            Button("Reset layout") {
+                webBrowser.smallWindow = nil
+                model.storeSettings()
+            }
+        }
     }
 
     var body: some View {
         GeometryReader { metrics in
-            ZStack {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        WebView(model: model)
-                            .frame(maxWidth: mapSide(maximum: metrics.size.width),
-                                   maxHeight: mapSide(maximum: metrics.size.height))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
-                            .padding(.trailing, 3)
-                    }
-                }
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            webBrowserState.isSmall.toggle()
-                        } label: {
-                            if #available(iOS 26, *) {
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundStyle(.primary)
-                                    .frame(width: 12, height: 12)
-                                    .padding()
-                                    .glassEffect()
-                                    .padding([.trailing, .bottom], 10)
-                            } else {
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundStyle(.primary)
-                                    .frame(width: 12, height: 12)
-                                    .padding()
-                                    .padding([.trailing, .bottom], 10)
-                            }
-                        }
-                    }
-                }
+            let bottomInset = 2 * (database.bigButtons ? segmentHeightBig : segmentHeight) + 10
+            let frame = webBrowser.smallWindow?.frame(in: metrics.size)
+                ?? WebBrowserWindowLayout.defaultFrame(in: metrics.size, bottomInset: bottomInset)
+            let moved = WebBrowserWindowLayout.moved(frame, by: moveTranslation, in: metrics.size)
+            let displayed = WebBrowserWindowLayout.resized(moved, by: resizeTranslation, in: metrics.size)
+            VStack(spacing: 0) {
+                controls(frame: frame, size: metrics.size)
+                WebView(model: model)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .offset(CGSize(width: 0, height: offset(metrics: metrics)))
+            .frame(width: displayed.width, height: displayed.height)
+            .clipShape(RoundedRectangle(cornerRadius: 7))
+            .position(x: displayed.midX, y: displayed.midY)
         }
     }
 }
@@ -246,6 +277,7 @@ struct WebBrowserView: View {
         if webBrowserState.isSmall {
             WebBrowserSmallView(model: model,
                                 database: database,
+                                webBrowser: database.webBrowser,
                                 webBrowserState: webBrowserState)
         } else {
             WebBrowserBigView(model: model,
