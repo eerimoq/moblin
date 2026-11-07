@@ -485,30 +485,6 @@ Topics to subscribe to are defined by `SubscribeTopic` in
 Messages passed to `onmessage` are defined by `Message` in
 [BrowserEffectServer.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/Browser/BrowserEffectServer.swift).
 
-# Remote control tally
-
-A studio or switcher integration can show a colored border and a message on
-the streamer's camera preview using the remote control protocol. The tally is
-only shown on Moblin's screen. It is not added to the outgoing video or
-recording, and it is independent of whether Moblin is live or recording.
-
-Show or update the tally. An empty `message` shows the border only. `background`
-is the color of the border and the message box, and `foreground` is the color of
-the message text.
-
-```json
-{"request":{"id":1,"data":{"showTally":{"message":"ON AIR","background":{"red":255,"green":0,"blue":0},"foreground":{"red":255,"green":255,"blue":255}}}}}
-```
-
-Hide the tally.
-
-```json
-{"request":{"id":2,"data":{"hideTally":{}}}}
-```
-
-The most recent `showTally` wins. The tally is also hidden when any remote
-control controller disconnects, and it is not saved across app launches.
-
 # Similar software
 
 - https://irlpro.app/
