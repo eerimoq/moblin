@@ -452,6 +452,31 @@ private struct SceneEditorButtonView: View {
     }
 }
 
+private struct SceneEditorButtonGroupView<Content: View>: View {
+    let vertical: Bool
+    @ViewBuilder let content: () -> Content
+
+    private func layout(spacing: CGFloat) -> AnyLayout {
+        vertical ? AnyLayout(VStackLayout(spacing: spacing)) : AnyLayout(HStackLayout(spacing: spacing))
+    }
+
+    var body: some View {
+        if #available(iOS 26, *) {
+            let layout = layout(spacing: 0)
+            layout {
+                content()
+            }
+            .tint(.primary)
+            .glassEffect()
+        } else {
+            let layout = layout(spacing: 2)
+            layout {
+                content()
+            }
+        }
+    }
+}
+
 private struct SceneEditorEnableButtonView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
@@ -716,6 +741,10 @@ private struct SceneEditorToolbarView: View {
     let vertical: Bool
     @State private var presentingRemoveWidgetConfirmation = false
 
+    private func group(@ViewBuilder content: @escaping () -> some View) -> some View {
+        SceneEditorButtonGroupView(vertical: vertical, content: content)
+    }
+
     @ViewBuilder
     private func widgetButtons(_ scene: SettingsScene, _ selected: WidgetOutline) -> some View {
         let sceneWidget = selected.sceneWidget
@@ -750,41 +779,67 @@ private struct SceneEditorToolbarView: View {
         }
     }
 
-    private func divider() -> some View {
-        Divider()
-            .background(.gray)
-            .frame(width: vertical ? 32 : nil, height: vertical ? nil : 32)
+    @ViewBuilder
+    private func separator() -> some View {
+        if #unavailable(iOS 26) {
+            Divider()
+                .background(.gray)
+                .frame(width: vertical ? 32 : nil, height: vertical ? nil : 32)
+        }
     }
 
     @ViewBuilder
     private func buttons() -> some View {
-        SceneEditorButtonView(image: "xmark") {
-            model.presentingSceneEditor = false
+        group {
+            SceneEditorButtonView(image: "xmark") {
+                model.presentingSceneEditor = false
+            }
         }
-        divider()
-        SceneEditorScenesButtonView(model: model, database: database, scene: scene, selection: selection)
+        separator()
+        group {
+            SceneEditorScenesButtonView(model: model, database: database, scene: scene, selection: selection)
+        }
         if let scene {
             if let selected {
-                divider()
-                widgetButtons(scene, selected)
-            } else {
-                SceneEditorAddWidgetButtonView(model: model,
-                                               database: database,
-                                               scene: scene,
-                                               selection: selection)
-                SceneEditorButtonView(image: "slider.horizontal.3") {
-                    selection.showingSettings.toggle()
+                separator()
+                group {
+                    widgetButtons(scene, selected)
                 }
-                SceneEditorDeleteSceneButtonView(model: model, scene: scene, selection: selection)
+            } else {
+                group {
+                    SceneEditorAddWidgetButtonView(model: model,
+                                                   database: database,
+                                                   scene: scene,
+                                                   selection: selection)
+                    SceneEditorButtonView(image: "slider.horizontal.3") {
+                        selection.showingSettings.toggle()
+                    }
+                    SceneEditorDeleteSceneButtonView(model: model, scene: scene, selection: selection)
+                }
             }
         }
     }
 
+    private func layout(spacing: CGFloat) -> AnyLayout {
+        vertical ? AnyLayout(VStackLayout(spacing: spacing)) : AnyLayout(HStackLayout(spacing: spacing))
+    }
+
     var body: some View {
-        let layout = vertical ? AnyLayout(VStackLayout(spacing: 2)) : AnyLayout(HStackLayout(spacing: 2))
         ScrollView(vertical ? .vertical : .horizontal, showsIndicators: false) {
-            layout {
-                buttons()
+            if #available(iOS 26, *) {
+                let layout = layout(spacing: 8)
+                GlassEffectContainer(spacing: 8) {
+                    layout {
+                        buttons()
+                    }
+                }
+                .padding(4)
+            } else {
+                let layout = layout(spacing: 2)
+                layout {
+                    buttons()
+                }
+                .padding(4)
             }
         }
         .frame(width: vertical ? 52 : nil, height: vertical ? nil : 52)
@@ -894,7 +949,7 @@ struct SceneEditorView: View {
                                        vertical: landscape)
             }
         }
-        .background(.black)
+        .background(Color(.systemGroupedBackground))
         .onAppear {
             model.sceneEditorPresentationChanged()
         }
