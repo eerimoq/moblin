@@ -31,6 +31,42 @@ struct RemoteControlSuite {
     }
 
     @Test
+    func stateChangesOnlyContainChangedFields() {
+        var sent = RemoteControlState(zoom: 0.5, torchOn: false)
+        #expect(sent.applyChanges(from: .init(zoom: 0.5, torchOn: true)) == .init(torchOn: true))
+        #expect(sent == .init(zoom: 0.5, torchOn: true))
+    }
+
+    @Test
+    func stateChangesAreNilWhenNothingChanged() {
+        var sent = RemoteControlState(zoomPreset: UUID(uuidString: "7E3854FA-A449-4C72-B2BF-C2246541CCE8"),
+                                      zoomCamera: .back)
+        #expect(sent.applyChanges(from: sent) == nil)
+    }
+
+    @Test
+    func stateChangesKeepFieldsMissingInUpdate() {
+        var sent = RemoteControlState(torchOn: false)
+        #expect(sent.applyChanges(from: .init(streaming: false)) == .init(streaming: false))
+        #expect(sent == .init(streaming: false, torchOn: false))
+    }
+
+    @Test
+    func stateChangesOnlyContainChangedFilters() {
+        var sent = RemoteControlState(filters: [.movie: true])
+        #expect(sent.applyChanges(from: .init(filters: [.movie: true, .sepia: true])) == .init(filters: [
+            .sepia: true,
+        ]))
+        #expect(sent == .init(filters: [.movie: true, .sepia: true]))
+    }
+
+    @Test
+    func stateChangesAreNilWhenNoFilterChanged() {
+        var sent = RemoteControlState(filters: [.movie: true, .sepia: false])
+        #expect(sent.applyChanges(from: .init(filters: [.sepia: false])) == nil)
+    }
+
+    @Test
     func gimbalRequests() throws {
         #expect(try encode(.setGimbalTracking(on: true)) == #"{"setGimbalTracking":{"on":true}}"#)
         #expect(try encode(.setGimbalMovement(x: 1, y: -1)) == #"{"setGimbalMovement":{"x":1,"y":-1}}"#)

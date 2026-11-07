@@ -1001,7 +1001,7 @@ struct RemoteControlSettingsSrt: Codable {
     let connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
 }
 
-struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
+struct RemoteControlSettingsGimbalPreset: Codable, Identifiable, Equatable {
     let id: UUID
     let name: String
 }
@@ -1093,7 +1093,7 @@ struct RemoteControlSettingsZoomPresets: Codable {
     }
 }
 
-struct RemoteControlStateAutoSceneSwitcher: Codable {
+struct RemoteControlStateAutoSceneSwitcher: Codable, Equatable {
     let id: UUID?
 }
 
@@ -1108,13 +1108,13 @@ enum RemoteControlZoomCamera: String, Codable {
     case other
 }
 
-struct RemoteControlMacro: Codable, Identifiable {
+struct RemoteControlMacro: Codable, Identifiable, Equatable {
     let id: UUID
     let name: String
     let running: Bool
 }
 
-struct RemoteControlState: Codable {
+struct RemoteControlState: Codable, Equatable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?
@@ -1134,6 +1134,166 @@ struct RemoteControlState: Codable {
     var gimbalTracking: Bool?
     var gimbalPresets: [RemoteControlSettingsGimbalPreset]?
     var macros: [RemoteControlMacro]?
+
+    mutating func applyChanges(from state: Self) -> Self? {
+        var changes = state
+        var changed = false
+        if let scene = state.scene {
+            if scene == self.scene {
+                changes.scene = nil
+            } else {
+                self.scene = scene
+                changed = true
+            }
+        }
+        if let autoSceneSwitcher = state.autoSceneSwitcher {
+            if autoSceneSwitcher == self.autoSceneSwitcher {
+                changes.autoSceneSwitcher = nil
+            } else {
+                self.autoSceneSwitcher = autoSceneSwitcher
+                changed = true
+            }
+        }
+        if let mic = state.mic {
+            if mic == self.mic {
+                changes.mic = nil
+            } else {
+                self.mic = mic
+                changed = true
+            }
+        }
+        if let bitrate = state.bitrate {
+            if bitrate == self.bitrate {
+                changes.bitrate = nil
+            } else {
+                self.bitrate = bitrate
+                changed = true
+            }
+        }
+        if let zoom = state.zoom {
+            if zoom == self.zoom {
+                changes.zoom = nil
+            } else {
+                self.zoom = zoom
+                changed = true
+            }
+        }
+        if let zoomPreset = state.zoomPreset {
+            if zoomPreset == self.zoomPreset {
+                changes.zoomPreset = nil
+            } else {
+                self.zoomPreset = zoomPreset
+                changed = true
+            }
+        }
+        if let zoomCamera = state.zoomCamera {
+            if zoomCamera == self.zoomCamera {
+                changes.zoomCamera = nil
+            } else {
+                self.zoomCamera = zoomCamera
+                changed = true
+            }
+        }
+        if let debugLogging = state.debugLogging {
+            if debugLogging == self.debugLogging {
+                changes.debugLogging = nil
+            } else {
+                self.debugLogging = debugLogging
+                changed = true
+            }
+        }
+        if let streaming = state.streaming {
+            if streaming == self.streaming {
+                changes.streaming = nil
+            } else {
+                self.streaming = streaming
+                changed = true
+            }
+        }
+        if let recording = state.recording {
+            if recording == self.recording {
+                changes.recording = nil
+            } else {
+                self.recording = recording
+                changed = true
+            }
+        }
+        if let previewStream = state.previewStream {
+            if previewStream == self.previewStream {
+                changes.previewStream = nil
+            } else {
+                self.previewStream = previewStream
+                changed = true
+            }
+        }
+        if let muted = state.muted {
+            if muted == self.muted {
+                changes.muted = nil
+            } else {
+                self.muted = muted
+                changed = true
+            }
+        }
+        if let stealthMode = state.stealthMode {
+            if stealthMode == self.stealthMode {
+                changes.stealthMode = nil
+            } else {
+                self.stealthMode = stealthMode
+                changed = true
+            }
+        }
+        if let torchOn = state.torchOn {
+            if torchOn == self.torchOn {
+                changes.torchOn = nil
+            } else {
+                self.torchOn = torchOn
+                changed = true
+            }
+        }
+        if let batteryCharging = state.batteryCharging {
+            if batteryCharging == self.batteryCharging {
+                changes.batteryCharging = nil
+            } else {
+                self.batteryCharging = batteryCharging
+                changed = true
+            }
+        }
+        if let gimbalTracking = state.gimbalTracking {
+            if gimbalTracking == self.gimbalTracking {
+                changes.gimbalTracking = nil
+            } else {
+                self.gimbalTracking = gimbalTracking
+                changed = true
+            }
+        }
+        if let gimbalPresets = state.gimbalPresets {
+            if gimbalPresets == self.gimbalPresets {
+                changes.gimbalPresets = nil
+            } else {
+                self.gimbalPresets = gimbalPresets
+                changed = true
+            }
+        }
+        if let macros = state.macros {
+            if macros == self.macros {
+                changes.macros = nil
+            } else {
+                self.macros = macros
+                changed = true
+            }
+        }
+        if let filters = state.filters {
+            let changedFilters = filters.filter { self.filters?[$0.key] != $0.value }
+            if changedFilters.isEmpty {
+                changes.filters = nil
+            } else {
+                self.filters = (self.filters ?? [:]).merging(changedFilters) { $1 }
+                changes.filters = changedFilters
+                changed = true
+            }
+        }
+        return changed ? changes : nil
+    }
 }
 
 struct RemoteControlScoreboardControl: Codable {

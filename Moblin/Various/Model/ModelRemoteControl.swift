@@ -637,9 +637,12 @@ extension Model {
     }
 
     func remoteControlStateChanged(state: RemoteControlState) {
-        remoteControlStreamer?.stateChanged(state: state)
-        remoteControlWeb?.stateChanged(state: state)
-        moblinCloud?.stateChanged(state: state)
+        guard let changes = remoteControlSentState.applyChanges(from: state) else {
+            return
+        }
+        remoteControlStreamer?.stateChanged(state: changes)
+        remoteControlWeb?.stateChanged(state: changes)
+        moblinCloud?.stateChanged(state: changes)
     }
 
     func remoteControlLog(entry: String) {
@@ -806,6 +809,7 @@ extension Model {
     }
 
     func remoteControlSetZoom(x: Float) {
+        remoteControlSentState.zoom = nil
         setZoomX(x: x, rate: database.zoom.speed)
     }
 
@@ -910,7 +914,7 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlStreamerStopStats()
         setLowFpsImage()
         updateRemoteControlStatus()
-        remoteControlStateChanged(state: createRemoteControlStateChanged())
+        remoteControlStreamer?.stateChanged(state: createRemoteControlStateChanged())
     }
 
     func remoteControlStreamerDisconnected() {
