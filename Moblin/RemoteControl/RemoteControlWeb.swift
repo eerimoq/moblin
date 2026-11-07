@@ -122,7 +122,7 @@ class RemoteControlWeb {
         stopWebsocketServer()
     }
 
-    func stateChanged(state: RemoteControlAssistantStreamerState) {
+    func stateChanged(state: RemoteControlState) {
         for connection in connections {
             send(connection: connection, message: .event(data: .state(data: state)))
         }

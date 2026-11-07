@@ -122,7 +122,7 @@ enum RemoteControlResponse: Codable {
 }
 
 enum RemoteControlEvent: Codable {
-    case state(data: RemoteControlAssistantStreamerState)
+    case state(data: RemoteControlState)
     case log(entry: String)
     case status(general: RemoteControlStatusGeneral?,
                 topLeft: RemoteControlStatusTopLeft?,
@@ -1091,7 +1091,7 @@ struct RemoteControlMacro: Codable, Identifiable {
     let running: Bool
 }
 
-struct RemoteControlAssistantStreamerState: Codable {
+struct RemoteControlState: Codable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?

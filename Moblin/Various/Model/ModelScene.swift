@@ -1346,7 +1346,7 @@ extension Model {
 
     private func setSceneId(id: UUID) {
         sceneSelector.selectedSceneId = id
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(scene: id))
+        remoteControlStateChanged(state: RemoteControlState(scene: id))
         if isWatchLocal() {
             sendSceneToWatch(id: sceneSelector.selectedSceneId)
         }

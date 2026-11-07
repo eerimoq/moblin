@@ -798,7 +798,7 @@ extension Model {
         if isWatchLocal() {
             sendIsLiveToWatch(isLive: isLive)
         }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(streaming: isLive))
+        remoteControlStateChanged(state: RemoteControlState(streaming: isLive))
     }
 
     func setStreamFps(fps: Int? = nil) {
@@ -836,7 +836,7 @@ extension Model {
         guard let preset = getBitratePresetByBitrate(bitrate: bitrate) else {
             return
         }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(bitrate: preset.id))
+        remoteControlStateChanged(state: RemoteControlState(bitrate: preset.id))
     }
 
     private func getBitrate() -> UInt32 {

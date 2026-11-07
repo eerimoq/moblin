@@ -694,7 +694,7 @@ final class Model: NSObject, ObservableObject {
     private var lastAttachCompletedTime: ContinuousClock.Instant?
     private var relaxedBitrateStartTime: ContinuousClock.Instant?
     var relaxedBitrate = false
-    var remoteControlAssistantStreamerState = RemoteControlAssistantStreamerState()
+    var remoteControlAssistantStreamerState = RemoteControlState()
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlHandledRequestIds: [String] = []
     var remoteControlAssistant: RemoteControlAssistant?
@@ -2246,7 +2246,7 @@ final class Model: NSObject, ObservableObject {
         }
         button.isOn = isOn
         if let filter = RemoteControlFilter(type: type) {
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
+            remoteControlStateChanged(state: RemoteControlState(filters: [
                 filter: button.isOn,
             ]))
         }
@@ -2400,7 +2400,7 @@ final class Model: NSObject, ObservableObject {
 
     func setDebugLogging(on: Bool) {
         logger.debugEnabled = on
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(debugLogging: on))
+        remoteControlStateChanged(state: RemoteControlState(debugLogging: on))
     }
 
     func isEventsConfigured() -> Bool {

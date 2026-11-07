@@ -132,7 +132,7 @@ extension Model {
             zoom.remoteControlPending = true
             return
         }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoom: zoom.x))
+        remoteControlStateChanged(state: RemoteControlState(zoom: zoom.x))
         zoom.remoteControlTimerRunning = true
         zoom.remoteControlTimer.startSingleShot(timeout: 0.5) {
             self.zoom.remoteControlTimerRunning = false
@@ -210,7 +210,7 @@ extension Model {
         }
         zoom.backPresetId = presetId
         if cameraPosition == .back {
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -223,7 +223,7 @@ extension Model {
         }
         zoom.frontPresetId = presetId
         if cameraPosition == .front {
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -279,7 +279,7 @@ extension Model {
             []
         }
         let zoomPresets = presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: zoomPresets))
+        remoteControlStateChanged(state: RemoteControlState(zoomPresets: zoomPresets))
         if isWatchLocal() {
             sendZoomPresetsToWatch(presets: presets)
         }

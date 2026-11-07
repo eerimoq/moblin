@@ -118,7 +118,7 @@ extension Model {
 
     func remoteControlMacrosStateChanged() {
         remoteControlStateChanged(
-            state: RemoteControlAssistantStreamerState(macros: getRemoteControlMacros())
+            state: RemoteControlState(macros: getRemoteControlMacros())
         )
     }
 

@@ -161,7 +161,7 @@ class RemoteControlStreamer {
         connected
     }
 
-    func stateChanged(state: RemoteControlAssistantStreamerState) {
+    func stateChanged(state: RemoteControlState) {
         guard connected else {
             return
         }

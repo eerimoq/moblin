@@ -487,7 +487,7 @@ class MoblinCloud {
         streamer?.sendIcon(id: id)
     }
 
-    func stateChanged(state: RemoteControlAssistantStreamerState) {
+    func stateChanged(state: RemoteControlState) {
         guard requestingStatus else {
             return
         }

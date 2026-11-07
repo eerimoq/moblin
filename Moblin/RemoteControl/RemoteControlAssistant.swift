@@ -8,7 +8,7 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantConnected()
     func remoteControlAssistantDisconnected()
     func remoteControlAssistantPreview(preview: Data)
-    func remoteControlAssistantStateChanged(state: RemoteControlAssistantStreamerState)
+    func remoteControlAssistantStateChanged(state: RemoteControlState)
     func remoteControlAssistantLog(entry: String)
     func remoteControlAssistantStatus(general: RemoteControlStatusGeneral?,
                                       topLeft: RemoteControlStatusTopLeft?,
@@ -739,7 +739,7 @@ class RemoteControlAssistant: NSObject {
         gotPing = true
     }
 
-    private func handleStateEvent(state: RemoteControlAssistantStreamerState) {
+    private func handleStateEvent(state: RemoteControlState) {
         delegate?.remoteControlAssistantStateChanged(state: state)
     }
 

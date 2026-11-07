@@ -10,7 +10,7 @@ extension Model {
             Gimbal.shared?.setTracking(on: on)
         }
         setQuickButton(type: .gimbalTracking, isOn: on)
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(gimbalTracking: on))
+        remoteControlStateChanged(state: RemoteControlState(gimbalTracking: on))
     }
 
     func setGimbalMovement(x: Float, y: Float) {
@@ -62,7 +62,7 @@ extension Model {
                     preset.zoomX = zoom.x
                     database.gimbal.presets.append(preset)
                 }
-                remoteControlStateChanged(state: RemoteControlAssistantStreamerState(
+                remoteControlStateChanged(state: RemoteControlState(
                     gimbalPresets: getRemoteControlGimbalPresets()
                 ))
             } catch {

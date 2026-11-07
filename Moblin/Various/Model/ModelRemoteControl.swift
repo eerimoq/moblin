@@ -594,8 +594,8 @@ extension Model {
         isRemoteControlWebRequestingPreview
     }
 
-    func createRemoteControlStateChanged() -> RemoteControlAssistantStreamerState {
-        var state = RemoteControlAssistantStreamerState()
+    func createRemoteControlStateChanged() -> RemoteControlState {
+        var state = RemoteControlState()
         if sceneSelector.sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneSelector.sceneIndex].id
         }
@@ -634,7 +634,7 @@ extension Model {
         return state
     }
 
-    func remoteControlStateChanged(state: RemoteControlAssistantStreamerState) {
+    func remoteControlStateChanged(state: RemoteControlState) {
         remoteControlStreamer?.stateChanged(state: state)
         remoteControlWeb?.stateChanged(state: state)
         moblinCloud?.stateChanged(state: state)
@@ -1383,7 +1383,7 @@ extension Model: RemoteControlAssistantDelegate {
         updateRemoteControlStatus()
     }
 
-    func remoteControlAssistantStateChanged(state: RemoteControlAssistantStreamerState) {
+    func remoteControlAssistantStateChanged(state: RemoteControlState) {
         if let scene = state.scene {
             remoteControlAssistantStreamerState.scene = scene
             remoteControl.scene = scene
