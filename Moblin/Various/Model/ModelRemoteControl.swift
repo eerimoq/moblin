@@ -180,7 +180,18 @@ extension Model {
         }
         remoteControlAssistant?.getSettings { settings in
             self.remoteControl.settings = settings
+            self.updateRemoteControlAssistantZoomPresets()
         }
+    }
+
+    private func updateRemoteControlAssistantZoomPresets() {
+        guard let camera = remoteControlAssistantStreamerState.zoomCamera,
+              let zoomPresets = remoteControl.settings?.zoomPresets
+        else {
+            remoteControl.zoomPresets = []
+            return
+        }
+        remoteControl.zoomPresets = zoomPresets.active(camera: camera)
     }
 
     func isRemoteControlAssistantConfigured() -> Bool {
@@ -604,17 +615,8 @@ extension Model {
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
             state.bitrate = preset.id
         }
-        switch cameraPosition {
-        case .front:
-            state.zoomPresets = zoom.frontZoomPresets
-                .map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            state.zoomPreset = zoom.frontPresetId
-        case .back:
-            state.zoomPresets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            state.zoomPreset = zoom.backPresetId
-        default:
-            state.zoomPresets = []
-        }
+        state.zoomPreset = getRemoteControlZoomPresetId()
+        state.zoomCamera = makeRemoteControlZoomCamera()
         state.zoom = zoom.x
         state.debugLogging = database.debug.debugLogging
         state.streaming = isLive
@@ -745,7 +747,11 @@ extension Model {
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
             ),
-            moblinCloud: moblinCloud
+            moblinCloud: moblinCloud,
+            zoomPresets: RemoteControlSettingsZoomPresets(
+                front: makeRemoteControlZoomPresets(presets: database.zoom.front),
+                back: makeRemoteControlZoomPresets(presets: database.zoom.back)
+            )
         )
     }
 }
@@ -1400,9 +1406,9 @@ extension Model: RemoteControlAssistantDelegate {
             remoteControlAssistantStreamerState.bitrate = bitrate
             remoteControl.bitrate = bitrate
         }
-        if let zoomPresets = state.zoomPresets {
-            remoteControlAssistantStreamerState.zoomPresets = zoomPresets
-            remoteControl.zoomPresets = zoomPresets
+        if let zoomCamera = state.zoomCamera {
+            remoteControlAssistantStreamerState.zoomCamera = zoomCamera
+            updateRemoteControlAssistantZoomPresets()
         }
         if let gimbalPresets = state.gimbalPresets {
             remoteControlAssistantStreamerState.gimbalPresets = gimbalPresets

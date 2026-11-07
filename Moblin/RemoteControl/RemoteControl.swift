@@ -1074,6 +1074,23 @@ struct RemoteControlSettings: Codable {
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
     var moblinCloud: RemoteControlSettingsMoblinCloud?
+    var zoomPresets: RemoteControlSettingsZoomPresets?
+}
+
+struct RemoteControlSettingsZoomPresets: Codable {
+    let front: [RemoteControlZoomPreset]
+    let back: [RemoteControlZoomPreset]
+
+    func active(camera: RemoteControlZoomCamera) -> [RemoteControlZoomPreset] {
+        switch camera {
+        case .front:
+            front
+        case .back:
+            back
+        case .other:
+            []
+        }
+    }
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {
@@ -1083,6 +1100,12 @@ struct RemoteControlStateAutoSceneSwitcher: Codable {
 struct RemoteControlZoomPreset: Codable, Identifiable {
     let id: UUID
     let name: String
+}
+
+enum RemoteControlZoomCamera: String, Codable {
+    case front
+    case back
+    case other
 }
 
 struct RemoteControlMacro: Codable, Identifiable {
@@ -1097,8 +1120,8 @@ struct RemoteControlState: Codable {
     var mic: String?
     var bitrate: UUID?
     var zoom: Float?
-    var zoomPresets: [RemoteControlZoomPreset]?
     var zoomPreset: UUID?
+    var zoomCamera: RemoteControlZoomCamera?
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?

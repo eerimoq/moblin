@@ -198,6 +198,7 @@ export interface RemoteControlSettings {
   bitratePresets: BitratePreset[];
   mics: NamedItem[];
   srt: RemoteControlSettingsSrt;
+  zoomPresets?: { front: ZoomPreset[]; back: ZoomPreset[] };
 }
 
 export interface ResponseData {
@@ -213,8 +214,8 @@ export interface RemoteControlAssistantStreamerState {
   mic?: string;
   bitrate?: string;
   zoom?: number;
-  zoomPresets?: ZoomPreset[];
   zoomPreset?: string;
+  zoomCamera?: ZoomCamera;
   debugLogging?: boolean;
   streaming?: boolean;
   recording?: boolean;
@@ -259,6 +260,8 @@ export interface NamedItem {
 }
 
 export interface ZoomPreset extends NamedItem {}
+
+export type ZoomCamera = "front" | "back" | "other";
 
 export interface BitratePreset {
   id: string;

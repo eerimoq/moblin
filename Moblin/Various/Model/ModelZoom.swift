@@ -258,18 +258,18 @@ extension Model {
     func updateFrontZoomPresets() {
         zoom.frontZoomPresets = database.zoom.front.filter { showPreset(preset: $0) }
         if cameraPosition == .front {
-            zoomPresetsMayHaveChanged()
+            activeZoomPresetsMayHaveChanged()
         }
     }
 
     func updateBackZoomPresets() {
         zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
         if cameraPosition == .back {
-            zoomPresetsMayHaveChanged()
+            activeZoomPresetsMayHaveChanged()
         }
     }
 
-    func zoomPresetsMayHaveChanged() {
+    func activeZoomPresetsMayHaveChanged() {
         let presets: [SettingsZoomPreset] = switch cameraPosition {
         case .back:
             zoom.backZoomPresets
@@ -278,10 +278,38 @@ extension Model {
         default:
             []
         }
-        let zoomPresets = presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-        remoteControlStateChanged(state: RemoteControlState(zoomPresets: zoomPresets))
+        remoteControlStateChanged(state: RemoteControlState(
+            zoomPreset: getRemoteControlZoomPresetId(),
+            zoomCamera: makeRemoteControlZoomCamera()
+        ))
         if isWatchLocal() {
             sendZoomPresetsToWatch(presets: presets)
+        }
+    }
+
+    func makeRemoteControlZoomPresets(presets: [SettingsZoomPreset]) -> [RemoteControlZoomPreset] {
+        presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+    }
+
+    func makeRemoteControlZoomCamera() -> RemoteControlZoomCamera {
+        switch cameraPosition {
+        case .front:
+            .front
+        case .back:
+            .back
+        default:
+            .other
+        }
+    }
+
+    func getRemoteControlZoomPresetId() -> UUID? {
+        switch cameraPosition {
+        case .front:
+            zoom.frontPresetId
+        case .back:
+            zoom.backPresetId
+        default:
+            nil
         }
     }
 

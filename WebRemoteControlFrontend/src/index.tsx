@@ -19,6 +19,7 @@ import {
   ResponseData,
   SrtPriority,
   WebSocketConnection,
+  ZoomCamera,
   ZoomPreset,
 } from "./utils.ts";
 import {
@@ -139,7 +140,15 @@ function App() {
   const [pendingPreviewStream, setPendingPreviewStream] = createSignal<boolean | null>(null);
   const [debugLoggingOn, setDebugLoggingOn] = createSignal(false);
   const [zoomValue, setZoomValue] = createSignal("");
-  const [zoomPresets, setZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [frontZoomPresets, setFrontZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [backZoomPresets, setBackZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [zoomCamera, setZoomCamera] = createSignal<ZoomCamera | null>(null);
+  const zoomPresets = (): ZoomPreset[] => {
+    const camera = zoomCamera();
+    if (camera === "front") return frontZoomPresets();
+    if (camera === "back") return backZoomPresets();
+    return [];
+  };
   const [currentZoomPresetId, setCurrentZoomPresetId] = createSignal<string | null>(null);
   const [scenes, setScenes] = createSignal<NamedItem[]>([]);
   const [currentSceneId, setCurrentSceneId] = createSignal("");
@@ -264,9 +273,8 @@ function App() {
       if (state.zoomPreset !== undefined) {
         setCurrentZoomPresetId(state.zoomPreset);
       }
-      if (state.zoomPresets !== undefined) {
-        setZoomPresets(state.zoomPresets);
-        setCurrentZoomPresetId(state.zoomPreset ?? null);
+      if (state.zoomCamera !== undefined) {
+        setZoomCamera(state.zoomCamera);
       }
       if (state.autoSceneSwitcher !== undefined) {
         setCurrentAutoSwitcherId(state.autoSceneSwitcher.id ?? "");
@@ -411,6 +419,8 @@ function App() {
     setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers ?? []));
     setMics(data.mics);
     setBitratePresets(data.bitratePresets);
+    setFrontZoomPresets(data.zoomPresets?.front ?? []);
+    setBackZoomPresets(data.zoomPresets?.back ?? []);
     if (data.srt.connectionPriorities.length > 0) {
       setShowSrt(true);
       setSrtEnabled(data.srt.connectionPrioritiesEnabled);

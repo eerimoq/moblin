@@ -3060,7 +3060,7 @@ final class Model: NSObject, ObservableObject {
         )
         media.usePendingAfterAttachEffects()
         updateVideoPreviews()
-        zoomPresetsMayHaveChanged()
+        activeZoomPresetsMayHaveChanged()
     }
 
     func attachExternalCamera(scene: SettingsScene, resolver: SceneResolver) {

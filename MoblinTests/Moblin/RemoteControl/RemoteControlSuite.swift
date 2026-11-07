@@ -10,6 +10,26 @@ struct RemoteControlSuite {
         return try String(bytes: encoder.encode(request), encoding: .utf8)
     }
 
+    @Test(arguments: [
+        (RemoteControlZoomCamera.front, ["1x", "2x"]),
+        (.back, ["0.5x", "1x", "5x"]),
+        (.other, []),
+    ])
+    func activeZoomPresets(camera: RemoteControlZoomCamera, names: [String]) {
+        let zoomPresets = RemoteControlSettingsZoomPresets(
+            front: [
+                RemoteControlZoomPreset(id: UUID(), name: "1x"),
+                RemoteControlZoomPreset(id: UUID(), name: "2x"),
+            ],
+            back: [
+                RemoteControlZoomPreset(id: UUID(), name: "0.5x"),
+                RemoteControlZoomPreset(id: UUID(), name: "1x"),
+                RemoteControlZoomPreset(id: UUID(), name: "5x"),
+            ]
+        )
+        #expect(zoomPresets.active(camera: camera).map(\.name) == names)
+    }
+
     @Test
     func gimbalRequests() throws {
         #expect(try encode(.setGimbalTracking(on: true)) == #"{"setGimbalTracking":{"on":true}}"#)
