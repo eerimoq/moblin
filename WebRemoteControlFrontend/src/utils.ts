@@ -259,9 +259,15 @@ export interface NamedItem {
   name: string;
 }
 
-export interface ZoomPreset extends NamedItem {}
+export interface ZoomPreset extends NamedItem {
+  x: number;
+}
 
-export type ZoomCamera = "front" | "back" | "other";
+export interface ZoomCamera {
+  position: "front" | "back" | "other";
+  minX: number;
+  maxX: number;
+}
 
 export interface BitratePreset {
   id: string;

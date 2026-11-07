@@ -11,20 +11,23 @@ struct RemoteControlSuite {
     }
 
     @Test(arguments: [
-        (RemoteControlZoomCamera.front, ["1x", "2x"]),
-        (.back, ["0.5x", "1x", "5x"]),
-        (.other, []),
+        (RemoteControlZoomCamera(position: .front, minX: 1, maxX: 2), ["1x", "2x"]),
+        (RemoteControlZoomCamera(position: .front, minX: 1, maxX: 1.5), ["1x"]),
+        (RemoteControlZoomCamera(position: .back, minX: 0.5, maxX: 15), ["0.5x", "1x", "5x"]),
+        (RemoteControlZoomCamera(position: .back, minX: 1, maxX: 15), ["1x", "5x"]),
+        (RemoteControlZoomCamera(position: .back, minX: 1, maxX: 4.9), ["1x"]),
+        (RemoteControlZoomCamera(position: .other, minX: 0.5, maxX: 15), []),
     ])
     func activeZoomPresets(camera: RemoteControlZoomCamera, names: [String]) {
         let zoomPresets = RemoteControlSettingsZoomPresets(
             front: [
-                RemoteControlZoomPreset(id: UUID(), name: "1x"),
-                RemoteControlZoomPreset(id: UUID(), name: "2x"),
+                RemoteControlZoomPreset(id: UUID(), name: "1x", x: 1),
+                RemoteControlZoomPreset(id: UUID(), name: "2x", x: 2),
             ],
             back: [
-                RemoteControlZoomPreset(id: UUID(), name: "0.5x"),
-                RemoteControlZoomPreset(id: UUID(), name: "1x"),
-                RemoteControlZoomPreset(id: UUID(), name: "5x"),
+                RemoteControlZoomPreset(id: UUID(), name: "0.5x", x: 0.5),
+                RemoteControlZoomPreset(id: UUID(), name: "1x", x: 1),
+                RemoteControlZoomPreset(id: UUID(), name: "5x", x: 5),
             ]
         )
         #expect(zoomPresets.active(camera: camera).map(\.name) == names)
@@ -40,7 +43,7 @@ struct RemoteControlSuite {
     @Test
     func stateChangesAreNilWhenNothingChanged() {
         var sent = RemoteControlState(zoomPreset: UUID(uuidString: "7E3854FA-A449-4C72-B2BF-C2246541CCE8"),
-                                      zoomCamera: .back)
+                                      zoomCamera: .init(position: .back, minX: 0.5, maxX: 15))
         #expect(sent.applyChanges(from: sent) == nil)
     }
 

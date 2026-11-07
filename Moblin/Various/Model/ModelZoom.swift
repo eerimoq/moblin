@@ -287,11 +287,11 @@ extension Model {
     }
 
     func makeRemoteControlZoomPresets(presets: [SettingsZoomPreset]) -> [RemoteControlZoomPreset] {
-        presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+        presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name, x: $0.x) }
     }
 
     func makeRemoteControlZoomCamera() -> RemoteControlZoomCamera {
-        switch cameraPosition {
+        let position: RemoteControlZoomCameraPosition = switch cameraPosition {
         case .front:
             .front
         case .back:
@@ -299,6 +299,7 @@ extension Model {
         default:
             .other
         }
+        return RemoteControlZoomCamera(position: position, minX: cameraZoomXMinimum, maxX: cameraZoomXMaximum)
     }
 
     func getRemoteControlZoomPresetId() -> UUID? {

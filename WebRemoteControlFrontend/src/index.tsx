@@ -145,9 +145,11 @@ function App() {
   const [zoomCamera, setZoomCamera] = createSignal<ZoomCamera | null>(null);
   const zoomPresets = (): ZoomPreset[] => {
     const camera = zoomCamera();
-    if (camera === "front") return frontZoomPresets();
-    if (camera === "back") return backZoomPresets();
-    return [];
+    if (camera === null) return [];
+    let presets: ZoomPreset[] = [];
+    if (camera.position === "front") presets = frontZoomPresets();
+    if (camera.position === "back") presets = backZoomPresets();
+    return presets.filter((preset) => preset.x >= camera.minX && preset.x <= camera.maxX);
   };
   const [currentZoomPresetId, setCurrentZoomPresetId] = createSignal<string | null>(null);
   const [scenes, setScenes] = createSignal<NamedItem[]>([]);

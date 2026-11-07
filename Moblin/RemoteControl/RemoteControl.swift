@@ -1082,14 +1082,15 @@ struct RemoteControlSettingsZoomPresets: Codable {
     let back: [RemoteControlZoomPreset]
 
     func active(camera: RemoteControlZoomCamera) -> [RemoteControlZoomPreset] {
-        switch camera {
+        let presets = switch camera.position {
         case .front:
             front
         case .back:
             back
         case .other:
-            []
+            [RemoteControlZoomPreset]()
         }
+        return presets.filter { $0.x >= camera.minX && $0.x <= camera.maxX }
     }
 }
 
@@ -1100,12 +1101,19 @@ struct RemoteControlStateAutoSceneSwitcher: Codable, Equatable {
 struct RemoteControlZoomPreset: Codable, Identifiable {
     let id: UUID
     let name: String
+    let x: Float
 }
 
-enum RemoteControlZoomCamera: String, Codable {
+enum RemoteControlZoomCameraPosition: String, Codable {
     case front
     case back
     case other
+}
+
+struct RemoteControlZoomCamera: Codable, Equatable {
+    let position: RemoteControlZoomCameraPosition
+    let minX: Float
+    let maxX: Float
 }
 
 struct RemoteControlMacro: Codable, Identifiable, Equatable {
