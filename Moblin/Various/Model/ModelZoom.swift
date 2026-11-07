@@ -100,7 +100,6 @@ extension Model {
     }
 
     func setZoomX(x: Float, rate: Float? = nil, setPinch: Bool = true) {
-        clearZoomPresetId()
         if let x = setCameraZoomX(x: x, rate: rate) {
             setZoomXWhenInRange(x: x, setPinch: setPinch)
         }
@@ -320,20 +319,17 @@ extension Model {
     }
 
     private func updateBackZoomPresetId() {
-        if let preset = database.zoom.back.first(where: { $0.x == zoom.backX }) {
-            setBackZoomPreset(presetId: preset.id)
-        }
+        let preset = database.zoom.back.first(where: { $0.x == zoom.backX })
+        setBackZoomPreset(presetId: preset?.id ?? noBackZoomPresetId)
     }
 
     private func updateFrontZoomPresetId() {
-        if let preset = database.zoom.front.first(where: { $0.x == zoom.frontX }) {
-            setFrontZoomPreset(presetId: preset.id)
-        }
+        let preset = database.zoom.front.first(where: { $0.x == zoom.frontX })
+        setFrontZoomPreset(presetId: preset?.id ?? noFrontZoomPresetId)
     }
 
     func updateBackZoomSwitchTo() {
         if database.zoom.switchToBack.enabled {
-            clearZoomPresetId()
             zoom.backX = database.zoom.switchToBack.x
             updateBackZoomPresetId()
         }
@@ -341,7 +337,6 @@ extension Model {
 
     func updateFrontZoomSwitchTo() {
         if database.zoom.switchToFront.enabled {
-            clearZoomPresetId()
             zoom.frontX = database.zoom.switchToFront.x
             updateFrontZoomPresetId()
         }
