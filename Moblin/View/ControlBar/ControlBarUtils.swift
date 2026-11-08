@@ -40,6 +40,7 @@ extension View {
     func controlBarButtonBackground(color: Color, shape: some Shape) -> some View {
         if #available(iOS 26, *) {
             glassEffect(.regular.tint(color), in: shape)
+                .environment(\.colorScheme, .light)
         } else {
             background(color)
                 .clipShape(shape)
