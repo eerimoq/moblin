@@ -148,13 +148,7 @@ private struct IconAndSettingsView: View {
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
-                Image(systemName: "gearshape")
-                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
-                    .overlay(
-                        Circle()
-                            .stroke(.secondary)
-                    )
-                    .foregroundStyle(.white)
+                SettingsButtonImage()
             }
             .buttonStyle(.borderless)
         }
@@ -178,6 +172,7 @@ private struct PageView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
+        .quickButtonsScrollClip(horizontal: false)
         .rotationEffect(.degrees(180))
     }
 }

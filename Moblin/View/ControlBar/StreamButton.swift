@@ -11,8 +11,8 @@ private struct StreamButtonText: View {
             .foregroundStyle(.white)
             .frame(minWidth: 60)
             .padding(5)
-            .background(database.streamButtonColorColor)
-            .cornerRadius(10)
+            .controlBarButtonBackground(color: database.streamButtonColorColor,
+                                        shape: RoundedRectangle(cornerRadius: 10))
     }
 }
 

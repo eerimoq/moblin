@@ -27,10 +27,6 @@ private struct QuickButtonImage: View {
         }
     }
 
-    private func backgroundColor() -> Color {
-        button.backgroundColor.color()
-    }
-
     private func iconSize() -> Font {
         if quickButtonsSettings.bigButtons {
             .system(size: 20)
@@ -39,20 +35,30 @@ private struct QuickButtonImage: View {
         }
     }
 
-    var body: some View {
-        let image = Image(systemName: getImage())
+    private func image() -> some View {
+        Image(systemName: getImage())
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
-            .background(backgroundColor())
-            .clipShape(Circle())
+            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
+    }
+
+    private func onRing() -> some View {
+        let ringSize = if #available(iOS 26, *) {
+            buttonSize
+        } else {
+            buttonSize - 1
+        }
+        return Circle()
+            .stroke(.white)
+            .frame(width: ringSize, height: ringSize)
+    }
+
+    var body: some View {
+        let image = image()
         ZStack {
             if button.isOn {
-                image.overlay(
-                    Circle()
-                        .stroke(.white)
-                        .frame(width: buttonSize - 1, height: buttonSize - 1)
-                )
+                image.overlay(onRing())
             } else {
                 image
             }
@@ -72,14 +78,17 @@ private struct InstantReplayView: View {
     @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
 
+    private func timeLeft() -> some View {
+        Text(String(replay.timeLeft))
+            .font(.system(size: 25))
+            .frame(width: size, height: size)
+            .foregroundStyle(.white)
+            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
+    }
+
     var body: some View {
         if replay.isPlaying {
-            Text(String(replay.timeLeft))
-                .font(.system(size: 25))
-                .frame(width: size, height: size)
-                .foregroundStyle(.white)
-                .background(button.backgroundColor.color())
-                .clipShape(Circle())
+            timeLeft()
                 .onTapGesture {
                     if model.stream.replay.enabled {
                         model.instantReplay()
@@ -416,6 +425,17 @@ struct QuickButtonsInnerView: View {
 
     private func sceneEditorAction() {
         model.presentingSceneEditor = true
+    }
+
+    private func selectedRing() -> some View {
+        let ringSize = if #available(iOS 26, *) {
+            size
+        } else {
+            size - 2
+        }
+        return Circle()
+            .stroke(.yellow, lineWidth: 2)
+            .frame(width: ringSize, height: ringSize)
     }
 
     var body: some View {
@@ -1004,11 +1024,7 @@ struct QuickButtonsInnerView: View {
                     }
                 }
                 if button.type == quickButtons.selectedButtonType {
-                    buttonView.overlay(
-                        Circle()
-                            .stroke(.yellow, lineWidth: 2)
-                            .frame(width: size - 2, height: size - 2)
-                    )
+                    buttonView.overlay(selectedRing())
                 } else {
                     buttonView
                 }
