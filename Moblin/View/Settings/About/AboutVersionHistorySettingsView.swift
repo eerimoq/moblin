@@ -8,6 +8,17 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "40.0.0", date: "2026-11-08", changes: [
+        "• Only show widget outlines in scene editor, and less features in Scene widgets quick button.",
+        "• Show video source picker when creating VTuber and PNGTuber widgets.",
+        "  • With front camera selected by default.",
+        "• Breaking changes in remote control protocol for zoom.",
+        "• Send less remote control events.",
+        "• Refactoring of zoom preset handling.",
+        "• Liquid glass buttons in scene editor and control bar (quick buttons).",
+        "• Fix UI layout when opening Moblin laying flat. 🐛 xcopy94",
+        "• Show/hide tally via remote control. 🧑‍🏭 jkondo",
+    ]),
     Version(version: "35.7.0", date: "2026-11-06", changes: [
         "• Sort Twitch and Kick category search results by prefix.",
         "• Slightly better error reporting when failing to save snapshot to Photos.",
