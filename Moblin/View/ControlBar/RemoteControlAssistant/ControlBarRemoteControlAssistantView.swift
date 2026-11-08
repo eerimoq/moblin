@@ -1,6 +1,19 @@
 import Collections
 import SwiftUI
 
+private struct PreviewImageView<Content: View>: View {
+    @ObservedObject var preview: RemoteControlPreview
+    @ViewBuilder let content: (UIImage) -> Content
+
+    var body: some View {
+        if let image = preview.image {
+            content(image)
+        } else {
+            Text("No preview received yet.")
+        }
+    }
+}
+
 private struct StatusItemView: View {
     let icon: String
     let status: RemoteControlStatusItem?
@@ -214,8 +227,8 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
     var body: some View {
         Section {
             if remoteControl.presentingPreview {
-                if let preview = remoteControl.preview {
-                    Image(uiImage: preview)
+                PreviewImageView(preview: remoteControl.preview) { image in
+                    Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: .infinity)
@@ -227,8 +240,6 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                             model.remoteControlAssistantStopPreview(user: .panel)
                             remoteControl.presentingPreview = false
                         }
-                } else {
-                    Text("No preview received yet.")
                 }
             } else {
                 TextButtonView("Show") {
@@ -1009,16 +1020,14 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 if !model.isRemoteControlAssistantConfigured() {
                     StreamerNotConfiguredView()
                 } else if model.isRemoteControlAssistantConnected() {
-                    if let preview = remoteControl.preview {
-                        Image(uiImage: preview)
+                    PreviewImageView(preview: remoteControl.preview) { image in
+                        Image(uiImage: image)
                             .resizable()
                             .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
                                 remoteControl.presentingPreviewFullScreen = false
                             }
-                    } else {
-                        Text("No preview received yet.")
                     }
                 } else {
                     WaitingForStreamerView()

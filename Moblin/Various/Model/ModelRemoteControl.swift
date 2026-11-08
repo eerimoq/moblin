@@ -3,6 +3,13 @@ import CoreLocation
 import Foundation
 import SwiftUI
 
+private let previewQueue = DispatchQueue(label: "com.eerimoq.moblin.remote-control-preview")
+
+@MainActor
+class RemoteControlPreview: ObservableObject {
+    @Published var image: UIImage?
+}
+
 @MainActor
 class RemoteControl: ObservableObject {
     @Published var general: RemoteControlStatusGeneral?
@@ -19,7 +26,7 @@ class RemoteControl: ObservableObject {
     @Published var macros: [RemoteControlMacro] = []
     @Published var zoomPreset = UUID()
     @Published var debugLogging = false
-    @Published var preview: UIImage?
+    let preview = RemoteControlPreview()
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
     @Published var muted: Bool = false
@@ -1499,7 +1506,12 @@ extension Model: RemoteControlAssistantDelegate {
     }
 
     func remoteControlAssistantPreview(preview: Data) {
-        remoteControl.preview = UIImage(data: preview)
+        previewQueue.async {
+            let image = UIImage(data: preview)?.preparingForDisplay()
+            DispatchQueue.main.async {
+                self.remoteControl.preview.image = image
+            }
+        }
         if isWatchRemoteControl() {
             sendPreviewToWatch(image: preview)
         }
