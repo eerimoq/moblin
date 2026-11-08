@@ -38,7 +38,7 @@ private struct QuickButtonsScrollClipShape: Shape {
 extension View {
     @ViewBuilder
     func quickButtonsScrollClip(horizontal: Bool) -> some View {
-        if #available(iOS 17, *) {
+        if #available(iOS 26, *) {
             scrollClipDisabled()
                 .clipShape(QuickButtonsScrollClipShape(horizontal: horizontal))
         } else {
