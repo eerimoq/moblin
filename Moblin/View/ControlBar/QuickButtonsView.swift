@@ -3,6 +3,13 @@ import SwiftUI
 
 let controlBarPages = 5
 
+@available(iOS 26, *)
+private extension View {
+    func quickButtonGlass(color: RgbColor) -> some View {
+        glassEffect(.regular.tint(color.color()))
+    }
+}
+
 private struct QuickButtonImage: View {
     let model: Model
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
@@ -39,20 +46,39 @@ private struct QuickButtonImage: View {
         }
     }
 
-    var body: some View {
+    @ViewBuilder
+    private func image() -> some View {
         let image = Image(systemName: getImage())
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
-            .background(backgroundColor())
-            .clipShape(Circle())
+        if #available(iOS 26, *) {
+            image.quickButtonGlass(color: button.backgroundColor)
+        } else {
+            image
+                .background(backgroundColor())
+                .clipShape(Circle())
+        }
+    }
+
+    @ViewBuilder
+    private func onRing() -> some View {
+        if #available(iOS 26, *) {
+            Circle()
+                .stroke(.white)
+                .frame(width: buttonSize, height: buttonSize)
+        } else {
+            Circle()
+                .stroke(.white)
+                .frame(width: buttonSize - 1, height: buttonSize - 1)
+        }
+    }
+
+    var body: some View {
+        let image = image()
         ZStack {
             if button.isOn {
-                image.overlay(
-                    Circle()
-                        .stroke(.white)
-                        .frame(width: buttonSize - 1, height: buttonSize - 1)
-                )
+                image.overlay(onRing())
             } else {
                 image
             }
@@ -72,14 +98,24 @@ private struct InstantReplayView: View {
     @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
 
-    var body: some View {
-        if replay.isPlaying {
-            Text(String(replay.timeLeft))
-                .font(.system(size: 25))
-                .frame(width: size, height: size)
-                .foregroundStyle(.white)
+    @ViewBuilder
+    private func timeLeft() -> some View {
+        let text = Text(String(replay.timeLeft))
+            .font(.system(size: 25))
+            .frame(width: size, height: size)
+            .foregroundStyle(.white)
+        if #available(iOS 26, *) {
+            text.quickButtonGlass(color: button.backgroundColor)
+        } else {
+            text
                 .background(button.backgroundColor.color())
                 .clipShape(Circle())
+        }
+    }
+
+    var body: some View {
+        if replay.isPlaying {
+            timeLeft()
                 .onTapGesture {
                     if model.stream.replay.enabled {
                         model.instantReplay()
@@ -416,6 +452,19 @@ struct QuickButtonsInnerView: View {
 
     private func sceneEditorAction() {
         model.presentingSceneEditor = true
+    }
+
+    @ViewBuilder
+    private func selectedRing() -> some View {
+        if #available(iOS 26, *) {
+            Circle()
+                .stroke(.yellow, lineWidth: 2)
+                .frame(width: size, height: size)
+        } else {
+            Circle()
+                .stroke(.yellow, lineWidth: 2)
+                .frame(width: size - 2, height: size - 2)
+        }
     }
 
     var body: some View {
@@ -1004,11 +1053,7 @@ struct QuickButtonsInnerView: View {
                     }
                 }
                 if button.type == quickButtons.selectedButtonType {
-                    buttonView.overlay(
-                        Circle()
-                            .stroke(.yellow, lineWidth: 2)
-                            .frame(width: size - 2, height: size - 2)
-                    )
+                    buttonView.overlay(selectedRing())
                 } else {
                     buttonView
                 }
