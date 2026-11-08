@@ -169,7 +169,6 @@ private struct PageView: View {
                              quickButtonsSettings: quickButtonsSettings,
                              page: page,
                              width: width)
-                .quickButtonsGlassContainer()
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
