@@ -42,9 +42,18 @@ private struct QuickButtonsView: View {
 
     var body: some View {
         VStack {
-            ForEach(model.getQuickButtonPairs(page: page + 1)) { pair in
+            ForEach(model.getQuickButtonPairs(page: page + 1).reversed()) { pair in
                 if quickButtonsSettings.twoColumns {
-                    HStack(alignment: .bottom) {
+                    HStack(alignment: .top) {
+                        QuickButtonsInnerView(
+                            quickButtons: quickButtons,
+                            quickButtonsSettings: quickButtonsSettings,
+                            orientation: model.orientation,
+                            button: pair.first,
+                            size: buttonSize(),
+                            nameSize: nameSize(),
+                            nameWidth: buttonSize()
+                        )
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 quickButtons: quickButtons,
@@ -58,17 +67,18 @@ private struct QuickButtonsView: View {
                         } else {
                             QuickButtonPlaceholderImage(size: buttonSize())
                         }
-                        QuickButtonsInnerView(
-                            quickButtons: quickButtons,
-                            quickButtonsSettings: quickButtonsSettings,
-                            orientation: model.orientation,
-                            button: pair.first,
-                            size: buttonSize(),
-                            nameSize: nameSize(),
-                            nameWidth: buttonSize()
-                        )
                     }
                 } else {
+                    QuickButtonsInnerView(
+                        quickButtons: quickButtons,
+                        quickButtonsSettings: quickButtonsSettings,
+                        orientation: model.orientation,
+                        button: pair.first,
+                        size: buttonSize(),
+                        nameSize: nameSize(),
+                        nameWidth: width - 10
+                    )
+                    .frame(width: width - 10)
                     if let second = pair.second {
                         QuickButtonsInnerView(
                             quickButtons: quickButtons,
@@ -81,16 +91,6 @@ private struct QuickButtonsView: View {
                         )
                         .frame(width: width - 10)
                     }
-                    QuickButtonsInnerView(
-                        quickButtons: quickButtons,
-                        quickButtonsSettings: quickButtonsSettings,
-                        orientation: model.orientation,
-                        button: pair.first,
-                        size: buttonSize(),
-                        nameSize: nameSize(),
-                        nameWidth: width - 10
-                    )
-                    .frame(width: width - 10)
                 }
             }
         }
@@ -163,17 +163,17 @@ private struct PageView: View {
     let width: Double
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
+        EndAnchoredScrollView(axis: .vertical) {
             QuickButtonsView(model: model,
                              quickButtons: quickButtons,
                              quickButtonsSettings: quickButtonsSettings,
                              page: page,
                              width: width)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .scrollIndicators(.hidden)
         .scrollDisabled(!quickButtonsSettings.enableScroll)
         .quickButtonsScrollClip(horizontal: false)
-        .rotationEffect(.degrees(180))
     }
 }
 

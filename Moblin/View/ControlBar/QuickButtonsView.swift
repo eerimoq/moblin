@@ -1040,6 +1040,5 @@ struct QuickButtonsInnerView: View {
                     .font(.system(size: nameSize))
             }
         }
-        .rotationEffect(.degrees(180))
     }
 }
