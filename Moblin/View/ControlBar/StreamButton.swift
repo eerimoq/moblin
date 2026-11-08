@@ -5,20 +5,14 @@ private struct StreamButtonText: View {
     let text: String
 
     var body: some View {
-        let text = Text(text)
+        Text(text)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
             .foregroundStyle(.white)
             .frame(minWidth: 60)
             .padding(5)
-        if #available(iOS 26, *) {
-            text.glassEffect(.regular.tint(database.streamButtonColorColor),
-                             in: RoundedRectangle(cornerRadius: 10))
-        } else {
-            text
-                .background(database.streamButtonColorColor)
-                .cornerRadius(10)
-        }
+            .controlBarButtonBackground(color: database.streamButtonColorColor,
+                                        shape: RoundedRectangle(cornerRadius: 10))
     }
 }
 

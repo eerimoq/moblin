@@ -3,13 +3,6 @@ import SwiftUI
 
 let controlBarPages = 5
 
-@available(iOS 26, *)
-private extension View {
-    func quickButtonGlass(color: RgbColor) -> some View {
-        glassEffect(.regular.tint(color.color()))
-    }
-}
-
 private struct QuickButtonImage: View {
     let model: Model
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
@@ -34,10 +27,6 @@ private struct QuickButtonImage: View {
         }
     }
 
-    private func backgroundColor() -> Color {
-        button.backgroundColor.color()
-    }
-
     private func iconSize() -> Font {
         if quickButtonsSettings.bigButtons {
             .system(size: 20)
@@ -46,19 +35,12 @@ private struct QuickButtonImage: View {
         }
     }
 
-    @ViewBuilder
     private func image() -> some View {
-        let image = Image(systemName: getImage())
+        Image(systemName: getImage())
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
-        if #available(iOS 26, *) {
-            image.quickButtonGlass(color: button.backgroundColor)
-        } else {
-            image
-                .background(backgroundColor())
-                .clipShape(Circle())
-        }
+            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
     }
 
     @ViewBuilder
@@ -98,19 +80,12 @@ private struct InstantReplayView: View {
     @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
 
-    @ViewBuilder
     private func timeLeft() -> some View {
-        let text = Text(String(replay.timeLeft))
+        Text(String(replay.timeLeft))
             .font(.system(size: 25))
             .frame(width: size, height: size)
             .foregroundStyle(.white)
-        if #available(iOS 26, *) {
-            text.quickButtonGlass(color: button.backgroundColor)
-        } else {
-            text
-                .background(button.backgroundColor.color())
-                .clipShape(Circle())
-        }
+            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
     }
 
     var body: some View {
