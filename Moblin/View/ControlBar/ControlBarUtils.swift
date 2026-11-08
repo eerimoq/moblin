@@ -38,7 +38,7 @@ private struct QuickButtonsScrollClipShape: Shape {
 extension View {
     @ViewBuilder
     func controlBarButtonBackground(color: Color, shape: some Shape) -> some View {
-        if #available(iOS 26, *), !isMac() {
+        if #available(iOS 26, *) {
             glassEffect(.regular.tint(color), in: shape)
         } else {
             background(color)
