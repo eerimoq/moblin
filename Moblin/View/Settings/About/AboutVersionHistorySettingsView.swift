@@ -15,7 +15,7 @@ private let versions = [
         "• Breaking changes in remote control protocol for zoom.",
         "• Send less remote control events.",
         "• Refactoring of zoom preset handling.",
-        "• Liquid glass buttons in scene editor and control bar (quick buttons).",
+        "• Liquid glass buttons in scene editor.",
         "• Fix UI layout when opening Moblin laying flat. 🐛 xcopy94",
         "• Show/hide tally via remote control. 🧑‍🏭 jkondo",
     ]),
