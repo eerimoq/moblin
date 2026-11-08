@@ -30,37 +30,10 @@ private struct QuickButtonsView: View {
     }
 
     var body: some View {
-        ControlBarGlassContainer {
-            HStack {
-                ForEach(model.getQuickButtonPairs(page: page + 1).reversed()) { pair in
-                    if quickButtonsSettings.twoColumns {
-                        VStack(alignment: .trailing) {
-                            QuickButtonsInnerView(
-                                model: model,
-                                quickButtons: quickButtons,
-                                quickButtonsSettings: quickButtonsSettings,
-                                orientation: model.orientation,
-                                button: pair.first,
-                                size: buttonSize(),
-                                nameSize: buttonSize(),
-                                nameWidth: buttonSize()
-                            )
-                            if let second = pair.second {
-                                QuickButtonsInnerView(
-                                    model: model,
-                                    quickButtons: quickButtons,
-                                    quickButtonsSettings: quickButtonsSettings,
-                                    orientation: model.orientation,
-                                    button: second,
-                                    size: buttonSize(),
-                                    nameSize: buttonSize(),
-                                    nameWidth: buttonSize()
-                                )
-                            } else {
-                                QuickButtonPlaceholderImage(size: buttonSize())
-                            }
-                        }
-                    } else {
+        HStack {
+            ForEach(model.getQuickButtonPairs(page: page + 1).reversed()) { pair in
+                if quickButtonsSettings.twoColumns {
+                    VStack(alignment: .trailing) {
                         QuickButtonsInnerView(
                             model: model,
                             quickButtons: quickButtons,
@@ -71,7 +44,6 @@ private struct QuickButtonsView: View {
                             nameSize: buttonSize(),
                             nameWidth: buttonSize()
                         )
-                        .frame(height: height - 10)
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 model: model,
@@ -83,8 +55,34 @@ private struct QuickButtonsView: View {
                                 nameSize: buttonSize(),
                                 nameWidth: buttonSize()
                             )
-                            .frame(height: height - 10)
+                        } else {
+                            QuickButtonPlaceholderImage(size: buttonSize())
                         }
+                    }
+                } else {
+                    QuickButtonsInnerView(
+                        model: model,
+                        quickButtons: quickButtons,
+                        quickButtonsSettings: quickButtonsSettings,
+                        orientation: model.orientation,
+                        button: pair.first,
+                        size: buttonSize(),
+                        nameSize: buttonSize(),
+                        nameWidth: buttonSize()
+                    )
+                    .frame(height: height - 10)
+                    if let second = pair.second {
+                        QuickButtonsInnerView(
+                            model: model,
+                            quickButtons: quickButtons,
+                            quickButtonsSettings: quickButtonsSettings,
+                            orientation: model.orientation,
+                            button: second,
+                            size: buttonSize(),
+                            nameSize: buttonSize(),
+                            nameWidth: buttonSize()
+                        )
+                        .frame(height: height - 10)
                     }
                 }
             }
@@ -110,7 +108,6 @@ private struct PageView: View {
         }
         .scrollIndicators(.hidden)
         .scrollDisabled(!quickButtonsSettings.enableScroll)
-        .quickButtonsScrollClip(horizontal: true)
     }
 }
 

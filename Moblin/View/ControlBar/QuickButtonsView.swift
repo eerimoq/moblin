@@ -43,14 +43,9 @@ private struct QuickButtonImage: View {
     }
 
     private func onRing() -> some View {
-        let ringSize = if #available(iOS 26, *) {
-            buttonSize
-        } else {
-            buttonSize - 1
-        }
-        return Circle()
+        Circle()
             .stroke(.white)
-            .frame(width: ringSize, height: ringSize)
+            .frame(width: buttonSize - 1, height: buttonSize - 1)
     }
 
     var body: some View {
@@ -426,14 +421,9 @@ struct QuickButtonsInnerView: View {
     }
 
     private func selectedRing() -> some View {
-        let ringSize = if #available(iOS 26, *) {
-            size
-        } else {
-            size - 2
-        }
-        return Circle()
+        Circle()
             .stroke(.yellow, lineWidth: 2)
-            .frame(width: ringSize, height: ringSize)
+            .frame(width: size - 2, height: size - 2)
     }
 
     var body: some View {
@@ -1026,10 +1016,10 @@ struct QuickButtonsInnerView: View {
                 } else if button.type == quickButtons.selectedButtonType {
                     buttonView
                         .overlay(selectedRing())
-                        .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
+                        .background(Circle().fill(button.backgroundColor.color()))
                 } else {
                     buttonView
-                        .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
+                        .background(Circle().fill(button.backgroundColor.color()))
                 }
             }
             if quickButtonsSettings.showName, !orientation.isPortrait {
