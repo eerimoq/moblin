@@ -83,6 +83,7 @@ private struct QuickButtonsView: View {
                 }
             }
         }
+        // .environment(\.colorScheme, .dark)
     }
 }
 
