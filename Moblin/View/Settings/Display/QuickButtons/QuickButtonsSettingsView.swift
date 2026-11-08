@@ -33,8 +33,8 @@ private struct ButtonSettingsView: View {
                                            showAll: false)
                 .onAppear {
                     model.quickButtons.selectedButtonType = button.type
-                    model.quickButtons.page = button.page
-                    model.quickButtons.activePage = button.page
+                    model.quickButtonsPages.page = button.page
+                    model.quickButtonsPages.activePage = button.page
                 }
                 .onDisappear {
                     if model.showingPanel != .quickButtonSettings {

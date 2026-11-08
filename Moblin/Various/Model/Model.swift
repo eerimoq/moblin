@@ -407,6 +407,10 @@ class GoProState: ObservableObject {
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var selectedButtonType: SettingsQuickButtonType?
+}
+
+@MainActor
+class QuickButtonsPages: ObservableObject {
     var page = 1
     @Published var activePage: Int? = 1
 }
@@ -521,6 +525,7 @@ final class Model: NSObject, ObservableObject {
     private var isDevicePortrait = false
     let snapshot = Snapshot()
     let quickButtons = QuickButtons()
+    let quickButtonsPages = QuickButtonsPages()
     let mic = Mic()
     let goPro = GoProState()
     let obsQuickButton = QuickButtonObs()

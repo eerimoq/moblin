@@ -46,6 +46,7 @@ private struct QuickButtonsView: View {
                 if quickButtonsSettings.twoColumns {
                     HStack(alignment: .top) {
                         QuickButtonsInnerView(
+                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -56,6 +57,7 @@ private struct QuickButtonsView: View {
                         )
                         if let second = pair.second {
                             QuickButtonsInnerView(
+                                model: model,
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
@@ -70,6 +72,7 @@ private struct QuickButtonsView: View {
                     }
                 } else {
                     QuickButtonsInnerView(
+                        model: model,
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,
@@ -81,6 +84,7 @@ private struct QuickButtonsView: View {
                     .frame(width: width - 10)
                     if let second = pair.second {
                         QuickButtonsInnerView(
+                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -231,6 +235,7 @@ private struct PageIndicatorView: View {
     let model: Model
     let size: CGFloat
     @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var pages: QuickButtonsPages
 
     private func visiblePages() -> [Int] {
         var pages = [1]
@@ -243,13 +248,13 @@ private struct PageIndicatorView: View {
     var body: some View {
         HStack(spacing: 3) {
             ForEach(visiblePages(), id: \.self) { page in
-                Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
+                Image(systemName: pages.activePage == page ? "circle.fill" : "circle")
                     .font(.system(size: size))
                     .padding(.bottom, 0)
                     .foregroundStyle(.white)
                     .onTapGesture {
-                        quickButtons.page = page
-                        quickButtons.activePage = page
+                        pages.page = page
+                        pages.activePage = page
                         model.updateQuickButtonPairs()
                     }
             }
@@ -260,6 +265,7 @@ private struct PageIndicatorView: View {
 private struct PagesView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var pages: QuickButtonsPages
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     let width: Double
 
@@ -302,16 +308,16 @@ private struct PagesView: View {
                 }
                 .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
                 .scrollIndicators(.never)
-                .scrollPosition(id: $quickButtons.activePage)
+                .scrollPosition(id: $pages.activePage)
                 .ignoresSafeArea(.all, edges: edgesToIgnore())
                 .overlay(alignment: .bottom) {
                     if !isMac() {
-                        PageIndicatorView(model: model, size: 5, quickButtons: quickButtons)
+                        PageIndicatorView(model: model, size: 5, quickButtons: quickButtons, pages: pages)
                             .offset(.init(width: offsetX(), height: 13))
                     }
                 }
                 if isMac() {
-                    PageIndicatorView(model: model, size: 9, quickButtons: quickButtons)
+                    PageIndicatorView(model: model, size: 9, quickButtons: quickButtons, pages: pages)
                         .padding(.top, 1)
                 }
             }
@@ -346,6 +352,7 @@ struct ControlBarLandscapeView: View {
             }
             PagesView(model: model,
                       quickButtons: model.quickButtons,
+                      pages: model.quickButtonsPages,
                       quickButtonsSettings: quickButtons,
                       width: controlBarWidth(quickButtons: quickButtons))
         }

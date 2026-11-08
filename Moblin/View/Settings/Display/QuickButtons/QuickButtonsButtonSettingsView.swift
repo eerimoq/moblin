@@ -207,8 +207,8 @@ struct QuickButtonsButtonSettingsView: View {
                         Text("Page")
                     }
                     .onChange(of: button.page) { page in
-                        model.quickButtons.page = page
-                        model.quickButtons.activePage = page
+                        model.quickButtonsPages.page = page
+                        model.quickButtonsPages.activePage = page
                         model.updateQuickButtonPairs()
                         model.database.objectWillChange.send()
                     }

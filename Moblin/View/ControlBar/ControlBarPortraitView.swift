@@ -35,6 +35,7 @@ private struct QuickButtonsView: View {
                 if quickButtonsSettings.twoColumns {
                     VStack(alignment: .trailing) {
                         QuickButtonsInnerView(
+                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -45,6 +46,7 @@ private struct QuickButtonsView: View {
                         )
                         if let second = pair.second {
                             QuickButtonsInnerView(
+                                model: model,
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
@@ -59,6 +61,7 @@ private struct QuickButtonsView: View {
                     }
                 } else {
                     QuickButtonsInnerView(
+                        model: model,
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,
@@ -70,6 +73,7 @@ private struct QuickButtonsView: View {
                     .frame(height: height - 10)
                     if let second = pair.second {
                         QuickButtonsInnerView(
+                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -186,6 +190,7 @@ private struct MainPageView: View {
 private struct PagesView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var pages: QuickButtonsPages
     let quickButtonsSettings: SettingsQuickButtons
     var height: Double
 
@@ -218,7 +223,7 @@ private struct PagesView: View {
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
-            .scrollPosition(id: $quickButtons.activePage)
+            .scrollPosition(id: $pages.activePage)
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
             ScrollView(.vertical) {
@@ -241,6 +246,7 @@ struct ControlBarPortraitView: View {
     var body: some View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
+                  pages: model.quickButtonsPages,
                   quickButtonsSettings: model.database.quickButtonsGeneral,
                   height: controlBarWidth(quickButtons: quickButtons))
             .frame(height: controlBarWidth(quickButtons: quickButtons))

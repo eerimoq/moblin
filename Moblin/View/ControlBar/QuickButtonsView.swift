@@ -141,7 +141,7 @@ private struct ButtonTextOverlayView: View {
 }
 
 struct QuickButtonsInnerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var orientation: Orientation
