@@ -42,14 +42,26 @@ class Executor: ObservableObject {
     }
 }
 
+extension EnvironmentValues {
+    @Entry var moderationPlatform: Platform = .twitch
+}
+
 struct ExecutorView<Content: View>: View {
     @EnvironmentObject var model: Model
+    @Environment(\.moderationPlatform) private var platform
     @ObservedObject var executor: Executor
     var centerNonContent: Bool = false
     @ViewBuilder let content: () -> Content
 
     private func handleState() {
-        if executor.state == .authError {
+        guard executor.state == .authError else {
+            return
+        }
+        switch platform {
+        case .kick:
+            model.kickLogin(stream: model.stream)
+            model.showModerationAuth = true
+        default:
             model.twitchLogin(stream: model.stream) {
                 model.showModerationAuth = true
             }
@@ -514,6 +526,7 @@ struct QuickButtonChatModerationView: View {
                 Section {
                     QuickButtonChatModerationTwitchView(model: model, platform: $platform)
                     QuickButtonChatModerationKickView(model: model, platform: $platform)
+                        .environment(\.moderationPlatform, .kick)
                 }
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(model: model, stream: model.stream)
@@ -529,6 +542,10 @@ struct QuickButtonChatModerationView: View {
             switch platform {
             case .twitch:
                 TwitchLoginView(model: model, presenting: $model.showModerationAuth)
+            case .kick:
+                KickLoginView(presenting: $model.showModerationAuth) { accessToken in
+                    model.kickAuthOnComplete?(accessToken)
+                }
             default:
                 EmptyView()
             }
