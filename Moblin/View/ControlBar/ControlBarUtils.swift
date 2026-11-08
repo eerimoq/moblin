@@ -37,6 +37,17 @@ private struct QuickButtonsScrollClipShape: Shape {
 
 extension View {
     @ViewBuilder
+    func quickButtonsGlassContainer() -> some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer {
+                self
+            }
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
     func quickButtonsScrollClip(horizontal: Bool) -> some View {
         if #available(iOS 26, *) {
             scrollClipDisabled()
