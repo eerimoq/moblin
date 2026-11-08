@@ -63,10 +63,7 @@ class ChatProvider: ObservableObject {
             }
         } else {
             while let post = newPosts.popFirst() {
-                if posts.count > maximumNumberOfChatMessages - 1 {
-                    posts.removeLast()
-                }
-                posts.prepend(post)
+                appendPost(post)
             }
         }
     }
@@ -82,11 +79,15 @@ class ChatProvider: ObservableObject {
 
     func endReachedWhenPaused() {
         while let post = pausedPosts.popFirst() {
-            if posts.count > maximumNumberOfChatMessages - 1 {
-                posts.removeLast()
-            }
-            posts.prepend(post)
+            appendPost(post)
         }
         paused = false
+    }
+
+    private func appendPost(_ post: ChatPost) {
+        if posts.count > maximumNumberOfChatMessages - 1 {
+            posts.removeFirst()
+        }
+        posts.append(post)
     }
 }

@@ -128,7 +128,7 @@ private class ChatRenderer {
     }
 
     private func render() {
-        let posts = chat.posts.prefix(settings.maximumNumberOfMessages).reversed()
+        let posts = chat.posts.suffix(settings.maximumNumberOfMessages)
             .filter { !$0.state.deleted }
         stateCancellables = posts.map { post in
             post.state.objectWillChange.sink { [weak self] _ in

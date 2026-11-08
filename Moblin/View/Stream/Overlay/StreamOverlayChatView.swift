@@ -1,4 +1,3 @@
-import Collections
 import SwiftUI
 
 private func makeChatLineStyle(chat: SettingsChat, interactive: Bool) -> ChatLineStyle {
@@ -93,8 +92,6 @@ private struct LineView: View {
     }
 }
 
-private let startId = UUID()
-
 private struct PostView: View {
     let chatSettings: SettingsChat
     let style: ChatLineStyle
@@ -174,54 +171,29 @@ private struct MessagesView: View {
     }
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
         let style = makeChatLineStyle(chat: chatSettings, interactive: interactive)
-        ScrollViewReader { proxy in
-            ScrollView(showsIndicators: false) {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    Color.clear
-                        .onAppear {
-                            // App hangs if not doing this async.
-                            DispatchQueue.main.async {
-                                tryUnpause()
-                            }
-                        }
-                        .onDisappear {
-                            tryPause()
-                        }
-                        .frame(height: 1)
-                        .id(startId)
-                    ForEach(chat.posts) { post in
-                        PostView(chatSettings: chatSettings,
-                                 style: style,
-                                 moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                                 post: post,
-                                 state: post.state,
-                                 interactive: interactive,
-                                 selectedPost: $selectedPost,
-                                 linkUrl: $linkUrl)
-                            .rotationEffect(Angle(degrees: rotation))
-                            .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .rotationEffect(Angle(degrees: rotation))
-            .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
-            .frame(width: width)
-            .allowsHitTesting(chat.interactiveChat)
-            .onChange(of: chat.interactiveChat) { _ in
-                proxy.scrollTo(startId, anchor: .bottom)
-            }
-            .onChange(of: chat.triggerScrollToBottom) { _ in
-                proxy.scrollTo(startId, anchor: .bottom)
-            }
-            .onAppear {
-                // Trigger after tryPause() of bottom of chat detector.
-                DispatchQueue.main.async {
-                    tryUnpause()
-                }
+        ChatScrollView(chat: chat,
+                       newMessagesAtTop: chatSettings.newMessagesAtTop,
+                       mirrored: chatSettings.mirrored,
+                       onLatestAppear: tryUnpause,
+                       onLatestDisappear: tryPause)
+        { post in
+            PostView(chatSettings: chatSettings,
+                     style: style,
+                     moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                     post: post,
+                     state: post.state,
+                     interactive: interactive,
+                     selectedPost: $selectedPost,
+                     linkUrl: $linkUrl)
+        }
+        .scrollIndicators(.hidden)
+        .frame(width: width)
+        .allowsHitTesting(chat.interactiveChat)
+        .onAppear {
+            // Trigger after tryPause() of bottom of chat detector.
+            DispatchQueue.main.async {
+                tryUnpause()
             }
         }
     }
@@ -331,7 +303,7 @@ private struct SeparatorView: View {
             }
         }
         .frame(width: width, height: separatorHeight, alignment: .leading)
-        .onChange(of: activityFeed.posts.first?.id) { _ in
+        .onChange(of: activityFeed.posts.last?.id) { _ in
             handleNewPost()
         }
         .onChange(of: activityFeed.pausedPostsCount) { _ in

@@ -72,8 +72,6 @@ private struct PostView: View {
     @Binding var linkUrl: URL?
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let rotation: Double
-    let scaleX: Double
 
     var body: some View {
         if !state.deleted || chatSettings.showDeletedMessages {
@@ -104,8 +102,6 @@ private struct PostView: View {
                         )
                     }
                 }
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
             } else {
                 LineView(
                     deleted: state.deleted,
@@ -116,8 +112,6 @@ private struct PostView: View {
                     linkUrl: $linkUrl
                 )
                 .padding(.leading, 3)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
             }
         }
     }
@@ -131,40 +125,21 @@ private struct MessagesView: View {
     @Binding var linkUrl: URL?
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
         let style = makeChatLineStyle(chat: chatSettings)
-        GeometryReader { metrics in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    Color.clear
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                model.endOfQuickButtonChatReachedWhenPaused()
-                            }
-                        }
-                        .onDisappear {
-                            model.pauseQuickButtonChat()
-                        }
-                        .frame(height: 1)
-                    ForEach(chat.posts) { post in
-                        PostView(chatSettings: chatSettings,
-                                 style: style,
-                                 moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                                 selectedPost: $selectedPost,
-                                 linkUrl: $linkUrl,
-                                 post: post,
-                                 state: post.state,
-                                 rotation: rotation,
-                                 scaleX: scaleX)
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .frame(minHeight: metrics.size.height)
+        ChatScrollView(chat: chat,
+                       newMessagesAtTop: chatSettings.newMessagesAtTop,
+                       mirrored: chatSettings.mirrored,
+                       onLatestAppear: model.endOfQuickButtonChatReachedWhenPaused,
+                       onLatestDisappear: model.pauseQuickButtonChat)
+        { post in
+            PostView(chatSettings: chatSettings,
+                     style: style,
+                     moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                     selectedPost: $selectedPost,
+                     linkUrl: $linkUrl,
+                     post: post,
+                     state: post.state)
         }
-        .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
@@ -200,8 +175,6 @@ private struct AlertsPostView: View {
     @Binding var linkUrl: URL?
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let rotation: Double
-    let scaleX: Double
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage, !showFirstTimeChatterMessage {
@@ -243,8 +216,6 @@ private struct AlertsPostView: View {
                             )
                         }
                     }
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
             } else {
                 LineView(
@@ -256,8 +227,6 @@ private struct AlertsPostView: View {
                     linkUrl: $linkUrl
                 )
                 .padding(.leading, 3)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
             }
         }
     }
@@ -272,44 +241,23 @@ private struct AlertsMessagesView: View {
     @Binding var linkUrl: URL?
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
         let style = makeChatLineStyle(chat: chatSettings)
-        GeometryReader { metrics in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    Color.clear
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                model.endOfQuickButtonChatAlertsReachedWhenPaused()
-                            }
-                        }
-                        .onDisappear {
-                            model.pauseQuickButtonChatAlerts()
-                        }
-                        .frame(height: 1)
-                    ForEach(chat.posts) { post in
-                        AlertsPostView(
-                            chatSettings: chatSettings,
-                            style: style,
-                            moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                            showFirstTimeChatterMessage: quickButtonChat.showFirstTimeChatterMessage,
-                            showNewFollowerMessage: quickButtonChat.showNewFollowerMessage,
-                            selectedPost: $selectedPost,
-                            linkUrl: $linkUrl,
-                            post: post,
-                            state: post.state,
-                            rotation: rotation,
-                            scaleX: scaleX
-                        )
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .frame(minHeight: metrics.size.height)
+        ChatScrollView(chat: chat,
+                       newMessagesAtTop: chatSettings.newMessagesAtTop,
+                       mirrored: chatSettings.mirrored,
+                       onLatestAppear: model.endOfQuickButtonChatAlertsReachedWhenPaused,
+                       onLatestDisappear: model.pauseQuickButtonChatAlerts)
+        { post in
+            AlertsPostView(chatSettings: chatSettings,
+                           style: style,
+                           moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                           showFirstTimeChatterMessage: quickButtonChat.showFirstTimeChatterMessage,
+                           showNewFollowerMessage: quickButtonChat.showNewFollowerMessage,
+                           selectedPost: $selectedPost,
+                           linkUrl: $linkUrl,
+                           post: post,
+                           state: post.state)
         }
-        .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 

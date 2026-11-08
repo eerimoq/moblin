@@ -46,9 +46,9 @@ extension Model {
         if chat.paused {
             return
         }
-        while let post = chat.posts.last {
+        while let post = chat.posts.first {
             if post.timestampTime.duration(to: now) > .seconds(database.chat.maximumAge) {
-                chat.posts.removeLast()
+                chat.posts.removeFirst()
             } else {
                 break
             }

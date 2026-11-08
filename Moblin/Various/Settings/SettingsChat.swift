@@ -1060,28 +1060,4 @@ class SettingsChat: Codable, ObservableObject {
         bigGifScale = container.decode(.bigGifScale, Float.self, Self.defaultBigGifScale)
         compactEvents = container.decode(.compactEvents, Bool.self, true)
     }
-
-    func getRotation() -> Double {
-        if newMessagesAtTop {
-            0.0
-        } else {
-            180.0
-        }
-    }
-
-    func getScaleX() -> Double {
-        if newMessagesAtTop {
-            1.0
-        } else {
-            -1.0
-        }
-    }
-
-    func isMirrored() -> CGFloat {
-        if mirrored {
-            -1
-        } else {
-            1
-        }
-    }
 }
