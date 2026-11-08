@@ -458,7 +458,7 @@ extension Model {
         topLeft.camera = RemoteControlStatusItem(message: statusTopLeft.statusCameraText)
         topLeft.mic = RemoteControlStatusItem(message: mic.current.name)
         if zoom.hasZoom {
-            topLeft.zoom = RemoteControlStatusItem(message: zoom.statusText())
+            topLeft.zoom = RemoteControlStatusItem(message: zoom.level.statusText())
         }
         if isObsRemoteControlConfigured() {
             topLeft.obs = RemoteControlStatusItem(message: statusTopLeft.statusObsText)
@@ -617,7 +617,7 @@ extension Model {
         }
         state.zoomPreset = getRemoteControlZoomPresetId()
         state.zoomCamera = makeRemoteControlZoomCamera()
-        state.zoom = zoom.x
+        state.zoom = zoom.level.x
         state.debugLogging = database.debug.debugLogging
         state.streaming = isLive
         state.recording = isRecording

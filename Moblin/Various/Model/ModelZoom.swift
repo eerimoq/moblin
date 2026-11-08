@@ -46,7 +46,17 @@ class MacZoomRamp {
 #endif
 
 @MainActor
+class ZoomLevel: ObservableObject {
+    @Published var x: Float = 1.0
+
+    func statusText() -> String {
+        String(format: "%.1f", x)
+    }
+}
+
+@MainActor
 class Zoom: ObservableObject {
+    let level = ZoomLevel()
     var xPinch: Float = 1.0
     var backX: Float = 0.5
     var frontX: Float = 0.5
@@ -60,14 +70,9 @@ class Zoom: ObservableObject {
     #endif
     @Published var backPresetId = UUID()
     @Published var frontPresetId = UUID()
-    @Published var x: Float = 1.0
     @Published var hasZoom = true
     @Published var backZoomPresets: [SettingsZoomPreset] = []
     @Published var frontZoomPresets: [SettingsZoomPreset] = []
-
-    func statusText() -> String {
-        String(format: "%.1f", x)
-    }
 }
 
 extension Model {
@@ -116,13 +121,13 @@ extension Model {
         default:
             break
         }
-        zoom.x = x
+        zoom.level.x = x
         remoteControlZoomChanged()
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }
         if setPinch {
-            zoom.xPinch = zoom.x
+            zoom.xPinch = zoom.level.x
         }
     }
 
@@ -131,7 +136,7 @@ extension Model {
             zoom.remoteControlPending = true
             return
         }
-        remoteControlStateChanged(state: RemoteControlState(zoom: zoom.x))
+        remoteControlStateChanged(state: RemoteControlState(zoom: zoom.level.x))
         zoom.remoteControlTimerRunning = true
         zoom.remoteControlTimer.startSingleShot(timeout: 0.5) {
             self.zoom.remoteControlTimerRunning = false
@@ -188,7 +193,7 @@ extension Model {
 
     private func updateZoomXFromCamera() {
         if let device = cameraDevice {
-            zoom.x = Float(device.videoZoomFactor) * cameraZoomLevelToXScale
+            zoom.level.x = Float(device.videoZoomFactor) * cameraZoomLevelToXScale
         }
     }
 

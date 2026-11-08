@@ -1160,7 +1160,7 @@ final class Model: NSObject, ObservableObject {
             } else {
                 zoom.backX = cameraZoomXMinimum
             }
-            zoom.x = zoom.backX
+            zoom.level.x = zoom.backX
         }
         updateFrontZoomPresets()
         updateBackZoomPresets()
@@ -2896,7 +2896,7 @@ final class Model: NSObject, ObservableObject {
     ) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
-        zoom.x = zoom.backX
+        zoom.level.x = zoom.backX
         guard let bestDevice = AVCaptureDevice.default(bestDeviceType, for: .video, position: .back),
               let lastZoomFactor = bestDevice.virtualDeviceSwitchOverVideoZoomFactors.last
         else {
@@ -2931,10 +2931,10 @@ final class Model: NSObject, ObservableObject {
         switch position {
         case .back:
             updateBackZoomSwitchTo()
-            zoom.x = zoom.backX
+            zoom.level.x = zoom.backX
         case .front:
             updateFrontZoomSwitchTo()
-            zoom.x = zoom.frontX
+            zoom.level.x = zoom.frontX
         default:
             break
         }
@@ -2975,7 +2975,7 @@ final class Model: NSObject, ObservableObject {
             onSuccess: {
                 self.streamPreviewView.isMirrored = isMirrored
                 self.externalDisplayStreamPreviewView.isMirrored = isMirrored
-                if let x = self.setCameraZoomX(x: self.zoom.x) {
+                if let x = self.setCameraZoomX(x: self.zoom.level.x) {
                     self.setZoomXWhenInRange(x: x)
                 }
                 if let device = self.cameraDevice {
@@ -2993,7 +2993,7 @@ final class Model: NSObject, ObservableObject {
                 self.activatePhotoShoot()
             }
         )
-        zoom.xPinch = zoom.x
+        zoom.xPinch = zoom.level.x
         zoom.hasZoom = true
         updateFrontZoomPresets()
         updateBackZoomPresets()

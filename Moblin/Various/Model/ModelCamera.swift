@@ -867,7 +867,7 @@ extension Model {
             }
         }
         media.setColorSpace(colorSpace: colorSpace) {
-            if let x = self.setCameraZoomX(x: self.zoom.x) {
+            if let x = self.setCameraZoomX(x: self.zoom.level.x) {
                 self.setZoomXWhenInRange(x: x)
             }
             self.lutEnabledUpdated()

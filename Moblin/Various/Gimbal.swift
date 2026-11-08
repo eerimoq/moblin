@@ -161,9 +161,9 @@ class Gimbal {
         let zoomSpeed = 1 + gimbal.zoomSpeed / 1000
         let rate = 1 + 2 * Float(pow(Double(gimbal.zoomSpeed) / 50.0, 1.3))
         if zoomIn {
-            model.setZoomX(x: model.zoom.x * zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.level.x * zoomSpeed, rate: rate)
         } else {
-            model.setZoomX(x: model.zoom.x / zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.level.x / zoomSpeed, rate: rate)
         }
     }
 }

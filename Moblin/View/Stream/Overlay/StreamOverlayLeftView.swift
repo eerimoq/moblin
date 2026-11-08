@@ -127,13 +127,13 @@ private struct StreamStatusView: View {
 }
 
 private struct ZoomView: View {
-    @ObservedObject var zoom: Zoom
+    @ObservedObject var level: ZoomLevel
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         StreamOverlayIconAndTextView(
             icon: "magnifyingglass",
-            text: zoom.statusText(),
+            text: level.statusText(),
             textPlacement: textPlacement
         )
     }
@@ -207,7 +207,7 @@ private struct StatusesView: View {
             )
         }
         if textPlacement != .hide, model.isShowingStatusZoom() {
-            ZoomView(zoom: model.zoom, textPlacement: textPlacement)
+            ZoomView(level: model.zoom.level, textPlacement: textPlacement)
         }
         if model.isShowingStatusObs() {
             StreamOverlayIconAndTextView(

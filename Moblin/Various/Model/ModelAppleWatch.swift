@@ -31,7 +31,7 @@ extension Model {
             }
             sendRemoteControlAssistantStatusToWatch()
         } else {
-            sendZoomToWatch(x: zoom.x)
+            sendZoomToWatch(x: zoom.level.x)
             activeZoomPresetsMayHaveChanged()
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()

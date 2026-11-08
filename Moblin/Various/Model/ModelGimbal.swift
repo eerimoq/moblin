@@ -51,7 +51,7 @@ extension Model {
                     if let preset = database.gimbal.presets.first(where: { $0.id == id }) {
                         preset.x = Float(angles.x)
                         preset.y = Float(angles.y)
-                        preset.zoomX = zoom.x
+                        preset.zoomX = zoom.level.x
                     }
                 } else {
                     let preset = SettingsGimbalPreset()
@@ -59,7 +59,7 @@ extension Model {
                                                  existingNames: database.gimbal.presets)
                     preset.x = Float(angles.x)
                     preset.y = Float(angles.y)
-                    preset.zoomX = zoom.x
+                    preset.zoomX = zoom.level.x
                     database.gimbal.presets.append(preset)
                 }
                 remoteControlStateChanged(state: RemoteControlState(
