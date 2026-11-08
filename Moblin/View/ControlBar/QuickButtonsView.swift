@@ -40,7 +40,6 @@ private struct QuickButtonImage: View {
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
-            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
     }
 
     private func onRing() -> some View {
@@ -83,7 +82,6 @@ private struct InstantReplayView: View {
             .font(.system(size: 25))
             .frame(width: size, height: size)
             .foregroundStyle(.white)
-            .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
     }
 
     var body: some View {
@@ -1023,10 +1021,15 @@ struct QuickButtonsInnerView: View {
                         }
                     }
                 }
-                if button.type == quickButtons.selectedButtonType {
-                    buttonView.overlay(selectedRing())
+                if button.type == .unknown {
+                    buttonView
+                } else if button.type == quickButtons.selectedButtonType {
+                    buttonView
+                        .overlay(selectedRing())
+                        .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
                 } else {
                     buttonView
+                        .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
                 }
             }
             if quickButtonsSettings.showName, !orientation.isPortrait {

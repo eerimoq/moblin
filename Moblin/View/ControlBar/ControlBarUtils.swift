@@ -27,6 +27,20 @@ struct SettingsButtonImage: View {
     }
 }
 
+struct ControlBarGlassContainer<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer(spacing: 0) {
+                content()
+            }
+        } else {
+            content()
+        }
+    }
+}
+
 private struct QuickButtonsScrollClipShape: Shape {
     let horizontal: Bool
 
@@ -39,12 +53,10 @@ extension View {
     @ViewBuilder
     func controlBarButtonBackground(color: Color, shape: some Shape) -> some View {
         if #available(iOS 26, *) {
-            background(color)
-                .clipShape(shape)
+            background(shape.fill(color))
                 .glassEffect(.regular.tint(color), in: shape)
         } else {
-            background(color)
-                .clipShape(shape)
+            background(shape.fill(color))
         }
     }
 

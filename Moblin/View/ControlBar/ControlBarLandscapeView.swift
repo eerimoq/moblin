@@ -41,10 +41,37 @@ private struct QuickButtonsView: View {
     }
 
     var body: some View {
-        VStack {
-            ForEach(model.getQuickButtonPairs(page: page + 1).reversed()) { pair in
-                if quickButtonsSettings.twoColumns {
-                    HStack(alignment: .top) {
+        ControlBarGlassContainer {
+            VStack {
+                ForEach(model.getQuickButtonPairs(page: page + 1).reversed()) { pair in
+                    if quickButtonsSettings.twoColumns {
+                        HStack(alignment: .top) {
+                            QuickButtonsInnerView(
+                                model: model,
+                                quickButtons: quickButtons,
+                                quickButtonsSettings: quickButtonsSettings,
+                                orientation: model.orientation,
+                                button: pair.first,
+                                size: buttonSize(),
+                                nameSize: nameSize(),
+                                nameWidth: buttonSize()
+                            )
+                            if let second = pair.second {
+                                QuickButtonsInnerView(
+                                    model: model,
+                                    quickButtons: quickButtons,
+                                    quickButtonsSettings: quickButtonsSettings,
+                                    orientation: model.orientation,
+                                    button: second,
+                                    size: buttonSize(),
+                                    nameSize: nameSize(),
+                                    nameWidth: buttonSize()
+                                )
+                            } else {
+                                QuickButtonPlaceholderImage(size: buttonSize())
+                            }
+                        }
+                    } else {
                         QuickButtonsInnerView(
                             model: model,
                             quickButtons: quickButtons,
@@ -53,8 +80,9 @@ private struct QuickButtonsView: View {
                             button: pair.first,
                             size: buttonSize(),
                             nameSize: nameSize(),
-                            nameWidth: buttonSize()
+                            nameWidth: width - 10
                         )
+                        .frame(width: width - 10)
                         if let second = pair.second {
                             QuickButtonsInnerView(
                                 model: model,
@@ -64,36 +92,10 @@ private struct QuickButtonsView: View {
                                 button: second,
                                 size: buttonSize(),
                                 nameSize: nameSize(),
-                                nameWidth: buttonSize()
+                                nameWidth: width - 10
                             )
-                        } else {
-                            QuickButtonPlaceholderImage(size: buttonSize())
+                            .frame(width: width - 10)
                         }
-                    }
-                } else {
-                    QuickButtonsInnerView(
-                        model: model,
-                        quickButtons: quickButtons,
-                        quickButtonsSettings: quickButtonsSettings,
-                        orientation: model.orientation,
-                        button: pair.first,
-                        size: buttonSize(),
-                        nameSize: nameSize(),
-                        nameWidth: width - 10
-                    )
-                    .frame(width: width - 10)
-                    if let second = pair.second {
-                        QuickButtonsInnerView(
-                            model: model,
-                            quickButtons: quickButtons,
-                            quickButtonsSettings: quickButtonsSettings,
-                            orientation: model.orientation,
-                            button: second,
-                            size: buttonSize(),
-                            nameSize: nameSize(),
-                            nameWidth: width - 10
-                        )
-                        .frame(width: width - 10)
                     }
                 }
             }
