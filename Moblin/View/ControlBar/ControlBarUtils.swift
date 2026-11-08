@@ -8,7 +8,7 @@ func controlBarScrollTargetBehavior(model: Model, containerWidth: Double, target
     } else if distance < -15 {
         model.quickButtons.page -= 1
     }
-    let pages = model.quickButtons.pairs.count(where: { !$0.isEmpty })
+    let pages = 1 + model.quickButtons.pairs.dropFirst().count(where: { !$0.isEmpty })
     model.quickButtons.page = model.quickButtons.page.clamped(to: 1 ... pages)
     return Double(model.quickButtons.page - 1) * (containerWidth + spacing)
 }
