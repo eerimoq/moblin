@@ -1323,6 +1323,7 @@ final class Model: NSObject, ObservableObject {
             return
         }
         if isAppActive {
+            updateOrientation()
             media.setShowCameraPreview(updateShowCameraPreview())
         } else if pictureInPictureEnabled() {
             media.setShowCameraPreview(false)
@@ -1784,7 +1785,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     func updateOrientation() {
-        switch UIDevice.current.orientation {
+        let deviceOrientation = getOrientation()
+        switch deviceOrientation {
         case .portrait:
             isDevicePortrait = true
         case .landscapeLeft, .landscapeRight:
@@ -1796,7 +1798,7 @@ final class Model: NSObject, ObservableObject {
         if stream.portrait {
             media.setVideoOrientation(value: .portrait)
         } else {
-            switch UIDevice.current.orientation {
+            switch deviceOrientation {
             case .landscapeLeft:
                 media.setVideoOrientation(value: .landscapeRight)
             case .landscapeRight:
@@ -2828,7 +2830,7 @@ final class Model: NSObject, ObservableObject {
         } else if stream.portrait {
             cameraPreviewView.setVideoOrientation(.portrait)
         } else {
-            switch UIDevice.current.orientation {
+            switch getOrientation() {
             case .landscapeLeft:
                 cameraPreviewView.setVideoOrientation(.landscapeRight)
             case .landscapeRight:

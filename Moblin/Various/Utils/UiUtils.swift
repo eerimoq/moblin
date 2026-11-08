@@ -17,13 +17,18 @@ extension UIImage {
 @MainActor
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
-    if orientation != .unknown {
+    if orientation.isValidInterfaceOrientation || isMac() {
         return orientation
     }
     let interfaceOrientation = UIApplication.shared.connectedScenes
-        .first(where: { $0 is UIWindowScene })
-        .flatMap { $0 as? UIWindowScene }?.interfaceOrientation
+        .compactMap { $0 as? UIWindowScene }
+        .first(where: { $0.session.role == .windowApplication })?
+        .interfaceOrientation
     switch interfaceOrientation {
+    case .portrait:
+        return .portrait
+    case .portraitUpsideDown:
+        return .portraitUpsideDown
     case .landscapeLeft:
         return .landscapeRight
     case .landscapeRight:
