@@ -43,17 +43,15 @@ private struct QuickButtonImage: View {
             .controlBarButtonBackground(color: button.backgroundColor.color(), shape: Circle())
     }
 
-    @ViewBuilder
     private func onRing() -> some View {
-        if #available(iOS 26, *) {
-            Circle()
-                .stroke(.white)
-                .frame(width: buttonSize, height: buttonSize)
+        let ringSize = if #available(iOS 26, *) {
+            buttonSize
         } else {
-            Circle()
-                .stroke(.white)
-                .frame(width: buttonSize - 1, height: buttonSize - 1)
+            buttonSize - 1
         }
+        return Circle()
+            .stroke(.white)
+            .frame(width: ringSize, height: ringSize)
     }
 
     var body: some View {
@@ -429,17 +427,15 @@ struct QuickButtonsInnerView: View {
         model.presentingSceneEditor = true
     }
 
-    @ViewBuilder
     private func selectedRing() -> some View {
-        if #available(iOS 26, *) {
-            Circle()
-                .stroke(.yellow, lineWidth: 2)
-                .frame(width: size, height: size)
+        let ringSize = if #available(iOS 26, *) {
+            size
         } else {
-            Circle()
-                .stroke(.yellow, lineWidth: 2)
-                .frame(width: size - 2, height: size - 2)
+            size - 2
         }
+        return Circle()
+            .stroke(.yellow, lineWidth: 2)
+            .frame(width: ringSize, height: ringSize)
     }
 
     var body: some View {
