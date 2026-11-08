@@ -16,8 +16,19 @@ private struct SceneEditorEdit {
 
 private class SceneEditorSelection: ObservableObject {
     @Published var sceneWidgetId: UUID?
-
     @Published var showingSettings = false
+}
+
+private func stackLayout(vertical: Bool, spacing: CGFloat) -> AnyLayout {
+    vertical ? AnyLayout(VStackLayout(spacing: spacing)) : AnyLayout(HStackLayout(spacing: spacing))
+}
+
+private var toolbarTint: Color? {
+    if #available(iOS 26, *) {
+        .primary
+    } else {
+        nil
+    }
 }
 
 private func distance(_ first: CGPoint, _ second: CGPoint) -> Double {
@@ -449,6 +460,7 @@ private struct SceneEditorButtonView: View {
         }
         .buttonStyle(.borderless)
         .disabled(disabled)
+        .tint(toolbarTint)
     }
 }
 
@@ -456,20 +468,15 @@ private struct SceneEditorButtonGroupView<Content: View>: View {
     let vertical: Bool
     @ViewBuilder let content: () -> Content
 
-    private func layout(spacing: CGFloat) -> AnyLayout {
-        vertical ? AnyLayout(VStackLayout(spacing: spacing)) : AnyLayout(HStackLayout(spacing: spacing))
-    }
-
     var body: some View {
         if #available(iOS 26, *) {
-            let layout = layout(spacing: 0)
+            let layout = stackLayout(vertical: vertical, spacing: 0)
             layout {
                 content()
             }
-            .tint(.primary)
             .glassEffect()
         } else {
-            let layout = layout(spacing: 2)
+            let layout = stackLayout(vertical: vertical, spacing: 2)
             layout {
                 content()
             }
@@ -820,14 +827,10 @@ private struct SceneEditorToolbarView: View {
         }
     }
 
-    private func layout(spacing: CGFloat) -> AnyLayout {
-        vertical ? AnyLayout(VStackLayout(spacing: spacing)) : AnyLayout(HStackLayout(spacing: spacing))
-    }
-
     var body: some View {
         ScrollView(vertical ? .vertical : .horizontal, showsIndicators: false) {
             if #available(iOS 26, *) {
-                let layout = layout(spacing: 8)
+                let layout = stackLayout(vertical: vertical, spacing: 8)
                 GlassEffectContainer(spacing: 8) {
                     layout {
                         buttons()
@@ -835,7 +838,7 @@ private struct SceneEditorToolbarView: View {
                 }
                 .padding(4)
             } else {
-                let layout = layout(spacing: 2)
+                let layout = stackLayout(vertical: vertical, spacing: 2)
                 layout {
                     buttons()
                 }
@@ -852,6 +855,7 @@ struct SceneEditorView: View {
     @ObservedObject var sceneSelector: SceneSelector
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var sceneEditor: SceneEditor
+    @ObservedObject var orientation: Orientation
     @StateObject private var selection = SceneEditorSelection()
 
     private func mirror(_ scene: SettingsScene?) -> Bool {
@@ -929,27 +933,23 @@ struct SceneEditorView: View {
     }
 
     var body: some View {
-        GeometryReader { metrics in
-            let scene = model.sceneEditorScene()
-            let selected = selectedOutline()
-            let landscape = metrics.size.width > metrics.size.height
-            let layout = landscape ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
-            layout {
-                videoArea(scene)
-                if selection.showingSettings {
-                    settingsPanel(scene, selected)
-                        .frame(width: landscape ? settingsHalfWidth : nil,
-                               height: landscape ? nil : metrics.size.height * 0.45)
-                }
-                SceneEditorToolbarView(model: model,
-                                       database: database,
-                                       scene: scene,
-                                       selected: selected,
-                                       selection: selection,
-                                       vertical: landscape)
+        let scene = model.sceneEditorScene()
+        let selected = selectedOutline()
+        let portrait = orientation.isPortrait
+        let layout = stackLayout(vertical: portrait, spacing: 0)
+        layout {
+            videoArea(scene)
+            if selection.showingSettings {
+                settingsPanel(scene, selected)
+                    .frame(width: portrait ? nil : settingsHalfWidth)
             }
+            SceneEditorToolbarView(model: model,
+                                   database: database,
+                                   scene: scene,
+                                   selected: selected,
+                                   selection: selection,
+                                   vertical: !portrait)
         }
-        .background(Color(.systemGroupedBackground))
         .onAppear {
             model.sceneEditorPresentationChanged()
         }

@@ -704,8 +704,8 @@ struct MainView: View {
                                 database: model.database,
                                 sceneSelector: model.sceneSelector,
                                 streamOverlay: model.streamOverlay,
-                                sceneEditor: model.sceneEditor)
-                    .environmentObject(model)
+                                sceneEditor: model.sceneEditor,
+                                orientation: model.orientation)
             })
             .confirmationDialog(
                 "Are you sure you want to import settings? This will replace your current settings.",
