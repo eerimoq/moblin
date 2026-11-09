@@ -180,7 +180,7 @@ private struct IsoView: View {
         if model.isCameraSupportingManualExposureAndIso() {
             SliderAndLockView(model: model,
                               value: $camera.lockedIso,
-                              locked: $camera.isExposureAndIsoLocked,
+                              locked: $camera.isIsoLocked,
                               editingLocked: $camera.editingLockedIso,
                               onEditingChanged: { begin in
                                   camera.editingLockedIso = begin
@@ -190,7 +190,7 @@ private struct IsoView: View {
                                   model.setManualIso(factor: camera.lockedIso)
                               },
                               setManual: model.setManualIso,
-                              setAuto: model.setAutoExposureAndIso)
+                              setAuto: model.setAutoIso)
         } else {
             NotSupportedForThisCameraView()
         }
@@ -207,7 +207,7 @@ private struct ExposureView: View {
             SliderAndLockView(model: model,
                               step: model.getExposureFactorStep(),
                               value: $camera.lockedExposure,
-                              locked: $camera.isExposureAndIsoLocked,
+                              locked: $camera.isExposureLocked,
                               editingLocked: $camera.editingLockedExposure,
                               onEditingChanged: { begin in
                                   camera.editingLockedExposure = begin
@@ -217,7 +217,7 @@ private struct ExposureView: View {
                                   model.setManualExposure(factor: camera.lockedExposure)
                               },
                               setManual: model.setManualExposure,
-                              setAuto: model.setAutoExposureAndIso)
+                              setAuto: model.setAutoExposure)
         } else {
             NotSupportedForThisCameraView()
         }
@@ -320,7 +320,7 @@ private struct ButtonsView: View {
                 CameraSettingButtonView(
                     title: "ISO",
                     value: formatIso(),
-                    locked: camera.isExposureAndIsoLocked,
+                    locked: camera.isIsoLocked,
                     on: show.type == .iso,
                     height: height
                 )
@@ -331,7 +331,7 @@ private struct ButtonsView: View {
                 CameraSettingButtonView(
                     title: "EXP",
                     value: formatExposure(exposure: camera.exposure),
-                    locked: camera.isExposureAndIsoLocked,
+                    locked: camera.isExposureLocked,
                     on: show.type == .exposure,
                     height: height
                 )
