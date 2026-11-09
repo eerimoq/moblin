@@ -1,5 +1,18 @@
 import SwiftUI
 
+private func drawSnapshotCard(context: GraphicsContext, time: Double) {
+    var path = Path()
+    path.move(to: CGPoint(x: 164, y: 83))
+    path.addLine(to: CGPoint(x: 186, y: 83))
+    strokeTradingCardDash(context: context,
+                          path: path,
+                          color: Color(red: 0x58 / 255, green: 0x65 / 255, blue: 0xF2 / 255),
+                          lineWidth: 3,
+                          dash: 6,
+                          gap: 6,
+                          time: time)
+}
+
 struct StreamSnapshotSettingsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
@@ -17,6 +30,11 @@ struct StreamSnapshotSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "Snapshot",
+                                background: Color(red: 0xDB / 255, green: 0xD7 / 255, blue: 0xE7 / 255),
+                                draw: drawSnapshotCard)
+            }
             Section {
                 Toggle("Clean snapshots", isOn: $recording.cleanSnapshots)
                     .onChange(of: recording.cleanSnapshots) { _ in

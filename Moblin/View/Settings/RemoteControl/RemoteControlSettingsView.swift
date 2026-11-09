@@ -547,6 +547,19 @@ struct RemoteControlSettingsWebView: View {
     }
 }
 
+private func drawRemoteControlCard(context: GraphicsContext, time: Double) {
+    var path = Path()
+    path.move(to: CGPoint(x: 56, y: 110))
+    path.addQuadCurve(to: CGPoint(x: 206, y: 110), control: CGPoint(x: 130, y: 10))
+    strokeTradingCardDash(context: context,
+                          path: path,
+                          color: Color(red: 0xFF / 255, green: 0xD1 / 255, blue: 0x66 / 255),
+                          lineWidth: 2.5,
+                          dash: 6,
+                          gap: 8,
+                          time: time)
+}
+
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -560,6 +573,11 @@ struct RemoteControlSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "RemoteControl",
+                                background: Color(red: 0x0F / 255, green: 0x1B / 255, blue: 0x2D / 255),
+                                draw: drawRemoteControlCard)
+            }
             Section {
                 Text("Control and monitor Moblin from another device.")
             }

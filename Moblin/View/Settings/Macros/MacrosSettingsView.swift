@@ -587,6 +587,10 @@ struct MacrosSettingsView: View {
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "Macros",
+                                background: Color(red: 0xE7 / 255, green: 0xE3 / 255, blue: 0xD6 / 255))
+            }
+            Section {
                 Text("""
                 A macro is a sequence of actions that can change settings, filters, etc. with a \
                 single button tap. It can also wait for events, for example new followers, before \

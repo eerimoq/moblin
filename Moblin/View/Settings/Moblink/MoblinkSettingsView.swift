@@ -234,6 +234,51 @@ private struct StreamerView: View {
     }
 }
 
+private func drawMoblinkCard(context: GraphicsContext, time: Double) {
+    let blue = Color(red: 0x2F / 255, green: 0x7C / 255, blue: 0xF6 / 255)
+    var serverPath = Path()
+    serverPath.move(to: CGPoint(x: 44, y: 54))
+    serverPath.addCurve(to: CGPoint(x: 116, y: 26),
+                        control1: CGPoint(x: 44, y: 34),
+                        control2: CGPoint(x: 100, y: 38))
+    serverPath.move(to: CGPoint(x: 130, y: 66))
+    serverPath.addLine(to: CGPoint(x: 130, y: 26))
+    serverPath.move(to: CGPoint(x: 216, y: 54))
+    serverPath.addCurve(to: CGPoint(x: 144, y: 26),
+                        control1: CGPoint(x: 216, y: 34),
+                        control2: CGPoint(x: 160, y: 38))
+    strokeTradingCardDash(context: context,
+                          path: serverPath,
+                          color: blue,
+                          lineWidth: 2,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    var hotspotPath = Path()
+    hotspotPath.move(to: CGPoint(x: 80, y: 90))
+    hotspotPath.addLine(to: CGPoint(x: 64, y: 90))
+    strokeTradingCardDash(context: context,
+                          path: hotspotPath,
+                          color: Color(red: 0x0D / 255, green: 0x7A / 255, blue: 0x30 / 255),
+                          lineWidth: 2.5,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    var moblinkPath = Path()
+    moblinkPath.move(to: CGPoint(x: 180, y: 90))
+    moblinkPath.addLine(to: CGPoint(x: 196, y: 90))
+    strokeTradingCardDash(context: context,
+                          path: moblinkPath,
+                          color: blue,
+                          lineWidth: 2.5,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    context.fill(Path(ellipseIn: CGRect(x: 144 - 1.6, y: 21 - 1.6, width: 3.2, height: 3.2)),
+                 with: .color(Color(red: 0x4C / 255, green: 0xD9 / 255, blue: 0x64 / 255)
+                     .opacity(tradingCardPulseOpacity(time: time))))
+}
+
 struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -247,6 +292,11 @@ struct MoblinkSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "Moblink",
+                                background: Color(red: 0xE0 / 255, green: 0xE4 / 255, blue: 0xEC / 255),
+                                draw: drawMoblinkCard)
+            }
             Section {
                 Text("""
                 Use phones as additional SRTLA and RIST bonding connections. Install Moblink on Android \
