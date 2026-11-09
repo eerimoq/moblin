@@ -6,19 +6,26 @@ class WebBrowserState: ObservableObject {
     @Published var isSmall = false
 }
 
-extension Model {
-    private func getWebBrowserUrl() -> URL? {
-        if let url = URL(string: webBrowserUrl), let scehme = url.scheme, !scehme.isEmpty {
-            return url
-        }
-        if webBrowserUrl.contains("."), let url = URL(string: "https://\(webBrowserUrl)") {
-            return url
-        }
-        return URL(string: "https://www.google.com/search?q=\(webBrowserUrl)")
+func makeWebBrowserUrl(text: String) -> URL? {
+    if let url = URL(string: text), let scheme = url.scheme, !scheme.isEmpty {
+        return url
     }
+    if text.contains("."), let url = URL(string: "https://\(text)") {
+        return url
+    }
+    var components = URLComponents()
+    components.scheme = "https"
+    components.host = "www.google.com"
+    components.path = "/search"
+    components.queryItems = [URLQueryItem(name: "q", value: text)]
+    let query = components.percentEncodedQuery
+    components.percentEncodedQuery = query?.replacingOccurrences(of: "+", with: "%2B")
+    return components.url
+}
 
+extension Model {
     func loadWebBrowserUrl() {
-        guard let url = getWebBrowserUrl() else {
+        guard let url = makeWebBrowserUrl(text: webBrowserUrl) else {
             return
         }
         webBrowser?.load(URLRequest(url: url))
