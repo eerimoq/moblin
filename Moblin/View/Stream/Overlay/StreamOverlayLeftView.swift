@@ -2,15 +2,16 @@ import SwiftUI
 import WebKit
 
 private struct CollapsedViewersView: View {
-    @ObservedObject var status: StatusTopLeft
+    let iconColor: Color
+    let numberOfViewersCompact: String
 
     var body: some View {
         HStack(spacing: 1) {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
                 .padding(.leading, 2)
-                .foregroundStyle(status.numberOfViewersIconColor)
-            Text(status.numberOfViewersCompact)
+                .foregroundStyle(iconColor)
+            Text(numberOfViewersCompact)
                 .foregroundStyle(.white)
                 .padding(.horizontal, 2)
         }
@@ -36,18 +37,19 @@ private struct ViewersLogoView: View {
 }
 
 private struct ViewersView: View {
-    @ObservedObject var status: StatusTopLeft
+    let iconColor: Color
+    let streamingPlatformStatuses: [StreamingPlatformStatus]
 
     var body: some View {
         HStack(spacing: 1) {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
                 .padding(.horizontal, 2)
-                .foregroundStyle(status.numberOfViewersIconColor)
+                .foregroundStyle(iconColor)
                 .background(backgroundColor)
                 .cornerRadius(5)
             HStack(spacing: 2) {
-                ForEach(status.streamingPlatformStatuses, id: \.platform) {
+                ForEach(streamingPlatformStatuses, id: \.platform) {
                     ViewersLogoView(platform: $0.platform)
                     switch $0.status {
                     case let .live(viewerCount: viewerCount):
@@ -74,7 +76,8 @@ private struct ViewersView: View {
 }
 
 private struct ChatStatusView: View {
-    @ObservedObject var status: StatusTopLeft
+    let chatPlatformStatuses: [ChatPlatformStatus]
+    let statusChatText: String
     let foregroundColor: Color
 
     var body: some View {
@@ -86,11 +89,11 @@ private struct ChatStatusView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
             HStack(spacing: 2) {
-                if status.chatPlatformStatuses.isEmpty {
-                    Text(status.statusChatText)
+                if chatPlatformStatuses.isEmpty {
+                    Text(statusChatText)
                         .foregroundStyle(.white)
                 } else {
-                    ForEach(status.chatPlatformStatuses, id: \.platform) {
+                    ForEach(chatPlatformStatuses, id: \.platform) {
                         ViewersLogoView(platform: $0.platform)
                         if $0.connected {
                             Text("Connected")
@@ -114,13 +117,13 @@ private struct ChatStatusView: View {
 }
 
 private struct StreamStatusView: View {
-    @ObservedObject var status: StatusTopLeft
+    let streamText: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         StreamOverlayIconAndTextView(
             icon: "dot.radiowaves.left.and.right",
-            text: status.streamText,
+            text: streamText,
             textPlacement: textPlacement
         )
     }
@@ -190,7 +193,7 @@ private struct StatusesView: View {
 
     var body: some View {
         if model.isShowingStatusStream() {
-            StreamStatusView(status: status, textPlacement: textPlacement)
+            StreamStatusView(streamText: status.streamText, textPlacement: textPlacement)
         }
         if model.isShowingStatusCamera() {
             StreamOverlayIconAndTextView(
@@ -234,14 +237,24 @@ private struct StatusesView: View {
                     color: chatColor()
                 )
             } else {
-                ChatStatusView(status: status, foregroundColor: chatColor())
+                ChatStatusView(
+                    chatPlatformStatuses: status.chatPlatformStatuses,
+                    statusChatText: status.statusChatText,
+                    foregroundColor: chatColor()
+                )
             }
         }
         if model.isShowingStatusViewers() {
             if textPlacement == .hide {
-                CollapsedViewersView(status: status)
+                CollapsedViewersView(
+                    iconColor: status.numberOfViewersIconColor,
+                    numberOfViewersCompact: status.numberOfViewersCompact
+                )
             } else {
-                ViewersView(status: status)
+                ViewersView(
+                    iconColor: status.numberOfViewersIconColor,
+                    streamingPlatformStatuses: status.streamingPlatformStatuses
+                )
             }
         }
     }
