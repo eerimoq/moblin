@@ -39,12 +39,14 @@ class MoblinSettingsSrt: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         latency = try container.decodeIfPresent(Int32.self, forKey: .latency)
         if let latency, !SettingsStreamSrt.isValidLatency(latency: latency) {
-            throw MoblinSettingsUrlError(message: "SRT latency out of range")
+            throw MoblinSettingsUrlError(message: String(localized: "SRT latency out of range"))
         }
         adaptiveBitrateEnabled = try container.decodeIfPresent(Bool.self, forKey: .adaptiveBitrateEnabled)
         dnsLookupStrategy = try container.decodeEnumIfPresent(SettingsDnsLookupStrategy.self,
                                                               forKey: .dnsLookupStrategy,
-                                                              "Unsupported SRT DNS lookup strategy")
+                                                              String(
+                                                                  localized: "Unsupported SRT DNS lookup strategy"
+                                                              ))
     }
 }
 
@@ -62,24 +64,24 @@ class MoblinSettingsUrlStreamVideo: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         resolution = try container.decodeEnumIfPresent(SettingsStreamResolution.self,
                                                        forKey: .resolution,
-                                                       "Unsupported video resolution")
+                                                       String(localized: "Unsupported video resolution"))
         fps = try container.decodeIfPresent(Int.self, forKey: .fps)
         if let fps, !SettingsStream.isValidFps(fps: fps) {
-            throw MoblinSettingsUrlError(message: "Unsupported video FPS")
+            throw MoblinSettingsUrlError(message: String(localized: "Unsupported video FPS"))
         }
         bitrate = try container.decodeIfPresent(UInt32.self, forKey: .bitrate)
         if let bitrate, !SettingsStream.isValidBitrate(bitrate: bitrate) {
-            throw MoblinSettingsUrlError(message: "Video bitrate out of range")
+            throw MoblinSettingsUrlError(message: String(localized: "Video bitrate out of range"))
         }
         codec = try container.decodeEnumIfPresent(SettingsStreamCodec.self,
                                                   forKey: .codec,
-                                                  "Unsupported video codec")
+                                                  String(localized: "Unsupported video codec"))
         bFrames = try container.decodeIfPresent(Bool.self, forKey: .bFrames)
         maxKeyFrameInterval = try container.decodeIfPresent(Int32.self, forKey: .maxKeyFrameInterval)
         if let maxKeyFrameInterval,
            !SettingsStream.isValidMaxKeyFrameInterval(interval: maxKeyFrameInterval)
         {
-            throw MoblinSettingsUrlError(message: "Max key frame interval out of range")
+            throw MoblinSettingsUrlError(message: String(localized: "Max key frame interval out of range"))
         }
     }
 }
@@ -93,7 +95,7 @@ class MoblinSettingsUrlStreamAudio: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         bitrate = try container.decodeIfPresent(Int.self, forKey: .bitrate)
         if let bitrate, !SettingsStream.isValidAudioBitrate(bitrate: bitrate) {
-            throw MoblinSettingsUrlError(message: "Unsupported audio bitrate")
+            throw MoblinSettingsUrlError(message: String(localized: "Unsupported audio bitrate"))
         }
     }
 }
@@ -185,12 +187,12 @@ class MoblinSettingsButton: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = try container.decode(SettingsQuickButtonType.self, forKey: .type)
         if type == .unknown {
-            throw MoblinSettingsUrlError(message: "Unknown quick button type")
+            throw MoblinSettingsUrlError(message: String(localized: "Unknown quick button type"))
         }
         enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled)
         page = try container.decodeIfPresent(Int.self, forKey: .page)
         if let page, !SettingsQuickButton.isValidPage(page: page) {
-            throw MoblinSettingsUrlError(message: "Quick button page out of range")
+            throw MoblinSettingsUrlError(message: String(localized: "Quick button page out of range"))
         }
     }
 }
@@ -218,7 +220,7 @@ class MoblinSettingsRemoteControlServerRelay: Codable, ObservableObject {
         }
         bridgeId = try container.decode(String.self, forKey: .bridgeId).trim()
         if !SettingsRemoteControlServerRelay.isValidBridgeId(bridgeId: bridgeId) {
-            throw MoblinSettingsUrlError(message: "Empty remote control relay bridge id")
+            throw MoblinSettingsUrlError(message: String(localized: "Empty remote control relay bridge id"))
         }
     }
 }
@@ -233,7 +235,7 @@ class MoblinSettingsRemoteControlAssistant: Codable {
         enabled = try container.decode(Bool.self, forKey: .enabled)
         port = try container.decode(UInt16.self, forKey: .port)
         if !SettingsRemoteControlAssistant.isValidPort(port: port) {
-            throw MoblinSettingsUrlError(message: "Invalid remote control assistant port")
+            throw MoblinSettingsUrlError(message: String(localized: "Invalid remote control assistant port"))
         }
         relay = try container.decodeIfPresent(MoblinSettingsRemoteControlServerRelay.self, forKey: .relay)
     }

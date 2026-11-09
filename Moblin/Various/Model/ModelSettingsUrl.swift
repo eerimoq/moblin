@@ -236,10 +236,10 @@ extension Model {
 
     private func handleSettingsUrlWithConfirmation(url: URL) -> String? {
         guard url.path.isEmpty else {
-            return "Custom URL path is not empty"
+            return String(localized: "Custom URL path is not empty")
         }
         guard let query = url.query(percentEncoded: false) else {
-            return "Custom URL query is missing"
+            return String(localized: "Custom URL query is missing")
         }
         let settings: MoblinSettingsUrl
         do {
