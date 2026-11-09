@@ -8,13 +8,49 @@ struct MoblinCloudSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Let viewers interact with your stream from your page at https://cloud.moblin.app")
-                Text("""
-                1. Sign in at https://cloud.moblin.app and set up your page.
-                2. Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below.
-                3. Pick the alerts widget that shows messages and the wheel of luck widget that viewers spin.
-                """)
-                Text("Guide: https://moblin.app/docs/#guides/moblin-cloud")
+                VStack(spacing: 10) {
+                    Image("MoblinCloudLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 110)
+                    Text("Moblin Cloud")
+                        .font(.title2)
+                        .bold()
+                    Text("Let viewers interact with your stream from your own page.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+            }
+            Section {
+                Label {
+                    Text("Sign in at [cloud.moblin.app](https://cloud.moblin.app) and set up your page.")
+                } icon: {
+                    Image(systemName: "1.circle.fill")
+                }
+                Label {
+                    Text(
+                        "Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below."
+                    )
+                } icon: {
+                    Image(systemName: "2.circle.fill")
+                }
+                Label {
+                    Text(
+                        "Pick the alerts widget that shows messages and the wheel of luck widget that viewers spin."
+                    )
+                } icon: {
+                    Image(systemName: "3.circle.fill")
+                }
+            } header: {
+                Text("Get started")
+            }
+            Section {
+                Link(destination: URL(string: "https://moblin.app/docs/#guides/moblin-cloud")!) {
+                    Label("Read the guide", systemImage: "book")
+                }
             }
             Section {
                 Toggle("Enabled", isOn: $moblinCloud.enabled)
