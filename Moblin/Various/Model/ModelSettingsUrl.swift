@@ -162,7 +162,7 @@ extension Model {
         database.moblinCloud.enabled = moblinCloud.enabled
         database.moblinCloud.key = moblinCloud.key.trim()
         if let url = moblinCloud.url {
-            database.moblinCloud.url = url.trim()
+            database.moblinCloud.url = url
         }
         reloadMoblinCloud()
     }
