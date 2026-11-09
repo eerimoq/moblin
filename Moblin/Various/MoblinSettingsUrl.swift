@@ -118,6 +118,14 @@ class MoblinSettingsMoblinCloud: Codable {
     var url: String?
 }
 
+private struct MoblinSettingsUrlError: LocalizedError {
+    let message: String
+
+    var errorDescription: String? {
+        message
+    }
+}
+
 class MoblinSettingsUrl: Codable {
     // The last enabled stream will be selected (if any).
     var streams: [MoblinSettingsUrlStream]?
@@ -139,26 +147,26 @@ class MoblinSettingsUrl: Codable {
         )
         for stream in query.streams ?? [] {
             if let message = isValidUrl(url: cleanUrl(url: stream.url)) {
-                throw message
+                throw MoblinSettingsUrlError(message: message)
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {
                     if latency < 0 {
-                        throw "Negative SRT latency"
+                        throw MoblinSettingsUrlError(message: "Negative SRT latency")
                     }
                     if latency > 65535 {
-                        throw "Too big SRT latency"
+                        throw MoblinSettingsUrlError(message: "Too big SRT latency")
                     }
                 }
             }
             if let obs = stream.obs {
                 if let message = isValidWebSocketUrl(url: cleanUrl(url: obs.webSocketUrl)) {
-                    throw message
+                    throw MoblinSettingsUrlError(message: message)
                 }
             }
         }
         if let url = query.moblinCloud?.url, let message = isValidHttpUrl(url: url.trim()) {
-            throw message
+            throw MoblinSettingsUrlError(message: message)
         }
         return query
     }
