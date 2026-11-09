@@ -12,6 +12,10 @@ struct ObsSceneMediaSource: Identifiable {
     var input: String
 }
 
+class ObsScreenshot: ObservableObject {
+    @Published var image: CGImage?
+}
+
 @MainActor
 class QuickButtonObs: ObservableObject {
     var sourceFetchScreenshot = false
@@ -26,13 +30,13 @@ class QuickButtonObs: ObservableObject {
     @Published var currentScenePicker: String = ""
     @Published var currentScene: String = ""
     @Published var scenes: [String] = []
-    @Published var screenshot: CGImage?
+    let screenshot = ObsScreenshot()
     @Published var streaming = false
     @Published var fixOngoing = false
     @Published var audioDelay: Int = 0
 
     func startObsSourceScreenshot() {
-        screenshot = nil
+        screenshot.image = nil
         sourceFetchScreenshot = true
         sourceScreenshotIsFetching = false
     }
@@ -50,12 +54,13 @@ extension Model {
             return
         }
         obsWebSocket?.getSourceScreenshot(name: obsQuickButton.currentScene, onSuccess: { data in
-            let screenshot = UIImage(data: data)?.cgImage
-            self.obsQuickButton.screenshot = screenshot
+            self.obsQuickButton.screenshot.image = UIImage(data: data)?.cgImage
             self.obsQuickButton.sourceScreenshotIsFetching = false
         }, onError: { message in
             logger.debug("Failed to update screenshot with error \(message)")
-            self.obsQuickButton.screenshot = nil
+            if self.obsQuickButton.screenshot.image != nil {
+                self.obsQuickButton.screenshot.image = nil
+            }
             self.obsQuickButton.sourceScreenshotIsFetching = false
         })
     }

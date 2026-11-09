@@ -105,11 +105,11 @@ private struct ObsSettingsView: View {
 }
 
 private struct ObsSnapshotView: View {
-    @ObservedObject var obsQuickButton: QuickButtonObs
+    @ObservedObject var screenshot: ObsScreenshot
 
     var body: some View {
         Section {
-            if let image = obsQuickButton.screenshot {
+            if let image = screenshot.image {
                 Image(image, scale: 1, label: Text(""))
                     .resizable()
                     .scaledToFit()
@@ -313,7 +313,7 @@ private struct ObsConnectedView: View {
     var body: some View {
         ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
         ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
-        ObsSnapshotView(obsQuickButton: obsQuickButton)
+        ObsSnapshotView(screenshot: obsQuickButton.screenshot)
         ObsScenesView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneMediaSourcesView(model: model, obsQuickButton: obsQuickButton)
