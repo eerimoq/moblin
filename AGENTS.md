@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents working with code in this repository.
 
 ## What this is
 
@@ -9,18 +9,22 @@ and OBS Studio. It streams over RTMP(S), SRT(LA), RIST and WHIP/WebRTC, with SRT
 multiple network interfaces. The repo also contains an Apple Watch companion, a Live Activity extension,
 a home screen widget, a screen recording broadcast extension, and a SolidJS web remote control frontend.
 
+## Where the details are
+
+Read the file for the part you are working on before changing it:
+
+- `tests/AGENTS.md` — the system tests: launching the app, module names and how tests are written.
+- `WebRemoteControlFrontend/AGENTS.md` — the web remote control frontend, its build and its protocol.
+
 ## Commands
 
 ```sh
-just style           # swiftformat + oxfmt + isort + black (auto-fix)
+just style           # swiftformat + oxfmt + isort + ruff format (auto-fix)
 just style-check     # same, lint-only
 just lint            # swiftlint --strict + oxlint + pylint + ruff check + mypy + xcstringslint
 just lint-fix        # auto-fix Localizable.xcstrings issues
 just spell-check     # codespell
 just periphery       # dead code detection (needs full index; slow)
-
-just web-remote-control-frontend-prepare   # npm install
-just web-remote-control-frontend-build     # tsc --noEmit + vite build → Moblin/RemoteControl/Web/
 
 just machine-translate                     # fill missing translations in Localizable.xcstrings
 ```
@@ -29,6 +33,15 @@ CI (`.github/workflows/all.yml`) runs `style-check`, `lint`, `spell-check`, and 
 by `git diff --exit-code`. Two consequences: **the built web assets in `Moblin/RemoteControl/Web/` are
 committed and must be regenerated whenever `WebRemoteControlFrontend/` changes**, and **CI never compiles
 the app or runs the unit tests** — build and run them yourself.
+
+### Building
+
+`xcodebuild` fails without the gitignored `Config/User.xcconfig`. If it is missing, create it with
+`cp User.template.xcconfig Config/User.xcconfig`, and never delete it afterwards.
+
+Build and run only for Mac Catalyst or a real device. **Never use the iOS simulator**, for any purpose —
+not for builds, debugging or reproducing UI bugs. Behavior that needs real hardware (rotation, camera,
+safe areas) is reproduced on a USB-connected device.
 
 ### Unit tests
 
@@ -44,23 +57,22 @@ xcodebuild test -scheme Moblin -destination 'platform=macOS,variant=Mac Catalyst
 "Time limit was exceeded", the test runner is killed and relaunched, and the run continues, so a hung test
 can no longer stall the whole run.
 
+Broad coverage (validation rules, every widget type, edge cases) belongs in unit tests. System tests only
+cover a few important end-to-end cases; before adding a system test step, check whether a unit test can
+cover it instead.
+
+Each test calls the function under test directly in its body
+(`#expect(isValidRemoteControlWidgetUpdate(widget: ..., new: ...))`). Fixtures and helpers may build data
+(databases, widgets, round-tripped copies) but never wrap the tested call. Test data goes in
+`@Test(arguments: [...])`, never in a `for` loop in the test body: one parameterized test per expectation,
+with cases that conform to `CustomTestStringConvertible`. Give a case type at most one defaulted closure and
+put starting state in the fixture's default objects — with two defaulted closures, an unlabeled trailing
+closure binds to the first and the case silently tests nothing.
+
 ### System tests
 
-`tests/` holds a Python harness that drives a real device against `mediamtx`/`ffmpeg`. Ask user to 
-start the app before running the test commands.
-
-```sh
-just test
-just test --device macpro Talkback
-just test-stability                        # long-running soak test, 12 hours by default
-```
-
-The harness runs with `tests/` as the working directory, so its imports are `from utils.moblin import
-Moblin`, while `just lint` type checks `tests/` and `utils/` from the repo root. That only works while
-every module name is unique across both trees — `tests/suites/` and `tests/utils/` are packages
-(`__init__.py`) so that `tests/suites/stability.py` does not collide with the `tests/stability.py` entry
-point. Adding a `utils/x.py` that shadows a `tests/x.py` (or dropping an `__init__.py`) makes mypy abort
-with "Duplicate module named ..." instead of checking anything.
+`tests/` holds a Python harness that drives a real device (`just test`). Read `tests/AGENTS.md` before
+running or changing them.
 
 ## Architecture
 
@@ -93,10 +105,10 @@ Secrets are kept out of the JSON: `store()` calls `extractSensitiveData` to null
 writing and `insertSensitiveData` to restore them, with the real values living in the Keychain
 (`Keychain.swift`, `addSensitiveData` on load).
 
-### Model — one class, ~100 extensions
+### Model — one class, many extensions
 
 `Model` (`Moblin/Various/Model/Model.swift`) is a single `final class Model: NSObject, ObservableObject`
-split across ~60 `ModelXxx.swift` files, each an `extension Model` for one feature area (`ModelChat`,
+split across ~75 `ModelXxx.swift` files, each an `extension Model` for one feature area (`ModelChat`,
 `ModelTwitch`, `ModelRecording`, …). New feature code belongs in its own `extension Model` file, not in
 `Model.swift`.
 
@@ -136,15 +148,28 @@ several files that a single-file search will not reveal:
 `Moblin/RemoteControl/` implements a streamer/assistant pair over WebSocket, with `RemoteControlRelay`
 for traversal and `RemoteControlWeb` serving the built SolidJS frontend from `Web/`.
 
+Scene and widget configuration over remote control must behave exactly like the Moblin UI: what it
+accepts, rejects, resets and creates as defaults. The UI is always right, even where it looks slightly
+wrong, so a remote control path that inherits a UI quirk is correct and is not a bug. It is a bug when a
+remote update diverges from the UI or does more than the UI would for the same change (for example,
+attaching the camera twice). The one exception: a wizard requirement that the widget's settings can fill in
+later on the device (such as the file of an image, VTuber or PNGTuber widget) is not enforced on remote
+create.
+
+- Remote control handlers (`ModelRemoteControlScenes.swift`, `ModelRemoteControlSettingsUpdate.swift`, …)
+  mutate the database and run the same reload/update calls as the UI, but never call `storeSettings()`.
+- When moving a view's logic into a `Model` function so remote control can share it, keep the view's
+  private method (`setEffectSettings()`, `updateEffect()`, …) and make its body call the model function,
+  rather than inlining `model.xxx(widget: widget)` at every call site.
+
 The Watch app talks to the phone over `WatchConnectivity` using the string-keyed message envelope in
 `Moblin Watch/Shared/WatchProtocol.swift` (`WatchMessageToWatch`/`WatchMessageFromWatch` plus
 `pack`/`unpack`). Both sides of a new message must be added there.
 
 ## Conventions
 
-- **Do not write comments or docstrings.** The one exception is a system test case class in `tests/suites/`,
-  which gets a one-line docstring describing what the test does (`"""Play talkback sound over RTMP server
-  through the speaker for 10 seconds."""`).
+- **Do not write comments or docstrings.** The one exception is the docstring on system test case classes;
+  see `tests/AGENTS.md`.
 - **Magic numbers are fine, and often preferred, when used in a single place.** Do not hoist a literal
   into a named constant just because it is a literal — only name it when the same value is used in more
   than one place.
@@ -156,7 +181,8 @@ The Watch app talks to the phone over `WatchConnectivity` using the string-keyed
   never `.strings` files. `utils/xcstringslint.py` (part of `just lint`) checks that format specifiers
   match across translations and that multi-specifier strings use positional `%1$@` forms.
 - `Moblin/Integrations/Tesla/Protobuf/` is generated and excluded from formatting and periphery.
-- `Moblin/RemoteControl/Web/` is build output — edit `WebRemoteControlFrontend/` instead.
+- `Moblin/RemoteControl/Web/` is build output — edit `WebRemoteControlFrontend/` instead (see its
+  `AGENTS.md`).
 - Code shared between the app, watch, and extensions goes in `Common/`.
 - The `moblin://?<url-encoded JSON>` settings import format is defined by `MoblinSettingsUrl.swift`; its
   members are the JSON keys, and the README documents it for users.
@@ -165,5 +191,5 @@ The Watch app talks to the phone over `WatchConnectivity` using the string-keyed
 
 - Never mention the StoreKit.framework change in `Moblin.xcodeproj/project.pbxproj` in summaries, reviews or
   commit messages.
-- Never mention styling or formatting changes (swiftformat, oxfmt, black, isort output) in summaries, reviews
+- Never mention styling or formatting changes (swiftformat, oxfmt, isort, ruff format output) in summaries, reviews
   or commit messages.
