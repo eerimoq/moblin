@@ -65,12 +65,6 @@ private class ChatRenderer {
                 self?.scheduleRender()
             }
             .store(in: &cancellables)
-        EmotesPlayer.shared.$sizesVersion
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.scheduleRender()
-            }
-            .store(in: &cancellables)
         scheduleRender()
     }
 
@@ -99,6 +93,9 @@ private class ChatRenderer {
         }
         let lineView = ChatLineUiView()
         lineView.onImageLoaded = { [weak self] in
+            self?.scheduleRender()
+        }
+        lineView.onImageSizeLoaded = { [weak self] in
             self?.scheduleRender()
         }
         containerView.addSubview(lineView)

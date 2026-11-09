@@ -114,9 +114,11 @@ private func makeFont(content: ChatLineContent, style: ChatLineTextStyle) -> UIF
 }
 
 @MainActor
-private func makeLayout(content: ChatLineContent, availableWidth: CGFloat) -> ChatLineLayout {
-    let player = EmotesPlayer.shared
-    let sizesVersion = player.sizesVersion
+private func makeLayout(content: ChatLineContent,
+                        availableWidth: CGFloat,
+                        sizesVersion: Int,
+                        imageSize: (ChatImageSource) -> CGSize?) -> ChatLineLayout
+{
     let baseFont = makeBaseFont(content: content)
     let fontAscent = baseFont.ascender
     let fontDescent = -baseFont.descender
@@ -143,7 +145,7 @@ private func makeLayout(content: ChatLineContent, availableWidth: CGFloat) -> Ch
         case let .image(image):
             var contentWidth: CGFloat = 0
             var contentHeight: CGFloat = 0
-            if let size = player.size(source: image.source), size.width > 0, size.height > 0 {
+            if let size = imageSize(image.source), size.width > 0, size.height > 0 {
                 if let height = image.height {
                     contentHeight = max(height - 2 * image.verticalPadding, 0)
                     contentWidth = contentHeight * size.width / size.height
@@ -237,6 +239,9 @@ private func makeLayout(content: ChatLineContent, availableWidth: CGFloat) -> Ch
 
 class ChatLineUiView: UIView {
     var onImageLoaded: (() -> Void)?
+    var onImageSizeLoaded: (() -> Void)?
+    private var sizesVersion = 0
+    private var pendingSizeSources: Set<ChatImageSource> = []
     private var content: ChatLineContent?
     private var layouts: [ChatLineLayout] = []
     private var currentLayout: ChatLineLayout?
@@ -311,17 +316,35 @@ class ChatLineUiView: UIView {
             return nil
         }
         if let layout = layouts.first(where: { $0.availableWidth == availableWidth }) {
-            if !layout.hasUnknownImageSize || layout.sizesVersion == EmotesPlayer.shared.sizesVersion {
+            if !layout.hasUnknownImageSize || layout.sizesVersion == sizesVersion {
                 return layout
             }
             layouts.removeAll(where: { $0.availableWidth == availableWidth })
         }
-        let layout = makeLayout(content: content, availableWidth: availableWidth)
+        let layout = makeLayout(content: content,
+                                availableWidth: availableWidth,
+                                sizesVersion: sizesVersion,
+                                imageSize: imageSize)
         layouts.append(layout)
         if layouts.count > 3 {
             layouts.removeFirst()
         }
         return layout
+    }
+
+    private func imageSize(source: ChatImageSource) -> CGSize? {
+        let size = EmotesPlayer.shared.size(source: source) { [weak self] in
+            guard let self, pendingSizeSources.remove(source) != nil else {
+                return
+            }
+            sizesVersion += 1
+            setNeedsLayout()
+            onImageSizeLoaded?()
+        }
+        if size == nil {
+            pendingSizeSources.insert(source)
+        }
+        return size
     }
 
     private func availableWidthForBounds() -> CGFloat {
@@ -424,10 +447,14 @@ class ChatLineUiView: UIView {
     }
 }
 
+private final class ChatLineImageSizes: ObservableObject {
+    @Published var version = 0
+}
+
 struct ChatLineView: UIViewRepresentable {
     let content: ChatLineContent
     let onTap: ((URL?) -> Void)?
-    @ObservedObject private var player = EmotesPlayer.shared
+    @StateObject private var imageSizes = ChatLineImageSizes()
 
     init(content: ChatLineContent, onTap: ((URL?) -> Void)? = nil) {
         self.content = content
@@ -456,6 +483,9 @@ struct ChatLineView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> ChatLineUiView {
         let view = ChatLineUiView()
+        view.onImageSizeLoaded = { [weak imageSizes] in
+            imageSizes?.version += 1
+        }
         updateTap(view, context: context)
         view.setContent(content)
         return view

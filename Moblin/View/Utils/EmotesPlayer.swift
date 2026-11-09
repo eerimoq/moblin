@@ -210,9 +210,8 @@ private class AnimatedEmote {
 }
 
 @MainActor
-class EmotesPlayer: NSObject, ObservableObject {
+class EmotesPlayer: NSObject {
     static let shared = EmotesPlayer()
-    @Published private(set) var sizesVersion = 0
     private var emotes: [EmoteKey: AnimatedEmote] = [:]
     private var animatingEmotes: [EmoteKey: AnimatedEmote] = [:]
     private var framesBytes = 0
@@ -224,18 +223,20 @@ class EmotesPlayer: NSObject, ObservableObject {
     private var failedUrls: [URL: ContinuousClock.Instant] = [:]
     private var displayLink: CADisplayLink?
 
-    func size(source: ChatImageSource) -> CGSize? {
+    func size(source: ChatImageSource, onLoaded: @escaping () -> Void) -> CGSize? {
         if let size = sizes[source] {
             return size
         }
         var loading = true
         load(source: source) { [weak self] image in
-            guard let self, sizes[source] == nil else {
+            guard let self else {
                 return
             }
-            sizes[source] = image.size
+            if sizes[source] == nil {
+                sizes[source] = image.size
+            }
             if !loading {
-                sizesVersion += 1
+                onLoaded()
             }
         }
         loading = false
