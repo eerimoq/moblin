@@ -30,7 +30,7 @@ extension Model {
                                                                    existingNames: database.streams))
                 database.streams.append(targetStream)
             }
-            targetStream.url = stream.url.trim()
+            targetStream.url = stream.url
             if stream.selected == true {
                 newSelectedStream = targetStream
             }
@@ -78,7 +78,7 @@ extension Model {
             }
             if let obs = stream.obs {
                 targetStream.obsWebSocketEnabled = true
-                targetStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                targetStream.obsWebSocketUrl = obs.webSocketUrl
                 targetStream.obsWebSocketPassword = obs.webSocketPassword.trim()
             }
             if let twitch = stream.twitch {

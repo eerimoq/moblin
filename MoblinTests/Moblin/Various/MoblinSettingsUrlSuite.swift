@@ -41,4 +41,42 @@ struct MoblinSettingsUrlSuite {
         }
         #expect(error?.localizedDescription == invalidCase.message)
     }
+
+    struct CleanUrlCase: CustomTestStringConvertible {
+        let testDescription: String
+        let url: String
+        let cleanedUrl: String
+
+        init(_ url: String, _ cleanedUrl: String) {
+            testDescription = url
+            self.url = url
+            self.cleanedUrl = cleanedUrl
+        }
+    }
+
+    @Test(arguments: [
+        CleanUrlCase("srt://host:5000", "srt://host:5000"),
+        CleanUrlCase("SRTLA://host:5000", "srtla://host:5000"),
+        CleanUrlCase("srt://host :5000", "srt://host:5000"),
+        CleanUrlCase(" srt://host:5000\\n", "srt://host:5000"),
+    ])
+    func streamUrlIsCleaned(cleanUrlCase: CleanUrlCase) throws {
+        let query = #"{"streams":[{"name":"a","url":"\#(cleanUrlCase.url)"}]}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).streams?.first?.url == cleanUrlCase.cleanedUrl)
+    }
+
+    @Test(arguments: [
+        CleanUrlCase("ws://host:4455", "ws://host:4455"),
+        CleanUrlCase("WSS://host:4455", "wss://host:4455"),
+        CleanUrlCase("ws://host :4455", "ws://host:4455"),
+        CleanUrlCase(" ws://host:4455\\n", "ws://host:4455"),
+    ])
+    func obsWebSocketUrlIsCleaned(cleanUrlCase: CleanUrlCase) throws {
+        let query = #"""
+        {"streams":[{"name":"a","url":"srt://host:5000",
+        "obs":{"webSocketUrl":"\#(cleanUrlCase.url)","webSocketPassword":""}}]}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).streams?.first?.obs?
+            .webSocketUrl == cleanUrlCase.cleanedUrl)
+    }
 }

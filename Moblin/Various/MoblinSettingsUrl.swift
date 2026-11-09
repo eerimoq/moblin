@@ -146,7 +146,8 @@ class MoblinSettingsUrl: Codable {
             from: query.data(using: .utf8)!
         )
         for stream in query.streams ?? [] {
-            if let message = isValidUrl(url: cleanUrl(url: stream.url)) {
+            stream.url = cleanUrl(url: stream.url.trim())
+            if let message = isValidUrl(url: stream.url) {
                 throw MoblinSettingsUrlError(message: message)
             }
             if let srt = stream.srt {
@@ -160,7 +161,8 @@ class MoblinSettingsUrl: Codable {
                 }
             }
             if let obs = stream.obs {
-                if let message = isValidWebSocketUrl(url: cleanUrl(url: obs.webSocketUrl)) {
+                obs.webSocketUrl = cleanUrl(url: obs.webSocketUrl.trim())
+                if let message = isValidWebSocketUrl(url: obs.webSocketUrl) {
                     throw MoblinSettingsUrlError(message: message)
                 }
             }
