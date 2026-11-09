@@ -21,10 +21,10 @@ struct MoblinSettingsUrlSuite {
                     String(localized: "SRT(LA) port number missing")),
         InvalidCase("negative srt latency",
                     #"{"streams":[{"name":"a","url":"srt://host:5000","srt":{"latency":-1}}]}"#,
-                    "Negative SRT latency"),
+                    "SRT latency out of range"),
         InvalidCase("too big srt latency",
                     #"{"streams":[{"name":"a","url":"srt://host:5000","srt":{"latency":65536}}]}"#,
-                    "Too big SRT latency"),
+                    "SRT latency out of range"),
         InvalidCase("obs websocket url with http scheme",
                     #"""
                     {"streams":[{"name":"a","url":"srt://host:5000",

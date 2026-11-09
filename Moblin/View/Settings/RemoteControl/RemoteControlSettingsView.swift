@@ -276,7 +276,7 @@ private struct StreamerView: View {
     }
 
     private func changeAssistantRelayBridgeId(value: String) -> String? {
-        guard !value.isEmpty else {
+        guard SettingsRemoteControlServerRelay.isValidBridgeId(bridgeId: value) else {
             return String(localized: "Empty")
         }
         return nil

@@ -151,29 +151,24 @@ class MoblinSettingsUrl: Codable {
                 throw MoblinSettingsUrlError(message: message)
             }
             if let video = stream.video {
-                if let fps = video.fps, !fpss.contains(fps) {
+                if let fps = video.fps, !SettingsStream.isValidFps(fps: fps) {
                     throw MoblinSettingsUrlError(message: "Unsupported video FPS")
                 }
-                if let bitrate = video.bitrate, bitrate < 50000 || bitrate > 50_000_000 {
+                if let bitrate = video.bitrate, !SettingsStream.isValidBitrate(bitrate: bitrate) {
                     throw MoblinSettingsUrlError(message: "Video bitrate out of range")
                 }
                 if let maxKeyFrameInterval = video.maxKeyFrameInterval,
-                   maxKeyFrameInterval < 0 || maxKeyFrameInterval > 10
+                   !SettingsStream.isValidMaxKeyFrameInterval(interval: maxKeyFrameInterval)
                 {
                     throw MoblinSettingsUrlError(message: "Max key frame interval out of range")
                 }
             }
-            if let bitrate = stream.audio?.bitrate, !isValidAudioBitrate(bitrate: bitrate) {
+            if let bitrate = stream.audio?.bitrate, !SettingsStream.isValidAudioBitrate(bitrate: bitrate) {
                 throw MoblinSettingsUrlError(message: "Unsupported audio bitrate")
             }
             if let srt = stream.srt {
-                if let latency = srt.latency {
-                    if latency < 0 {
-                        throw MoblinSettingsUrlError(message: "Negative SRT latency")
-                    }
-                    if latency > 65535 {
-                        throw MoblinSettingsUrlError(message: "Too big SRT latency")
-                    }
+                if let latency = srt.latency, !SettingsStreamSrt.isValidLatency(latency: latency) {
+                    throw MoblinSettingsUrlError(message: "SRT latency out of range")
                 }
             }
             if let obs = stream.obs {
@@ -184,14 +179,14 @@ class MoblinSettingsUrl: Codable {
             }
         }
         for button in query.quickButtons?.buttons ?? [] {
-            if let page = button.page, page < 1 || page > controlBarPages {
+            if let page = button.page, !SettingsQuickButton.isValidPage(page: page) {
                 throw MoblinSettingsUrlError(message: "Quick button page out of range")
             }
         }
         if let remoteControl = query.remoteControl {
             remoteControl.password = remoteControl.password.trim()
             if let assistant = remoteControl.assistant {
-                if assistant.port == 0 {
+                if !SettingsRemoteControlAssistant.isValidPort(port: assistant.port) {
                     throw MoblinSettingsUrlError(message: "Invalid remote control assistant port")
                 }
                 if let relay = assistant.relay {
@@ -200,7 +195,7 @@ class MoblinSettingsUrl: Codable {
                         throw MoblinSettingsUrlError(message: message)
                     }
                     relay.bridgeId = relay.bridgeId.trim()
-                    if relay.bridgeId.isEmpty {
+                    if !SettingsRemoteControlServerRelay.isValidBridgeId(bridgeId: relay.bridgeId) {
                         throw MoblinSettingsUrlError(message: "Empty remote control relay bridge id")
                     }
                 }

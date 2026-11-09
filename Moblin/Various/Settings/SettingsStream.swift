@@ -506,6 +506,10 @@ class SettingsStreamSrtAdaptiveBitrate: Codable, ObservableObject {
 }
 
 class SettingsStreamSrt: Codable, ObservableObject {
+    static func isValidLatency(latency: Int32) -> Bool {
+        (0 ... 65535).contains(latency)
+    }
+
     @Published var latency: Int32 = defaultSrtLatency
     @Published var maximumBandwidthFollowInput: Bool = true
     var overheadBandwidth: Int32 = 25
@@ -1233,6 +1237,23 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     static let defaultResolution: SettingsStreamResolution = .r1920x1080
     static let defaultFps: Int = 30
+
+    static func isValidFps(fps: Int) -> Bool {
+        fpss.contains(fps)
+    }
+
+    static func isValidBitrate(bitrate: UInt32) -> Bool {
+        (50000 ... 50_000_000).contains(bitrate)
+    }
+
+    static func isValidMaxKeyFrameInterval(interval: Int32) -> Bool {
+        (0 ... 10).contains(interval)
+    }
+
+    static func isValidAudioBitrate(bitrate: Int) -> Bool {
+        (32000 ... 320_000).contains(bitrate) && bitrate % 32000 == 0
+    }
+
     @Published var name: String
     var id: UUID = .init()
     var enabled: Bool = false

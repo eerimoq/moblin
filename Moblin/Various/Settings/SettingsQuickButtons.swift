@@ -234,6 +234,10 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
 }
 
 class SettingsQuickButton: Codable, Identifiable, ObservableObject {
+    static func isValidPage(page: Int) -> Bool {
+        (1 ... controlBarPages).contains(page)
+    }
+
     var id: UUID = .init()
     var name: String
     var type: SettingsQuickButtonType

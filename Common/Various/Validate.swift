@@ -36,13 +36,6 @@ func isValidPort(value: String) -> String? {
     return nil
 }
 
-func isValidAudioBitrate(bitrate: Int) -> Bool {
-    guard bitrate >= 32000, bitrate <= 320_000, bitrate % 32000 == 0 else {
-        return false
-    }
-    return true
-}
-
 func isValidRtmpUrl(url: String, rtmpStreamKeyRequired: Bool) -> String? {
     if !rtmpStreamKeyRequired {
         return nil

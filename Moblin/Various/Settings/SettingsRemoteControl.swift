@@ -2,6 +2,11 @@ import Foundation
 
 class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, Named {
     static let baseName = String(localized: "Streamer name")
+
+    static func isValidPort(port: UInt16) -> Bool {
+        port > 0
+    }
+
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var enabled: Bool = false
@@ -106,6 +111,10 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
 }
 
 class SettingsRemoteControlServerRelay: Codable, ObservableObject {
+    static func isValidBridgeId(bridgeId: String) -> Bool {
+        !bridgeId.isEmpty
+    }
+
     @Published var enabled: Bool = true
     @Published var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
     @Published var bridgeId: String = UUID().uuidString.lowercased()
