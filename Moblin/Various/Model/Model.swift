@@ -121,11 +121,15 @@ class Banners: ObservableObject {
     @Published var minimized = false
 }
 
+class BannerMessage: ObservableObject {
+    @Published var text = ""
+}
+
 @MainActor
 class HypeTrain: ObservableObject {
     @Published var level: Int?
     @Published var progress: ProgressBar?
-    @Published var message = ""
+    let message = BannerMessage()
     var expiresAt: Date?
 }
 
@@ -163,7 +167,7 @@ class TwitchPoll: ObservableObject {
     @Published var title = ""
     @Published var choices: [TwitchPollChoice] = []
     @Published var totalVotes = 0
-    @Published var message = ""
+    let message = BannerMessage()
     var endsAt: Date?
 }
 
@@ -189,7 +193,7 @@ class TwitchPrediction: ObservableObject {
     @Published var title = ""
     @Published var outcomes: [TwitchPredictionOutcome] = []
     @Published var totalChannelPoints = 0
-    @Published var message = ""
+    let message = BannerMessage()
     var locksAt: Date?
 }
 

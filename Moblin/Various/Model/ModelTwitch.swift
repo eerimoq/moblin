@@ -662,7 +662,7 @@ extension Model {
             return
         }
         let countdown = formatTwitchCountdown(endsAt)
-        twitchPoll.message = String(localized: "Ends in \(countdown)")
+        twitchPoll.message.text = String(localized: "Ends in \(countdown)")
     }
 
     func removeTwitchPoll() {
@@ -692,7 +692,7 @@ extension Model {
             return
         }
         let countdown = formatTwitchCountdown(locksAt)
-        twitchPrediction.message = String(localized: "Locks in \(countdown)")
+        twitchPrediction.message.text = String(localized: "Locks in \(countdown)")
     }
 
     func removeTwitchPrediction() {
@@ -704,14 +704,14 @@ extension Model {
             return
         }
         let countdown = formatTwitchCountdown(expiresAt)
-        hypeTrain.message = String(localized: "Ends in \(countdown)")
+        hypeTrain.message.text = String(localized: "Ends in \(countdown)")
     }
 
     func removeHypeTrain() {
         hypeTrain.level = nil
         hypeTrain.progress = nil
         hypeTrain.expiresAt = nil
-        hypeTrain.message = ""
+        hypeTrain.message.text = ""
     }
 
     func makeTwitchAlertSegments(text: String,
@@ -1140,7 +1140,7 @@ extension Model: TwitchEventSubDelegate {
         hypeTrain.progress?.progress = 1
         hypeTrain.progress?.goal = 1
         hypeTrain.expiresAt = nil
-        hypeTrain.message = String(localized: "Ended")
+        hypeTrain.message.text = String(localized: "Ended")
         appendTwitchChatAlertMessage(
             user: stream.twitchChannelName,
             segments: makeTwitchAlertSegments(
@@ -1187,7 +1187,7 @@ extension Model: TwitchEventSubDelegate {
         updateTwitchPoll(event: event, state: .completed)
         let text: String
         if event.status != "archived" {
-            twitchPoll.message = String(localized: "Poll ended")
+            twitchPoll.message.text = String(localized: "Poll ended")
             if let winner = twitchPoll.choices.max(by: { $0.votes < $1.votes }) {
                 text = String(localized: "ended the poll: \(event.title) Winner: \(winner.title)")
             } else {
@@ -1233,17 +1233,17 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelPredictionLock(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .locked)
-        twitchPrediction.message = String(localized: "Locked, waiting for outcome")
+        twitchPrediction.message.text = String(localized: "Locked, waiting for outcome")
     }
 
     func twitchEventSubChannelPredictionEnd(event: TwitchEventSubChannelPredictionEvent) {
         updateTwitchPrediction(event: event, state: .completed)
         let text: String
         if let winner = twitchPrediction.outcomes.first(where: { $0.winner }) {
-            twitchPrediction.message = String(localized: "Outcome: \(winner.title)")
+            twitchPrediction.message.text = String(localized: "Outcome: \(winner.title)")
             text = String(localized: "ended the prediction: \(event.title) Outcome: \(winner.title)")
         } else {
-            twitchPrediction.message = String(localized: "Prediction cancelled")
+            twitchPrediction.message.text = String(localized: "Prediction cancelled")
             text = String(localized: "cancelled the prediction: \(event.title)")
         }
         appendTwitchChatAlertMessage(

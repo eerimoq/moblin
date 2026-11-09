@@ -16,7 +16,7 @@ private struct ProgressBarView: View {
 
 private struct HypeTrainProgressView: View {
     @ObservedObject var progress: ProgressBar
-    let message: String
+    let message: BannerMessage
 
     private func percentage() -> Int {
         guard progress.goal > 0 else {
@@ -33,7 +33,7 @@ private struct HypeTrainProgressView: View {
             HStack {
                 Text(String("\(percentage())%"))
                 Spacer()
-                Text(message)
+                BannerMessageView(message: message)
             }
             .font(.footnote)
         }
@@ -169,10 +169,18 @@ private struct OptionBarView: View {
     }
 }
 
+private struct BannerMessageView: View {
+    @ObservedObject var message: BannerMessage
+
+    var body: some View {
+        Text(message.text)
+    }
+}
+
 private struct BannerView<Content: View>: View {
     let image: String
     let title: String
-    let message: String
+    let message: BannerMessage
     let onClose: () -> Void
     @ViewBuilder let content: Content
 
@@ -192,7 +200,7 @@ private struct BannerView<Content: View>: View {
                 .buttonStyle(.bordered)
             }
             content
-            Text(message)
+            BannerMessageView(message: message)
                 .font(.footnote)
         }
         .foregroundStyle(.white)
