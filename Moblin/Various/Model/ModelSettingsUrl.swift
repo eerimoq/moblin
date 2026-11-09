@@ -141,13 +141,13 @@ extension Model {
             database.remoteControl.assistant.port = assistant.port
             if let relay = assistant.relay {
                 database.remoteControl.assistant.relay.enabled = relay.enabled
-                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl.trim()
-                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId.trim()
+                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl
+                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId
             }
         }
         if let streamer = remoteControl.streamer {
             database.remoteControl.streamer.enabled = streamer.enabled
-            database.remoteControl.streamer.url = streamer.url.trim()
+            database.remoteControl.streamer.url = streamer.url
         }
         database.remoteControl.password = remoteControl.password
         reloadRemoteControlStreamer()

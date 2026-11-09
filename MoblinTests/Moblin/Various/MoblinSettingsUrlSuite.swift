@@ -55,6 +55,30 @@ struct MoblinSettingsUrlSuite {
         InvalidCase("too big audio bitrate",
                     #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":352000}}]}"#,
                     "Unsupported audio bitrate"),
+        InvalidCase("remote control streamer url with http scheme",
+                    #"{"remoteControl":{"password":"p","streamer":{"enabled":true,"url":"http://host:2345"}}}"#,
+                    String(localized: "Unsupported scheme \("http")")),
+        InvalidCase("remote control relay base url with https scheme",
+                    #"""
+                    {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+                    "relay":{"enabled":true,"baseUrl":"https://relay","bridgeId":"b"}}}}
+                    """#,
+                    String(localized: "Unsupported scheme \("https")")),
+        InvalidCase("empty remote control relay bridge id",
+                    #"""
+                    {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+                    "relay":{"enabled":true,"baseUrl":"wss://relay","bridgeId":" "}}}}
+                    """#,
+                    "Empty remote control relay bridge id"),
+        InvalidCase("remote control assistant port 0",
+                    #"{"remoteControl":{"password":"p","assistant":{"enabled":true,"port":0}}}"#,
+                    "Invalid remote control assistant port"),
+        InvalidCase("quick button page 0",
+                    #"{"quickButtons":{"buttons":[{"type":"Torch","page":0}]}}"#,
+                    "Quick button page out of range"),
+        InvalidCase("quick button page 6",
+                    #"{"quickButtons":{"buttons":[{"type":"Torch","page":6}]}}"#,
+                    "Quick button page out of range"),
     ])
     func invalid(invalidCase: InvalidCase) {
         let error = #expect(throws: (any Error).self) {
@@ -88,6 +112,14 @@ struct MoblinSettingsUrlSuite {
                   #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":32000}}]}"#),
         ValidCase("biggest audio bitrate",
                   #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":320000}}]}"#),
+        ValidCase("empty remote control streamer url",
+                  #"{"remoteControl":{"password":"p","streamer":{"enabled":false,"url":""}}}"#),
+        ValidCase("remote control assistant port 1",
+                  #"{"remoteControl":{"password":"p","assistant":{"enabled":true,"port":1}}}"#),
+        ValidCase("quick button page 1",
+                  #"{"quickButtons":{"buttons":[{"type":"Torch","page":1}]}}"#),
+        ValidCase("quick button page 5",
+                  #"{"quickButtons":{"buttons":[{"type":"Torch","page":5}]}}"#),
     ])
     func valid(validCase: ValidCase) {
         #expect(throws: Never.self) {
@@ -131,5 +163,38 @@ struct MoblinSettingsUrlSuite {
         """#
         #expect(try MoblinSettingsUrl.fromString(query: query).streams?.first?.obs?
             .webSocketUrl == cleanUrlCase.cleanedUrl)
+    }
+
+    @Test
+    func remoteControlPasswordIsTrimmed() throws {
+        let query = #"{"remoteControl":{"password":" p "}}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.password == "p")
+    }
+
+    @Test
+    func remoteControlStreamerUrlIsTrimmed() throws {
+        let query = #"{"remoteControl":{"password":"p","streamer":{"enabled":true,"url":" ws://host:2345\n"}}}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.streamer?
+            .url == "ws://host:2345")
+    }
+
+    @Test
+    func remoteControlRelayBaseUrlIsTrimmed() throws {
+        let query = #"""
+        {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+        "relay":{"enabled":true,"baseUrl":" wss://relay\n","bridgeId":"b"}}}}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.assistant?.relay?
+            .baseUrl == "wss://relay")
+    }
+
+    @Test
+    func remoteControlRelayBridgeIdIsTrimmed() throws {
+        let query = #"""
+        {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+        "relay":{"enabled":true,"baseUrl":"wss://relay","bridgeId":" b "}}}}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.assistant?.relay?
+            .bridgeId == "b")
     }
 }

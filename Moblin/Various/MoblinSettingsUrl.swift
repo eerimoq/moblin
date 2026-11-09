@@ -183,6 +183,35 @@ class MoblinSettingsUrl: Codable {
                 }
             }
         }
+        for button in query.quickButtons?.buttons ?? [] {
+            if let page = button.page, page < 1 || page > controlBarPages {
+                throw MoblinSettingsUrlError(message: "Quick button page out of range")
+            }
+        }
+        if let remoteControl = query.remoteControl {
+            remoteControl.password = remoteControl.password.trim()
+            if let assistant = remoteControl.assistant {
+                if assistant.port == 0 {
+                    throw MoblinSettingsUrlError(message: "Invalid remote control assistant port")
+                }
+                if let relay = assistant.relay {
+                    relay.baseUrl = relay.baseUrl.trim()
+                    if let message = isValidWebSocketUrl(url: relay.baseUrl) {
+                        throw MoblinSettingsUrlError(message: message)
+                    }
+                    relay.bridgeId = relay.bridgeId.trim()
+                    if relay.bridgeId.isEmpty {
+                        throw MoblinSettingsUrlError(message: "Empty remote control relay bridge id")
+                    }
+                }
+            }
+            if let streamer = remoteControl.streamer {
+                streamer.url = streamer.url.trim()
+                if let message = isValidWebSocketUrl(url: streamer.url) {
+                    throw MoblinSettingsUrlError(message: message)
+                }
+            }
+        }
         if let url = query.moblinCloud?.url, let message = isValidHttpUrl(url: url.trim()) {
             throw MoblinSettingsUrlError(message: message)
         }
