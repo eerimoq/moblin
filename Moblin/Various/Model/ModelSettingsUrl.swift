@@ -44,10 +44,10 @@ extension Model {
                 if let resolution = video.resolution {
                     targetStream.resolution = resolution
                 }
-                if let fps = video.fps, fpss.contains(fps) {
+                if let fps = video.fps {
                     targetStream.fps = fps
                 }
-                if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
+                if let bitrate = video.bitrate {
                     targetStream.bitrate = bitrate
                 }
                 if let codec = video.codec {
@@ -56,13 +56,11 @@ extension Model {
                 if let bFrames = video.bFrames {
                     targetStream.bFrames = bFrames
                 }
-                if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
-                   maxKeyFrameInterval <= 10
-                {
+                if let maxKeyFrameInterval = video.maxKeyFrameInterval {
                     targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
-            if let audio = stream.audio, let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
+            if let bitrate = stream.audio?.bitrate {
                 targetStream.audioBitrate = bitrate
             }
             if let srt = stream.srt {

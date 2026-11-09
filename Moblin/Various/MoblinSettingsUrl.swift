@@ -150,6 +150,22 @@ class MoblinSettingsUrl: Codable {
             if let message = isValidUrl(url: stream.url) {
                 throw MoblinSettingsUrlError(message: message)
             }
+            if let video = stream.video {
+                if let fps = video.fps, !fpss.contains(fps) {
+                    throw MoblinSettingsUrlError(message: "Unsupported video FPS")
+                }
+                if let bitrate = video.bitrate, bitrate < 50000 || bitrate > 50_000_000 {
+                    throw MoblinSettingsUrlError(message: "Video bitrate out of range")
+                }
+                if let maxKeyFrameInterval = video.maxKeyFrameInterval,
+                   maxKeyFrameInterval < 0 || maxKeyFrameInterval > 10
+                {
+                    throw MoblinSettingsUrlError(message: "Max key frame interval out of range")
+                }
+            }
+            if let bitrate = stream.audio?.bitrate, !isValidAudioBitrate(bitrate: bitrate) {
+                throw MoblinSettingsUrlError(message: "Unsupported audio bitrate")
+            }
             if let srt = stream.srt {
                 if let latency = srt.latency {
                     if latency < 0 {
