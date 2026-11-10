@@ -812,11 +812,23 @@ private struct ChatBotAliasesSettingsView: View {
     }
 }
 
+private func drawChatBotCard(context: GraphicsContext, time: Double) {
+    context.fill(Path(ellipseIn: CGRect(x: 65.52 - 4.08, y: 39.68 - 4.08, width: 8.16, height: 8.16)),
+                 with: .color(Color(red: 0xFF / 255, green: 0x3B / 255, blue: 0x30 / 255)
+                     .opacity(tradingCardPulseOpacity(time: time))))
+}
+
 struct ChatBotSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "ChatBot",
+                                background: Color(red: 0xEA / 255, green: 0xF4 / 255, blue: 0xEA / 255),
+                                hasFront: false,
+                                draw: drawChatBotCard)
+            }
             Section {
                 NavigationLink {
                     ChatBotCommandsSettingsView()

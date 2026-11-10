@@ -17,6 +17,10 @@ struct GameControllersSettingsView: View {
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "GameController",
+                                background: Color(red: 0x8F / 255, green: 0xBC / 255, blue: 0xF0 / 255))
+            }
+            Section {
                 Text("Use game controllers to zoom, set scene, and more, from a distance.")
             }
             Section {

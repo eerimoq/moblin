@@ -27,6 +27,7 @@ struct TradingCardView: View {
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     let name: String
     let background: Color
+    var hasFront = true
     var draw: ((GraphicsContext, Double) -> Void)?
 
     var body: some View {
@@ -41,8 +42,10 @@ struct TradingCardView: View {
                         draw(context, timeline.date.timeIntervalSinceReferenceDate)
                     }
                 }
-                Image("\(name)CardFront")
-                    .resizable()
+                if hasFront {
+                    Image("\(name)CardFront")
+                        .resizable()
+                }
             } else {
                 Image("\(name)Card")
                     .resizable()
