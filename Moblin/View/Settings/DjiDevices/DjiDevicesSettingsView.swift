@@ -35,9 +35,7 @@ struct DjiDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "DjiOa4")
-                }
+                IntegrationImageView(imageName: "DjiOa4", height: 180)
             }
             Section {
                 List {

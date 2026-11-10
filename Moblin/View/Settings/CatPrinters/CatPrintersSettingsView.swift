@@ -1,15 +1,25 @@
 import SwiftUI
 
+extension View {
+    func integrationImageRow(height: CGFloat? = nil) -> some View {
+        frame(maxWidth: 500)
+            .frame(height: height)
+            .frame(maxWidth: .infinity)
+            .background(.white)
+            .listRowInsets(EdgeInsets())
+            .accessibilityHidden(true)
+    }
+}
+
 struct IntegrationImageView: View {
     let imageName: String
-    var height: Double?
+    var height: CGFloat?
 
     var body: some View {
         Image(imageName)
             .resizable()
             .scaledToFit()
-            .background(.white)
-            .frame(height: height ?? 130.0)
+            .integrationImageRow(height: height)
     }
 }
 
@@ -34,9 +44,9 @@ struct CatPrintersSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "CatPrinter")
-                }
+                IntegrationImageView(imageName: "CatPrinter", height: 180)
+            }
+            Section {
                 Text("A small affordable black and white printer.")
             }
             Section {

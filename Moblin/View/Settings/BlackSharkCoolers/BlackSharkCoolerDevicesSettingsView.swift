@@ -14,9 +14,7 @@ struct BlackSharkCoolerDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "BlackSharkMagCooler4Pro")
-                }
+                IntegrationImageView(imageName: "BlackSharkMagCooler4Pro", height: 180)
             }
             Section {
                 List {

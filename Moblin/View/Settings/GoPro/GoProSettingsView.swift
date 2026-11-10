@@ -441,9 +441,7 @@ struct GoProSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "GoPro")
-                }
+                IntegrationImageView(imageName: "GoPro", height: 180)
             }
             GoProBleDevicesSettingsSection(goPro: model.database.goPro)
             Section {

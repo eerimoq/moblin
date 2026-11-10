@@ -89,11 +89,7 @@ struct TeslaSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    Image("Tesla")
-                        .resizable()
-                        .scaledToFit()
-                }
+                IntegrationImageView(imageName: "Tesla")
             }
             Section {
                 Toggle(isOn: Binding(get: {
