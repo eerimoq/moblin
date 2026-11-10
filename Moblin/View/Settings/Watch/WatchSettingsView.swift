@@ -7,6 +7,10 @@ struct WatchSettingsView: View {
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "AppleWatch",
+                                background: Color(red: 0xF1 / 255, green: 0xEF / 255, blue: 0xE4 / 255))
+            }
+            Section {
                 NavigationLink {
                     WatchChatSettingsView(model: model, chat: model.database.watch.chat)
                 } label: {
