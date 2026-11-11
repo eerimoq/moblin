@@ -2385,6 +2385,9 @@ final class Settings {
     }
 
     func store() {
+        for stream in realDatabase.streams {
+            stream.storeToKeychain()
+        }
         do {
             let database = extractSensitiveData(fromDatabase: realDatabase)
             try storage.set(realDatabase.toString())
@@ -2481,12 +2484,7 @@ final class Settings {
 
     private func addSensitiveData(database: Database) {
         for stream in database.streams {
-            if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
-                stream.twitchAccessToken = accessToken
-            }
-            if let accessToken = loadKickAccessTokenFromKeychain(streamId: stream.id) {
-                stream.kickAccessToken = accessToken
-            }
+            stream.loadFromKeychain()
         }
     }
 

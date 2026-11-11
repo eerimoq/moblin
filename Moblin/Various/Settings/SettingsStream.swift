@@ -1481,9 +1481,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
-        if let encoded = encodeYouTubeAuthState() {
-            storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
-        }
         try container.encode(.youTubeVideoId, youTubeVideoIds)
         try container.encode(.youTubeWantsToBeLoggedIn, youTubeWantsToBeLoggedIn)
         try container.encode(.youTubeNotLoggedInCount, youTubeNotLoggedInCount)
@@ -1580,23 +1577,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickChatroomChannelId = container.decode(.kickChatroomChannelId, String?.self, nil)
         kickSlug = container.decode(.kickSlug, String?.self, nil)
         kickAccessToken = container.decode(.kickAccessToken, String.self, "")
-        if !kickAccessToken.isEmpty {
-            storeKickAccessTokenInKeychain(streamId: id, accessToken: kickAccessToken)
-            kickAccessToken = ""
-        }
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
         kickNotLoggedInCount = container.decode(.kickNotLoggedInCount, Int.self, 0)
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
-        if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
-            youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
-        }
         youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
-        youTubeWantsToBeLoggedIn = container.decode(.youTubeWantsToBeLoggedIn,
-                                                    Bool.self,
-                                                    youTubeAuthState != nil)
+        youTubeWantsToBeLoggedIn = container.decode(.youTubeWantsToBeLoggedIn, Bool.self, false)
         youTubeNotLoggedInCount = container.decode(.youTubeNotLoggedInCount, Int.self, 0)
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
         youTubeScheduleStreamTitle = container.decode(.youTubeScheduleStreamTitle, String.self, "")
@@ -1915,6 +1903,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func isYouTubeAuthorized() -> Bool {
         youTubeAuthState?.isAuthorized == true
+    }
+
+    func loadFromKeychain() {
+        twitchAccessToken = loadTwitchAccessTokenFromKeychain(streamId: id) ?? ""
+        kickAccessToken = loadKickAccessTokenFromKeychain(streamId: id) ?? ""
+        if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
+            youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
+        }
+    }
+
+    func storeToKeychain() {
+        if let encoded = encodeYouTubeAuthState() {
+            storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
+        }
     }
 
     private func encodeYouTubeAuthState() -> Data? {
