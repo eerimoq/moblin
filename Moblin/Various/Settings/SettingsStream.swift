@@ -632,7 +632,7 @@ class SettingsStreamRist: Codable {
     }
 }
 
-struct SettingsHttpHeader: Codable {
+struct SettingsHttpHeader: Codable, Equatable {
     var name: String = ""
     var value: String = ""
 }
@@ -1234,6 +1234,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
 }
 
 class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
+    static let baseName = String(localized: "My stream")
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     static let defaultResolution: SettingsStreamResolution = .r1920x1080
     static let defaultFps: Int = 30
@@ -1899,6 +1900,58 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         } else {
             String(localized: "Auto")
         }
+    }
+
+    func removeAccessTokens() {
+        twitchAccessToken = ""
+        kickAccessToken = ""
+    }
+
+    func removeSecrets() {
+        url = secretsRemoved(url: url)
+        obsWebSocketUrl = ""
+        obsWebSocketPassword = ""
+        realtimeIrlBaseUrl = ""
+        realtimeIrlPushKey = ""
+        discordSnapshotWebhook = ""
+        discordChatBotSnapshotWebhook = ""
+        goLiveNotificationDiscordWebhookUrl = ""
+        whip.headers = []
+        previewStream.url = secretsRemoved(url: previewStream.url)
+        for destination in multiStreaming.destinations {
+            destination.url = secretsRemoved(url: destination.url)
+        }
+        removeAccessTokens()
+    }
+
+    func keepSecrets(from old: SettingsStream) {
+        url = old.url
+        obsWebSocketUrl = old.obsWebSocketUrl
+        obsWebSocketPassword = old.obsWebSocketPassword
+        realtimeIrlBaseUrl = old.realtimeIrlBaseUrl
+        realtimeIrlPushKey = old.realtimeIrlPushKey
+        discordSnapshotWebhook = old.discordSnapshotWebhook
+        discordChatBotSnapshotWebhook = old.discordChatBotSnapshotWebhook
+        goLiveNotificationDiscordWebhookUrl = old.goLiveNotificationDiscordWebhookUrl
+        whip.headers = old.whip.headers
+        previewStream.url = old.previewStream.url
+        let oldDestinations = old.multiStreaming.destinations
+        let samePositions = oldDestinations.count == multiStreaming.destinations.count
+        for (index, destination) in multiStreaming.destinations.enumerated() {
+            let oldDestination = samePositions
+                ? oldDestinations[index]
+                : oldDestinations.first { $0.name == destination.name }
+            destination.url = oldDestination?.url ?? defaultRtmpStreamUrl
+        }
+        twitchAccessToken = old.twitchAccessToken
+        kickAccessToken = old.kickAccessToken
+    }
+
+    private func secretsRemoved(url: String) -> String {
+        guard let range = url.range(of: "://") else {
+            return ""
+        }
+        return String(url[..<range.upperBound])
     }
 
     func isYouTubeAuthorized() -> Bool {

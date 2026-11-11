@@ -59,12 +59,16 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSaveGimbalPreset()
     func remoteControlStreamerImportSettings(settings: Data, onCompleted: @escaping (Bool) -> Void)
     func remoteControlStreamerGetScenes() -> [SettingsScene]
-    func remoteControlStreamerGetWidgets() -> [SettingsWidget]
+    func remoteControlStreamerGetWidgets(secrets: Bool) -> [SettingsWidget]
     func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool
     func remoteControlStreamerUpdateScene(scene: SettingsScene) -> Bool
     func remoteControlStreamerDeleteScene(id: UUID) -> Bool
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool
-    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool
+    func remoteControlStreamerGetStream(id: UUID, secrets: Bool) -> SettingsStream?
+    func remoteControlStreamerCreateStream(stream: SettingsStream, secrets: Bool) -> Bool
+    func remoteControlStreamerUpdateStream(stream: SettingsStream, secrets: Bool) -> Bool
+    func remoteControlStreamerDeleteStream(id: UUID) -> Bool
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget, secrets: Bool) -> Bool
     func remoteControlStreamerDeleteWidget(id: UUID) -> Bool
     func remoteControlStreamerGetAlertsMediaGallery() -> SettingsAlertsMediaGallery
     func remoteControlStreamerGetVideoSources() -> [RemoteControlVideoSource]
@@ -521,8 +525,8 @@ class RemoteControlStreamer {
         case .getScenes:
             let scenes = delegate.remoteControlStreamerGetScenes()
             send(message: .response(id: id, result: .ok, data: .getScenes(scenes: scenes)))
-        case .getWidgets:
-            let widgets = delegate.remoteControlStreamerGetWidgets()
+        case let .getWidgets(secrets: secrets):
+            let widgets = delegate.remoteControlStreamerGetWidgets(secrets: secrets)
             send(message: .response(id: id, result: .ok, data: .getWidgets(widgets: widgets)))
         case let .createScene(scene: scene):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateScene(scene: scene))
@@ -530,13 +534,30 @@ class RemoteControlStreamer {
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateScene(scene: scene))
         case let .deleteScene(id: sceneId):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteScene(id: sceneId))
-        case let .createWidget(widget: widget, sceneIds: sceneIds):
-            sendResultResponse(id: id, ok: delegate.remoteControlStreamerCreateWidget(widget: widget,
-                                                                                      sceneIds: sceneIds))
-        case let .updateWidget(widget: widget):
-            sendResultResponse(id: id, ok: delegate.remoteControlStreamerUpdateWidget(widget: widget))
+        case let .createWidget(widget: widget, sceneIds: sceneIds, secrets: secrets):
+            let ok = delegate.remoteControlStreamerCreateWidget(widget: widget,
+                                                                sceneIds: sceneIds,
+                                                                secrets: secrets)
+            sendResultResponse(id: id, ok: ok)
+        case let .updateWidget(widget: widget, secrets: secrets):
+            let ok = delegate.remoteControlStreamerUpdateWidget(widget: widget, secrets: secrets)
+            sendResultResponse(id: id, ok: ok)
         case let .deleteWidget(id: widgetId):
             sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteWidget(id: widgetId))
+        case let .getStream(id: streamId, secrets: secrets):
+            if let stream = delegate.remoteControlStreamerGetStream(id: streamId, secrets: secrets) {
+                send(message: .response(id: id, result: .ok, data: .getStream(stream: stream)))
+            } else {
+                sendResultResponse(id: id, ok: false)
+            }
+        case let .createStream(stream: stream, secrets: secrets):
+            let ok = delegate.remoteControlStreamerCreateStream(stream: stream, secrets: secrets)
+            sendResultResponse(id: id, ok: ok)
+        case let .updateStream(stream: stream, secrets: secrets):
+            let ok = delegate.remoteControlStreamerUpdateStream(stream: stream, secrets: secrets)
+            sendResultResponse(id: id, ok: ok)
+        case let .deleteStream(id: streamId):
+            sendResultResponse(id: id, ok: delegate.remoteControlStreamerDeleteStream(id: streamId))
         case .getAlertsMediaGallery:
             let gallery = delegate.remoteControlStreamerGetAlertsMediaGallery()
             send(message: .response(id: id, result: .ok, data: .getAlertsMediaGallery(gallery: gallery)))

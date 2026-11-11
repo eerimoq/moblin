@@ -3,6 +3,18 @@ import Foundation
 import Testing
 
 struct UtilsSuite {
+    @Test
+    func deepCopySharesNothingWithTheOriginal() throws {
+        let stream = SettingsStream(name: "Main")
+        stream.srt.latency = 2000
+        let copy = try #require(stream.deepCopy())
+        copy.name = "Copy"
+        copy.srt.latency = 500
+        #expect(copy.id == stream.id)
+        #expect(stream.name == "Main" && stream.srt.latency == 2000)
+        #expect(copy.name == "Copy" && copy.srt.latency == 500)
+    }
+
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func fullDuration() {
         #expect(formatShortDuration(seconds: 0) == "0 secs")

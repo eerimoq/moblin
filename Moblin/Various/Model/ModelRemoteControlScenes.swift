@@ -25,8 +25,15 @@ extension Model {
         database.scenes
     }
 
-    func remoteControlGetWidgets() -> [SettingsWidget] {
-        database.widgets
+    func remoteControlGetWidgets(secrets: Bool) -> [SettingsWidget] {
+        guard !secrets else {
+            return database.widgets
+        }
+        return database.widgets.compactMap {
+            let widget = $0.deepCopy()
+            widget?.removeSecrets()
+            return widget
+        }
     }
 
     func remoteControlCreateScene(scene: SettingsScene) -> Bool {
@@ -84,7 +91,10 @@ extension Model {
         return true
     }
 
-    func remoteControlCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
+    func remoteControlCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool {
+        if !secrets {
+            widget.keepSecrets(from: SettingsWidget(name: ""))
+        }
         guard !database.widgets.contains(where: { $0.id == widget.id }),
               let newWidget = remoteControlMakeWidget(widget: widget),
               isValidRemoteControlName(newWidget, database.widgets + [newWidget], database.widgets),
@@ -99,9 +109,14 @@ extension Model {
         return true
     }
 
-    func remoteControlUpdateWidget(widget: SettingsWidget) -> Bool {
-        guard let oldWidget = database.findWidget(id: widget.id),
-              isValidRemoteControlName(widget, database.widgets, database.widgets),
+    func remoteControlUpdateWidget(widget: SettingsWidget, secrets: Bool) -> Bool {
+        guard let oldWidget = database.findWidget(id: widget.id) else {
+            return false
+        }
+        if !secrets {
+            widget.keepSecrets(from: oldWidget)
+        }
+        guard isValidRemoteControlName(widget, database.widgets, database.widgets),
               remoteControlApplyWidgetUpdate(widget: oldWidget, new: widget, creating: false)
         else {
             return false

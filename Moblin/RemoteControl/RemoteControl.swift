@@ -77,13 +77,17 @@ enum RemoteControlRequest: Codable {
     case music(command: RemoteControlMusicCommand)
     case tip(name: String, message: String, kind: RemoteControlTipKind, requestId: String)
     case getScenes
-    case getWidgets
+    case getWidgets(secrets: Bool)
     case createScene(scene: SettingsScene)
     case updateScene(scene: SettingsScene)
     case deleteScene(id: UUID)
-    case createWidget(widget: SettingsWidget, sceneIds: [UUID])
-    case updateWidget(widget: SettingsWidget)
+    case createWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool)
+    case updateWidget(widget: SettingsWidget, secrets: Bool)
     case deleteWidget(id: UUID)
+    case getStream(id: UUID, secrets: Bool)
+    case createStream(stream: SettingsStream, secrets: Bool)
+    case updateStream(stream: SettingsStream, secrets: Bool)
+    case deleteStream(id: UUID)
     case getAlertsMediaGallery
     case getVideoSources
     case getEditorOptions
@@ -115,6 +119,7 @@ enum RemoteControlResponse: Codable {
     case musicFind(song: RemoteControlMusicFoundSong?)
     case getScenes(scenes: [SettingsScene])
     case getWidgets(widgets: [SettingsWidget])
+    case getStream(stream: SettingsStream)
     case getAlertsMediaGallery(gallery: SettingsAlertsMediaGallery)
     case getVideoSources(videoSources: [RemoteControlVideoSource])
     case getEditorOptions(options: RemoteControlEditorOptions)
@@ -1068,6 +1073,7 @@ struct RemoteControlSettingsMoblinCloud: Codable {
 
 struct RemoteControlSettings: Codable {
     var streams: [RemoteControlSettingsStream]
+    var currentStreamId: UUID?
     var scenes: [RemoteControlSettingsScene]
     var autoSceneSwitchers: [RemoteControlSettingsAutoSceneSwitcher]?
     var bitratePresets: [RemoteControlSettingsBitratePreset]

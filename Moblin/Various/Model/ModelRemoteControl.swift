@@ -749,6 +749,7 @@ extension Model {
         )
         return RemoteControlSettings(
             streams: streams,
+            currentStreamId: database.streams.first(where: { $0.enabled })?.id,
             scenes: scenes,
             autoSceneSwitchers: autoSceneSwitchers,
             bitratePresets: bitratePresets,
@@ -1329,8 +1330,8 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlGetScenes()
     }
 
-    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
-        remoteControlGetWidgets()
+    func remoteControlStreamerGetWidgets(secrets: Bool) -> [SettingsWidget] {
+        remoteControlGetWidgets(secrets: secrets)
     }
 
     func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
@@ -1345,12 +1346,28 @@ extension Model: RemoteControlStreamerDelegate {
         remoteControlDeleteScene(id: id)
     }
 
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
-        remoteControlCreateWidget(widget: widget, sceneIds: sceneIds)
+    func remoteControlStreamerGetStream(id: UUID, secrets: Bool) -> SettingsStream? {
+        remoteControlGetStream(id: id, secrets: secrets)
     }
 
-    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
-        remoteControlUpdateWidget(widget: widget)
+    func remoteControlStreamerCreateStream(stream: SettingsStream, secrets: Bool) -> Bool {
+        remoteControlCreateStream(stream: stream, secrets: secrets)
+    }
+
+    func remoteControlStreamerUpdateStream(stream: SettingsStream, secrets: Bool) -> Bool {
+        remoteControlUpdateStream(stream: stream, secrets: secrets)
+    }
+
+    func remoteControlStreamerDeleteStream(id: UUID) -> Bool {
+        remoteControlDeleteStream(id: id)
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool {
+        remoteControlCreateWidget(widget: widget, sceneIds: sceneIds, secrets: secrets)
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget, secrets: Bool) -> Bool {
+        remoteControlUpdateWidget(widget: widget, secrets: secrets)
     }
 
     func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {

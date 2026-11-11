@@ -1,6 +1,6 @@
 import Foundation
 
-private struct ChangeTracker {
+struct ChangeTracker {
     private(set) var changed = false
 
     @discardableResult

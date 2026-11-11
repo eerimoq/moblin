@@ -283,6 +283,15 @@ func formatFourDecimals(_ value: some BinaryFloatingPoint) -> String {
     String(format: "%.04f", Double(value))
 }
 
+extension Decodable where Self: Encodable {
+    func deepCopy() -> Self? {
+        guard let data = try? JSONEncoder().encode(self) else {
+            return nil
+        }
+        return try? JSONDecoder().decode(Self.self, from: data)
+    }
+}
+
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         min(max(self, limits.lowerBound), limits.upperBound)

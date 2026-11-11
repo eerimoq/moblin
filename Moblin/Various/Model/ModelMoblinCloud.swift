@@ -773,8 +773,8 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlGetScenes() ?? []
     }
 
-    func remoteControlStreamerGetWidgets() -> [SettingsWidget] {
-        model?.remoteControlGetWidgets() ?? []
+    func remoteControlStreamerGetWidgets(secrets: Bool) -> [SettingsWidget] {
+        model?.remoteControlGetWidgets(secrets: secrets) ?? []
     }
 
     func remoteControlStreamerCreateScene(scene: SettingsScene) -> Bool {
@@ -789,12 +789,28 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
         model?.remoteControlDeleteScene(id: id) ?? false
     }
 
-    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID]) -> Bool {
-        model?.remoteControlCreateWidget(widget: widget, sceneIds: sceneIds) ?? false
+    func remoteControlStreamerGetStream(id: UUID, secrets: Bool) -> SettingsStream? {
+        model?.remoteControlGetStream(id: id, secrets: secrets)
     }
 
-    func remoteControlStreamerUpdateWidget(widget: SettingsWidget) -> Bool {
-        model?.remoteControlUpdateWidget(widget: widget) ?? false
+    func remoteControlStreamerCreateStream(stream: SettingsStream, secrets: Bool) -> Bool {
+        model?.remoteControlCreateStream(stream: stream, secrets: secrets) ?? false
+    }
+
+    func remoteControlStreamerUpdateStream(stream: SettingsStream, secrets: Bool) -> Bool {
+        model?.remoteControlUpdateStream(stream: stream, secrets: secrets) ?? false
+    }
+
+    func remoteControlStreamerDeleteStream(id: UUID) -> Bool {
+        model?.remoteControlDeleteStream(id: id) ?? false
+    }
+
+    func remoteControlStreamerCreateWidget(widget: SettingsWidget, sceneIds: [UUID], secrets: Bool) -> Bool {
+        model?.remoteControlCreateWidget(widget: widget, sceneIds: sceneIds, secrets: secrets) ?? false
+    }
+
+    func remoteControlStreamerUpdateWidget(widget: SettingsWidget, secrets: Bool) -> Bool {
+        model?.remoteControlUpdateWidget(widget: widget, secrets: secrets) ?? false
     }
 
     func remoteControlStreamerDeleteWidget(id: UUID) -> Bool {

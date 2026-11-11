@@ -2740,6 +2740,18 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         }
     }
 
+    func removeSecrets() {
+        alerts.ai.baseUrl = ""
+        alerts.ai.apiKey = ""
+        alerts.ttsMonster.apiToken = ""
+    }
+
+    func keepSecrets(from old: SettingsWidget) {
+        alerts.ai.baseUrl = old.alerts.ai.baseUrl
+        alerts.ai.apiKey = old.alerts.ai.apiKey
+        alerts.ttsMonster.apiToken = old.alerts.ttsMonster.apiToken
+    }
+
     @MainActor
     func getEffects(model: Model) -> [VideoEffect] {
         effects.filter(\.enabled).map { $0.getEffect(model: model) }

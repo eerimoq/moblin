@@ -3,7 +3,71 @@ import Foundation
 import Testing
 import WeatherKit
 
+private let streamId = "3F2B8C1E-5A4D-4E7F-9B6A-1C2D3E4F5A6B"
+
 struct RemoteControlSuite {
+    private func decode(_ json: String) throws -> RemoteControlRequest {
+        try JSONDecoder().decode(RemoteControlRequest.self, from: Data(json.utf8))
+    }
+
+    @Test
+    func moblinCloudStreamRequestsDecode() throws {
+        guard case let .getStream(id: id, secrets: secrets) = try decode(
+            #"{"getStream":{"id":"\#(streamId)","secrets":false}}"#
+        ) else {
+            Issue.record("Not getStream")
+            return
+        }
+        #expect(id.uuidString == streamId && !secrets)
+        guard case let .updateStream(stream: stream, secrets: secrets) = try decode(
+            #"{"updateStream":{"stream":{"id":"\#(streamId)","name":"Kick"},"secrets":true}}"#
+        ) else {
+            Issue.record("Not updateStream")
+            return
+        }
+        #expect(stream.id.uuidString == streamId && stream.name == "Kick" && secrets)
+        guard case .createStream(stream: _, secrets: false) = try decode(
+            #"{"createStream":{"stream":{"id":"\#(streamId)"},"secrets":false}}"#
+        ) else {
+            Issue.record("Not createStream")
+            return
+        }
+        guard case .deleteStream = try decode(#"{"deleteStream":{"id":"\#(streamId)"}}"#) else {
+            Issue.record("Not deleteStream")
+            return
+        }
+        guard case .getWidgets(secrets: false) = try decode(#"{"getWidgets":{"secrets":false}}"#) else {
+            Issue.record("Not getWidgets")
+            return
+        }
+    }
+
+    @Test(arguments: [
+        #"{"getStream":{"id":"3F2B8C1E-5A4D-4E7F-9B6A-1C2D3E4F5A6B"}}"#,
+        #"{"updateStream":{"stream":{"id":"3F2B8C1E-5A4D-4E7F-9B6A-1C2D3E4F5A6B"}}}"#,
+        #"{"getWidgets":{}}"#,
+    ])
+    func requestsWithoutTheSecretsFlagAreRefused(json: String) {
+        #expect(throws: (any Error).self) {
+            try decode(json)
+        }
+    }
+
+    @Test
+    func settingsNameTheCurrentStream() throws {
+        let settings = RemoteControlSettings(
+            streams: [],
+            currentStreamId: UUID(uuidString: streamId),
+            scenes: [],
+            autoSceneSwitchers: nil,
+            bitratePresets: [],
+            mics: [],
+            srt: .init(connectionPrioritiesEnabled: false, connectionPriorities: [])
+        )
+        let json = try #require(try String(bytes: JSONEncoder().encode(settings), encoding: .utf8))
+        #expect(json.contains(#""currentStreamId":"\#(streamId)""#))
+    }
+
     private func encode(_ request: RemoteControlRequest) throws -> String? {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]

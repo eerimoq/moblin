@@ -216,7 +216,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     func getWidgets(onSuccess: @escaping ([SettingsWidget]) -> Void) {
-        performRequest(data: .getWidgets) { response in
+        performRequest(data: .getWidgets(secrets: true)) { response in
             guard case let .getWidgets(widgets: widgets) = response else {
                 return
             }
@@ -252,7 +252,7 @@ class RemoteControlAssistant: NSObject {
                       onError: @escaping (String) -> Void)
     {
         performRequestNoResponseData(
-            data: .createWidget(widget: widget, sceneIds: sceneIds),
+            data: .createWidget(widget: widget, sceneIds: sceneIds, secrets: true),
             onSuccess: onSuccess,
             onError: onError
         )
@@ -263,7 +263,7 @@ class RemoteControlAssistant: NSObject {
                       onError: @escaping (String) -> Void)
     {
         performRequestNoResponseData(
-            data: .updateWidget(widget: widget),
+            data: .updateWidget(widget: widget, secrets: true),
             onSuccess: onSuccess,
             onError: onError
         )
