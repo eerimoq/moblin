@@ -57,6 +57,7 @@ private struct QuickButtonImage: View {
                 image
             }
         }
+        .contentShape(Circle())
         .onTapGesture {
             onTapGesture()
         }
@@ -78,6 +79,7 @@ private struct InstantReplayView: View {
             .font(.system(size: 25))
             .frame(width: size, height: size)
             .foregroundStyle(.white)
+            .contentShape(Circle())
     }
 
     var body: some View {
