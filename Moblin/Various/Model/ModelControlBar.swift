@@ -91,7 +91,7 @@ extension Model {
         }
     }
 
-    func controlBarDoubleTapped() {
+    func startFilteringQuickButtons() {
         guard !quickButtonsFilter.filtering else {
             return
         }

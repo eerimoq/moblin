@@ -185,6 +185,7 @@ struct ControlBarLandscapePageView: View {
             }
             .scrollIndicators(.hidden)
             .scrollDisabled(!quickButtonsSettings.enableScroll)
+            .filterQuickButtonsOnOverscroll(model: model, axis: .vertical)
             .scrollToQuickButton(model: model, quickButtons: quickButtons, pairs: pairs, proxy: scrollProxy)
         }
     }

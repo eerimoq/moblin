@@ -116,6 +116,7 @@ struct ControlBarPortraitPageView: View {
             }
             .scrollIndicators(.hidden)
             .scrollDisabled(!quickButtonsSettings.enableScroll)
+            .filterQuickButtonsOnOverscroll(model: model, axis: .horizontal)
             .scrollToQuickButton(model: model, quickButtons: quickButtons, pairs: pairs, proxy: scrollProxy)
         }
     }

@@ -84,7 +84,7 @@ extension View {
             Color.clear
                 .contentShape(Rectangle())
                 .onTapGesture(count: 2) {
-                    model.controlBarDoubleTapped()
+                    model.startFilteringQuickButtons()
                 }
         }
     }
@@ -96,11 +96,52 @@ extension View {
                 .contentShape(Rectangle())
                 .ignoresSafeArea()
                 .onTapGesture(count: 2) {
-                    model.controlBarDoubleTapped()
+                    model.startFilteringQuickButtons()
                 }
         }
         .overlay {
             QuickButtonsFilterOverlayView(model: model, quickButtonsFilter: model.quickButtonsFilter)
+        }
+    }
+}
+
+@available(iOS 18, *)
+private struct FilterOnOverscrollModifier: ViewModifier {
+    let model: Model
+    let axis: Axis
+    @State private var interacting = false
+
+    private func overscroll(geometry: ScrollGeometry) -> CGFloat {
+        switch axis {
+        case .vertical:
+            geometry.visibleRect.maxY - geometry.contentSize.height
+        case .horizontal:
+            geometry.visibleRect.maxX - geometry.contentSize.width
+        }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .onScrollPhaseChange { _, phase in
+                interacting = phase == .interacting
+            }
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                overscroll(geometry: geometry) > 50
+            } action: { _, overscrolled in
+                if overscrolled, interacting {
+                    model.startFilteringQuickButtons()
+                }
+            }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func filterQuickButtonsOnOverscroll(model: Model, axis: Axis) -> some View {
+        if #available(iOS 18, *) {
+            modifier(FilterOnOverscrollModifier(model: model, axis: axis))
+        } else {
+            self
         }
     }
 }
