@@ -85,6 +85,14 @@ extension Model {
         reloadOpenStreamingPlatformChat()
     }
 
+    func reloadEmotes() {
+        twitchChat?.reloadEmotes()
+        kickPusher?.reloadEmotes()
+        for youTubeLiveChat in youTubeLiveChats.values {
+            youTubeLiveChat.reloadEmotes()
+        }
+    }
+
     func updateChatMoreThanOneChatConfigured() {
         let moreThanOneStreamingPlatform = isMoreThanOneChatConfigured()
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform

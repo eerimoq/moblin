@@ -546,6 +546,10 @@ final class TwitchChat {
         emotes.isReady()
     }
 
+    func reloadEmotes() {
+        emotes.reload()
+    }
+
     func getBadgeUrl(badgeId: String) -> URL? {
         badges.getUrl(badgeId: badgeId)
     }

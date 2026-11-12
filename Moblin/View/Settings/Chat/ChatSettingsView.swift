@@ -98,6 +98,17 @@ struct ChatSettingsView: View {
                     """)
                 }
             }
+            if chat.enabled {
+                Section {
+                    TextButtonView("Reload emotes") {
+                        model.reloadEmotes()
+                    }
+                } footer: {
+                    Text(
+                        "Fetch BTTV, FFZ and 7TV emotes again, for example after the channel added new ones."
+                    )
+                }
+            }
             if stream !== fallbackStream {
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(model: model, stream: stream)

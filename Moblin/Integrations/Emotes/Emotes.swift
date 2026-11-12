@@ -21,6 +21,12 @@ class Emotes: @unchecked Sendable {
     private var emotes: [String: Emote] = [:]
     private var task: Task<Void, any Error>?
     private var ready: Bool = false
+    private var started: Bool = false
+    private var platform: EmotesPlatform = .twitch
+    private var channelId: String = ""
+    private var onError: (@MainActor (String, String) -> Void)?
+    private var onOk: (@MainActor (String) -> Void)?
+    private var settings = SettingsStreamChat()
 
     func isReady() -> Bool {
         ready
@@ -33,7 +39,16 @@ class Emotes: @unchecked Sendable {
         onOk: @escaping @MainActor (String) -> Void,
         settings: SettingsStreamChat
     ) {
-        let settings = settings.clone()
+        started = true
+        self.platform = platform
+        self.channelId = channelId
+        self.onError = onError
+        self.onOk = onOk
+        self.settings = settings.clone()
+        startInternal()
+    }
+
+    private func startInternal() {
         ready = false
         emotes.removeAll()
         task = Task { @MainActor in
@@ -41,30 +56,30 @@ class Emotes: @unchecked Sendable {
             var retryTime = 30
             while !self.ready {
                 let (bttvEmotes, bttvError) = await fetchBttvEmotes(
-                    platform: platform,
-                    channelId: channelId,
-                    enabled: settings.bttvEmotes
+                    platform: self.platform,
+                    channelId: self.channelId,
+                    enabled: self.settings.bttvEmotes
                 )
-                self.addEmotes(bttvEmotes)
                 let (ffzEmotes, ffzError) = await fetchFfzEmotes(
-                    platform: platform,
-                    channelId: channelId,
-                    enabled: settings.ffzEmotes
+                    platform: self.platform,
+                    channelId: self.channelId,
+                    enabled: self.settings.ffzEmotes
                 )
-                self.addEmotes(ffzEmotes)
                 let (seventvEmotes, seventvError) = await fetchSeventvEmotes(
-                    platform: platform,
-                    channelId: channelId,
-                    enabled: settings.seventvEmotes
+                    platform: self.platform,
+                    channelId: self.channelId,
+                    enabled: self.settings.seventvEmotes
                 )
-                self.addEmotes(seventvEmotes)
                 if Task.isCancelled {
                     return
                 }
+                self.addEmotes(bttvEmotes)
+                self.addEmotes(ffzEmotes)
+                self.addEmotes(seventvEmotes)
                 if let error = bttvError ?? ffzError ?? seventvError {
                     logger.info("emotes: \(error)")
                     if firstRetry {
-                        onError(error, String(localized: "Retrying later"))
+                        self.onError?(error, String(localized: "Retrying later"))
                     }
                     firstRetry = false
                     self.ready = false
@@ -78,7 +93,7 @@ class Emotes: @unchecked Sendable {
                 } else {
                     self.ready = true
                     if !firstRetry {
-                        onOk("Emotes fetched")
+                        self.onOk?("Emotes fetched")
                     }
                 }
             }
@@ -91,9 +106,24 @@ class Emotes: @unchecked Sendable {
     }
 
     func stop() {
+        started = false
+        onError = nil
+        onOk = nil
+        stopInternal()
+    }
+
+    private func stopInternal() {
         ready = false
         task?.cancel()
         task = nil
+    }
+
+    func reload() {
+        guard started else {
+            return
+        }
+        stopInternal()
+        startInternal()
     }
 
     func createSegments(text: String, id: inout Int) -> [ChatPostSegment] {

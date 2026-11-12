@@ -344,6 +344,10 @@ final class KickPusher: NSObject {
         emotes.isReady()
     }
 
+    func reloadEmotes() {
+        emotes.reload()
+    }
+
     private func fetchSubscriberBadges() {
         getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
             if let subscriberBadges = channelInfo?.subscriber_badges {

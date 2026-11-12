@@ -257,6 +257,10 @@ final class YouTubeLiveChat: NSObject {
         emotes.isReady()
     }
 
+    func reloadEmotes() {
+        emotes.reload()
+    }
+
     private func handleError(title: String, subTitle: String) {
         delegate?.youTubeLiveChatMakeErrorToast(title: title, subTitle: subTitle)
     }
