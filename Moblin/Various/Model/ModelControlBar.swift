@@ -4,6 +4,17 @@ import SwiftUI
 let controlBarBackgroundImagePath = URL.documentsDirectory
     .appending(component: "controlBarBackgroundImage.img")
 
+func quickButtonNameMatchesFilter(name: String, filter: String) -> Bool {
+    let filterWords = filter.lowercased().split(whereSeparator: \.isWhitespace)
+    let nameWords = name.lowercased().split(whereSeparator: \.isWhitespace)
+    guard nameWords.count >= filterWords.count else {
+        return false
+    }
+    return (0 ... nameWords.count - filterWords.count).contains { start in
+        zip(nameWords[start...], filterWords).allSatisfy { $0.hasPrefix($1) }
+    }
+}
+
 extension Model {
     func saveControlBarBackgroundImage(data: Data) -> UIImage? {
         guard let original = UIImage(data: data) else {
@@ -78,6 +89,58 @@ extension Model {
                                  width: image.size.width * scale,
                                  height: image.size.height * scale))
         }
+    }
+
+    func controlBarDoubleTapped() {
+        guard !quickButtonsFilter.filtering else {
+            return
+        }
+        quickButtonsFilter.filter = ""
+        quickButtons.scrollToButtonId = nil
+        updateFilteredQuickButtonPairs()
+        quickButtonsFilter.filtering = true
+    }
+
+    func stopFilteringQuickButtons() {
+        quickButtonsFilter.filtering = false
+        quickButtonsFilter.presentingDialog = false
+    }
+
+    func quickButtonsFilterPresentingDialog() {
+        guard quickButtonsFilter.filtering else {
+            return
+        }
+        quickButtonsFilter.presentingDialog = true
+    }
+
+    func quickButtonsFilterFocusLost() {
+        guard !quickButtonsFilter.presentingDialog else {
+            return
+        }
+        stopFilteringQuickButtons()
+    }
+
+    func stopFilteringQuickButtons(showButton button: SettingsQuickButton) {
+        guard quickButtonsFilter.filtering else {
+            return
+        }
+        stopFilteringQuickButtons()
+        quickButtonsPages.page = button.page
+        quickButtonsPages.activePage = button.page
+        if database.quickButtonsGeneral.enableScroll {
+            quickButtons.scrollToButtonId = button.id
+        }
+    }
+
+    func takeQuickButtonToScrollTo(pairs: [QuickButtonPair]) -> UUID? {
+        guard let buttonId = quickButtons.scrollToButtonId,
+              quickButtons.pairs.contains(pairs),
+              pairs.contains(where: { $0.first.id == buttonId || $0.second?.id == buttonId })
+        else {
+            return nil
+        }
+        quickButtons.scrollToButtonId = nil
+        return buttonId
     }
 
     func deleteControlBarBackgroundImage() {

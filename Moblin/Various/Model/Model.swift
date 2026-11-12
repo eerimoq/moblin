@@ -411,6 +411,14 @@ class GoProState: ObservableObject {
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var selectedButtonType: SettingsQuickButtonType?
+    @Published var scrollToButtonId: UUID?
+}
+
+class QuickButtonsFilter: ObservableObject {
+    @Published var filtering = false
+    @Published var filter = ""
+    @Published var pairs: [QuickButtonPair] = []
+    var presentingDialog = false
 }
 
 @MainActor
@@ -529,6 +537,7 @@ final class Model: NSObject, ObservableObject {
     private var isDevicePortrait = false
     let snapshot = Snapshot()
     let quickButtons = QuickButtons()
+    let quickButtonsFilter = QuickButtonsFilter()
     let quickButtonsPages = QuickButtonsPages()
     let mic = Mic()
     let goPro = GoProState()
@@ -1080,25 +1089,33 @@ final class Model: NSObject, ObservableObject {
         makeErrorToast(title: String(localized: "Invalid port \(port.trim())"))
     }
 
+    private func makeQuickButtonPairs(buttons: [SettingsQuickButton]) -> [QuickButtonPair] {
+        var pairs: [QuickButtonPair] = []
+        for index in stride(from: 0, to: buttons.count, by: 2) {
+            if buttons.count - index > 1 {
+                pairs.append(QuickButtonPair(
+                    id: UUID(),
+                    first: buttons[index + 1],
+                    second: buttons[index]
+                ))
+            } else {
+                pairs.append(QuickButtonPair(id: UUID(), first: buttons[index]))
+            }
+        }
+        return pairs
+    }
+
+    private func enabledQuickButtons(page: Int) -> [SettingsQuickButton] {
+        database.quickButtons.filter { button in
+            button.enabled && button.page == page && isQuickButtonAllowed(type: button.type)
+        }
+    }
+
     func updateQuickButtonPairs() {
         for page in 0 ..< controlBarPages {
-            let buttons = database.quickButtons.filter { button in
-                button.enabled && button.page == page + 1 && isQuickButtonAllowed(type: button.type)
-            }
-            var pairs: [QuickButtonPair] = []
-            for index in stride(from: 0, to: buttons.count, by: 2) {
-                if buttons.count - index > 1 {
-                    pairs.append(QuickButtonPair(
-                        id: UUID(),
-                        first: buttons[index + 1],
-                        second: buttons[index]
-                    ))
-                } else {
-                    pairs.append(QuickButtonPair(id: UUID(), first: buttons[index]))
-                }
-            }
-            quickButtons.pairs[page] = pairs
+            quickButtons.pairs[page] = makeQuickButtonPairs(buttons: enabledQuickButtons(page: page + 1))
         }
+        updateFilteredQuickButtonPairs()
     }
 
     func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
@@ -1106,6 +1123,15 @@ final class Model: NSObject, ObservableObject {
             return []
         }
         return quickButtons.pairs[page - 1]
+    }
+
+    func updateFilteredQuickButtonPairs() {
+        let buttons = (1 ... controlBarPages).flatMap { page in
+            enabledQuickButtons(page: page).filter { button in
+                quickButtonNameMatchesFilter(name: button.name, filter: quickButtonsFilter.filter)
+            }
+        }
+        quickButtonsFilter.pairs = makeQuickButtonPairs(buttons: buttons)
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
