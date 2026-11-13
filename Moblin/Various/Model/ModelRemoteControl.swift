@@ -1303,7 +1303,9 @@ extension Model: RemoteControlStreamerDelegate {
         case .warning:
             makeWarningToast(title: title, subTitle: subTitle, vibrate: true)
         case .error:
-            makeErrorToast(title: title, subTitle: subTitle, vibrate: true)
+            // makeErrorToast() has no equivalent of makeWarningToast()'s own
+            // formatWarning() glyph-wrapping, so add one here to match.
+            makeErrorToast(title: "❌ \(title) ❌", subTitle: subTitle, vibrate: true)
         }
     }
 
