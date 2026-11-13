@@ -101,6 +101,11 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "speedometer")
                 }
                 Label {
+                    Toggle("Server bitrate", isOn: $show.serverBitrate)
+                } icon: {
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                }
+                Label {
                     Toggle("Uptime", isOn: $show.uptime)
                 } icon: {
                     Image(systemName: "deskclock")

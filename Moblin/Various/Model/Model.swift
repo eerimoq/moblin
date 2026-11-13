@@ -218,6 +218,26 @@ class Bitrate: ObservableObject {
     @Published var statusIconColor: Color?
 }
 
+// Shared with ServerBitrate below, so an externally-reported (e.g. a
+// receiving server/relay) bitrate is colored by the exact same thresholds
+// as the locally measured one, relative to the configured target rather
+// than an absolute number any particular setup would have to guess.
+func bitrateStatusIconColor(speed: Int64, target: Int64) -> Color? {
+    if speed < target / 5 {
+        return .red
+    } else if speed < target / 2 {
+        return .orange
+    } else {
+        return nil
+    }
+}
+
+@MainActor
+class ServerBitrate: ObservableObject {
+    @Published var speedAndTotal = noValue
+    @Published var statusIconColor: Color?
+}
+
 @MainActor
 class Bonding: ObservableObject {
     @Published var statistics = noValue
@@ -581,6 +601,7 @@ final class Model: NSObject, ObservableObject {
     let ingests = Ingests()
     let videoSources = VideoSources()
     let bitrate = Bitrate()
+    let serverBitrate = ServerBitrate()
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
@@ -3316,6 +3337,13 @@ final class Model: NSObject, ObservableObject {
 
     func isShowingStatusBitrate() -> Bool {
         database.show.speed && isLive
+    }
+
+    // Only shown once a value has actually been received - most Moblin
+    // users have nothing pushing this, and the toggle defaulting to true
+    // would otherwise add a permanently empty row for everyone else.
+    func isShowingStatusServerBitrate() -> Bool {
+        database.show.serverBitrate && serverBitrate.speedAndTotal != noValue
     }
 
     func isShowingStatusStreamUptime() -> Bool {

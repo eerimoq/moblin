@@ -62,6 +62,7 @@ enum RemoteControlRequest: Codable {
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
     case showToast(title: String, subTitle: String?, type: RemoteControlToastType)
+    case setServerBitrate(bitsPerSecond: Int64?)
     case moveToGimbalPreset(id: UUID)
     case setGimbalTracking(on: Bool)
     case setGimbalMovement(x: Float, y: Float)

@@ -394,6 +394,13 @@ class RemoteControlAssistant: NSObject {
         )
     }
 
+    func setServerBitrate(bitsPerSecond: Int64?) {
+        performRequestNoResponseData(
+            data: .setServerBitrate(bitsPerSecond: bitsPerSecond),
+            onSuccess: {}
+        )
+    }
+
     func sendMessage(text: String) {
         performRequestNoResponseData(data: .sendMessage(name: nil, text: text), onSuccess: {})
     }

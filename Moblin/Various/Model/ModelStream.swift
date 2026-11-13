@@ -644,15 +644,9 @@ extension Model {
             if speedAndTotal != bitrate.speedAndTotal {
                 bitrate.speedAndTotal = speedAndTotal
             }
-            let bitrateStatusIconColor: Color? = if speed < stream.bitrate / 5 {
-                .red
-            } else if speed < stream.bitrate / 2 {
-                .orange
-            } else {
-                nil
-            }
-            if bitrateStatusIconColor != bitrate.statusIconColor {
-                bitrate.statusIconColor = bitrateStatusIconColor
+            let iconColor = bitrateStatusIconColor(speed: speed, target: Int64(stream.bitrate))
+            if iconColor != bitrate.statusIconColor {
+                bitrate.statusIconColor = iconColor
             }
             if isWatchLocal() {
                 sendSpeedAndTotalToWatch(speedAndTotal: bitrate.speedAndTotal)
