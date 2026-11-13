@@ -1,8 +1,6 @@
 import SwiftUI
 import WebKit
 
-private let smallBrowserSide = 250.0
-
 struct WebView: UIViewRepresentable {
     let model: Model
 
@@ -134,62 +132,180 @@ private struct BookmarksView: View {
 }
 
 private struct WebBrowserSmallView: View {
-    let model: Model
-    @ObservedObject var database: Database
-    @ObservedObject var webBrowserState: WebBrowserState
-
-    private func offset(metrics _: GeometryProxy) -> Double {
-        if database.bigButtons {
-            -(2 * segmentHeightBig + 10)
-        } else {
-            -(2 * segmentHeight + 10)
+    private struct Border: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path(rect)
+            path.addRect(rect.insetBy(dx: 26, dy: 26))
+            return path
         }
     }
 
-    private func mapSide(maximum: Double) -> Double {
-        min(maximum - 130, smallBrowserSide)
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var webBrowser: WebBrowserSettings
+    @ObservedObject var webBrowserState: WebBrowserState
+    @State private var isEditing = false
+    @GestureState private var moveTranslation = CGSize.zero
+    @GestureState private var resizeTranslation = CGSize.zero
+    @GestureState private var resizeHandle = WebBrowserResizeHandle.bottomTrailing
+
+    private func save(frame: CGRect, in size: CGSize) {
+        webBrowser.smallWindow = WebBrowserWindowLayout(frame: frame, in: size)
+        model.storeSettings()
+    }
+
+    private func moveGesture(frame: CGRect, size: CGSize) -> some Gesture {
+        DragGesture(coordinateSpace: .global)
+            .updating($moveTranslation) { value, translation, _ in
+                translation = value.translation
+            }
+            .onEnded { value in
+                save(frame: WebBrowserWindowLayout.moved(frame, by: value.translation, in: size), in: size)
+            }
+    }
+
+    private func resizeHandle(at location: CGPoint, frame: CGRect) -> WebBrowserResizeHandle {
+        WebBrowserResizeHandle.at(CGPoint(x: location.x - frame.minX, y: location.y - frame.minY),
+                                  in: frame.size)
+    }
+
+    private func resizeGesture(frame: CGRect, size: CGSize) -> some Gesture {
+        DragGesture(coordinateSpace: .named("webBrowserWindowLayout"))
+            .updating($resizeHandle) { value, selected, _ in
+                selected = resizeHandle(at: value.startLocation, frame: frame)
+            }
+            .updating($resizeTranslation) { value, translation, _ in
+                translation = value.translation
+            }
+            .onEnded { value in
+                save(frame: WebBrowserWindowLayout.resized(frame, by: value.translation, in: size,
+                                                           handle: resizeHandle(at: value.startLocation,
+                                                                                frame: frame)), in: size)
+            }
+    }
+
+    private var adjustButton: some View {
+        Button {
+            isEditing = true
+        } label: {
+            if #available(iOS 26, *) {
+                Image(systemName: "rectangle.dashed")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(.trailing, 10)
+            } else {
+                Image(systemName: "rectangle.dashed")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .padding(.trailing, 10)
+            }
+        }
+        .accessibilityLabel("Adjust browser")
+    }
+
+    private var expandButton: some View {
+        Button {
+            webBrowserState.isSmall = false
+        } label: {
+            if #available(iOS 26, *) {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding([.trailing, .bottom], 10)
+            } else {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .padding([.trailing, .bottom], 10)
+            }
+        }
+        .accessibilityLabel("Expand browser")
+    }
+
+    private func controls(frame: CGRect, size: CGSize) -> some View {
+        Color.clear
+            .contentShape(Rectangle())
+            .gesture(moveGesture(frame: frame, size: size))
+            .accessibilityLabel("Move browser")
+            .overlay {
+                RoundedRectangle(cornerRadius: 7)
+                    .strokeBorder(.blue.opacity(0.35), lineWidth: 12)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 7)
+                            .strokeBorder(.blue, lineWidth: 2)
+                    }
+                    .allowsHitTesting(false)
+            }
+            .accessibilityAction(named: Text("Done")) { isEditing = false }
+            .contextMenu {
+                Button("Reset layout") {
+                    webBrowser.smallWindow = nil
+                    model.storeSettings()
+                }
+            }
+    }
+
+    private func resizeBorder(frame: CGRect, size: CGSize) -> some View {
+        Border()
+            .fill(.clear, style: FillStyle(eoFill: true))
+            .contentShape(Border(), eoFill: true)
+            .gesture(resizeGesture(frame: frame, size: size))
+            .accessibilityLabel("Resize browser")
+            .accessibilityAdjustableAction { direction in
+                let delta = direction == .increment ? 20.0 : -20.0
+                save(frame: WebBrowserWindowLayout.resized(frame,
+                                                           by: CGSize(width: delta, height: delta),
+                                                           in: size), in: size)
+            }
     }
 
     var body: some View {
         GeometryReader { metrics in
-            ZStack {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        WebView(model: model)
-                            .frame(maxWidth: mapSide(maximum: metrics.size.width),
-                                   maxHeight: mapSide(maximum: metrics.size.height))
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
-                            .padding(.trailing, 3)
-                    }
+            let bottomInset = 2 * (database.bigButtons ? segmentHeightBig : segmentHeight) + 10
+            let frame = webBrowser.smallWindow?.frame(in: metrics.size)
+                ?? WebBrowserWindowLayout.defaultFrame(in: metrics.size, bottomInset: bottomInset)
+            let moved = WebBrowserWindowLayout.moved(frame, by: moveTranslation, in: metrics.size)
+            let displayed = WebBrowserWindowLayout.resized(moved, by: resizeTranslation,
+                                                           in: metrics.size, handle: resizeHandle)
+            ZStack(alignment: .topLeading) {
+                if isEditing {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { isEditing = false }
                 }
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Button {
-                            webBrowserState.isSmall.toggle()
-                        } label: {
-                            if #available(iOS 26, *) {
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundStyle(.primary)
-                                    .frame(width: 12, height: 12)
-                                    .padding()
-                                    .glassEffect()
-                                    .padding([.trailing, .bottom], 10)
-                            } else {
-                                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                    .foregroundStyle(.primary)
-                                    .frame(width: 12, height: 12)
-                                    .padding()
-                                    .padding([.trailing, .bottom], 10)
+                WebView(model: model)
+                    .allowsHitTesting(!isEditing)
+                    .frame(width: displayed.width, height: displayed.height)
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    .overlay {
+                        if isEditing {
+                            controls(frame: frame, size: metrics.size)
+                        }
+                    }
+                    .overlay(alignment: .bottomTrailing) {
+                        if !isEditing {
+                            VStack(spacing: 0) {
+                                adjustButton
+                                expandButton
                             }
                         }
                     }
+                    .accessibilityAction(named: Text("Adjust browser")) { isEditing = true }
+                    .position(x: displayed.midX, y: displayed.midY)
+                if isEditing {
+                    resizeBorder(frame: frame, size: metrics.size)
+                        .frame(width: displayed.width + 24, height: displayed.height + 24)
+                        .position(x: displayed.midX, y: displayed.midY)
                 }
             }
-            .offset(CGSize(width: 0, height: offset(metrics: metrics)))
+            .frame(width: metrics.size.width, height: metrics.size.height)
+            .coordinateSpace(name: "webBrowserWindowLayout")
         }
     }
 }
@@ -246,6 +362,7 @@ struct WebBrowserView: View {
         if webBrowserState.isSmall {
             WebBrowserSmallView(model: model,
                                 database: database,
+                                webBrowser: database.webBrowser,
                                 webBrowserState: webBrowserState)
         } else {
             WebBrowserBigView(model: model,
