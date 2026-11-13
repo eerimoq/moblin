@@ -1296,6 +1296,17 @@ extension Model: RemoteControlStreamerDelegate {
         handleRemoteControlTriggerReaction(reaction: reaction)
     }
 
+    func remoteControlStreamerShowToast(title: String, subTitle: String?, type: RemoteControlToastType) {
+        switch type {
+        case .info:
+            makeToast(title: title, subTitle: subTitle)
+        case .warning:
+            makeWarningToast(title: title, subTitle: subTitle, vibrate: true)
+        case .error:
+            makeErrorToast(title: title, subTitle: subTitle, vibrate: true)
+        }
+    }
+
     func remoteControlStreamerMoveToGimbalPreset(id: UUID) {
         moveToGimbalPreset(id: id)
     }

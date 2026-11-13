@@ -387,6 +387,13 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setFilter(filter: filter, on: on), onSuccess: {})
     }
 
+    func showToast(title: String, subTitle: String? = nil, type: RemoteControlToastType = .info) {
+        performRequestNoResponseData(
+            data: .showToast(title: title, subTitle: subTitle, type: type),
+            onSuccess: {}
+        )
+    }
+
     func sendMessage(text: String) {
         performRequestNoResponseData(data: .sendMessage(name: nil, text: text), onSuccess: {})
     }

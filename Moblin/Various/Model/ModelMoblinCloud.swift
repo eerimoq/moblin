@@ -717,6 +717,10 @@ extension MoblinCloud: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerTriggerReaction(reaction _: RemoteControlReaction) {}
 
+    func remoteControlStreamerShowToast(title: String, subTitle: String?, type: RemoteControlToastType) {
+        model?.remoteControlStreamerShowToast(title: title, subTitle: subTitle, type: type)
+    }
+
     func remoteControlStreamerMoveToGimbalPreset(id _: UUID) {}
 
     func remoteControlStreamerSetGimbalTracking(on: Bool) {

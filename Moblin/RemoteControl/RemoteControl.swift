@@ -61,6 +61,7 @@ enum RemoteControlRequest: Codable {
     case whip(url: String, method: String, headers: [SettingsHttpHeader], body: Data)
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
+    case showToast(title: String, subTitle: String?, type: RemoteControlToastType)
     case moveToGimbalPreset(id: UUID)
     case setGimbalTracking(on: Bool)
     case setGimbalMovement(x: Float, y: Float)
@@ -241,6 +242,12 @@ struct RemoteControlMusicStatus: Codable {
     var currentSongIndex: Int?
     var songs: [RemoteControlMusicSong]
     var songNotFound: Bool?
+}
+
+enum RemoteControlToastType: Codable, CaseIterable {
+    case info
+    case warning
+    case error
 }
 
 enum RemoteControlReaction: Codable, CaseIterable {
