@@ -24,5 +24,6 @@ struct SettingsButtonImage: View {
                     .stroke(.secondary)
             )
             .foregroundStyle(.white)
+            .contentShape(Circle())
     }
 }
