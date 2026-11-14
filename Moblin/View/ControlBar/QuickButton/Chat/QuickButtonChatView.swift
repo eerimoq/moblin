@@ -366,7 +366,7 @@ private struct PredefinedMessageView: View {
                 Text(predefinedMessage.text)
                 Spacer()
                 BorderlessButtonView(text: "Send") {
-                    model.sendChatMessageShowLogin(message: predefinedMessage.text)
+                    model.sendChatMessageShowToast(message: predefinedMessage.text)
                     showingPredefinedMessages = false
                 }
                 .disabled(predefinedMessage.text.isEmpty)
@@ -477,86 +477,6 @@ struct PredefinedMessagesView: View {
     }
 }
 
-private struct SendMessagesToView: View {
-    let platform: Platform
-    @Binding var enabled: Bool
-
-    var body: some View {
-        HStack {
-            Image(platform.imageName())
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-            Text(platform.name())
-                .padding(.leading, 6)
-                .foregroundStyle(.primary)
-            Button {
-                enabled.toggle()
-            } label: {
-                Toggle("", isOn: $enabled)
-            }
-        }
-    }
-}
-
-private struct PlatformIconView: View {
-    let image: String
-
-    var body: some View {
-        Image(image)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 25, height: 25)
-    }
-}
-
-private struct SendMessagesToSelectorView: View {
-    @ObservedObject var stream: SettingsStream
-    @State var presentingSelector = false
-
-    private func sendsToTwitch() -> Bool {
-        stream.twitchLoggedIn && stream.twitchSendMessagesTo
-    }
-
-    private func sendsToKick() -> Bool {
-        stream.kickLoggedIn && stream.kickSendMessagesTo
-    }
-
-    var body: some View {
-        if stream.twitchLoggedIn || stream.kickLoggedIn {
-            Button {
-                presentingSelector = true
-            } label: {
-                if sendsToTwitch(), !sendsToKick() {
-                    PlatformIconView(image: "TwitchLogo")
-                } else if sendsToKick(), !sendsToTwitch() {
-                    PlatformIconView(image: "KickLogo")
-                } else {
-                    Image(systemName: "globe")
-                        .font(.title)
-                }
-            }
-            .frame(width: 30, height: 30)
-            .popover(isPresented: $presentingSelector) {
-                VStack(spacing: 0) {
-                    Text("Send messages to")
-                        .padding(11)
-                    if stream.twitchLoggedIn {
-                        SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
-                            .padding(11)
-                    }
-                    if stream.kickLoggedIn {
-                        SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
-                            .padding(11)
-                    }
-                }
-                .padding(5)
-                .presentationCompactAdaptation(.none)
-            }
-        }
-    }
-}
-
 private struct MenuItemView: View {
     let image: String
     let text: LocalizedStringKey
@@ -631,13 +551,12 @@ private struct ControlView: View {
         .submitLabel(.send)
         .onSubmit {
             if !message.isEmpty {
-                model.sendChatMessageShowLogin(message: message)
+                model.sendChatMessageShowToast(message: message)
             }
             message = ""
         }
         .padding(5)
         .foregroundStyle(.white)
-        SendMessagesToSelectorView(stream: model.stream)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
         ControlMenuButtonView(model: model)
     }

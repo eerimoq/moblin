@@ -1265,13 +1265,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchChatAlerts: SettingsTwitchAlerts = .init()
     var twitchToastAlerts: SettingsTwitchAlerts = .init()
     var twitchAccessToken: String = ""
-    @Published var twitchLoggedIn: Bool = false
+    var twitchLoggedIn: Bool = false
     var twitchWantsToBeLoggedIn: Bool = false
     var twitchNotLoggedInCount: Int = 0
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchRaidsSent: [SettingsStreamTwitchRaidChannel] = []
     @Published var twitchRaidsReceived: [SettingsStreamTwitchRaidChannel] = []
-    @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
     @Published var kickChannelId: String?
     @Published var kickChatroomChannelId: String?
@@ -1280,7 +1279,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickLoggedIn: Bool = false
     var kickWantsToBeLoggedIn: Bool = false
     var kickNotLoggedInCount: Int = 0
-    @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
     @Published var youTubeAuthState: OIDAuthState?
@@ -1373,7 +1371,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case twitchRewards
         case twitchRaidsSent
         case twitchRaidsReceived
-        case twitchSendMessagesTo
         case kickChannelName
         case kickChannelId
         case kickChatroomChannelId
@@ -1382,7 +1379,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickLoggedIn
         case kickWantsToBeLoggedIn
         case kickNotLoggedInCount
-        case kickSendMessagesTo
         case kickChatAlerts
         case kickToastAlerts
         case youTubeVideoId
@@ -1468,7 +1464,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.twitchRaidsSent, twitchRaidsSent)
         try container.encode(.twitchRaidsReceived, twitchRaidsReceived)
-        try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.twitchChatAlerts, twitchChatAlerts)
         try container.encode(.twitchToastAlerts, twitchToastAlerts)
         try container.encode(.kickChannelName, kickChannelName)
@@ -1479,7 +1474,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickWantsToBeLoggedIn, kickWantsToBeLoggedIn)
         try container.encode(.kickNotLoggedInCount, kickNotLoggedInCount)
-        try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
         try container.encode(.youTubeVideoId, youTubeVideoIds)
@@ -1565,7 +1559,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         twitchRaidsReceived = container.decode(.twitchRaidsReceived,
                                                [SettingsStreamTwitchRaidChannel].self,
                                                [])
-        twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         twitchChatAlerts = container.decode(.twitchChatAlerts, SettingsTwitchAlerts.self, .init())
         twitchToastAlerts = container.decode(.twitchToastAlerts, SettingsTwitchAlerts.self, .init())
         if let twitchShowFollows {
@@ -1581,7 +1574,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
         kickNotLoggedInCount = container.decode(.kickNotLoggedInCount, Int.self, 0)
-        kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
         youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
@@ -1684,7 +1676,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.twitchRewards = twitchRewards
         new.twitchRaidsSent = twitchRaidsSent.map { $0.clone() }
         new.twitchRaidsReceived = twitchRaidsReceived.map { $0.clone() }
-        new.twitchSendMessagesTo = twitchSendMessagesTo
         new.twitchChatAlerts = twitchChatAlerts.clone()
         new.twitchToastAlerts = twitchToastAlerts.clone()
         new.twitchAccessToken = twitchAccessToken
@@ -1705,7 +1696,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         if kickLoggedIn {
             storeKickAccessTokenInKeychain(streamId: new.id, accessToken: kickAccessToken)
         }
-        new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
         new.youTubeAuthState = youTubeAuthState

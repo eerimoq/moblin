@@ -171,27 +171,21 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        if stream.twitchSendMessagesTo, stream.twitchLoggedIn {
+        if stream.twitchLoggedIn {
             sendTwitchChatMessage(message: message) { _ in }
         }
-        if stream.kickSendMessagesTo, stream.kickLoggedIn {
+        if stream.kickLoggedIn {
             sendKickChatMessage(message: message)
         }
     }
 
-    func sendChatMessageShowLogin(message: String) {
-        let sendToTwitch = stream.twitchLoggedIn && stream.twitchSendMessagesTo
-        let sendToKick = stream.kickLoggedIn && stream.kickSendMessagesTo
-        if sendToTwitch {
-            sendTwitchChatMessage(message: message) { _ in }
-        }
-        if sendToKick {
-            sendKickChatMessage(message: message)
-        }
-        if !sendToTwitch, !sendToKick {
+    func sendChatMessageShowToast(message: String) {
+        if !stream.twitchLoggedIn, !stream.kickLoggedIn {
             makeErrorToast(title: String(localized: "Message not sent"),
                            subTitle: String(localized: "Login to Twitch or Kick to send chat messages"))
+            return
         }
+        sendChatMessage(message: message)
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
