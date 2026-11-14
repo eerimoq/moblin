@@ -1149,6 +1149,7 @@ final class Model: NSObject, ObservableObject {
         let streamIds = database.streams.map(\.id)
         removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedKickAccessTokensInKeychain(usedStreamIds: streamIds)
+        removeUnusedVkVideoLiveAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: streamIds)
     }
 

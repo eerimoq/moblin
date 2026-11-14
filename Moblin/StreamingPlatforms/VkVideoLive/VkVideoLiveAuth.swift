@@ -5,6 +5,7 @@ import WebKit
 // and enter its identifier here. The redirect URI below must be one of the redirect URIs
 // entered when registering the application (must match exactly).
 let vkVideoLiveMoblinAppClientId = "yy1v4boc46j4gln2"
+private let vkVideoLiveDomain = "live.vkvideo.ru"
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"
 private let authorizeUrl = "https://auth.live.vkvideo.ru/app/oauth2/authorize"
@@ -136,6 +137,15 @@ func removeVkVideoLiveAccessTokenInKeychain(streamId: UUID) {
     createKeychain(streamId: streamId.uuidString).remove()
 }
 
+func removeUnusedVkVideoLiveAccessTokensInKeychain(usedStreamIds: [UUID]) {
+    let usedStreamIds = Set(usedStreamIds.map(\.uuidString))
+    for streamId in Keychain.loadStreamIds(server: vkVideoLiveDomain)
+        where !usedStreamIds.contains(streamId)
+    {
+        createKeychain(streamId: streamId).remove()
+    }
+}
+
 private func createKeychain(streamId: String) -> Keychain {
-    Keychain(streamId: streamId, server: "live.vkvideo.ru", logPrefix: "vk-video-live: auth")
+    Keychain(streamId: streamId, server: vkVideoLiveDomain, logPrefix: "vk-video-live: auth")
 }

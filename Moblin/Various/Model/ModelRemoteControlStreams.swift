@@ -64,6 +64,7 @@ extension Model {
         }
         removeTwitchAccessTokenInKeychain(streamId: newStream.id)
         removeKickAccessTokenInKeychain(streamId: newStream.id)
+        removeVkVideoLiveAccessTokenInKeychain(streamId: newStream.id)
         removeYouTubeAuthStateInKeychain(streamId: newStream.id)
         database.streams.append(newStream)
         return true
