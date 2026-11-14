@@ -143606,6 +143606,9 @@
         }
       }
     },
+    "Login to Twitch or Kick to send chat messages" : {
+
+    },
     "Logout" : {
       "localizations" : {
         "de" : {
@@ -152899,6 +152902,9 @@
           }
         }
       }
+    },
+    "Message not sent" : {
+
     },
     "Message starts with" : {
       "localizations" : {
@@ -225781,6 +225787,7 @@
       }
     },
     "Send messages to" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
