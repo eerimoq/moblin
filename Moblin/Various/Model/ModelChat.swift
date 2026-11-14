@@ -180,24 +180,17 @@ extension Model {
     }
 
     func sendChatMessageShowLogin(message: String) {
-        if stream.twitchSendMessagesTo {
-            sendTwitchChatMessage(message: message) {
-                switch $0 {
-                case .authError:
-                    self.twitchLogin(stream: self.stream) {
-                        self.showTwitchAuth = true
-                    }
-                default:
-                    break
-                }
-            }
+        let sendToTwitch = stream.twitchLoggedIn && stream.twitchSendMessagesTo
+        let sendToKick = stream.kickLoggedIn && stream.kickSendMessagesTo
+        if sendToTwitch {
+            sendTwitchChatMessage(message: message) { _ in }
         }
-        if stream.kickSendMessagesTo {
-            if stream.kickLoggedIn {
-                sendKickChatMessage(message: message)
-            } else {
-                makeNotLoggedInToToast(platform: .kick)
-            }
+        if sendToKick {
+            sendKickChatMessage(message: message)
+        }
+        if !sendToTwitch, !sendToKick {
+            makeErrorToast(title: String(localized: "Message not sent"),
+                           subTitle: String(localized: "Login to Twitch or Kick to send chat messages"))
         }
     }
 

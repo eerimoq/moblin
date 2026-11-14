@@ -1265,7 +1265,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchChatAlerts: SettingsTwitchAlerts = .init()
     var twitchToastAlerts: SettingsTwitchAlerts = .init()
     var twitchAccessToken: String = ""
-    var twitchLoggedIn: Bool = false
+    @Published var twitchLoggedIn: Bool = false
     var twitchWantsToBeLoggedIn: Bool = false
     var twitchNotLoggedInCount: Int = 0
     var twitchRewards: [SettingsStreamTwitchReward] = []

@@ -514,39 +514,45 @@ private struct SendMessagesToSelectorView: View {
     @ObservedObject var stream: SettingsStream
     @State var presentingSelector = false
 
-    private func isTwitchOnly() -> Bool {
-        stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
+    private func sendsToTwitch() -> Bool {
+        stream.twitchLoggedIn && stream.twitchSendMessagesTo
     }
 
-    private func isKickOnly() -> Bool {
-        stream.kickSendMessagesTo && !stream.twitchSendMessagesTo
+    private func sendsToKick() -> Bool {
+        stream.kickLoggedIn && stream.kickSendMessagesTo
     }
 
     var body: some View {
-        Button {
-            presentingSelector = true
-        } label: {
-            if isTwitchOnly() {
-                PlatformIconView(image: "TwitchLogo")
-            } else if isKickOnly() {
-                PlatformIconView(image: "KickLogo")
-            } else {
-                Image(systemName: "globe")
-                    .font(.title)
+        if stream.twitchLoggedIn || stream.kickLoggedIn {
+            Button {
+                presentingSelector = true
+            } label: {
+                if sendsToTwitch(), !sendsToKick() {
+                    PlatformIconView(image: "TwitchLogo")
+                } else if sendsToKick(), !sendsToTwitch() {
+                    PlatformIconView(image: "KickLogo")
+                } else {
+                    Image(systemName: "globe")
+                        .font(.title)
+                }
             }
-        }
-        .frame(width: 30, height: 30)
-        .popover(isPresented: $presentingSelector) {
-            VStack(spacing: 0) {
-                Text("Send messages to")
-                    .padding(11)
-                SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
-                    .padding(11)
-                SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
-                    .padding(11)
+            .frame(width: 30, height: 30)
+            .popover(isPresented: $presentingSelector) {
+                VStack(spacing: 0) {
+                    Text("Send messages to")
+                        .padding(11)
+                    if stream.twitchLoggedIn {
+                        SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
+                            .padding(11)
+                    }
+                    if stream.kickLoggedIn {
+                        SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
+                            .padding(11)
+                    }
+                }
+                .padding(5)
+                .presentationCompactAdaptation(.none)
             }
-            .padding(5)
-            .presentationCompactAdaptation(.none)
         }
     }
 }
