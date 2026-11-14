@@ -62,7 +62,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func averageBitrateString() -> String {
-        let bitrate = Int64(8 * totalBytes / UInt64(duration().components.seconds))
+        let bitrate = Int64(8 * totalBytes / UInt64(max(duration().components.seconds, 1)))
         return formatBytesPerSecond(speed: bitrate)
     }
 

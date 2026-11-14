@@ -31,8 +31,8 @@ extension Model {
             }
             sendRemoteControlAssistantStatusToWatch()
         } else {
-            sendZoomToWatch(x: zoom.x)
-            zoomPresetsMayHaveChanged()
+            sendZoomToWatch(x: zoom.level.x)
+            activeZoomPresetsMayHaveChanged()
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()
             sendSceneToWatch(id: sceneSelector.selectedSceneId)
@@ -42,7 +42,7 @@ extension Model {
             sendThermalStateToWatch(thermalState: statusOther.thermalState)
             sendIsLiveToWatch(isLive: isLive)
             sendIsRecordingToWatch(isRecording: isRecording)
-            sendIsMutedToWatch(isMuteOn: isMuteOn)
+            sendIsMutedToWatch(isMuteOn: audio.muted)
             sendViewerCountWatch()
             sendScoreboardPlayersToWatch()
             if let widget = getEnabledScoreboardWidgetsInSelectedScene()
@@ -184,9 +184,6 @@ extension Model {
         guard WCSession.default.isWatchAppInstalled else {
             return
         }
-        guard !post.isRedLine() else {
-            return
-        }
         let displayName = post.displayName(nicknames: database.chat.nicknames,
                                            displayStyle: database.chat.displayStyle)
         let userColor = WatchProtocolColor(
@@ -201,7 +198,10 @@ extension Model {
             userColor: userColor,
             userBadges: post.userBadges,
             segments: post.segments
-                .map { WatchProtocolChatSegment(text: $0.text, url: $0.url?.absoluteString) },
+                .map { WatchProtocolChatSegment(
+                    text: $0.text,
+                    url: ($0.url ?? $0.bigGifUrl)?.url(animated: false)?.absoluteString
+                ) },
             highlight: post.highlight?.toWatchProtocol()
         )
         nextWatchChatPostId += 1
@@ -339,10 +339,8 @@ extension Model {
                 sendIsMutedToWatch(isMuteOn: isMuted)
             }
         }
-        if let topLeft = remoteControl.topLeft {
-            if let zoom = topLeft.zoom {
-                sendZoomToWatch(x: Float(zoom.message) ?? 0.0)
-            }
+        if let topLeft = remoteControl.topLeft, let zoom = topLeft.zoom {
+            sendZoomToWatch(x: Float(zoom.message) ?? 0.0)
         }
         if let topRight = remoteControl.topRight {
             if let recordingMessage = topRight.recording?.message {
@@ -413,24 +411,14 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleGetImage(_ data: Any, _ replyHandler: @escaping ([String: Any]) -> Void) {
-        guard let urlString = data as? String else {
-            replyHandler(["data": Data()])
-            return
-        }
-        guard let url = URL(string: urlString) else {
+        guard let urlString = data as? String, let url = URL(string: urlString) else {
             replyHandler(["data": Data()])
             return
         }
         httpRequest(request: URLRequest(url: url)) { data, response, _ in
-            guard let response = response?.http else {
-                replyHandler(["data": Data()])
-                return
-            }
-            guard response.isSuccessful, let data else {
-                replyHandler(["data": Data()])
-                return
-            }
-            guard let uiImage = UIImage(data: data) else {
+            guard let response = response?.http, response.isSuccessful, let data,
+                  let uiImage = UIImage(data: data)
+            else {
                 replyHandler(["data": Data()])
                 return
             }
@@ -445,12 +433,10 @@ extension Model: WCSessionDelegate {
         DispatchQueue.main.async {
             if self.isWatchRemoteControl() {
                 self.remoteControlAssistantSetLive(on: value)
+            } else if value {
+                self.startStream()
             } else {
-                if value {
-                    self.startStream()
-                } else {
-                    _ = self.stopStream()
-                }
+                _ = self.stopStream()
             }
         }
     }
@@ -507,10 +493,7 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleSetZoomPresetMessage(_ data: Any) {
-        guard let data = data as? String else {
-            return
-        }
-        guard let zoomPresetId = UUID(uuidString: data) else {
+        guard let data = data as? String, let zoomPresetId = UUID(uuidString: data) else {
             return
         }
         DispatchQueue.main.async {
@@ -521,10 +504,7 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleSetSceneMessage(_ data: Any) {
-        guard let data = data as? String else {
-            return
-        }
-        guard let sceneId = UUID(uuidString: data) else {
+        guard let data = data as? String, let sceneId = UUID(uuidString: data) else {
             return
         }
         DispatchQueue.main.async {
@@ -537,10 +517,10 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleUpdateWorkoutStats(_ data: Any) {
-        guard let data = data as? Data else {
-            return
-        }
-        guard let stats = try? JSONDecoder().decode(WatchProtocolWorkoutStats.self, from: data) else {
+        guard let data = data as? Data, let stats = try? JSONDecoder().decode(
+            WatchProtocolWorkoutStats.self,
+            from: data
+        ) else {
             return
         }
         DispatchQueue.main.async {
@@ -551,10 +531,10 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleUpdatePadelScoreboard(_ data: Any) {
-        guard let data = data as? Data else {
-            return
-        }
-        guard let action = try? JSONDecoder().decode(WatchProtocolPadelScoreboardAction.self, from: data)
+        guard let data = data as? Data, let action = try? JSONDecoder().decode(
+            WatchProtocolPadelScoreboardAction.self,
+            from: data
+        )
         else {
             return
         }
@@ -567,10 +547,10 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleUpdateGenericScoreboard(_ data: Any) {
-        guard let data = data as? Data else {
-            return
-        }
-        guard let action = try? JSONDecoder().decode(WatchProtocolGenericScoreboardAction.self, from: data)
+        guard let data = data as? Data, let action = try? JSONDecoder().decode(
+            WatchProtocolGenericScoreboardAction.self,
+            from: data
+        )
         else {
             return
         }
@@ -591,10 +571,10 @@ extension Model: WCSessionDelegate {
     }
 
     private nonisolated func handleInstantReplay(_ data: Any) {
-        guard let data = data as? Data else {
-            return
-        }
-        guard let instantReplay = try? JSONDecoder().decode(WatchProtocolInstantReplay.self, from: data)
+        guard let data = data as? Data, let instantReplay = try? JSONDecoder().decode(
+            WatchProtocolInstantReplay.self,
+            from: data
+        )
         else {
             return
         }

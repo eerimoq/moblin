@@ -74,6 +74,7 @@ enum TSTimestamp {
     static let dataSize: Int = 5
 
     static func encode(_ b: Int64, _ m: UInt8) -> Data {
+        let b = b & 0x1_FFFF_FFFF
         var encoded = Data(count: dataSize)
         encoded[0] = UInt8(truncatingIfNeeded: b >> 29) | 0x01 | m
         encoded[1] = UInt8(truncatingIfNeeded: b >> 22)
@@ -83,7 +84,10 @@ enum TSTimestamp {
         return encoded
     }
 
-    static func decode(_ data: Data, offset: Int = 0) -> Int64 {
+    static func decode(_ data: Data, offset: Int = 0) -> Int64? {
+        guard data.count >= offset + dataSize else {
+            return nil
+        }
         var result: Int64 = 0
         result |= Int64(data[offset + 0] & 0x0E) << 29
         result |= Int64(data[offset + 1]) << 22

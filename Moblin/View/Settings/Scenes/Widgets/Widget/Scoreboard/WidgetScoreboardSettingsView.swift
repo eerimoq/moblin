@@ -25,31 +25,24 @@ struct ScoreboardColorsView: View {
         NavigationLink {
             Form {
                 Section {
-                    ColorPicker("Text", selection: $scoreboard.textColorColor, supportsOpacity: false)
-                        .onChange(of: scoreboard.textColorColor) { _ in
-                            if let color = scoreboard.textColorColor.toRgb() {
-                                scoreboard.textColor = color
-                            }
-                            updated()
-                        }
-                    ColorPicker("Primary background",
-                                selection: $scoreboard.primaryBackgroundColorColor,
-                                supportsOpacity: false)
-                        .onChange(of: scoreboard.primaryBackgroundColorColor) { _ in
-                            if let color = scoreboard.primaryBackgroundColorColor.toRgb() {
-                                scoreboard.primaryBackgroundColor = color
-                            }
-                            updated()
-                        }
-                    ColorPicker("Secondary background",
-                                selection: $scoreboard.secondaryBackgroundColorColor,
-                                supportsOpacity: false)
-                        .onChange(of: scoreboard.secondaryBackgroundColorColor) { _ in
-                            if let color = scoreboard.secondaryBackgroundColorColor.toRgb() {
-                                scoreboard.secondaryBackgroundColor = color
-                            }
-                            updated()
-                        }
+                    RgbColorPickerView(title: "Text", color: $scoreboard.textColorColor) {
+                        scoreboard.textColor = $0
+                        updated()
+                    }
+                    RgbColorPickerView(
+                        title: "Primary background",
+                        color: $scoreboard.primaryBackgroundColorColor
+                    ) {
+                        scoreboard.primaryBackgroundColor = $0
+                        updated()
+                    }
+                    RgbColorPickerView(
+                        title: "Secondary background",
+                        color: $scoreboard.secondaryBackgroundColorColor
+                    ) {
+                        scoreboard.secondaryBackgroundColor = $0
+                        updated()
+                    }
                 }
                 Section {
                     TextButtonView("Reset") {
@@ -72,21 +65,7 @@ struct WidgetScoreboardSettingsView: View {
     @ObservedObject var web: SettingsRemoteControlWeb
 
     private func updated() {
-        switch scoreboard.sport {
-        case .generic:
-            model.sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
-        case .padel:
-            model.sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
-        default:
-            break
-        }
-        model.remoteControlScoreboardUpdate(scoreboard: scoreboard)
-        model.getScoreboardEffect(id: widget.id)?
-            .update(
-                scoreboard: scoreboard,
-                config: model.getModularScoreboardConfig(scoreboard: scoreboard),
-                players: model.database.scoreboardPlayers
-            )
+        model.scoreboardWidgetUpdated(widget: widget)
     }
 
     var body: some View {
@@ -97,7 +76,7 @@ struct WidgetScoreboardSettingsView: View {
                 }
             }
             .onChange(of: scoreboard.sport) { _ in
-                scoreboard.modular.config = nil
+                scoreboard.sportChanged()
                 updated()
             }
             switch scoreboard.sport {

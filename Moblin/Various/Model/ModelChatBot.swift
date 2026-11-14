@@ -1,91 +1,12 @@
 import AVFoundation
 import Foundation
-import NaturalLanguage
 
-private let askedByLanguage = [
-    "ar": "سأل",
-    "bg": "попита",
-    "ca": "va preguntar",
-    "cs": "se zeptal",
-    "da": "spurgte",
-    "de": "fragte",
-    "en": "asked",
-    "el": "ερωτηθείς",
-    "es": "preguntó",
-    "fi": "kysyi",
-    "fr": "demandée",
-    "he": "שאל",
-    "hi": "पूछा",
-    "hr": "pitao",
-    "hu": "kérdezte",
-    "id": "diminta",
-    "it": "chiesto",
-    "ja": "尋ねた",
-    "ko": "질문",
-    "ms": "bertanya",
-    "nb": "spurte",
-    "nl": "vroeg",
-    "no": "spurte",
-    "pl": "zapytał",
-    "pt": "perguntou",
-    "ro": "a întrebat",
-    "ru": "спросил",
-    "sk": "sa spýtal",
-    "sl": "vprašal",
-    "sv": "frågade",
-    "ta": "என்று கேட்டார்",
-    "th": "ถาม",
-    "tr": "sordu",
-    "uk": "запитав",
-    "vi": "yêu cầu",
-    "zh": "问",
-]
-
-private let answerByLanguage = [
-    "ar": "إجابة",
-    "bg": "отговор",
-    "ca": "Respon",
-    "cs": "Odpověď",
-    "da": "Svar",
-    "de": "Antwort",
-    "en": "Answer",
-    "el": "Ερωτηθείς",
-    "es": "Respuesta",
-    "fi": "Vastaus",
-    "fr": "Répondre",
-    "he": "תְשׁוּבָה",
-    "hi": "उत्तर",
-    "hr": "Odgovor",
-    "hu": "Válasz",
-    "id": "Menjawab",
-    "it": "Risposta",
-    "ja": "答え",
-    "ko": "답변",
-    "ms": "Jawab",
-    "nb": "Svare",
-    "nl": "Antwoord",
-    "no": "Svare",
-    "pl": "Odpowiedź",
-    "pt": "Resposta",
-    "ro": "Răspuns",
-    "ru": "Отвечать",
-    "sk": "Odpoveď",
-    "sl": "Odgovori",
-    "sv": "Svar",
-    "ta": "பதில்",
-    "th": "คำตอบ",
-    "tr": "Cevap",
-    "uk": "Відповідь",
-    "vi": "Trả lời",
-    "zh": "回答",
-]
-
-private func getAsked(_ language: String) -> String {
-    askedByLanguage[language] ?? ""
-}
-
-private func getAnswer(_ language: String) -> String {
-    answerByLanguage[language] ?? ""
+private func formatAiAnswer(user: String, question: String, answer: String) -> String {
+    var question = question
+    if question.last?.isPunctuation != true {
+        question += ","
+    }
+    return String(localized: "\(user) asked: \(question) Answer: \(answer)")
 }
 
 extension Model {
@@ -93,82 +14,118 @@ extension Model {
         guard let message = chatBotMessages.popFirst() else {
             return
         }
-        DispatchQueue.main.async {
-            self.handleChatBotMessage(message: message)
-        }
+        handleChatBotMessage(message: message)
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
-        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
+        guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases),
+              let mainCommand = command.popFirstArgument(ChatBotMainArgument.self)
+        else {
             return
         }
-        switch command.rest() {
-        case "help":
+        switch mainCommand {
+        case .help:
             handleChatBotMessageHelp(platform: message.platform)
-        case "tts on":
-            handleChatBotMessageTtsOn(command: command)
-        case "tts off":
-            handleChatBotMessageTtsOff(command: command)
-        case "obs fix":
-            handleChatBotMessageObsFix(command: command)
-        case "map zoom out":
-            handleChatBotMessageMapZoomOut(command: command)
-        case "location data reset":
-            handleChatBotMessageLocationDataReset(command: command)
-        case "location data split":
-            handleChatBotMessageLocationDataSplit(command: command)
-        case "snapshot":
-            handleChatBotMessageSnapshot(command: command)
-        case "mute":
-            handleChatBotMessageMute(command: command)
-        case "unmute":
-            handleChatBotMessageUnmute(command: command)
-        default:
-            switch command.popFirst() {
-            case "alert":
-                handleChatBotMessageAlert(command: command)
-            case "fax":
-                handleChatBotMessageFax(command: command)
-            case "filter":
-                handleChatBotMessageFilter(command: command)
-            case "zoom":
-                handleChatBotMessageZoom(command: command)
-            case "say":
-                handleChatBotMessageTtsSay(command: command)
-            case "tesla":
-                handleChatBotMessageTesla(command: command)
-            case "snapshot":
+        case .tts:
+            handleChatBotMessageTts(command: command)
+        case .obs:
+            handleChatBotMessageObs(command: command)
+        case .map:
+            handleChatBotMessageMap(command: command)
+        case .location:
+            handleChatBotMessageLocation(command: command)
+        case .snapshot:
+            if command.peekFirst() == nil {
+                handleChatBotMessageSnapshot(command: command)
+            } else {
                 handleChatBotMessageSnapshotWithMessage(command: command)
-            case "reaction":
-                handleChatBotMessageReaction(command: command)
-            case "scene":
-                handleChatBotMessageScene(command: command)
-            case "stream":
-                handleChatBotMessageStream(command: command)
-            case "widget":
-                handleChatBotMessageWidget(command: command)
-            case "ai":
-                handleChatBotMessageAi(command: command)
-            case "twitch":
-                handleChatBotMessageTwitch(command: command)
-            case "gimbal":
-                handleChatBotMessageGimbal(command: command)
-            case "macro":
-                handleChatBotMessageMacro(command: command)
-            case "send":
-                handleChatBotMessageSend(command: command)
-            default:
-                break
             }
+        case .mute:
+            handleChatBotMessageMute(command: command)
+        case .unmute:
+            handleChatBotMessageUnmute(command: command)
+        case .alert:
+            handleChatBotMessageAlert(command: command)
+        case .fax:
+            handleChatBotMessageFax(command: command)
+        case .filter:
+            handleChatBotMessageFilter(command: command)
+        case .zoom:
+            handleChatBotMessageZoom(command: command)
+        case .say:
+            handleChatBotMessageTtsSay(command: command)
+        case .tesla:
+            handleChatBotMessageTesla(command: command)
+        case .reaction:
+            handleChatBotMessageReaction(command: command)
+        case .scene:
+            handleChatBotMessageScene(command: command)
+        case .stream:
+            handleChatBotMessageStream(command: command)
+        case .widget:
+            handleChatBotMessageWidget(command: command)
+        case .ai:
+            handleChatBotMessageAi(command: command)
+        case .twitch:
+            handleChatBotMessageTwitch(command: command)
+        case .gimbal:
+            handleChatBotMessageGimbal(command: command)
+        case .macro:
+            handleChatBotMessageMacro(command: command)
+        case .send:
+            handleChatBotMessageSend(command: command)
+        case .music:
+            handleChatBotMessageMusic(command: command)
+        case .torch:
+            handleChatBotMessageTorch(command: command)
+        case .vibrate:
+            handleChatBotMessageVibrate(command: command)
+        case .custom:
+            handleChatBotMessageCustom(command: command)
+        }
+    }
+
+    private func handleChatBotMessageTts(command: ChatBotCommand) {
+        switch command.popFirstArgument(ChatBotOnOffArgument.self) {
+        case .on:
+            handleChatBotMessageTtsOn(command: command)
+        case .off:
+            handleChatBotMessageTtsOff(command: command)
+        case nil:
+            break
+        }
+    }
+
+    private func handleChatBotMessageObs(command: ChatBotCommand) {
+        if command.popFirstArgument(ChatBotObsArgument.self) == .fix {
+            handleChatBotMessageObsFix(command: command)
+        }
+    }
+
+    private func handleChatBotMessageMap(command: ChatBotCommand) {
+        if command.popFirstArgument(ChatBotMapArgument.self) == .zoom,
+           command.popFirstArgument(ChatBotMapZoomArgument.self) == .out
+        {
+            handleChatBotMessageMapZoomOut(command: command)
+        }
+    }
+
+    private func handleChatBotMessageLocation(command: ChatBotCommand) {
+        guard command.popFirstArgument(ChatBotLocationArgument.self) == .data else {
+            return
+        }
+        switch command.popFirstArgument(ChatBotLocationDataArgument.self) {
+        case .reset:
+            handleChatBotMessageLocationDataReset(command: command)
+        case .split:
+            handleChatBotMessageLocationDataSplit(command: command)
+        case nil:
+            break
         }
     }
 
     private func handleChatBotMessageHelp(platform: Platform) {
-        sendChatBotReply(message: """
-                         Moblin chat bot help: \
-                         https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md#moblin-chat-bot-help
-                         """,
-                         platform: platform)
+        sendChatBotReply(message: "Moblin chat bot help: https://moblin.app/chat-bot/", platform: platform)
     }
 
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
@@ -203,6 +160,9 @@ extension Model {
             permissions: database.chat.botCommandPermissions.tts,
             command: command
         ) {
+            guard self.isTextToSpeechOutputAllowed() else {
+                return
+            }
             let user = command.user() ?? "Unknown"
             self.chatTextToSpeech.say(
                 messageId: nil,
@@ -265,7 +225,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.location,
             command: command
         ) {
-            self.resetSplitDistance()
+            self.resetSplitLocationData()
         }
     }
 
@@ -275,14 +235,20 @@ extension Model {
             permissions: permissions,
             command: command
         ) {
+            var message: String?
             if let user = command.user() {
                 if permissions.sendChatMessages {
                     self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
                                           platform: command.message.platform)
                 }
-                self.takeSnapshot(isChatBot: true, message: self.formatSnapshotTakenBy(user: user))
-            } else {
-                self.takeSnapshot(isChatBot: true)
+                message = self.formatSnapshotTakenBy(user: user)
+            }
+            let age = self.stream.estimatedViewerDelay
+            switch self.database.chat.botCommandSnapshot.effectiveSource(isLive: self.isLive) {
+            case .thisDevice:
+                self.takeSnapshot(age: age, isChatBot: true, message: message)
+            case .webRemoteControl:
+                self.takeSnapshotWebRemoteControl(age: age, isChatBot: true, message: message)
             }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
@@ -303,11 +269,14 @@ extension Model {
                 self.sendChatBotReply(message: self.formatSnapshotTakenSuccessfully(user: user),
                                       platform: command.message.platform)
             }
-            self.takeSnapshotWithCountdown(
-                isChatBot: true,
-                message: command.rest(),
-                user: command.user()
-            )
+            self.takeSnapshotWithCountdown(message: command.rest(), user: command.user()) { message in
+                switch self.database.chat.botCommandSnapshot.effectiveSource(isLive: self.isLive) {
+                case .thisDevice:
+                    self.takeSnapshot(age: 0.0, isChatBot: true, message: message)
+                case .webRemoteControl:
+                    self.takeSnapshotWebRemoteControl(age: 0.0, isChatBot: true, message: message)
+                }
+            }
         } onNotAllowed: {
             if permissions.sendChatMessages, let user = command.user() {
                 self.sendChatBotReply(message: self.formatSnapshotTakenNotAllowed(user: user),
@@ -321,7 +290,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
-            guard !self.isMuteOn else {
+            guard !self.audio.muted else {
                 return
             }
             self.makeToast(
@@ -330,7 +299,6 @@ extension Model {
             )
             self.setMuted(value: true)
             self.setQuickButton(type: .mute, isOn: true)
-            self.updateQuickButtonStates()
         }
     }
 
@@ -339,7 +307,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.audio,
             command: command
         ) {
-            guard self.isMuteOn else {
+            guard self.audio.muted else {
                 return
             }
             self.makeToast(
@@ -348,7 +316,63 @@ extension Model {
             )
             self.setMuted(value: false)
             self.setQuickButton(type: .mute, isOn: false)
-            self.updateQuickButtonStates()
+        }
+    }
+
+    private func handleChatBotMessageTorch(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.torch,
+            command: command
+        ) {
+            switch command.popFirstArgument(ChatBotTorchArgument.self) {
+            case .on:
+                self.handleChatBotMessageTorchOn()
+            case .off:
+                self.handleChatBotMessageTorchOff()
+            case .level:
+                self.handleChatBotMessageTorchLevel(command: command)
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageTorchOn() {
+        setTorch(on: true)
+        setQuickButton(type: .torch, isOn: true)
+    }
+
+    private func handleChatBotMessageTorchOff() {
+        setTorch(on: false)
+        setQuickButton(type: .torch, isOn: false)
+    }
+
+    private func handleChatBotMessageTorchLevel(command: ChatBotCommand) {
+        guard let level = command.popFirstInt(in: 1 ... 100) else {
+            return
+        }
+        database.torchLevel = Float(level) / 100
+        updateTorch()
+    }
+
+    private func handleChatBotMessageVibrate(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.vibrate,
+            command: command
+        ) {
+            switch command.popFirstArgument(ChatBotOnOffArgument.self) {
+            case .on:
+                let duration = command.popFirstDouble(in: 0.1 ... 3600)
+                let intensity = command.popFirstInt(in: 1 ... 100) ?? 100
+                let sharpness = command.popFirstInt(in: 1 ... 100) ?? 50
+                self.haptics.start(duration: duration,
+                                   intensity: Float(intensity) / 100,
+                                   sharpness: Float(sharpness) / 100)
+            case .off:
+                self.haptics.stop()
+            case nil:
+                break
+            }
         }
     }
 
@@ -357,41 +381,36 @@ extension Model {
             permissions: database.chat.botCommandPermissions.ai,
             command: command
         ) {
-            switch command.popFirst() {
-            case "ask":
+            switch command.popFirstArgument(ChatBotAiArgument.self) {
+            case .ask:
                 self.handleChatBotMessageAiAsk(command: command)
-            default:
+            case nil:
                 break
             }
         }
     }
 
     private func handleChatBotMessageAiAsk(command: ChatBotCommand) {
-        var question = command.rest()
+        let question = command.rest()
         let ai = database.chat.botCommandAi
         guard let baseUrl = URL(string: ai.baseUrl) else {
             return
         }
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
         OpenAi(baseUrl: baseUrl, apiKey: ai.apiKey)
-            .ask(question, model: ai.model, role: ai.personality) { answer in
-                guard let answer else {
-                    return
+            .ask(question, model: ai.model, role: ai.personality) { result in
+                switch result {
+                case let .success(answer):
+                    self.sendChatBotReply(
+                        message: formatAiAnswer(user: user, question: question, answer: answer),
+                        platform: platform
+                    )
+                case let .failure(error):
+                    self.sendChatBotReply(message: String(localized: """
+                    \(user), sorry, I could not answer your question (\(error.description)). 😢
+                    """), platform: platform)
                 }
-                guard let user = command.message.user else {
-                    return
-                }
-                let recognizer = NLLanguageRecognizer()
-                recognizer.processString(question)
-                let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?
-                    .identifier
-                guard let language else {
-                    return
-                }
-                if question.last?.isPunctuation != true {
-                    question += ","
-                }
-                let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
-                self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
             }
     }
 
@@ -401,10 +420,10 @@ extension Model {
             permissions: database.chat.botCommandPermissions.twitch,
             command: command
         ) {
-            switch command.popFirst() {
-            case "raid":
+            switch command.popFirstArgument(ChatBotTwitchArgument.self) {
+            case .raid:
                 self.handleChatBotMessageTwitchRaid(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -434,22 +453,21 @@ extension Model {
             permissions: database.chat.botCommandPermissions.gimbal,
             command: command
         ) {
-            switch command.popFirst() {
-            case "preset":
+            switch command.popFirstArgument(ChatBotGimbalArgument.self) {
+            case .preset:
                 self.handleChatBotMessageGimbalPreset(command: command)
-            default:
+            case nil:
                 break
             }
         }
     }
 
     private func handleChatBotMessageGimbalPreset(command: ChatBotCommand) {
-        guard let presetName = command.popFirst() else {
-            return
-        }
-        guard let preset = database.gimbal.presets.first(where: {
-            $0.name.lowercased() == presetName.lowercased()
-        }) else {
+        guard let presetName = command.popFirstLowerCased(),
+              let preset = database.gimbal.presets.first(where: {
+                  $0.name.lowercased() == presetName
+              })
+        else {
             return
         }
         moveToGimbalPreset(id: preset.id)
@@ -460,21 +478,19 @@ extension Model {
             permissions: database.chat.botCommandPermissions.macro,
             command: command
         ) {
-            guard let subcommand = command.popFirst(),
-                  let macroName = command.popFirst(),
+            guard let subcommand = command.popFirstArgument(ChatBotMacroArgument.self),
+                  let macroName = command.popFirstLowerCased(),
                   let macro = self.database.macros.macros.first(where: {
-                      $0.name.lowercased() == macroName.lowercased()
+                      $0.name.lowercased() == macroName
                   })
             else {
                 return
             }
             switch subcommand {
-            case "run":
+            case .run:
                 self.handleChatBotMessageMacroRun(macro: macro)
-            case "cancel":
+            case .cancel:
                 self.handleChatBotMessageMacroCancel(macro: macro)
-            default:
-                break
             }
         }
     }
@@ -489,6 +505,149 @@ extension Model {
         }
     }
 
+    func isChatBotCustomCommandsWeatherNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsWeather)
+    }
+
+    func isChatBotCustomCommandsGeographyNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGeography)
+    }
+
+    func isChatBotCustomCommandsGForceNeeded() -> Bool {
+        database.chat.botEnabled && database.chat.customCommands.contains(where: \.needsGForce)
+    }
+
+    func chatBotCustomCommandsTextChanged() {
+        for customCommand in database.chat.customCommands {
+            let parts = loadTextFormat(format: customCommand.formatString)
+            customCommand.needsWeather = parts.isWeatherVariable()
+            customCommand.needsGeography = parts.isGeographyVariable()
+            customCommand.needsGForce = parts.isGForceVariable()
+        }
+        startTextVariableManagers()
+    }
+
+    private func handleChatBotMessageCustom(command: ChatBotCommand) {
+        let name = command.rest().lowercased()
+        guard let customCommand = database.chat.customCommands.first(where: {
+            $0.name.lowercased() == name
+        }) else {
+            return
+        }
+        executeIfUserAllowedToUseChatBot(
+            permissions: customCommand.permissions,
+            command: command
+        ) {
+            self.sendChatBotReply(message: self.formatPlainText(formatString: customCommand.formatString),
+                                  platform: command.message.platform)
+        }
+    }
+
+    private func handleChatBotMessageMusic(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.music,
+            command: command
+        ) {
+            switch command.popFirstArgument(ChatBotMusicArgument.self) {
+            case .play:
+                self.handleChatBotMessageMusicPlay()
+            case .pause:
+                self.handleChatBotMessageMusicPause()
+            case .add:
+                self.handleChatBotMessageMusicAdd(command: command)
+            case .next:
+                self.handleChatBotMessageMusicNext(command: command)
+            case .previous:
+                self.handleChatBotMessageMusicPrevious(command: command)
+            case .status:
+                self.handleChatBotMessageMusicStatus(command: command)
+            case .clear:
+                self.handleChatBotMessageMusicClear()
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageMusicPlay() {
+        playMusic()
+    }
+
+    private func handleChatBotMessageMusicPause() {
+        pauseMusic()
+    }
+
+    private func handleChatBotMessageMusicAdd(command: ChatBotCommand) {
+        let title = command.rest()
+        guard !title.isEmpty else {
+            return
+        }
+        let platform = command.message.platform
+        let user = command.user() ?? String(localized: "Unknown")
+        addMusic(title: title, user: user) { result in
+            switch result {
+            case let .added(song: song):
+                self.sendChatBotReply(message: self.makeMusicAddedMessage(song: song, user: user),
+                                      platform: platform)
+            case .songNotFound:
+                self.sendChatBotReply(
+                    message: String(localized: "\(title) requested by \(user) not found."),
+                    platform: platform
+                )
+            case .alreadyAdded, .failed:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageMusicNext(command: ChatBotCommand) {
+        nextMusic(count: command.popFirstInt(in: 1 ... 100) ?? 1)
+    }
+
+    private func handleChatBotMessageMusicPrevious(command: ChatBotCommand) {
+        previousMusic(count: command.popFirstInt(in: 1 ... 100) ?? 1)
+    }
+
+    private func handleChatBotMessageMusicClear() {
+        clearMusic()
+    }
+
+    private func handleChatBotMessageMusicStatus(command: ChatBotCommand) {
+        statusMusic { status in
+            var songs: [String] = []
+            var numberOfSongsNotShown = 0
+            if let currentSongIndex = status.currentSongIndex {
+                let lastSongToShowIndex = currentSongIndex + 4
+                for (index, song) in status.songs.enumerated() {
+                    if index >= currentSongIndex, index <= lastSongToShowIndex {
+                        var title = String(song.title.prefix(50)).trim()
+                        if title != song.title {
+                            title += "…"
+                        }
+                        if index == currentSongIndex {
+                            if status.playing {
+                                songs.append("▶️ \(title)")
+                            } else {
+                                songs.append("⏸️ \(title)")
+                            }
+                        } else {
+                            songs.append(title)
+                        }
+                    } else if index > lastSongToShowIndex {
+                        numberOfSongsNotShown += 1
+                    }
+                }
+                if numberOfSongsNotShown > 0 {
+                    songs.append("\(numberOfSongsNotShown) more")
+                }
+            } else {
+                songs.append("Current song not found")
+            }
+            self.sendChatBotReply(message: songs.joined(separator: " | "),
+                                  platform: command.message.platform)
+        }
+    }
+
     private func handleChatBotMessageMacroRun(macro: SettingsMacrosMacro) {
         startMacro(macro: macro)
     }
@@ -499,16 +658,16 @@ extension Model {
 
     @MainActor
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
-        guard #available(iOS 17, *) else {
+        guard #available(iOS 17, *),
+              let reaction = command.popFirstArgument(ChatBotReactionArgument.self),
+              let reaction = SettingsReaction(value: reaction.rawValue)
+        else {
             return
         }
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
-            guard let reaction = SettingsReaction(value: command.popFirst()) else {
-                return
-            }
             self.triggerReaction(reaction: reaction)
         }
     }
@@ -534,9 +693,12 @@ extension Model {
         guard let scene = getSelectedScene() else {
             return
         }
-        for device in getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice).devices
-            where device.device.availableReactionTypes.contains(reaction)
-        {
+        for device in getBuiltinCameraDevices(
+            scene: scene,
+            sceneDevice: cameraDevice,
+            resolver: makeSceneResolver()
+        )
+        .devices where device.device.availableReactionTypes.contains(reaction) {
             device.device.performEffect(for: reaction)
         }
     }
@@ -559,16 +721,16 @@ extension Model {
             permissions: database.chat.botCommandPermissions.stream,
             command: command
         ) {
-            switch command.popFirst() {
-            case "start":
+            switch command.popFirstArgument(ChatBotStreamArgument.self) {
+            case .start:
                 self.handleChatBotMessageStreamStart()
-            case "stop":
+            case .stop:
                 self.handleChatBotMessageStreamStop()
-            case "title":
+            case .title:
                 self.handleChatBotMessageStreamTitle(command: command)
-            case "category":
+            case .category:
                 self.handleChatBotMessageStreamCategory(command: command)
-            default:
+            case nil:
                 break
             }
         }
@@ -601,22 +763,19 @@ extension Model {
             permissions: database.chat.botCommandPermissions.widget,
             command: command
         ) {
-            guard let name = command.popFirst() else {
+            guard let name = command.popFirst(), let widget = self.findWidget(name: name) else {
                 return
             }
-            guard let widget = self.findWidget(name: name) else {
-                return
-            }
-            switch command.popFirst() {
-            case "enable":
+            switch command.popFirstArgument(ChatBotWidgetArgument.self) {
+            case .enable:
                 self.handleChatBotMessageWidgetEnable(widget: widget)
-            case "disable":
+            case .disable:
                 self.handleChatBotMessageWidgetDisable(widget: widget)
-            case "timer":
+            case .timer:
                 self.handleChatBotMessageWidgetTimer(command: command, widget: widget)
-            case "wheelofluck":
+            case .wheelOfLuck:
                 self.handleChatBotMessageWidgetWheelOfLuck(command: command, widget: widget)
-            default:
+            case nil:
                 break
             }
         }
@@ -636,27 +795,23 @@ extension Model {
 
     private func handleChatBotMessageWidgetTimer(command: ChatBotCommand, widget: SettingsWidget) {
         let effects = getTextEffects(id: widget.id)
-        guard !effects.isEmpty else {
+        guard !effects.isEmpty, !widget.text.timers.isEmpty,
+              let number = command.popFirstInt(in: 1 ... widget.text.timers.count)
+        else {
             return
         }
-        guard let number = command.popFirst(), var index = Int(number) else {
-            return
-        }
-        index -= 1
-        guard index < widget.text.timers.count else {
-            return
-        }
+        let index = number - 1
         let timer = widget.text.timers[index]
-        switch command.popFirst() {
-        case "add":
-            guard let delta = command.popFirst(), let delta = Double(delta) else {
+        switch command.popFirstArgument(ChatBotWidgetTimerArgument.self) {
+        case .add:
+            guard let delta = command.popFirstDouble(in: -3600 ... 3600) else {
                 return
             }
-            timer.add(delta: delta.clamped(to: -3600 ... 3600))
+            timer.add(delta: delta)
             for effect in effects {
                 effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
             }
-        default:
+        case nil:
             break
         }
     }
@@ -665,14 +820,14 @@ extension Model {
         guard let effect = getWheelOfLuckEffect(id: widget.id) else {
             return
         }
-        switch command.popFirst() {
-        case "spin":
+        switch command.popFirstArgument(ChatBotWidgetWheelOfLuckArgument.self) {
+        case .spin:
             effect.spin()
-        case "options":
+        case .options:
             let options = command.popAll()
             widget.wheelOfLuck.optionsFromText(text: options.joined(separator: "\n"))
-            getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
-        default:
+            updateWheelOfLuckEffect(widget: widget)
+        case nil:
             break
         }
     }
@@ -706,31 +861,31 @@ extension Model {
             permissions: database.chat.botCommandPermissions.filter,
             command: command
         ) {
-            guard let filter = command.popFirst(), let state = command.popFirst() else {
+            guard let filter = command.popFirstArgument(ChatBotFilterArgument.self),
+                  let state = command.popFirstArgument(ChatBotOnOffArgument.self)
+            else {
                 return
             }
-            let on = state == "on"
+            let on = state == .on
             switch filter {
-            case "movie":
+            case .movie:
                 self.setFilterQuickButton(type: .movie, on: on)
-            case "grayscale":
+            case .grayscale:
                 self.setFilterQuickButton(type: .grayScale, on: on)
-            case "sepia":
+            case .sepia:
                 self.setFilterQuickButton(type: .sepia, on: on)
-            case "triple":
+            case .triple:
                 self.setFilterQuickButton(type: .triple, on: on)
-            case "twin":
+            case .twin:
                 self.setFilterQuickButton(type: .twin, on: on)
-            case "pixellate":
+            case .pixellate:
                 self.setPixellateQuickButton(on: on)
-            case "4:3":
+            case .fourThree:
                 self.setFilterQuickButton(type: .fourThree, on: on)
-            case "whirlpool":
+            case .whirlpool:
                 self.setWhirlpoolQuickButton(on: on)
-            case "pinch":
+            case .pinch:
                 self.setPinchQuickButton(on: on)
-            default:
-                break
             }
         }
     }
@@ -742,7 +897,7 @@ extension Model {
             permissions: permissions,
             command: command
         ) {
-            guard let x = Float(command.rest()) else {
+            guard let x = Float(command.rest()), x.isFinite else {
                 guard permissions.sendChatMessages else {
                     return
                 }
@@ -761,37 +916,37 @@ extension Model {
             permissions: database.chat.botCommandPermissions.tesla,
             command: command
         ) {
-            switch command.popFirst() {
-            case "trunk":
+            switch command.popFirstArgument(ChatBotTeslaArgument.self) {
+            case .trunk:
                 self.handleChatBotMessageTeslaTrunk(command: command)
-            case "media":
+            case .media:
                 self.handleChatBotMessageTeslaMedia(command: command)
-            default:
+            case nil:
                 break
             }
         }
     }
 
     private func handleChatBotMessageTeslaTrunk(command: ChatBotCommand) {
-        switch command.popFirst() {
-        case "open":
+        switch command.popFirstArgument(ChatBotTeslaTrunkArgument.self) {
+        case .open:
             tesla.vehicle?.openTrunk()
-        case "close":
+        case .close:
             tesla.vehicle?.closeTrunk()
-        default:
+        case nil:
             break
         }
     }
 
     private func handleChatBotMessageTeslaMedia(command: ChatBotCommand) {
-        switch command.popFirst() {
-        case "next":
+        switch command.popFirstArgument(ChatBotTeslaMediaArgument.self) {
+        case .next:
             tesla.vehicle?.mediaNextTrack()
-        case "previous":
+        case .previous:
             tesla.vehicle?.mediaPreviousTrack()
-        case "toggle-playback":
+        case .togglePlayback:
             tesla.vehicle?.mediaTogglePlayback()
-        default:
+        case nil:
             break
         }
     }
@@ -864,19 +1019,17 @@ extension Model {
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
-                            DispatchQueue.main.async {
-                                if let tier = data?.tierAsNumber(),
-                                   tier >= permissions.minimumSubscriberTier
-                                {
-                                    onCompleted()
-                                    return
-                                }
-                                self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
-                                    permissions: permissions,
-                                    onCompleted: onCompleted,
-                                    onNotAllowed: onNotAllowed
-                                )
+                            if let tier = data?.tierAsNumber(),
+                               tier >= permissions.minimumSubscriberTier
+                            {
+                                onCompleted()
+                                return
                             }
+                            self.executeIfUserAllowedToUseChatBotAfterSubscribeCheck(
+                                permissions: permissions,
+                                onCompleted: onCompleted,
+                                onNotAllowed: onNotAllowed
+                            )
                         }
                         return
                     }

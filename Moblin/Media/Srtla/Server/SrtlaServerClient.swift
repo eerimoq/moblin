@@ -145,6 +145,10 @@ class SrtlaServerClient: @unchecked Sendable {
     }
 
     private func handlePacketFromLocalSrtServer(packet: Data) {
+        guard packet.count >= srtControlTypeSize else {
+            logger.info("srtla-server-client: Packet too short (\(packet.count) bytes.")
+            return
+        }
         if isSrtDataPacket(packet: packet) {
             sendPacketOnLatestConnection(packet: packet)
         } else {

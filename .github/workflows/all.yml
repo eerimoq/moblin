@@ -5,41 +5,34 @@ on:
   pull_request:
 
 jobs:
-  all:
+  checks:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.14'
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
-      - name: Create user config
+      - name: Brew update
         run: |
-          cp User.template.xcconfig Config/User.xcconfig
+          brew update
+      - name: Install tools
+        run: |
+          brew install just swiftformat swiftlint oxfmt oxlint codespell
       - name: Source code styling
         run: |
-          brew install swiftformat oxfmt
-          make style-check
+          just style-check
       - name: Linting
         run: |
-          brew install swiftlint oxlint
-          make lint
+          just lint
       - name: Spell checking
         run: |
-          brew install codespell
-          make spell-check
+          just spell-check
       - name: Web remote control frontend
         run: |
-          make web-remote-control-frontend-prepare
-          make web-remote-control-frontend-build
+          just web-remote-control-frontend-prepare
+          just web-remote-control-frontend-build
           git diff --exit-code
-      - name: Build
-        run: |
-          xcodebuild \
-              -scheme Moblin \
-              -skipPackagePluginValidation \
-              build \
-              CODE_SIGN_IDENTITY="" \
-              CODE_SIGNING_REQUIRED=NO
+

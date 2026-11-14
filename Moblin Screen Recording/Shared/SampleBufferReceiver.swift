@@ -1,5 +1,7 @@
 import AVFoundation
+import CoreAudio
 import ReplayKit
+import System
 
 let screenRecordingLatency = 0.2
 
@@ -42,6 +44,12 @@ class SampleBufferReceiver: @unchecked Sendable {
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
+    private var audioConverter: AVAudioConverter?
+    private let colorRange: Atomic<SettingsStreamColorRange> = .init(.full)
+
+    func setPixelFormatType(_ colorRange: SettingsStreamColorRange) {
+        self.colorRange.mutate { $0 = colorRange }
+    }
 
     func start(appGroup: String) {
         do {
@@ -63,15 +71,17 @@ class SampleBufferReceiver: @unchecked Sendable {
 
     private func acceptLoop() throws {
         while true {
-            let senderFd = try accept(fd: listenerFd)
-            try setIgnoreSigPipe(fd: senderFd)
+            let senderFd = try FileDescriptor(rawValue: accept(fd: listenerFd))
+            try setIgnoreSigPipe(fd: senderFd.rawValue)
             delegate?.senderConnected()
-            try? readLoop(senderFd: senderFd)
+            try? senderFd.closeAfter {
+                try readLoop(senderFd: senderFd)
+            }
             delegate?.senderDisconnected()
         }
     }
 
-    private func readLoop(senderFd: Int32) throws {
+    private func readLoop(senderFd: FileDescriptor) throws {
         while true {
             let header = try readHeader(senderFd)
             switch header.type {
@@ -79,22 +89,29 @@ class SampleBufferReceiver: @unchecked Sendable {
                 try handleVideoFormat(senderFd, header)
             case .videoBuffer:
                 try handleVideoBuffer(senderFd, header)
+            case .audioFormat:
+                try handleAudioFormat(senderFd, header)
+            case .audioBuffer:
+                try handleAudioBuffer(senderFd, header)
             }
         }
     }
 
-    private func handleVideoFormat(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+    private func handleVideoFormat(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
         let hvcC = try read(senderFd, header.size)
         let config = MpegTsVideoConfigHevc(hvcC: hvcC)
         let status = config.makeFormatDescription(&formatDescription)
         if status == noErr, let formatDescription {
-            videoDecoder = VideoDecoder(lockQueue: lockQueue)
+            videoDecoder = VideoDecoder(name: "",
+                                        lockQueue: lockQueue,
+                                        softwareDecoding: false,
+                                        colorRange: colorRange.value)
             videoDecoder!.delegate = self
             videoDecoder!.startRunning(formatDescription: formatDescription)
         }
     }
 
-    private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
+    private func handleVideoBuffer(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
         let data = try read(senderFd, header.size)
         let timestamp = CMTime(seconds: header.presentationTimeStamp + screenRecordingLatency)
         var timing = CMSampleTimingInfo(
@@ -125,30 +142,88 @@ class SampleBufferReceiver: @unchecked Sendable {
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
-    private func readHeader(_ senderFd: Int32) throws -> SampleBufferHeader {
+    private func handleAudioFormat(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        audioConverter = nil
+        guard data.count == MemoryLayout<AudioStreamBasicDescription>.size else {
+            return
+        }
+        var asbd = data.withUnsafeBytes { $0.loadUnaligned(as: AudioStreamBasicDescription.self) }
+        guard let inputFormat = AVAudioFormat(streamDescription: &asbd),
+              let outputFormat = AVAudioFormat(
+                  commonFormat: .pcmFormatInt16,
+                  sampleRate: inputFormat.sampleRate,
+                  channels: inputFormat.channelCount,
+                  interleaved: true
+              )
+        else {
+            return
+        }
+        audioConverter = AVAudioConverter(from: inputFormat, to: outputFormat)
+    }
+
+    private func handleAudioBuffer(_ senderFd: FileDescriptor, _ header: SampleBufferHeader) throws {
+        let data = try read(senderFd, header.size)
+        guard let audioConverter else {
+            return
+        }
+        let inputFormat = audioConverter.inputFormat
+        let bytesPerFrame = Int(inputFormat.streamDescription.pointee.mBytesPerFrame)
+        let numberOfBuffers = inputFormat.isInterleaved ? 1 : Int(inputFormat.channelCount)
+        guard bytesPerFrame > 0 else {
+            return
+        }
+        let frameCount = AVAudioFrameCount(data.count / bytesPerFrame / numberOfBuffers)
+        guard frameCount > 0,
+              let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: frameCount),
+              let outputBuffer = AVAudioPCMBuffer(
+                  pcmFormat: audioConverter.outputFormat,
+                  frameCapacity: frameCount
+              )
+        else {
+            return
+        }
+        inputBuffer.frameLength = frameCount
+        let bufferSize = Int(frameCount) * bytesPerFrame
+        let buffers = UnsafeMutableAudioBufferListPointer(inputBuffer.mutableAudioBufferList)
+        data.withUnsafeBytes { pointer in
+            for (index, buffer) in buffers.enumerated() {
+                buffer.mData?.copyMemory(from: pointer.baseAddress! + index * bufferSize,
+                                         byteCount: bufferSize)
+            }
+        }
+        do {
+            try audioConverter.convert(to: outputBuffer, from: inputBuffer)
+        } catch {
+            return
+        }
+        let timestamp = CMTime(seconds: header.presentationTimeStamp + screenRecordingLatency)
+        guard let sampleBuffer = outputBuffer.makeSampleBuffer(timestamp) else {
+            return
+        }
+        delegate?.handleSampleBuffer(type: .audioApp, sampleBuffer: sampleBuffer)
+    }
+
+    private func readHeader(_ senderFd: FileDescriptor) throws -> SampleBufferHeader {
         let sizeData = try read(senderFd, 4)
         let size = Int(sizeData.getUInt32Be())
         let data = try read(senderFd, size)
         return try PropertyListDecoder().decode(SampleBufferHeader.self, from: data)
     }
 
-    private func read(_ senderFd: Int32, _ count: Int) throws -> Data {
+    private func read(_ senderFd: FileDescriptor, _ count: Int) throws -> Data {
         var data = Data(count: count)
-        try data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-            try readPointer(senderFd, pointer.baseAddress!, count)
+        try data.withUnsafeMutableBytes { pointer in
+            var offset = 0
+            while offset < count {
+                let readCount = try senderFd.read(into: .init(rebasing: pointer[offset...]))
+                if readCount == 0 {
+                    throw "Closed"
+                }
+                offset += readCount
+            }
         }
         return data
-    }
-
-    private func readPointer(_ senderFd: Int32, _ pointer: UnsafeMutableRawPointer, _ count: Int) throws {
-        var offset = 0
-        while offset < count {
-            let readCount = Darwin.read(senderFd, pointer.advanced(by: offset), count - offset)
-            if readCount <= 0 {
-                throw "Closed"
-            }
-            offset += readCount
-        }
     }
 }
 

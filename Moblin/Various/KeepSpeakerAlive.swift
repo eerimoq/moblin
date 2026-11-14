@@ -10,10 +10,10 @@ class KeepSpeakerAlivePlayer {
     }
 
     func playIfNeeded(now: ContinuousClock.Instant) {
-        guard latestPlayTime.value.duration(to: now) > .seconds(5 * 60) else {
-            return
-        }
-        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
+        guard latestPlayTime.value.duration(to: now) > .seconds(5 * 60), let soundUrl = Bundle.main.url(
+            forResource: "Alerts.bundle/Silence",
+            withExtension: "mp3"
+        )
         else {
             return
         }
@@ -35,6 +35,14 @@ class AudioPlayer {
 
     func setDelegate(delegate: any AVAudioPlayerDelegate) {
         player.delegate = delegate
+    }
+
+    func duration() -> TimeInterval {
+        player.duration
+    }
+
+    func setVolume(volume: Float) {
+        player.volume = volume
     }
 
     func play() {

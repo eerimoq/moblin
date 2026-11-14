@@ -4,6 +4,11 @@ import XMLCoder
 private struct Message: Codable {
     let from: String
     let body: String
+    // Optional per-message nickname color as a 6-digit hex string (no "#"),
+    // e.g. "bcc2cf". Not part of core XMPP MUC; servers that don't send it
+    // simply omit the attribute, which decodes to nil here and behaves
+    // exactly as before.
+    let color: String?
 
     func user() -> String? {
         guard let slashIndex = from.firstIndex(of: "/") else {
@@ -96,7 +101,7 @@ private struct FeaturesContainer: Codable {
 }
 
 @MainActor
-class OpenStreamingPlatformChat: @unchecked Sendable {
+class OpenStreamingPlatformChat {
     private var model: Model
     private var task: Task<Void, any Error>?
     private var connected: Bool = false
@@ -231,7 +236,7 @@ class OpenStreamingPlatformChat: @unchecked Sendable {
                                 displayName: user,
                                 user: user,
                                 userId: nil,
-                                userColor: nil,
+                                userColor: RgbColor.fromHex(string: message.color ?? ""),
                                 userBadges: [],
                                 segments: segments,
                                 timestamp: model.statusOther.digitalClock,

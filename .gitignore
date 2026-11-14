@@ -98,13 +98,16 @@ Config/User.xcconfig
 
 # Node.js
 node_modules/
-test/*.log
-test/*.json
-test/*.png
-test/*.dot
-test/logs
-test/files/
+logs
+tests/files/
 __pycache__
 
-test/tests/websites/*.jpg
-test/tests/websites/*.mp4
+tests/suites/websites/*.jpg
+tests/suites/websites/*.mp4
+tests/config.toml
+FfmpegTestStream.wav
+tests/ltc.wav
+*~
+tests/*.moblinSettings
+tests/cache/
+Moblin Localizations/

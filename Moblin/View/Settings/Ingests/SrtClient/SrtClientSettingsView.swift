@@ -5,12 +5,13 @@ struct SrtClientSettingsView: View {
     @ObservedObject var srtClient: SettingsSrtClient
 
     private func status() -> String {
-        String(srtClient.streams.filter(\.enabled).count)
+        String(srtClient.streams.count(where: \.enabled))
     }
 
     private func deleteStream(at indexes: IndexSet) {
         srtClient.streams.remove(atOffsets: indexes)
         model.reloadSrtClient()
+        model.updateSrtClientVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -19,7 +20,7 @@ struct SrtClientSettingsView: View {
                 Section {
                     List {
                         ForEach(srtClient.streams) { stream in
-                            SrtClientStreamSettingsView(srtClient: srtClient, stream: stream)
+                            SrtClientStreamSettingsView(model: model, srtClient: srtClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(srtClient.streams, stream.id) {
                                         deleteStream(at: offsets)
@@ -33,6 +34,7 @@ struct SrtClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsSrtClientStream.baseName,
                                                      existingNames: srtClient.streams)
                         srtClient.streams.append(stream)
+                        model.updateSrtClientVideoSourcesAndMics()
                     }
                 } header: {
                     Text("Streams")

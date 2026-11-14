@@ -22,7 +22,7 @@ private func formatBlackSharkCoolerDeviceState(state: BlackSharkCoolerDeviceStat
 }
 
 struct BlackSharkCoolerDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject private var scanner = blackSharkCoolerScanner
     @ObservedObject var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices
     @ObservedObject var device: SettingsBlackSharkCoolerDevice
@@ -37,10 +37,8 @@ struct BlackSharkCoolerDeviceSettingsView: View {
     }
 
     private func onDeviceChange(value: String) {
-        guard let deviceId = UUID(uuidString: value) else {
-            return
-        }
-        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
+        guard let deviceId = UUID(uuidString: value),
+              let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
         else {
             return
         }

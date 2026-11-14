@@ -122,6 +122,9 @@ class SrtlaServerClientConnection: @unchecked Sendable {
     }
 
     private func handleDataPacket(packet: Data) {
+        guard packet.count >= 4 else {
+            return
+        }
         if ackPacket.appendSequenceNumber(sn: getSrtSequenceNumber(packet: packet)) {
             sendPacket(packet: ackPacket.data)
         }

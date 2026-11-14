@@ -7,13 +7,13 @@ struct WidgetChatSettingsView: View {
     @ObservedObject var chat: SettingsWidgetChat
 
     private func setEffectSettings() {
-        model.getChatEffect(id: widget.id)?.setSettings(settings: chat)
+        model.chatWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {
         Section {
             HStack {
-                Text("Font size")
+                Text("Size")
                 Slider(
                     value: $chat.fontSize,
                     in: 10 ... 50,
@@ -34,6 +34,31 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            if database.showAllSettings {
+                FontSettingsView(font: $chat.font) {
+                    setEffectSettings()
+                }
+                Toggle("Bold name", isOn: $chat.boldUsername)
+                    .onChange(of: chat.boldUsername) { _ in
+                        setEffectSettings()
+                    }
+                Toggle("Bold message", isOn: $chat.boldMessage)
+                    .onChange(of: chat.boldMessage) { _ in
+                        setEffectSettings()
+                    }
+            }
+        } header: {
+            Text("Font")
+        }
+        Section {
+            Picker("Messages", selection: $chat.maximumNumberOfMessages) {
+                ForEach([1, 2, 3, 4, 5], id: \.self) {
+                    Text(String($0))
+                }
+            }
+            .onChange(of: chat.maximumNumberOfMessages) { _ in
+                setEffectSettings()
+            }
             HStack {
                 Text("Height")
                 Slider(value: $chat.height, in: 0.1 ... 1, step: 0.01)
@@ -52,14 +77,6 @@ struct WidgetChatSettingsView: View {
                 .onChange(of: chat.displayStyle) { _ in
                     setEffectSettings()
                 }
-                Toggle("Bold name", isOn: $chat.boldUsername)
-                    .onChange(of: chat.boldUsername) { _ in
-                        setEffectSettings()
-                    }
-                Toggle("Bold message", isOn: $chat.boldMessage)
-                    .onChange(of: chat.boldMessage) { _ in
-                        setEffectSettings()
-                    }
                 Toggle("Badges", isOn: $chat.badges)
                     .onChange(of: chat.badges) { _ in
                         setEffectSettings()
@@ -69,48 +86,34 @@ struct WidgetChatSettingsView: View {
                         setEffectSettings()
                     }
             }
+        } header: {
+            Text("General")
         }
         Section {
             if database.showAllSettings {
-                ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
-                    .onChange(of: chat.usernameColorColor) { _ in
-                        guard let color = chat.usernameColorColor.toRgb() else {
-                            return
-                        }
-                        chat.usernameColor = color
-                        setEffectSettings()
-                    }
-                ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
-                    .onChange(of: chat.messageColorColor) { _ in
-                        guard let color = chat.messageColorColor.toRgb() else {
-                            return
-                        }
-                        chat.messageColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Name", color: $chat.usernameColorColor) {
+                    chat.usernameColor = $0
+                    setEffectSettings()
+                }
+                RgbColorPickerView(title: "Message", color: $chat.messageColorColor) {
+                    chat.messageColor = $0
+                    setEffectSettings()
+                }
             }
             Toggle(isOn: $chat.backgroundColorEnabled) {
-                ColorPicker("Background", selection: $chat.backgroundColorColor, supportsOpacity: false)
-                    .onChange(of: chat.backgroundColorColor) { _ in
-                        guard let color = chat.backgroundColorColor.toRgb() else {
-                            return
-                        }
-                        chat.backgroundColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Background", color: $chat.backgroundColorColor) {
+                    chat.backgroundColor = $0
+                    setEffectSettings()
+                }
             }
             .onChange(of: chat.backgroundColorEnabled) { _ in
                 setEffectSettings()
             }
             Toggle(isOn: $chat.shadowColorEnabled) {
-                ColorPicker("Border", selection: $chat.shadowColorColor, supportsOpacity: false)
-                    .onChange(of: chat.shadowColorColor) { _ in
-                        guard let color = chat.shadowColorColor.toRgb() else {
-                            return
-                        }
-                        chat.shadowColor = color
-                        setEffectSettings()
-                    }
+                RgbColorPickerView(title: "Border", color: $chat.shadowColorColor) {
+                    chat.shadowColor = $0
+                    setEffectSettings()
+                }
             }
             .onChange(of: chat.shadowColorEnabled) { _ in
                 setEffectSettings()

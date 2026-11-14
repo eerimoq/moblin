@@ -4,7 +4,7 @@ import CoreImage
 import SwiftUI
 
 struct ReplayImage {
-    let image: CIImage?
+    let image: EffectImageCiImage?
     let offset: Double?
     let isLast: Bool
 }
@@ -18,19 +18,26 @@ class ReplayEffectReplayReader: @unchecked Sendable {
     private var images: Deque<ReplayImage> = []
     private var overlay: CIImage?
     private let size: CGSize
+    private let pixelFormatType: OSType
 
-    init(video: ReplayBufferFile, start: Double, duration: Double, size: CMVideoDimensions) {
+    init(video: ReplayBufferFile,
+         start: Double,
+         duration: Double,
+         size: CMVideoDimensions,
+         pixelFormatType: OSType)
+    {
         self.video = video
+        self.pixelFormatType = pixelFormatType
         self.size = size.toSize()
         startTime = start
-        DispatchQueue.main.async {
-            self.overlay = self.createOverlay(size: size)
-            replayEffectQueue.async {
+        DispatchQueue.main.async { [self] in
+            overlay = createOverlay(size: size)
+            replayEffectQueue.async { [self] in
                 let asset = AVAsset(url: video.url)
-                self.reader = try? AVAssetReader(asset: asset)
+                reader = try? AVAssetReader(asset: asset)
                 let startTime = CMTime(seconds: start)
                 let duration = CMTime(seconds: duration)
-                self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
+                reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
                 asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
                     let self2 = self
                     replayEffectQueue.async {
@@ -113,7 +120,7 @@ class ReplayEffectReplayReader: @unchecked Sendable {
                     image = overlay.composited(over: image)
                 }
                 newImages.append(ReplayImage(
-                    image: image,
+                    image: image.toEffectImage(isOpaque: true),
                     offset: sampleBuffer.presentationTimeStamp.seconds - startTime,
                     isLast: false
                 ))

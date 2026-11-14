@@ -18,10 +18,7 @@ extension CMBlockBuffer {
             lengthAtOffsetOut: nil,
             totalLengthOut: &length,
             dataPointerOut: &buffer
-        ) == noErr else {
-            return nil
-        }
-        guard let buffer else {
+        ) == noErr, let buffer else {
             return nil
         }
         return (buffer, length)

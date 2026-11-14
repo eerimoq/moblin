@@ -113,22 +113,11 @@ extension VkVideoLiveAuth: WKUIDelegate {
 
 extension VkVideoLiveAuth: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation _: WKNavigation!) {
-        guard let url = webView.url else {
-            return
-        }
-        guard url.host() == redirectHost else {
-            return
-        }
-        guard let fragment = url.fragment() else {
-            return
-        }
-        guard let urlComponents = URLComponents(string: "foo:///?\(fragment)") else {
-            return
-        }
-        guard let token = urlComponents.queryItems?.first(where: { $0.name == "access_token" }) else {
-            return
-        }
-        guard let accessToken = token.value else {
+        guard let url = webView.url, url.host() == redirectHost, let fragment = url.fragment(),
+              let urlComponents = URLComponents(string: "foo:///?\(fragment)"),
+              let token = urlComponents.queryItems?.first(where: { $0.name == "access_token" }),
+              let accessToken = token.value
+        else {
             return
         }
         onAccessToken?(accessToken)

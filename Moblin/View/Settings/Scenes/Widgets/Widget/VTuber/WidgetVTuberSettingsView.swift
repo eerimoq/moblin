@@ -1,4 +1,5 @@
 import SwiftUI
+import ZipArchive
 
 private struct PickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
@@ -15,6 +16,13 @@ private struct PickerView: UIViewControllerRepresentable {
     func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
 }
 
+private func unzipLive2DModel(from url: URL, to directory: URL) throws {
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    try ZipArchiveReader.withFile(url.path) { reader in
+        try reader.extract(to: .init(directory.path))
+    }
+}
+
 struct WidgetVTuberPickerView: View {
     let model: Model
     @ObservedObject var vTuber: SettingsWidgetVTuber
@@ -22,9 +30,35 @@ struct WidgetVTuberPickerView: View {
     @State var showPicker = false
 
     private func onUrl(url: URL) {
-        vTuber.modelName = url.lastPathComponent
-        model.vTuberStorage.add(id: vTuber.id, url: url)
-        onSelected?()
+        if url.pathExtension.lowercased() == "zip" {
+            onLive2DUrl(url: url)
+        } else {
+            vTuber.type = .vrm
+            vTuber.modelName = url.lastPathComponent
+            model.vTuberStorage.add(id: vTuber.id, url: url)
+            onSelected?()
+        }
+    }
+
+    private func onLive2DUrl(url: URL) {
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        DispatchQueue.global().async {
+            do {
+                try unzipLive2DModel(from: url, to: directory)
+            } catch {
+                DispatchQueue.main.async {
+                    model.makeErrorToast(title: String(localized: "Failed to unzip model"),
+                                         subTitle: error.localizedDescription)
+                }
+                return
+            }
+            DispatchQueue.main.async {
+                vTuber.type = .live2D
+                vTuber.modelName = url.lastPathComponent
+                model.vTuberStorage.add(id: vTuber.id, url: directory)
+                onSelected?()
+            }
+        }
     }
 
     var body: some View {
@@ -41,7 +75,12 @@ struct WidgetVTuberPickerView: View {
         } header: {
             Text("Model")
         } footer: {
-            Text("Most VRM 0.0 files are supported.")
+            VStack(alignment: .leading) {
+                Text("Most VRM 0.x and 1.0 files and zipped Live2D Cubism models are supported.")
+                if #unavailable(iOS 18) {
+                    Text("VRM models require iOS 18 or later.")
+                }
+            }
         }
     }
 }
@@ -50,21 +89,15 @@ struct WidgetVTuberSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var vTuber: SettingsWidgetVTuber
+    @ObservedObject var videoSources: VideoSources
 
     private func onCameraChange(cameraId: String) {
-        vTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.vTuberWidgetSetCamera(widget: widget,
+                                    settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
     }
 
     private func setEffectSettings() {
-        model.getVTuberEffect(id: widget.id)?
-            .setSettings(
-                cameraFieldOfView: vTuber.cameraFieldOfView,
-                cameraPositionY: vTuber.cameraPositionY,
-                mirror: vTuber.mirror,
-                sensitivity: vTuber.sensitivity,
-                armsAngle: vTuber.armsAngle
-            )
+        model.vTuberWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {
@@ -73,7 +106,7 @@ struct WidgetVTuberSettingsView: View {
                 InlinePickerView(
                     title: "Video source",
                     onChange: onCameraChange,
-                    items: model.listCameras(excludeBuiltin: false).map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(vTuberWidget: vTuber)
@@ -89,58 +122,62 @@ struct WidgetVTuberSettingsView: View {
         WidgetVTuberPickerView(model: model, vTuber: vTuber) {
             model.resetSelectedScene(changeScene: false)
         }
-        Section {
-            HStack {
-                Text("Vertical position")
-                Slider(
-                    value: $vTuber.cameraPositionY,
-                    in: 1 ... 2,
-                    step: 0.01
-                )
-                .onChange(of: vTuber.cameraPositionY) { _ in
-                    setEffectSettings()
-                }
-            }
-            HStack {
-                Text("Field of view")
-                Slider(
-                    value: $vTuber.cameraFieldOfView,
-                    in: 10 ... 30,
-                    step: 1.0
-                )
-                .onChange(of: vTuber.cameraFieldOfView) { _ in
-                    setEffectSettings()
-                }
-            }
+        if vTuber.type == .vrm {
             Section {
-                Toggle(isOn: $vTuber.mirror) {
-                    Text("Mirror")
+                HStack {
+                    Text("Vertical position")
+                    Slider(
+                        value: $vTuber.cameraPositionY,
+                        in: 1 ... 2,
+                        step: 0.01
+                    )
+                    .onChange(of: vTuber.cameraPositionY) { _ in
+                        setEffectSettings()
+                    }
                 }
-                .onChange(of: vTuber.mirror) { _ in
-                    setEffectSettings()
+                HStack {
+                    Text("Field of view")
+                    Slider(
+                        value: $vTuber.cameraFieldOfView,
+                        in: 10 ... 30,
+                        step: 1.0
+                    )
+                    .onChange(of: vTuber.cameraFieldOfView) { _ in
+                        setEffectSettings()
+                    }
                 }
+            } header: {
+                Text("Camera")
             }
-        } header: {
-            Text("Camera")
+        }
+        Section {
+            Toggle(isOn: $vTuber.mirror) {
+                Text("Mirror")
+            }
+            .onChange(of: vTuber.mirror) { _ in
+                setEffectSettings()
+            }
         }
         WidgetSensitivityView(sensitivity: $vTuber.sensitivity)
             .onChange(of: vTuber.sensitivity) { _ in
                 setEffectSettings()
             }
-        Section {
-            HStack {
-                Text("Arms")
-                Slider(
-                    value: $vTuber.armsAngle,
-                    in: 20 ... 90,
-                    step: 1.0
-                )
-                .onChange(of: vTuber.armsAngle) { _ in
-                    setEffectSettings()
+        if vTuber.type == .vrm {
+            Section {
+                HStack {
+                    Text("Arms")
+                    Slider(
+                        value: $vTuber.armsAngle,
+                        in: 20 ... 90,
+                        step: 1.0
+                    )
+                    .onChange(of: vTuber.armsAngle) { _ in
+                        setEffectSettings()
+                    }
                 }
+            } header: {
+                Text("Angles")
             }
-        } header: {
-            Text("Angles")
         }
     }
 }

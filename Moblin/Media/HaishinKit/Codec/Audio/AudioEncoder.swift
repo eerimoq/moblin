@@ -153,10 +153,7 @@ class AudioEncoder: @unchecked Sendable {
 
 extension AVAudioConverter {
     func setBitrate(to bitrate: Int) {
-        guard bitrate != bitRate else {
-            return
-        }
-        guard let bitrates = applicableEncodeBitRates else {
+        guard bitrate != bitRate, let bitrates = applicableEncodeBitRates else {
             return
         }
         let minBitrate = bitrates.min(by: { $0.intValue < $1.intValue })?.intValue ?? bitrate

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamRealtimeIrlSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
 
     private func submitBaseUrl(value: String) {

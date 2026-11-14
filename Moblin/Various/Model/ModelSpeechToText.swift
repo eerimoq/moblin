@@ -4,21 +4,22 @@ import Translation
 extension Model {
     func reloadSpeechToText() {
         stopSpeechToText()
-        if isSpeechToTextNeeded() {
-            startSpeechToText()
+        let drawnWidgets = drawnWidgetsInSelectedScene()
+        if isSpeechToTextNeeded(drawnWidgets: drawnWidgets) {
+            startSpeechToText(drawnWidgets: drawnWidgets)
         }
     }
 
-    func startSpeechToText() {
+    private func startSpeechToText(drawnWidgets: [SettingsWidget]) {
         speechToText = SpeechToText()
         speechToText?.delegate = self
         speechToText?.start { message in
             self.makeErrorToast(title: message)
         }
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            switch widget.widget.type {
+        for widget in drawnWidgets {
+            switch widget.type {
             case .text:
-                let languageIdentifiers = Set(widget.widget.text.subtitles.map(\.identifier))
+                let languageIdentifiers = Set(widget.text.subtitles.map(\.identifier))
                 for languageIdentifier in languageIdentifiers {
                     if let languageIdentifier {
                         addTranslator(targetIdentifier: languageIdentifier)
@@ -43,29 +44,29 @@ extension Model {
         speechToTextTextAligners.removeAll()
     }
 
-    func updateSpeechToText() {
-        if isSpeechToTextNeeded() {
+    func updateSpeechToText(drawnWidgets: [SettingsWidget]) {
+        if isSpeechToTextNeeded(drawnWidgets: drawnWidgets) {
             if speechToText == nil {
-                startSpeechToText()
+                startSpeechToText(drawnWidgets: drawnWidgets)
             }
         } else if speechToText != nil {
             stopSpeechToText()
         }
     }
 
-    func isSpeechToTextNeeded() -> Bool {
-        for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            switch widget.widget.type {
+    private func isSpeechToTextNeeded(drawnWidgets: [SettingsWidget]) -> Bool {
+        for widget in drawnWidgets {
+            switch widget.type {
             case .text:
-                if widget.widget.text.needsSubtitles {
+                if widget.text.needsSubtitles {
                     return true
                 }
             case .alerts:
-                if widget.widget.alerts.needsSubtitles {
+                if widget.alerts.needsSubtitles {
                     return true
                 }
             case .browser:
-                if widget.widget.browser.moblinAccess, widget.widget.browser.speechToText {
+                if widget.browser.moblinAccess, widget.browser.speechToText {
                     return true
                 }
             default:
@@ -143,7 +144,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency SpeechToTextDelegate {
+extension Model: SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
         speechToTextLatestPosition = position
         speechToTextLatestText = text
@@ -166,7 +167,7 @@ extension Model: @preconcurrency SpeechToTextDelegate {
     }
 }
 
-extension Model: @preconcurrency TranslatorDelegate {
+extension Model: TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
         let position: Int
         if let textAligner = speechToTextTextAligners[languageIdentifier] {

@@ -10,7 +10,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case chat = "Chat"
     case blackScreen = "Black screen"
     case record = "Record"
-    case recordings = "Recrodings"
     case image = "Image"
     case movie = "Movie"
     case grayScale = "Gray scale"
@@ -66,6 +65,8 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case macros = "Macros"
     case gimbalTracking = "Gimbal tracking"
     case previewStream = "Preview stream"
+    case photoShoot = "Photo shoot"
+    case sceneEditor = "Scene editor"
 
     init(from decoder: any Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -167,8 +168,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             String(localized: "Camera")
         case .cameraPreview:
             String(localized: "Camera preview")
-        case .recordings:
-            String(localized: "Recordings")
         case .stream:
             String(localized: "Switch stream")
         case .grid:
@@ -205,6 +204,10 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             String(localized: "Gimbal tracking")
         case .previewStream:
             String(localized: "Preview stream")
+        case .photoShoot:
+            String(localized: "Photo shoot")
+        case .sceneEditor:
+            String(localized: "Scene editor")
         }
     }
 
@@ -231,12 +234,16 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
 }
 
 class SettingsQuickButton: Codable, Identifiable, ObservableObject {
+    static func isValidPage(page: Int) -> Bool {
+        (1 ... controlBarPages).contains(page)
+    }
+
     var id: UUID = .init()
     var name: String
     var type: SettingsQuickButtonType
     var imageOn: String
     var imageOff: String
-    var isOn: Bool
+    @Published var isOn: Bool
     @Published var enabled: Bool = true
     var backgroundColor: RgbColor = defaultQuickButtonColor
     @Published var color: Color = defaultQuickButtonColor.color()
@@ -257,12 +264,8 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case name
-        case id
         case type
         case imageType
-        case systemImageNameOn
-        case systemImageNameOff
         case isOn
         case enabled
         case backgroundColor
@@ -271,12 +274,10 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.name, name)
-        try container.encode(.id, id)
         try container.encode(.type, type)
-        try container.encode(.systemImageNameOn, imageOn)
-        try container.encode(.systemImageNameOff, imageOff)
-        try container.encode(.isOn, isOn)
+        if Self.isOnStored(type: type) {
+            try container.encode(.isOn, isOn)
+        }
         try container.encode(.enabled, enabled)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.page, page)
@@ -284,16 +285,23 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = container.decode(.name, String.self, "")
-        id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
-        imageOn = container.decode(.systemImageNameOn, String.self, "")
-        imageOff = container.decode(.systemImageNameOff, String.self, "")
-        isOn = container.decode(.isOn, Bool.self, false)
+        name = type.toString()
+        imageOn = ""
+        imageOff = ""
+        if Self.isOnStored(type: type) {
+            isOn = container.decode(.isOn, Bool.self, false)
+        } else {
+            isOn = false
+        }
         enabled = container.decode(.enabled, Bool.self, true)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, defaultQuickButtonColor)
         color = backgroundColor.color()
         page = container.decode(.page, Int.self, 1)
+    }
+
+    private static func isOnStored(type: SettingsQuickButtonType) -> Bool {
+        type == .interactiveChat || type == .cameraPreview || type == .interactiveBrowserWidgets
     }
 }
 
@@ -304,6 +312,11 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var enableScroll: Bool = true
     @Published var stealthModeShowChat: Bool = false
     @Published var stealthModeShowStatus: Bool = false
+    var backgroundImageCropX: Double = 0.0
+    var backgroundImageCropY: Double = 0.0
+    var backgroundImageCropWidth: Double = 1.0
+    var backgroundImageCropHeight: Double = 1.0
+    @Published var backgroundImageOpacity: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case twoColumns
@@ -312,6 +325,11 @@ class SettingsQuickButtons: Codable, ObservableObject {
         case enableScroll
         case blackScreenShowChat
         case blackScreenShowStatus
+        case backgroundImageCropX
+        case backgroundImageCropY
+        case backgroundImageCropWidth
+        case backgroundImageCropHeight
+        case backgroundImageOpacity
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -322,6 +340,11 @@ class SettingsQuickButtons: Codable, ObservableObject {
         try container.encode(.enableScroll, enableScroll)
         try container.encode(.blackScreenShowChat, stealthModeShowChat)
         try container.encode(.blackScreenShowStatus, stealthModeShowStatus)
+        try container.encode(.backgroundImageCropX, backgroundImageCropX)
+        try container.encode(.backgroundImageCropY, backgroundImageCropY)
+        try container.encode(.backgroundImageCropWidth, backgroundImageCropWidth)
+        try container.encode(.backgroundImageCropHeight, backgroundImageCropHeight)
+        try container.encode(.backgroundImageOpacity, backgroundImageOpacity)
     }
 
     init() {}
@@ -334,5 +357,10 @@ class SettingsQuickButtons: Codable, ObservableObject {
         enableScroll = container.decode(.enableScroll, Bool.self, true)
         stealthModeShowChat = container.decode(.blackScreenShowChat, Bool.self, false)
         stealthModeShowStatus = container.decode(.blackScreenShowStatus, Bool.self, false)
+        backgroundImageCropX = container.decode(.backgroundImageCropX, Double.self, 0.0)
+        backgroundImageCropY = container.decode(.backgroundImageCropY, Double.self, 0.0)
+        backgroundImageCropWidth = container.decode(.backgroundImageCropWidth, Double.self, 1.0)
+        backgroundImageCropHeight = container.decode(.backgroundImageCropHeight, Double.self, 1.0)
+        backgroundImageOpacity = container.decode(.backgroundImageOpacity, Double.self, 1.0)
     }
 }

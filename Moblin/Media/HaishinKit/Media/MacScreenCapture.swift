@@ -37,6 +37,7 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
             config.captureResolution = .best
             config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps.rounded()))
             config.pixelFormat = kCVPixelFormatType_32BGRA
+            config.colorSpaceName = CGColorSpace.sRGB
             let scale = Int(screenScale())
             config.width = display.width * scale
             config.height = display.height * scale

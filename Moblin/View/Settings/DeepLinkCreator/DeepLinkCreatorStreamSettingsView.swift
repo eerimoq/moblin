@@ -5,10 +5,9 @@ private struct DeepLinkCreatorStreamVideoView: View {
     @ObservedObject var video: DeepLinkCreatorStreamVideo
 
     private func submitMaxKeyFrameInterval(value: String) {
-        guard let interval = Int32(value) else {
-            return
-        }
-        guard interval >= 0, interval <= 10 else {
+        guard let interval = Int32(value),
+              SettingsStream.isValidMaxKeyFrameInterval(interval: interval)
+        else {
             return
         }
         video.maxKeyFrameInterval = interval
@@ -110,10 +109,7 @@ private struct DeepLinkCreatorStreamSrtView: View {
     }
 
     private func submitLatency(value: String) {
-        guard let latency = Int32(value) else {
-            return
-        }
-        guard latency >= 0 else {
+        guard let latency = Int32(value), latency >= 0 else {
             return
         }
         srt.latency = latency

@@ -77,6 +77,11 @@ class ByteWriter {
         writeUInt8(UInt8((value >> 24) & 0xFF))
     }
 
+    func writeUInt64(_ value: UInt64) {
+        writeUInt32(UInt32((value >> 32) & 0xFFFF_FFFF))
+        writeUInt32(UInt32(value & 0xFFFF_FFFF))
+    }
+
     func writeInt32(_ value: Int32) {
         writeBytes(value.bigEndian.data)
     }
@@ -100,6 +105,15 @@ class ByteWriter {
                 data.append(value[length ..< value.count])
             }
             position += value.count
+        }
+    }
+
+    func writeBytes(_ value: UnsafeRawBufferPointer) {
+        if position == data.count {
+            data.append(value.baseAddress!.assumingMemoryBound(to: UInt8.self), count: value.count)
+            position = data.count
+        } else {
+            writeBytes(Data(value))
         }
     }
 

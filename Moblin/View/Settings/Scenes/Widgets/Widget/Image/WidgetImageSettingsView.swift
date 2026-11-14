@@ -26,7 +26,7 @@ struct WidgetImagePickerView: View {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(width: 1920 / sizeScale, height: 1080 / sizeScale)
                     }
                 } else {
@@ -45,6 +45,7 @@ struct WidgetImagePickerView: View {
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
                             loadImage()
+                            model.imageWidgetUpdated(id: widget.id)
                             model.getImageEffect(id: widget.id)?.loadImage(
                                 imageStorage: model.imageStorage,
                                 widgetId: widget.id

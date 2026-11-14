@@ -12,6 +12,11 @@ struct ObsSceneMediaSource: Identifiable {
     var input: String
 }
 
+class ObsScreenshot: ObservableObject {
+    @Published var image: CGImage?
+}
+
+@MainActor
 class QuickButtonObs: ObservableObject {
     var sourceFetchScreenshot = false
     var sourceScreenshotIsFetching = false
@@ -25,13 +30,13 @@ class QuickButtonObs: ObservableObject {
     @Published var currentScenePicker: String = ""
     @Published var currentScene: String = ""
     @Published var scenes: [String] = []
-    @Published var screenshot: CGImage?
+    let screenshot = ObsScreenshot()
     @Published var streaming = false
     @Published var fixOngoing = false
     @Published var audioDelay: Int = 0
 
     func startObsSourceScreenshot() {
-        screenshot = nil
+        screenshot.image = nil
         sourceFetchScreenshot = true
         sourceScreenshotIsFetching = false
     }
@@ -43,22 +48,19 @@ class QuickButtonObs: ObservableObject {
 
 extension Model {
     func updateObsSourceScreenshot() {
-        guard obsQuickButton.sourceFetchScreenshot else {
-            return
-        }
-        guard !obsQuickButton.sourceScreenshotIsFetching else {
-            return
-        }
-        guard !obsQuickButton.currentScene.isEmpty else {
+        guard obsQuickButton.sourceFetchScreenshot, !obsQuickButton.sourceScreenshotIsFetching,
+              !obsQuickButton.currentScene.isEmpty
+        else {
             return
         }
         obsWebSocket?.getSourceScreenshot(name: obsQuickButton.currentScene, onSuccess: { data in
-            let screenshot = UIImage(data: data)?.cgImage
-            self.obsQuickButton.screenshot = screenshot
+            self.obsQuickButton.screenshot.image = UIImage(data: data)?.cgImage
             self.obsQuickButton.sourceScreenshotIsFetching = false
         }, onError: { message in
             logger.debug("Failed to update screenshot with error \(message)")
-            self.obsQuickButton.screenshot = nil
+            if self.obsQuickButton.screenshot.image != nil {
+                self.obsQuickButton.screenshot.image = nil
+            }
             self.obsQuickButton.sourceScreenshotIsFetching = false
         })
     }
@@ -68,9 +70,7 @@ extension Model {
             return
         }
         obsWebSocket?.setInputAudioSyncOffset(name: stream.obsSourceName, offsetInMs: offset, onSuccess: {
-            DispatchQueue.main.async {
-                self.updateObsAudioDelay()
-            }
+            self.updateObsAudioDelay()
         }, onError: { _ in
         })
     }
@@ -80,9 +80,7 @@ extension Model {
             return
         }
         obsWebSocket?.getInputAudioSyncOffset(name: stream.obsSourceName, onSuccess: { offset in
-            DispatchQueue.main.async {
-                self.obsQuickButton.audioDelay = offset
-            }
+            self.obsQuickButton.audioDelay = offset
         }, onError: { _ in
         })
     }
@@ -122,10 +120,7 @@ extension Model {
                 onSuccess: { settings in
                     var sources: [ObsSceneMediaSource] = []
                     for (index, name) in names.enumerated() {
-                        guard let setting = settings[index] else {
-                            continue
-                        }
-                        guard !setting.isLocalFile else {
+                        guard let setting = settings[index], !setting.isLocalFile else {
                             continue
                         }
                         sources.append(ObsSceneMediaSource(name: name, input: setting.input))
@@ -157,10 +152,11 @@ extension Model {
                     for input in inputs {
                         if specialInputs.mics().contains(input) {
                             obsSceneInputs.append(ObsSceneInput(name: input))
-                        } else if sceneItems.contains(where: { $0.sourceName == input }) {
-                            if sceneItems.first(where: { $0.sourceName == input })?.sceneItemEnabled == true {
-                                obsSceneInputs.append(ObsSceneInput(name: input))
-                            }
+                        } else if sceneItems.contains(where: { $0.sourceName == input }),
+                                  sceneItems.first(where: { $0.sourceName == input })?
+                                      .sceneItemEnabled == true
+                        {
+                            obsSceneInputs.append(ObsSceneInput(name: input))
                         }
                     }
                     self.obsWebSocket?.getInputMuteBatch(
@@ -294,19 +290,15 @@ extension Model {
             } else {
                 switchToMainSceneIfNeeded()
             }
-        } else {
-            if isStreamLikelyBroken(now: now) {
-                switchToBrbSceneIfNeeded()
-            } else {
-                if obsQuickButton.currentScene == stream.obsBrbScene {
-                    makeStreamReconnectFixAudioToast()
-                    stopNetStream()
-                    streamState = .disconnected
-                    reconnectTimer.startSingleShot(timeout: 5) {
-                        logger.info("stream: Reconnecting because of OBS scene switcher")
-                        self.startNetStream()
-                    }
-                }
+        } else if isStreamLikelyBroken(now: now) {
+            switchToBrbSceneIfNeeded()
+        } else if obsQuickButton.currentScene == stream.obsBrbScene {
+            makeStreamReconnectFixAudioToast()
+            stopNetStream()
+            streamState = .disconnected
+            reconnectTimer.startSingleShot(timeout: 5) {
+                logger.info("stream: Reconnecting because of OBS scene switcher")
+                self.startNetStream()
             }
         }
     }
@@ -359,11 +351,7 @@ extension Model {
     func reloadObsWebSocket() {
         obsWebSocket?.stop()
         obsWebSocket = nil
-        guard isObsRemoteControlConfigured() else {
-            updateStatusObsText()
-            return
-        }
-        guard let url = URL(string: stream.obsWebSocketUrl) else {
+        guard isObsRemoteControlConfigured(), let url = URL(string: stream.obsWebSocketUrl) else {
             updateStatusObsText()
             return
         }
@@ -390,37 +378,29 @@ extension Model {
 
     func obsStartStream() {
         obsWebSocket?.startStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to start OBS stream"),
+                                subTitle: message)
         })
     }
 
     func obsStopStream() {
         obsWebSocket?.stopStream(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to stop OBS stream"),
+                                subTitle: message)
         })
     }
 
     func obsStartRecording() {
         obsWebSocket?.startRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to start OBS recording"),
+                                subTitle: message)
         })
     }
 
     func obsStopRecording() {
         obsWebSocket?.stopRecord(onSuccess: {}, onError: { message in
-            DispatchQueue.main.async {
-                self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
-                                    subTitle: message)
-            }
+            self.makeErrorToast(title: String(localized: "Failed to stop OBS recording"),
+                                subTitle: message)
         })
     }
 
@@ -434,12 +414,10 @@ extension Model {
                                           self.obsQuickButton.fixOngoing = false
                                       }, onError: { message in
                                           self.obsQuickButton.fixOngoing = false
-                                          DispatchQueue.main.async {
-                                              self.makeErrorToast(
-                                                  title: String(localized: "Failed to fix OBS input"),
-                                                  subTitle: message
-                                              )
-                                          }
+                                          self.makeErrorToast(
+                                              title: String(localized: "Failed to fix OBS input"),
+                                              subTitle: message
+                                          )
                                       })
     }
 
@@ -499,7 +477,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency ObsWebsocketDelegate {
+extension Model: ObsWebsocketDelegate {
     func obsWebsocketConnected() {
         updateObsStatus()
         updateStatusObsText()

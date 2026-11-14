@@ -4,12 +4,15 @@ import Rist
 class RistServerClient {
     weak var server: RistServer?
     private let reader: MpegTsReader
-    private let virtualDestinationPort: UInt16
+    private let cameraId: UUID
 
-    init(virtualDestinationPort: UInt16, latency: Double) {
-        self.virtualDestinationPort = virtualDestinationPort
-        reader = MpegTsReader(decoderQueue: ristServerQueue,
+    init(cameraId: UUID, latency: Double, softwareDecoding: Bool, colorRange: SettingsStreamColorRange) {
+        self.cameraId = cameraId
+        reader = MpegTsReader(name: "rist-server",
+                              decoderQueue: ristServerQueue,
                               timecodesEnabled: false,
+                              softwareDecoding: softwareDecoding,
+                              colorRange: colorRange,
                               targetLatency: latency)
         reader.delegate = self
     }
@@ -25,22 +28,10 @@ class RistServerClient {
 
 extension RistServerClient: MpegTsReaderDelegate {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.delegate.ristServerOnAudioBuffer(
-            virtualDestinationPort: virtualDestinationPort,
-            sampleBuffer
-        )
+        server?.delegate.ristServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.delegate.ristServerOnVideoBuffer(
-            virtualDestinationPort: virtualDestinationPort,
-            sampleBuffer
-        )
-    }
-
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
-        server?.delegate.ristServerSetTargetLatencies(virtualDestinationPort: virtualDestinationPort,
-                                                      videoTargetLatency,
-                                                      audioTargetLatency)
+        server?.delegate.ristServerOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 }

@@ -1,7 +1,8 @@
 import Foundation
 import Network
 
-class IPMonitor: @unchecked Sendable {
+@MainActor
+class IPMonitor {
     enum IPType {
         case ipv4
         case ipv6
@@ -29,22 +30,28 @@ class IPMonitor: @unchecked Sendable {
 
     init() {
         monitor.pathUpdateHandler = { path in
-            var statuses: [Status] = []
-            var id = 0
-            for interface in path.uniqueAvailableInterfaces() {
-                for (ip, type) in self.getIpAddresses(interfaceName: interface.name) {
-                    statuses.append(Status(
-                        id: id,
-                        name: interface.name,
-                        interfaceType: interface.type,
-                        ip: ip,
-                        ipType: type
-                    ))
-                    id += 1
-                }
+            MainActor.assumeIsolated {
+                self.handlePathUpdate(path: path)
             }
-            self.pathUpdateHandler?(statuses)
         }
+    }
+
+    private func handlePathUpdate(path: NWPath) {
+        var statuses: [Status] = []
+        var id = 0
+        for interface in path.uniqueAvailableInterfaces() {
+            for (ip, type) in getIpAddresses(interfaceName: interface.name) {
+                statuses.append(Status(
+                    id: id,
+                    name: interface.name,
+                    interfaceType: interface.type,
+                    ip: ip,
+                    ipType: type
+                ))
+                id += 1
+            }
+        }
+        pathUpdateHandler?(statuses)
     }
 
     func start() {

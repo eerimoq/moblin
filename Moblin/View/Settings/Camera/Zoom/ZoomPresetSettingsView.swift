@@ -2,7 +2,7 @@ import AVFoundation
 import SwiftUI
 
 struct ZoomPresetSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var preset: SettingsZoomPreset
     let minX: Float
     let maxX: Float
@@ -16,7 +16,7 @@ struct ZoomPresetSettingsView: View {
             return
         }
         preset.x = x
-        preset.name = "\(formatOneDecimal(x))x".replacingOccurrences(of: ".0", with: "")
+        preset.name = "\(formatOneDecimal(x))x".replace(".0", "")
         model.frontZoomPresetSettingUpdated()
         model.backZoomPresetSettingsUpdated()
     }

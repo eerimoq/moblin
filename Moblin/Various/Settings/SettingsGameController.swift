@@ -1,4 +1,3 @@
-import DockKit
 import Foundation
 import SwiftUI
 
@@ -23,20 +22,6 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
             String(localized: "No")
         case .wakeup:
             String(localized: "Wakeup")
-        }
-    }
-
-    @available(iOS 18, *)
-    func toSystem() -> DockAccessory.Animation {
-        switch self {
-        case .kapow:
-            .kapow
-        case .yes:
-            .yes
-        case .no:
-            .no
-        case .wakeup:
-            .wakeup
         }
     }
 }
@@ -314,7 +299,6 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id
         case name
         case text
         case function
@@ -328,21 +312,29 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.text, text)
         try container.encode(.function, function)
-        try container.encode(.sceneId, functionData.sceneId)
-        try container.encode(.widgetId, functionData.widgetId)
-        try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
-        try container.encode(.gimbalMotion, functionData.gimbalMotion)
-        try container.encode(.macroId, functionData.macroId)
-        try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        switch function {
+        case .scene:
+            try container.encode(.sceneId, functionData.sceneId)
+        case .widget:
+            try container.encode(.widgetId, functionData.widgetId)
+        case .gimbalPreset:
+            try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
+        case .gimbalAnimate:
+            try container.encode(.gimbalMotion, functionData.gimbalMotion)
+        case .macro:
+            try container.encode(.macroId, functionData.macroId)
+        case .streamDeckLayout:
+            try container.encode(.streamDeckLayoutId, functionData.streamDeckLayoutId)
+        default:
+            break
+        }
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
         text = container.decode(.text, String.self, "")
         function = container.decode(.function, SettingsControllerFunction.self, .unused)

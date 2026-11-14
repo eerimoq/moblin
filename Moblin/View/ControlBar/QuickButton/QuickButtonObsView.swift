@@ -105,14 +105,14 @@ private struct ObsSettingsView: View {
 }
 
 private struct ObsSnapshotView: View {
-    @ObservedObject var obsQuickButton: QuickButtonObs
+    @ObservedObject var screenshot: ObsScreenshot
 
     var body: some View {
         Section {
-            if let image = obsQuickButton.screenshot {
+            if let image = screenshot.image {
                 Image(image, scale: 1, label: Text(""))
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .background(.black)
             } else {
                 Text("No snapshot received yet.")
@@ -258,9 +258,9 @@ private struct ObsAudioSyncView: View {
     @ObservedObject var obsQuickButton: QuickButtonObs
 
     private func submitAudioDelay(value: String) -> String {
-        let offsetDouble = Double(value) ?? 0
-        var offset = Int(offsetDouble)
-        offset = offset.clamped(to: obsMinimumAudioDelay ... obsMaximumAudioDelay)
+        let offsetDouble = (Double(value) ?? 0)
+            .clamped(to: Double(obsMinimumAudioDelay) ... Double(obsMaximumAudioDelay))
+        let offset = Int(offsetDouble)
         model.setObsAudioDelay(offset: offset)
         return String(offset)
     }
@@ -306,14 +306,14 @@ private struct ObsAudioLevelsView: View {
 }
 
 private struct ObsConnectedView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @ObservedObject var obsQuickButton: QuickButtonObs
 
     var body: some View {
         ObsStartStopStreamingView(model: model, obsQuickButton: obsQuickButton)
         ObsStartStopRecordingView(model: model, obsQuickButton: obsQuickButton)
-        ObsSnapshotView(obsQuickButton: obsQuickButton)
+        ObsSnapshotView(screenshot: obsQuickButton.screenshot)
         ObsScenesView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneMediaSourcesView(model: model, obsQuickButton: obsQuickButton)
@@ -344,7 +344,7 @@ struct QuickButtonObsView: View {
                     Text("Unable to connect the OBS server. Retrying every 5 seconds.")
                 }
             } else {
-                ObsConnectedView(stream: stream, obsQuickButton: obsQuickButton)
+                ObsConnectedView(model: model, stream: stream, obsQuickButton: obsQuickButton)
             }
             if stream !== fallbackStream {
                 ShortcutSectionView {

@@ -1,4 +1,5 @@
 import ReplayKit
+import System
 import VideoToolbox
 
 private func connect(fd: Int32, addr: sockaddr_un) throws {
@@ -14,53 +15,59 @@ private func connect(fd: Int32, addr: sockaddr_un) throws {
 }
 
 class SampleBufferSender: NSObject {
-    private var fd: Int32
+    private var fd: FileDescriptor?
     private var videoEncoder: VideoEncoder?
     private var appGroup: String?
-
-    override init() {
-        fd = -1
-        super.init()
-    }
+    private var audioFormat: Data?
+    private let writeLock = NSLock()
 
     func start(appGroup: String) {
         self.appGroup = appGroup
     }
 
     func stop() {
-        Darwin.close(fd)
-        fd = -1
+        writeLock.withLock {
+            try? fd?.close()
+            fd = nil
+            audioFormat = nil
+        }
     }
 
     func send(_ sampleBuffer: CMSampleBuffer, _ type: RPSampleBufferType) {
-        if !isConnected() {
-            if !tryConnect() {
-                return
-            }
+        if !isConnected(), !tryConnect() {
+            return
         }
-        if type == .video {
+        switch type {
+        case .video:
             try? sendVideo(sampleBuffer, type)
+        case .audioApp:
+            try? sendAudio(sampleBuffer)
+        default:
+            break
         }
     }
 
     private func isConnected() -> Bool {
-        fd != -1
+        fd != nil
     }
 
     private func tryConnect() -> Bool {
-        guard let appGroup else {
+        guard let appGroup, let rawFd = try? createSocket() else {
             return false
         }
+        let fd = FileDescriptor(rawValue: rawFd)
         do {
-            fd = try createSocket()
-            try setIgnoreSigPipe(fd: fd)
+            try setIgnoreSigPipe(fd: rawFd)
             let containerDir = try createContainerDir(appGroup: appGroup)
             let path = createSocketPath(containerDir: containerDir)
             let addr = try createAddr(path: path)
-            try connect(fd: fd, addr: addr)
+            try connect(fd: rawFd, addr: addr)
         } catch {
-            stop()
+            try? fd.close()
             return false
+        }
+        writeLock.withLock {
+            self.fd = fd
         }
         return true
     }
@@ -76,6 +83,44 @@ class SampleBufferSender: NSObject {
         videoEncoder?.appendImageBuffer(imageBuffer, sampleBuffer.presentationTimeStamp)
     }
 
+    private func sendAudio(_ sampleBuffer: CMSampleBuffer) throws {
+        guard var asbd = sampleBuffer.formatDescription?.audioStreamBasicDescription,
+              let dataBuffer = sampleBuffer.dataBuffer
+        else {
+            return
+        }
+        let format = Data(bytes: &asbd, count: MemoryLayout<AudioStreamBasicDescription>.size)
+        var data = Data(count: dataBuffer.dataLength)
+        let status = data.withUnsafeMutableBytes { pointer in
+            CMBlockBufferCopyDataBytes(dataBuffer,
+                                       atOffset: 0,
+                                       dataLength: pointer.count,
+                                       destination: pointer.baseAddress!)
+        }
+        guard status == noErr else {
+            return
+        }
+        try writeLock.withLock {
+            if format != audioFormat {
+                try sendHeader(SampleBufferHeader(
+                    type: .audioFormat,
+                    size: format.count,
+                    presentationTimeStamp: 0.0,
+                    isSync: false
+                ))
+                try send(data: format)
+                audioFormat = format
+            }
+            try sendHeader(SampleBufferHeader(
+                type: .audioBuffer,
+                size: data.count,
+                presentationTimeStamp: sampleBuffer.presentationTimeStamp.seconds,
+                isSync: false
+            ))
+            try send(data: data)
+        }
+    }
+
     private func sendHeader(_ header: SampleBufferHeader) throws {
         let data = try PropertyListEncoder().encode(header)
         var size = Data(count: 4)
@@ -85,32 +130,17 @@ class SampleBufferSender: NSObject {
     }
 
     private func send(data: Data) throws {
-        try data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
-            try send(pointer: pointer)
-        }
+        _ = try fd?.writeAll(data)
     }
 
     private func send(pointer: UnsafeRawBufferPointer) throws {
-        guard let basePointer = pointer.baseAddress else {
-            return
-        }
-        var offset = 0
-        while offset < pointer.count {
-            let res = Darwin.write(fd, basePointer.advanced(by: offset), pointer.count - offset)
-            if res == -1 {
-                throw "Send failed"
-            }
-            offset += res
-        }
+        _ = try fd?.writeAll(pointer)
     }
 }
 
 extension SampleBufferSender: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ formatDescription: CMFormatDescription) {
-        guard let atoms = formatDescription.atoms() else {
-            return
-        }
-        guard let hvcC = atoms["hvcC"] as? Data else {
+        guard let atoms = formatDescription.atoms(), let hvcC = atoms["hvcC"] as? Data else {
             return
         }
         let header = SampleBufferHeader(
@@ -120,8 +150,10 @@ extension SampleBufferSender: VideoEncoderDelegate {
             isSync: false
         )
         do {
-            try sendHeader(header)
-            try send(data: hvcC)
+            try writeLock.withLock {
+                try sendHeader(header)
+                try send(data: hvcC)
+            }
         } catch {}
     }
 
@@ -139,8 +171,10 @@ extension SampleBufferSender: VideoEncoderDelegate {
             isSync: sampleBuffer.getIsSync()
         )
         do {
-            try sendHeader(header)
-            try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
+            try writeLock.withLock {
+                try sendHeader(header)
+                try send(pointer: UnsafeRawBufferPointer(start: UnsafeRawPointer(buffer), count: size))
+            }
         } catch {}
     }
 }
@@ -155,10 +189,9 @@ class VideoEncoder: @unchecked Sendable {
     private var session: VTCompressionSession?
     private var formatDescription: CMFormatDescription? {
         didSet {
-            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue) else {
-                return
-            }
-            guard let formatDescription else {
+            guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: oldValue),
+                  let formatDescription
+            else {
                 return
             }
             delegate?.videoEncoderOutputFormat(formatDescription)
@@ -181,10 +214,7 @@ class VideoEncoder: @unchecked Sendable {
             frameProperties: nil,
             infoFlagsOut: nil,
             outputHandler: { [weak self] status, _, sampleBuffer in
-                guard let self else {
-                    return
-                }
-                guard let sampleBuffer, status == noErr else {
+                guard let self, let sampleBuffer, status == noErr else {
                     return
                 }
                 formatDescription = sampleBuffer.formatDescription

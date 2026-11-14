@@ -15,11 +15,6 @@ protocol SrtlaServerDelegate: AnyObject {
     func srtlaServerOnClientStop(cameraId: UUID, name: String)
     func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
     func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
-    func srtlaServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class SrtlaServer: @unchecked Sendable {
@@ -36,17 +31,23 @@ class SrtlaServer: @unchecked Sendable {
 
     init(settings: SettingsSrtlaServer,
          delegate: any SrtlaServerDelegate,
-         timecodesEnabled: Bool)
+         timecodesEnabled: Bool,
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange)
     {
         self.settings = settings.clone()
         self.delegate = delegate
         srtServer = SrtServer(
             timecodesEnabled: timecodesEnabled,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             port: settings.srtlaSrtPort(),
             srtlaPatches: true
         )
         srtServerNoSrtlaPatches = SrtServer(
             timecodesEnabled: timecodesEnabled,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             port: settings.srtPort,
             srtlaPatches: false
         )
@@ -77,12 +78,7 @@ class SrtlaServer: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        nonisolated(unsafe)
-        var result: BitrateStatsInstant?
-        bitrateStats.mutate {
-            result = $0.update()
-        }
-        return result!
+        bitrateStats.mutate { $0.update() }
     }
 
     func getNumberOfClients() -> Int {

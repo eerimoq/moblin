@@ -3,6 +3,7 @@ import SwiftUI
 
 let teamRowHeight: CGFloat = 32
 
+@MainActor
 class Padel: ObservableObject {
     @Published var scoreboard: PadelScoreboard = .init(
         id: .init(),

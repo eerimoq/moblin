@@ -4,13 +4,14 @@ private struct PlatformLogoAndNameView: View {
     let logo: String
     let name: String
     var channel: String = ""
+    var scale = 1.0
 
     var body: some View {
         HStack {
             Image(logo)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 30, height: 25)
+                .scaledToFit()
+                .frame(width: 30 * scale, height: 25 * scale)
             if channel.isEmpty {
                 Text(name)
             } else {
@@ -89,6 +90,18 @@ struct TtsMonsterLogoAndNameView: View {
     }
 }
 
+struct ElevenLabsLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "ElevenLabs", name: String(localized: "ElevenLabs"))
+    }
+}
+
+struct MobcamLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "MobcamLogo", name: String(localized: "Mobcam"), scale: 1.25)
+    }
+}
+
 struct GithubLogoAndNameView: View {
     @Environment(\.colorScheme) private var colorScheme
 
@@ -108,6 +121,16 @@ struct GrayTextView: View {
     }
 }
 
+struct TokenExpiresInView: View {
+    let expiresIn: Duration?
+
+    var body: some View {
+        if let expiresIn {
+            Text("Expires in \(expiresIn.format()).")
+        }
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
@@ -123,7 +146,7 @@ struct StreamPlatformsSettingsView: View {
             }
         }
         NavigationLink {
-            StreamKickSettingsView(stream: stream)
+            StreamKickSettingsView(model: model, stream: stream)
         } label: {
             HStack {
                 KickLogoAndNameView()
@@ -169,6 +192,12 @@ struct StreamPlatformsSettingsView: View {
 struct BackgroundStreamingFooterView: View {
     var body: some View {
         Text("Live stream and record when the app is in background mode.")
+    }
+}
+
+struct AutoGoLiveFooterView: View {
+    var body: some View {
+        Text("Automatically go live when the app enters foreground.")
     }
 }
 
@@ -252,6 +281,12 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("WHIP")
                         }
+                    case .mobcam:
+                        NavigationLink {
+                            StreamMobcamSettingsView(stream: stream)
+                        } label: {
+                            Text("Mobcam")
+                        }
                     }
                 }
             }
@@ -285,7 +320,7 @@ struct StreamSettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
+                        StreamSnapshotSettingsView(model: model, stream: stream, recording: stream.recording)
                     } label: {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
@@ -295,7 +330,7 @@ struct StreamSettingsView: View {
                         IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                     }
                 }
-                if isPhone() || isPad() {
+                if !isMac() {
                     Toggle(isOn: $stream.portrait) {
                         Text("Portrait")
                     }
@@ -306,6 +341,7 @@ struct StreamSettingsView: View {
                             model.reloadStream()
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
+                            model.updateOrientationLock()
                         }
                     }
                 }
@@ -315,6 +351,13 @@ struct StreamSettingsView: View {
             }
             if !isMac() {
                 BackgroundStreamingView(model: model, stream: stream)
+            }
+            if stream.getProtocol() == .mobcam {
+                Section {
+                    Toggle("Auto go live", isOn: $stream.autoGoLive)
+                } footer: {
+                    AutoGoLiveFooterView()
+                }
             }
             Section {
                 NavigationLink {
@@ -334,7 +377,7 @@ struct StreamSettingsView: View {
                         Text("Go live notification")
                     }
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: stream)
+                        StreamRealtimeIrlSettingsView(model: model, stream: stream)
                     } label: {
                         Toggle("RealtimeIRL", isOn: Binding(get: {
                             stream.realtimeIrlEnabled

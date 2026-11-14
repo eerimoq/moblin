@@ -12,6 +12,8 @@ class RtmpServerChunkStream: @unchecked Sendable {
     var extendedTimestampPresentInType3: Bool
     private weak var client: RtmpServerClient?
     private var streamId: UInt16
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private var mediaTimestamp: Double = 0
     private var mediaTimestampZero: Double
     private var videoTimestamp: Double
@@ -22,9 +24,16 @@ class RtmpServerChunkStream: @unchecked Sendable {
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
 
-    init(client: RtmpServerClient, streamId: UInt16) {
+    init(
+        client: RtmpServerClient,
+        streamId: UInt16,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange
+    ) {
         self.client = client
         self.streamId = streamId
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         messageBody = Data()
         messageLength = 0
         messageTypeId = 0
@@ -234,8 +243,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         {
             client.latency = stream.latency
             client.cameraId = stream.id
-            client.targetLatenciesSynchronizer =
-                TargetLatenciesSynchronizer(targetLatency: stream.latencySeconds())
             isStreamKeyConfigured = true
         } else {
             isStreamKeyConfigured = false
@@ -295,10 +302,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
     }
 
     private func processMessageAudio() {
-        guard let client else {
-            return
-        }
-        guard checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
+        guard let client, checkMessageBodyBigEnough(client: client, minimumSize: 2) else {
             return
         }
         let control = messageBody[0]
@@ -408,9 +412,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         guard let sampleBuffer = makeAudioSampleBuffer(client: client, audioBuffer: pcmAudioBuffer) else {
             return
         }
-        client.targetLatenciesSynchronizer
-            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        client.updateTargetLatencies()
         client.handleAudioBuffer(sampleBuffer: sampleBuffer)
     }
 
@@ -518,7 +519,10 @@ class RtmpServerChunkStream: @unchecked Sendable {
         guard videoDecoder == nil else {
             return
         }
-        videoDecoder = VideoDecoder(lockQueue: rtmpServerDispatchQueue)
+        videoDecoder = VideoDecoder(name: "rtmp-server",
+                                    lockQueue: rtmpServerDispatchQueue,
+                                    softwareDecoding: softwareDecoding,
+                                    colorRange: colorRange)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
@@ -572,9 +576,6 @@ class RtmpServerChunkStream: @unchecked Sendable {
         else {
             return
         }
-        client.targetLatenciesSynchronizer
-            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        client.updateTargetLatencies()
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 

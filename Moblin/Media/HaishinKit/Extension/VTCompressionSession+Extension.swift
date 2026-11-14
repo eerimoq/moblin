@@ -28,17 +28,11 @@ extension VTCompressionSession {
         VTCompressionSessionInvalidate(self)
     }
 
-    func setProperty(_ property: VTSessionProperty) -> OSStatus {
-        VTSessionSetProperty(self, key: property.key.value, value: property.value)
-    }
-
     func setProperties(_ properties: [VTSessionProperty]) -> OSStatus {
+        var dictionary: [CFString: AnyObject] = [:]
         for property in properties {
-            let err = setProperty(property)
-            if err != noErr {
-                return err
-            }
+            dictionary[property.key.value] = property.value
         }
-        return noErr
+        return VTSessionSetProperties(self, propertyDictionary: dictionary as CFDictionary)
     }
 }

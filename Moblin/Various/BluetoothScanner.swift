@@ -1,5 +1,6 @@
 import CoreBluetooth
 
+@MainActor
 class BluetoothScanner: NSObject, ObservableObject {
     @Published var discoveredPeripherals: [CBPeripheral] = []
     private var centralManager: CBCentralManager?
@@ -20,7 +21,7 @@ class BluetoothScanner: NSObject, ObservableObject {
     }
 }
 
-extension BluetoothScanner: CBCentralManagerDelegate {
+extension BluetoothScanner: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: serviceIds)

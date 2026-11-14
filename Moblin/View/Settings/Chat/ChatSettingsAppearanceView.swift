@@ -10,7 +10,7 @@ struct ChatSettingsAppearanceView: View {
             Form {
                 Section {
                     HStack {
-                        Text("Font size")
+                        Text("Size")
                         Slider(
                             value: $chat.fontSize,
                             in: 10 ... 30,
@@ -32,6 +32,45 @@ struct ChatSettingsAppearanceView: View {
                             .frame(width: 25)
                     }
                     if database.showAllSettings {
+                        FontSettingsView(font: $chat.font) {
+                            model.reloadChatMessages()
+                        }
+                        Toggle("Bold name", isOn: $chat.boldUsername)
+                            .onChange(of: chat.boldUsername) { _ in
+                                model.reloadChatMessages()
+                            }
+                        Toggle("Bold message", isOn: $chat.boldMessage)
+                            .onChange(of: chat.boldMessage) { _ in
+                                model.reloadChatMessages()
+                            }
+                    }
+                } header: {
+                    Text("Font")
+                }
+                if database.showAllSettings {
+                    Section {
+                        HStack {
+                            Text("Big GIF scale")
+                            Slider(
+                                value: $chat.bigGifScale,
+                                in: 1 ... 10,
+                                step: 1,
+                                label: {
+                                    EmptyView()
+                                },
+                                onEditingChanged: { begin in
+                                    guard !begin else {
+                                        return
+                                    }
+                                    model.reloadChatMessages()
+                                }
+                            )
+                            .onChange(of: chat.bigGifScale) { _ in
+                                model.reloadChatMessages()
+                            }
+                            Text(String(Int(chat.bigGifScale)))
+                                .frame(width: 25)
+                        }
                         Picker("Display style", selection: $chat.displayStyle) {
                             ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
                                 Text(displayStyle.toString())
@@ -39,14 +78,6 @@ struct ChatSettingsAppearanceView: View {
                         }
                         Toggle("Timestamp", isOn: $chat.timestampColorEnabled)
                             .onChange(of: chat.timestampColorEnabled) { _ in
-                                model.reloadChatMessages()
-                            }
-                        Toggle("Bold name", isOn: $chat.boldUsername)
-                            .onChange(of: chat.boldUsername) { _ in
-                                model.reloadChatMessages()
-                            }
-                        Toggle("Bold message", isOn: $chat.boldMessage)
-                            .onChange(of: chat.boldMessage) { _ in
                                 model.reloadChatMessages()
                             }
                         Toggle("Badges", isOn: $chat.badges)
@@ -61,50 +92,33 @@ struct ChatSettingsAppearanceView: View {
                             .onChange(of: chat.sharedChatIcons) { _ in
                                 model.reloadChatMessages()
                             }
-                    }
-                } footer: {
-                    if database.showAllSettings {
-                        Text("Animated emotes are fairly CPU intensive. Disable for less power usage.")
+                        Toggle("Compact events", isOn: $chat.compactEvents)
+                            .onChange(of: chat.compactEvents) { _ in
+                                model.reloadChatMessages()
+                            }
+                    } header: {
+                        Text("General")
                     }
                 }
                 Section {
                     if database.showAllSettings {
-                        ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
-                            .onChange(of: chat.timestampColorColor) { _ in
-                                guard let color = chat.timestampColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.timestampColor = color
-                                model.reloadChatMessages()
-                            }
-                        ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
-                            .onChange(of: chat.usernameColorColor) { _ in
-                                guard let color = chat.usernameColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.usernameColor = color
-                                model.reloadChatMessages()
-                            }
-                        ColorPicker("Message", selection: $chat.messageColorColor, supportsOpacity: false)
-                            .onChange(of: chat.messageColorColor) { _ in
-                                guard let color = chat.messageColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.messageColor = color
-                                model.reloadChatMessages()
-                            }
+                        RgbColorPickerView(title: "Timestamp", color: $chat.timestampColorColor) {
+                            chat.timestampColor = $0
+                            model.reloadChatMessages()
+                        }
+                        RgbColorPickerView(title: "Name", color: $chat.usernameColorColor) {
+                            chat.usernameColor = $0
+                            model.reloadChatMessages()
+                        }
+                        Toggle("Same color for all names", isOn: $chat.sameUsernameColor)
+                        RgbColorPickerView(title: "Message", color: $chat.messageColorColor) {
+                            chat.messageColor = $0
+                            model.reloadChatMessages()
+                        }
                     }
                     Toggle(isOn: $chat.backgroundColorEnabled) {
-                        ColorPicker(
-                            "Background",
-                            selection: $chat.backgroundColorColor,
-                            supportsOpacity: false
-                        )
-                        .onChange(of: chat.backgroundColorColor) { _ in
-                            guard let color = chat.backgroundColorColor.toRgb() else {
-                                return
-                            }
-                            chat.backgroundColor = color
+                        RgbColorPickerView(title: "Background", color: $chat.backgroundColorColor) {
+                            chat.backgroundColor = $0
                             model.reloadChatMessages()
                         }
                     }
@@ -112,14 +126,10 @@ struct ChatSettingsAppearanceView: View {
                         model.reloadChatMessages()
                     }
                     Toggle(isOn: $chat.shadowColorEnabled) {
-                        ColorPicker("Border", selection: $chat.shadowColorColor, supportsOpacity: false)
-                            .onChange(of: chat.shadowColorColor) { _ in
-                                guard let color = chat.shadowColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.shadowColor = color
-                                model.reloadChatMessages()
-                            }
+                        RgbColorPickerView(title: "Border", color: $chat.shadowColorColor) {
+                            chat.shadowColor = $0
+                            model.reloadChatMessages()
+                        }
                     }
                     .onChange(of: chat.shadowColorEnabled) { _ in
                         model.reloadChatMessages()

@@ -28,7 +28,7 @@ struct CustomLutView: View {
                         HCenter {
                             Image(uiImage: image)
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 1920 / 6, height: 1080 / 6)
                         }
                     }
@@ -73,7 +73,7 @@ private struct CameraSettingsCubeLutsView: View {
                 model.onDocumentPickerUrl = onUrl
             }
             .sheet(isPresented: $showPicker) {
-                AlertPickerView(type: .item)
+                AlertPickerView(model: model, type: .item)
             }
         } header: {
             Text("My .cube LUTs")
@@ -193,11 +193,64 @@ private struct CameraSettingsAppleLogLutView: View {
     }
 }
 
+private struct CameraPreviewSettingsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Section {
+            Toggle("Instant camera preview", isOn: $database.alwaysAttachCameraPreview)
+                .onChange(of: database.alwaysAttachCameraPreview) { _ in
+                    model.attachCamera()
+                }
+        } footer: {
+            Text("""
+            The Camera preview quick button shows and hides the camera preview instantly, without \
+            the scene switch transition. Uses slightly more system resources.
+            """)
+        }
+    }
+}
+
+private struct PhotoShootSettingsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Section {
+            Toggle("Instant photo shoot", isOn: $database.alwaysAttachPhotoShoot)
+                .onChange(of: database.alwaysAttachPhotoShoot) { _ in
+                    model.attachCamera()
+                }
+        } footer: {
+            Text("""
+            The Photo shoot quick button starts and stops the photo shoot instantly, without \
+            the scene switch transition. Uses slightly more system resources.
+            """)
+        }
+    }
+}
+
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
     @ObservedObject var color: SettingsColor
+
+    private func colorSpaces() -> [SettingsColorSpace] {
+        SettingsColorSpace.allCases.filter {
+            switch $0 {
+            case .hlgBt2020:
+                model.supportsHlg
+            case .appleLog:
+                model.supportsAppleLog
+            case .appleLog2:
+                model.supportsAppleLog2
+            default:
+                true
+            }
+        }
+    }
 
     var body: some View {
         Form {
@@ -218,9 +271,9 @@ struct CameraSettingsView: View {
                         Text("Zoom")
                     }
                 }
-                VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
+                VideoStabilizationSettingsView(model: model, mode: database.videoStabilizationMode)
                 if database.showAllSettings {
-                    FixedHorizonView(database: database)
+                    FixedHorizonView(model: model, database: database)
                 }
                 MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
@@ -234,7 +287,7 @@ struct CameraSettingsView: View {
             }
             if database.showAllSettings {
                 Section {
-                    CameraControlsView(database: database)
+                    CameraControlsView(model: model, database: database)
                 } footer: {
                     Text(
                         "⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled."
@@ -242,36 +295,28 @@ struct CameraSettingsView: View {
                 }
             }
             if database.showAllSettings {
-                if model.supportsAppleLog {
-                    Section {
-                        Picker("Color space", selection: $color.space) {
-                            ForEach(SettingsColorSpace.allCases, id: \.self) {
-                                Text($0.rawValue)
-                            }
+                CameraPreviewSettingsView(model: model, database: database)
+                PhotoShootSettingsView(model: model, database: database)
+                Section {
+                    Picker("Color space", selection: $color.space) {
+                        ForEach(colorSpaces(), id: \.self) {
+                            Text($0.rawValue)
                         }
-                        .onChange(of: color.space) { _ in
-                            model.colorSpaceUpdated()
-                        }
-                        .disabled(model.isLive || model.isRecording)
+                    }
+                    .onChange(of: color.space) { _ in
+                        model.colorSpaceUpdated()
+                    }
+                    .disabled(model.isLive || model.isRecording)
+                    if model.supportsAppleLog || model.supportsAppleLog2 {
                         NavigationLink {
                             CameraSettingsAppleLogLutView(model: model, color: color)
                         } label: {
                             Text("Apple Log LUT")
                         }
-                    } footer: {
-                        Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                     }
-                } else {
-                    Section {
-                        Picker("Color space", selection: $color.space) {
-                            ForEach(SettingsColorSpace.allCases.filter { $0 != .appleLog }, id: \.self) {
-                                Text($0.rawValue)
-                            }
-                        }
-                        .onChange(of: color.space) { _ in
-                            model.colorSpaceUpdated()
-                        }
-                        .disabled(model.isLive || model.isRecording)
+                } footer: {
+                    if model.supportsAppleLog || model.supportsAppleLog2 {
+                        Text("The Apple Log LUT is only applied when the Apple Log color space is selected.")
                     }
                 }
                 Section {

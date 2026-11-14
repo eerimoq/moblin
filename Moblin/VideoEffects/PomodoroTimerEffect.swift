@@ -1,4 +1,5 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
 private struct PomodoroTimerView: View {
@@ -100,7 +101,7 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
     private var renderer: ImageRenderer<PomodoroTimerView>?
     private var cancellable: AnyCancellable?
-    private var timerImage: CIImage?
+    private var timerImage: EffectImageCgImage?
 
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
@@ -124,10 +125,14 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        timerImage?
+        timerImage?.getCiImage()
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        timerImage?.getMetalPetalImage().moveComposited(sceneWidgetPipeline.layout, image) ?? image
     }
 
     @MainActor
@@ -140,14 +145,15 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            setTimerImage(image: renderer?.ciImage())
+            setTimerImage(image: renderer?.cgImage)
         }
-        setTimerImage(image: renderer?.ciImage())
+        setTimerImage(image: renderer?.cgImage)
     }
 
-    private func setTimerImage(image: CIImage?) {
+    private func setTimerImage(image: CGImage?) {
+        let timerImage = image?.toEffectImage()
         processorPipelineQueue.async {
-            self.timerImage = image
+            self.timerImage = timerImage
         }
     }
 }

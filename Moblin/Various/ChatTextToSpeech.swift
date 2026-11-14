@@ -52,21 +52,16 @@ private let saysByLanguage = [
     "zh": "说",
 ]
 
-private enum Voice {
-    case apple(voice: AVSpeechSynthesisVoice?)
-    case ttsMonster(voiceId: String)
-}
-
 final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
     private var sayUsername: Bool = false
     private var defaultLanguage: String?
     private var detectLanguagePerMessage: Bool = false
-    private var pauseBetweenMessages: Double = 0.0
+    private var pauseBetweenMessages: Double = 0.5
     private var voices: [String: SettingsVoice] = [:]
     private var messageQueue: Deque<TextToSpeechMessage> = .init()
-    private var synthesizer = createSpeechSynthesizer()
+    private let synthesizer = SpeechSynthesizer(queue: textToSpeechDispatchQueue)
     private var recognizer = NLLanguageRecognizer()
     private var latestUserThatSaidSomething: String?
     private var sayLatestUserThatSaidSomethingAgain = ContinuousClock.now
@@ -77,8 +72,11 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
     private var ttsMonster: TtsMonster?
+    private var elevenLabs: ElevenLabs?
     private var audioPlayer: AudioPlayer?
     private var isSpeaking: Bool = false
+    private var isPausingBetweenMessages: Bool = false
+    private let pauseBetweenMessagesTimer = SimpleTimer(queue: textToSpeechDispatchQueue)
 
     func say(messageId: String?, user: String, userId: String?, message: String, isRedemption: Bool) {
         textToSpeechDispatchQueue.async {
@@ -202,17 +200,26 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         }
     }
 
+    func setElevenLabsApiKey(apiKey: String) {
+        textToSpeechDispatchQueue.async {
+            if apiKey.isEmpty {
+                self.elevenLabs = nil
+            } else {
+                self.elevenLabs = ElevenLabs(apiKey: apiKey)
+            }
+        }
+    }
+
     func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
             self.running = running
-            self.synthesizer.stopSpeaking(at: .immediate)
+            self.synthesizer.stop()
             self.audioPlayer?.stop()
             self.isSpeaking = false
+            self.stopPauseBetweenMessages()
             self.currentlyPlayingMessage = nil
             self.latestUserThatSaidSomething = nil
             self.messageQueue.removeAll()
-            self.synthesizer = createSpeechSynthesizer()
-            self.synthesizer.delegate = self
             self.recognizer = NLLanguageRecognizer()
         }
     }
@@ -237,13 +244,16 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     }
 
     private func skipCurrentMessageInternal() {
-        synthesizer.stopSpeaking(at: .immediate)
-        synthesizer = createSpeechSynthesizer()
-        synthesizer.delegate = self
+        synthesizer.stop()
         audioPlayer?.stop()
         isSpeaking = false
         currentlyPlayingMessage = nil
-        trySayNextMessage()
+        sayNextMessageAfterPause(pause: 0.5)
+    }
+
+    private func stopPauseBetweenMessages() {
+        pauseBetweenMessagesTimer.stop()
+        isPausingBetweenMessages = false
     }
 
     private func isFilteredOut(message: String) -> Bool {
@@ -318,7 +328,7 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         saysByLanguage[language] ?? ""
     }
 
-    private func getVoice(message: String) -> (Voice?, String)? {
+    private func getVoice(message: String) -> (TextToSpeechVoice, String)? {
         recognizer.reset()
         recognizer.processString(message)
         guard !isFilteredOut(message: message) else {
@@ -328,24 +338,14 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         if !detectLanguagePerMessage || language == nil {
             language = defaultLanguage ?? Locale.current.language.languageCode?.identifier
         }
-        guard let language else {
+        guard let language, let voice = TextToSpeechVoice.find(voices: voices, language: language) else {
             return nil
         }
-        let voice = voices[language]
-        if voice?.type == .apple, let voiceIdentifier = voice?.apple.voice {
-            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voiceIdentifier)), getSays(language))
-        } else if voice?.type == .ttsMonster, let voiceId = voice?.ttsMonster.voiceId {
-            return (.ttsMonster(voiceId: voiceId), getSays(language))
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first
-        {
-            return (.apple(voice: AVSpeechSynthesisVoice(identifier: voice.identifier)), getSays(language))
-        }
-        return nil
+        return (voice, getSays(language))
     }
 
     private func trySayNextMessage() {
-        guard !paused, !isSpeaking else {
+        guard !paused, !isSpeaking, !isPausingBetweenMessages else {
             return
         }
         guard let (message, voice, says) = findNextMessageToSay() else {
@@ -367,17 +367,16 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
             utterApple(voice: voice, text: text)
         case let .ttsMonster(voiceId):
             utterTtsMonster(voiceId: voiceId, text: text)
+        case let .elevenLabs(voiceId):
+            utterElevenLabs(voiceId: voiceId, text: text)
         }
         latestUserThatSaidSomething = message.user
         sayLatestUserThatSaidSomethingAgain = now.advanced(by: .seconds(30))
     }
 
-    private func findNextMessageToSay() -> (TextToSpeechMessage, Voice, String)? {
+    private func findNextMessageToSay() -> (TextToSpeechMessage, TextToSpeechVoice, String)? {
         while let message = messageQueue.popFirst() {
             guard let (voice, says) = getVoice(message: message.message) else {
-                continue
-            }
-            guard let voice else {
                 continue
             }
             return (message, voice, says)
@@ -389,24 +388,33 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         let utterance = AVSpeechUtterance(string: text)
         utterance.rate = rate
         utterance.pitchMultiplier = 0.8
-        utterance.preUtteranceDelay = pauseBetweenMessages
-        utterance.volume = volume
         utterance.voice = voice
-        synthesizer.speak(utterance)
-        KeepSpeakerAlivePlayer.shared.audioPlayed()
+        synthesizer.speak(utterance: utterance, volume: volume) {
+            self.sayFinished()
+        }
     }
 
     private func utterTtsMonster(voiceId: String, text: String) {
         Task {
-            if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
-                textToSpeechDispatchQueue.async {
-                    self.audioPlayer = try? AudioPlayer(data: data)
-                    self.audioPlayer?.setDelegate(delegate: self)
-                    self.audioPlayer?.play()
-                }
-            } else {
-                sayFinished()
+            await playGeneratedAudio(data: ttsMonster?.generateTts(voiceId: voiceId, message: text))
+        }
+    }
+
+    private func utterElevenLabs(voiceId: String, text: String) {
+        Task {
+            await playGeneratedAudio(data: elevenLabs?.generateTts(voiceId: voiceId, message: text))
+        }
+    }
+
+    private func playGeneratedAudio(data: Data?) {
+        if let data {
+            textToSpeechDispatchQueue.async {
+                self.audioPlayer = try? AudioPlayer(data: data)
+                self.audioPlayer?.setDelegate(delegate: self)
+                self.audioPlayer?.play()
             }
+        } else {
+            sayFinished()
         }
     }
 
@@ -424,14 +432,16 @@ final class ChatTextToSpeech: NSObject, @unchecked Sendable {
         textToSpeechDispatchQueue.async {
             self.isSpeaking = false
             self.currentlyPlayingMessage = nil
-            self.trySayNextMessage()
+            self.sayNextMessageAfterPause(pause: self.pauseBetweenMessages)
         }
     }
-}
 
-extension ChatTextToSpeech: AVSpeechSynthesizerDelegate {
-    func speechSynthesizer(_: AVSpeechSynthesizer, didFinish _: AVSpeechUtterance) {
-        sayFinished()
+    private func sayNextMessageAfterPause(pause: Double) {
+        isPausingBetweenMessages = true
+        pauseBetweenMessagesTimer.startSingleShot(timeout: pause) {
+            self.isPausingBetweenMessages = false
+            self.trySayNextMessage()
+        }
     }
 }
 

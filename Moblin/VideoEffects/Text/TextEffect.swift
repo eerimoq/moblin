@@ -1,53 +1,12 @@
 import Collections
 import Combine
+import MetalPetal
 import SwiftUI
-import WeatherKit
 
-struct TextEffectStats {
-    let timestamp: ContinuousClock.Instant
-    let bitrate: String
-    let bitrateAndTotal: String
-    let resolution: String?
-    let fps: Int?
-    let date: Date
-    let debugOverlayLines: [String]
-    let speed: Double
-    let averageSpeed: Double
-    let altitude: Double
-    let distance: Double
-    let splitDistance: Double
-    let slope: String
-    let conditions: String?
-    let temperature: Measurement<UnitTemperature>?
-    let feelsLikeTemperature: Measurement<UnitTemperature>?
-    let windSpeed: Measurement<UnitSpeed>?
-    let windGust: Measurement<UnitSpeed>?
-    let country: String?
-    let countryFlag: String?
-    let state: String?
-    let area: String?
-    let city: String?
-    let neighborhood: String?
-    let muted: Bool
-    let heartRates: [String: Int?]
-    let activeEnergyBurned: Int?
-    let workoutDistance: Int?
-    let power: Int?
-    let stepCount: Int?
-    let teslaBatteryLevel: String
-    let teslaDrive: String
-    let teslaMedia: String
-    let cyclingPower: String
-    let cyclingCadence: String
-    let runningMetrics: [String: WorkoutDeviceRunningMetrics]
-    let browserTitle: String
-    let gForce: GForce?
-    let latestSubscriber: String
-    let latestFollower: String
-}
-
+@MainActor
 private class TextViewState: ObservableObject {
     @Published var fontSize: CGFloat
+    @Published var font: SettingsFont
     @Published var fontDesign: Font.Design
     @Published var fontWeight: Font.Weight
     @Published var fontMonospacedDigits: Bool
@@ -60,6 +19,7 @@ private class TextViewState: ObservableObject {
     @Published var lines: [TextEffectLine]
 
     init(fontSize: CGFloat,
+         font: SettingsFont,
          fontDesign: Font.Design,
          fontWeight: Font.Weight,
          fontMonospacedDigits: Bool,
@@ -71,6 +31,7 @@ private class TextViewState: ObservableObject {
          lines: [TextEffectLine])
     {
         self.fontSize = fontSize
+        self.font = font
         self.fontDesign = fontDesign
         self.fontWeight = fontWeight
         self.fontMonospacedDigits = fontMonospacedDigits
@@ -90,6 +51,14 @@ private struct TextView: View {
         state.fontSize * (size.maximum() / 1920)
     }
 
+    private func font(size: CGFloat) -> Font {
+        if let name = state.font.name() {
+            .custom(name, size: size)
+        } else {
+            .system(size: size, weight: state.fontWeight, design: state.fontDesign)
+        }
+    }
+
     var body: some View {
         if let size = state.size {
             let fontSize = scaledFontSize(size: size)
@@ -104,10 +73,10 @@ private struct TextView: View {
                             case let .text(text):
                                 Text(text)
                                     .foregroundStyle(state.foregroundColor)
-                            case let .imageSystemName(name):
+                            case let .imageSystemName(name, _):
                                 Image(systemName: name)
                                     .foregroundStyle(state.foregroundColor)
-                            case let .imageSystemNameTryFill(name):
+                            case let .imageSystemNameTryFill(name, _):
                                 if UIImage(systemName: "\(name).fill") != nil {
                                     Image(systemName: "\(name).fill")
                                         .symbolRenderingMode(.multicolor)
@@ -140,12 +109,8 @@ private struct TextView: View {
                     .cornerRadius(state.cornerRadius)
                 }
             }
-            .font(.system(
-                size: fontSize,
-                weight: state.fontWeight,
-                design: state.fontDesign
-            ))
-            if state.fontMonospacedDigits {
+            .font(font(size: fontSize))
+            if state.font.family == nil, state.fontMonospacedDigits {
                 stack.monospacedDigit()
             } else {
                 stack
@@ -155,8 +120,8 @@ private struct TextView: View {
 }
 
 final class TextEffect: VideoEffect, @unchecked Sendable {
-    private var stats: Deque<TextEffectStats> = []
-    private var overlay: CIImage?
+    private var variables: Deque<Variables> = []
+    private var overlay: EffectImageCgImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
     private let formatter: TextEffectFormatter
@@ -173,6 +138,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         backgroundColor: RgbColor,
         foregroundColor: RgbColor,
         fontSize: CGFloat,
+        font: SettingsFont,
         fontDesign: Font.Design,
         fontWeight: Font.Weight,
         fontMonospacedDigits: Bool,
@@ -194,6 +160,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
                                         lapTimes: lapTimes)
         sceneWidget = SettingsSceneWidget(widgetId: .init())
         state = TextViewState(fontSize: fontSize,
+                              font: font,
                               fontDesign: fontDesign,
                               fontWeight: fontWeight,
                               fontMonospacedDigits: fontMonospacedDigits,
@@ -205,15 +172,15 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
                               lines: [])
         self.delay = delay
         super.init()
-        DispatchQueue.main.async {
-            self.renderer = ImageRenderer(content: TextView(state: self.state))
-            self.cancellable = self.renderer?.objectWillChange.sink { [weak self] in
+        DispatchQueue.main.async { [self] in
+            renderer = ImageRenderer(content: TextView(state: state))
+            cancellable = renderer?.objectWillChange.sink { [weak self] in
                 guard let self else {
                     return
                 }
-                setOverlay(image: renderer?.ciImage())
+                setOverlay(image: renderer?.cgImage)
             }
-            self.setOverlay(image: self.renderer?.ciImage())
+            setOverlay(image: renderer?.cgImage)
         }
     }
 
@@ -238,30 +205,42 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         forceOverlayUpdate()
     }
 
+    @MainActor
     func setBackgroundColor(color: RgbColor) {
         state.backgroundColor = color.color()
     }
 
+    @MainActor
     func setForegroundColor(color: RgbColor) {
         state.foregroundColor = color.color()
     }
 
+    @MainActor
     func setFontSize(size: CGFloat) {
         state.fontSize = size
     }
 
+    @MainActor
+    func setFont(font: SettingsFont) {
+        state.font = font
+    }
+
+    @MainActor
     func setFontDesign(design: Font.Design) {
         state.fontDesign = design
     }
 
+    @MainActor
     func setFontWeight(weight: Font.Weight) {
         state.fontWeight = weight
     }
 
+    @MainActor
     func setFontMonospacedDigits(enabled: Bool) {
         state.fontMonospacedDigits = enabled
     }
 
+    @MainActor
     func setLayout(alignment: HorizontalAlignment, width: Int?, cornerRadius: Double) {
         state.horizontalAlignment = alignment
         state.minWidth = Double(width ?? 0)
@@ -349,33 +328,38 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         forceOverlayUpdate()
     }
 
-    func updateStats(stats: TextEffectStats) {
-        self.stats.append(stats)
-        if self.stats.count > 10 {
-            self.stats.removeFirst()
+    func updateVariables(variables: Variables) {
+        self.variables.append(variables)
+        if self.variables.count > 10 {
+            self.variables.removeFirst()
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         updateOverlayIfNeeded(size: image.extent.size)
-        return overlay?
+        return overlay?.getCiImage()
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }
 
-    override func prepare(_ image: CIImage, _: VideoEffectInfo) {
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
         updateOverlayIfNeeded(size: image.extent.size)
+        return overlay?.getMetalPetalImage().moveComposited(sceneWidget.layout, image) ?? image
+    }
+
+    override func prepare(_ size: CGSize, _: VideoEffectInfo) {
+        updateOverlayIfNeeded(size: size)
     }
 
     private func formatted(now: ContinuousClock.Instant) -> [TextEffectLine] {
-        guard let stats = stats
-            .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? stats
+        guard let variables = variables
+            .last(where: { $0.timestamp.advanced(by: .seconds(delay - 1)) <= now }) ?? variables
             .first
         else {
             return []
         }
-        return formatter.format(stats: stats, now: now)
+        return formatter.format(variables: variables, now: now)
     }
 
     private func updateOverlayIfNeeded(size: CGSize) {
@@ -405,9 +389,10 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         state.lines = lines
     }
 
-    private func setOverlay(image: CIImage?) {
+    private func setOverlay(image: CGImage?) {
+        let overlay = image?.toEffectImage()
         processorPipelineQueue.async {
-            self.overlay = image
+            self.overlay = overlay
         }
     }
 }

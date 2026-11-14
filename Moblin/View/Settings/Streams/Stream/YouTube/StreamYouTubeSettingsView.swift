@@ -42,11 +42,11 @@ private struct StreamDescriptionView: View {
                 CacheAsyncImage(url: thumbnailUrl) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 } placeholder: {
                     Image("AppIconNoBackground")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 }
                 .frame(width: 50, height: 50)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -410,7 +410,7 @@ struct StreamYouTubeScheduleStreamView: View {
         TextButtonView("Manage streams") {
             presenting = true
         }
-        .disabled(stream.youTubeAuthState == nil)
+        .disabled(!stream.isYouTubeAuthorized())
         .sheet(isPresented: $presenting) {
             NavigationStack {
                 Form {
@@ -482,6 +482,14 @@ struct StreamYouTubeSettingsView: View {
         }
     }
 
+    private func tokenExpiresIn() -> Duration? {
+        guard let expirationDate = stream.youTubeAuthState?.lastTokenResponse?.accessTokenExpirationDate
+        else {
+            return nil
+        }
+        return .seconds(max(Date().distance(to: expirationDate), 0))
+    }
+
     private func showFailedToFetchVideoIdsToast() {
         model.makeErrorToast(
             title: String(localized: "Failed to fetch YouTube Video IDs"),
@@ -492,7 +500,7 @@ struct StreamYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if stream.youTubeAuthState == nil {
+                if !stream.isYouTubeAuthorized() {
                     TextButtonView("Login") {
                         model.youTubeSignIn(stream: stream)
                     }
@@ -521,7 +529,7 @@ struct StreamYouTubeSettingsView: View {
                     placeholder: "FekKCUN5W8U"
                 )
                 TextButtonView("Fetch Video IDs") {
-                    if stream.youTubeAuthState != nil {
+                    if stream.isYouTubeAuthorized() {
                         model.getYouTubeApi(stream: stream) { youTubeApi in
                             guard let youTubeApi else {
                                 showFailedToFetchVideoIdsToast()
@@ -542,7 +550,7 @@ struct StreamYouTubeSettingsView: View {
                             }
                         }
                     } else {
-                        Task { @MainActor in
+                        Task {
                             do {
                                 let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
                                 submitVideoIds(value: videoId)
@@ -552,7 +560,7 @@ struct StreamYouTubeSettingsView: View {
                         }
                     }
                 }
-                .disabled(stream.youTubeAuthState == nil && stream.youTubeHandle.isEmpty)
+                .disabled(!stream.isYouTubeAuthorized() && stream.youTubeHandle.isEmpty)
             } footer: {
                 Text("The Video ID unique for every live stream.")
             }

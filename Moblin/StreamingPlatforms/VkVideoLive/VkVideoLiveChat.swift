@@ -201,6 +201,7 @@ private enum JsonValue: Decodable {
     }
 }
 
+@MainActor
 protocol VkVideoLiveChatDelegate: AnyObject {
     func vkVideoLiveChatAppendMessage(
         messageId: String?,
@@ -226,6 +227,7 @@ protocol VkVideoLiveChatDelegate: AnyObject {
     )
 }
 
+@MainActor
 final class VkVideoLiveChat: NSObject {
     private let channelUrl: String
     private let api: VkVideoLiveApi
@@ -239,7 +241,7 @@ final class VkVideoLiveChat: NSObject {
     private var streamId: String?
     private var subscribed = false
     private var started = false
-    private let restartTimer = SimpleTimer(queue: .main)
+    private let restartTimer = MainTimer()
 
     init(delegate: any VkVideoLiveChatDelegate, channelUrl: String, accessToken: String) {
         self.delegate = delegate
@@ -546,15 +548,10 @@ final class VkVideoLiveChat: NSObject {
     // chat bot as a mention of the redeeming user followed by text.
     private func handleRewardRedemptionMessage(message: VkVideoLiveChatMessage) -> Bool {
         guard message.author.badges?
-            .contains(where: { $0.achievement_name == internalChatBotAchievementName }) == true
-        else {
-            return false
-        }
-        guard let mention = message.parts.first?.mention, let nick = mention.nick else {
-            return false
-        }
-        guard let text = message.parts.compactMap({ $0.text?.content }).first,
-              text.hasPrefix(rewardRedemptionTextPrefix)
+            .contains(where: { $0.achievement_name == internalChatBotAchievementName }) == true,
+            let mention = message.parts.first?.mention, let nick = mention.nick,
+            let text = message.parts.compactMap({ $0.text?.content }).first,
+            text.hasPrefix(rewardRedemptionTextPrefix)
         else {
             return false
         }
@@ -615,7 +612,10 @@ final class VkVideoLiveChat: NSObject {
             }
             if let smile = part.smile {
                 if let url = URL(string: smile.medium_url ?? smile.small_url ?? "") {
-                    segments.append(ChatPostSegment(id: id, url: url))
+                    segments.append(ChatPostSegment(
+                        id: id,
+                        url: ChatPostEmote(moving: url, still: url, name: smile.name)
+                    ))
                     id += 1
                 } else if let name = smile.name {
                     segments += makeChatPostTextSegments(text: name, id: &id)

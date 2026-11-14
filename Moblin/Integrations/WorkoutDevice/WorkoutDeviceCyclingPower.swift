@@ -1,10 +1,10 @@
 import Collections
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
-let workoutDeviceCyclingPowerServiceId = CBUUID(string: "1818")
-let workoutDeviceCyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
-let workoutDeviceCyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
+nonisolated(unsafe) let workoutDeviceCyclingPowerServiceId = CBUUID(string: "1818")
+nonisolated(unsafe) let workoutDeviceCyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
+nonisolated(unsafe) let workoutDeviceCyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
 private let measurementAccumulatedTorqueFlagIndex = 2
@@ -16,8 +16,6 @@ private let measurementExtremeAnglesFlagIndex = 8
 private let measurementTopDeadSpotAngleFlagIndex = 9
 private let measurementBottomDeadSpotAngleFlagIndex = 10
 private let measurementAccumulatedEnergyFlagIndex = 11
-
-private let averageSampleCount = 3
 
 private struct PowerMeasurement {
     var instantaneousPower: UInt16 = 0
@@ -146,41 +144,18 @@ private struct PowerVector {
     }
 }
 
-private class AverageMeasurementCalculator {
-    private var values = Array(repeating: 0, count: averageSampleCount)
-    private var nextIndex = 0
-
-    func update(value: Int) {
-        values[nextIndex] = value
-        nextIndex += 1
-        nextIndex %= averageSampleCount
-    }
-
-    func average() -> Int {
-        values.reduce(0, +) / averageSampleCount
-    }
-
-    func averageIngoreZeros() -> Int {
-        let numberOfNonZeroValues = values.filter { $0 != 0 }.count
-        guard numberOfNonZeroValues > 0 else {
-            return 0
-        }
-        return values.reduce(0, +) / numberOfNonZeroValues
-    }
-}
-
 class WorkoutDeviceCyclingPower {
     private var measurementCharacteristic: CBCharacteristic?
-    private var previousRevolutions: UInt16?
-    private var previousRevolutionsTime: UInt16?
-    private var averagePower = AverageMeasurementCalculator()
-    private var averageCadence = AverageMeasurementCalculator()
-    private var latestAverageCadenceUpdateTime = ContinuousClock.now
+    private let averagePower = WorkoutDeviceAverageCalculator()
+    private let crankCadence = WorkoutDeviceCrankCadence()
 
     func reset() {
         measurementCharacteristic = nil
-        previousRevolutions = nil
-        previousRevolutionsTime = nil
+        resetMeasurements()
+    }
+
+    func resetMeasurements() {
+        crankCadence.reset()
     }
 
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {
@@ -191,39 +166,13 @@ class WorkoutDeviceCyclingPower {
         measurementCharacteristic != nil
     }
 
-    func handleMeasurement(value: Data) throws -> (Int, Int) {
+    func handleMeasurement(value: Data) throws -> (Int, Int?) {
         let measurement = try PowerMeasurement(value: value)
-        var cadence = -1.0
-        if let revolutions = measurement.cumulativeCrankRevolutions,
-           let time = measurement.lastCrankEventTime
-        {
-            if let previousRevolutions, let previousRevolutionsTime {
-                var deltaRevolutions = Int(revolutions) - Int(previousRevolutions)
-                if deltaRevolutions < 0 {
-                    deltaRevolutions += 65536
-                }
-                var deltaTime = Int(time) - Int(previousRevolutionsTime)
-                if deltaTime < 0 {
-                    deltaTime += 65536
-                }
-                let deltaTimeSeconds = Double(deltaTime) / 1024
-                if deltaTimeSeconds > 0 {
-                    cadence = 60 * Double(deltaRevolutions) / deltaTimeSeconds
-                    cadence = min(cadence, 10000)
-                }
-            }
-            previousRevolutions = revolutions
-            previousRevolutionsTime = time
-        }
-        averagePower.update(value: Int(measurement.instantaneousPower))
-        let now = ContinuousClock.now
-        if cadence != -1.0 {
-            averageCadence.update(value: Int(cadence))
-            latestAverageCadenceUpdateTime = now
-        } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
-            averageCadence.update(value: 0)
-        }
-        return (averagePower.average(), averageCadence.averageIngoreZeros())
+        averagePower.update(value: Double(measurement.instantaneousPower))
+        let cadence = crankCadence.update(revolutions: measurement.cumulativeCrankRevolutions,
+                                          time: measurement.lastCrankEventTime,
+                                          now: .now)
+        return (Int(averagePower.average()), cadence)
     }
 
     func handlePowerVector(value: Data) throws {

@@ -83,40 +83,8 @@ private struct ReplayStatusView: View {
     }
 }
 
-private struct CollapsedHypeTrainView: View {
-    let status: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 1) {
-            let train = Image(systemName: "train.side.front.car")
-                .frame(width: 17, height: 17)
-                .padding(.horizontal, 2)
-                .foregroundStyle(color)
-            if #available(iOS 18.0, *) {
-                train
-                    .symbolEffect(
-                        .wiggle.forward.byLayer,
-                        options: .repeat(.periodic(delay: 2.0))
-                    )
-            } else {
-                train
-            }
-            Text(status)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 2)
-        }
-        .font(smallFont)
-        .background(backgroundColor)
-        .cornerRadius(5)
-        .padding(20)
-        .contentShape(Rectangle())
-        .padding(-20)
-    }
-}
-
 private struct CollapsedAdsRemainingTimerView: View {
-    @ObservedObject var status: StatusTopRight
+    let adsRemainingTimerStatus: String
 
     var body: some View {
         HStack(spacing: 1) {
@@ -124,7 +92,7 @@ private struct CollapsedAdsRemainingTimerView: View {
                 .frame(width: 17, height: 17)
                 .padding(.horizontal, 2)
                 .foregroundStyle(.white)
-            Text(status.adsRemainingTimerStatus)
+            Text(adsRemainingTimerStatus)
                 .foregroundStyle(.white)
                 .padding(.horizontal, 2)
         }
@@ -139,17 +107,17 @@ private struct CollapsedAdsRemainingTimerView: View {
 
 private struct AdsRemainingTimerView: View {
     let model: Model
-    @ObservedObject var status: StatusTopRight
+    let adsRemainingTimerStatus: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusAdsRemainingTimer() {
             if textPlacement == .hide {
-                CollapsedAdsRemainingTimerView(status: status)
+                CollapsedAdsRemainingTimerView(adsRemainingTimerStatus: adsRemainingTimerStatus)
             } else {
                 StreamOverlayIconAndTextView(
                     icon: "cup.and.saucer",
-                    text: "\(status.adsRemainingTimerStatus) seconds",
+                    text: "\(adsRemainingTimerStatus) seconds",
                     textPlacement: textPlacement
                 )
             }
@@ -274,26 +242,6 @@ private struct CpuStatusView: View {
     }
 }
 
-private struct HypeTrainStatusView: View {
-    let model: Model
-    @ObservedObject var hypeTrain: HypeTrain
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    var body: some View {
-        if model.isShowingStatusHypeTrain() {
-            if textPlacement == .hide {
-                CollapsedHypeTrainView(status: hypeTrain.status, color: .white)
-            } else {
-                StreamOverlayIconAndTextView(
-                    icon: "train.side.front.car",
-                    text: hypeTrain.status,
-                    textPlacement: textPlacement
-                )
-            }
-        }
-    }
-}
-
 private struct MoblinkStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
@@ -327,27 +275,47 @@ private struct MoblinkStatusView: View {
 private struct RemoteControlStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let remoteControlStatus: String
+    let remoteControlOk: Bool
     @ObservedObject var streamer: SettingsRemoteControlStreamer
     @ObservedObject var assistant: SettingsRemoteControlAssistant
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
-        if model.isRemoteControlStreamerConfigured(), !model.isRemoteControlStreamerConnected() {
-            return .red
-        } else if model.isRemoteControlAssistantConfigured(), !model.isRemoteControlAssistantConnected() {
-            return .red
+        if remoteControlOk {
+            .white
+        } else {
+            .red
         }
-        return .white
     }
 
     var body: some View {
         if model.isShowingStatusRemoteControl() {
             StreamOverlayIconAndTextView(
                 icon: "appletvremote.gen1",
-                text: status.remoteControlStatus,
+                text: remoteControlStatus,
                 textPlacement: textPlacement,
                 color: remoteControlColor()
+            )
+        }
+    }
+}
+
+private struct MoblinCloudStatusView: View {
+    let model: Model
+    @ObservedObject var show: SettingsShow
+    let moblinCloudStatus: String
+    let moblinCloudOk: Bool
+    @ObservedObject var moblinCloud: SettingsMoblinCloud
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusMoblinCloud() {
+            StreamOverlayIconAndTextView(
+                icon: "cloud",
+                text: moblinCloudStatus,
+                textPlacement: textPlacement,
+                color: moblinCloudOk ? .white : .red
             )
         }
     }
@@ -356,14 +324,14 @@ private struct RemoteControlStatusView: View {
 private struct DjiDevicesStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let djiDevicesStatus: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusDjiDevices() {
             StreamOverlayIconAndTextView(
                 icon: "appletvremote.gen1",
-                text: status.djiDevicesStatus,
+                text: djiDevicesStatus,
                 textPlacement: textPlacement,
                 color: .white
             )
@@ -374,14 +342,14 @@ private struct DjiDevicesStatusView: View {
 private struct GameControllersStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let gameControllersTotal: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusGameController() {
             StreamOverlayIconAndTextView(
                 icon: "gamecontroller",
-                text: status.gameControllersTotal,
+                text: gameControllersTotal,
                 textPlacement: textPlacement
             )
         }
@@ -411,14 +379,14 @@ private struct LocationStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
     @ObservedObject var location: SettingsLocation
-    @ObservedObject var status: StatusTopRight
+    let locationStatus: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusLocation() {
             StreamOverlayIconAndTextView(
                 icon: "location",
-                text: status.location,
+                text: locationStatus,
                 textPlacement: textPlacement
             )
         }
@@ -445,14 +413,14 @@ private struct RecordingStatusView: View {
 private struct BrowserWidgetsStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let browserWidgetsStatus: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusBrowserWidgets() {
             StreamOverlayIconAndTextView(
                 icon: "globe",
-                text: status.browserWidgetsStatus,
+                text: browserWidgetsStatus,
                 textPlacement: textPlacement
             )
         }
@@ -462,23 +430,17 @@ private struct BrowserWidgetsStatusView: View {
 private struct CatPrinterStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let catPrinterStatus: String
+    let color: Color
     let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func catPrinterColor() -> Color {
-        if model.isAnyCatPrinterConfigured(), !model.areAllCatPrintersConnected() {
-            return .red
-        }
-        return .white
-    }
 
     var body: some View {
         if model.isShowingStatusCatPrinter() {
             StreamOverlayIconAndTextView(
                 icon: "pawprint",
-                text: status.catPrinterStatus,
+                text: catPrinterStatus,
                 textPlacement: textPlacement,
-                color: catPrinterColor()
+                color: color
             )
         }
     }
@@ -487,23 +449,17 @@ private struct CatPrinterStatusView: View {
 private struct WorkoutDeviceStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let workoutDeviceStatus: String
+    let color: Color
     let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func workoutDeviceColor() -> Color {
-        if model.isAnyWorkoutDeviceConfigured(), !model.areAllWorkoutDevicesConnected() {
-            return .red
-        }
-        return .white
-    }
 
     var body: some View {
         if model.isShowingStatusWorkoutDevice() {
             StreamOverlayIconAndTextView(
                 icon: "figure.walk.motion",
-                text: status.workoutDeviceStatus,
+                text: workoutDeviceStatus,
                 textPlacement: textPlacement,
-                color: workoutDeviceColor()
+                color: color
             )
         }
     }
@@ -512,14 +468,14 @@ private struct WorkoutDeviceStatusView: View {
 private struct FixedHorizonStatusView: View {
     let model: Model
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let fixedHorizonStatus: String
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
         if model.isShowingStatusFixedHorizon() {
             StreamOverlayIconAndTextView(
                 icon: "circle.and.line.horizontal",
-                text: status.fixedHorizonStatus,
+                text: fixedHorizonStatus,
                 textPlacement: textPlacement
             )
         }
@@ -528,16 +484,18 @@ private struct FixedHorizonStatusView: View {
 
 private struct BlackSharkCoolerDeviceStatusView: View {
     @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
+    let deviceState: BlackSharkCoolerDeviceState?
+    let phoneTemp: Int?
+    let exhaustTemp: Int?
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if status.blackSharkCoolerDeviceState == .connected {
+        if deviceState == .connected {
             StreamOverlayIconAndTextView(
                 icon: "fan",
                 text: """
-                \(String(status.blackSharkCoolerPhoneTemp ?? 0)) °C / \
-                \(String(status.blackSharkCoolerExhaustTemp ?? 0)) °C
+                \(String(phoneTemp ?? 0)) °C / \
+                \(String(exhaustTemp ?? 0)) °C
                 """,
                 textPlacement: textPlacement
             )
@@ -580,12 +538,23 @@ private struct StatusesView: View {
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
+    private func catPrinterColor() -> Color {
+        if model.isAnyCatPrinterConfigured(), !model.areAllCatPrintersConnected() {
+            return .red
+        }
+        return .white
+    }
+
+    private func workoutDeviceColor() -> Color {
+        if model.isAnyWorkoutDeviceConfigured(), !model.areAllWorkoutDevicesConnected() {
+            return .red
+        }
+        return .white
+    }
+
     var body: some View {
-        HypeTrainStatusView(model: model,
-                            hypeTrain: model.hypeTrain,
-                            textPlacement: textPlacement)
         AdsRemainingTimerView(model: model,
-                              status: model.statusTopRight,
+                              adsRemainingTimerStatus: status.adsRemainingTimerStatus,
                               textPlacement: textPlacement)
         IngestsStatusView(model: model,
                           show: model.database.show,
@@ -601,17 +570,24 @@ private struct StatusesView: View {
                           textPlacement: textPlacement)
         RemoteControlStatusView(model: model,
                                 show: model.database.show,
-                                status: model.statusTopRight,
+                                remoteControlStatus: status.remoteControlStatus,
+                                remoteControlOk: status.remoteControlOk,
                                 streamer: model.database.remoteControl.streamer,
                                 assistant: model.database.remoteControl.assistant,
                                 textPlacement: textPlacement)
+        MoblinCloudStatusView(model: model,
+                              show: model.database.show,
+                              moblinCloudStatus: status.moblinCloudStatus,
+                              moblinCloudOk: status.moblinCloudOk,
+                              moblinCloud: model.database.moblinCloud,
+                              textPlacement: textPlacement)
         DjiDevicesStatusView(model: model,
                              show: model.database.show,
-                             status: model.statusTopRight,
+                             djiDevicesStatus: status.djiDevicesStatus,
                              textPlacement: textPlacement)
         GameControllersStatusView(model: model,
                                   show: model.database.show,
-                                  status: model.statusTopRight,
+                                  gameControllersTotal: status.gameControllersTotal,
                                   textPlacement: textPlacement)
         BitrateStatusView(model: model,
                           show: model.database.show,
@@ -629,7 +605,7 @@ private struct StatusesView: View {
         LocationStatusView(
             show: model.database.show,
             location: model.database.location,
-            status: model.statusTopRight,
+            locationStatus: status.location,
             textPlacement: textPlacement
         )
         RecordingStatusView(
@@ -639,28 +615,32 @@ private struct StatusesView: View {
         )
         BrowserWidgetsStatusView(
             show: model.database.show,
-            status: model.statusTopRight,
+            browserWidgetsStatus: status.browserWidgetsStatus,
             textPlacement: textPlacement
         )
         CatPrinterStatusView(
             show: model.database.show,
-            status: model.statusTopRight,
+            catPrinterStatus: status.catPrinterStatus,
+            color: catPrinterColor(),
             textPlacement: textPlacement
         )
         WorkoutDeviceStatusView(
             show: model.database.show,
-            status: model.statusTopRight,
+            workoutDeviceStatus: status.workoutDeviceStatus,
+            color: workoutDeviceColor(),
             textPlacement: textPlacement
         )
         FixedHorizonStatusView(
             model: model,
             show: model.database.show,
-            status: model.statusTopRight,
+            fixedHorizonStatus: status.fixedHorizonStatus,
             textPlacement: textPlacement
         )
         BlackSharkCoolerDeviceStatusView(
             show: model.database.show,
-            status: model.statusTopRight,
+            deviceState: status.blackSharkCoolerDeviceState,
+            phoneTemp: status.blackSharkCoolerPhoneTemp,
+            exhaustTemp: status.blackSharkCoolerExhaustTemp,
             textPlacement: textPlacement
         )
         AutoSceneSwitcherStatusView(
@@ -671,8 +651,8 @@ private struct StatusesView: View {
                       show: model.database.show,
                       systemMonitor: model.systemMonitor,
                       textPlacement: textPlacement)
-        if show.audioLevel, textPlacement == .hide {
-            CompactAudioBarView(level: model.audio.level)
+        if model.isShowingStatusAudioLevel(), textPlacement == .hide {
+            CompactAudioBarView(audio: model.audio, level: model.audio.level)
         }
     }
 }
@@ -683,7 +663,7 @@ private struct AudioView: View {
     @ObservedObject var show: SettingsShow
 
     var body: some View {
-        if show.audioLevel {
+        if model.isShowingStatusAudioLevel() {
             AudioLevelView(model: model, big: database.bigAudioLevelMeter)
                 .padding(20)
                 .contentShape(Rectangle())
@@ -732,7 +712,7 @@ private struct RightOverlayBottomVerticalView: View {
         HStack(alignment: .bottom) {
             Spacer()
             if streamOverlay.showMediaPlayerControls {
-                StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model
+                StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model
                     .mediaPlayerPlayer)
             } else {
                 VStack(alignment: .trailing) {
@@ -750,6 +730,12 @@ private struct RightOverlayBottomVerticalView: View {
                         StreamOverlayRightCameraSettingsControlView(model: model,
                                                                     camera: model.camera,
                                                                     show: model.camera.show)
+                    }
+                    if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                        StreamOverlayRightTorchView(model: model, database: database)
+                    }
+                    if show.zoomSlider, zoom.hasZoom {
+                        StreamOverlayRightZoomSliderView(model: model)
                     }
                 }
                 if show.zoomPresets, zoom.hasZoom {
@@ -775,7 +761,7 @@ private struct RightOverlayBottomHorizontalView: View {
 
     var body: some View {
         if streamOverlay.showMediaPlayerControls {
-            StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
+            StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model.mediaPlayerPlayer)
         } else {
             StreamOverlayRightFaceView(model: model, face: database.face)
             if streamOverlay.showingPixellate {
@@ -791,6 +777,12 @@ private struct RightOverlayBottomHorizontalView: View {
                 StreamOverlayRightCameraSettingsControlView(model: model,
                                                             camera: model.camera,
                                                             show: model.camera.show)
+            }
+            if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+                StreamOverlayRightTorchView(model: model, database: database)
+            }
+            if show.zoomSlider, zoom.hasZoom {
+                StreamOverlayRightZoomSliderView(model: model)
             }
             if show.zoomPresets, zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
@@ -815,7 +807,7 @@ struct RightOverlayBottomView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             Spacer()
-            if !model.showDrawOnStream {
+            if !model.showDrawOnStream, database.appMode == .streaming {
                 if streamOverlay.showingReplay {
                     StreamOverlayRightReplayView(model: model,
                                                  replay: model.replay,
@@ -823,6 +815,9 @@ struct RightOverlayBottomView: View {
                 } else if streamOverlay.showingBeauty {
                     StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
                 } else if streamOverlay.showingVideoPreview {
+                    if show.zoomSlider, zoom.hasZoom {
+                        StreamOverlayRightZoomSliderView(model: model)
+                    }
                     if show.zoomPresets, zoom.hasZoom {
                         StreamOverlayRightZoomPresetSelctorView(model: model,
                                                                 zoom: zoom,

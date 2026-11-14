@@ -4,7 +4,7 @@ import Foundation
 class VkVideoLivePlatformStatus {
     private var api: VkVideoLiveApi?
     private var channelUrl: String = ""
-    private let timer = SimpleTimer(queue: .main)
+    private let timer = MainTimer()
     var platformStatus: PlatformStatus = .unknown
 
     func start(channelUrl: String, accessToken: String) {

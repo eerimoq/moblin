@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WhepClientSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var whepClient: SettingsWhepClient
     @State var numberOfEnabledStreams: Int = 0
 
@@ -12,6 +12,7 @@ struct WhepClientSettingsView: View {
     private func deleteStream(at indexes: IndexSet) {
         whepClient.streams.remove(atOffsets: indexes)
         model.reloadWhepClient()
+        model.updateWhepVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -23,7 +24,7 @@ struct WhepClientSettingsView: View {
                 Section {
                     List {
                         ForEach(whepClient.streams) { stream in
-                            WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
+                            WhepClientStreamSettingsView(model: model, whepClient: whepClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(whepClient.streams, stream.id) {
                                         deleteStream(at: offsets)
@@ -37,6 +38,7 @@ struct WhepClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsWhepClientStream.baseName,
                                                      existingNames: whepClient.streams)
                         whepClient.streams.append(stream)
+                        model.updateWhepVideoSourcesAndMics()
                     }
                 } header: {
                     Text("Streams")
@@ -53,7 +55,7 @@ struct WhepClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = whepClient.streams.filter(\.enabled).count
+            numberOfEnabledStreams = whepClient.streams.count(where: \.enabled)
         }
     }
 }

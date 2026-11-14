@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct AppearanceSettingsView: View {
-    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var quickButtons: SettingsQuickButtons
 
@@ -9,22 +8,10 @@ private struct AppearanceSettingsView: View {
         Section {
             if database.showAllSettings {
                 Toggle("Scroll", isOn: $quickButtons.enableScroll)
-                    .onChange(of: quickButtons.enableScroll) { _ in
-                        model.updateQuickButtonStates()
-                    }
                 Toggle("Two columns", isOn: $quickButtons.twoColumns)
-                    .onChange(of: quickButtons.twoColumns) { _ in
-                        model.updateQuickButtonStates()
-                    }
             }
             Toggle("Big buttons", isOn: $quickButtons.bigButtons)
-                .onChange(of: quickButtons.bigButtons) { _ in
-                    model.updateQuickButtonStates()
-                }
             Toggle("Show name", isOn: $quickButtons.showName)
-                .onChange(of: quickButtons.showName) { _ in
-                    model.updateQuickButtonStates()
-                }
         } header: {
             Text("Appearance")
         } footer: {
@@ -36,7 +23,6 @@ private struct AppearanceSettingsView: View {
 private struct ButtonSettingsView: View {
     let model: Model
     @ObservedObject var button: SettingsQuickButton
-    @ObservedObject var state: ButtonState
 
     var body: some View {
         NavigationLink {
@@ -47,8 +33,8 @@ private struct ButtonSettingsView: View {
                                            showAll: false)
                 .onAppear {
                     model.quickButtons.selectedButtonType = button.type
-                    model.quickButtons.page = button.page
-                    model.quickButtons.activePage = button.page
+                    model.quickButtonsPages.page = button.page
+                    model.quickButtonsPages.activePage = button.page
                 }
                 .onDisappear {
                     if model.showingPanel != .quickButtonSettings {
@@ -63,32 +49,51 @@ private struct ButtonSettingsView: View {
                     longDivider: true
                 )
             }
-            .disabled(state.isOn && button.enabled)
+            .disabled(button.isOn && button.enabled)
             .onChange(of: button.enabled) { _ in
-                model.updateQuickButtonStates()
+                model.updateQuickButtonPairs()
             }
         }
     }
 }
 
+private struct ButtonsPage: Identifiable {
+    let id: Int
+    let buttons: [SettingsQuickButton]
+}
+
 private struct ButtonsSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
-    @ObservedObject var quickButtons: QuickButtons
+    @State private var filter = ""
+
+    private func pages() -> [ButtonsPage] {
+        (1 ... controlBarPages).compactMap { page in
+            let buttons = database.quickButtons.reversed().filter { button in
+                guard button.page == page else {
+                    return false
+                }
+                return filter.isEmpty || button.name.lowercased().contains(filter.lowercased())
+            }
+            guard !buttons.isEmpty else {
+                return nil
+            }
+            return ButtonsPage(id: page, buttons: buttons)
+        }
+    }
 
     var body: some View {
-        ForEach(1 ... controlBarPages, id: \.self) { page in
+        Section {
+            TextField("Filter", text: $filter)
+                .autocorrectionDisabled()
+        }
+        ForEach(pages()) { page in
             Section {
-                List {
-                    ForEach(database.quickButtons.reversed().filter { $0.page == page }) { button in
-                        ButtonSettingsView(model: model,
-                                           button: button,
-                                           state: model.getQuickButtonState(type: button.type)
-                                               ?? ButtonState(isOn: false, button: button))
-                    }
+                ForEach(page.buttons) { button in
+                    ButtonSettingsView(model: model, button: button)
                 }
             } header: {
-                Text("Page \(page)")
+                Text("Page \(page.id)")
             }
         }
     }
@@ -100,13 +105,10 @@ struct QuickButtonsSettingsView: View {
 
     var body: some View {
         Form {
-            AppearanceSettingsView(model: model,
-                                   database: model.database,
+            AppearanceSettingsView(database: model.database,
                                    quickButtons: model.database.quickButtonsGeneral)
             if showAll {
-                ButtonsSettingsView(model: model,
-                                    database: model.database,
-                                    quickButtons: model.quickButtons)
+                ButtonsSettingsView(model: model, database: model.database)
             }
         }
         .navigationTitle("Quick buttons")

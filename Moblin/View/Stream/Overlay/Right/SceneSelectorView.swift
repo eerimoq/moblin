@@ -44,20 +44,28 @@ struct StreamOverlayRightSceneSelectorView: View {
     @ObservedObject var sceneSelector: SceneSelector
     let width: CGFloat
 
+    private func selectedScene() -> SettingsScene? {
+        if sceneSelector.sceneIndex < model.enabledScenes.count {
+            model.enabledScenes[sceneSelector.sceneIndex]
+        } else {
+            nil
+        }
+    }
+
+    private func selectedSceneColor() -> Color {
+        (selectedScene()?.backgroundColor ?? defaultSegmentedPickerSelectedColor).color()
+    }
+
     var body: some View {
         SegmentedHPicker(items: model.enabledScenes, selectedItem: Binding(get: {
-            if sceneSelector.sceneIndex < model.enabledScenes.count {
-                model.enabledScenes[sceneSelector.sceneIndex]
-            } else {
-                nil
-            }
+            selectedScene()
         }, set: { value in
             if let value, let index = model.enabledScenes.firstIndex(of: value) {
                 sceneSelector.sceneIndex = index
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        }), onLongPress: { index in
+        }), selectedColor: selectedSceneColor(), onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
@@ -67,14 +75,8 @@ struct StreamOverlayRightSceneSelectorView: View {
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), max(width - 20, 1)))
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
     }
 }
 
@@ -84,20 +86,28 @@ struct StreamOverlayRightSceneVSelectorView: View {
     @ObservedObject var sceneSelector: SceneSelector
     let width: CGFloat
 
+    private func selectedScene() -> SettingsScene? {
+        if sceneSelector.sceneIndex < model.enabledScenes.count {
+            model.enabledScenes[sceneSelector.sceneIndex]
+        } else {
+            nil
+        }
+    }
+
+    private func selectedSceneColor() -> Color {
+        (selectedScene()?.backgroundColor ?? defaultSegmentedPickerSelectedColor).color()
+    }
+
     var body: some View {
         SegmentedVPicker(items: model.enabledScenes.reversed(), selectedItem: Binding(get: {
-            if sceneSelector.sceneIndex < model.enabledScenes.count {
-                model.enabledScenes[sceneSelector.sceneIndex]
-            } else {
-                nil
-            }
+            selectedScene()
         }, set: { value in
             if let value, let index = model.enabledScenes.firstIndex(of: value) {
                 sceneSelector.sceneIndex = index
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        }), onLongPress: { index in
+        }), selectedColor: selectedSceneColor(), onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
@@ -107,14 +117,8 @@ struct StreamOverlayRightSceneVSelectorView: View {
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: sceneSegmentWidth)
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }

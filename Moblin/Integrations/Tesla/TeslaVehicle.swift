@@ -1,14 +1,13 @@
 import Collections
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import CryptoKit
 
-private let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
-private let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
-private let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let vehicleServiceUuid = CBUUID(string: "00000211-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let toVehicleUuid = CBUUID(string: "00000212-b2d1-43f0-9b88-960cebf8b91e")
+private nonisolated(unsafe) let fromVehicleUuid = CBUUID(string: "00000213-b2d1-43f0-9b88-960cebf8b91e")
 
 enum TeslaVehicleState {
     case idle
-    case discovering
     case connecting
     case connected
 }
@@ -120,14 +119,17 @@ func teslaGeneratePrivateKey() -> P256.KeyAgreement.PrivateKey {
     P256.KeyAgreement.PrivateKey()
 }
 
+@MainActor
 protocol TeslaVehicleDelegate: AnyObject {
     func teslaVehicleState(_ vehicle: TeslaVehicle, state: TeslaVehicleState)
     func teslaVehicleVehicleSecurityConnected(_ vehicle: TeslaVehicle)
     func teslaVehicleInfotainmentConnected(_ vehicle: TeslaVehicle)
 }
 
+@MainActor
 class TeslaVehicle: NSObject {
     private let vin: String
+    private let peripheralId: UUID
     private let clientPrivateKey: P256.KeyAgreement.PrivateKey
     private let clientPublicKeyBytes: Data
     private var centralManager: CBCentralManager?
@@ -139,11 +141,12 @@ class TeslaVehicle: NSObject {
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
     weak var delegate: (any TeslaVehicleDelegate)?
-    private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
-    private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
+    private let vehicleSecurityHandshakeTimer = MainTimer()
+    private let infotainmentHandshakeTimer = MainTimer()
 
-    init?(vin: String, privateKeyPem: String, handshake _: Bool = true) {
+    init?(vin: String, privateKeyPem: String, peripheralId: UUID, handshake _: Bool = true) {
         self.vin = vin
+        self.peripheralId = peripheralId
         do {
             clientPrivateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
         } catch {
@@ -156,9 +159,7 @@ class TeslaVehicle: NSObject {
     func start() {
         reset()
         centralManager = CBCentralManager(delegate: self, queue: .main)
-        vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKey)
-        vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKey)
-        setState(state: .discovering)
+        startSession()
     }
 
     func stop() {
@@ -166,16 +167,40 @@ class TeslaVehicle: NSObject {
     }
 
     private func reset() {
-        vehicleSecurityHandshakeTimer.stop()
-        infotainmentHandshakeTimer.stop()
+        resetSession()
         centralManager = nil
         vehiclePeripheral = nil
+        setState(state: .idle)
+    }
+
+    private func startSession() {
+        vehicleDomains[.vehicleSecurity] = VehicleDomain(clientPrivateKey)
+        vehicleDomains[.infotainment] = VehicleDomain(clientPrivateKey)
+    }
+
+    private func resetSession() {
+        vehicleSecurityHandshakeTimer.stop()
+        infotainmentHandshakeTimer.stop()
         toVehicleCharacteristic = nil
         fromVehicleCharacteristic = nil
         responseHandlers.removeAll()
         receiveBuffer.removeAll()
         vehicleDomains.removeAll()
-        setState(state: .idle)
+    }
+
+    private func connect(_ central: CBCentralManager) {
+        guard let peripheral = central.retrievePeripherals(withIdentifiers: [peripheralId]).first else {
+            logger.info("tesla-vehicle: Vehicle not found")
+            return
+        }
+        vehiclePeripheral = peripheral
+        peripheral.delegate = self
+        var options: [String: Any] = [:]
+        if #available(iOS 17, *) {
+            options[CBConnectPeripheralOptionEnableAutoReconnect] = true
+        }
+        central.connect(peripheral, options: options)
+        setState(state: .connecting)
     }
 
     func addKeyRequestWithRole(privateKeyPem: String) {
@@ -281,10 +306,7 @@ class TeslaVehicle: NSObject {
     private func executeClosureMoveAction(_ closureMoveRequest: VCSEC_ClosureMoveRequest,
                                           onCompleted: @escaping () throws -> Void)
     {
-        guard state == .connected else {
-            return
-        }
-        guard let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
+        guard state == .connected, let vehicleDomain = vehicleDomains[.vehicleSecurity] else {
             return
         }
         var unsignedMessage = VCSEC_UnsignedMessage()
@@ -304,10 +326,7 @@ class TeslaVehicle: NSObject {
         _ action: CarServer_Action,
         onCompleted: @escaping (CarServer_Response) throws -> Void
     ) {
-        guard state == .connected else {
-            return
-        }
-        guard let vehicleDomain = vehicleDomains[.infotainment] else {
+        guard state == .connected, let vehicleDomain = vehicleDomains[.infotainment] else {
             return
         }
         do {
@@ -340,11 +359,6 @@ class TeslaVehicle: NSObject {
         logger.info("tesla-vehicle: State change \(self.state) -> \(state)")
         self.state = state
         delegate?.teslaVehicleState(self, state: state)
-    }
-
-    private func localName() -> String {
-        let hash = Data(Insecure.SHA1.hash(data: vin.utf8Data).prefix(8)).hexString()
-        return "S\(hash)C"
     }
 
     private func getNextAddress() -> Data {
@@ -455,6 +469,8 @@ class TeslaVehicle: NSObject {
         // logger.info("tesla-vehicle: Got \(payload.hexString()) of \(payload.count) bytes")
         if reader.bytesAvailable > 0 {
             receiveBuffer = try reader.readBytes(reader.bytesAvailable)
+        } else {
+            receiveBuffer.removeAll()
         }
         let message = try UniversalMessage_RoutableMessage(serializedBytes: payload)
         guard case let .routingAddress(address) = message.toDestination.subDestination else {
@@ -536,34 +552,14 @@ class TeslaVehicle: NSObject {
     }
 }
 
-extension TeslaVehicle: CBCentralManagerDelegate {
+extension TeslaVehicle: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: nil)
+            connect(central)
         default:
             break
         }
-    }
-
-    func centralManager(
-        _ central: CBCentralManager,
-        didDiscover peripheral: CBPeripheral,
-        advertisementData: [String: Any],
-        rssi _: NSNumber
-    ) {
-        guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String else {
-            return
-        }
-        guard localName == self.localName() else {
-            return
-        }
-        logger.info("tesla-vehicle: Connecting to \(localName)")
-        central.stopScan()
-        vehiclePeripheral = peripheral
-        peripheral.delegate = self
-        central.connect(peripheral, options: nil)
-        setState(state: .connecting)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {
@@ -580,9 +576,26 @@ extension TeslaVehicle: CBCentralManagerDelegate {
         logger.debug("tesla-vehicle: Disconnected")
         reset()
     }
+
+    func centralManager(
+        _: CBCentralManager,
+        didDisconnectPeripheral _: CBPeripheral,
+        timestamp _: CFAbsoluteTime,
+        isReconnecting: Bool,
+        error _: (any Error)?
+    ) {
+        logger.debug("tesla-vehicle: Disconnected (reconnecting: \(isReconnecting))")
+        guard isReconnecting else {
+            reset()
+            return
+        }
+        resetSession()
+        startSession()
+        setState(state: .connecting)
+    }
 }
 
-extension TeslaVehicle: CBPeripheralDelegate {
+extension TeslaVehicle: @MainActor CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             logger.info("tesla-vehicle: No services found")

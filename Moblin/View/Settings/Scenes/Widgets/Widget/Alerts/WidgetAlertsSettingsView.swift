@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 let alertTestNames = ["Mark", "Natasha", "Pedro", "Anna"]
 
 struct AlertPickerView: UIViewControllerRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
     let type: UTType
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
@@ -73,7 +73,8 @@ struct AlertTextToSpeechView: View {
                     onLanguageReset: onLanguageReset,
                     rate: $rate,
                     volume: $volume,
-                    ttsMonsterApiToken: ""
+                    ttsMonsterApiToken: model.database.chat.ttsMonster.apiToken,
+                    elevenLabsApiKey: model.database.chat.elevenLabs.apiKey
                 )
             } label: {
                 Text("Voices")
@@ -86,12 +87,12 @@ struct AlertTextToSpeechView: View {
 
 @MainActor
 private func getImageName(model: Model, id: UUID?) -> String {
-    model.getAllAlertImages().first(where: { $0.id == id })?.name ?? ""
+    model.database.alertsMediaGallery.allImages().first(where: { $0.id == id })?.name ?? ""
 }
 
 @MainActor
 private func getSoundName(model: Model, id: UUID?) -> String {
-    model.getAllAlertSounds().first(where: { $0.id == id })?.name ?? ""
+    model.database.alertsMediaGallery.allSounds().first(where: { $0.id == id })?.name ?? ""
 }
 
 private struct VideoPickerView: UIViewControllerRepresentable {
@@ -177,6 +178,8 @@ struct AlertMediaView: View {
             case .gifAndSound:
                 NavigationLink {
                     AlertImageSelectorView(
+                        model: model,
+                        gallery: model.database.alertsMediaGallery,
                         alert: alert,
                         imageId: $alert.imageId,
                         loopCount: Float(alert.imageLoopCount)
@@ -185,7 +188,9 @@ struct AlertMediaView: View {
                     TextItemLocalizedView(name: "Image", value: getImageName(model: model, id: alert.imageId))
                 }
                 NavigationLink {
-                    AlertSoundSelectorView(alert: alert, soundId: $alert.soundId)
+                    AlertSoundSelectorView(gallery: model.database.alertsMediaGallery,
+                                           alert: alert,
+                                           soundId: $alert.soundId)
                 } label: {
                     TextItemLocalizedView(name: "Sound", value: getSoundName(model: model, id: alert.soundId))
                 }
@@ -197,7 +202,7 @@ struct AlertMediaView: View {
 }
 
 private struct AlertPositionFaceView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State private var facePosition: CGPoint = .init(x: 100, y: 100)
     @State private var facePositionOffset: CGSize = .init(width: 0, height: 0)
@@ -219,7 +224,7 @@ private struct AlertPositionFaceView: View {
         }
     }
 
-    private func createFacePositionPathAndUpdateImage(size: CGSize) -> Path {
+    private func createFacePositionRectangleAndUpdateImage(size: CGSize) -> CGRect {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             facePositionAnchorPoint,
             alert.facePosition.x,
@@ -238,14 +243,13 @@ private struct AlertPositionFaceView: View {
         let yPoints = CGFloat(alert.facePosition.y) * size.height
         let widthPoints = CGFloat(alert.facePosition.width) * size.width
         let heightPoints = CGFloat(alert.facePosition.height) * size.height
-        let path = drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
         imageWidth = widthPoints
         imageHeight = heightPoints
         imageOffset = .init(
             width: xPoints + widthPoints / 2 - size.width / 2,
             height: yPoints + heightPoints / 2 - size.height / 2
         )
-        return path
+        return CGRect(x: xPoints, y: yPoints, width: widthPoints, height: heightPoints)
     }
 
     var body: some View {
@@ -256,25 +260,20 @@ private struct AlertPositionFaceView: View {
             if let image = loadAlertImage(model: model, imageId: alert.imageId) {
                 AnimatedImage(data: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: imageWidth, height: imageHeight)
                     .offset(imageOffset)
                     .allowsHitTesting(false)
             }
             GeometryReader { reader in
                 Canvas { context, size in
-                    context.stroke(
-                        createFacePositionPathAndUpdateImage(size: size),
-                        with: .color(.black),
-                        lineWidth: 1.5
-                    )
+                    drawPositioningRectangle(context, createFacePositionRectangleAndUpdateImage(size: size))
                 }
-                .padding(.vertical, 6)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
                             facePosition = value.location
-                            let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                            let size = reader.size
                             updateFacePositionAnchorPoint(location: facePosition, size: size)
                         }
                         .onEnded { _ in
@@ -288,28 +287,25 @@ private struct AlertPositionFaceView: View {
 
 struct AlertPositionView: View {
     @EnvironmentObject var model: Model
-    let alert: SettingsWidgetAlertsAlert
-    @State var positionType: SettingsWidgetAlertPositionType
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
         Section {
-            Picker("Type", selection: $positionType) {
+            Picker("Type", selection: $alert.positionType) {
                 ForEach(SettingsWidgetAlertPositionType.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
-            .onChange(of: positionType) { _ in
-                alert.positionType = positionType
+            .onChange(of: alert.positionType) { _ in
                 model.updateAlertsSettings()
-                model.objectWillChange.send()
             }
         } header: {
             Text("Position")
         }
         Section {
-            switch positionType {
+            switch alert.positionType {
             case .face:
-                AlertPositionFaceView(alert: alert)
+                AlertPositionFaceView(model: model, alert: alert)
             default:
                 EmptyView()
             }
@@ -367,12 +363,17 @@ struct WidgetAlertsSettingsView: View {
                 KickLogoAndNameView()
             }
             NavigationLink {
-                WidgetAlertsChatBotSettingsView(chatBot: widget.alerts.chatBot)
+                WidgetAlertsMoblinCloudSettingsView(moblinCloud: widget.alerts.moblinCloud)
+            } label: {
+                Label("Moblin Cloud", systemImage: "cloud")
+            }
+            NavigationLink {
+                WidgetAlertsChatBotSettingsView(model: model, chatBot: widget.alerts.chatBot)
             } label: {
                 Text("Chat bot")
             }
             NavigationLink {
-                WidgetAlertsSpeechToTextSettingsView(speechToText: widget.alerts.speechToText)
+                WidgetAlertsSpeechToTextSettingsView(model: model, speechToText: widget.alerts.speechToText)
             } label: {
                 Text("Speech to text")
             }

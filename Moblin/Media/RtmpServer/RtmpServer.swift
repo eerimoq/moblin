@@ -11,11 +11,6 @@ protocol RtmpServerDelegate: AnyObject {
     func rtmpServerOnPublishStop(streamKey: String, reason: String)
     func rtmpServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func rtmpServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func rtmpServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class RtmpServer: @unchecked Sendable {
@@ -23,11 +18,22 @@ class RtmpServer: @unchecked Sendable {
     private var clients: [RtmpServerClient]
     let delegate: any RtmpServerDelegate
     var settings: SettingsRtmpServer
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
-    var bitrateStats = BitrateStats()
+    let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
+    private var numberOfClients: Atomic<Int> = .init(0)
+    private var connectedStreamKeys: Atomic<[String]> = .init([])
 
-    init(settings: SettingsRtmpServer, delegate: any RtmpServerDelegate) {
+    init(
+        settings: SettingsRtmpServer,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange,
+        delegate: any RtmpServerDelegate
+    ) {
         self.settings = settings
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.delegate = delegate
         clients = []
     }
@@ -45,6 +51,7 @@ class RtmpServer: @unchecked Sendable {
                 client.stop(reason: "Server stop")
             }
             self.clients.removeAll()
+            self.clientsChanged()
             self.listener?.stateUpdateHandler = nil
             self.listener?.newConnectionHandler = nil
             self.listener?.cancel()
@@ -54,23 +61,15 @@ class RtmpServer: @unchecked Sendable {
     }
 
     func isStreamConnected(streamKey: String) -> Bool {
-        rtmpServerDispatchQueue.sync {
-            clients.contains(where: { client in
-                client.streamKey == streamKey
-            })
-        }
+        connectedStreamKeys.value.contains(streamKey)
     }
 
     func updateStats() -> BitrateStatsInstant {
-        rtmpServerDispatchQueue.sync {
-            bitrateStats.update()
-        }
+        bitrateStats.mutate { $0.update() }
     }
 
     func getNumberOfClients() -> Int {
-        rtmpServerDispatchQueue.sync {
-            clients.count
-        }
+        numberOfClients.value
     }
 
     private func setupListener() {
@@ -79,7 +78,7 @@ class RtmpServer: @unchecked Sendable {
         let parameters = NWParameters(tls: nil, tcp: options)
         parameters.requiredLocalEndpoint = .hostPort(
             host: .ipv4(.any),
-            port: NWEndpoint.Port(rawValue: settings.port) ?? 1935
+            port: .init(rawValue: settings.port) ?? .init(integerLiteral: DefaultTcpPorts.rtmpServer)
         )
         parameters.allowLocalEndpointReuse = true
         do {
@@ -129,9 +128,13 @@ class RtmpServer: @unchecked Sendable {
 
     private func handleNewListenerConnection(connection: NWConnection) {
         logger.info("rtmp-server: Client TCP connected")
-        let client = RtmpServerClient(server: self, connection: connection)
+        let client = RtmpServerClient(server: self,
+                                      connection: connection,
+                                      softwareDecoding: softwareDecoding,
+                                      colorRange: colorRange)
         client.start()
         clients.append(client)
+        clientsChanged()
     }
 
     func handleClientConnected(client: RtmpServerClient) {
@@ -146,6 +149,7 @@ class RtmpServer: @unchecked Sendable {
             }
         }
         clients = newClients
+        clientsChanged()
         delegate.rtmpServerOnPublishStart(streamKey: client.streamKey)
         logNumberOfClients()
     }
@@ -155,10 +159,18 @@ class RtmpServer: @unchecked Sendable {
         clients.removeAll { c in
             c === client
         }
+        clientsChanged()
         logNumberOfClients()
         if !client.streamKey.isEmpty {
             delegate.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
         }
+    }
+
+    private func clientsChanged() {
+        let count = clients.count
+        numberOfClients.mutate { $0 = count }
+        let streamKeys = clients.map(\.streamKey).filter { !$0.isEmpty }
+        connectedStreamKeys.mutate { $0 = streamKeys }
     }
 
     private func logNumberOfClients() {

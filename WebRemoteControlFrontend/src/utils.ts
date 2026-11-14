@@ -198,7 +198,7 @@ export interface RemoteControlSettings {
   bitratePresets: BitratePreset[];
   mics: NamedItem[];
   srt: RemoteControlSettingsSrt;
-  gimbalPresets: GimbalPreset[];
+  zoomPresets?: { front: ZoomPreset[]; back: ZoomPreset[] };
 }
 
 export interface ResponseData {
@@ -214,8 +214,8 @@ export interface RemoteControlAssistantStreamerState {
   mic?: string;
   bitrate?: string;
   zoom?: number;
-  zoomPresets?: ZoomPreset[];
   zoomPreset?: string;
+  zoomCamera?: ZoomCamera;
   debugLogging?: boolean;
   streaming?: boolean;
   recording?: boolean;
@@ -225,6 +225,8 @@ export interface RemoteControlAssistantStreamerState {
   torchOn?: boolean;
   batteryCharging?: boolean;
   filters?: (object | boolean)[];
+  gimbalTracking?: boolean;
+  gimbalPresets?: GimbalPreset[];
 }
 
 export function convertFilters(filters: (object | boolean)[]): [string, boolean][] {
@@ -257,7 +259,15 @@ export interface NamedItem {
   name: string;
 }
 
-export interface ZoomPreset extends NamedItem {}
+export interface ZoomPreset extends NamedItem {
+  x: number;
+}
+
+export interface ZoomCamera {
+  position: "front" | "back" | "other";
+  minX: number;
+  maxX: number;
+}
 
 export interface BitratePreset {
   id: string;
@@ -331,7 +341,7 @@ export class WebSocketConnection {
   onConnected(): void {}
 
   setLive(on: boolean): void {
-    this.sendRequest({ setStream: { on } });
+    this.sendRequest({ setLive: { on } });
   }
 
   setRecording(on: boolean): void {
@@ -392,6 +402,22 @@ export class WebSocketConnection {
 
   moveToGimbalPreset(id: string): void {
     this.sendRequest({ moveToGimbalPreset: { id } });
+  }
+
+  setGimbalTracking(on: boolean): void {
+    this.sendRequest({ setGimbalTracking: { on } });
+  }
+
+  setGimbalMovement(x: number, y: number): void {
+    this.sendRequest({ setGimbalMovement: { x, y } });
+  }
+
+  animateGimbal(motion: string): void {
+    this.sendRequest({ animateGimbal: { motion: { [motion]: {} } } });
+  }
+
+  saveGimbalPreset(): void {
+    this.sendRequest({ saveGimbalPreset: {} });
   }
 
   setFilter(filter: string, on: boolean): void {

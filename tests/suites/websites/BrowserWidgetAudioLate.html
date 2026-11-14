@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="AudioLate"></script>
+    <script>
+      setTimeout(async () => {
+        const sound = new Audio("BrowserWidgetBeeps.mp4");
+        await sound.play();
+        browserWidgetReport("ok");
+      }, 2000);
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -7,12 +7,22 @@ extension Model {
         presentingSettingsImportConfirmation = true
     }
 
-    func importSettingsFromFile(url: URL, completion: @escaping @MainActor () -> Void) {
+    func importSettingsFromFile(url: URL, completion: @escaping @MainActor (Bool) -> Void) {
+        cleanupBeforeImport()
         settings.importFromFile(url: url) {
             self.importDone(message: $0)
-            DispatchQueue.main.async {
-                completion()
-            }
+            completion($0 == nil)
+        }
+    }
+
+    func importSettingsFromData(settings: Data, completion: @escaping @MainActor (Bool) -> Void) {
+        let settingsUrl = FileManager.default.temporaryDirectory
+            .appendingPathComponent("data_import")
+            .appendingPathExtension("moblinSettings")
+        try? settings.write(to: settingsUrl)
+        importSettingsFromFile(url: settingsUrl) {
+            try? FileManager.default.removeItem(at: settingsUrl)
+            completion($0)
         }
     }
 
@@ -28,33 +38,29 @@ extension Model {
                         completion()
                         return
                     }
-                    let settingsUrl = FileManager.default.temporaryDirectory
-                        .appendingPathComponent("clipboard_import")
-                        .appendingPathExtension("moblinSettings")
-                    try? settings.write(to: settingsUrl)
-                    self.importSettingsFromFile(url: settingsUrl) {
-                        try? FileManager.default.removeItem(at: settingsUrl)
+                    self.importSettingsFromData(settings: settings) { _ in
                         completion()
                     }
                 }
             }
         } else if let settings = UIPasteboard.general.string {
+            cleanupBeforeImport()
             self.settings.importFromClipboard(settings: settings) {
                 self.importDone(message: $0)
-                DispatchQueue.main.async {
-                    completion()
-                }
+                completion()
             }
         } else {
             importFailed(message: String(localized: "No settings found in clipboard"))
-            DispatchQueue.main.async {
-                completion()
-            }
+            completion()
         }
     }
 
     func exportToFile(completion: @escaping @MainActor (URL?) -> Void) {
         settings.exportToFile(onCompleted: completion)
+    }
+
+    private func cleanupBeforeImport() {
+        stopAllMacros()
     }
 
     private func importDone(message: String?) {
@@ -66,11 +72,28 @@ extension Model {
     }
 
     private func importSucceeded() {
+        setDebugLogging(on: database.debug.debugLogging)
+        setExternalCameraVideoRange()
+        setPhotosImageQuality()
         setCurrentStream()
         updateIconImageFromDatabase()
+        updateMics()
+        updateVideoSources()
+        show.chatPhone = isChatPhone()
+        updateScreenAutoOff()
         reloadStream()
+        lutUpdated()
+        chatBotCustomCommandsTextChanged()
+        macrosTextFormatChanged()
         resetSelectedScene()
-        updateQuickButtonStates()
+        setupAudioAfterSettingsImport()
+        updateQuickButtonPairs()
+        loadStealthModeImage()
+        loadControlBarBackgroundImage()
+        loadFaceBackgroundImage()
+        reloadDjiDevicesAfterSettingsImport()
+        reloadGoProDevicesAfterSettingsImport()
+        reloadHttpProxyServer()
         makeToast(title: String(localized: "Settings imported"))
     }
 

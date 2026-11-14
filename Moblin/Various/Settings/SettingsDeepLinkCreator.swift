@@ -226,7 +226,6 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
     @Published var page: Int = 1
 
     enum CodingKeys: CodingKey {
-        case id
         case type
         case enabled
         case page
@@ -234,7 +233,6 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.id, id)
         try container.encode(.type, type)
         try container.encode(.enabled, enabled)
         try container.encode(.page, page)
@@ -244,7 +242,6 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
         enabled = container.decode(.enabled, Bool.self, false)
         page = container.decode(.page, Int.self, 1)

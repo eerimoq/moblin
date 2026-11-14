@@ -3,13 +3,18 @@ import Foundation
 
 extension Model {
     func whipServerEnabled() -> Bool {
-        database.srtlaServer.enabled
+        database.whipServer.enabled
     }
 
-    func whipCameras() -> [Camera] {
-        database.whipServer.streams.map { stream in
+    func updateWhipVideoSources() {
+        videoSources.whip = database.whipServer.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
+    }
+
+    func updateWhipVideoSourcesAndMics() {
+        updateWhipVideoSources()
+        updateWhipMics()
     }
 
     func getWhipStream(id: UUID) -> SettingsWhipServerStream? {
@@ -52,42 +57,22 @@ extension Model {
         media.removeBufferedAudio(cameraId: stream.id)
     }
 
-    func handleWhipServerPublishStart(streamId: UUID) {
-        DispatchQueue.main.async {
-            guard let stream = self.getWhipStream(id: streamId) else {
-                return
-            }
-            let camera = stream.camera()
-            self.makeToast(title: String(localized: "\(camera) connected"))
-            let latency = stream.latencySeconds()
-            self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
-            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
+    private func handleWhipServerPublishStart(streamId: UUID) {
+        guard let stream = getWhipStream(id: streamId) else {
+            return
         }
+        let camera = stream.camera()
+        makeToast(title: String(localized: "\(camera) connected"))
+        let latency = stream.latencySeconds()
+        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
+        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
     }
 
-    func handleWhipServerPublishStop(streamId: UUID, reason: String? = nil) {
-        DispatchQueue.main.async {
-            guard let stream = self.getWhipStream(id: streamId) else {
-                return
-            }
-            self.stopWhipServerStream(stream: stream, showToast: true, reason: reason)
+    private func handleWhipServerPublishStop(streamId: UUID, reason: String) {
+        guard let stream = getWhipStream(id: streamId) else {
+            return
         }
-    }
-
-    func handleWhipServerFrame(streamId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
-    }
-
-    func handleWhipServerAudioBuffer(streamId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
-    }
-
-    func handleWhipServerSetTargetLatencies(streamId: UUID,
-                                            _ videoTargetLatency: Double,
-                                            _ audioTargetLatency: Double)
-    {
-        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
+        stopWhipServerStream(stream: stream, showToast: true, reason: reason)
     }
 
     func stopWhipServer() {
@@ -99,34 +84,33 @@ extension Model {
     func reloadWhipServer() {
         stopWhipServer()
         if database.whipServer.enabled {
-            ingests.whip = WhipServer(settings: database.whipServer.clone(), delegate: self)
+            ingests.whip = WhipServer(settings: database.whipServer.clone(),
+                                      softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                      colorRange: stream.colorRange,
+                                      delegate: self)
             ingests.whip?.start()
         }
     }
 }
 
-extension Model: @preconcurrency WhipServerDelegate {
-    func whipServerOnPublishStart(streamId: UUID) {
-        handleWhipServerPublishStart(streamId: streamId)
+extension Model: WhipServerDelegate {
+    nonisolated func whipServerOnPublishStart(streamId: UUID) {
+        DispatchQueue.main.async {
+            self.handleWhipServerPublishStart(streamId: streamId)
+        }
     }
 
-    func whipServerOnPublishStop(streamId: UUID, reason: String) {
-        handleWhipServerPublishStop(streamId: streamId, reason: reason)
+    nonisolated func whipServerOnPublishStop(streamId: UUID, reason: String) {
+        DispatchQueue.main.async {
+            self.handleWhipServerPublishStop(streamId: streamId, reason: reason)
+        }
     }
 
-    func whipServerOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        handleWhipServerFrame(streamId: streamId, sampleBuffer: sampleBuffer)
+    nonisolated func whipServerOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        handleWhipServerAudioBuffer(streamId: streamId, sampleBuffer: sampleBuffer)
-    }
-
-    func whipServerSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        handleWhipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
+    nonisolated func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 }

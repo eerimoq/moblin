@@ -1,12 +1,13 @@
 import Translation
 
+@MainActor
 protocol TranslatorDelegate: AnyObject {
     func translatorTranslated(languageIdentifier: String, text: String)
 }
 
 @available(iOS 26.0, *)
 class Translator: @unchecked Sendable {
-    nonisolated(unsafe) static var translators: [Translator] = []
+    @MainActor static var translators: [Translator] = []
 
     private let session: TranslationSession
     private var ready = true

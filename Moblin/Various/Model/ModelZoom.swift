@@ -4,20 +4,75 @@ import Foundation
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
-class Zoom: ObservableObject {
-    var xPinch: Float = 1.0
-    var backX: Float = 0.5
-    var frontX: Float = 0.5
-    @Published var backPresetId = UUID()
-    @Published var frontPresetId = UUID()
+#if targetEnvironment(macCatalyst)
+@MainActor
+class MacZoomRamp {
+    private let timer = MainTimer()
+    private var device: AVCaptureDevice?
+    private var level: Float = 1.0
+    private var rate: Float = 1.0
+    private var latestUpdateTime = ContinuousClock.now
+
+    func start(media: Media, device: AVCaptureDevice, level: Float, rate: Float) {
+        self.level = level
+        self.rate = rate
+        guard self.device !== device else {
+            return
+        }
+        self.device = device
+        latestUpdateTime = .now
+        timer.startPeriodic(interval: 1 / 30, initial: 0) { [weak self] in
+            self?.update(media: media, device: device)
+        }
+    }
+
+    func stop() {
+        timer.stop()
+        device = nil
+    }
+
+    private func update(media: Media, device: AVCaptureDevice) {
+        let now = ContinuousClock.now
+        let step = pow(2, rate * Float(latestUpdateTime.duration(to: now).seconds))
+        latestUpdateTime = now
+        let current = Float(device.videoZoomFactor)
+        let next = current < level ? min(current * step, level) : max(current / step, level)
+        _ = media.setCameraZoomLevel(device: device, level: next, rate: nil)
+        if next == level {
+            stop()
+        }
+    }
+}
+#endif
+
+@MainActor
+class ZoomLevel: ObservableObject {
     @Published var x: Float = 1.0
-    @Published var hasZoom = true
-    @Published var backZoomPresets: [SettingsZoomPreset] = []
-    @Published var frontZoomPresets: [SettingsZoomPreset] = []
 
     func statusText() -> String {
         String(format: "%.1f", x)
     }
+}
+
+@MainActor
+class Zoom: ObservableObject {
+    let level = ZoomLevel()
+    var xPinch: Float = 1.0
+    var backX: Float = 0.5
+    var frontX: Float = 0.5
+    var speedActive = false
+    let speedTimer = MainTimer()
+    let remoteControlTimer = MainTimer()
+    var remoteControlTimerRunning = false
+    var remoteControlPending = false
+    #if targetEnvironment(macCatalyst)
+    let macRamp = MacZoomRamp()
+    #endif
+    @Published var backPresetId = UUID()
+    @Published var frontPresetId = UUID()
+    @Published var hasZoom = true
+    @Published var backZoomPresets: [SettingsZoomPreset] = []
+    @Published var frontZoomPresets: [SettingsZoomPreset] = []
 }
 
 extension Model {
@@ -50,7 +105,6 @@ extension Model {
     }
 
     func setZoomX(x: Float, rate: Float? = nil, setPinch: Bool = true) {
-        clearZoomPresetId()
         if let x = setCameraZoomX(x: x, rate: rate) {
             setZoomXWhenInRange(x: x, setPinch: setPinch)
         }
@@ -67,13 +121,29 @@ extension Model {
         default:
             break
         }
-        zoom.x = x
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoom: x))
+        zoom.level.x = x
+        remoteControlZoomChanged()
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }
         if setPinch {
-            zoom.xPinch = zoom.x
+            zoom.xPinch = zoom.level.x
+        }
+    }
+
+    private func remoteControlZoomChanged() {
+        guard !zoom.remoteControlTimerRunning else {
+            zoom.remoteControlPending = true
+            return
+        }
+        remoteControlStateChanged(state: RemoteControlState(zoom: zoom.level.x))
+        zoom.remoteControlTimerRunning = true
+        zoom.remoteControlTimer.startSingleShot(timeout: 0.5) {
+            self.zoom.remoteControlTimerRunning = false
+            if self.zoom.remoteControlPending {
+                self.zoom.remoteControlPending = false
+                self.remoteControlZoomChanged()
+            }
         }
     }
 
@@ -91,6 +161,42 @@ extension Model {
         setZoomX(x: zoom.xPinch * amount, rate: rate)
     }
 
+    func setZoomSpeed(speed: Float) {
+        guard zoom.hasZoom else {
+            return
+        }
+        if abs(speed) < 0.05 {
+            _ = stopCameraZoom()
+            return
+        }
+        if !zoom.speedActive {
+            zoom.speedActive = true
+            clearZoomPresetId()
+            zoom.speedTimer.startPeriodic(interval: 0.1) { [weak self] in
+                self?.updateZoomXFromCamera()
+            }
+        }
+        let x = speed > 0 ? cameraZoomXMaximum : cameraZoomXMinimum
+        _ = setCameraZoomX(x: x, rate: 0.05 + 3 * pow(abs(speed), 2))
+    }
+
+    func stopZoomSpeed() {
+        guard zoom.speedActive else {
+            return
+        }
+        zoom.speedActive = false
+        zoom.speedTimer.stop()
+        if let x = stopCameraZoom() {
+            setZoomXWhenInRange(x: x)
+        }
+    }
+
+    private func updateZoomXFromCamera() {
+        if let device = cameraDevice {
+            zoom.level.x = Float(device.videoZoomFactor) * cameraZoomLevelToXScale
+        }
+    }
+
     private func clearZoomPresetId() {
         switch cameraPosition {
         case .back:
@@ -103,9 +209,12 @@ extension Model {
     }
 
     private func setBackZoomPreset(presetId: UUID) {
+        guard presetId != zoom.backPresetId else {
+            return
+        }
         zoom.backPresetId = presetId
         if cameraPosition == .back {
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -113,9 +222,12 @@ extension Model {
     }
 
     private func setFrontZoomPreset(presetId: UUID) {
+        guard presetId != zoom.frontPresetId else {
+            return
+        }
         zoom.frontPresetId = presetId
         if cameraPosition == .front {
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -150,18 +262,18 @@ extension Model {
     func updateFrontZoomPresets() {
         zoom.frontZoomPresets = database.zoom.front.filter { showPreset(preset: $0) }
         if cameraPosition == .front {
-            zoomPresetsMayHaveChanged()
+            activeZoomPresetsMayHaveChanged()
         }
     }
 
     func updateBackZoomPresets() {
         zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
         if cameraPosition == .back {
-            zoomPresetsMayHaveChanged()
+            activeZoomPresetsMayHaveChanged()
         }
     }
 
-    func zoomPresetsMayHaveChanged() {
+    func activeZoomPresetsMayHaveChanged() {
         let presets: [SettingsZoomPreset] = switch cameraPosition {
         case .back:
             zoom.backZoomPresets
@@ -170,10 +282,39 @@ extension Model {
         default:
             []
         }
-        let zoomPresets = presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: zoomPresets))
+        remoteControlStateChanged(state: RemoteControlState(
+            zoomPreset: getRemoteControlZoomPresetId(),
+            zoomCamera: makeRemoteControlZoomCamera()
+        ))
         if isWatchLocal() {
             sendZoomPresetsToWatch(presets: presets)
+        }
+    }
+
+    func makeRemoteControlZoomPresets(presets: [SettingsZoomPreset]) -> [RemoteControlZoomPreset] {
+        presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name, x: $0.x) }
+    }
+
+    func makeRemoteControlZoomCamera() -> RemoteControlZoomCamera {
+        let position: RemoteControlZoomCameraPosition = switch cameraPosition {
+        case .front:
+            .front
+        case .back:
+            .back
+        default:
+            .other
+        }
+        return RemoteControlZoomCamera(position: position, minX: cameraZoomXMinimum, maxX: cameraZoomXMaximum)
+    }
+
+    func getRemoteControlZoomPresetId() -> UUID? {
+        switch cameraPosition {
+        case .front:
+            zoom.frontPresetId
+        case .back:
+            zoom.backPresetId
+        default:
+            nil
         }
     }
 
@@ -184,20 +325,17 @@ extension Model {
     }
 
     private func updateBackZoomPresetId() {
-        if let preset = database.zoom.back.first(where: { $0.x == zoom.backX }) {
-            setBackZoomPreset(presetId: preset.id)
-        }
+        let preset = database.zoom.back.first(where: { $0.x == zoom.backX })
+        setBackZoomPreset(presetId: preset?.id ?? noBackZoomPresetId)
     }
 
     private func updateFrontZoomPresetId() {
-        if let preset = database.zoom.front.first(where: { $0.x == zoom.frontX }) {
-            setFrontZoomPreset(presetId: preset.id)
-        }
+        let preset = database.zoom.front.first(where: { $0.x == zoom.frontX })
+        setFrontZoomPreset(presetId: preset?.id ?? noFrontZoomPresetId)
     }
 
     func updateBackZoomSwitchTo() {
         if database.zoom.switchToBack.enabled {
-            clearZoomPresetId()
             zoom.backX = database.zoom.switchToBack.x
             updateBackZoomPresetId()
         }
@@ -205,7 +343,6 @@ extension Model {
 
     func updateFrontZoomSwitchTo() {
         if database.zoom.switchToFront.enabled {
-            clearZoomPresetId()
             zoom.frontX = database.zoom.switchToFront.x
             updateFrontZoomPresetId()
         }
@@ -240,7 +377,7 @@ extension Model {
     }
 
     func isShowingStatusZoom() -> Bool {
-        database.show.zoom && zoom.hasZoom
+        database.show.zoom && zoom.hasZoom && !isChatPhone()
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
@@ -249,7 +386,16 @@ extension Model {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        cameraZoomLevelToX(media.setCameraZoomLevel(
+        #if targetEnvironment(macCatalyst)
+        if let rate, let device = cameraDevice {
+            let level = (x / cameraZoomLevelToXScale)
+                .clamped(to: 1.0 ... Float(device.activeFormat.videoMaxZoomFactor))
+            zoom.macRamp.start(media: media, device: device, level: level, rate: rate)
+            return cameraZoomLevelToX(level)
+        }
+        zoom.macRamp.stop()
+        #endif
+        return cameraZoomLevelToX(media.setCameraZoomLevel(
             device: cameraDevice,
             level: x / cameraZoomLevelToXScale,
             rate: rate
@@ -257,7 +403,10 @@ extension Model {
     }
 
     func stopCameraZoom() -> Float? {
-        cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
+        #if targetEnvironment(macCatalyst)
+        zoom.macRamp.stop()
+        #endif
+        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
     }
 
     private func cameraZoomLevelToX(_ level: Float?) -> Float? {

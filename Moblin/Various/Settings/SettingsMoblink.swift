@@ -2,7 +2,7 @@ import Foundation
 
 class SettingsMoblinkStreamer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 7777
+    @Published var port: UInt16 = DefaultTcpPorts.moblinkStreamer
 
     enum CodingKeys: CodingKey {
         case enabled
@@ -20,7 +20,7 @@ class SettingsMoblinkStreamer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 7777)
+        port = container.decode(.port, UInt16.self, DefaultTcpPorts.moblinkStreamer)
     }
 }
 
@@ -51,7 +51,7 @@ class SettingsMoblinkRelay: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         name = container.decode(.name, String.self, randomName())
-        url = container.decode(.url, String.self, "")
+        url = container.decode(.url, String.self, "") { isValidWebSocketUrl(url: $0) == nil }
         manual = container.decode(.manual, Bool.self, false)
     }
 }

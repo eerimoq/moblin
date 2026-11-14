@@ -6,10 +6,7 @@ private struct ChatSettingsGeneralView: View {
     @ObservedObject var chat: SettingsChat
 
     func submitMaximumAge(value: String) {
-        guard let maximumAge = Int(value) else {
-            return
-        }
-        guard maximumAge > 0 else {
+        guard let maximumAge = Int(value), maximumAge > 0 else {
             return
         }
         chat.maximumAge = maximumAge
@@ -19,12 +16,22 @@ private struct ChatSettingsGeneralView: View {
         NavigationLink {
             ChatBotSettingsView()
         } label: {
-            Toggle(isOn: $chat.botEnabled) {
+            Toggle(isOn: Binding(get: {
+                chat.botEnabled
+            }, set: { value in
+                chat.botEnabled = value
+                model.chatBotCustomCommandsTextChanged()
+            })) {
                 Text("Bot")
             }
         }
         NavigationLink {
-            ChatTextToSpeechSettingsView(chat: chat, ttsMonster: chat.ttsMonster)
+            ChatTextToSpeechSettingsView(
+                model: model,
+                chat: chat,
+                ttsMonster: chat.ttsMonster,
+                elevenLabs: chat.elevenLabs
+            )
         } label: {
             Toggle(isOn: Binding(get: {
                 chat.textToSpeechEnabled
@@ -76,6 +83,7 @@ struct ChatSettingsView: View {
                     }
             }
             Section {
+                Toggle("Activity feed", isOn: $chat.activityFeed)
                 ChatSettingsAppearanceView(model: model, database: database, chat: chat)
                 ChatSettingsLayoutView(model: model, database: database, chat: chat)
                 ChatSettingsGeneralView(model: model, database: database, chat: chat)
@@ -88,6 +96,17 @@ struct ChatSettingsView: View {
                     Enable to keep chat alive when the app is in background mode, even if not \
                     streaming.
                     """)
+                }
+            }
+            if chat.enabled {
+                Section {
+                    TextButtonView("Reload emotes") {
+                        model.reloadEmotes()
+                    }
+                } footer: {
+                    Text(
+                        "Fetch BTTV, FFZ and 7TV emotes again, for example after the channel added new ones."
+                    )
                 }
             }
             if stream !== fallbackStream {

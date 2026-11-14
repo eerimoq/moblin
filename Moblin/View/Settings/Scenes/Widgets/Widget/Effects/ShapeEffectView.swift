@@ -41,14 +41,10 @@ private struct BorderView: View {
                     updateWidget()
                 }
             }
-            ColorPicker("Color", selection: $shape.borderColorColor, supportsOpacity: false)
-                .onChange(of: shape.borderColorColor) { _ in
-                    guard let borderColor = shape.borderColorColor.toRgb() else {
-                        return
-                    }
-                    shape.borderColor = borderColor
-                    updateWidget()
-                }
+            RgbColorPickerView(title: "Color", color: $shape.borderColorColor) {
+                shape.borderColor = $0
+                updateWidget()
+            }
         } header: {
             Text("Border")
         }
@@ -77,7 +73,7 @@ private struct CropView: View {
         }
     }
 
-    private func createPositionPath(size: CGSize) -> Path {
+    private func createPositionRectangle(size: CGSize) -> CGRect {
         let (xTopLeft, yTopLeft, xBottomRight, yBottomRight) = calculatePositioningRectangle(
             positionAnchorPoint,
             shape.cropX,
@@ -93,11 +89,12 @@ private struct CropView: View {
         shape.cropWidth = xBottomRight - xTopLeft
         shape.cropHeight = yBottomRight - yTopLeft
         updateWidget()
-        let xPoints = CGFloat(shape.cropX) * size.width
-        let yPoints = CGFloat(shape.cropY) * size.height
-        let widthPoints = CGFloat(shape.cropWidth) * size.width
-        let heightPoints = CGFloat(shape.cropHeight) * size.height
-        return drawPositioningRectangle(xPoints, yPoints, widthPoints, heightPoints)
+        return CGRect(
+            x: CGFloat(shape.cropX) * size.width,
+            y: CGFloat(shape.cropY) * size.height,
+            width: CGFloat(shape.cropWidth) * size.width,
+            height: CGFloat(shape.cropHeight) * size.height
+        )
     }
 
     var body: some View {
@@ -114,18 +111,13 @@ private struct CropView: View {
                 }
                 GeometryReader { reader in
                     Canvas { context, size in
-                        context.stroke(
-                            createPositionPath(size: size),
-                            with: .color(.black),
-                            lineWidth: 1.5
-                        )
+                        drawPositioningRectangle(context, createPositionRectangle(size: size))
                     }
-                    .padding(.vertical, 6)
                     .gesture(
                         DragGesture()
                             .onChanged { value in
                                 position = value.location
-                                let size = CGSize(width: reader.size.width, height: reader.size.height - 12)
+                                let size = reader.size
                                 updatePositionAnchorPoint(location: position, size: size)
                             }
                             .onEnded { _ in
@@ -152,7 +144,7 @@ struct ShapeEffectView: View {
     @State private var previewImage: UIImage?
 
     private func updateWidget() {
-        model.getWidgetShapeEffect(widget, effect)?.setSettings(settings: shape.toSettings())
+        model.shapeEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     var body: some View {

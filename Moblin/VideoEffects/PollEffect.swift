@@ -1,6 +1,8 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
+@MainActor
 private class PollState: ObservableObject {
     let size: CGSize
     @Published var text = String(localized: "No votes yet")
@@ -32,11 +34,12 @@ private struct PollView: View {
 
 final class PollEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
-    private var overlay: CIImage?
+    private var overlay: EffectImageCgImage?
     private var renderer: ImageRenderer<PollView>?
     private var cancellable: AnyCancellable?
     private let state: PollState
 
+    @MainActor
     init(canvasSize: CGSize) {
         state = PollState(size: canvasSize)
         super.init()
@@ -45,6 +48,7 @@ final class PollEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     func updateText(text: String) {
         guard state.text != text else {
             return
@@ -59,17 +63,13 @@ final class PollEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            setOverlay(image: renderer?.ciImage())
+            setOverlay(image: renderer?.cgImage)
         }
-        setOverlay(image: renderer?.ciImage())
+        setOverlay(image: renderer?.cgImage)
     }
 
-    private func setOverlay(image: CIImage?) {
-        let overlay: CIImage? = if let image {
-            moveToTopRight(image: image, size: state.size)
-        } else {
-            nil
-        }
+    private func setOverlay(image: CGImage?) {
+        let overlay = image?.toEffectImage()
         processorPipelineQueue.async {
             self.overlay = overlay
         }
@@ -83,8 +83,20 @@ final class PollEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        filter.inputImage = overlay
+        guard let overlay else {
+            return image
+        }
+        filter.inputImage = moveToTopRight(image: overlay.getCiImage(), size: image.extent.size)
         filter.backgroundImage = image
         return filter.outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        guard let overlay = overlay?.getMetalPetalImage() else {
+            return image
+        }
+        let size = overlay.extent.size
+        let position = CGPoint(x: image.extent.width - size.width / 2 - 5, y: size.height / 2 + 5)
+        return overlay.positionComposited(position, image)
     }
 }

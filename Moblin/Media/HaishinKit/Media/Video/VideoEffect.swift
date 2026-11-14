@@ -30,7 +30,17 @@ struct VideoEffectInfo {
         else {
             return videoUnit.getCiImage(videoSourceId, presentationTimeStamp)
         }
-        return CIImage(cvPixelBuffer: imageBuffer)
+        return videoUnit.makeCiImage(imageBuffer)
+    }
+
+    func getMetalPetalImage(_ videoSourceId: UUID) -> MTIImage? {
+        guard let imageBuffer = detectionJobs
+            .first(where: { $0.videoSourceId == videoSourceId })?
+            .imageBuffer
+        else {
+            return videoUnit.getMetalPetalImage(videoSourceId, presentationTimeStamp)
+        }
+        return MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
     }
 }
 
@@ -71,7 +81,7 @@ class VideoEffect: NSObject, @unchecked Sendable {
         false
     }
 
-    func prepare(_: CIImage, _: VideoEffectInfo) {}
+    func prepare(_: CGSize, _: VideoEffectInfo) {}
 
     func removed() {}
 
@@ -92,6 +102,23 @@ class VideoEffect: NSObject, @unchecked Sendable {
             .cropped(to: backgroundImageExtent)
     }
 
+    func applyEffectsResizeMirrorMoveMetalPetal(_ image: MTIImage,
+                                                _ sceneWidget: SettingsSceneWidget,
+                                                _ mirror: Bool,
+                                                _ backgroundImage: MTIImage,
+                                                _ info: VideoEffectInfo,
+                                                _ widgetShape: WidgetShape? = nil) -> MTIImage
+    {
+        var shape = widgetShape ?? WidgetShape(contentRegion: image.extent)
+        let image = applyEffectsMetalPetal(image, info)
+        for effect in effects {
+            effect.modifyWidgetShape(&shape)
+        }
+        return image.resizeMirrorMoveComposited(sceneWidget.layout, mirror, backgroundImage, shape)
+    }
+
+    func modifyWidgetShape(_: inout WidgetShape) {}
+
     private func applyEarlyEffects(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         var image = image
         for effect in effects {
@@ -106,5 +133,13 @@ class VideoEffect: NSObject, @unchecked Sendable {
             image = effect.execute(image, info)
         }
         return image.cropped(to: image.extent.insetBy(dx: graphicsEpsilon, dy: graphicsEpsilon))
+    }
+
+    private func applyEffectsMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        var image = image
+        for effect in effects {
+            image = effect.executeMetalPetal(image, info)
+        }
+        return image
     }
 }

@@ -4,5 +4,11 @@ DEVELOPMENT_TEAM = L82N7LD4N5
 // Something unique. Typically replace 'eerimoq' with your name.
 BASE_PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs
 
-// 'free' or 'all'. 'all' requires paying for Apple development account.
+// 'free' or 'all'. Use 'free' unless you know what you are doing.
 CAPABILITIES = free
+
+// Optional. Moblin website API base URL. Note the $() to avoid the // comment.
+// MOBLIN_WEBSITE_API_URL[config=Debug] = http:/$()/macpro.home:8070
+
+// Optional. Moblin Cloud API base URL. Note the $() to avoid the // comment.
+// MOBLIN_CLOUD_API_URL[config=Debug] = http:/$()/macpro.home:8080

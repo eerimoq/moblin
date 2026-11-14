@@ -1,0 +1,1000 @@
+import bisect
+import logging
+import math
+import time
+from pathlib import Path
+
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import FfmpegNoiseStream
+from systest_moblin.ffmpeg import FfmpegServer
+from systest_moblin.ffmpeg import Image
+from systest_moblin.ffmpeg import Pixel
+from systest_moblin.ffmpeg import ffprobe_format
+from systest_moblin.ffmpeg import read_unique_frame_presentation_time_stamps
+from systest_moblin.ffmpeg import read_video_frame
+from systest_moblin.ffmpeg import read_video_region_colors
+
+from ..utils.config import RTMP_SERVER_PORT
+from ..utils.config import Capability
+from ..utils.config import srt_listener_url
+from ..utils.generate_device_settings import BACK_SCENE_SETTINGS
+from ..utils.generate_device_settings import FRONT_SCENE_SETTINGS
+from ..utils.generate_device_settings import RECORD_STREAM_SETTINGS
+from ..utils.generate_device_settings import SCREEN_SCENE_SETTINGS
+from ..utils.generate_device_settings import Alignment
+from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import CameraPosition
+from ..utils.generate_device_settings import ColorLutType
+from ..utils.generate_device_settings import GraphicsImplementation
+from ..utils.generate_device_settings import QuickButtonType
+from ..utils.generate_device_settings import SceneName
+from ..utils.generate_device_settings import VideoEffectType
+from ..utils.generate_device_settings import VideoStabilizationMode
+from ..utils.generate_device_settings import VTuberType
+from ..utils.generate_device_settings import WidgetType
+from ..utils.generate_device_settings import download_model
+from ..utils.generate_device_settings import download_zipped_model
+from ..utils.generate_device_settings import mic_id
+from ..utils.generate_device_settings import quick_button_settings
+from ..utils.generate_device_settings import scene_widget_settings
+from ..utils.generate_device_settings import text_widget_settings
+from ..utils.generate_device_settings import uuid
+from ..utils.generate_device_settings import video_source_widget_settings
+from ..utils.moblin import Moblin
+from ..utils.moblin import Recorder
+from ..utils.test_case import TestCase
+from ..utils.utils import FILES_DIR
+from ..utils.utils import manual_confirmation
+from ..utils.utils import read_text_in_video_frame
+from ..utils.utils import read_video_frames_sharpness
+from ..utils.utils import write_png
+
+LOGGER = logging.getLogger(__name__)
+WIDTH = 1920
+HEIGHT = 1080
+WARM_UP_TIME = 5
+RECORDING_TIME = 5
+FRAME_TIMESTAMP = 2.5
+SCENE_SWITCH_INTERVAL = 6
+SCENE_SWITCH_TRANSITION_MARGIN = 2.5
+SMALL_MAP_CROP = Crop(x=0, y=0, width=216, height=216)
+LARGE_MAP_CROP = Crop(x=576, y=0, width=432, height=432)
+REMOTE_MAP_CROP = Crop(x=576, y=0, width=216, height=216)
+TUBER_CROP = Crop(x=0, y=0, width=960, height=540)
+BACKGROUND_CROP = Crop(x=0, y=600, width=WIDTH, height=480)
+IMAGE_CROP = Crop(x=20, y=20, width=40, height=40)
+REMOTE_TEXT_CROP = Crop(x=0, y=0, width=1200, height=120)
+LOCAL_TEXT_CROP = Crop(x=0, y=216, width=1200, height=120)
+MAP_DOT_SIDE = 22
+ACCEPTED_MAP_DOT_SIDES = range(MAP_DOT_SIDE - 3, MAP_DOT_SIDE + 4)
+FRONT_VIDEO_SOURCE_WIDGET_ID = uuid()
+BACK_VIDEO_SOURCE_WIDGET_ID = uuid()
+TEXT_WIDGET_ID = "F4868489-D301-422D-A7DD-335572CA1312"
+MAP_SMALL_WIDGET_ID = uuid()
+MAP_LARGE_WIDGET_ID = uuid()
+PNG_TUBER_WIDGET_ID = uuid()
+V_TUBER_WIDGET_ID = uuid()
+IMAGE_WIDGET_ID = uuid()
+REMOTE_SCENE_ID = uuid()
+REMOTE_TEXT_WIDGET_ID = uuid()
+LOCAL_TEXT_WIDGET_ID = uuid()
+REMOTE_MAP_WIDGET_ID = uuid()
+LUT_ID = uuid()
+PNG_TUBER_MODEL_ID = uuid()
+V_TUBER_MODEL_ID = uuid()
+V_TUBER_LIVE_2D_MODEL_ID = uuid()
+NOISE_TALKBACK_STREAM_ID = uuid()
+V_TUBER_MODEL_NAME = "AliciaSolid.vrm"
+V_TUBER_LIVE_2D_MODEL_NAME = "zundamon_ja.zip"
+PNG_TUBER_MODEL_NAME = "moblin.save"
+GRAPHICS_IMPLEMENTATION_NAMES = {
+    GraphicsImplementation.CORE_IMAGE: "CoreImage",
+    GraphicsImplementation.METAL_PETAL: "MetalPetal",
+}
+COLOR_LUT_TYPE_NAMES = {
+    ColorLutType.CUBE: "Cube",
+    ColorLutType.PNG: "Png",
+}
+COLOR_LUTS_KEYS = {
+    ColorLutType.CUBE: "diskLutsCube",
+    ColorLutType.PNG: "diskLutsPng",
+}
+CUBE_LUT_DIMENSION = 33
+PNG_LUT_DIMENSION = 196
+
+
+def is_map_dot(pixel: Pixel) -> bool:
+    return pixel.blue > 180 and pixel.blue - pixel.red > 80 and pixel.blue - pixel.green > 60
+
+
+def corner_colored_ratio(image: Image) -> float:
+    corner = image.pixel(image.width - 10, 10)
+    count = 0
+    for y in range(image.height):
+        for x in range(image.width):
+            pixel = image.pixel(x, y)
+            if (
+                abs(pixel.red - corner.red) <= 16
+                and abs(pixel.green - corner.green) <= 16
+                and abs(pixel.blue - corner.blue) <= 16
+            ):
+                count += 1
+    return count / (image.width * image.height)
+
+
+def lut_levels(dimension: int) -> list[int]:
+    return [round(255 * index / (dimension - 1)) for index in range(dimension)]
+
+
+def create_swap_red_and_blue_cube_lut(path: Path):
+    values = [f"{level / 255:.6f}" for level in lut_levels(CUBE_LUT_DIMENSION)]
+    lines = [f"LUT_3D_SIZE {CUBE_LUT_DIMENSION}"]
+    for blue in values:
+        for green in values:
+            for red in values:
+                lines.append(f"{blue} {green} {red}")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def create_swap_red_and_blue_png_lut(path: Path):
+    dimension = PNG_LUT_DIMENSION
+    levels = lut_levels(dimension)
+    tiles_per_side = math.isqrt(dimension)
+    size = tiles_per_side * dimension
+    rgba = bytearray()
+    tile = bytearray(4 * dimension)
+    tile[2::4] = bytes(levels)
+    tile[3::4] = b"\xff" * dimension
+    for tile_row in range(tiles_per_side):
+        for green in levels:
+            tile[1::4] = bytes([green]) * dimension
+            for tile_column in range(tiles_per_side):
+                tile[0::4] = bytes([levels[tile_row * tiles_per_side + tile_column]]) * dimension
+                rgba += tile
+    write_png(path, size, size, bytes(rgba))
+
+
+def measure_map_dot(image: Image, x_step: int, y_step: int) -> int:
+    length = 1
+    for direction in [1, -1]:
+        x = image.width // 2 + direction * x_step
+        y = image.height // 2 + direction * y_step
+        while image.contains(x, y) and is_map_dot(image.pixel(x, y)):
+            length += 1
+            x += direction * x_step
+            y += direction * y_step
+    return length
+
+
+class SceneSwitchMultipleTimes(TestCase):
+    """Switch between two scenes a few times."""
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [FRONT_SCENE_SETTINGS, SCREEN_SCENE_SETTINGS],
+            }
+        )
+
+    def run(self):
+        for _ in range(10):
+            self.moblin.set_scene(SceneName.SCREEN)
+            self.moblin.set_scene(SceneName.FRONT)
+
+
+class SceneSwitchBackAndFrontCameraAudio(TestCase):
+    """Switch between a back camera scene and a front camera scene every two seconds
+    while recording and streaming over SRT to the test runner computer with the default
+    builtin microphone. White noise is played on the device's speaker over talkback for
+    the microphone to pick up. Validate that the recorded and streamed audio has no
+    glitches.
+
+    """
+
+    def __init__(self, moblin: Moblin, video_stabilization_mode: VideoStabilizationMode):
+        super().__init__(moblin, f"{type(self).__name__}{video_stabilization_mode.name.title()}")
+        self.video_stabilization_mode = video_stabilization_mode
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        **RECORD_STREAM_SETTINGS,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                    }
+                ],
+                "scenes": [BACK_SCENE_SETTINGS, FRONT_SCENE_SETTINGS],
+                "videoStabilizationMode": self.video_stabilization_mode,
+                "rtmpServer": {
+                    "enabled": True,
+                    "port": RTMP_SERVER_PORT,
+                    "streams": [
+                        {
+                            "id": NOISE_TALKBACK_STREAM_ID,
+                            "name": "Noise",
+                            "streamKey": "noise",
+                        }
+                    ],
+                },
+                "talkBack": {"enabled": True, "micId": mic_id(NOISE_TALKBACK_STREAM_ID)},
+            }
+        )
+        self.moblin.wait_for_tcp_ports(RTMP_SERVER_PORT)
+
+    def run(self):
+        back_camera = self.select_scene(SceneName.BACK)
+        front_camera = self.select_scene(SceneName.FRONT)
+        self.assert_not_equal(back_camera, front_camera)
+        recorder = Recorder(self.moblin, f"{self.name}.mp4")
+        stream_file = FILES_DIR / f"{self.name}.ts"
+        with FfmpegNoiseStream(self.moblin.ingest_rtmp_url("noise")):
+            with FfmpegServer(url=srt_listener_url(), filename=stream_file):
+                self.moblin.go_live()
+                with recorder:
+                    for _ in range(5):
+                        self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                        time.sleep(2)
+                        self.assert_equal(self.select_scene(SceneName.FRONT), front_camera)
+                        time.sleep(2)
+                self.moblin.end()
+        self.assert_no_audio_glitches(recorder.recording)
+        self.assert_no_audio_glitches(stream_file)
+
+    def select_scene(self, name: SceneName) -> str:
+        self.moblin.set_scene(name)
+        return self.moblin.get_camera_status()
+
+
+class SceneSwitchSwappedCameras(TestCase):
+    """Switch between two scenes every few seconds while recording. The first scene has
+    the back camera as video source and the front camera in a video source widget. The
+    second scene has the cameras swapped. Validate that the recording never gets blurred,
+    as both scenes use the same cameras and the scene switch transition should not be
+    applied.
+
+    """
+
+    def __init__(self, moblin: Moblin, camera_preview: bool):
+        suffix = "Enabled" if camera_preview else "Disabled"
+        super().__init__(moblin, f"{type(self).__name__}CameraPreview{suffix}")
+        self.camera_preview = camera_preview
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moblin.import_settings(
+            overrides={
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        **BACK_SCENE_SETTINGS,
+                        "widgets": [
+                            scene_widget_settings(
+                                FRONT_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment=Alignment.BOTTOM_RIGHT,
+                            )
+                        ],
+                    },
+                    {
+                        **FRONT_SCENE_SETTINGS,
+                        "widgets": [
+                            scene_widget_settings(
+                                BACK_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment=Alignment.BOTTOM_RIGHT,
+                            )
+                        ],
+                    },
+                ],
+                "widgets": [
+                    video_source_widget_settings(
+                        "Front",
+                        FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        {"cameraPosition": CameraPosition.FRONT},
+                    ),
+                    video_source_widget_settings(
+                        "Back",
+                        BACK_VIDEO_SOURCE_WIDGET_ID,
+                        {"cameraPosition": CameraPosition.BACK},
+                    ),
+                ],
+                "globalButtons": [quick_button_settings(QuickButtonType.CAMERA_PREVIEW, self.camera_preview)],
+            }
+        )
+
+    def run(self):
+        back_camera = self.select_scene(SceneName.BACK)
+        time.sleep(WARM_UP_TIME)
+        with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
+            time.sleep(SCENE_SWITCH_INTERVAL)
+            for _ in range(3):
+                front_camera = self.select_scene(SceneName.FRONT)
+                self.assert_not_equal(front_camera, back_camera)
+                time.sleep(SCENE_SWITCH_INTERVAL)
+                self.assert_equal(self.select_scene(SceneName.BACK), back_camera)
+                time.sleep(SCENE_SWITCH_INTERVAL)
+        self.assert_not_blurred(recorder.recording)
+
+    def select_scene(self, name: SceneName) -> str:
+        self.moblin.set_scene(name)
+        return self.moblin.get_camera_status()
+
+    def assert_not_blurred(self, recording_file: Path):
+        frames = read_video_frames_sharpness(recording_file)
+        self.assert_greater(len(frames), 0, "Number of frames")
+        timestamps = [pts for pts, _ in frames]
+
+        def sharpness_at(pts: float) -> float:
+            return frames[bisect.bisect_left(timestamps, pts)][1]
+
+        blurred = []
+        for pts, sharpness in frames:
+            if pts - SCENE_SWITCH_TRANSITION_MARGIN < timestamps[0]:
+                continue
+            if pts + SCENE_SWITCH_TRANSITION_MARGIN > timestamps[-1]:
+                continue
+            earlier = sharpness_at(pts - SCENE_SWITCH_TRANSITION_MARGIN)
+            later = sharpness_at(pts + SCENE_SWITCH_TRANSITION_MARGIN)
+            if sharpness < 0.5 * min(earlier, later):
+                blurred.append((pts, sharpness, earlier, later))
+        self.assert_equal(blurred, [], "Blurred frames (pts, sharpness, earlier sharpness, later sharpness)")
+
+
+class GraphicsImplementationTestCase(TestCase):
+    """Base class of test cases that are run once per graphics implementation."""
+
+    def __init__(
+        self,
+        moblin: Moblin,
+        graphics_implementation: GraphicsImplementation,
+        name: str | None = None,
+    ):
+        self.graphics_implementation = graphics_implementation
+        suffix = GRAPHICS_IMPLEMENTATION_NAMES[graphics_implementation]
+        super().__init__(moblin, f"{name or type(self).__name__}{suffix}")
+
+
+class ScenePiPBackFront(GraphicsImplementationTestCase):
+    """A picture in picture scene with full screen back camera and small front camera in
+    bottom right. Record for a few seconds and validate the recording.
+
+    """
+
+    def __init__(
+        self,
+        moblin: Moblin,
+        fps: int,
+        graphics_implementation: GraphicsImplementation,
+    ):
+        super().__init__(moblin, graphics_implementation, f"ScenePiPBackFront{fps}Fps")
+        self._fps = fps
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.PIP)
+        self.moving_picture_on()
+        self.moblin.import_settings(
+            overrides={
+                "graphicsImplementation": self.graphics_implementation,
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                        "fps": self._fps,
+                    }
+                ],
+                "scenes": [
+                    {
+                        "cameraPosition": CameraPosition.BACK,
+                        "backCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:0",
+                        "widgets": [
+                            scene_widget_settings(
+                                FRONT_VIDEO_SOURCE_WIDGET_ID,
+                                x=0,
+                                y=0,
+                                size=50,
+                                alignment=Alignment.BOTTOM_RIGHT,
+                            )
+                        ],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [
+                    video_source_widget_settings(
+                        "Front",
+                        FRONT_VIDEO_SOURCE_WIDGET_ID,
+                        {
+                            "cameraPosition": CameraPosition.FRONT,
+                            "frontCameraId": "com.apple.avfoundation.avcapturedevice.built-in_video:1",
+                        },
+                    )
+                ],
+            }
+        )
+
+    def run(self):
+        time.sleep(2)
+        recording_file = self.moblin.record(10, f"{self.name}.mp4")
+        self.assert_recording(
+            recording_file,
+            FILES_DIR,
+            has_qr_codes=False,
+            duplicated_frames_crops=(
+                [
+                    # Top left
+                    Crop(x=0, y=0, width=800, height=500),
+                    # Bottom right
+                    Crop(x=1120, y=580, width=800, height=500),
+                ]
+                if self.moblin.has_moving_picture()
+                else []
+            ),
+            fps=self._fps,
+        )
+
+
+class SceneWidgetsInBackground(GraphicsImplementationTestCase):
+    """Stream in background mode with a clock widget showing. Validate that the widget
+    is updated once per second with Core Image, and not updated at all with Metal Petal,
+    which is not allowed to run in background.
+
+    """
+
+    def setup(self):
+        self.skip_if_missing_capability(Capability.BACKGROUND_STREAMING)
+        self.skip_if_not_interactive()
+        self.moblin.import_settings(
+            overrides={
+                "graphicsImplementation": self.graphics_implementation,
+                "streams": [
+                    {
+                        "enabled": True,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_srt_publish_url("test"),
+                        "srt": {"adaptiveBitrateEnabled": False},
+                        "bitrate": 5_000_000,
+                        "backgroundStreaming": True,
+                        "backgroundStreamingPiP": False,
+                    }
+                ],
+                "scenes": [
+                    {
+                        "cameraPosition": CameraPosition.SCREEN_CAPTURE,
+                        "widgets": [scene_widget_settings(TEXT_WIDGET_ID, x=0, y=0, size=100)],
+                        "enabled": True,
+                    }
+                ],
+                "widgets": [
+                    text_widget_settings(
+                        "Time",
+                        TEXT_WIDGET_ID,
+                        {"formatString": "{time}", "fontSize": 80},
+                    )
+                ],
+            }
+        )
+
+    def run(self):
+        filename = FILES_DIR / f"{self.name}.ts"
+        with FfmpegServer(url=srt_listener_url(), filename=filename):
+            self.moblin.go_live()
+            manual_confirmation("Put the app in background.")
+            LOGGER.info("Streaming in background for 10 more seconds")
+            time.sleep(10)
+            self.moblin.end()
+            manual_confirmation("Put the app in foreground.")
+        self.assert_live_stream(filename, maximum_length=None)
+        crop = Crop(x=0, y=0, width=400, height=100)
+        presentation_time_stamps = read_unique_frame_presentation_time_stamps(filename, crop)
+        if self.graphics_implementation == GraphicsImplementation.CORE_IMAGE:
+            self.assert_presentation_time_stamps(
+                filename, 1, presentation_time_stamps[-8:], "widget", delta_error=0.25
+            )
+        else:
+            background_start = ffprobe_format(filename).duration - 8
+            self.assert_equal(
+                [pts for pts in presentation_time_stamps if pts > background_start],
+                [],
+                "Widgets updated in background",
+            )
+
+
+class WidgetTestCase(TestCase):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None, **overrides):
+        self.moblin.import_settings(
+            overrides={
+                **overrides,
+                "streams": [RECORD_STREAM_SETTINGS],
+                "scenes": [
+                    {
+                        "cameraPosition": CameraPosition.NONE,
+                        "widgets": scene_widgets,
+                        "enabled": True,
+                    }
+                ],
+                "widgets": widgets,
+            },
+            files=files,
+        )
+
+    def record(self, filename: str) -> Path:
+        time.sleep(WARM_UP_TIME)
+        recording_file = self.moblin.record(RECORDING_TIME, filename)
+        self.assert_video_size(recording_file, WIDTH, HEIGHT)
+        return recording_file
+
+    def assert_widget_rendered(self, recording_file: Path, crop: Crop):
+        self.assert_not_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, crop))
+
+    def assert_black_background(self, recording_file: Path):
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, BACKGROUND_CROP))
+
+
+class GraphicsImplementationWidgetTestCase(GraphicsImplementationTestCase, WidgetTestCase):
+    def import_settings(self, scene_widgets, widgets, files: dict[str, Path] | None = None, **overrides):
+        super().import_settings(
+            scene_widgets,
+            widgets,
+            files,
+            graphicsImplementation=self.graphics_implementation,
+            **overrides,
+        )
+
+
+class SceneMapWidget(GraphicsImplementationWidgetTestCase):
+    """One small and one large map widget on top of a scene without video source.
+    Validate that both maps are rendered and that their blue dots are equally big.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[
+                scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20),
+                scene_widget_settings(MAP_LARGE_WIDGET_ID, x=30, y=0, size=40),
+            ],
+            widgets=[
+                {
+                    "id": MAP_SMALL_WIDGET_ID,
+                    "name": "Map small",
+                    "type": WidgetType.MAP,
+                },
+                {
+                    "id": MAP_LARGE_WIDGET_ID,
+                    "name": "Map large",
+                    "type": WidgetType.MAP,
+                },
+            ],
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        self.assert_map(recording_file, "small", SMALL_MAP_CROP)
+        self.assert_map(recording_file, "large", LARGE_MAP_CROP)
+        self.assert_black_background(recording_file)
+
+    def assert_map(self, recording_file: Path, name: str, crop: Crop):
+        image = read_video_frame(recording_file, FRAME_TIMESTAMP, crop)
+        self.assert_not_all_black(image)
+        self.assert_true(
+            is_map_dot(image.pixel(image.width // 2, image.height // 2)),
+            f"No blue dot in the middle of the {name} map",
+        )
+        width = measure_map_dot(image, x_step=1, y_step=0)
+        height = measure_map_dot(image, x_step=0, y_step=1)
+        self.assert_in(width, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot width")
+        self.assert_in(height, ACCEPTED_MAP_DOT_SIDES, f"The {name} map's dot height")
+
+
+class ScenePngTuberWidget(GraphicsImplementationWidgetTestCase):
+    """A PNGTuber widget on top of a scene without video source. Validate that the model
+    is rendered.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(PNG_TUBER_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": PNG_TUBER_WIDGET_ID,
+                    "type": WidgetType.PNG_TUBER,
+                    "pngTuber": {
+                        "id": PNG_TUBER_MODEL_ID,
+                        "cameraPosition": CameraPosition.FRONT,
+                        "modelName": PNG_TUBER_MODEL_NAME,
+                    },
+                }
+            ],
+            files={f"PNGTuber/{PNG_TUBER_MODEL_ID}": download_model(PNG_TUBER_MODEL_NAME)},
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        self.assert_widget_rendered(recording_file, TUBER_CROP)
+        self.assert_black_background(recording_file)
+
+
+class SceneVTuberWidget(GraphicsImplementationWidgetTestCase):
+    """A VTuber widget with a VRM model on top of a scene without video source. Validate
+    that the model is rendered.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": V_TUBER_WIDGET_ID,
+                    "type": WidgetType.V_TUBER,
+                    "vTuber": {
+                        "id": V_TUBER_MODEL_ID,
+                        "cameraPosition": CameraPosition.FRONT,
+                        "modelName": V_TUBER_MODEL_NAME,
+                    },
+                }
+            ],
+            files={f"VTuber/{V_TUBER_MODEL_ID}": download_model(V_TUBER_MODEL_NAME)},
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        self.assert_widget_rendered(recording_file, TUBER_CROP)
+        self.assert_black_background(recording_file)
+
+
+class SceneVTuberLive2DWidget(GraphicsImplementationWidgetTestCase):
+    """A VTuber widget with a Live2D model on top of a scene without video source.
+    Validate that the model is rendered.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(V_TUBER_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": V_TUBER_WIDGET_ID,
+                    "type": WidgetType.V_TUBER,
+                    "vTuber": {
+                        "id": V_TUBER_LIVE_2D_MODEL_ID,
+                        "type": VTuberType.LIVE_2D,
+                        "cameraPosition": CameraPosition.FRONT,
+                        "modelName": V_TUBER_LIVE_2D_MODEL_NAME,
+                    },
+                }
+            ],
+            files={f"VTuber/{V_TUBER_LIVE_2D_MODEL_ID}": download_zipped_model(V_TUBER_LIVE_2D_MODEL_NAME)},
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        self.assert_widget_rendered(recording_file, TUBER_CROP)
+        self.assert_black_background(recording_file)
+
+
+class SceneImageWidgetLut(GraphicsImplementationWidgetTestCase):
+    """A red image widget with a LUT effect that swaps red and blue. Validate that the
+    image is rendered blue. The PNG LUT is 196x196x196 and must be downsampled.
+
+    """
+
+    def __init__(
+        self,
+        moblin: Moblin,
+        lut_type: ColorLutType,
+        graphics_implementation: GraphicsImplementation,
+    ):
+        super().__init__(
+            moblin,
+            graphics_implementation,
+            f"SceneImageWidget{COLOR_LUT_TYPE_NAMES[lut_type]}Lut",
+        )
+        self.lut_type = lut_type
+
+    def setup(self):
+        image_file = FILES_DIR / "red.png"
+        write_png(image_file, 64, 64, bytes([255, 0, 0, 255]) * 64 * 64)
+        if self.lut_type == ColorLutType.CUBE:
+            lut_file = FILES_DIR / "swap_red_and_blue.cube"
+            create_swap_red_and_blue_cube_lut(lut_file)
+        else:
+            lut_file = FILES_DIR / "swap_red_and_blue.png"
+            create_swap_red_and_blue_png_lut(lut_file)
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(IMAGE_WIDGET_ID, x=0, y=0, size=50)],
+            widgets=[
+                {
+                    "id": IMAGE_WIDGET_ID,
+                    "name": "Image",
+                    "type": WidgetType.IMAGE,
+                    "effects": [
+                        {
+                            "type": VideoEffectType.LUT,
+                            "enabled": True,
+                            "lut": {"lut": LUT_ID},
+                        }
+                    ],
+                }
+            ],
+            files={
+                f"Images/{IMAGE_WIDGET_ID}": image_file,
+                f"Images/{LUT_ID}": lut_file,
+            },
+            color={
+                COLOR_LUTS_KEYS[self.lut_type]: [
+                    {
+                        "id": LUT_ID,
+                        "type": self.lut_type,
+                        "name": "Swap red and blue",
+                    }
+                ],
+            },
+        )
+
+    def run(self):
+        recording_file = self.record(f"{self.name}.mp4")
+        image = read_video_frame(recording_file, FRAME_TIMESTAMP, IMAGE_CROP)
+        pixel = image.pixel(image.width // 2, image.height // 2)
+        self.assert_greater(pixel.blue, 200, f"Blue in {pixel}")
+        self.assert_less(pixel.red, 60, f"Red in {pixel}")
+        self.assert_less(pixel.green, 60, f"Green in {pixel}")
+        self.assert_black_background(recording_file)
+
+
+class RemoteSceneTestCase(WidgetTestCase):
+    def setup(self):
+        self.import_settings(scene_widgets=[], widgets=[])
+
+    def teardown(self):
+        self.moblin.clear_remote_scene_settings()
+        super().teardown()
+
+    def set_remote_scene_with_widget(self, widget_id: str, layout: dict, widget_type: dict):
+        self.moblin.set_remote_scene_settings(
+            scenes=[{"id": REMOTE_SCENE_ID, "widgets": [{"id": widget_id, "layout": layout}]}],
+            widgets=[{"id": widget_id, "enabled": True, "type": widget_type}],
+            selected_scene_id=REMOTE_SCENE_ID,
+        )
+
+    def set_remote_scene_with_text_widget(self, format_string: str):
+        self.set_remote_scene_with_widget(
+            REMOTE_TEXT_WIDGET_ID,
+            {"x": 0, "y": 0, "size": 100, "alignment": Alignment.TOP_LEFT},
+            {
+                "text": {
+                    "data": {
+                        "formatString": format_string,
+                        "backgroundColor": {"red": 255, "green": 255, "blue": 255},
+                        "clearBackgroundColor": False,
+                        "foregroundColor": {"red": 0, "green": 0, "blue": 0},
+                        "clearForegroundColor": False,
+                        "fontSize": 80,
+                        "fontDesign": "Default",
+                        "fontWeight": "Regular",
+                        "fontMonospacedDigits": False,
+                        "horizontalAlignment": {"leading": {}},
+                        "delay": 0,
+                    }
+                }
+            },
+        )
+
+    def record_and_assert_text(self, filename: str, text: str):
+        recording_file = self.record(filename)
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP), text)
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteScene(RemoteSceneTestCase):
+    """Set a remote scene with a text widget over remote control and send remote scene
+    data, as an assistant does, on top of a scene without video source. Validate that the
+    text is rendered. Clear the remote scene and validate that the text widget is gone.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("Remote scene")
+        self.moblin.set_remote_scene_text_stats({})
+        self.record_and_assert_text(f"{self.name}Set.mp4", "Remote scene")
+        self.moblin.clear_remote_scene_settings()
+        recording_file = self.record(f"{self.name}Cleared.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP))
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteSceneData(RemoteSceneTestCase):
+    """Set a remote scene with a text widget showing the bitrate and total variable over
+    remote control, as an assistant does. Send remote scene data with two different
+    values of the variable and validate that each value is rendered.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{bitrateAndTotal}")
+        for number, text in enumerate(["4.2 Mbps (12.3 MB)", "1.5 Mbps (20.1 MB)"]):
+            self.moblin.set_remote_scene_text_stats({"bitrateAndTotal": text})
+            self.record_and_assert_text(f"{self.name}{number}.mp4", text)
+
+
+class LocalTextWidgetRemoteSceneTestCase(RemoteSceneTestCase):
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(LOCAL_TEXT_WIDGET_ID, x=0, y=20, size=100)],
+            widgets=[
+                text_widget_settings(
+                    "Resolution",
+                    LOCAL_TEXT_WIDGET_ID,
+                    {
+                        "formatString": "{resolution}",
+                        "backgroundColor": {"red": 255, "green": 255, "blue": 255},
+                        "foregroundColor": {"red": 0, "green": 0, "blue": 0},
+                        "fontSize": 80,
+                    },
+                )
+            ],
+        )
+
+
+class SceneRemoteSceneDataAndLocalStats(LocalTextWidgetRemoteSceneTestCase):
+    """A text widget showing the resolution on top of a scene without video source, and a
+    remote scene with a text widget showing the resolution set over remote control, as an
+    assistant does. Send remote scene data with another resolution than the recorded one.
+    Validate that the remote scene text widget renders the resolution from the remote scene
+    data and that the local text widget renders the resolution of the recording. Clear and
+    set the remote scene again without sending remote scene data. Validate that the remote
+    scene text widget renders nothing, neither the old remote scene data nor local stats.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{resolution}")
+        self.moblin.set_remote_scene_text_stats({"resolution": "720p"})
+        recording_file = self.record(f"{self.name}Data.mp4")
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP), "720p")
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+        self.moblin.clear_remote_scene_settings()
+        self.set_remote_scene_with_text_widget("{resolution}")
+        recording_file = self.record(f"{self.name}NoData.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_TEXT_CROP))
+        self.assert_equal(read_text_in_video_frame(recording_file, FRAME_TIMESTAMP, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+
+
+class SceneRemoteSceneAssistantReconnect(LocalTextWidgetRemoteSceneTestCase):
+    """A text widget showing the resolution on top of a scene without video source, and a
+    remote scene with a text widget showing the resolution set over remote control and
+    remote scene data sent, as an assistant does. Restart the assistant while recording
+    and set the same remote scene again once the streamer has reconnected, as an assistant
+    does when connected. Validate that both text widgets are rendered in every frame, that
+    is, that they do not flicker, and that they still show their resolutions.
+
+    """
+
+    def run(self):
+        self.set_remote_scene_with_text_widget("{resolution}")
+        self.moblin.set_remote_scene_text_stats({"resolution": "720p"})
+        time.sleep(WARM_UP_TIME)
+        with Recorder(self.moblin, f"{self.name}.mp4") as recorder:
+            time.sleep(2)
+            self.moblin.restart_assistant()
+            self.set_remote_scene_with_text_widget("{resolution}")
+            time.sleep(3)
+        recording_file = recorder.recording
+        duration = ffprobe_format(recording_file).duration
+        self.assert_rendered_in_every_frame(recording_file, duration, REMOTE_TEXT_CROP, "remote")
+        self.assert_rendered_in_every_frame(recording_file, duration, LOCAL_TEXT_CROP, "local")
+        self.assert_equal(read_text_in_video_frame(recording_file, duration - 1, REMOTE_TEXT_CROP), "720p")
+        self.assert_equal(read_text_in_video_frame(recording_file, duration - 1, LOCAL_TEXT_CROP), "1080p")
+        self.assert_black_background(recording_file)
+
+    def assert_rendered_in_every_frame(self, recording_file: Path, duration: float, crop: Crop, name: str):
+        crop = Crop(x=crop.x, y=crop.y, width=80, height=80)
+        frames = read_video_region_colors(recording_file, crop, 1, 1, 0, duration)
+        self.assert_greater(len(frames), 0, f"Number of frames with the {name} text widget")
+        self.assert_equal(
+            [frame.pts for frame in frames if frame.colors[0].is_black()],
+            [],
+            f"Presentation time stamps of frames without the {name} text widget",
+        )
+
+
+class SceneRemoteSceneLocationAndLocalLocation(RemoteSceneTestCase):
+    """A small map widget on top of a scene without video source, and a remote scene with
+    an equally small map widget set over remote control, as an assistant does. Send remote
+    scene data with a location in the middle of the Atlantic Ocean. Validate that both maps
+    are rendered, that the remote scene map widget shows almost only water and that the
+    local map widget, showing the device's location, does not. Clear and set the remote
+    scene again without sending remote scene data. Validate that the remote scene map
+    widget renders nothing, neither the old remote scene location nor the local location.
+
+    """
+
+    def setup(self):
+        self.import_settings(
+            scene_widgets=[scene_widget_settings(MAP_SMALL_WIDGET_ID, x=0, y=0, size=20)],
+            widgets=[
+                {
+                    "id": MAP_SMALL_WIDGET_ID,
+                    "name": "Map",
+                    "type": WidgetType.MAP,
+                    "map": {"northUp": True},
+                }
+            ],
+        )
+
+    def run(self):
+        self.set_remote_scene_with_map_widget()
+        self.moblin.set_remote_scene_location(30, -40)
+        recording_file = self.record(f"{self.name}Data.mp4")
+        remote_map = read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_MAP_CROP)
+        self.assert_map_dot_in_middle(remote_map, "remote")
+        self.assert_greater(corner_colored_ratio(remote_map), 0.9, "Remote map water ratio")
+        self.assert_local_map(recording_file)
+        self.assert_black_background(recording_file)
+        self.moblin.clear_remote_scene_settings()
+        self.set_remote_scene_with_map_widget()
+        recording_file = self.record(f"{self.name}NoData.mp4")
+        self.assert_all_black(read_video_frame(recording_file, FRAME_TIMESTAMP, REMOTE_MAP_CROP))
+        self.assert_local_map(recording_file)
+        self.assert_black_background(recording_file)
+
+    def set_remote_scene_with_map_widget(self):
+        self.set_remote_scene_with_widget(
+            REMOTE_MAP_WIDGET_ID,
+            {"x": 30, "y": 0, "size": 20, "alignment": Alignment.TOP_LEFT},
+            {"map": {"data": {"northUp": True}}},
+        )
+
+    def assert_local_map(self, recording_file: Path):
+        local_map = read_video_frame(recording_file, FRAME_TIMESTAMP, SMALL_MAP_CROP)
+        self.assert_map_dot_in_middle(local_map, "local")
+        self.assert_less(corner_colored_ratio(local_map), 0.8, "Local map water ratio")
+
+    def assert_map_dot_in_middle(self, image: Image, name: str):
+        self.assert_true(
+            is_map_dot(image.pixel(image.width // 2, image.height // 2)),
+            f"No blue dot in the middle of the {name} map",
+        )
+
+
+def tests(moblin: Moblin):
+    test_cases = [
+        SceneSwitchMultipleTimes(moblin),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.OFF),
+        SceneSwitchBackAndFrontCameraAudio(moblin, VideoStabilizationMode.CINEMATIC),
+        SceneSwitchSwappedCameras(moblin, camera_preview=False),
+        SceneSwitchSwappedCameras(moblin, camera_preview=True),
+        SceneRemoteScene(moblin),
+        SceneRemoteSceneData(moblin),
+        SceneRemoteSceneDataAndLocalStats(moblin),
+        SceneRemoteSceneLocationAndLocalLocation(moblin),
+        SceneRemoteSceneAssistantReconnect(moblin),
+    ]
+    for graphics_implementation in GraphicsImplementation:
+        test_cases += [
+            ScenePiPBackFront(moblin, 30, graphics_implementation),
+            ScenePiPBackFront(moblin, 60, graphics_implementation),
+            SceneWidgetsInBackground(moblin, graphics_implementation),
+            SceneMapWidget(moblin, graphics_implementation),
+            ScenePngTuberWidget(moblin, graphics_implementation),
+            SceneVTuberWidget(moblin, graphics_implementation),
+            SceneVTuberLive2DWidget(moblin, graphics_implementation),
+            SceneImageWidgetLut(moblin, ColorLutType.CUBE, graphics_implementation),
+            SceneImageWidgetLut(moblin, ColorLutType.PNG, graphics_implementation),
+        ]
+    return test_cases

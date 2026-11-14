@@ -1,23 +1,121 @@
+import ImageIO
+import Photos
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SnapshotJob {
-    let isChatBot: Bool
     let message: String
     let user: String?
+    let takeSnapshot: (String) -> Void
+}
+
+struct DiscordSnapshotUpload {
+    let url: URL
+    let image: Data
+    let message: String?
 }
 
 extension Model {
-    func takeSnapshot(isChatBot: Bool = false, message: String? = nil, noDelay: Bool = false) {
-        let age = (isChatBot && !noDelay) ? stream.estimatedViewerDelay : 0.0
+    func takeSnapshot(age: Float, isChatBot: Bool, message: String?) {
+        guard !isChatPhone() else {
+            return
+        }
         media.takeSnapshot(age: age) { uiImage, image, portraitImage in
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
-            self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-            self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
-            self.printSnapshotCatPrinters(image: portraitImage)
-            self.appendSnapshotToSnapshotWidgets(image: image)
+            self.saveSnapshotToPhotos(image: uiImage, fallbackImage: imageJpeg)
+            self.handleSnapshot(imageJpeg,
+                                image,
+                                portraitImage,
+                                message,
+                                isChatBot,
+                                !self.stream.discordSnapshotWebhookOnlyWhenLive || self.isLive)
+        }
+    }
+
+    func takeSnapshotWebRemoteControl(age: Float, isChatBot: Bool, message: String?) {
+        guard let url = URL(string: database.chat.botCommandSnapshot.webRemoteControlUrl)?
+            .appending(path: "snapshot")
+            .appending(queryItems: [URLQueryItem(name: "age", value: String(age))])
+        else {
+            makeErrorToast(title: String(localized: "Invalid chat bot snapshot web remote control URL"))
+            return
+        }
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 15
+        httpRequest(request: request, queue: .global()) { data, response, error in
+            guard error == nil, response?.http?.isSuccessful == true, let data,
+                  let uiImage = UIImage(data: data), let cgImage = uiImage.cgImage,
+                  let imageJpeg = uiImage.jpegData(compressionQuality: 0.9)
+            else {
+                let title = String(localized: "Failed to fetch snapshot from web remote control")
+                self.makeErrorToastMain(title: title)
+                return
+            }
+            let image = CIImage(cgImage: cgImage)
+            var portraitImage = image
+            if image.extent.width > image.extent.height {
+                portraitImage = portraitImage.oriented(.left)
+            }
+            DispatchQueue.main.async {
+                self.saveSnapshotToPhotos(image: data)
+                self.handleSnapshot(imageJpeg, image, portraitImage, message, isChatBot, true)
+            }
+        }
+    }
+
+    func takeSnapshotHeic(age: Float, onComplete: @escaping @MainActor (Data?) -> Void) {
+        guard !isChatPhone() else {
+            onComplete(nil)
+            return
+        }
+        media.takeSnapshot(age: age) { uiImage, _, _ in
+            DispatchQueue.global().async {
+                let imageHeic = encodeSnapshotForPhotos(image: uiImage)
+                DispatchQueue.main.async {
+                    onComplete(imageHeic)
+                }
+            }
+        }
+    }
+
+    private func handleSnapshot(_ imageJpeg: Data,
+                                _ image: CIImage,
+                                _ portraitImage: CIImage,
+                                _ message: String?,
+                                _ isChatBot: Bool,
+                                _ uploadToDiscord: Bool)
+    {
+        if uploadToDiscord {
+            tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+        }
+        printSnapshotCatPrinters(image: portraitImage)
+        appendSnapshotToSnapshotWidgets(image: image)
+    }
+
+    private func saveSnapshotToPhotos(image: UIImage, fallbackImage: Data) {
+        DispatchQueue.global().async {
+            let image = encodeSnapshotForPhotos(image: image) ?? fallbackImage
+            DispatchQueue.main.async {
+                self.saveSnapshotToPhotos(image: image)
+            }
+        }
+    }
+
+    private func saveSnapshotToPhotos(image: Data) {
+        PHPhotoLibrary.shared().performChanges { @Sendable in
+            let creationRequest = PHAssetCreationRequest.forAsset()
+            creationRequest.addResource(with: .photo, data: image, options: nil)
+        } completionHandler: { @Sendable _, error in
+            if let error {
+                self.makeErrorToastMain(title: String(localized: "Failed to save snapshot to Photos"),
+                                        subTitle: error.localizedDescription)
+            } else {
+                DispatchQueue.main.async {
+                    self.makeToast(title: String(localized: "Snapshot saved to Photos"))
+                }
+            }
         }
     }
 
@@ -66,7 +164,7 @@ extension Model {
                 message += "\n"
                 message += self.formatSnapshotTakenBy(user: user)
             }
-            self.takeSnapshot(isChatBot: snapshotJob.isChatBot, message: message, noDelay: true)
+            snapshotJob.takeSnapshot(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
                 self.snapshot.currentJob = nil
                 self.tryTakeNextSnapshot()
@@ -74,38 +172,9 @@ extension Model {
         }
     }
 
-    func takeSnapshotWithCountdown(isChatBot: Bool, message: String, user: String?) {
-        snapshotJobs.append(SnapshotJob(isChatBot: isChatBot, message: message, user: user))
+    func takeSnapshotWithCountdown(message: String, user: String?, takeSnapshot: @escaping (String) -> Void) {
+        snapshotJobs.append(SnapshotJob(message: message, user: user, takeSnapshot: takeSnapshot))
         tryTakeNextSnapshot()
-    }
-
-    private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
-        if isChatBot {
-            URL(string: stream.discordChatBotSnapshotWebhook)
-        } else {
-            URL(string: stream.discordSnapshotWebhook)
-        }
-    }
-
-    private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
-        guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive,
-              let url = getDiscordWebhookUrl(isChatBot)
-        else {
-            return
-        }
-        uploadImage(
-            url: url,
-            paramName: "snapshot",
-            fileName: "snapshot.jpg",
-            image: image,
-            message: message
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
-            }
-        }
     }
 
     func takeVideoSourcePreviewImage(widget: SettingsWidget,
@@ -123,4 +192,82 @@ extension Model {
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }
+
+    private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
+        if isChatBot {
+            URL(string: stream.discordChatBotSnapshotWebhook)
+        } else {
+            URL(string: stream.discordSnapshotWebhook)
+        }
+    }
+
+    private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
+        guard let url = getDiscordWebhookUrl(isChatBot) else {
+            return
+        }
+        if discordSnapshotUploads.count == 20 {
+            logger.info("snapshot: Discord upload queue full, dropping oldest snapshot")
+            discordSnapshotUploads.removeFirst()
+        }
+        discordSnapshotUploads.append(DiscordSnapshotUpload(url: url, image: image, message: message))
+        tryUploadNextSnapshotToDiscord()
+    }
+
+    private func tryUploadNextSnapshotToDiscord() {
+        guard !isUploadingSnapshotToDiscord, !discordSnapshotUploads.isEmpty else {
+            return
+        }
+        let upload = discordSnapshotUploads.removeFirst()
+        isUploadingSnapshotToDiscord = true
+        uploadImage(
+            url: upload.url,
+            paramName: "snapshot",
+            fileName: "snapshot.jpg",
+            image: upload.image,
+            message: upload.message,
+            maximumBytesPerSecond: getDiscordSnapshotUploadMaximumBytesPerSecond
+        ) { ok in
+            self.isUploadingSnapshotToDiscord = false
+            if ok {
+                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
+            }
+            self.tryUploadNextSnapshotToDiscord()
+        }
+    }
+
+    private func getDiscordSnapshotUploadMaximumBytesPerSecond() -> Int? {
+        guard isLive else {
+            return nil
+        }
+        let bitrate = media.getVideoStreamBitrate(bitrate: stream.bitrate)
+        let divisor = bitrate >= stream.bitrate ? 2 : 4
+        return (Int(bitrate) / 8 / divisor).clamped(to: 16000 ... 1_000_000)
+    }
+}
+
+private func encodeSnapshotForPhotos(image: UIImage) -> Data? {
+    guard let cgImage = image.cgImage else {
+        return nil
+    }
+    let data = NSMutableData()
+    guard let destination = CGImageDestinationCreateWithData(data,
+                                                             UTType.heic.identifier as CFString,
+                                                             1,
+                                                             nil)
+    else {
+        return nil
+    }
+    let properties: [String: Any] = [
+        kCGImagePropertyIPTCDictionary as String: [
+            kCGImagePropertyIPTCKeywords as String: [String(localized: "Moblin snapshot")],
+        ],
+        kCGImageDestinationLossyCompressionQuality as String: photosImageQuality,
+    ]
+    CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
+    guard CGImageDestinationFinalize(destination) else {
+        return nil
+    }
+    return data as Data
 }

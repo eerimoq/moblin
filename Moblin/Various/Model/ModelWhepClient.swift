@@ -2,10 +2,15 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func whepCameras() -> [Camera] {
-        database.whepClient.streams.map { stream in
+    func updateWhepVideoSources() {
+        videoSources.whep = database.whepClient.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
+    }
+
+    func updateWhepVideoSourcesAndMics() {
+        updateWhepVideoSources()
+        updateWhepMics()
     }
 
     func getWhepStream(id: UUID) -> SettingsWhepClientStream? {
@@ -20,10 +25,6 @@ extension Model {
         }
     }
 
-    func isWhepStreamConnected(streamId: UUID) -> Bool {
-        ingests.whep.first(where: { $0.streamId == streamId })?.isConnected() ?? false
-    }
-
     func reloadWhepClient() {
         stopWhepClient()
         for stream in database.whepClient.streams where stream.enabled {
@@ -34,6 +35,8 @@ extension Model {
                                     url: url,
                                     latency: stream.latencySeconds(),
                                     syncTimestamps: stream.syncTimestamps,
+                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                    colorRange: self.stream.colorRange,
                                     delegate: self)
             client.start()
             ingests.whep.append(client)
@@ -52,8 +55,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency WhepClientDelegate {
-    func whepClientOnPublishStart(streamId: UUID) {
+extension Model: WhepClientDelegate {
+    nonisolated func whepClientOnPublishStart(streamId: UUID) {
         DispatchQueue.main.async {
             guard let stream = self.getWhepStream(id: streamId) else {
                 return
@@ -66,7 +69,7 @@ extension Model: @preconcurrency WhepClientDelegate {
         }
     }
 
-    func whepClientOnPublishStop(streamId: UUID, reason: String) {
+    nonisolated func whepClientOnPublishStop(streamId: UUID, reason: String) {
         DispatchQueue.main.async {
             guard let stream = self.getWhepStream(id: streamId) else {
                 return
@@ -80,19 +83,11 @@ extension Model: @preconcurrency WhepClientDelegate {
         }
     }
 
-    func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
-    }
-
-    func whepClientSetTargetLatencies(streamId: UUID,
-                                      _ videoTargetLatency: Double,
-                                      _ audioTargetLatency: Double)
-    {
-        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
     }
 }

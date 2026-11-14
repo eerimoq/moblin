@@ -67,13 +67,13 @@ extension Model {
     }
 
     func printEventCatPrinters(event: CatPrinterEvent, username: String, message: String) {
-        Task { @MainActor in
+        Task {
             var image: CIImage?
             for catPrinter in catPrinters.values {
-                guard let settings = getCatPrinterSettings(catPrinter: catPrinter) else {
-                    continue
-                }
-                guard isCatPrinterEventEnabled(event: event, settings: settings) else {
+                guard let settings = getCatPrinterSettings(catPrinter: catPrinter), isCatPrinterEventEnabled(
+                    event: event,
+                    settings: settings
+                ) else {
                     continue
                 }
                 if image == nil {
@@ -200,7 +200,7 @@ extension Model {
                 .font(.system(size: 36, weight: .bold))
             Image(uiImage: profileImage ?? UIImage(named: "AppIconNoBackground")!)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(width: 120, height: 120)
                 .clipShape(Circle())
             Text(username)
@@ -245,8 +245,8 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency CatPrinterDelegate {
-    func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
+extension Model: CatPrinterDelegate {
+    nonisolated func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
         DispatchQueue.main.async {
             guard let device = self.getCatPrinterSettings(catPrinter: catPrinter) else {
                 return

@@ -33,7 +33,7 @@ private struct ChatBotCommandView: View {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
                 AlertMediaView(alert: alert)
-                AlertPositionView(alert: alert, positionType: alert.positionType)
+                AlertPositionView(alert: alert)
                 AlertColorsView(
                     alert: alert,
                     textColor: alert.textColor.color(),
@@ -60,7 +60,7 @@ private struct ChatBotCommandView: View {
 }
 
 struct WidgetAlertsChatBotSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var chatBot: SettingsWidgetAlertsChatBot
 
     private func deleteCommand(at indexes: IndexSet) {

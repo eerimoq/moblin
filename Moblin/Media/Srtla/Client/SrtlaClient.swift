@@ -8,8 +8,9 @@ import Network
 protocol SrtlaDelegate: AnyObject {
     func srtlaReady(port: UInt16)
     func srtlaError(message: String)
-    func moblinkStreamerDestinationAddress(address: String, port: UInt16)
     func srtlaReceivedPacket(packet: Data)
+    func moblinkStreamerDestinationAddress(address: String, port: UInt16)
+    func moblinkStreamerRestartTunnel(relayId: UUID)
 }
 
 private enum State {
@@ -31,7 +32,7 @@ let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 class SrtlaClient: NSObject, @unchecked Sendable {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
-    private weak var delegate: (any SrtlaDelegate)?
+    private weak let delegate: (any SrtlaDelegate)?
     private let passThrough: Bool
     private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
     private var state: State = .idle {
@@ -175,10 +176,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
             return
         }
         srtlaClientQueue.async {
-            guard self.state != .idle else {
-                return
-            }
-            guard let remoteConnection = self.remoteConnections
+            guard self.state != .idle, let remoteConnection = self.remoteConnections
                 .first(where: { $0.destinationHost == host && $0.destinationPort == port })
             else {
                 return
@@ -261,10 +259,7 @@ class SrtlaClient: NSObject, @unchecked Sendable {
 
     private func updateConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
         self.connectionPriorities = .init()
-        guard connectionPriorities.enabled else {
-            return
-        }
-        guard let lowestPriority = connectionPriorities.priorities
+        guard connectionPriorities.enabled, let lowestPriority = connectionPriorities.priorities
             .filter({ priority in priority.enabled })
             .min(by: { first, second in
                 first.priority < second.priority
@@ -499,6 +494,13 @@ extension SrtlaClient: RemoteConnectionDelegate {
         for connection in remoteConnections {
             connection.handleSrtlaAckSn(sn: sn)
         }
+    }
+
+    func remoteConnectionOnMoblinkReconnect(connection: RemoteConnection) {
+        guard let relayId = connection.relayId else {
+            return
+        }
+        delegate?.moblinkStreamerRestartTunnel(relayId: relayId)
     }
 }
 

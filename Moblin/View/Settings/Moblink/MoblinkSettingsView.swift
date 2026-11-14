@@ -94,13 +94,14 @@ private struct RelayStreamerServerView: View {
 }
 
 private struct RelayStreamerUrlView: View {
+    let model: Model
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var model: Model
     @ObservedObject var moblink: Moblink
-    @Binding var streamerUrl: String
+    @State var streamerUrl: String
 
     private func submitUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
+            streamerUrl = model.database.moblink.relay.url
             return
         }
         model.database.moblink.relay.url = value
@@ -111,13 +112,16 @@ private struct RelayStreamerUrlView: View {
     var body: some View {
         Form {
             Section {
-                TextField("ws://32.143.32.12:2345", text: $streamerUrl)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .submitLabel(.done)
-                    .onSubmit {
-                        submitUrl(value: streamerUrl)
-                    }
+                TextField(
+                    String("ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)"),
+                    text: $streamerUrl
+                )
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .submitLabel(.done)
+                .onSubmit {
+                    submitUrl(value: streamerUrl)
+                }
             }
             if moblink.scannerDiscoveredStreamers.isEmpty {
                 Text("No streamers discovered yet on your local network.")
@@ -161,7 +165,7 @@ private struct RelayView: View {
             .disabled(model.isLive)
             if relay.manual {
                 NavigationLink {
-                    RelayStreamerUrlView(moblink: model.moblink, streamerUrl: $relay.url)
+                    RelayStreamerUrlView(model: model, moblink: model.moblink, streamerUrl: relay.url)
                 } label: {
                     TextItemLocalizedView(name: "Streamer URL", value: relay.url)
                 }
@@ -219,7 +223,7 @@ private struct StreamerView: View {
                 onChange: isValidPort,
                 onSubmit: submitPort,
                 keyboardType: .numbersAndPunctuation,
-                placeholder: "7777"
+                placeholder: String(DefaultTcpPorts.moblinkStreamer)
             )
             .disabled(model.isLive)
         } header: {
@@ -228,6 +232,51 @@ private struct StreamerView: View {
             Text("Enable this on your streaming device. Configure relay devices to connect to this device.")
         }
     }
+}
+
+private func drawMoblinkCard(context: GraphicsContext, time: Double) {
+    let blue = Color(red: 0x2F / 255, green: 0x7C / 255, blue: 0xF6 / 255)
+    var serverPath = Path()
+    serverPath.move(to: CGPoint(x: 44, y: 54))
+    serverPath.addCurve(to: CGPoint(x: 116, y: 26),
+                        control1: CGPoint(x: 44, y: 34),
+                        control2: CGPoint(x: 100, y: 38))
+    serverPath.move(to: CGPoint(x: 130, y: 66))
+    serverPath.addLine(to: CGPoint(x: 130, y: 26))
+    serverPath.move(to: CGPoint(x: 216, y: 54))
+    serverPath.addCurve(to: CGPoint(x: 144, y: 26),
+                        control1: CGPoint(x: 216, y: 34),
+                        control2: CGPoint(x: 160, y: 38))
+    strokeTradingCardDash(context: context,
+                          path: serverPath,
+                          color: blue,
+                          lineWidth: 2,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    var hotspotPath = Path()
+    hotspotPath.move(to: CGPoint(x: 80, y: 90))
+    hotspotPath.addLine(to: CGPoint(x: 64, y: 90))
+    strokeTradingCardDash(context: context,
+                          path: hotspotPath,
+                          color: Color(red: 0x0D / 255, green: 0x7A / 255, blue: 0x30 / 255),
+                          lineWidth: 2.5,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    var moblinkPath = Path()
+    moblinkPath.move(to: CGPoint(x: 180, y: 90))
+    moblinkPath.addLine(to: CGPoint(x: 196, y: 90))
+    strokeTradingCardDash(context: context,
+                          path: moblinkPath,
+                          color: blue,
+                          lineWidth: 2.5,
+                          dash: 4,
+                          gap: 4,
+                          time: time)
+    context.fill(Path(ellipseIn: CGRect(x: 144 - 1.6, y: 21 - 1.6, width: 3.2, height: 3.2)),
+                 with: .color(Color(red: 0x4C / 255, green: 0xD9 / 255, blue: 0x64 / 255)
+                     .opacity(tradingCardPulseOpacity(time: time))))
 }
 
 struct MoblinkSettingsView: View {
@@ -243,6 +292,11 @@ struct MoblinkSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "Moblink",
+                                background: Color(red: 0xE0 / 255, green: 0xE4 / 255, blue: 0xEC / 255),
+                                draw: drawMoblinkCard)
+            }
             Section {
                 Text("""
                 Use phones as additional SRTLA and RIST bonding connections. Install Moblink on Android \

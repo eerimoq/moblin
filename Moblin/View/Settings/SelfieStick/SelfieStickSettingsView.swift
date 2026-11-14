@@ -24,6 +24,10 @@ struct SelfieStickSettingsView: View {
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "SelfieStick",
+                                background: Color(red: 0xD2 / 255, green: 0xE0 / 255, blue: 0xD8 / 255))
+            }
+            Section {
                 Toggle("Enabled", isOn: $selfieStick.enabled)
                 ControllerButtonView(model: model,
                                      functions: functions(),

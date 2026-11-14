@@ -9,8 +9,9 @@ struct DjiDiscoveredDevice {
     let model: SettingsDjiDeviceModel
 }
 
+@MainActor
 class DjiDeviceScanner: NSObject, ObservableObject {
-    nonisolated(unsafe) static let shared = DjiDeviceScanner()
+    static let shared = DjiDeviceScanner()
     @Published var discoveredDevices: [DjiDiscoveredDevice] = []
     private var centralManager: CBCentralManager?
 
@@ -25,7 +26,7 @@ class DjiDeviceScanner: NSObject, ObservableObject {
     }
 }
 
-extension DjiDeviceScanner: CBCentralManagerDelegate {
+extension DjiDeviceScanner: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: nil, options: nil)
@@ -38,13 +39,10 @@ extension DjiDeviceScanner: CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi _: NSNumber
     ) {
-        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
-            return
-        }
-        guard isDjiDevice(manufacturerData: manufacturerData) else {
-            return
-        }
-        guard !discoveredDevices.contains(where: { $0.peripheral == peripheral }) else {
+        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data,
+              isDjiDevice(manufacturerData: manufacturerData),
+              !discoveredDevices.contains(where: { $0.peripheral == peripheral })
+        else {
             return
         }
         let model = djiModelFromManufacturerData(data: manufacturerData)

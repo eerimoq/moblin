@@ -57,6 +57,10 @@ struct TwitchApiCreateStreamMarker: Decodable {
 }
 
 struct TwitchApiStreamData: Decodable {
+    let user_id: String
+    let user_name: String
+    let game_name: String
+    let title: String
     let viewer_count: Int
 }
 
@@ -71,8 +75,8 @@ struct TwitchApiGameData: Decodable, Identifiable {
 
     func boxArtUrl(width: Int, height: Int) -> String? {
         box_art_url?
-            .replacingOccurrences(of: "{width}", with: String(width))
-            .replacingOccurrences(of: "{height}", with: String(height))
+            .replace("{width}", String(width))
+            .replace("{height}", String(height))
     }
 }
 
@@ -153,8 +157,69 @@ struct TwitchApiChatBadges: Decodable {
     let data: [TwitchApiChatBadgesData]
 }
 
-protocol TwitchApiDelegate: AnyObject {
-    func twitchApiUnauthorized()
+enum TwitchApiPollStatus: String {
+    case terminated = "TERMINATED"
+    case archived = "ARCHIVED"
+}
+
+struct TwitchApiPollChoice: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let votes: Int?
+}
+
+struct TwitchApiPollData: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let choices: [TwitchApiPollChoice]
+    let status: String
+    let ends_at: String?
+
+    func isActive() -> Bool {
+        status == "ACTIVE"
+    }
+}
+
+struct TwitchApiPolls: Decodable {
+    let data: [TwitchApiPollData]
+}
+
+enum TwitchApiPredictionStatus: String {
+    case resolved = "RESOLVED"
+    case canceled = "CANCELED"
+    case locked = "LOCKED"
+}
+
+struct TwitchApiPredictionOutcome: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let color: String
+    let users: Int?
+    let channel_points: Int?
+}
+
+struct TwitchApiPredictionData: Decodable, Identifiable {
+    let id: String
+    let title: String
+    let outcomes: [TwitchApiPredictionOutcome]
+    let status: String
+    let locked_at: String?
+
+    func isActive() -> Bool {
+        status == "ACTIVE"
+    }
+
+    func isLocked() -> Bool {
+        status == "LOCKED"
+    }
+}
+
+struct TwitchApiPredictions: Decodable {
+    let data: [TwitchApiPredictionData]
+}
+
+struct TwitchApiValidateTokenData: Decodable {
+    let expires_in: Int
 }
 
 func fetchTwitchProfilePicture(username: String) async -> UIImage? {
@@ -162,23 +227,24 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
         return nil
     }
     let request = URLRequest(url: url, timeoutInterval: 10)
-    guard let (data, _) = try? await URLSession.shared.data(for: request),
+    guard let (data, _) = try? await httpUrlSession().data(for: request),
           let imageUrlString = String(data: data, encoding: .utf8),
           let profileUrl = URL(string: imageUrlString.trimmingCharacters(in: .whitespacesAndNewlines))
     else {
         return nil
     }
     let imageRequest = URLRequest(url: profileUrl, timeoutInterval: 10)
-    guard let (imageData, _) = try? await URLSession.shared.data(for: imageRequest) else {
+    guard let (imageData, _) = try? await httpUrlSession().data(for: imageRequest) else {
         return nil
     }
     return UIImage(data: imageData)
 }
 
+@MainActor
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
-    weak var delegate: (any TwitchApiDelegate)?
+    var onUnauthorized: (() -> Void)?
 
     init(_ accessToken: String) {
         clientId = twitchMoblinAppClientId
@@ -192,9 +258,20 @@ class TwitchApi {
         let body = [
             "broadcaster_id": broadcasterId,
             "sender_id": broadcasterId,
-            "message": message,
+            "message": message.truncate(length: 500),
         ]
         doPost(subPath: "chat/messages", body: serialize(body), onComplete: onComplete)
+    }
+
+    func validateToken(onComplete: @escaping (TwitchApiValidateTokenData?) -> Void) {
+        doRequest(createRequest(url: URL(string: "https://id.twitch.tv/oauth2/validate")!, method: "GET")) {
+            switch $0 {
+            case let .success(data):
+                onComplete(try? JSONDecoder().decode(TwitchApiValidateTokenData.self, from: data))
+            default:
+                onComplete(nil)
+            }
+        }
     }
 
     func getUsers(onComplete: @escaping (TwitchApiUsers?) -> Void) {
@@ -238,10 +315,13 @@ class TwitchApi {
         }
     }
 
-    func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
-        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data) {
-            onComplete($0.isSuccessful())
-        }
+    func createEventSubSubscription(body: String, onComplete: @escaping (OperationResult) -> Void) {
+        doPost(
+            subPath: "eventsub/subscriptions",
+            body: body.utf8Data,
+            forbiddenIsAuthError: true,
+            onComplete: onComplete
+        )
     }
 
     func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {
@@ -465,6 +545,62 @@ class TwitchApi {
         }
     }
 
+    func getFollowedStreams(
+        userId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiStreamData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("streams/followed", [("user_id", userId), ("first", "100")])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func getStreams(userIds: [String], live: Bool, onComplete: @escaping ([TwitchApiStreamData]?) -> Void) {
+        guard !userIds.isEmpty else {
+            onComplete([])
+            return
+        }
+        var parameters = userIds.prefix(100).map { ("user_id", $0) }
+        if live {
+            parameters.append(("type", "live"))
+        }
+        doGet(subPath: makeUrl("streams", parameters)) {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
+    func getUsersByIds(ids: [String], onComplete: @escaping ([TwitchApiUser]?) -> Void) {
+        guard !ids.isEmpty else {
+            onComplete([])
+            return
+        }
+        doGet(subPath: makeUrl("users", ids.prefix(100).map { ("id", $0) })) {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
     func getGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
         doGet(subPath: makeUrl("games", names.map { ("name", $0) })) {
             switch $0 {
@@ -496,6 +632,22 @@ class TwitchApi {
         doDelete(subPath: makeUrl("raids", [("broadcaster_id", broadcasterId)])) {
             onComplete($0)
         }
+    }
+
+    func sendShoutout(
+        broadcasterId: String,
+        toBroadcasterId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
+        let subPath = makeUrl(
+            "chat/shoutouts",
+            [
+                ("from_broadcaster_id", broadcasterId),
+                ("to_broadcaster_id", toBroadcasterId),
+                ("moderator_id", broadcasterId),
+            ]
+        )
+        doPost(subPath: subPath, body: Data(), onComplete: onComplete)
     }
 
     func searchCategories(query: String, onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
@@ -626,14 +778,118 @@ class TwitchApi {
         }
     }
 
+    func getPolls(
+        broadcasterId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiPollData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("polls", [("broadcaster_id", broadcasterId)])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiPolls.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func createPoll(broadcasterId: String,
+                    title: String,
+                    choices: [String],
+                    duration: Int,
+                    onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "title": title,
+            "choices": choices.map { ["title": $0] },
+            "duration": duration,
+        ]
+        doPost(subPath: "polls", body: serialize(body), onComplete: onComplete)
+    }
+
+    func endPoll(broadcasterId: String,
+                 id: String,
+                 status: TwitchApiPollStatus,
+                 onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "id": id,
+            "status": status.rawValue,
+        ]
+        doPatch(subPath: "polls", body: serialize(body), onComplete: onComplete)
+    }
+
+    func getPredictions(
+        broadcasterId: String,
+        onComplete: @escaping (NetworkResponse<[TwitchApiPredictionData]>) -> Void
+    ) {
+        doGet(subPath: makeUrl("predictions", [("broadcaster_id", broadcasterId)])) {
+            switch $0 {
+            case let .success(data):
+                if let message = try? JSONDecoder().decode(TwitchApiPredictions.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
+    }
+
+    func createPrediction(broadcasterId: String,
+                          title: String,
+                          outcomes: [String],
+                          predictionWindow: Int,
+                          onComplete: @escaping (OperationResult) -> Void)
+    {
+        let body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "title": title,
+            "outcomes": outcomes.map { ["title": $0] },
+            "prediction_window": predictionWindow,
+        ]
+        doPost(subPath: "predictions", body: serialize(body), onComplete: onComplete)
+    }
+
+    func endPrediction(broadcasterId: String,
+                       id: String,
+                       status: TwitchApiPredictionStatus,
+                       winningOutcomeId: String?,
+                       onComplete: @escaping (OperationResult) -> Void)
+    {
+        var body: [String: Any] = [
+            "broadcaster_id": broadcasterId,
+            "id": id,
+            "status": status.rawValue,
+        ]
+        if let winningOutcomeId {
+            body["winning_outcome_id"] = winningOutcomeId
+        }
+        doPatch(subPath: "predictions", body: serialize(body), onComplete: onComplete)
+    }
+
     private func doGet(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {
         doRequest(createRequest(url: makeHelixUrl(subPath: subPath), method: "GET"), onComplete)
     }
 
-    private func doPost(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
+    private func doPost(subPath: String,
+                        body: Data,
+                        forbiddenIsAuthError: Bool = false,
+                        onComplete: @escaping (OperationResult) -> Void)
+    {
         var request = createRequest(url: makeHelixUrl(subPath: subPath), method: "POST", json: true)
         request.httpBody = body
-        doRequest(request, onComplete)
+        doRequest(request, forbiddenIsAuthError: forbiddenIsAuthError, onComplete)
     }
 
     private func doPatch(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
@@ -650,14 +906,18 @@ class TwitchApi {
         URL(string: "https://api.twitch.tv/helix/\(subPath)")!
     }
 
-    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
+    private func doRequest(_ request: URLRequest,
+                           forbiddenIsAuthError: Bool = false,
+                           _ onComplete: @escaping (OperationResult) -> Void)
+    {
         httpRequest(request: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
                 if let data, let data = String(bytes: data, encoding: .utf8) {
                     logger.info("twitch-api: Error response body: \(data)")
                 }
-                if response?.http?.isUnauthorized == true {
-                    self.delegate?.twitchApiUnauthorized()
+                let isForbidden = forbiddenIsAuthError && response?.http?.isForbidden == true
+                if response?.http?.isUnauthorized == true || isForbidden {
+                    self.onUnauthorized?()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

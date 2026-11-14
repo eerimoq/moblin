@@ -10,10 +10,12 @@ class HttpParser {
 
     func getLine(data: Data, offset: Int) -> (String, Int)? {
         let data = data.advanced(by: offset)
-        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex + 1, data[rIndex + 1] == 0xA else {
-            return nil
-        }
-        guard let line = String(bytes: data[0 ..< rIndex], encoding: .utf8) else {
+        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex + 1, data[rIndex + 1] == 0xA,
+              let line = String(
+                  bytes: data[0 ..< rIndex],
+                  encoding: .utf8
+              )
+        else {
             return nil
         }
         return (line, offset + rIndex + 2)
@@ -54,21 +56,18 @@ class HttpResponseParser: HttpParser {
     }
 }
 
-private class InterfaceTypeHttpClient: @unchecked Sendable {
-    private nonisolated(unsafe) static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
-        .cellular,
-        .wifi,
-        .wiredEthernet,
-    ])
+@MainActor
+private class InterfaceTypeHttpClient {
+    private static var interfaceTypes: [NWInterface.InterfaceType] = [.cellular, .wifi, .wiredEthernet]
     private var interfaceTypes: [NWInterface.InterfaceType] = []
     private var interfaceTypeIndex: Int = 0
     private var connection: NWConnection?
-    private let timer = SimpleTimer(queue: .main)
+    private let timer = MainTimer()
     private var completion: ((Data?) -> Void)?
     private var responseParser = HttpResponseParser()
 
     init() {
-        interfaceTypes = Self.interfaceTypes.value
+        interfaceTypes = Self.interfaceTypes
     }
 
     private func stop() {
@@ -79,29 +78,79 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         connection = nil
     }
 
+    private func startTimer() {
+        timer.startSingleShot(timeout: 60) {
+            self.completed(data: nil)
+        }
+    }
+
     private func completed(data: Data?) {
         completion?(data)
         stop()
     }
 
-    func call(request: URLRequest, body: Data?, completion: @escaping (Data?) -> Void) {
+    func call(request: URLRequest,
+              body: Data?,
+              maximumBytesPerSecond: (@MainActor () -> Int?)?,
+              completion: @escaping (Data?) -> Void)
+    {
         guard let (host, port, useTls, content) = createRequest(request: request, body: body) else {
             completion(nil)
             return
         }
         let endpoint = NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: NWEndpoint.Port(integer: port))
         self.completion = completion
-        timer.startSingleShot(timeout: 60) {
-            self.completed(data: nil)
-        }
+        startTimer()
         connect(endpoint, useTls) { interfaceTypeIndex in
-            self.connection?.send(content: content, completion: .contentProcessed { error in
+            if let maximumBytesPerSecond {
+                self.sendPaced(content, 0, .now, maximumBytesPerSecond, interfaceTypeIndex)
+            } else {
+                self.send(content, interfaceTypeIndex) {
+                    self.receiveData(interfaceTypeIndex)
+                }
+            }
+        }
+    }
+
+    private func send(_ content: Data, _ interfaceTypeIndex: Int, _ onSent: @escaping @MainActor () -> Void) {
+        connection?.send(content: content, completion: .contentProcessed { error in
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
                 if error != nil {
                     self.completed(data: nil)
                     return
                 }
+                onSent()
+            }
+        })
+    }
+
+    private func sendPaced(_ content: Data,
+                           _ offset: Int,
+                           _ sendTime: ContinuousClock.Instant,
+                           _ maximumBytesPerSecond: @escaping @MainActor () -> Int?,
+                           _ interfaceTypeIndex: Int)
+    {
+        let end = min(offset + 16384, content.count)
+        send(content.subdata(in: offset ..< end), interfaceTypeIndex) {
+            guard end < content.count else {
                 self.receiveData(interfaceTypeIndex)
-            })
+                return
+            }
+            self.startTimer()
+            var nextSendTime = max(sendTime, .now)
+            if let maximumBytesPerSecond = maximumBytesPerSecond() {
+                nextSendTime += .seconds(Double(end - offset) / Double(maximumBytesPerSecond))
+            }
+            let delay = max(ContinuousClock.now.duration(to: nextSendTime).seconds, 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                guard self.connection != nil, self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
+                self.sendPaced(content, end, nextSendTime, maximumBytesPerSecond, interfaceTypeIndex)
+            }
         }
     }
 
@@ -120,22 +169,22 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         parameters.requiredInterfaceType = interfaceType
         connection = NWConnection(to: endpoint, using: parameters)
         connection?.stateUpdateHandler = { state in
-            guard self.isCurrentConnection(interfaceTypeIndex) else {
-                return
-            }
-            switch state {
-            case .preparing:
-                break
-            case .ready:
-                self.updateGlobalInterfaceTypesIfNeeded()
-                DispatchQueue.main.async {
-                    onConnected(interfaceTypeIndex)
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
                 }
-            default:
-                self.connection?.stateUpdateHandler = nil
-                self.connection?.cancel()
-                self.interfaceTypeIndex += 1
-                self.connect(endpoint, useTls, onConnected)
+                switch state {
+                case .preparing:
+                    break
+                case .ready:
+                    self.updateGlobalInterfaceTypesIfNeeded()
+                    onConnected(interfaceTypeIndex)
+                default:
+                    self.connection?.stateUpdateHandler = nil
+                    self.connection?.cancel()
+                    self.interfaceTypeIndex += 1
+                    self.connect(endpoint, useTls, onConnected)
+                }
             }
         }
         connection?.start(queue: .main)
@@ -149,12 +198,9 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         guard interfaceTypeIndex != 0 else {
             return
         }
-        nonisolated(unsafe)
         var interfaceTypes = interfaceTypes
-        let interfaceType = interfaceTypes[0]
-        interfaceTypes[0] = interfaceTypes[interfaceTypeIndex]
-        interfaceTypes[interfaceTypeIndex] = interfaceType
-        Self.interfaceTypes.mutate { $0 = interfaceTypes }
+        interfaceTypes.swapAt(0, interfaceTypeIndex)
+        Self.interfaceTypes = interfaceTypes
     }
 
     private func createRequest(request: URLRequest, body: Data?) -> (String, Int, Bool, Data)? {
@@ -193,15 +239,17 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
 
     private func receiveData(_ interfaceTypeIndex: Int) {
         connection?.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, _, error in
-            guard self.isCurrentConnection(interfaceTypeIndex) else {
-                return
+            MainActor.assumeIsolated {
+                guard self.isCurrentConnection(interfaceTypeIndex) else {
+                    return
+                }
+                guard let data, error == nil else {
+                    self.completed(data: nil)
+                    return
+                }
+                self.handleResponse(data: data)
+                self.receiveData(interfaceTypeIndex)
             }
-            guard let data, error == nil else {
-                self.completed(data: nil)
-                return
-            }
-            self.handleResponse(data: data)
-            self.receiveData(interfaceTypeIndex)
         }
     }
 
@@ -214,24 +262,31 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
     }
 }
 
-func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor (Data?) -> Void) {
-    InterfaceTypeHttpClient().call(request: request, body: body) { data in
+@MainActor
+func httpCall(request: URLRequest,
+              body: Data?,
+              maximumBytesPerSecond: (@MainActor () -> Int?)? = nil,
+              completion: @escaping @MainActor (Data?) -> Void)
+{
+    InterfaceTypeHttpClient().call(request: request,
+                                   body: body,
+                                   maximumBytesPerSecond: maximumBytesPerSecond)
+    { data in
         if let data {
-            DispatchQueue.main.async {
-                completion(data)
-            }
+            completion(data)
         } else {
             httpCallUrlSession(request: request, body: body, completion: completion)
         }
     }
 }
 
+@MainActor
 private func httpCallUrlSession(request: URLRequest,
                                 body: Data?,
                                 completion: @escaping @MainActor (Data?) -> Void)
 {
     if let body {
-        URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
+        httpUrlSession().uploadTask(with: request, from: body) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
                 DispatchQueue.main.async {
                     completion(nil)
@@ -245,14 +300,10 @@ private func httpCallUrlSession(request: URLRequest,
     } else {
         httpRequest(request: request) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
+                completion(nil)
                 return
             }
-            DispatchQueue.main.async {
-                completion(data)
-            }
+            completion(data)
         }
     }
 }

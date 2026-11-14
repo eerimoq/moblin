@@ -42,7 +42,7 @@ class Navigation: ObservableObject {
     @Published var longPressLocation: MKMapItem?
     @Published var searchText: String = ""
     @Published var searchResults: [MKMapItem] = []
-    let timer = SimpleTimer(queue: .main)
+    let timer = MainTimer()
 
     func updateCameraPosition(settings: SettingsNavigation, region: MKCoordinateRegion? = nil) {
         guard let region = region ?? cameraRegion else {
@@ -78,8 +78,8 @@ class Navigation: ObservableObject {
     }
 }
 
+@available(iOS 26, *)
 extension Model {
-    @available(iOS 26, *)
     func navigation() -> Navigation {
         Navigation.shared
     }

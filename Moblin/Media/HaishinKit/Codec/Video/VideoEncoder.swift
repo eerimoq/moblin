@@ -1,4 +1,4 @@
-@preconcurrency import AVFoundation
+import AVFoundation
 import VideoToolbox
 
 nonisolated(unsafe) var numberOfFailedEncodings = 0
@@ -28,6 +28,7 @@ class VideoEncoder: @unchecked Sendable {
 
     private var isRunning = false
     private let lockQueue: DispatchQueue
+    private let colorRange: SettingsStreamColorRange
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoEncoderDelegate)?
     weak var controlDelegate: (any VideoEncoderControlDelegate)?
@@ -39,11 +40,15 @@ class VideoEncoder: @unchecked Sendable {
     }
 
     private var invalidateSession = true
+    private var colorAttachments: [String: String] = [:]
+    private var colorAttachmentsFormatDescription: CMVideoFormatDescription?
+    var outputColorAttachments: [String: String]?
     private var currentBitrate: UInt32 = 0
     private var oldBitrateVideoSize = CMVideoDimensions(width: 0, height: 0)
 
-    init(lockQueue: DispatchQueue) {
+    init(lockQueue: DispatchQueue, colorRange: SettingsStreamColorRange) {
         self.lockQueue = lockQueue
+        self.colorRange = colorRange
     }
 
     func startRunning(formatDescription: CMFormatDescription? = nil) {
@@ -51,6 +56,7 @@ class VideoEncoder: @unchecked Sendable {
             self.isRunning = true
             self.invalidateSession = true
             self.currentBitrate = 0
+            self.oldBitrateVideoSize = CMVideoDimensions(width: 0, height: 0)
             self.formatDescription = formatDescription
             numberOfFailedEncodings = 0
             logger.info("video-encoder: Starting with codec \(self.settings.value.format)")
@@ -72,6 +78,7 @@ class VideoEncoder: @unchecked Sendable {
             return
         }
         let settings = settings.value
+        updateColorAttachments(imageBuffer)
         let newBitrateVideoSize = updateAdaptiveResolution(settings: settings)
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
@@ -81,7 +88,7 @@ class VideoEncoder: @unchecked Sendable {
             controlDelegate?.videoEncoderControlResolutionChanged(self, resolution: resolution)
         }
         if invalidateSession {
-            session = makeSession(settings: settings)
+            session = makeSession(settings: settings, videoSize: oldBitrateVideoSize)
         }
         updateBitrate(settings: settings)
         let err = session?.encodeFrame(
@@ -134,37 +141,36 @@ class VideoEncoder: @unchecked Sendable {
         delegate?.videoEncoderOutputFormat(self, formatDescription)
     }
 
+    private func updateColorAttachments(_ imageBuffer: CVImageBuffer) {
+        let colorAttachments: [String: String]
+        if let outputColorAttachments {
+            colorAttachmentsFormatDescription = nil
+            colorAttachments = outputColorAttachments
+        } else {
+            if let colorAttachmentsFormatDescription,
+               CMVideoFormatDescriptionMatchesImageBuffer(colorAttachmentsFormatDescription,
+                                                          imageBuffer: imageBuffer)
+            {
+                return
+            }
+            colorAttachmentsFormatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer)
+            colorAttachments = imageBuffer.colorAttachments
+        }
+        if colorAttachments != self.colorAttachments {
+            self.colorAttachments = colorAttachments
+            invalidateSession = true
+        }
+    }
+
     private func updateBitrate(settings: VideoEncoderSettings) {
         guard currentBitrate != settings.bitrate else {
             return
         }
         currentBitrate = settings.bitrate
         let bitrate = currentBitrate
-        switch settings.rateControl {
-        case .abr:
-            let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
-            if let status = session?.setProperty(option), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(option)")
-            }
-            let optionLimit = VTSessionProperty(
-                key: .dataRateLimits,
-                value: createDataRateLimits(bitRate: bitrate)
-            )
-            if let status = session?.setProperty(optionLimit), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
-            }
-        case .cbr:
-            let option = VTSessionProperty(key: .constantBitRate, value: NSNumber(value: bitrate))
-            if let status = session?.setProperty(option), status != noErr {
-                logger.info("video-encoder: Failed to set option \(status) \(option)")
-            }
-        case .vbr:
-            if #available(iOS 26, *) {
-                let option = VTSessionProperty(key: .variableBitRate, value: NSNumber(value: bitrate))
-                if let status = session?.setProperty(option), status != noErr {
-                    logger.info("video-encoder: Failed to set option \(status) \(option)")
-                }
-            }
+        let properties = settings.bitrateProperties(bitrate: bitrate)
+        if let status = session?.setProperties(properties), status != noErr {
+            logger.info("video-encoder: Failed to set bitrate options \(status) \(properties)")
         }
     }
 
@@ -197,11 +203,11 @@ class VideoEncoder: @unchecked Sendable {
     }
 
     private func makeSession(settings: VideoEncoderSettings,
-                             videoSize: CMVideoDimensions? = nil) -> VTCompressionSession?
+                             videoSize: CMVideoDimensions) -> VTCompressionSession?
     {
         var session: VTCompressionSession?
         let attributes: [NSString: AnyObject] = [
-            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
+            kCVPixelBufferPixelFormatTypeKey: NSNumber(value: colorRange.pixelFormatType()),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
             kCVPixelBufferWidthKey: NSNumber(value: settings.videoSize.width),
@@ -209,8 +215,8 @@ class VideoEncoder: @unchecked Sendable {
         ]
         var status = VTCompressionSessionCreate(
             allocator: kCFAllocatorDefault,
-            width: videoSize?.width ?? settings.videoSize.width,
-            height: videoSize?.height ?? settings.videoSize.height,
+            width: videoSize.width,
+            height: videoSize.height,
             codecType: settings.format.codecType,
             encoderSpecification: nil,
             imageBufferAttributes: attributes as CFDictionary?,
@@ -222,6 +228,10 @@ class VideoEncoder: @unchecked Sendable {
         guard status == noErr, let session else {
             logger.info("video-encoder: Failed to create session with status \(status)")
             return nil
+        }
+        status = session.setProperties(createColorProperties(colorAttachments))
+        if status != noErr {
+            logger.info("video-encoder: Failed to set color properties with status \(status)")
         }
         status = session.setProperties(settings.properties())
         guard status == noErr else {

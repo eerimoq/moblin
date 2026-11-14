@@ -51,6 +51,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction6
     case osmoPocket3
     case osmoPocket4
+    case osmoPocket4Pro
     case osmo360
     case unknown
 
@@ -69,6 +70,8 @@ enum SettingsDjiDeviceModel: String, Codable {
         case .osmoPocket3:
             false
         case .osmoPocket4:
+            false
+        case .osmoPocket4Pro:
             false
         case .osmo360:
             true
@@ -93,6 +96,8 @@ enum SettingsDjiDeviceModel: String, Codable {
             false
         case .osmoPocket4:
             true
+        case .osmoPocket4Pro:
+            true
         case .osmo360:
             true
         case .unknown:
@@ -115,6 +120,33 @@ enum SettingsDjiDeviceModel: String, Codable {
         case .osmoPocket3:
             false
         case .osmoPocket4:
+            true
+        case .osmoPocket4Pro:
+            true
+        case .osmo360:
+            false
+        case .unknown:
+            false
+        }
+    }
+
+    func hasFps() -> Bool {
+        switch self {
+        case .osmoAction2:
+            false
+        case .osmoAction3:
+            false
+        case .osmoAction4:
+            false
+        case .osmoAction5Pro:
+            false
+        case .osmoAction6:
+            false
+        case .osmoPocket3:
+            true
+        case .osmoPocket4:
+            true
+        case .osmoPocket4Pro:
             true
         case .osmo360:
             false
@@ -181,6 +213,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var isStarted: Bool = false
     @Published var model: SettingsDjiDeviceModel = .unknown
     @Published var state: DjiDeviceState?
+    let autoRestartStreamTimer = MainTimer()
 
     init() {
         bluetoothPeripheralName = nil

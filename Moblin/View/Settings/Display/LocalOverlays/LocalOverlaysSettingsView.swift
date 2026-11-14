@@ -78,6 +78,13 @@ struct LocalOverlaysSettingsView: View {
                 } icon: {
                     Image(systemName: "appletvremote.gen1")
                 }
+                if !isMac() {
+                    Label {
+                        Toggle("Moblin Cloud", isOn: $show.moblinCloud)
+                    } icon: {
+                        Image(systemName: "cloud")
+                    }
+                }
                 Label {
                     Toggle("DJI devices", isOn: $show.djiDevices)
                 } icon: {
@@ -129,6 +136,11 @@ struct LocalOverlaysSettingsView: View {
                     Toggle("Zoom presets", isOn: $show.zoomPresets)
                 } icon: {
                     Image(systemName: "magnifyingglass")
+                }
+                Label {
+                    Toggle("Zoom slider", isOn: $show.zoomSlider)
+                } icon: {
+                    Image(systemName: "plus.magnifyingglass")
                 }
             } header: {
                 Text("Bottom right")

@@ -9,7 +9,7 @@ enum AlertsEffectMediaItem {
 }
 
 struct AlertsEffectGifImage {
-    let image: CIImage
+    let image: EffectImageCiImage
     let timeOffset: Double
 }
 
@@ -131,17 +131,22 @@ class AlertsEffectMedia: @unchecked Sendable {
     }
 
     private func loadGifImages(url: URL, loopCount: Int) -> Deque<AlertsEffectGifImage> {
-        var timeOffset = 0.0
         var images: Deque<AlertsEffectGifImage> = []
+        guard let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) else {
+            return images
+        }
+        var frames: [(image: EffectImageCiImage, duration: Double)] = []
+        for index in 0 ..< animatedImage.animatedImageFrameCount {
+            if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
+                let image = CIImage(cgImage: cgImage).toEffectImage(isOpaque: false)
+                frames.append((image, animatedImage.animatedImageDuration(at: index)))
+            }
+        }
+        var timeOffset = 0.0
         for _ in 0 ..< loopCount {
-            if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
-                for index in 0 ..< animatedImage.animatedImageFrameCount {
-                    if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
-                        timeOffset += animatedImage.animatedImageDuration(at: index)
-                        images.append(AlertsEffectGifImage(image: CIImage(cgImage: cgImage),
-                                                           timeOffset: timeOffset))
-                    }
-                }
+            for frame in frames {
+                timeOffset += frame.duration
+                images.append(AlertsEffectGifImage(image: frame.image, timeOffset: timeOffset))
             }
         }
         return images
@@ -150,16 +155,17 @@ class AlertsEffectMedia: @unchecked Sendable {
     private func loadGifImages(image: CIImage, loopCount: Int) -> Deque<AlertsEffectGifImage> {
         var timeOffset = 0.0
         var images: Deque<AlertsEffectGifImage> = []
+        let effectImage = image.toEffectImage(isOpaque: false)
         for _ in 0 ..< loopCount {
             timeOffset += 1
-            images.append(AlertsEffectGifImage(image: image, timeOffset: timeOffset))
+            images.append(AlertsEffectGifImage(image: effectImage, timeOffset: timeOffset))
         }
         return images
     }
 }
 
 protocol AlertsEffectImages {
-    func getImage(_ presentationTimeStamp: Double) -> CIImage?
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage?
     func isEmpty() -> Bool
 }
 
@@ -173,7 +179,7 @@ class AlertsEffectGifImages: AlertsEffectImages {
         self.images = images
     }
 
-    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         if basePresentationTimeStamp == nil {
             basePresentationTimeStamp = presentationTimeStamp
         }
@@ -204,7 +210,7 @@ class AlertsEffectVideoImages: AlertsEffectImages {
         }
     }
 
-    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         reader?.getImage(presentationTimeStamp: presentationTimeStamp)
     }
 
@@ -217,13 +223,9 @@ private func loadVideoSound(path: URL, onCompleted: @escaping @MainActor (URL?) 
     let asset = AVAsset(url: path)
     asset.loadTracks(withMediaType: .audio) { tracks, error in
         DispatchQueue.global().async {
-            guard let reader = try? AVAssetReader(asset: asset) else {
-                DispatchQueue.main.async {
-                    onCompleted(nil)
-                }
-                return
-            }
-            guard let track = tracks?.first, error == nil else {
+            guard let reader = try? AVAssetReader(asset: asset), let track = tracks?.first,
+                  error == nil
+            else {
                 DispatchQueue.main.async {
                     onCompleted(nil)
                 }

@@ -25,7 +25,7 @@ class SrtStreamOfficial: @unchecked Sendable {
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
-    weak var srtStreamDelegate: (any SrtStreamOfficialDelegate)?
+    weak let srtStreamDelegate: (any SrtStreamOfficialDelegate)?
     private let processor: Processor
 
     private var readyState: ReadyState = .initialized {
@@ -37,16 +37,20 @@ class SrtStreamOfficial: @unchecked Sendable {
             switch oldValue {
             case .publishing:
                 logger.info("srt: Stop publishing")
-                writer.stopRunning()
-                processor.stopEncoding(writer)
+                processorPipelineQueue.async {
+                    self.writer.stopRunning()
+                    self.processor.stopEncoding(self.writer)
+                }
             default:
                 break
             }
             switch readyState {
             case .publishing:
                 logger.info("srt: Start publishing")
-                processor.startEncoding(writer)
-                writer.startRunning()
+                processorPipelineQueue.async {
+                    self.processor.startEncoding(self.writer)
+                    self.writer.startRunning()
+                }
             default:
                 break
             }

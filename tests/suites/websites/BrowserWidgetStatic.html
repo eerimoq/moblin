@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="Static"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      #image {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 400px;
+        height: 400px;
+      }
+      #canvas {
+        position: absolute;
+        left: 480px;
+        top: 0;
+      }
+      #background {
+        position: absolute;
+        left: 960px;
+        top: 0;
+        width: 400px;
+        height: 400px;
+        background-image: url("BrowserWidgetHighFpsVideo.jpg");
+        background-size: 400px 400px;
+      }
+      #ticker {
+        position: absolute;
+        left: 0;
+        bottom: 40px;
+        white-space: nowrap;
+        font: bold 48px sans-serif;
+        color: white;
+        text-shadow: 2px 2px 4px black;
+        animation: scroll 10s linear infinite;
+      }
+      @keyframes scroll {
+        from {
+          transform: translateX(1920px);
+        }
+        to {
+          transform: translateX(-100%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <img id="image" src="BrowserWidgetHighFpsVideo.jpg" />
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <div id="background"></div>
+    <div id="ticker">Thanks for watching! Follow for more IRL streams.</div>
+    <script>
+      const canvasImage = new Image();
+      const context = document.getElementById("canvas").getContext("2d");
+      let animationFrames = 0;
+
+      function draw() {
+        animationFrames += 1;
+        context.clearRect(0, 0, 400, 400);
+        context.drawImage(canvasImage, 0, 0, 400, 400);
+        requestAnimationFrame(draw);
+      }
+
+      canvasImage.onload = () => {
+        requestAnimationFrame(draw);
+        setTimeout(() => {
+          if (animationFrames < 60) {
+            browserWidgetReport(`error: Only ${animationFrames} animation frames in 3 seconds`);
+          } else {
+            browserWidgetReport("ok");
+          }
+        }, 3000);
+      };
+      canvasImage.src = "BrowserWidgetHighFpsVideo.jpg";
+    </script>
+  </body>
+</html>

@@ -239,10 +239,12 @@ private struct VkVideoLiveStreamEditRequest: Encodable {
     let stream: VkVideoLiveStreamEditStream
 }
 
+@MainActor
 protocol VkVideoLiveApiDelegate: AnyObject {
     func vkVideoLiveApiUnauthorized()
 }
 
+@MainActor
 class VkVideoLiveApi {
     private let accessToken: String
     weak var delegate: (any VkVideoLiveApiDelegate)?

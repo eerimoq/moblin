@@ -1,5 +1,6 @@
-@preconcurrency import AVFoundation
+import AVFoundation
 import AVKit
+import HealthKit
 import MapKit
 import Network
 import SwiftUI
@@ -13,6 +14,16 @@ let controlBarQuickButtonNameSingleColumnSize = 12.0
 let controlBarQuickButtonSingleQuickButtonSize = 60.0
 let stealthModeButtonSize = 80.0
 let maximumNumberOfWatchChatMessages = 50
+let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
+let distanceCyclingType = HKQuantityType.quantityType(forIdentifier: .distanceCycling)!
+let distanceWalkingRunningType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
+let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+let runningPowerType = HKQuantityType.quantityType(forIdentifier: .runningPower)!
+@available(iOS 17.0, watchOS 10.0, *)
+let cyclingPowerType = HKQuantityType.quantityType(forIdentifier: .cyclingPower)!
+@available(iOS 17.0, watchOS 10.0, *)
+let cyclingCadenceType = HKQuantityType.quantityType(forIdentifier: .cyclingCadence)!
 let personalHotspotLocalAddress = "172.20.10.1"
 let backgroundColor = Color(white: 0, opacity: 0.4)
 let scoreboardBlueColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC).color()
@@ -32,6 +43,10 @@ extension String {
         let beginIndex = index(startIndex, offsetBy: begin)
         let endIndex = index(startIndex, offsetBy: end)
         return String(self[beginIndex ..< endIndex])
+    }
+
+    func replace(_ of: String, _ with: String) -> String {
+        replacingOccurrences(of: of, with: with)
     }
 }
 
@@ -58,7 +73,7 @@ func makeRtmpStreamKey(url: String) -> String {
 }
 
 func cleanUrl(url value: String) -> String {
-    let stripped = value.replacingOccurrences(of: " ", with: "")
+    let stripped = value.replace(" ", "")
     guard var components = URLComponents(string: stripped) else {
         return stripped
     }
@@ -103,8 +118,8 @@ var speedFormatterUnit: ByteCountFormatter {
 func formatBytesPerSecond(speed: Int64) -> String {
     let value = speedFormatterValue.string(fromByteCount: speed)
     var unit = speedFormatterUnit.string(fromByteCount: speed)
-    unit = unit.replacingOccurrences(of: "bytes", with: "bps")
-    unit = unit.replacingOccurrences(of: "byte", with: "bps")
+    unit = unit.replace("bytes", "bps")
+    unit = unit.replace("byte", "bps")
     if unit.count == 2 {
         unit = "\(unit.remove(at: unit.startIndex))bps"
     }
@@ -264,9 +279,28 @@ func formatThreeDecimals(_ value: some BinaryFloatingPoint) -> String {
     String(format: "%.03f", Double(value))
 }
 
+func formatFourDecimals(_ value: some BinaryFloatingPoint) -> String {
+    String(format: "%.04f", Double(value))
+}
+
+extension Decodable where Self: Encodable {
+    func deepCopy() -> Self? {
+        guard let data = try? JSONEncoder().encode(self) else {
+            return nil
+        }
+        return try? JSONDecoder().decode(Self.self, from: data)
+    }
+}
+
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         min(max(self, limits.lowerBound), limits.upperBound)
+    }
+}
+
+extension FloatingPoint {
+    func clamped(to limits: ClosedRange<Self>) -> Self {
+        isNaN ? limits.lowerBound : min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
 
@@ -311,23 +345,13 @@ extension HTTPURLResponse {
     var isUnauthorized: Bool {
         statusCode == 401
     }
-}
 
-func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
-    let (data, response) = try await URLSession.shared.data(from: from)
-    if let response = response.http {
-        return (data, response)
-    } else {
-        throw "Not an HTTP response"
+    var isForbidden: Bool {
+        statusCode == 403
     }
-}
 
-func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-    let (data, response) = try await URLSession.shared.data(for: request)
-    if let response = response.http {
-        return (data, response)
-    } else {
-        throw "Not an HTTP response"
+    var isTooManyRequests: Bool {
+        statusCode == 429
     }
 }
 
@@ -477,10 +501,7 @@ extension Data {
             return nil
         }
         return withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> CMBlockBuffer? in
-            guard let baseAddress = buffer.baseAddress else {
-                return nil
-            }
-            guard CMBlockBufferCreateWithMemoryBlock(
+            guard let baseAddress = buffer.baseAddress, CMBlockBufferCreateWithMemoryBlock(
                 allocator: kCFAllocatorDefault,
                 memoryBlock: nil,
                 blockLength: length,
@@ -490,10 +511,7 @@ extension Data {
                 dataLength: length,
                 flags: 0,
                 blockBufferOut: &blockBuffer
-            ) == noErr, let blockBuffer else {
-                return nil
-            }
-            guard CMBlockBufferReplaceDataBytes(
+            ) == noErr, let blockBuffer, CMBlockBufferReplaceDataBytes(
                 with: baseAddress.advanced(by: advancedBy),
                 blockBuffer: blockBuffer,
                 offsetIntoDestination: 0,
@@ -583,11 +601,9 @@ func formatAudioLevelDb(level: Float) -> String {
     String(localized: "\(Int(level)) dB,")
 }
 
-func formatAudioLevel(level: Float) -> String {
-    if level.isNaN {
+func formatAudioLevel(level: Float, muted: Bool) -> String {
+    if muted {
         "Muted,"
-    } else if level == .infinity {
-        "Unknown,"
     } else {
         formatAudioLevelDb(level: level)
     }
@@ -606,17 +622,17 @@ let noValue = ""
 func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
     switch interfaceType {
     case .other:
-        return "questionmark"
+        "questionmark"
     case .wifi:
-        return "wifi"
+        "wifi"
     case .cellular:
-        return "antenna.radiowaves.left.and.right"
+        "antenna.radiowaves.left.and.right"
     case .wiredEthernet:
-        return "cable.coaxial"
+        "cable.coaxial"
     case .loopback:
-        return "questionmark"
+        "questionmark"
     @unknown default:
-        return "questionmark"
+        "questionmark"
     }
 }
 
@@ -657,6 +673,82 @@ extension String {
     }
 }
 
+private func moda(_ x: CGFloat, m: CGFloat) -> CGFloat {
+    (x.truncatingRemainder(dividingBy: m) + m).truncatingRemainder(dividingBy: m)
+}
+
+private struct HSL {
+    var hue: CGFloat = 0.0
+    var saturation: CGFloat = 0.0
+    var lightness: CGFloat = 0.0
+
+    init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
+        self.hue = hue.truncatingRemainder(dividingBy: 360.0) / 360.0
+        self.saturation = saturation.clamped(to: 0 ... 1)
+        self.lightness = lightness.clamped(to: 0 ... 1)
+    }
+
+    init(color: RgbColor) {
+        let red = CGFloat(color.red) / 255
+        let green = CGFloat(color.green) / 255
+        let blue = CGFloat(color.blue) / 255
+        let maximum = max(red, max(green, blue))
+        let minimum = min(red, min(green, blue))
+        let delta = maximum - minimum
+        hue = 0.0
+        saturation = 0.0
+        lightness = (maximum + minimum) / 2.0
+
+        if delta != 0.0 {
+            if lightness < 0.5 {
+                saturation = delta / (maximum + minimum)
+            } else {
+                saturation = delta / (2.0 - maximum - minimum)
+            }
+            if red == maximum {
+                hue = (green - blue) / delta
+                if green < blue {
+                    hue += 6.0
+                }
+            } else if green == maximum {
+                hue = ((blue - red) / delta) + 2.0
+            } else if blue == maximum {
+                hue = ((red - green) / delta) + 4.0
+            }
+        }
+        hue /= 6.0
+    }
+
+    func lighter(amount: CGFloat) -> HSL {
+        HSL(hue: hue * 360.0, saturation: saturation, lightness: lightness + amount)
+    }
+
+    func toRgbColor() -> RgbColor {
+        let m2 = if lightness <= 0.5 {
+            lightness * (saturation + 1.0)
+        } else {
+            (lightness + saturation) - (lightness * saturation)
+        }
+        let m1 = (lightness * 2.0) - m2
+        let r = hueToRGB(m1: m1, m2: m2, h: hue + (1.0 / 3.0))
+        let g = hueToRGB(m1: m1, m2: m2, h: hue)
+        let b = hueToRGB(m1: m1, m2: m2, h: hue - (1.0 / 3.0))
+        return RgbColor(red: Int(r * 255), green: Int(g * 255), blue: Int(b * 255), opacity: nil)
+    }
+
+    private func hueToRGB(m1: CGFloat, m2: CGFloat, h: CGFloat) -> CGFloat {
+        let hue = moda(h, m: 1)
+        if hue * 6 < 1.0 {
+            return m1 + ((m2 - m1) * hue * 6.0)
+        } else if hue * 2.0 < 1.0 {
+            return m2
+        } else if hue * 3.0 < 1.9999 {
+            return m1 + ((m2 - m1) * ((2.0 / 3.0) - hue) * 6.0)
+        }
+        return m1
+    }
+}
+
 struct RgbColor: Codable, Equatable {
     static let white = RgbColor(red: 255, green: 255, blue: 255)
     static let black = RgbColor(red: 0, green: 0, blue: 0)
@@ -664,7 +756,6 @@ struct RgbColor: Codable, Equatable {
     let red: Int
     let green: Int
     let blue: Int
-    // May be nil
     let opacity: Double?
 
     init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
@@ -674,12 +765,24 @@ struct RgbColor: Codable, Equatable {
         self.opacity = opacity
     }
 
+    func isDark() -> Bool {
+        (red * 299) + (green * 587) + (blue * 114) < 500 * 255 / 2
+    }
+
     func makeReadableOnDarkBackground() -> RgbColor {
-        let threshold = 100
-        guard red < threshold, green < threshold, blue < threshold else {
-            return self
+        if true {
+            if isDark() {
+                return HSL(color: self).lighter(amount: 0.45).toRgbColor()
+            } else {
+                return self
+            }
+        } else {
+            let threshold = 100
+            guard red < threshold, green < threshold, blue < threshold else {
+                return self
+            }
+            return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
         }
-        return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
     }
 
     func withOpacity(opacity: Double?) -> RgbColor {
@@ -717,6 +820,15 @@ extension RgbColor {
         )
     }
 
+    func uiColor() -> UIColor {
+        UIColor(
+            red: colorScale(red),
+            green: colorScale(green),
+            blue: colorScale(blue),
+            alpha: opacity ?? 1.0
+        )
+    }
+
     func hue() -> Double {
         let color = UIColor(red: colorScale(red), green: colorScale(green), blue: colorScale(blue), alpha: 1)
         var hue: CGFloat = 0
@@ -727,10 +839,7 @@ extension RgbColor {
 
 extension Color {
     func toRgb() -> RgbColor? {
-        guard let components = UIColor(self).cgColor.components else {
-            return nil
-        }
-        guard components.count >= 3 else {
+        guard let components = UIColor(self).cgColor.components, components.count >= 3 else {
             return nil
         }
         return RgbColor(
@@ -772,7 +881,22 @@ extension KeyedEncodingContainer {
 }
 
 extension KeyedDecodingContainer {
-    func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T {
-        (try? decode(type, forKey: key)) ?? defaultValue
+    func decode<T: Decodable>(_ key: KeyedDecodingContainer<K>.Key,
+                              _ type: T.Type,
+                              _ defaultValue: @autoclosure () -> T) -> T
+    {
+        (try? decode(type, forKey: key)) ?? defaultValue()
+    }
+
+    func decode<T: Decodable>(
+        _ key: KeyedDecodingContainer<K>.Key,
+        _ type: T.Type,
+        _ defaultValue: @autoclosure () -> T,
+        _ isValid: (T) -> Bool
+    ) -> T {
+        guard let value = try? decode(type, forKey: key), isValid(value) else {
+            return defaultValue()
+        }
+        return value
     }
 }

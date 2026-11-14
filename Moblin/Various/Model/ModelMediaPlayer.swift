@@ -1,6 +1,7 @@
 import CoreMedia
 import Foundation
 
+@MainActor
 class MediaPlayerPlayer: ObservableObject {
     @Published var playing = false
     @Published var position: Float = 0
@@ -32,15 +33,15 @@ extension Model {
     }
 
     func addMediaPlayer(settings: SettingsMediaPlayer) {
-        let mediaPlayer = MediaPlayer(settings: settings, mediaStorage: mediaStorage)
+        let mediaPlayer = MediaPlayer(settings: settings,
+                                      mediaStorage: mediaStorage,
+                                      colorRange: stream.colorRange)
         mediaPlayer.delegate = self
         mediaPlayers[settings.id] = mediaPlayer
-        updateMicsListAsync()
     }
 
     func deleteMediaPlayer(playerId: UUID) {
         mediaPlayers.removeValue(forKey: playerId)
-        updateMicsListAsync()
     }
 
     func updateMediaPlayerSettings(playerId: UUID, settings: SettingsMediaPlayer) {
@@ -76,13 +77,9 @@ extension Model {
     }
 
     func getCurrentMediaPlayer() -> MediaPlayer? {
-        guard let scene = getSelectedScene() else {
-            return nil
-        }
-        guard scene.videoSource.cameraPosition == .mediaPlayer else {
-            return nil
-        }
-        guard let mediaPlayerSettings = getMediaPlayer(id: scene.videoSource.mediaPlayerCameraId) else {
+        guard let scene = getSelectedScene(), scene.videoSource.cameraPosition == .mediaPlayer,
+              let mediaPlayerSettings = getMediaPlayer(id: scene.videoSource.mediaPlayerCameraId)
+        else {
             return nil
         }
         return mediaPlayers[mediaPlayerSettings.id]
@@ -94,10 +91,15 @@ extension Model {
         }
     }
 
-    func playerCameras() -> [Camera] {
-        database.mediaPlayers.players.map {
+    func updateMediaPlayerVideoSources() {
+        videoSources.mediaPlayer = database.mediaPlayers.players.map {
             Camera(id: $0.id.uuidString, name: $0.camera())
         }
+    }
+
+    func updateMediaPlayerVideoSourcesAndMics() {
+        updateMediaPlayerVideoSources()
+        updateMediaPlayerMics()
     }
 
     func getMediaPlayer(idString: String) -> SettingsMediaPlayer? {
@@ -113,20 +115,20 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency MediaPlayerDelegate {
-    func mediaPlayerFileLoaded(playerId: UUID, name: String) {
+extension Model: MediaPlayerDelegate {
+    nonisolated func mediaPlayerFileLoaded(playerId: UUID, name: String) {
         let name = "Media player: \(name)"
         let latency = mediaPlayerLatency
         media.addBufferedVideo(cameraId: playerId, name: name, latency: latency)
         media.addBufferedAudio(cameraId: playerId, name: name, latency: latency)
     }
 
-    func mediaPlayerFileUnloaded(playerId: UUID) {
+    nonisolated func mediaPlayerFileUnloaded(playerId: UUID) {
         media.removeBufferedVideo(cameraId: playerId)
         media.removeBufferedAudio(cameraId: playerId)
     }
 
-    func mediaPlayerStateUpdate(
+    nonisolated func mediaPlayerStateUpdate(
         playerId _: UUID,
         name: String,
         playing: Bool,
@@ -143,11 +145,11 @@ extension Model: @preconcurrency MediaPlayerDelegate {
         }
     }
 
-    func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func mediaPlayerVideoBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 
-    func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func mediaPlayerAudioBuffer(playerId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: playerId, sampleBuffer: sampleBuffer)
     }
 }

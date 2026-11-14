@@ -68,7 +68,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Widget Moblin"
+            "value" : "MoblinWidget"
           }
         },
         "nl" : {
@@ -116,7 +116,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si"
+            "value" : "Sì"
           }
         },
         "nl" : {
@@ -182,7 +182,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si"
+            "value" : "Sì"
           }
         },
         "nl" : {
@@ -236,7 +236,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si"
+            "value" : "Sì"
           }
         },
         "nl" : {
@@ -290,7 +290,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Si"
+            "value" : "Sì"
           }
         },
         "nl" : {

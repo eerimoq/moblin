@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WhepClientStreamSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var whepClient: SettingsWhepClient
     @ObservedObject var stream: SettingsWhepClientStream
 
@@ -10,6 +10,9 @@ struct WhepClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: whepClient.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateWhepVideoSourcesAndMics()
+                        }
                         .disabled(stream.enabled)
                 }
                 Section {

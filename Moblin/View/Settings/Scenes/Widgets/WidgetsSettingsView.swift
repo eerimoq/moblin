@@ -21,20 +21,16 @@ private struct WidgetsSettingsItemView: View {
                 }
             }
             .onChange(of: widget.enabled) { _ in
-                model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+                model.widgetEnabledChanged(widget: widget)
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             SwipeLeftToDeleteButtonView {
-                database.widgets.removeAll(where: { $0 === widget })
-                model.removeDeadWidgetsFromScenes()
-                model.resetSelectedScene()
+                model.deleteWidget(widget: widget)
             }
         }
         .contextMenuDeleteButton {
-            database.widgets.removeAll(where: { $0 === widget })
-            model.removeDeadWidgetsFromScenes()
-            model.resetSelectedScene()
+            model.deleteWidget(widget: widget)
         }
     }
 }
@@ -57,13 +53,9 @@ struct WidgetsSettingsView: View {
                 model.createWidgetWizard.reset()
             }
             .sheet(isPresented: $presentingCreateWizard) {
-                NavigationStack {
-                    WidgetWizardSettingsView(model: model,
-                                             database: database,
-                                             createWidgetWizard: model.createWidgetWizard,
-                                             presentingCreateWizard: $presentingCreateWizard)
-                        .navigationBarTitleDisplayMode(.inline)
-                }
+                WidgetWizardSheetView(model: model,
+                                      database: database,
+                                      presentingCreateWizard: $presentingCreateWizard)
             }
         } header: {
             Text("Widgets")

@@ -12,7 +12,6 @@
 		0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0318D3692CF51D6900E12F3B /* SwiftProtobuf */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032303212F671CC600790A63 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 03AA00012F6500000000AA00 /* ZipArchive */; };
-		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
 		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
 		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
 		035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */ = {isa = PBXBuildFile; productRef = 035503F12FE7C9B500067E65 /* StreamDeckKit */; };
@@ -26,20 +25,22 @@
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0377239A2DE35191007D040D /* VRMKit in Frameworks */ = {isa = PBXBuildFile; productRef = 037723992DE35191007D040D /* VRMKit */; };
-		0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMSceneKit */; };
+		0377239C2DE35191007D040D /* VRMRealityKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0377239B2DE35191007D040D /* VRMRealityKit */; };
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
+		03A7A6A130D00000000000A1 /* Ayagami in Frameworks */ = {isa = PBXBuildFile; productRef = 03A7A6A130D00000000000A2 /* Ayagami */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
 		03AA0007000000000000AA02 /* MoblinLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03AC6B952D17786700832A7E /* TrueTime in Frameworks */ = {isa = PBXBuildFile; productRef = 03AC6B942D17786700832A7E /* TrueTime */; };
 		03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */ = {isa = PBXBuildFile; productRef = 03B279822D45EB9C007DEDB2 /* SwiftCube */; };
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
+		03BB0006000000000000BB00 /* MoblinMac.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 03BB0005000000000000BB00 /* MoblinMac.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC11662AE5654700C38FC4 /* SDWebImageSwiftUI */; };
 		03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */; };
-		03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03DC6B162F8A1D6700E12FAB /* DockKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
+		03FA5E0130C0000000000003 /* FuzzyMatchingSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03FA5E0130C0000000000002 /* FuzzyMatchingSwift */; };
 		882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */ = {isa = PBXBuildFile; productRef = 882D0C152DF76F5B0035BFAF /* BlackSharkLib */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 03AA0002000000000000AA02;
 			remoteInfo = MoblinLiveActivity;
+		};
+		03BB0007000000000000BB00 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03BB0001000000000000BB00;
+			remoteInfo = MoblinMac;
 		};
 		03E649472E634D2800728501 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -105,6 +113,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03BB0010000000000000BB00 /* Embed PlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				03BB0006000000000000BB00 /* MoblinMac.bundle in Embed PlugIns */,
+			);
+			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03ECDF572B8E4E6000BD920E /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -126,8 +145,9 @@
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		03AA0006000000000000AA02 /* MoblinLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		03DC6B162F8A1D6700E12FAB /* DockKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DockKit.framework; path = System/Library/Frameworks/DockKit.framework; sourceTree = SDKROOT; };
+		03BB0005000000000000BB00 /* MoblinMac.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinMac.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		03E649432E634D2800728501 /* MoblinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		03E64A002E634D2800728502 /* Moblin.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Moblin.xctestplan; sourceTree = "<group>"; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -138,6 +158,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -152,6 +173,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -166,6 +188,7 @@
 				Base.xcconfig,
 				Moblin.xcconfig,
 				MoblinLiveActivity.xcconfig,
+				MoblinMac.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -257,6 +280,14 @@
 			);
 			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
 		};
+		03BB000A000000000000BB00 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"MoblinMac-InfoPlist.xcstrings",
+				MoblinMacStatusItem.swift,
+			);
+			target = 035E9E322A9A02D6009D4F5A /* Moblin */;
+		};
 		03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -274,6 +305,7 @@
 		037D9EFC2E38AC2300C0AF9A /* Moblin Widget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F022E38AC2300C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Widget"; sourceTree = "<group>"; };
 		037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F162E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9F172E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Screen Recording"; sourceTree = "<group>"; };
 		03AA000A000000000000AA02 /* Moblin Live Activity */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (03A0001F2E00000000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03AA000B000000000000AA02 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Live Activity"; sourceTree = "<group>"; };
+		03BB0009000000000000BB00 /* Moblin Mac */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (03BB000A000000000000BB00 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Mac"; sourceTree = "<group>"; };
 		03E649442E634D2800728501 /* MoblinTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MoblinTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -290,10 +322,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03DC6B172F8A1D6700E12FAB /* DockKit.framework in Frameworks */,
 				032303212F671CC600790A63 /* ZipArchive in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
-				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */,
 				03AC6B952D17786700832A7E /* TrueTime in Frameworks */,
@@ -301,18 +331,20 @@
 				0375F6EC2F53844C005BE7A8 /* DataChannel in Frameworks */,
 				035351962F1C27A500428DAC /* AppAuth in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
+				03FA5E0130C0000000000003 /* FuzzyMatchingSwift in Frameworks */,
 				0377239A2DE35191007D040D /* VRMKit in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				0375FD7B2F539AAC005BE7A8 /* Srt in Frameworks */,
 				0360FD162F228EEB00FF8847 /* MetalPetal in Frameworks */,
 				882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */,
 				0375F6EF2F539602005BE7A8 /* Srt in Frameworks */,
+				03A7A6A130D00000000000A1 /* Ayagami in Frameworks */,
 				035351942F1C271700428DAC /* AppAuthCore in Frameworks */,
 				0375F6E62F5354BE005BE7A8 /* Rist in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				035503F22FE7C9B500067E65 /* StreamDeckKit in Frameworks */,
-				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
+				0377239C2DE35191007D040D /* VRMRealityKit in Frameworks */,
 				0375F6E92F535715005BE7A8 /* Rist in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
 			);
@@ -328,6 +360,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		03AA0004000000000000AA02 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03BB0003000000000000BB00 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -359,7 +398,6 @@
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
 				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
-				03DC6B162F8A1D6700E12FAB /* DockKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -373,8 +411,10 @@
 				037D9EE42E38AC2000C0AF9A /* Moblin Watch */,
 				037D9EFC2E38AC2300C0AF9A /* Moblin Widget */,
 				03AA000A000000000000AA02 /* Moblin Live Activity */,
+				03BB0009000000000000BB00 /* Moblin Mac */,
 				037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */,
 				03E649442E634D2800728501 /* MoblinTests */,
+				03E64A002E634D2800728502 /* Moblin.xctestplan */,
 				035E9E342A9A02D6009D4F5A /* Products */,
 				035D372A2AB103E600045B92 /* Frameworks */,
 			);
@@ -389,6 +429,7 @@
 				0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */,
 				03E649432E634D2800728501 /* MoblinTests.xctest */,
 				03AA0006000000000000AA02 /* MoblinLiveActivity.appex */,
+				03BB0005000000000000BB00 /* MoblinMac.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -427,6 +468,7 @@
 				035E9E312A9A02D6009D4F5A /* Resources */,
 				03ECDF572B8E4E6000BD920E /* Embed Watch Content */,
 				0312E4382C00F24E00C6F878 /* Embed Foundation Extensions */,
+				03BB0010000000000000BB00 /* Embed PlugIns */,
 			);
 			buildRules = (
 			);
@@ -434,11 +476,13 @@
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
 				03AA0009000000000000AA02 /* PBXTargetDependency */,
+				03BB0008000000000000BB00 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				030AC5AF2F4988A000496F6F /* Config */,
 				037D9C902E38AC1600C0AF9A /* Moblin */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
+				03BB0009000000000000BB00 /* Moblin Mac */,
 			);
 			name = Moblin;
 			packageProductDependencies = (
@@ -448,13 +492,12 @@
 				03BC116A2AE56C2200C38FC4 /* SDWebImageWebPCoder */,
 				0320D8752AED36860030418F /* WrappingHStack */,
 				03B7DAB42BA640C100CEFC1B /* XMLCoder */,
-				033BEAC32C0FCC0B005F4E06 /* NWWebSocket */,
 				03F465EB2C441D1400630708 /* CrcSwift */,
 				0318D3692CF51D6900E12F3B /* SwiftProtobuf */,
 				03AC6B942D17786700832A7E /* TrueTime */,
 				03B279822D45EB9C007DEDB2 /* SwiftCube */,
 				037723992DE35191007D040D /* VRMKit */,
-				0377239B2DE35191007D040D /* VRMSceneKit */,
+				0377239B2DE35191007D040D /* VRMRealityKit */,
 				882D0C152DF76F5B0035BFAF /* BlackSharkLib */,
 				035351932F1C271700428DAC /* AppAuthCore */,
 				035351952F1C27A500428DAC /* AppAuth */,
@@ -466,6 +509,8 @@
 				0375FD7A2F539AAC005BE7A8 /* Srt */,
 				03AA00012F6500000000AA00 /* ZipArchive */,
 				035503F12FE7C9B500067E65 /* StreamDeckKit */,
+				03FA5E0130C0000000000002 /* FuzzyMatchingSwift */,
+				03A7A6A130D00000000000A2 /* Ayagami */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -510,6 +555,26 @@
 			productName = "Moblin Live Activity";
 			productReference = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		03BB0001000000000000BB00 /* MoblinMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03BB000D000000000000BB00 /* Build configuration list for PBXNativeTarget "MoblinMac" */;
+			buildPhases = (
+				03BB0002000000000000BB00 /* Sources */,
+				03BB0003000000000000BB00 /* Frameworks */,
+				03BB0004000000000000BB00 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				03BB0009000000000000BB00 /* Moblin Mac */,
+			);
+			name = MoblinMac;
+			productName = "Moblin Mac";
+			productReference = 03BB0005000000000000BB00 /* MoblinMac.bundle */;
+			productType = "com.apple.product-type.bundle";
 		};
 		03E649422E634D2800728501 /* MoblinTests */ = {
 			isa = PBXNativeTarget;
@@ -570,7 +635,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 2620;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					0312E42D2C00F24E00C6F878 = {
 						CreatedOnToolsVersion = 15.4;
@@ -583,6 +648,9 @@
 					};
 					03AA0002000000000000AA02 = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					03BB0001000000000000BB00 = {
+						CreatedOnToolsVersion = 26.0;
 					};
 					03E649422E634D2800728501 = {
 						CreatedOnToolsVersion = 16.4;
@@ -624,6 +692,7 @@
 				sk,
 				"zh-Hant-TW",
 				sl,
+				eo,
 			);
 			mainGroup = 035E9E2A2A9A02D6009D4F5A;
 			packageReferences = (
@@ -633,8 +702,8 @@
 				03BC11692AE56C2200C38FC4 /* XCRemoteSwiftPackageReference "SDWebImageWebPCoder" */,
 				0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 				03B7DAB32BA6409800CEFC1B /* XCRemoteSwiftPackageReference "XMLCoder" */,
-				033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */,
 				03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */,
+				03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */,
 				0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */,
 				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
@@ -647,6 +716,7 @@
 				0375FD792F539AAC005BE7A8 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 				03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */,
 				035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */,
+				03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -658,6 +728,7 @@
 				03AA0002000000000000AA02 /* MoblinLiveActivity */,
 				0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */,
 				03E649422E634D2800728501 /* MoblinTests */,
+				03BB0001000000000000BB00 /* MoblinMac */,
 			);
 		};
 /* End PBXProject section */
@@ -685,6 +756,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		03AA0005000000000000AA02 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03BB0004000000000000BB00 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -736,6 +814,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03BB0002000000000000BB00 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03E6493F2E634D2800728501 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -769,6 +854,12 @@
 			platformFilter = ios;
 			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
 			targetProxy = 03AA0008000000000000AA02 /* PBXContainerItemProxy */;
+		};
+		03BB0008000000000000BB00 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = maccatalyst;
+			target = 03BB0001000000000000BB00 /* MoblinMac */;
+			targetProxy = 03BB0007000000000000BB00 /* PBXContainerItemProxy */;
 		};
 		03E649482E634D2800728501 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -814,7 +905,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -848,7 +939,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1016,6 +1107,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Moblin uses Apple Music to play music while you stream.";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can show your heart rate on stream.";
@@ -1028,6 +1120,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
@@ -1049,7 +1142,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1083,6 +1176,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Moblin uses Apple Music to play music while you stream.";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "Moblin can show your heart rate on stream.";
@@ -1095,6 +1189,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Moblin shows selected images as overlays.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Moblin can add transcription to the stream.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
@@ -1116,7 +1211,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1151,7 +1246,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.2;
 			};
@@ -1186,7 +1281,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.2;
 			};
@@ -1219,7 +1314,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1250,8 +1345,55 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		03BB000B000000000000BB00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinMac.xcconfig;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Mac";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = MoblinMacStatusItem;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_NAME = MoblinMac;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_VERSION = 6.0;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		03BB000C000000000000BB00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinMac.xcconfig;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Mac";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = MoblinMacStatusItem;
+				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				PRODUCT_NAME = MoblinMac;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 6.0;
+				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
 		};
@@ -1270,7 +1412,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Moblin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Moblin";
 			};
@@ -1290,7 +1432,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Moblin.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Moblin";
 			};
@@ -1329,7 +1471,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.2;
 			};
@@ -1367,7 +1509,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 10.2;
 			};
@@ -1421,6 +1563,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		03BB000D000000000000BB00 /* Build configuration list for PBXNativeTarget "MoblinMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03BB000B000000000000BB00 /* Debug */,
+				03BB000C000000000000BB00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		03E649492E634D2800728501 /* Build configuration list for PBXNativeTarget "MoblinTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1458,20 +1609,12 @@
 				minimumVersion = 0.1.3;
 			};
 		};
-		033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eerimoq/NWWebSocket";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 3.0.0;
 			};
 		};
 		035503F02FE7C9B500067E65 /* XCRemoteSwiftPackageReference "streamdeck-kit-ipad" */ = {
@@ -1486,7 +1629,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/MetalPetal";
 			requirement = {
-				branch = master;
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -1516,10 +1659,10 @@
 		};
 		037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/eerimoq/VRMKit";
+			repositoryURL = "https://github.com/tattn/VRMKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = ec1ffe15d7da956c18cc699d34cb293ccc3e5703;
 			};
 		};
 		03A08B7A2AC295620018BA95 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
@@ -1527,6 +1670,14 @@
 			repositoryURL = "https://github.com/eerimoq/AlertToast.git";
 			requirement = {
 				branch = master;
+				kind = branch;
+			};
+		};
+		03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/AyagamiSwift";
+			requirement = {
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -1543,7 +1694,7 @@
 			repositoryURL = "https://github.com/adam-fowler/swift-zip-archive";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.6.4;
+				minimumVersion = 0.9.0;
 			};
 		};
 		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {
@@ -1594,12 +1745,20 @@
 				kind = branch;
 			};
 		};
+		03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/seanoshea/FuzzyMatchingSwift";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.11.1;
+			};
+		};
 		882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Spillmaker/BlackSharkLib.swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.1;
+				minimumVersion = 1.3.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1614,11 +1773,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0320D8742AED36860030418F /* XCRemoteSwiftPackageReference "WrappingHStack" */;
 			productName = WrappingHStack;
-		};
-		033BEAC32C0FCC0B005F4E06 /* NWWebSocket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
-			productName = NWWebSocket;
 		};
 		035351932F1C271700428DAC /* AppAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1668,10 +1822,10 @@
 			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
 			productName = VRMKit;
 		};
-		0377239B2DE35191007D040D /* VRMSceneKit */ = {
+		0377239B2DE35191007D040D /* VRMRealityKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */;
-			productName = VRMSceneKit;
+			productName = VRMRealityKit;
 		};
 		03A08B7B2AC295620018BA95 /* AlertToast */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1682,6 +1836,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
+		};
+		03A7A6A130D00000000000A2 /* Ayagami */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03A7A6A130D00000000000A0 /* XCRemoteSwiftPackageReference "AyagamiSwift" */;
+			productName = Ayagami;
 		};
 		03A974272AC137A000610E21 /* Collections */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1727,6 +1886,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */;
 			productName = CrcSwift;
+		};
+		03FA5E0130C0000000000002 /* FuzzyMatchingSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03FA5E0130C0000000000001 /* XCRemoteSwiftPackageReference "FuzzyMatchingSwift" */;
+			productName = FuzzyMatchingSwift;
 		};
 		882D0C152DF76F5B0035BFAF /* BlackSharkLib */ = {
 			isa = XCSwiftPackageProductDependency;

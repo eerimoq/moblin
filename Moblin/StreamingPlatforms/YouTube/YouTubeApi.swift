@@ -78,6 +78,7 @@ struct YouTubeApiListVideoStreamingDetails: Codable {
     let concurrentViewers: String?
     let actualStartTime: String?
     let actualEndTime: String?
+    let activeLiveChatId: String?
 
     func isLive() -> Bool {
         actualStartTime != nil && actualEndTime == nil
@@ -108,8 +109,10 @@ struct YouTubeApiChannelListResponse: Codable {
     let items: [YouTubeApiChannel]
 }
 
+@MainActor
 class YouTubeApi {
     private let accessToken: String
+    var onUnauthorized: (() -> Void)?
 
     init(accessToken: String) {
         self.accessToken = accessToken
@@ -299,6 +302,36 @@ class YouTubeApi {
         }
     }
 
+    func insertLiveChatBan(liveChatId: String,
+                           channelId: String,
+                           duration: Int?,
+                           onCompleted: @escaping (NetworkResponse<Void>) -> Void)
+    {
+        let subPath = makeUrl("liveChat/bans", [("part", "snippet")])
+        var snippet: [String: Any] = [
+            "liveChatId": liveChatId,
+            "bannedUserDetails": [
+                "channelId": channelId,
+            ],
+        ]
+        if let duration {
+            snippet["type"] = "temporary"
+            snippet["banDurationSeconds"] = duration
+        } else {
+            snippet["type"] = "permanent"
+        }
+        doPost(subPath: subPath, body: serialize(["snippet": snippet])) {
+            switch $0 {
+            case .success:
+                onCompleted(.success(()))
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
+    }
+
     private func doGet(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {
         guard let url = URL(string: "https://youtube.googleapis.com/youtube/v3/\(subPath)") else {
             return
@@ -329,6 +362,7 @@ class YouTubeApi {
                     logger.info("youtube-api: Error response body: \(data)")
                 }
                 if response?.http?.isUnauthorized == true {
+                    self.onUnauthorized?()
                     onComplete(.authError)
                 } else {
                     onComplete(.error)

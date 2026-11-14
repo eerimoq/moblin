@@ -41,9 +41,49 @@ private struct PasswordView: View {
     }
 }
 
-private struct RemoteControlSettingsStreamerView: View {
+private struct AssistantUrlSettingsView: View {
     let model: Model
     @ObservedObject var streamer: SettingsRemoteControlStreamer
+    @ObservedObject var url: SettingsRemoteControlStreamerUrl
+
+    var body: some View {
+        Button {
+            streamer.name = url.name
+            streamer.url = url.url
+            model.reloadRemoteControlStreamer()
+            model.reloadConnections()
+        } label: {
+            HStack {
+                Text(url.name)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text(url.url)
+                    .foregroundColor(.primary)
+                if streamer.url == url.url {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .contextMenu {
+            if isMac() {
+                ContextMenuDeleteButtonView {
+                    streamer.savedUrls.removeAll(where: { $0 === url })
+                }
+            }
+        }
+    }
+}
+
+private struct UrlSettingsInnerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
+
+    private func submitStreamerName(name: String) {
+        streamer.name = name
+        streamer.savedUrls.first(where: { $0.url == streamer.url })?.name = name
+    }
 
     private func submitStreamerUrl(value: String) {
         guard isValidWebSocketUrl(url: value) == nil else {
@@ -52,7 +92,55 @@ private struct RemoteControlSettingsStreamerView: View {
         streamer.url = value
         model.reloadRemoteControlStreamer()
         model.reloadConnections()
+        guard !streamer.savedUrls.contains(where: { $0.url == value }) else {
+            return
+        }
+        let url = SettingsRemoteControlStreamerUrl()
+        url.name = streamer.name
+        url.url = value
+        streamer.savedUrls.append(url)
     }
+
+    var body: some View {
+        Form {
+            Section {
+                NameEditView(name: $streamer.name)
+                    .onChange(of: streamer.name) { name in
+                        submitStreamerName(name: name)
+                    }
+                TextEditNavigationView(
+                    title: String(localized: "URL"),
+                    value: streamer.url,
+                    onChange: isValidWebSocketUrl,
+                    onSubmit: submitStreamerUrl,
+                    footers: [
+                        String(
+                            localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
+                        ),
+                    ],
+                    placeholder: "ws://32.143.32.12:\(DefaultTcpPorts.remoteControlAssistant)"
+                )
+            }
+            Section {
+                ForEach(streamer.savedUrls) { url in
+                    AssistantUrlSettingsView(model: model, streamer: streamer, url: url)
+                }
+                .onDelete { offsets in
+                    streamer.savedUrls.remove(atOffsets: offsets)
+                }
+            } header: {
+                Text("Saved URLs")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "a URL"))
+            }
+        }
+        .navigationTitle("Assistant")
+    }
+}
+
+private struct RemoteControlSettingsStreamerView: View {
+    let model: Model
+    @ObservedObject var streamer: SettingsRemoteControlStreamer
 
     private func submitStreamerPreviewFps(value: Float) {
         streamer.previewFps = value
@@ -70,18 +158,14 @@ private struct RemoteControlSettingsStreamerView: View {
                     model.reloadRemoteControlStreamer()
                     model.reloadConnections()
                 }
-            TextEditNavigationView(
-                title: String(localized: "Assistant URL"),
-                value: streamer.url,
-                onChange: isValidWebSocketUrl,
-                onSubmit: submitStreamerUrl,
-                footers: [
-                    String(
-                        localized: "Enter assistant's address and port. For example ws://132.23.43.43:2345."
-                    ),
-                ],
-                placeholder: "ws://32.143.32.12:2345"
-            )
+            NavigationLink {
+                UrlSettingsInnerView(model: model,
+                                     database: model.database,
+                                     streamer: streamer)
+            } label: {
+                TextItemLocalizedView(name: "Assistant",
+                                      value: streamer.name.isEmpty ? streamer.url : streamer.name)
+            }
         } footer: {
             Text("""
             Enable to allow an assistant to monitor and control this device from a \
@@ -159,9 +243,10 @@ private struct RemoteControlUrlsView: View {
 }
 
 private struct StreamerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
     @ObservedObject var streamer: SettingsRemoteControlAssistant
+    @ObservedObject var streamerRelay: SettingsRemoteControlServerRelay
 
     private func reloadIfEnabled() {
         guard streamer.id == remoteControlSettings.selectedStreamer else {
@@ -170,9 +255,9 @@ private struct StreamerView: View {
         let assistant = model.database.remoteControl.assistant
         assistant.enabled = streamer.enabled
         assistant.port = streamer.port
-        assistant.relay.enabled = streamer.relay.enabled
-        assistant.relay.baseUrl = streamer.relay.baseUrl
-        assistant.relay.bridgeId = streamer.relay.bridgeId
+        assistant.relay.enabled = streamerRelay.enabled
+        assistant.relay.baseUrl = streamerRelay.baseUrl
+        assistant.relay.bridgeId = streamerRelay.bridgeId
         model.reloadRemoteControlRelay()
         model.reloadRemoteControlAssistant()
     }
@@ -186,19 +271,19 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayUrl(value: String) {
-        streamer.relay.baseUrl = value
+        streamerRelay.baseUrl = value
         reloadIfEnabled()
     }
 
     private func changeAssistantRelayBridgeId(value: String) -> String? {
-        guard !value.isEmpty else {
+        guard SettingsRemoteControlServerRelay.isValidBridgeId(bridgeId: value) else {
             return String(localized: "Empty")
         }
         return nil
     }
 
     private func submitAssistantRelayBridgeId(value: String) {
-        streamer.relay.bridgeId = value
+        streamerRelay.bridgeId = value
         reloadIfEnabled()
     }
 
@@ -219,25 +304,25 @@ private struct StreamerView: View {
                         onChange: isValidPort,
                         onSubmit: submitAssistantPort,
                         keyboardType: .numbersAndPunctuation,
-                        placeholder: "2345"
+                        placeholder: String(DefaultTcpPorts.remoteControlAssistant)
                     )
                 } header: {
                     Text("Assistant")
                 }
                 Section {
-                    Toggle("Enabled", isOn: $streamer.relay.enabled)
-                        .onChange(of: streamer.enabled) { _ in
+                    Toggle("Enabled", isOn: $streamerRelay.enabled)
+                        .onChange(of: streamerRelay.enabled) { _ in
                             reloadIfEnabled()
                         }
                     TextEditNavigationView(
                         title: String(localized: "Base URL"),
-                        value: streamer.relay.baseUrl,
+                        value: streamerRelay.baseUrl,
                         onChange: isValidWebSocketUrl,
                         onSubmit: submitAssistantRelayUrl
                     )
                     TextEditNavigationView(
                         title: String(localized: "Bridge id"),
-                        value: streamer.relay.bridgeId,
+                        value: streamerRelay.bridgeId,
                         onChange: changeAssistantRelayBridgeId,
                         onSubmit: submitAssistantRelayBridgeId,
                         sensitive: true
@@ -248,7 +333,7 @@ private struct StreamerView: View {
                     Text("Use a relay server when the assistant is behind CGNAT or similar.")
                 }
                 if streamer.enabled {
-                    RemoteControlUrlsView(relay: streamer.relay,
+                    RemoteControlUrlsView(relay: streamerRelay,
                                           port: $streamer.port,
                                           status: model.statusOther)
                 }
@@ -293,10 +378,7 @@ struct RemoteControlStreamersView: View {
 
     private func deleteStreamer(at offsets: IndexSet) {
         remoteControlSettings.streamers.remove(atOffsets: offsets)
-        guard remoteControlSettings.selectedStreamer != nil else {
-            return
-        }
-        guard !remoteControlSettings.streamers
+        guard remoteControlSettings.selectedStreamer != nil, !remoteControlSettings.streamers
             .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
         else {
             return
@@ -326,12 +408,17 @@ struct RemoteControlStreamersView: View {
         Section {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
-                    StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
-                        .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(remoteControlSettings.streamers, streamer.id) {
-                                deleteStreamer(at: offsets)
-                            }
+                    StreamerView(
+                        model: model,
+                        remoteControlSettings: remoteControlSettings,
+                        streamer: streamer,
+                        streamerRelay: streamer.relay
+                    )
+                    .contextMenuDeleteButton {
+                        if let offsets = makeOffsets(remoteControlSettings.streamers, streamer.id) {
+                            deleteStreamer(at: offsets)
                         }
+                    }
                 }
                 .onDelete(perform: deleteStreamer)
                 .onMove { froms, to in
@@ -343,7 +430,7 @@ struct RemoteControlStreamersView: View {
                 streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
                                                existingNames: remoteControlSettings.streamers)
                 streamer.enabled = true
-                streamer.port = 2345
+                streamer.port = DefaultTcpPorts.remoteControlAssistant
                 remoteControlSettings.streamers.append(streamer)
             }
         } footer: {
@@ -460,6 +547,19 @@ struct RemoteControlSettingsWebView: View {
     }
 }
 
+private func drawRemoteControlCard(context: GraphicsContext, time: Double) {
+    var path = Path()
+    path.move(to: CGPoint(x: 56, y: 110))
+    path.addQuadCurve(to: CGPoint(x: 206, y: 110), control: CGPoint(x: 130, y: 10))
+    strokeTradingCardDash(context: context,
+                          path: path,
+                          color: Color(red: 0xFF / 255, green: 0xD1 / 255, blue: 0x66 / 255),
+                          lineWidth: 2.5,
+                          dash: 6,
+                          gap: 8,
+                          time: time)
+}
+
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -473,6 +573,11 @@ struct RemoteControlSettingsView: View {
 
     var body: some View {
         Form {
+            Section {
+                TradingCardView(name: "RemoteControl",
+                                background: Color(red: 0x0F / 255, green: 0x1B / 255, blue: 0x2D / 255),
+                                draw: drawRemoteControlCard)
+            }
             Section {
                 Text("Control and monitor Moblin from another device.")
             }

@@ -1,19 +1,15 @@
 import AVFoundation
 import Collections
+import MetalPetal
 import SwiftUI
 import Vision
-import WrappingHStack
-
-private struct Word: Identifiable {
-    let id: UUID = .init()
-    let text: String
-}
 
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
     case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
+    case twitchSubscriptionUpgrade(TwitchEventSubNotificationChannelSubscriptionUpgradeEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchRedemption(TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
@@ -22,6 +18,7 @@ enum AlertsEffectAlert {
     case kickHost(event: KickPusherStreamHostEvent)
     case kickReward(event: KickPusherRewardRedeemedEvent)
     case kickKicks(event: KickPusherKicksGiftedEvent)
+    case moblinCloudTip(name: String, message: String, amount: String, currency: String)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
     case quickButton
@@ -29,17 +26,22 @@ enum AlertsEffectAlert {
 
 protocol AlertsEffectDelegate: AnyObject {
     func alertsMakeErrorToast(title: String)
+    @MainActor func alertsMakeTwitchSegments(text: String,
+                                             fragments: [TwitchEventSubMessageFragment],
+                                             bits: String?) -> [ChatPostSegment]
+    @MainActor func alertsMakeKickSegments(text: String) -> [ChatPostSegment]
+    @MainActor func alertsTtsMonsterApiToken() -> String
+    @MainActor func alertsElevenLabsApiKey() -> String
 }
 
 private struct Pipeline {
     var playing: Bool = false
-    var messageImage: CIImage?
+    var messageImage: EffectImageCiImage?
     var images: any AlertsEffectImages = AlertsEffectGifImages()
-    var x: Double = 0
-    var y: Double = 0
+    var layout = SettingsWidgetLayout()
     var landmarkSettings: AlertsEffectLandmarkSettings?
 
-    mutating func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+    mutating func getImage(_ presentationTimeStamp: Double) -> EffectImageCiImage? {
         defer {
             playing = !images.isEmpty()
         }
@@ -49,11 +51,12 @@ private struct Pipeline {
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var audioPlayer: AudioPlayer?
+    private var textToSpeechAudioPlayer: AudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
-    private var synthesizer = createSpeechSynthesizer()
+    private let synthesizer = SpeechSynthesizer(queue: .main)
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
-    private weak var delegate: (any AlertsEffectDelegate)?
+    private weak let delegate: (any AlertsEffectDelegate)?
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
@@ -68,6 +71,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var kickHostMedia = AlertsEffectMedia()
     private var kickRewardMedia = AlertsEffectMedia()
     private var kickGiftsMedias: [AlertsEffectMedia] = []
+    private var moblinCloudTipMedia = AlertsEffectMedia()
     private var chatBotCommandsMedias: [AlertsEffectMedia] = []
     private var speechToTextStringsMedias: [AlertsEffectMedia] = []
     private var quickButtonMedias = AlertsEffectMedia()
@@ -75,6 +79,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var aiBaseUrl: URL?
     private var pipeline = Pipeline()
+    private var messageLineView: ChatLineUiView?
 
     init(
         settings: SettingsWidgetAlerts,
@@ -106,9 +111,33 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return image
         }
         if let landmarkSettings = pipeline.landmarkSettings {
-            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
+            return executePositionFace(image,
+                                       info.sceneFaceDetections(),
+                                       alertImage.getCiImage(),
+                                       landmarkSettings)
         } else {
-            return executePositionScene(image, alertImage, messageImage, pipeline.x, pipeline.y)
+            return executePositionScene(image,
+                                        alertImage.getCiImage(),
+                                        messageImage.getCiImage(),
+                                        pipeline.layout)
+        }
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        let (alertImage, messageImage) = getNext(info.presentationTimeStamp.seconds)
+        guard let alertImage, let messageImage else {
+            return image
+        }
+        if let landmarkSettings = pipeline.landmarkSettings {
+            return executePositionFaceMetalPetal(image,
+                                                 info.sceneFaceDetections(),
+                                                 alertImage.getMetalPetalImage(),
+                                                 landmarkSettings)
+        } else {
+            return executePositionSceneMetalPetal(image,
+                                                  alertImage.getMetalPetalImage(),
+                                                  messageImage.getMetalPetalImage(),
+                                                  pipeline.layout)
         }
     }
 
@@ -119,6 +148,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     func setSettings(settings: SettingsWidgetAlerts) {
         setTwitchSettings(twitch: settings.twitch)
         setKickSettings(kick: settings.kick)
+        setMoblinCloudSettings(moblinCloud: settings.moblinCloud)
         setChatBotSettings(settings: settings)
         setSpeechToTextSettings(settings: settings)
         setQuickButtonSettings(alert: settings.quickButton)
@@ -130,10 +160,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         settings
     }
 
-    func setPosition(x: Double, y: Double) {
+    func setLayout(_ layout: SettingsWidgetLayout) {
         processorPipelineQueue.async {
-            self.pipeline.x = x
-            self.pipeline.y = y
+            self.pipeline.layout = layout
         }
     }
 
@@ -173,10 +202,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func tryPlayNextAlert() {
-        guard !isPlaying else {
-            return
-        }
-        guard let alert = alertsQueue.popFirst() else {
+        guard !isPlaying, let alert = alertsQueue.popFirst() else {
             return
         }
         switch alert {
@@ -188,6 +214,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchSubscriptionGift(event: event)
         case let .twitchResubscribe(event):
             playTwitchResubscribe(event: event)
+        case let .twitchSubscriptionUpgrade(event):
+            playTwitchSubscriptionUpgrade(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
         case let .twitchRedemption(event: event):
@@ -204,6 +232,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playKickReward(event: event)
         case let .kickKicks(event):
             playKickKicks(event: event)
+        case let .moblinCloudTip(name, message, amount, currency):
+            playMoblinCloudTip(name: name, message: message, amount: amount, currency: currency)
         case let .chatBotCommand(command, name):
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
@@ -216,11 +246,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     @MainActor
     private func playChatBotCommand(command: String, name: String) {
         guard let commandIndex = settings.chatBot.commands
-            .firstIndex(where: { command == $0.name && $0.alert.enabled })
+            .firstIndex(where: { command == $0.name && $0.alert.enabled }),
+            commandIndex < chatBotCommandsMedias.count
         else {
-            return
-        }
-        guard commandIndex < chatBotCommandsMedias.count else {
             return
         }
         let media = chatBotCommandsMedias[commandIndex]
@@ -234,11 +262,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     @MainActor
     private func playSpeechToTextString(id: UUID) {
         guard let stringIndex = settings.speechToText.strings
-            .firstIndex(where: { $0.id == id && $0.alert.enabled })
+            .firstIndex(where: { $0.id == id && $0.alert.enabled }),
+            stringIndex < speechToTextStringsMedias.count
         else {
-            return
-        }
-        guard stringIndex < speechToTextStringsMedias.count else {
             return
         }
         play(
@@ -255,28 +281,34 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         media: AlertsEffectMedia,
         username: String,
         message: String,
+        segments: [ChatPostSegment]? = nil,
         settings: SettingsWidgetAlertsAlert,
         delayAfterPlaying: Double = 3.0
     ) {
         isPlaying = true
         self.delayAfterPlaying = delayAfterPlaying
-        let messageImage = renderMessage(username: username, message: message, settings: settings)
+        setMessage(username: username,
+                   segments: segments ?? makeChatPostTextSegments(text: message),
+                   settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
         let player = media.getPlayer()
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
-                .ask(message, model: ai.model, role: ai.personality) { answer in
+                .ask(message, model: ai.model, role: ai.personality) { result in
                     var message = message
-                    if let answer {
+                    switch result {
+                    case let .success(answer):
                         message += ". " + answer
-                    } else {
-                        self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
+                    case let .failure(error):
+                        self.delegate?
+                            .alertsMakeErrorToast(
+                                title: String(localized: "Got no AI response: \(error.description)")
+                            )
                     }
                     self.play(player: player,
                               username: username,
                               message: message,
-                              messageImage: messageImage,
                               landmarkSettings: landmarkSettings,
                               settings: settings)
                 }
@@ -284,22 +316,20 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             play(player: player,
                  username: username,
                  message: message,
-                 messageImage: messageImage,
                  landmarkSettings: landmarkSettings,
                  settings: settings)
         }
     }
 
+    @MainActor
     private func play(player: AlertsEffectPlayer,
                       username: String,
                       message: String,
-                      messageImage: CIImage?,
                       landmarkSettings: AlertsEffectLandmarkSettings?,
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
             self.pipeline.images = player.images
-            self.pipeline.messageImage = messageImage
             self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
@@ -312,66 +342,121 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     private func say(username: String, message: String, settings: SettingsWidgetAlertsAlert) {
         guard let voice = getVoice(settings: settings) else {
             return
         }
-        let utterance = AVSpeechUtterance(string: "\(username) \(message)")
-        utterance.rate = rate
-        utterance.pitchMultiplier = 0.8
-        utterance.volume = volume
-        utterance.voice = voice
-        DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay) {
-            self.synthesizer.speak(utterance)
-            KeepSpeakerAlivePlayer.shared.audioPlayed()
+        let text = "\(username) \(message)"
+        let delay = settings.textToSpeechDelay
+        switch voice {
+        case let .apple(voice):
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.rate = rate
+            utterance.pitchMultiplier = 0.8
+            utterance.voice = voice
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                self.synthesizer.speak(utterance: utterance, volume: self.volume)
+            }
+        case let .ttsMonster(voiceId):
+            guard let apiToken = delegate?.alertsTtsMonsterApiToken(), !apiToken.isEmpty else {
+                return
+            }
+            sayGenerated(delay: delay) {
+                await TtsMonster(apiToken: apiToken).generateTts(voiceId: voiceId, message: text)
+            }
+        case let .elevenLabs(voiceId):
+            guard let apiKey = delegate?.alertsElevenLabsApiKey(), !apiKey.isEmpty else {
+                return
+            }
+            sayGenerated(delay: delay) {
+                await ElevenLabs(apiKey: apiKey).generateTts(voiceId: voiceId, message: text)
+            }
         }
-    }
-
-    private func getVoice(settings: SettingsWidgetAlertsAlert) -> AVSpeechSynthesisVoice? {
-        guard let language = Locale.current.language.languageCode?.identifier else {
-            return nil
-        }
-        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language]?.apple.voice {
-            return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
-        } else if let voice = AVSpeechSynthesisVoice.speechVoices()
-            .filter({ $0.language.starts(with: language) }).first
-        {
-            return AVSpeechSynthesisVoice(identifier: voice.identifier)
-        }
-        return nil
     }
 
     @MainActor
-    private func renderMessage(username: String,
-                               message: String,
-                               settings: SettingsWidgetAlertsAlert) -> CIImage?
-    {
-        let words = message.split(separator: " ").map { Word(text: String($0)) }
-        let message = WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            Text("\(username) ")
-                .foregroundStyle(settings.accentColor.color())
-            ForEach(words) { word in
-                Text("\(word.text) ")
-                    .foregroundStyle(settings.textColor.color())
+    private func sayGenerated(delay: Double, generate: @escaping @Sendable () async -> Data?) {
+        let playAt = ContinuousClock.now.advanced(by: .seconds(delay))
+        Task { @MainActor in
+            guard let data = await generate() else {
+                return
             }
+            try? await Task.sleep(until: playAt)
+            textToSpeechAudioPlayer = try? AudioPlayer(data: data)
+            textToSpeechAudioPlayer?.setVolume(volume: volume)
+            textToSpeechAudioPlayer?.play()
         }
-        .font(.system(
-            size: CGFloat(settings.fontSize),
-            weight: settings.fontWeight.toSystem(),
-            design: settings.fontDesign.toSystem()
-        ))
-        .stroke(color: .black, width: 2)
-        .frame(width: 1000)
-        let renderer = ImageRenderer(content: message)
-        guard let image = renderer.uiImage else {
+    }
+
+    private func getVoice(settings: SettingsWidgetAlertsAlert) -> TextToSpeechVoice? {
+        guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        return CIImage(image: image)
+        return TextToSpeechVoice.find(voices: settings.textToSpeechLanguageVoices, language: language)
+    }
+
+    @MainActor
+    private func setMessage(
+        username: String,
+        segments: [ChatPostSegment],
+        settings: SettingsWidgetAlertsAlert
+    ) {
+        let style = ChatLineStyle(fontSize: CGFloat(settings.fontSize),
+                                  borderColor: .black,
+                                  borderWidth: 2,
+                                  leadingPadding: 0,
+                                  fontWeight: settings.fontWeight.toUiKit(),
+                                  fontDesign: settings.fontDesign.toUiKit())
+        let textColor = settings.textColor.uiColor()
+        var items = [style.textItem(
+            text: "\(username) ",
+            color: settings.accentColor.uiColor(),
+            deleted: false
+        )]
+        for segment in segments {
+            if let text = segment.text {
+                items.append(style.textItem(text: text, color: textColor, deleted: false))
+            }
+            if let url = segment.url?.url(animated: false) {
+                items.append(style.emoteItem(url: url, deleted: false))
+                items.append(style.textItem(text: " ", color: textColor, deleted: false))
+            }
+        }
+        getMessageLineView().setContent(style.content(items: items))
+        updateMessageImage()
+    }
+
+    @MainActor
+    private func getMessageLineView() -> ChatLineUiView {
+        if let messageLineView {
+            return messageLineView
+        }
+        let lineView = ChatLineUiView()
+        lineView.onImageLoaded = { [weak self] in
+            self?.updateMessageImage()
+        }
+        messageLineView = lineView
+        return lineView
+    }
+
+    @MainActor
+    private func updateMessageImage() {
+        let lineView = getMessageLineView()
+        let size = lineView.size(availableWidth: 1000)
+        lineView.frame = CGRect(origin: .zero, size: size)
+        lineView.layoutIfNeeded()
+        lineView.layer.displayIfNeeded()
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            lineView.layer.render(in: context.cgContext)
+        }
+        let messageImage = image.cgImage.map { CIImage(cgImage: $0).toEffectImage(isOpaque: false) }
+        processorPipelineQueue.async {
+            self.pipeline.messageImage = messageImage
+        }
     }
 
     private func isInRectangle(_ x: Double,
@@ -422,7 +507,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?) {
+    private func getNext(_ presentationTimeStamp: Double) -> (EffectImageCiImage?, EffectImageCiImage?) {
         defer {
             if !pipeline.playing {
                 pipeline.landmarkSettings = nil
@@ -439,6 +524,67 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    private func calcFacePlacement(
+        _ detection: VNFaceObservation,
+        _ imageSize: CGSize,
+        _ landmarkSettings: AlertsEffectLandmarkSettings
+    ) -> (center: CGPoint, height: Double, rotation: CGFloat)? {
+        guard let rotationAngle = detection.calcFaceAngle(imageSize: imageSize),
+              let boundingBox = detection.stableBoundingBox(
+                  imageSize: imageSize,
+                  rotationAngle: rotationAngle
+              )
+        else {
+            return nil
+        }
+        let faceMinX = boundingBox.minX
+        let faceMaxY = boundingBox.maxY
+        let faceWidth = boundingBox.width
+        let faceHeight = boundingBox.height
+        let alertImageHeight = faceHeight * landmarkSettings.height
+        var centerX: Double
+        var centerY: Double
+        switch landmarkSettings.landmark {
+        case .face:
+            centerX = faceMinX + landmarkSettings.centerX * faceWidth
+            centerY = faceMaxY - landmarkSettings.centerY * faceHeight
+        case .leftEye:
+            guard let leftEye = detection.landmarks?.leftEye else {
+                return nil
+            }
+            var points = leftEye.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        case .rightEye:
+            guard let rightEye = detection.landmarks?.rightEye else {
+                return nil
+            }
+            var points = rightEye.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        case .mouth:
+            guard let outerLips = detection.landmarks?.outerLips else {
+                return nil
+            }
+            var points = outerLips.pointsInImage(imageSize: imageSize)
+            points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
+            guard let boundingBox = calcBoundingBox(points: points) else {
+                return nil
+            }
+            centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
+            centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
+        }
+        return (CGPoint(x: centerX, y: centerY), alertImageHeight, rotationAngle)
+    }
+
     private func executePositionFace(
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
@@ -450,91 +596,104 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
         var outputImage = image
         for detection in faceDetections {
-            guard let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size) else {
+            guard let placement = calcFacePlacement(detection, image.extent.size, landmarkSettings) else {
                 continue
             }
-            guard let boundingBox = detection.stableBoundingBox(
-                imageSize: image.extent.size,
-                rotationAngle: rotationAngle
-            ) else {
-                continue
-            }
-            let faceMinX = boundingBox.minX
-            let faceMaxY = boundingBox.maxY
-            let faceWidth = boundingBox.width
-            let faceHeight = boundingBox.height
-            let alertImageHeight = faceHeight * landmarkSettings.height
-            var centerX: Double
-            var centerY: Double
-            switch landmarkSettings.landmark {
-            case .face:
-                centerX = faceMinX + landmarkSettings.centerX * faceWidth
-                centerY = faceMaxY - landmarkSettings.centerY * faceHeight
-            case .leftEye:
-                guard let leftEye = detection.landmarks?.leftEye else {
-                    continue
-                }
-                var points = leftEye.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            case .rightEye:
-                guard let rightEye = detection.landmarks?.rightEye else {
-                    continue
-                }
-                var points = rightEye.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            case .mouth:
-                guard let outerLips = detection.landmarks?.outerLips else {
-                    continue
-                }
-                var points = outerLips.pointsInImage(imageSize: image.extent.size)
-                points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
-                guard let boundingBox = calcBoundingBox(points: points) else {
-                    continue
-                }
-                centerX = boundingBox.minX + landmarkSettings.centerX * boundingBox.width
-                centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
-            }
-            let moblinImage = alertImage
-                .scaled(x: alertImageHeight / alertImage.extent.height,
-                        y: alertImageHeight / alertImage.extent.height)
+            let scale = placement.height / alertImage.extent.height
+            let moblinImage = alertImage.scaled(x: scale, y: scale)
             let centerPoint = rotatePoint(
-                point: .init(x: centerX - moblinImage.extent.midX, y: centerY - moblinImage.extent.midY),
-                alpha: rotationAngle
+                point: .init(x: placement.center.x - moblinImage.extent.midX,
+                             y: placement.center.y - moblinImage.extent.midY),
+                alpha: placement.rotation
             )
             outputImage = moblinImage
-                .transformed(by: CGAffineTransform(rotationAngle: rotationAngle))
+                .transformed(by: CGAffineTransform(rotationAngle: placement.rotation))
                 .translated(x: centerPoint.x, y: centerPoint.y)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
     }
 
+    private func executePositionFaceMetalPetal(
+        _ image: MTIImage,
+        _ faceDetections: [VNFaceObservation]?,
+        _ alertImage: MTIImage,
+        _ landmarkSettings: AlertsEffectLandmarkSettings
+    ) -> MTIImage {
+        guard let faceDetections else {
+            return image
+        }
+        let imageSize = image.extent.size
+        let layers: [MTILayer] = faceDetections.compactMap { detection in
+            guard let placement = calcFacePlacement(detection, imageSize, landmarkSettings) else {
+                return nil
+            }
+            let scale = placement.height / alertImage.extent.height
+            let size = CGSize(width: alertImage.extent.width * scale, height: placement.height)
+            let centerPoint = rotatePoint(point: .init(x: placement.center.x - size.width / 2,
+                                                       y: placement.center.y - size.height / 2),
+                                          alpha: placement.rotation)
+            let rotatedCenter = rotatePoint(point: .init(x: size.width / 2, y: size.height / 2),
+                                            alpha: placement.rotation)
+            let center = CGPoint(x: rotatedCenter.x + centerPoint.x, y: rotatedCenter.y + centerPoint.y)
+            return .init(content: alertImage,
+                         position: CGPoint(x: center.x, y: imageSize.height - center.y),
+                         size: size,
+                         rotation: Float(-placement.rotation))
+        }
+        guard !layers.isEmpty else {
+            return image
+        }
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = layers
+        return filter.outputImage ?? image
+    }
+
+    private func alertAndMessageSize(_ alertSize: CGSize, _ messageSize: CGSize) -> CGSize {
+        CGSize(width: alertSize.width, height: alertSize.height + messageSize.height)
+    }
+
     private func executePositionScene(
         _ image: CIImage,
         _ alertImage: CIImage,
         _ messageImage: CIImage,
-        _ x: Double,
-        _ y: Double
+        _ layout: SettingsWidgetLayout
     ) -> CIImage {
-        let xPos = toPixels(x, image.extent.width)
-        let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
+        let alertSize = alertImage.extent.size
+        let messageSize = messageImage.extent.size
+        let size = alertAndMessageSize(alertSize, messageSize)
+        let position = layoutPosition(layout, size, image.extent.size)
+        let xPos = position.x
+        let yPos = image.extent.height - position.y - alertSize.height
         return messageImage
-            .translated(x: -(messageImage.extent.width - alertImage.extent.width) / 2,
-                        y: -messageImage.extent.height)
+            .translated(x: -(messageSize.width - alertSize.width) / 2, y: -messageSize.height)
             .composited(over: alertImage)
             .translated(x: xPos, y: yPos)
             .composited(over: image)
             .cropped(to: image.extent)
+    }
+
+    private func executePositionSceneMetalPetal(
+        _ image: MTIImage,
+        _ alertImage: MTIImage,
+        _ messageImage: MTIImage,
+        _ layout: SettingsWidgetLayout
+    ) -> MTIImage {
+        let alertSize = alertImage.extent.size
+        let messageSize = messageImage.extent.size
+        let size = alertAndMessageSize(alertSize, messageSize)
+        let position = layoutPosition(layout, size, image.extent.size)
+        let xPos = position.x + alertSize.width / 2
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [
+            .init(content: alertImage,
+                  position: CGPoint(x: xPos, y: position.y + alertSize.height / 2)),
+            .init(content: messageImage,
+                  position: CGPoint(x: xPos, y: position.y + alertSize.height + messageSize.height / 2)),
+        ]
+        return filter.outputImage ?? image
     }
 }
 
@@ -573,10 +732,15 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let message = if event.isPrime() {
+            String(localized: "just subscribed with Prime!")
+        } else {
+            String(localized: "just subscribed tier \(event.tierAsNumber())!")
+        }
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }
@@ -599,13 +763,44 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
+        let text = if let streakMonths = event.streak_months {
+            String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months, \
+            \(streakMonths) in a row!
+            """)
+        } else {
+            String(
+                localized: "just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) months!"
+            )
+        }
+        let message = event.message.text.isEmpty ? text : "\(text) \(event.message.text)"
         play(
             media: twitchSubscribeMedia,
             username: event.user_name,
-            message: String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """),
+            message: message,
+            segments: delegate?.alertsMakeTwitchSegments(text: text,
+                                                         fragments: event.message.fragments,
+                                                         bits: nil),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionUpgrade(
+        event: TwitchEventSubNotificationChannelSubscriptionUpgradeEvent
+    ) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        let message = if let tier = event.tierAsNumber() {
+            String(localized: "just converted their Prime subscription to tier \(tier)!")
+        } else {
+            String(localized: "just continued their gift subscription!")
+        }
+        play(
+            media: twitchSubscribeMedia,
+            username: event.user_name,
+            message: message,
             settings: settings.twitch.subscriptions
         )
     }
@@ -653,10 +848,12 @@ extension AlertsEffect {
                 return
             }
             let bits = countFormatter.format(event.bits)
+            let message = String(localized: "cheered \(bits) bits! \(event.message)")
             play(
                 media: twitchCheersMedias[index],
                 username: event.user_name ?? "Anonymous",
-                message: String(localized: "cheered \(bits) bits! \(event.message)"),
+                message: message,
+                segments: delegate?.alertsMakeTwitchSegments(text: message, fragments: [], bits: ""),
                 settings: cheerBit.alert
             )
             break
@@ -733,6 +930,7 @@ extension AlertsEffect {
         play(media: kickRewardMedia,
              username: event.username,
              message: message,
+             segments: delegate?.alertsMakeKickSegments(text: message),
              settings: settings.kick.rewards)
     }
 
@@ -760,6 +958,27 @@ extension AlertsEffect {
             )
             break
         }
+    }
+}
+
+extension AlertsEffect {
+    private func setMoblinCloudSettings(moblinCloud: SettingsWidgetAlertsMoblinCloud) {
+        moblinCloudTipMedia.update(moblinCloud.tips, mediaStorage, bundledImages, bundledSounds)
+    }
+
+    @MainActor
+    private func playMoblinCloudTip(name: String, message: String, amount: String, currency: String) {
+        guard settings.moblinCloud.tips.enabled else {
+            return
+        }
+        var text = String(localized: "tipped \(amount) \(currency)!")
+        if !message.isEmpty {
+            text += " \(message)"
+        }
+        play(media: moblinCloudTipMedia,
+             username: name,
+             message: text,
+             settings: settings.moblinCloud.tips)
     }
 }
 

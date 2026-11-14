@@ -1,44 +1,27 @@
 import Foundation
 
-class DjiDeviceWrapper {
-    let device: DjiDevice
-    let autoRestartStreamTimer = SimpleTimer(queue: .main)
-
-    init(device: DjiDevice) {
-        self.device = device
-    }
-}
-
 extension Model {
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        if !djiDeviceWrappers.keys.contains(device.id) {
+        if !djiDevices.keys.contains(device.id) {
             let djiDevice = DjiDevice()
             djiDevice.delegate = self
-            djiDeviceWrappers[device.id] = DjiDeviceWrapper(device: djiDevice)
+            djiDevices[device.id] = djiDevice
         }
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+        guard let djiDevice = djiDevices[device.id] else {
             return
         }
         device.isStarted = true
-        startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
+        startDjiDeviceLiveStreamInternal(djiDevice: djiDevice, device: device)
     }
 
     func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
         device.isStarted = false
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-            return
-        }
-        djiDeviceWrapper.device.stopLiveStream()
-        stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
+        device.autoRestartStreamTimer.stop()
+        djiDevices[device.id]?.stopLiveStream()
     }
 
     func restartDjiLiveStreamIfNeededAfterDelay(device: SettingsDjiDevice) {
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-            return
-        }
-        djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 5) { [weak self] in
-            self?.restartDjiLiveStreamIfNeeded(device: device)
-        }
+        startDjiDeviceRestartTimer(device: device, timeout: 5)
     }
 
     func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
@@ -46,30 +29,21 @@ extension Model {
             guard device.rtmpUrlType == .server, device.serverRtmpStreamId == rtmpServerStreamId else {
                 continue
             }
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                continue
-            }
-            djiDeviceWrapper.autoRestartStreamTimer.stop()
+            device.autoRestartStreamTimer.stop()
         }
     }
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
-        statusTopRight.djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
+        statusTopRight.djiDeviceStreamingState = djiDevices[device.id]?.getState()
     }
 
     func reloadDjiDevices() {
-        for deviceId in djiDeviceWrappers.keys {
-            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }) else {
-                continue
-            }
-            guard device.isStarted else {
-                continue
-            }
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                continue
-            }
-            guard djiDeviceWrapper.device.getState() != .streaming else {
+        for deviceId in djiDevices.keys {
+            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }),
+                  device.isStarted, let djiDevice = djiDevices[device.id],
+                  djiDevice.getState() != .streaming
+            else {
                 continue
             }
             startDjiDeviceLiveStream(device: device)
@@ -88,6 +62,16 @@ extension Model {
         }
     }
 
+    func reloadDjiDevicesAfterSettingsImport() {
+        for (deviceId, djiDevice) in djiDevices
+            where !database.djiDevices.devices.contains(where: { $0.id == deviceId })
+        {
+            djiDevice.stopLiveStream()
+            djiDevices.removeValue(forKey: deviceId)
+        }
+        autoStartDjiDevices()
+    }
+
     func autoStartDjiDevices() {
         for device in database.djiDevices.devices where device.isStarted {
             startDjiDeviceLiveStream(device: device)
@@ -98,7 +82,7 @@ extension Model {
         for offset in offsets {
             let device = database.djiDevices.devices[offset]
             stopDjiDeviceLiveStream(device: device)
-            djiDeviceWrappers.removeValue(forKey: device.id)
+            djiDevices.removeValue(forKey: device.id)
         }
         database.djiDevices.devices.remove(atOffsets: offsets)
     }
@@ -106,15 +90,12 @@ extension Model {
     func updateDjiDevicesStatus() {
         var statuses: [String] = []
         for device in database.djiDevices.devices {
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                continue
-            }
-            guard djiDeviceWrapper.device.getState() == .streaming else {
+            guard let djiDevice = djiDevices[device.id], djiDevice.getState() == .streaming else {
                 continue
             }
             let (status, ok) = formatDeviceStatus(
                 name: device.name,
-                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage(),
+                batteryPercentage: djiDevice.getBatteryPercentage(),
                 thermalState: nil
             )
             statuses.append(status)
@@ -129,7 +110,7 @@ extension Model {
     }
 
     private func startDjiDeviceLiveStreamInternal(
-        djiDeviceWrapper: DjiDeviceWrapper,
+        djiDevice: DjiDevice,
         device: SettingsDjiDevice
     ) {
         let rtmpUrl: String? = switch device.rtmpUrlType {
@@ -142,7 +123,7 @@ extension Model {
             return
         }
         if let rtmpUrl {
-            djiDeviceWrapper.device.startLiveStream(
+            djiDevice.startLiveStream(
                 wifiSsid: device.wifiSsid,
                 wifiPassword: device.wifiPassword,
                 rtmpUrl: rtmpUrl,
@@ -154,19 +135,14 @@ extension Model {
                 deviceId: deviceId,
                 model: device.model
             )
-            startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+            startDjiDeviceTimer(device: device)
         } else {
-            djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 3) { [weak self] in
-                self?.restartDjiLiveStreamIfNeeded(device: device)
-            }
+            startDjiDeviceRestartTimer(device: device, timeout: 3)
         }
     }
 
     func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
-        guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
-            return nil
-        }
-        guard let status = statusOther.ipStatuses
+        guard let stream = getRtmpStream(id: device.serverRtmpStreamId), let status = statusOther.ipStatuses
             .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })
         else {
             return nil
@@ -178,8 +154,11 @@ extension Model {
         )
     }
 
-    private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {
-        djiDeviceWrapper.autoRestartStreamTimer.startSingleShot(timeout: 45) { [weak self] in
+    private func startDjiDeviceTimer(device: SettingsDjiDevice) {
+        device.autoRestartStreamTimer.startSingleShot(timeout: 45) { [weak self, weak device] in
+            guard let device else {
+                return
+            }
             self?
                 .makeErrorToast(
                     title: String(localized: "Failed to start live stream from DJI device \(device.name)")
@@ -188,8 +167,13 @@ extension Model {
         }
     }
 
-    private func stopDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper) {
-        djiDeviceWrapper.autoRestartStreamTimer.stop()
+    private func startDjiDeviceRestartTimer(device: SettingsDjiDevice, timeout: Double) {
+        device.autoRestartStreamTimer.startSingleShot(timeout: timeout) { [weak self, weak device] in
+            guard let device else {
+                return
+            }
+            self?.restartDjiLiveStreamIfNeeded(device: device)
+        }
     }
 
     private func restartDjiLiveStreamIfNeeded(device: SettingsDjiDevice) {
@@ -202,26 +186,20 @@ extension Model {
         case .custom:
             return
         }
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+        guard let djiDevice = djiDevices[device.id], device.isStarted else {
             return
         }
-        guard device.isStarted else {
-            return
-        }
-        startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
+        startDjiDeviceLiveStreamInternal(djiDevice: djiDevice, device: device)
     }
 
     private func getDjiDeviceSettings(djiDevice: DjiDevice) -> SettingsDjiDevice? {
-        database.djiDevices.devices.first(where: { djiDeviceWrappers[$0.id]?.device === djiDevice })
+        database.djiDevices.devices.first(where: { djiDevices[$0.id] === djiDevice })
     }
 }
 
-extension Model: @preconcurrency DjiDeviceDelegate {
+extension Model: DjiDeviceDelegate {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState) {
         guard let device = getDjiDeviceSettings(djiDevice: device) else {
-            return
-        }
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
             return
         }
         device.state = state
@@ -230,11 +208,11 @@ extension Model: @preconcurrency DjiDeviceDelegate {
         }
         switch state {
         case .connecting:
-            startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+            startDjiDeviceTimer(device: device)
             makeToast(title: String(localized: "Connecting to DJI device \(device.name)"))
         case .streaming:
             if device.rtmpUrlType == .custom {
-                stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
+                device.autoRestartStreamTimer.stop()
                 makeToast(title: String(localized: "DJI device \(device.name) streaming to custom URL"))
             }
         case .wifiSetupFailed:

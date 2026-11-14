@@ -49,10 +49,7 @@ struct WidgetCropSettingsView: View {
     }
 
     private func submitHeight(value: String) {
-        guard let height = Int(value) else {
-            return
-        }
-        guard height > 0 else {
+        guard let height = Int(value), height > 0 else {
             return
         }
         widget.crop.height = height

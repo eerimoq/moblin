@@ -1,0 +1,143 @@
+import os
+import re
+import select
+import struct
+import subprocess
+import sys
+import tempfile
+import time
+import zlib
+from dataclasses import dataclass
+from logging import Logger
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from systest_moblin.ffmpeg import Crop
+from systest_moblin.ffmpeg import ffmpeg_run
+
+TEST_DIR = Path(__file__).parent.parent.resolve()
+WEBSITES_DIR = TEST_DIR / "suites" / "websites"
+FILES_DIR = TEST_DIR / "files"
+RE_SHARPNESS = re.compile(r"pts_time:(\S+)\s*\n\[Parsed_metadata.*? lavfi\.signalstats\.YAVG=(\S+)")
+
+
+@dataclass
+class Range:
+    minimum: float
+    maximum: float
+
+
+def manual_validation(logger: Logger, message: str):
+    logger.info("🧪: %s", message)
+
+
+def manual_requirement(logger: Logger, message: str):
+    logger.info("👷‍♂️: %s", message)
+
+
+def manual_volume_requirement(logger: Logger):
+    manual_requirement(logger, "Keep the volume turned up so the microphones pick up played sounds")
+
+
+def manual_confirmation(message: str):
+    input(f"🧑‍🔧: {message} Press ENTER to continue.")
+
+
+def sleep_unless_quit(logger: Logger, duration: float) -> bool:
+    fd = sys.stdin.fileno()
+    if not os.isatty(fd) or os.tcgetpgrp(fd) != os.getpgrp():
+        time.sleep(duration)
+        return False
+    end_time = time.monotonic() + duration
+    while (remaining := end_time - time.monotonic()) > 0:
+        readable, _, _ = select.select([fd], [], [], remaining)
+        if readable and os.read(fd, 1024).strip() == b"q":
+            logger.info("Test stopped by the tester. Ending it early.")
+            return True
+    return False
+
+
+def create_qr_code_image(text: str, output_image: Path):
+    command = ["qrtool", "encode", "--output", str(output_image), text]
+    subprocess.run(command, check=True)
+
+
+def read_qr_code_in_video_frame(path: Path, timestamp: float, crop: Crop) -> str:
+    with tempfile.TemporaryDirectory() as directory:
+        image = Path(directory) / "frame.png"
+        ffmpeg_run(
+            "-ss",
+            str(timestamp),
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-vf",
+            f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
+            str(image),
+        )
+        command = ["qrtool", "decode", str(image)]
+        return subprocess.run(command, check=False, capture_output=True, text=True).stdout.strip()
+
+
+def write_png(path: Path, width: int, height: int, rgba: bytes):
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    stride = 4 * width
+    scanlines = b"".join(b"\x00" + rgba[y * stride : (y + 1) * stride] for y in range(height))
+    path.write_bytes(
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(scanlines))
+        + chunk(b"IEND", b"")
+    )
+
+
+def read_text_in_video_frame(path: Path, timestamp: float, crop: Crop) -> str:
+    with tempfile.TemporaryDirectory() as directory:
+        image = Path(directory) / "frame.png"
+        ffmpeg_run(
+            "-ss",
+            str(timestamp),
+            "-i",
+            str(path),
+            "-frames:v",
+            "1",
+            "-vf",
+            f"crop=x={crop.x}:y={crop.y}:w={crop.width}:h={crop.height}",
+            str(image),
+        )
+        command = ["tesseract", str(image), "-", "--psm", "7"]
+        return subprocess.run(command, check=True, capture_output=True, text=True).stdout.strip()
+
+
+def read_video_frames_sharpness(path: Path) -> list[tuple[float, float]]:
+    output = ffmpeg_run(
+        "-i",
+        str(path),
+        "-vf",
+        "sobel,signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+        "-an",
+        "-f",
+        "null",
+        "-",
+    ).stderr
+    return [(float(pts), float(sharpness)) for pts, sharpness in RE_SHARPNESS.findall(output)]
+
+
+def format_generic_stream_url_stream_name(number: int, url: str) -> str:
+    urlparts = urlsplit(url)
+    return f"Generic {number} ({urlparts.scheme}://{urlparts.netloc})"
+
+
+def slope_per_hour(points: list[tuple[float, float]]) -> float:
+    if len(points) < 2:
+        return 0.0
+    mean_x = sum(x for x, _ in points) / len(points)
+    mean_y = sum(y for _, y in points) / len(points)
+    numerator = sum((x - mean_x) * (y - mean_y) for x, y in points)
+    denominator = sum((x - mean_x) ** 2 for x, _ in points)
+    if denominator == 0:
+        return 0.0
+    return 3600 * numerator / denominator

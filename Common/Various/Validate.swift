@@ -13,6 +13,16 @@ func isValidIngestLatency(value: String) -> String? {
     return nil
 }
 
+func isValidRistVirtualPort(value: String) -> String? {
+    if let error = isValidPort(value: value) {
+        return error
+    }
+    guard UInt(value)! % 2 == 0 else {
+        return String(localized: "Must be even")
+    }
+    return nil
+}
+
 func isValidPort(value: String) -> String? {
     guard let port = UInt(value) else {
         return String(localized: "Not a number")
@@ -24,16 +34,6 @@ func isValidPort(value: String) -> String? {
         return String(localized: "Too big")
     }
     return nil
-}
-
-func isValidAudioBitrate(bitrate: Int) -> Bool {
-    guard bitrate >= 32000, bitrate <= 320_000 else {
-        return false
-    }
-    guard bitrate % 32000 == 0 else {
-        return false
-    }
-    return true
 }
 
 func isValidRtmpUrl(url: String, rtmpStreamKeyRequired: Bool) -> String? {
@@ -76,6 +76,19 @@ func isValidWhipUrl(url: String) -> String? {
     return nil
 }
 
+func isValidMobcamUrl(url: String) -> String? {
+    guard let url = URL(string: url) else {
+        return String(localized: "Malformed Mobcam URL")
+    }
+    guard let host = url.host(), ["localhost", "127.0.0.1"].contains(host.lowercased()) else {
+        return String(localized: "Mobcam host must be localhost")
+    }
+    if url.port == nil {
+        return String(localized: "Mobcam port number missing")
+    }
+    return nil
+}
+
 private func isValidRtspUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
         return String(localized: "Malformed RTSP URL")
@@ -101,10 +114,8 @@ func isValidUrl(url value: String,
     guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
         return String(localized: "Malformed URL")
     }
-    if let allowedSchemes, let scheme = url.scheme {
-        if !allowedSchemes.contains(scheme) {
-            return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
-        }
+    if let allowedSchemes, let scheme = url.scheme, !allowedSchemes.contains(scheme) {
+        return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
     }
     switch url.scheme {
     case "rtmp":
@@ -133,6 +144,10 @@ func isValidUrl(url value: String,
         }
     case "whips":
         if let message = isValidWhipUrl(url: value) {
+            return message
+        }
+    case "mobcam":
+        if let message = isValidMobcamUrl(url: value) {
             return message
         }
     case "http":

@@ -11,6 +11,10 @@ class Moblin {
     this.send({ publish: { message: message } });
   }
 
+  log(message) {
+    this.publish({ log: { message: String(message) } });
+  }
+
   subscribe(topic) {
     this.send({ subscribe: { topic: topic } });
   }

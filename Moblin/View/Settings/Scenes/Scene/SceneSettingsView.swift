@@ -12,7 +12,7 @@ private struct VideoStabilizationView: View {
             }
         }
         .onChange(of: scene.videoStabilizationMode) { _ in
-            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+            model.sceneVideoSourceSettingsChanged()
         }
     }
 }
@@ -24,9 +24,7 @@ private struct MicView: View {
 
     private func onMicChange(micId: String) {
         scene.micId = micId
-        if model.getSelectedScene() === scene {
-            model.switchMicIfNeededAfterSceneSwitch()
-        }
+        model.sceneMicChanged(scene: scene)
     }
 
     var body: some View {
@@ -60,7 +58,7 @@ private struct SceneWidgetView: View {
     let sceneWidget: SettingsSceneWidget
 
     var body: some View {
-        if let widget = database.widgets.first(where: { $0.id == sceneWidget.widgetId }) {
+        if let widget = database.findWidget(id: sceneWidget.widgetId) {
             NavigationLink {
                 SceneWidgetSettingsView(
                     model: model,
@@ -73,7 +71,7 @@ private struct SceneWidgetView: View {
                     widget.enabled
                 }, set: { value in
                     widget.enabled = value
-                    model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
+                    model.widgetEnabledChanged(widget: widget)
                 })) {
                     HStack {
                         DraggableItemPrefixView()
@@ -98,11 +96,12 @@ private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
+    @ObservedObject var videoSources: VideoSources
     @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
-        scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.sceneSetCamera(scene: scene,
+                             settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         #if !targetEnvironment(macCatalyst)
         if model.isScreenCaptureCamera(cameraId: cameraId) {
             presentingScreenCaptureAlert = true
@@ -128,7 +127,7 @@ private struct VideoSourceView: View {
                         one is used at a time. This allows the phone to quickly change camera when zooming.
                         """),
                     ],
-                    items: model.listCameras().map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(scene: scene)
@@ -156,12 +155,16 @@ private struct VideoSourceView: View {
                 if scene.videoSource.cameraPosition != .none {
                     VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
                         .onChange(of: scene.videoSourceRotation) { _ in
-                            model.sceneUpdated(updateRemoteScene: false)
+                            model.sceneVideoSourceRotationChanged()
                         }
                 }
+                Toggle("Mirror", isOn: $scene.mirror)
+                    .onChange(of: scene.mirror) { _ in
+                        model.sceneVideoSourceSettingsChanged()
+                    }
                 Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
                     .onChange(of: scene.overrideVideoStabilizationMode) { _ in
-                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                        model.sceneVideoSourceSettingsChanged()
                     }
                 if scene.overrideVideoStabilizationMode {
                     VideoStabilizationView(model: model, scene: scene)
@@ -169,7 +172,7 @@ private struct VideoSourceView: View {
                 if scene.videoSource.cameraPosition != .none {
                     Toggle("Fill frame", isOn: $scene.fillFrame)
                         .onChange(of: scene.fillFrame) { _ in
-                            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                            model.sceneVideoSourceSettingsChanged()
                         }
                 }
             }
@@ -202,9 +205,7 @@ private struct QuickSwitchGroupView: View {
                 }
             }
             .onChange(of: scene.quickSwitchGroup) { _ in
-                if model.getSelectedScene() === scene {
-                    model.resetSelectedScene(changeScene: false, attachCamera: true)
-                }
+                model.sceneQuickSwitchGroupChanged(scene: scene)
             }
         } footer: {
             VStack(alignment: .leading) {
@@ -218,8 +219,31 @@ private struct QuickSwitchGroupView: View {
     }
 }
 
+private struct SceneColorView: View {
+    let model: Model
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        Section {
+            RgbColorPickerView(title: "Background", color: $scene.backgroundColorColor, opacity: true) {
+                scene.backgroundColor = $0
+                model.sceneBackgroundColorChanged()
+            }
+            TextButtonView("Reset") {
+                scene.backgroundColor = defaultSegmentedPickerSelectedColor
+                scene.backgroundColorColor = scene.backgroundColor.color()
+                model.sceneBackgroundColorChanged()
+            }
+        } header: {
+            Text("Color")
+        } footer: {
+            Text("Background color of the scene button when selected.")
+        }
+    }
+}
+
 private struct SceneMicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
 
@@ -250,9 +274,10 @@ private struct WidgetsView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
     @State private var presentingAddWidget = false
+    @State private var presentingCreateWizard = false
 
     private var widgets: [SettingsWidget] {
-        database.widgets
+        model.addableWidgets(scene: scene)
     }
 
     private func deleteSceneWidget(at offsets: IndexSet) {
@@ -313,6 +338,15 @@ private struct WidgetsView: View {
                 .padding(5)
                 .presentationCompactAdaptation(.none)
             }
+            CreateButtonView {
+                model.createWidgetWizard.reset(scene: scene)
+                presentingCreateWizard = true
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                WidgetWizardSheetView(model: model,
+                                      database: database,
+                                      presentingCreateWizard: $presentingCreateWizard)
+            }
         } header: {
             Text("Widgets")
         } footer: {
@@ -323,30 +357,19 @@ private struct WidgetsView: View {
     }
 }
 
-struct SceneShortcutView: View {
-    let database: Database
-    let scene: SettingsScene
-
-    var body: some View {
-        NavigationLink {
-            SceneSettingsView(database: database, scene: scene)
-        } label: {
-            Text("Scene")
-        }
-    }
-}
-
 struct SceneSettingsView: View {
+    @EnvironmentObject var model: Model
     let database: Database
     @ObservedObject var scene: SettingsScene
 
     var body: some View {
         Form {
             NameEditView(name: $scene.name, existingNames: database.scenes)
-            VideoSourceView(database: database, scene: scene)
-            QuickSwitchGroupView(database: database, scene: scene)
-            SceneMicView(database: database, scene: scene)
             WidgetsView(database: database, scene: scene)
+            VideoSourceView(database: database, scene: scene, videoSources: model.videoSources)
+            QuickSwitchGroupView(database: database, scene: scene)
+            SceneMicView(model: model, database: database, scene: scene)
+            SceneColorView(model: model, scene: scene)
         }
         .navigationTitle("Scene")
     }

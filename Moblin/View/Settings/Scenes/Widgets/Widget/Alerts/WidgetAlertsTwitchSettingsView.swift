@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct TwitchFollowsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -17,7 +17,7 @@ private struct TwitchFollowsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -44,7 +44,7 @@ private struct TwitchFollowsView: View {
 }
 
 private struct TwitchSubscriptionsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -60,7 +60,7 @@ private struct TwitchSubscriptionsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -78,7 +78,8 @@ private struct TwitchSubscriptionsView: View {
                     let event = TwitchEventSubNotificationChannelSubscribeEvent(
                         user_name: alertTestNames.randomElement()!,
                         tier: "2000",
-                        is_gift: false
+                        is_gift: false,
+                        is_prime: false
                     )
                     model.testAlert(alert: .twitchSubscribe(event))
                 }
@@ -89,7 +90,7 @@ private struct TwitchSubscriptionsView: View {
 }
 
 private struct TwitchRaidsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
@@ -105,7 +106,7 @@ private struct TwitchRaidsView: View {
                 }
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -197,7 +198,7 @@ private struct TwitchCheerView: View {
                 model.updateAlertsSettings()
             }
             AlertMediaView(alert: alert)
-            AlertPositionView(alert: alert, positionType: alert.positionType)
+            AlertPositionView(alert: alert)
             AlertColorsView(
                 alert: alert,
                 textColor: alert.textColor.color(),
@@ -256,8 +257,8 @@ private struct TwitchCheerBitsItemView: View {
 }
 
 private struct TwitchCheerBitsView: View {
-    @EnvironmentObject var model: Model
-    let twitch: SettingsWidgetAlertsTwitch
+    let model: Model
+    @ObservedObject var twitch: SettingsWidgetAlertsTwitch
 
     private func deleteCheerBit(at offsets: IndexSet) {
         twitch.cheerBits.remove(atOffsets: offsets)
@@ -283,10 +284,8 @@ private struct TwitchCheerBitsView: View {
                     .onDelete(perform: deleteCheerBit)
                 }
                 CreateButtonView {
-                    let cheerBits = SettingsWidgetAlertsCheerBitsAlert()
-                    twitch.cheerBits.append(cheerBits)
+                    twitch.cheerBits.append(SettingsWidgetAlertsCheerBitsAlert())
                     model.updateAlertsSettings()
-                    model.objectWillChange.send()
                 }
             } footer: {
                 VStack(alignment: .leading) {
@@ -354,22 +353,22 @@ struct WidgetAlertsTwitchSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    TwitchFollowsView(alert: twitch.follows)
+                    TwitchFollowsView(model: model, alert: twitch.follows)
                 } label: {
                     Text("Follows")
                 }
                 NavigationLink {
-                    TwitchSubscriptionsView(alert: twitch.subscriptions)
+                    TwitchSubscriptionsView(model: model, alert: twitch.subscriptions)
                 } label: {
                     Text("Subscriptions")
                 }
                 NavigationLink {
-                    TwitchRaidsView(alert: twitch.raids)
+                    TwitchRaidsView(model: model, alert: twitch.raids)
                 } label: {
                     Text("Raids")
                 }
                 NavigationLink {
-                    TwitchCheerBitsView(twitch: twitch)
+                    TwitchCheerBitsView(model: model, twitch: twitch)
                 } label: {
                     Text("Cheers")
                 }

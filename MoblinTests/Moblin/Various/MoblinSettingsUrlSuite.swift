@@ -1,0 +1,212 @@
+import Foundation
+@testable import Moblin
+import Testing
+
+struct MoblinSettingsUrlSuite {
+    struct InvalidCase: CustomTestStringConvertible {
+        let testDescription: String
+        let query: String
+        let message: String
+
+        init(_ description: String, _ query: String, _ message: String) {
+            testDescription = description
+            self.query = query
+            self.message = message
+        }
+    }
+
+    @Test(arguments: [
+        InvalidCase("stream url without port",
+                    #"{"streams":[{"name":"a","url":"srt://host"}]}"#,
+                    String(localized: "SRT(LA) port number missing")),
+        InvalidCase("negative srt latency",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","srt":{"latency":-1}}]}"#,
+                    String(localized: "SRT latency out of range")),
+        InvalidCase("too big srt latency",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","srt":{"latency":65536}}]}"#,
+                    String(localized: "SRT latency out of range")),
+        InvalidCase("obs websocket url with http scheme",
+                    #"""
+                    {"streams":[{"name":"a","url":"srt://host:5000",
+                    "obs":{"webSocketUrl":"http://host:4455","webSocketPassword":""}}]}
+                    """#,
+                    String(localized: "Unsupported scheme \("http")")),
+        InvalidCase("moblin cloud url with ftp scheme",
+                    #"{"moblinCloud":{"enabled":true,"key":"k","url":"ftp://host"}}"#,
+                    String(localized: "Unsupported scheme \("ftp")")),
+        InvalidCase("unsupported video fps",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"fps":24}}]}"#,
+                    String(localized: "Unsupported video FPS")),
+        InvalidCase("too small video bitrate",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"bitrate":49999}}]}"#,
+                    String(localized: "Video bitrate out of range")),
+        InvalidCase("too big video bitrate",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"bitrate":50000001}}]}"#,
+                    String(localized: "Video bitrate out of range")),
+        InvalidCase("negative max key frame interval",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"maxKeyFrameInterval":-1}}]}"#,
+                    String(localized: "Max key frame interval out of range")),
+        InvalidCase("too big max key frame interval",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"maxKeyFrameInterval":11}}]}"#,
+                    String(localized: "Max key frame interval out of range")),
+        InvalidCase("audio bitrate not a multiple of 32000",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":100000}}]}"#,
+                    String(localized: "Unsupported audio bitrate")),
+        InvalidCase("too big audio bitrate",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":352000}}]}"#,
+                    String(localized: "Unsupported audio bitrate")),
+        InvalidCase("remote control streamer url with http scheme",
+                    #"{"remoteControl":{"password":"p","streamer":{"enabled":true,"url":"http://host:2345"}}}"#,
+                    String(localized: "Unsupported scheme \("http")")),
+        InvalidCase("remote control relay base url with https scheme",
+                    #"""
+                    {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+                    "relay":{"enabled":true,"baseUrl":"https://relay","bridgeId":"b"}}}}
+                    """#,
+                    String(localized: "Unsupported scheme \("https")")),
+        InvalidCase("empty remote control relay bridge id",
+                    #"""
+                    {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+                    "relay":{"enabled":true,"baseUrl":"wss://relay","bridgeId":" "}}}}
+                    """#,
+                    String(localized: "Empty remote control relay bridge id")),
+        InvalidCase("remote control assistant port 0",
+                    #"{"remoteControl":{"password":"p","assistant":{"enabled":true,"port":0}}}"#,
+                    String(localized: "Invalid remote control assistant port")),
+        InvalidCase("quick button page 0",
+                    #"{"quickButtons":{"buttons":[{"type":"Torch","page":0}]}}"#,
+                    String(localized: "Quick button page out of range")),
+        InvalidCase("unknown quick button type",
+                    #"{"quickButtons":{"buttons":[{"type":"Torhc"}]}}"#,
+                    String(localized: "Unknown quick button type")),
+        InvalidCase("unsupported video resolution",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"resolution":"1234x5"}}]}"#,
+                    String(localized: "Unsupported video resolution")),
+        InvalidCase("unsupported video codec",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"codec":"VP8"}}]}"#,
+                    String(localized: "Unsupported video codec")),
+        InvalidCase("unsupported srt dns lookup strategy",
+                    #"{"streams":[{"name":"a","url":"srt://host:5000","srt":{"dnsLookupStrategy":"IPv5"}}]}"#,
+                    String(localized: "Unsupported SRT DNS lookup strategy")),
+        InvalidCase("quick button page 6",
+                    #"{"quickButtons":{"buttons":[{"type":"Torch","page":6}]}}"#,
+                    String(localized: "Quick button page out of range")),
+    ])
+    func invalid(invalidCase: InvalidCase) {
+        let error = #expect(throws: (any Error).self) {
+            try MoblinSettingsUrl.fromString(query: invalidCase.query)
+        }
+        #expect(error?.localizedDescription == invalidCase.message)
+    }
+
+    struct ValidCase: CustomTestStringConvertible {
+        let testDescription: String
+        let query: String
+
+        init(_ description: String, _ query: String) {
+            testDescription = description
+            self.query = query
+        }
+    }
+
+    @Test(arguments: [
+        ValidCase("video fps 30",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"fps":30}}]}"#),
+        ValidCase("smallest video bitrate",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"bitrate":50000}}]}"#),
+        ValidCase("biggest video bitrate",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"bitrate":50000000}}]}"#),
+        ValidCase("smallest max key frame interval",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"maxKeyFrameInterval":0}}]}"#),
+        ValidCase("biggest max key frame interval",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","video":{"maxKeyFrameInterval":10}}]}"#),
+        ValidCase("smallest audio bitrate",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":32000}}]}"#),
+        ValidCase("biggest audio bitrate",
+                  #"{"streams":[{"name":"a","url":"srt://host:5000","audio":{"bitrate":320000}}]}"#),
+        ValidCase("empty remote control streamer url",
+                  #"{"remoteControl":{"password":"p","streamer":{"enabled":false,"url":""}}}"#),
+        ValidCase("remote control assistant port 1",
+                  #"{"remoteControl":{"password":"p","assistant":{"enabled":true,"port":1}}}"#),
+        ValidCase("quick button page 1",
+                  #"{"quickButtons":{"buttons":[{"type":"Torch","page":1}]}}"#),
+        ValidCase("quick button page 5",
+                  #"{"quickButtons":{"buttons":[{"type":"Torch","page":5}]}}"#),
+    ])
+    func valid(validCase: ValidCase) {
+        #expect(throws: Never.self) {
+            try MoblinSettingsUrl.fromString(query: validCase.query)
+        }
+    }
+
+    struct CleanUrlCase: CustomTestStringConvertible {
+        let testDescription: String
+        let url: String
+        let cleanedUrl: String
+
+        init(_ url: String, _ cleanedUrl: String) {
+            testDescription = url
+            self.url = url
+            self.cleanedUrl = cleanedUrl
+        }
+    }
+
+    @Test(arguments: [
+        CleanUrlCase("srt://host:5000", "srt://host:5000"),
+        CleanUrlCase("SRTLA://host:5000", "srtla://host:5000"),
+        CleanUrlCase("srt://host :5000", "srt://host:5000"),
+        CleanUrlCase(" srt://host:5000\\n", "srt://host:5000"),
+    ])
+    func streamUrlIsCleaned(cleanUrlCase: CleanUrlCase) throws {
+        let query = #"{"streams":[{"name":"a","url":"\#(cleanUrlCase.url)"}]}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).streams?.first?.url == cleanUrlCase.cleanedUrl)
+    }
+
+    @Test(arguments: [
+        CleanUrlCase("ws://host:4455", "ws://host:4455"),
+        CleanUrlCase("WSS://host:4455", "wss://host:4455"),
+        CleanUrlCase("ws://host :4455", "ws://host:4455"),
+        CleanUrlCase(" ws://host:4455\\n", "ws://host:4455"),
+    ])
+    func obsWebSocketUrlIsCleaned(cleanUrlCase: CleanUrlCase) throws {
+        let query = #"""
+        {"streams":[{"name":"a","url":"srt://host:5000",
+        "obs":{"webSocketUrl":"\#(cleanUrlCase.url)","webSocketPassword":""}}]}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).streams?.first?.obs?
+            .webSocketUrl == cleanUrlCase.cleanedUrl)
+    }
+
+    @Test
+    func remoteControlPasswordIsTrimmed() throws {
+        let query = #"{"remoteControl":{"password":" p "}}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.password == "p")
+    }
+
+    @Test
+    func remoteControlStreamerUrlIsTrimmed() throws {
+        let query = #"{"remoteControl":{"password":"p","streamer":{"enabled":true,"url":" ws://host:2345\n"}}}"#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.streamer?
+            .url == "ws://host:2345")
+    }
+
+    @Test
+    func remoteControlRelayBaseUrlIsTrimmed() throws {
+        let query = #"""
+        {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+        "relay":{"enabled":true,"baseUrl":" wss://relay\n","bridgeId":"b"}}}}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.assistant?.relay?
+            .baseUrl == "wss://relay")
+    }
+
+    @Test
+    func remoteControlRelayBridgeIdIsTrimmed() throws {
+        let query = #"""
+        {"remoteControl":{"password":"p","assistant":{"enabled":true,"port":2345,
+        "relay":{"enabled":true,"baseUrl":"wss://relay","bridgeId":" b "}}}}
+        """#
+        #expect(try MoblinSettingsUrl.fromString(query: query).remoteControl?.assistant?.relay?
+            .bridgeId == "b")
+    }
+}

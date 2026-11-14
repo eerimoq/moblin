@@ -3,15 +3,10 @@ import Foundation
 import Rist
 
 protocol RistServerDelegate: AnyObject {
-    func ristServerOnConnected(port: UInt16)
-    func ristServerOnDisconnected(port: UInt16, reason: String)
-    func ristServerOnVideoBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer)
-    func ristServerOnAudioBuffer(virtualDestinationPort: UInt16, _ sampleBuffer: CMSampleBuffer)
-    func ristServerSetTargetLatencies(
-        virtualDestinationPort: UInt16,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
+    func ristServerOnConnected(cameraId: UUID, name: String, latency: Double)
+    func ristServerOnDisconnected(cameraId: UUID, name: String)
+    func ristServerOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func ristServerOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
 let ristServerQueue = DispatchQueue(label: "com.eerimoq.rist-server")
@@ -22,11 +17,21 @@ class RistServer: @unchecked Sendable {
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
     let delegate: any RistServerDelegate
     private let streams: [SettingsRistServerStream]
-    private var bitrateStats = BitrateStats()
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
+    private let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
+    private var numberOfClients: Atomic<Int> = .init(0)
 
-    init?(port: UInt16, streams: [SettingsRistServerStream], delegate: any RistServerDelegate) {
+    init?(port: UInt16,
+          streams: [SettingsRistServerStream],
+          softwareDecoding: Bool,
+          colorRange: SettingsStreamColorRange,
+          delegate: any RistServerDelegate)
+    {
         self.port = port
         self.streams = streams
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.delegate = delegate
     }
 
@@ -43,15 +48,11 @@ class RistServer: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        ristServerQueue.sync {
-            bitrateStats.update()
-        }
+        bitrateStats.mutate { $0.update() }
     }
 
     func getNumberOfClients() -> Int {
-        ristServerQueue.sync {
-            clientsByVirtualDestinationPort.count
-        }
+        numberOfClients.value
     }
 
     private func startInternal() {
@@ -66,9 +67,10 @@ class RistServer: @unchecked Sendable {
         context?.stop()
         context = nil
         for virtualDestinationPort in clientsByVirtualDestinationPort.keys {
-            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            notifyDisconnected(virtualDestinationPort)
         }
         clientsByVirtualDestinationPort.removeAll()
+        clientsChanged()
     }
 
     private func peerConnected(_ virtualDestinationPort: UInt16) {
@@ -78,18 +80,37 @@ class RistServer: @unchecked Sendable {
             logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
             return
         }
-        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
-                                      latency: stream.latencySeconds())
+        let client = RistServerClient(cameraId: stream.id,
+                                      latency: stream.latencySeconds(),
+                                      softwareDecoding: softwareDecoding,
+                                      colorRange: colorRange)
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
-        delegate.ristServerOnConnected(port: virtualDestinationPort)
+        clientsChanged()
+        delegate.ristServerOnConnected(cameraId: stream.id,
+                                       name: stream.camera(),
+                                       latency: stream.latencySeconds())
     }
 
     private func peerDisconnected(_ virtualDestinationPort: UInt16) {
         logger.info("rist-server: Disconnected virtual destination port \(virtualDestinationPort)")
         if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
-            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            clientsChanged()
+            notifyDisconnected(virtualDestinationPort)
         }
+    }
+
+    private func notifyDisconnected(_ virtualDestinationPort: UInt16) {
+        guard let stream = streams.first(where: { $0.virtualDestinationPort == virtualDestinationPort })
+        else {
+            return
+        }
+        delegate.ristServerOnDisconnected(cameraId: stream.id, name: stream.camera())
+    }
+
+    private func clientsChanged() {
+        let count = clientsByVirtualDestinationPort.count
+        numberOfClients.mutate { $0 = count }
     }
 
     private func peerReceivedData(_ virtualDestinationPort: UInt16, packets: [Data]) {
@@ -97,7 +118,7 @@ class RistServer: @unchecked Sendable {
             return
         }
         for packet in packets {
-            bitrateStats.add(bytesTransferred: packet.count)
+            bitrateStats.mutate { $0.add(bytesTransferred: packet.count) }
             client.handlePacketFromClient(packet: packet)
         }
     }

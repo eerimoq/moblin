@@ -1,6 +1,7 @@
 import StreamDeckKit
 import SwiftUI
 
+@MainActor
 class StreamDeck: ObservableObject {
     @Published var isDeviceDriverInstalled: Bool = true
     @Published var streamDeck: SettingsStreamDeckLayout?

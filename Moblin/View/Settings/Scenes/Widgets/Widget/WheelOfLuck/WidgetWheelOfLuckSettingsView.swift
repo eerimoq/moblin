@@ -17,7 +17,7 @@ private struct WheelOfLuckWidgetView: View {
             Spacer()
             Button {
                 widget.wheelOfLuck.shuffle()
-                model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
+                model.updateWheelOfLuckEffect(widget: widget)
 
             } label: {
                 Image(systemName: "shuffle")
@@ -41,28 +41,47 @@ private struct OptionView: View {
     @ObservedObject var options: SettingsWidgetWheelOfLuckOption
 
     private func updateEffect() {
-        model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
+        model.updateWheelOfLuckEffect(widget: widget)
     }
 
     private func calcPercent() -> Int {
         100 * options.weight / wheelOfLuck.totalWeight
     }
 
+    private func functions() -> [SettingsControllerFunction] {
+        SettingsControllerFunction.allCases.filter {
+            ![.zoomIn, .zoomOut, .gimbalUp, .gimbalDown, .gimbalLeft, .gimbalRight, .gimbalPreset]
+                .contains($0)
+        }
+    }
+
     var body: some View {
         NavigationLink {
             Form {
-                TextEditNavigationView(title: "Text", value: options.text) {
-                    options.text = $0
-                    updateEffect()
-                }
-                Picker("Weight", selection: $options.weight) {
-                    ForEach(wheelOfLuckOptionWeights, id: \.self) {
-                        Text(String($0))
+                Section {
+                    TextEditNavigationView(title: "Text", value: options.text) {
+                        options.text = $0
+                        updateEffect()
+                    }
+                    Picker("Weight", selection: $options.weight) {
+                        ForEach(wheelOfLuckOptionWeights, id: \.self) {
+                            Text(String($0))
+                        }
+                    }
+                    .onChange(of: options.weight) { _ in
+                        wheelOfLuck.updateTotalWeight()
+                        updateEffect()
                     }
                 }
-                .onChange(of: options.weight) { _ in
-                    wheelOfLuck.updateTotalWeight()
-                    updateEffect()
+                Section {
+                    ControllerButtonView(model: model,
+                                         functions: functions(),
+                                         function: $options.function,
+                                         functionData: $options.functionData)
+                } header: {
+                    Text("Action")
+                } footer: {
+                    Text("Executed when the wheel stops on this option.")
                 }
             }
             .navigationTitle("Option")
@@ -72,6 +91,29 @@ private struct OptionView: View {
                 Text(options.text)
                 Spacer()
                 Text(String("\(calcPercent())%"))
+            }
+        }
+    }
+}
+
+private struct ResultView: View {
+    let result: WheelOfLuckSpinResult
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(result.text)
+                    .bold()
+                Spacer()
+                Text(result.date.formatted(date: .omitted, time: .standard))
+                    .foregroundStyle(.secondary)
+            }
+            if !result.name.isEmpty {
+                Text(result.name)
+            }
+            if !result.message.isEmpty {
+                Text(result.message)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -110,7 +152,7 @@ struct WidgetWheelOfLuckSettingsView: View {
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
 
     private func updateEffect() {
-        model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
+        model.updateWheelOfLuckEffect(widget: widget)
     }
 
     private func deleteOption(at offsets: IndexSet) {
@@ -162,9 +204,30 @@ struct WidgetWheelOfLuckSettingsView: View {
             Toggle("Advanced", isOn: $wheelOfLuck.advanced)
         }
         Section {
+            Toggle("Only show when spinning", isOn: $wheelOfLuck.onlyShowWhenSpinning)
+                .onChange(of: wheelOfLuck.onlyShowWhenSpinning) { _ in
+                    updateEffect()
+                }
+        }
+        Section {
             if let effect = model.getWheelOfLuckEffect(id: widget.id) {
                 WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: false)
             }
+        }
+        Section {
+            ForEach(wheelOfLuck.results) { result in
+                ResultView(result: result)
+                    .contextMenuDeleteButton {
+                        if let offsets = makeOffsets(wheelOfLuck.results, result.id) {
+                            wheelOfLuck.results.remove(atOffsets: offsets)
+                        }
+                    }
+            }
+            .onDelete { offsets in
+                wheelOfLuck.results.remove(atOffsets: offsets)
+            }
+        } header: {
+            Text("Results")
         }
     }
 }

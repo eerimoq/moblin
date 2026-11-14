@@ -49,10 +49,14 @@ func processSrtNak(packet: Data, onNak: (UInt32) -> Void) {
                 return
             }
             let upToNakSn = packet.getUInt32Be(offset: offset)
-            for sn in stride(from: nakSn & 0x7FFF_FFFF, through: upToNakSn, by: 1) {
+            offset += 4
+            let fromNakSn = nakSn & 0x7FFF_FFFF
+            guard upToNakSn &- fromNakSn < 100_000 else {
+                continue
+            }
+            for sn in fromNakSn ... upToNakSn {
                 onNak(sn)
             }
-            offset += 4
         } else {
             onNak(nakSn)
         }

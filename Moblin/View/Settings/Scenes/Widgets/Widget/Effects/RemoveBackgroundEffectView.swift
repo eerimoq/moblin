@@ -7,30 +7,19 @@ struct RemoveBackgroundEffectView: View {
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
 
     private func updateWidget() {
-        model.getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
-            from: removeBackground.from,
-            to: removeBackground.to
-        )
+        model.removeBackgroundEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     var body: some View {
         Section {
-            ColorPicker("From", selection: $removeBackground.fromColor, supportsOpacity: false)
-                .onChange(of: removeBackground.fromColor) { _ in
-                    guard let color = removeBackground.fromColor.toRgb() else {
-                        return
-                    }
-                    removeBackground.from = color
-                    updateWidget()
-                }
-            ColorPicker("To", selection: $removeBackground.toColor, supportsOpacity: false)
-                .onChange(of: removeBackground.toColor) { _ in
-                    guard let color = removeBackground.toColor.toRgb() else {
-                        return
-                    }
-                    removeBackground.to = color
-                    updateWidget()
-                }
+            RgbColorPickerView(title: "From", color: $removeBackground.fromColor) {
+                removeBackground.from = $0
+                updateWidget()
+            }
+            RgbColorPickerView(title: "To", color: $removeBackground.toColor) {
+                removeBackground.to = $0
+                updateWidget()
+            }
         } header: {
             Text("Color range")
         }

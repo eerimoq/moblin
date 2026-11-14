@@ -381,10 +381,10 @@ private final class PeerConnection {
                                                             Int32(remotePointer.count)))
                 }
             }
-            guard let local = String(bytes: local, encoding: .utf8) else {
-                return nil
-            }
-            guard let remote = String(bytes: remote, encoding: .utf8) else {
+            guard let local = String(bytes: local, encoding: .utf8), let remote = String(
+                bytes: remote,
+                encoding: .utf8
+            ) else {
                 return nil
             }
             return (local, remote)
@@ -414,7 +414,7 @@ protocol WhipStreamDelegate: AnyObject {
     func whipStreamOnDisconnected(reason: String)
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@Sendable (Data?, URLResponse?, (any Error)?) -> Void)?)
     func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
     func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }
@@ -576,7 +576,7 @@ final class WhipStream: @unchecked Sendable {
         guard !offerSent, let endpointUrl else {
             return
         }
-        logger.debug("whip: Sending offer: \(offer.replacingOccurrences(of: "\r", with: ""))")
+        logger.debug("whip: Sending offer: \(offer.replace("\r", ""))")
         var request = URLRequest(url: endpointUrl)
         request.httpMethod = "POST"
         request.setContentType("application/sdp")
@@ -610,7 +610,7 @@ final class WhipStream: @unchecked Sendable {
             stopInternal(reason: "WHIP answer missing")
             return
         }
-        logger.debug("whip: Got answer: \(answer.replacingOccurrences(of: "\r", with: ""))")
+        logger.debug("whip: Got answer: \(answer.replace("\r", ""))")
         do {
             try peerConnection?.setRemoteAnswer(answer)
         } catch {
@@ -651,13 +651,9 @@ final class WhipStream: @unchecked Sendable {
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
-        guard connected, let audioTrack else {
-            return
-        }
-        guard let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp) else {
-            return
-        }
-        guard buffer.byteLength > 0 else {
+        guard connected, let audioTrack, let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp),
+              buffer.byteLength > 0
+        else {
             return
         }
         do {
@@ -705,10 +701,9 @@ final class WhipStream: @unchecked Sendable {
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard connected, let videoTrack else {
-            return
-        }
-        guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {
+        guard connected, let videoTrack,
+              let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp)
+        else {
             return
         }
         do {

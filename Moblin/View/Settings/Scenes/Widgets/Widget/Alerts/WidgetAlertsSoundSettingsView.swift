@@ -61,7 +61,7 @@ private struct CustomSoundView: View {
                     }
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertPickerView(type: .audio)
+                    AlertPickerView(model: model, type: .audio)
                 }
             }
         }
@@ -69,13 +69,30 @@ private struct CustomSoundView: View {
     }
 }
 
+private struct SoundGalleryItemView: View {
+    let model: Model
+    @ObservedObject var sound: SettingsAlertsMediaGalleryItem
+
+    var body: some View {
+        NavigationLink {
+            CustomSoundView(
+                media: sound,
+                audioPlayer: loadSound(model: model, soundId: sound.id)
+            )
+        } label: {
+            Text(sound.name)
+        }
+    }
+}
+
 private struct SoundGalleryView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
     private func deleteSound(at offsets: IndexSet) {
-        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
+        gallery.customSounds.remove(atOffsets: offsets)
         model.fixAlertMedias()
         soundId = alert.soundId
     }
@@ -84,30 +101,18 @@ private struct SoundGalleryView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.alertsMediaGallery.customSounds) { sound in
-                        NavigationLink {
-                            CustomSoundView(
-                                media: sound,
-                                audioPlayer: loadSound(model: model, soundId: sound.id)
-                            )
-                        } label: {
-                            Text(sound.name)
-                        }
-                        .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(
-                                model.database.alertsMediaGallery.customSounds,
-                                sound.id
-                            ) {
-                                deleteSound(at: offsets)
+                    ForEach(gallery.customSounds) { sound in
+                        SoundGalleryItemView(model: model, sound: sound)
+                            .contextMenuDeleteButton {
+                                if let offsets = makeOffsets(gallery.customSounds, sound.id) {
+                                    deleteSound(at: offsets)
+                                }
                             }
-                        }
                     }
                     .onDelete(perform: deleteSound)
                 }
                 TextButtonView("Add") {
-                    let sound = SettingsAlertsMediaGalleryItem(name: "My sound")
-                    model.database.alertsMediaGallery.customSounds.append(sound)
-                    model.objectWillChange.send()
+                    gallery.customSounds.append(SettingsAlertsMediaGalleryItem(name: "My sound"))
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a sound"))
@@ -122,6 +127,7 @@ private var player: AudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
@@ -129,7 +135,7 @@ struct AlertSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(model.getAllAlertSounds()) { sound in
+                    ForEach(gallery.allSounds()) { sound in
                         HStack {
                             Text(sound.name)
                             Spacer()
@@ -151,7 +157,7 @@ struct AlertSoundSelectorView: View {
             }
             Section {
                 NavigationLink {
-                    SoundGalleryView(alert: alert, soundId: $soundId)
+                    SoundGalleryView(gallery: gallery, alert: alert, soundId: $soundId)
                 } label: {
                     Text("My sounds")
                 }

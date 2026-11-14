@@ -324,13 +324,7 @@ extension Model {
     }
 
     func getEnabledScoreboardWidgetsInSelectedScene() -> [SettingsWidget] {
-        if let scene = getSelectedScene() {
-            getSceneWidgets(scene: scene, onlyEnabled: true)
-                .filter { $0.widget.type == .scoreboard }
-                .map(\.widget)
-        } else {
-            []
-        }
+        drawnWidgetsInSelectedScene().filter { $0.type == .scoreboard }
     }
 
     func updateScoreboardEffects() {
@@ -351,29 +345,49 @@ extension Model {
                     continue
                 }
                 scoreboard.generic.clock.tick()
-                DispatchQueue.main.async {
-                    effect.update(
-                        scoreboard: scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
-                        players: self.database.scoreboardPlayers
-                    )
-                }
+                effect.update(
+                    scoreboard: scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: scoreboard),
+                    players: database.scoreboardPlayers
+                )
                 sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
             default:
                 guard !scoreboard.modular.clock.isStopped else {
                     continue
                 }
                 widget.scoreboard.modular.clock.tick()
-                DispatchQueue.main.async {
-                    effect.update(
-                        scoreboard: scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
-                        players: self.database.scoreboardPlayers
-                    )
-                }
+                effect.update(
+                    scoreboard: scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: scoreboard),
+                    players: database.scoreboardPlayers
+                )
                 remoteControlScoreboardUpdate(scoreboard: scoreboard)
             }
         }
+    }
+
+    func scoreboardPlayersChanged() {
+        sceneUpdated()
+        sendScoreboardPlayersToWatch()
+    }
+
+    func scoreboardWidgetUpdated(widget: SettingsWidget) {
+        let scoreboard = widget.scoreboard
+        switch scoreboard.sport {
+        case .generic:
+            sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
+        case .padel:
+            sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
+        default:
+            break
+        }
+        remoteControlScoreboardUpdate(scoreboard: scoreboard)
+        getScoreboardEffect(id: widget.id)?
+            .update(
+                scoreboard: scoreboard,
+                config: getModularScoreboardConfig(scoreboard: scoreboard),
+                players: database.scoreboardPlayers
+            )
     }
 
     func getModularScoreboardConfig(scoreboard: SettingsWidgetScoreboard?)
@@ -485,21 +499,17 @@ extension Model {
     }
 
     private func updateScoreboardEffect(widget: SettingsWidget) {
-        DispatchQueue.main.async {
-            self.getScoreboardEffect(id: widget.id)?
-                .update(scoreboard: widget.scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
-                        players: self.database.scoreboardPlayers)
-        }
+        getScoreboardEffect(id: widget.id)?
+            .update(scoreboard: widget.scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                    players: database.scoreboardPlayers)
     }
 
     private func updateGolfScoreboardEffect(widget: SettingsWidget) {
-        DispatchQueue.main.async {
-            self.getScoreboardEffect(id: widget.id)?
-                .update(scoreboard: widget.scoreboard,
-                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
-                        players: self.database.scoreboardPlayers)
-        }
+        getScoreboardEffect(id: widget.id)?
+            .update(scoreboard: widget.scoreboard,
+                    config: getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                    players: database.scoreboardPlayers)
     }
 
     private func updateAllGolfScoreboardEffects(golf: SettingsWidgetGolfScoreboard) {
@@ -670,10 +680,7 @@ extension Model {
     }
 
     private func handleUpdatePadelScoreboardUndo(scoreboard: SettingsWidgetPadelScoreboard) {
-        guard let team = scoreboard.scoreChanges.popLast() else {
-            return
-        }
-        guard let score = scoreboard.score.last else {
+        guard let team = scoreboard.scoreChanges.popLast(), let score = scoreboard.score.last else {
             return
         }
         if score.home == 0, score.away == 0, scoreboard.score.count > 1 {
@@ -790,13 +797,9 @@ extension Model {
     }
 
     private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {
-        guard let score = scoreboard.score.last else {
-            return
-        }
-        guard isSetCompleted(score: score) else {
-            return
-        }
-        guard !isMatchCompleted(scoreboard: scoreboard) else {
+        guard let score = scoreboard.score.last, isSetCompleted(score: score),
+              !isMatchCompleted(scoreboard: scoreboard)
+        else {
             return
         }
         scoreboard.score.append(.init())

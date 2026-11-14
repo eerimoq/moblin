@@ -20,6 +20,10 @@ struct EffectSlider: View {
             .frame(width: sliderWidth, height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
+            .overlay(
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(pickerBorderColor)
+            )
             .padding(.bottom, 5)
         }
     }
@@ -74,7 +78,6 @@ struct StreamOverlayRightFaceView: View {
                                     model.saveFaceBackgroundImage(data: data)
                                     DispatchQueue.main.async {
                                         model.loadFaceBackgroundImage()
-                                        model.updateFaceFilterSettings()
                                     }
                                 case .success(nil):
                                     logger.info("face: background image is nil")
@@ -83,6 +86,8 @@ struct StreamOverlayRightFaceView: View {
                                 }
                             }
                         }
+                    case .icon:
+                        EmptyView()
                     }
                     Picker("", selection: $face.privacyMode) {
                         ForEach(SettingsFacePrivacyMode.allCases, id: \.self) {

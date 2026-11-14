@@ -71,6 +71,10 @@ extension VNFaceObservation {
         isEyeOpen(eye: landmarks?.leftEye, rotationAngle: rotationAngle, sensitivity: sensitivity)
     }
 
+    func isRightEyeOpen(rotationAngle: Double, sensitivity: Double) -> Double {
+        isEyeOpen(eye: landmarks?.rightEye, rotationAngle: rotationAngle, sensitivity: sensitivity)
+    }
+
     //     1   2
     // 0           3
     //     5   4
@@ -100,7 +104,7 @@ func rotateFace(allPoints: [CGPoint], rotationAngle: CGFloat) -> [CGPoint] {
 
 func rotatePoint(point: CGPoint, alpha: CGFloat) -> CGPoint {
     let z = sqrt(pow(point.x, 2) + pow(point.y, 2))
-    let beta = atan(point.y / point.x)
+    let beta = atan2(point.y, point.x)
     return CGPoint(x: z * cos(alpha + beta), y: z * sin(alpha + beta))
 }
 

@@ -6,11 +6,12 @@ extension Model {
             chatTextToSpeech.play()
         }
         toggleQuickButton(type: .pauseTts)
-        updateQuickButtonStates()
     }
 
     func isTextToSpeechEnabledForMessage(post: ChatPost) -> Bool {
-        guard database.chat.textToSpeechEnabled, post.live, post.filter?.textToSpeech != false else {
+        guard database.chat.textToSpeechEnabled, post.live, post.filter?.textToSpeech != false,
+              isTextToSpeechOutputAllowed()
+        else {
             return false
         }
         if database.chat.textToSpeechSubscribersOnly {
@@ -25,6 +26,17 @@ extension Model {
             return false
         }
         return post.user != nil
+    }
+
+    func isTextToSpeechOutputAllowed() -> Bool {
+        !database.chat.textToSpeechBluetoothSpeakerOnly || isBluetoothAudioOutput
+    }
+
+    func stopTextToSpeechIfOutputNotAllowed() {
+        guard database.chat.textToSpeechEnabled, !isTextToSpeechOutputAllowed() else {
+            return
+        }
+        chatTextToSpeech.reset(running: true)
     }
 
     private func isTextToSpeechEnabledForAnyAlertWidget() -> Bool {

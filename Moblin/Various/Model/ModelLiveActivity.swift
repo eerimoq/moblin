@@ -5,16 +5,18 @@ import Foundation
 
 extension Model {
     func startLiveActivity() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled, liveActivity == nil else {
             return
         }
-        guard liveActivity == nil else {
-            return
+        do {
+            liveActivity = try Activity.request(
+                attributes: LiveActivityAttributes(),
+                content: .init(state: makeState(), staleDate: nil)
+            )
+            logger.info("live-activity: Started")
+        } catch {
+            logger.info("live-activity: Start failed with error: \(error)")
         }
-        liveActivity = try? Activity.request(
-            attributes: LiveActivityAttributes(),
-            content: .init(state: makeState(), staleDate: nil)
-        )
     }
 
     func stopLiveActivity() {

@@ -11,15 +11,15 @@ private class BackgroundActivity {
     }
 
     func stop() {
-        if #available(iOS 17.0, *) {
-            if let session = backgroundSession as? CLBackgroundActivitySession {
-                session.invalidate()
-            }
+        if #available(iOS 17.0, *), let session = backgroundSession as? CLBackgroundActivitySession {
+            session.invalidate()
         }
     }
 }
 
-class Location: NSObject {
+@MainActor
+class Location: NSObject, ObservableObject {
+    @Published var isDenied = false
     private var manager = CLLocationManager()
     private var onUpdate: ((CLLocation) -> Void)?
     private var latestLocation: CLLocation?
@@ -84,9 +84,15 @@ class Location: NSObject {
     }
 }
 
-extension Location: CLLocationManagerDelegate {
-    func locationManagerDidChangeAuthorization(_: CLLocationManager) {
+extension Location: @MainActor CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         logger.debug("location: Auth did change \(manager.authorizationStatus)")
+        switch manager.authorizationStatus {
+        case .denied, .restricted:
+            isDenied = true
+        default:
+            isDenied = false
+        }
     }
 
     func locationManager(_: CLLocationManager, didFailWithError error: any Error) {

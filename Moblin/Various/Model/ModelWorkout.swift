@@ -3,108 +3,224 @@ import WatchConnectivity
 
 private func types() -> Set<HKSampleType> {
     var types: Set<HKSampleType> = [
-        .quantityType(forIdentifier: .heartRate)!,
-        .quantityType(forIdentifier: .distanceCycling)!,
-        .quantityType(forIdentifier: .distanceWalkingRunning)!,
-        .quantityType(forIdentifier: .stepCount)!,
-        .quantityType(forIdentifier: .activeEnergyBurned)!,
-        .quantityType(forIdentifier: .runningPower)!,
+        heartRateType,
+        distanceCyclingType,
+        distanceWalkingRunningType,
+        stepCountType,
+        activeEnergyBurnedType,
+        runningPowerType,
     ]
     if #available(iOS 17.0, *) {
-        types.insert(.quantityType(forIdentifier: .cyclingPower)!)
+        types.insert(cyclingPowerType)
+        types.insert(cyclingCadenceType)
     }
     return types
 }
 
 @available(iOS 26.0, *)
-class Workout: NSObject, @unchecked Sendable {
+@MainActor
+private class Workout: NSObject {
     static let shared = Workout()
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
     private var model: Model?
+    private var latestSampleTimes: [HKQuantityType: ContinuousClock.Instant] = [:]
+    private var workoutType: WatchProtocolWorkoutType?
 
-    func start(model: Model, type: WatchProtocolWorkoutType) {
+    func isActive() -> Bool {
+        workoutSession != nil
+    }
+
+    func start(model: Model, type: WatchProtocolWorkoutType) -> Bool {
         self.model = model
-        stop()
-        #if !targetEnvironment(macCatalyst)
+        #if targetEnvironment(macCatalyst)
+        return false
+        #else
         let configuration = HKWorkoutConfiguration()
-        var activityType: HKWorkoutActivityType
+        let activityType: HKWorkoutActivityType
         let addStepCount: Bool
+        let addCyclingMetrics: Bool
         switch type {
         case .walking:
             activityType = .walking
             addStepCount = true
+            addCyclingMetrics = false
         case .running:
             activityType = .running
             addStepCount = true
+            addCyclingMetrics = false
         case .cycling:
             activityType = .cycling
             addStepCount = false
+            addCyclingMetrics = true
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
+        workoutType = type
+        latestSampleTimes.removeAll()
         workoutSession = try? HKWorkoutSession(healthStore: healthStore, configuration: configuration)
         guard let workoutSession else {
-            return
+            return false
         }
         workoutBuilder = workoutSession.associatedWorkoutBuilder()
         guard let workoutBuilder else {
-            return
+            self.workoutSession = nil
+            return false
         }
         let dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
             workoutConfiguration: configuration
         )
         if addStepCount {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: stepCountType, predicate: nil)
+        }
+        if addCyclingMetrics {
+            dataSource.enableCollection(for: cyclingPowerType, predicate: nil)
+            dataSource.enableCollection(for: cyclingCadenceType, predicate: nil)
         }
         workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
+        return true
         #endif
     }
 
     func stop() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
+        workoutSession?.stopActivity(with: .now)
+    }
+
+    private func handleStateChange(session: HKWorkoutSession,
+                                   toState: HKWorkoutSessionState,
+                                   fromState: HKWorkoutSessionState,
+                                   date: Date)
+    {
+        guard session === workoutSession else {
+            return
+        }
+        logger.info("workout: State change \(fromState) -> \(toState)")
+        switch toState {
+        case .stopped:
+            guard let workoutBuilder else {
+                return
+            }
+            workoutBuilder.endCollection(withEnd: date) { _, error in
+                if let error {
+                    logger.info("workout: End collection error \(error)")
+                }
+                workoutBuilder.finishWorkout { _, error in
+                    if let error {
+                        logger.info("workout: Finish error \(error)")
+                    }
+                    session.end()
+                }
+            }
+        case .ended:
+            finished(session: session)
+        default:
+            break
+        }
+    }
+
+    private func handleError(session: HKWorkoutSession, error: any Error) {
+        guard session === workoutSession else {
+            return
+        }
+        logger.info("workout: Error \(error)")
+        session.end()
+        finished(session: session)
+    }
+
+    private func finished(session _: HKWorkoutSession) {
+        logger.info("workout: Finished")
+        workoutSession = nil
+        workoutBuilder = nil
+        workoutType = nil
+        model?.setIsWorkout(type: nil)
+    }
+
+    func add(heartRate: Int) {
+        add(type: heartRateType, unit: .count().unitDivided(by: .minute()), value: Double(heartRate))
+    }
+
+    func add(cyclingPower: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
+        add(type: cyclingPowerType, unit: .watt(), value: Double(cyclingPower))
+    }
+
+    func add(cyclingCadence: Int) {
+        guard workoutType == .cycling else {
+            return
+        }
+        add(type: cyclingCadenceType,
+            unit: .count().unitDivided(by: .minute()),
+            value: Double(cyclingCadence))
+    }
+
+    private func add(type: HKQuantityType, unit: HKUnit, value: Double) {
+        guard let workoutBuilder, workoutSession?.state == .running else {
+            return
+        }
+        let now = ContinuousClock.now
+        if let latest = latestSampleTimes[type], latest.duration(to: now) < .seconds(1) {
+            return
+        }
+        latestSampleTimes[type] = now
+        let date = Date.now
+        let sample = HKQuantitySample(type: type,
+                                      quantity: HKQuantity(unit: unit, doubleValue: value),
+                                      start: date,
+                                      end: date)
+        workoutBuilder.add([sample]) { _, _ in }
     }
 }
 
 @available(iOS 26.0, *)
 extension Workout: HKWorkoutSessionDelegate {
-    func workoutSession(_: HKWorkoutSession,
-                        didChangeTo _: HKWorkoutSessionState,
-                        from _: HKWorkoutSessionState,
-                        date _: Date) {}
+    nonisolated func workoutSession(_ session: HKWorkoutSession,
+                                    didChangeTo toState: HKWorkoutSessionState,
+                                    from fromState: HKWorkoutSessionState,
+                                    date: Date)
+    {
+        DispatchQueue.main.async {
+            self.handleStateChange(session: session, toState: toState, fromState: fromState, date: date)
+        }
+    }
 
-    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
+    nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError error: any Error) {
+        DispatchQueue.main.async {
+            self.handleError(session: session, error: error)
+        }
+    }
 }
 
 @available(iOS 26.0, *)
 extension Workout: HKLiveWorkoutBuilderDelegate {
-    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
-                        didCollectDataOf collectedTypes: Set<HKSampleType>)
+    nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
+                                    didCollectDataOf collectedTypes: Set<HKSampleType>)
     {
+        var stats = WatchProtocolWorkoutStats()
         for type in collectedTypes {
-            guard let quantityType = type as? HKQuantityType else {
+            guard let quantityType = type as? HKQuantityType,
+                  let statistics = workoutBuilder.statistics(for: quantityType)
+            else {
                 continue
             }
-            guard let statistics = workoutBuilder.statistics(for: quantityType) else {
-                continue
-            }
-            DispatchQueue.main.async {
-                self.model?.handleWorkout(stats: WatchProtocolWorkoutStats(statistics: statistics))
-            }
+            stats.update(statistics: statistics)
+        }
+        guard stats != WatchProtocolWorkoutStats() else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.model?.handleWorkout(stats: stats)
         }
     }
 
-    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
+    nonisolated func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }
 
 extension Model {
@@ -115,8 +231,18 @@ extension Model {
             return
         }
         authorizeHealthKit {
-            self.setIsWorkout(type: type)
-            Workout.shared.start(model: self, type: type)
+            guard !Workout.shared.isActive() else {
+                self.makeErrorToast(
+                    title: String(localized: "Cannot start workout"),
+                    subTitle: String(localized: "The previous workout is still stopping. Try again.")
+                )
+                return
+            }
+            if Workout.shared.start(model: self, type: type) {
+                self.setIsWorkout(type: type)
+            } else {
+                self.makeErrorToast(title: String(localized: "Cannot start workout"))
+            }
         }
     }
 
@@ -124,14 +250,42 @@ extension Model {
         guard #available(iOS 26, *) else {
             return
         }
-        setIsWorkout(type: nil)
         Workout.shared.stop()
+        if !Workout.shared.isActive() {
+            setIsWorkout(type: nil)
+        }
+    }
+
+    func addWorkoutHeartRate(_ heartRate: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(heartRate: heartRate)
+    }
+
+    func addWorkoutCyclingPower(_ power: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(cyclingPower: power)
+    }
+
+    func addWorkoutCyclingCadence(_ cadence: Int) {
+        guard #available(iOS 26, *) else {
+            return
+        }
+        Workout.shared.add(cyclingCadence: cadence)
     }
 
     private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {
-        let typesToShare: Set = [
+        var typesToShare: Set<HKSampleType> = [
             HKQuantityType.workoutType(),
+            heartRateType,
         ]
+        if #available(iOS 17.0, *) {
+            typesToShare.insert(cyclingPowerType)
+            typesToShare.insert(cyclingCadenceType)
+        }
         healthStore.requestAuthorization(toShare: typesToShare, read: types()) { _, _ in
             DispatchQueue.main.async {
                 completion()

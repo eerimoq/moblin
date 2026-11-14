@@ -515,6 +515,46 @@ nonisolated struct CarServer_VehicleAction: Sendable {
     set {vehicleActionMsg = .batchRemoveChargeSchedulesAction(newValue)}
   }
 
+  var parentalControlsClearPinAction: CarServer_ParentalControlsClearPinAction {
+    get {
+      if case .parentalControlsClearPinAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_ParentalControlsClearPinAction()
+    }
+    set {vehicleActionMsg = .parentalControlsClearPinAction(newValue)}
+  }
+
+  var parentalControlsClearPinAdminAction: CarServer_ParentalControlsClearPinAdminAction {
+    get {
+      if case .parentalControlsClearPinAdminAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_ParentalControlsClearPinAdminAction()
+    }
+    set {vehicleActionMsg = .parentalControlsClearPinAdminAction(newValue)}
+  }
+
+  var parentalControlsAction: CarServer_ParentalControlsAction {
+    get {
+      if case .parentalControlsAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_ParentalControlsAction()
+    }
+    set {vehicleActionMsg = .parentalControlsAction(newValue)}
+  }
+
+  var parentalControlsEnableSettingsAction: CarServer_ParentalControlsEnableSettingsAction {
+    get {
+      if case .parentalControlsEnableSettingsAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_ParentalControlsEnableSettingsAction()
+    }
+    set {vehicleActionMsg = .parentalControlsEnableSettingsAction(newValue)}
+  }
+
+  var parentalControlsSetSpeedLimitAction: CarServer_ParentalControlsSetSpeedLimitAction {
+    get {
+      if case .parentalControlsSetSpeedLimitAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_ParentalControlsSetSpeedLimitAction()
+    }
+    set {vehicleActionMsg = .parentalControlsSetSpeedLimitAction(newValue)}
+  }
+
   var setLowPowerModeAction: CarServer_SetLowPowerModeAction {
     get {
       if case .setLowPowerModeAction(let v)? = vehicleActionMsg {return v}
@@ -587,6 +627,11 @@ nonisolated struct CarServer_VehicleAction: Sendable {
     case removePreconditionScheduleAction(CarServer_RemovePreconditionScheduleAction)
     case batchRemovePreconditionSchedulesAction(CarServer_BatchRemovePreconditionSchedulesAction)
     case batchRemoveChargeSchedulesAction(CarServer_BatchRemoveChargeSchedulesAction)
+    case parentalControlsClearPinAction(CarServer_ParentalControlsClearPinAction)
+    case parentalControlsClearPinAdminAction(CarServer_ParentalControlsClearPinAdminAction)
+    case parentalControlsAction(CarServer_ParentalControlsAction)
+    case parentalControlsEnableSettingsAction(CarServer_ParentalControlsEnableSettingsAction)
+    case parentalControlsSetSpeedLimitAction(CarServer_ParentalControlsSetSpeedLimitAction)
     case setLowPowerModeAction(CarServer_SetLowPowerModeAction)
     case setKeepAccessoryPowerModeAction(CarServer_SetKeepAccessoryPowerModeAction)
 
@@ -2417,6 +2462,125 @@ nonisolated struct CarServer_VehicleControlResetPinToDriveAction: Sendable {
   init() {}
 }
 
+nonisolated struct CarServer_ParentalControlsClearPinAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var pin: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+nonisolated struct CarServer_ParentalControlsClearPinAdminAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+nonisolated struct CarServer_ParentalControlsAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// If a PIN was set previously, it must be provided whenever this command
+  /// is used. For example, after parental controls are disabled, re-enabling
+  /// requires the original PIN.
+  var activate: Bool = false
+
+  var pin: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+nonisolated struct CarServer_ParentalControlsEnableSettingsAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var setting: CarServer_ParentalControlsEnableSettingsAction.ParentalControlsSetting_E = .speedLimit
+
+  var enable: Bool = false
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  nonisolated enum ParentalControlsSetting_E: SwiftProtobuf.Enum, Swift.CaseIterable {
+    typealias RawValue = Int
+    case speedLimit // = 0
+    case acceleration // = 1
+    case safetyFeatures // = 2
+    case curfew // = 3
+    case browserBlocked // = 4
+    case theaterBlocked // = 5
+    case arcadeBlocked // = 6
+    case UNRECOGNIZED(Int)
+
+    init() {
+      self = .speedLimit
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .speedLimit
+      case 1: self = .acceleration
+      case 2: self = .safetyFeatures
+      case 3: self = .curfew
+      case 4: self = .browserBlocked
+      case 5: self = .theaterBlocked
+      case 6: self = .arcadeBlocked
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .speedLimit: return 0
+      case .acceleration: return 1
+      case .safetyFeatures: return 2
+      case .curfew: return 3
+      case .browserBlocked: return 4
+      case .theaterBlocked: return 5
+      case .arcadeBlocked: return 6
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+    // The compiler won't synthesize support with the UNRECOGNIZED case.
+    static let allCases: [CarServer_ParentalControlsEnableSettingsAction.ParentalControlsSetting_E] = [
+      .speedLimit,
+      .acceleration,
+      .safetyFeatures,
+      .curfew,
+      .browserBlocked,
+      .theaterBlocked,
+      .arcadeBlocked,
+    ]
+
+  }
+
+  init() {}
+}
+
+nonisolated struct CarServer_ParentalControlsSetSpeedLimitAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var limitMph: Double = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 nonisolated struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2507,7 +2671,7 @@ nonisolated extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleAction"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{2}\u{16}setLowPowerModeAction\0\u{2}\u{8}setKeepAccessoryPowerModeAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{1}parentalControlsClearPinAction\0\u{1}parentalControlsClearPinAdminAction\0\u{1}parentalControlsAction\0\u{1}parentalControlsEnableSettingsAction\0\u{1}parentalControlsSetSpeedLimitAction\0\u{2}\u{11}setLowPowerModeAction\0\u{2}\u{8}setKeepAccessoryPowerModeAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3204,6 +3368,71 @@ nonisolated extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProto
           self.vehicleActionMsg = .batchRemoveChargeSchedulesAction(v)
         }
       }()
+      case 109: try {
+        var v: CarServer_ParentalControlsClearPinAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .parentalControlsClearPinAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .parentalControlsClearPinAction(v)
+        }
+      }()
+      case 110: try {
+        var v: CarServer_ParentalControlsClearPinAdminAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .parentalControlsClearPinAdminAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .parentalControlsClearPinAdminAction(v)
+        }
+      }()
+      case 111: try {
+        var v: CarServer_ParentalControlsAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .parentalControlsAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .parentalControlsAction(v)
+        }
+      }()
+      case 112: try {
+        var v: CarServer_ParentalControlsEnableSettingsAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .parentalControlsEnableSettingsAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .parentalControlsEnableSettingsAction(v)
+        }
+      }()
+      case 113: try {
+        var v: CarServer_ParentalControlsSetSpeedLimitAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .parentalControlsSetSpeedLimitAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .parentalControlsSetSpeedLimitAction(v)
+        }
+      }()
       case 130: try {
         var v: CarServer_SetLowPowerModeAction?
         var hadOneofValue = false
@@ -3452,6 +3681,26 @@ nonisolated extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProto
     case .batchRemoveChargeSchedulesAction?: try {
       guard case .batchRemoveChargeSchedulesAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 108)
+    }()
+    case .parentalControlsClearPinAction?: try {
+      guard case .parentalControlsClearPinAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 109)
+    }()
+    case .parentalControlsClearPinAdminAction?: try {
+      guard case .parentalControlsClearPinAdminAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 110)
+    }()
+    case .parentalControlsAction?: try {
+      guard case .parentalControlsAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 111)
+    }()
+    case .parentalControlsEnableSettingsAction?: try {
+      guard case .parentalControlsEnableSettingsAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 112)
+    }()
+    case .parentalControlsSetSpeedLimitAction?: try {
+      guard case .parentalControlsSetSpeedLimitAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 113)
     }()
     case .setLowPowerModeAction?: try {
       guard case .setLowPowerModeAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
@@ -6534,6 +6783,159 @@ nonisolated extension CarServer_VehicleControlResetPinToDriveAction: SwiftProtob
   }
 
   static func ==(lhs: CarServer_VehicleControlResetPinToDriveAction, rhs: CarServer_VehicleControlResetPinToDriveAction) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension CarServer_ParentalControlsClearPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ParentalControlsClearPinAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pin\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.pin) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.pin.isEmpty {
+      try visitor.visitSingularStringField(value: self.pin, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_ParentalControlsClearPinAction, rhs: CarServer_ParentalControlsClearPinAction) -> Bool {
+    if lhs.pin != rhs.pin {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension CarServer_ParentalControlsClearPinAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ParentalControlsClearPinAdminAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_ParentalControlsClearPinAdminAction, rhs: CarServer_ParentalControlsClearPinAdminAction) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension CarServer_ParentalControlsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ParentalControlsAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}activate\0\u{1}pin\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.activate) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.pin) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.activate != false {
+      try visitor.visitSingularBoolField(value: self.activate, fieldNumber: 1)
+    }
+    if !self.pin.isEmpty {
+      try visitor.visitSingularStringField(value: self.pin, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_ParentalControlsAction, rhs: CarServer_ParentalControlsAction) -> Bool {
+    if lhs.activate != rhs.activate {return false}
+    if lhs.pin != rhs.pin {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension CarServer_ParentalControlsEnableSettingsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ParentalControlsEnableSettingsAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}setting\0\u{1}enable\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.setting) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.enable) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.setting != .speedLimit {
+      try visitor.visitSingularEnumField(value: self.setting, fieldNumber: 1)
+    }
+    if self.enable != false {
+      try visitor.visitSingularBoolField(value: self.enable, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_ParentalControlsEnableSettingsAction, rhs: CarServer_ParentalControlsEnableSettingsAction) -> Bool {
+    if lhs.setting != rhs.setting {return false}
+    if lhs.enable != rhs.enable {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension CarServer_ParentalControlsEnableSettingsAction.ParentalControlsSetting_E: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SpeedLimit\0\u{1}Acceleration\0\u{1}SafetyFeatures\0\u{1}Curfew\0\u{1}BrowserBlocked\0\u{1}TheaterBlocked\0\u{1}ArcadeBlocked\0")
+}
+
+nonisolated extension CarServer_ParentalControlsSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ParentalControlsSetSpeedLimitAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}limit_mph\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularDoubleField(value: &self.limitMph) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.limitMph.bitPattern != 0 {
+      try visitor.visitSingularDoubleField(value: self.limitMph, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_ParentalControlsSetSpeedLimitAction, rhs: CarServer_ParentalControlsSetSpeedLimitAction) -> Bool {
+    if lhs.limitMph != rhs.limitMph {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -58,6 +58,14 @@ struct GoLiveNotificationSettingsView: View {
             } label: {
                 DiscordLogoAndNameView()
             }
+            if !isMac() {
+                Section {
+                    Toggle(
+                        "[Moblin website](https://moblin.app/#streamers)",
+                        isOn: $stream.goLiveNotificationMoblinWebsite
+                    )
+                }
+            }
         }
         .navigationTitle("Go live notification")
     }

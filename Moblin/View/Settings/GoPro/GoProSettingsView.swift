@@ -1,4 +1,3 @@
-import NetworkExtension
 import SwiftUI
 
 func qrCodeHeight(_ metrics: GeometryProxy) -> Double {
@@ -84,14 +83,10 @@ private struct GoProWifiCredentialsSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        TextEditView(
-                            title: String(localized: "SSID"),
-                            value: wifiCredentials.ssid,
-                            onSubmit: {
-                                wifiCredentials.ssid = $0
-                                generate()
-                            }
-                        )
+                        WiFiSsidEditView(value: wifiCredentials.ssid) {
+                            wifiCredentials.ssid = $0
+                            generate()
+                        }
                     } label: {
                         TextItemLocalizedView(name: "SSID", value: wifiCredentials.ssid)
                     }
@@ -122,19 +117,6 @@ private struct GoProWifiCredentialsSettingsView: View {
                 generate()
             }
             .navigationTitle("WiFi credentials")
-            .onAppear {
-                NEHotspotNetwork.fetchCurrent { network in
-                    guard let ssid = network?.ssid else {
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        if wifiCredentials.ssid.isEmpty {
-                            wifiCredentials.ssid = ssid
-                            generate()
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -440,19 +422,35 @@ private struct GoProRtmpUrls: View {
     }
 }
 
+private struct GoProQrCodesSettingsView: View {
+    @EnvironmentObject var model: Model
+
+    var body: some View {
+        Form {
+            GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
+            GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
+            GoProRtmpUrls(status: model.statusOther, goPro: model.database.goPro, goProState: model.goPro)
+        }
+        .navigationTitle("QR codes")
+    }
+}
+
 struct GoProSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "GoPro")
+                IntegrationImageView(imageName: "GoPro", height: 180)
+            }
+            GoProBleDevicesSettingsSection(goPro: model.database.goPro)
+            Section {
+                NavigationLink {
+                    GoProQrCodesSettingsView()
+                } label: {
+                    Text("QR codes")
                 }
             }
-            GoProLaunchLiveStream(goPro: model.database.goPro, goProState: model.goPro)
-            GoProWifiCredentials(goPro: model.database.goPro, goProState: model.goPro)
-            GoProRtmpUrls(status: model.statusOther, goPro: model.database.goPro, goProState: model.goPro)
         }
         .navigationTitle("GoPro")
     }

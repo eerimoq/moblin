@@ -7,7 +7,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var user: String = ""
     @Published var messageStart: String = ""
     var messageStartWords: [String] = []
-    @Published var showOnScreen: Bool = false
+    @Published var showInChat: Bool = false
+    @Published var showInActivityFeed: Bool = false
     @Published var textToSpeech: Bool = false
     @Published var chatBot: Bool = false
     @Published var poll: Bool = false
@@ -70,6 +71,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         case value
         case messageWords
         case showOnScreen
+        case showInActivityFeed
         case textToSpeech
         case chatBot
         case poll
@@ -82,7 +84,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.value, user)
         try container.encode(.messageWords, messageStartWords)
-        try container.encode(.showOnScreen, showOnScreen)
+        try container.encode(.showOnScreen, showInChat)
+        try container.encode(.showInActivityFeed, showInActivityFeed)
         try container.encode(.textToSpeech, textToSpeech)
         try container.encode(.chatBot, chatBot)
         try container.encode(.poll, poll)
@@ -98,7 +101,8 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
         user = container.decode(.value, String.self, "")
         messageStartWords = container.decode(.messageWords, [String].self, [])
         messageStart = messageStartWords.joined(separator: " ")
-        showOnScreen = container.decode(.showOnScreen, Bool.self, false)
+        showInChat = container.decode(.showOnScreen, Bool.self, false)
+        showInActivityFeed = container.decode(.showInActivityFeed, Bool.self, false)
         textToSpeech = container.decode(.textToSpeech, Bool.self, false)
         chatBot = container.decode(.chatBot, Bool.self, false)
         poll = container.decode(.poll, Bool.self, false)
@@ -170,7 +174,9 @@ class SettingsChatBotPermissions: Codable {
     var gimbal: SettingsChatBotPermissionsCommand = .init()
     var macro: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var send: SettingsChatBotPermissionsCommand = .init()
-    var migrated: Bool = false
+    var music: SettingsChatBotPermissionsCommand = .init()
+    var torch: SettingsChatBotPermissionsCommand = .init()
+    var vibrate: SettingsChatBotPermissionsCommand = .init()
 
     enum CodingKeys: CodingKey {
         case tts
@@ -193,7 +199,9 @@ class SettingsChatBotPermissions: Codable {
         case gimbal
         case macro
         case send
-        case migrated
+        case music
+        case torch
+        case vibrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -218,7 +226,9 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.gimbal, gimbal)
         try container.encode(.macro, macro)
         try container.encode(.send, send)
-        try container.encode(.migrated, migrated)
+        try container.encode(.music, music)
+        try container.encode(.torch, torch)
+        try container.encode(.vibrate, vibrate)
     }
 
     init() {}
@@ -247,12 +257,9 @@ class SettingsChatBotPermissions: Codable {
                                  SettingsChatBotPermissionsCommand.self,
                                  .init(moderatorsEnabled: false))
         send = container.decode(.send, SettingsChatBotPermissionsCommand.self, .init())
-        migrated = container.decode(.migrated, Bool.self, false)
-        if !migrated {
-            scene.moderatorsEnabled = false
-            stream.moderatorsEnabled = false
-            migrated = true
-        }
+        music = container.decode(.music, SettingsChatBotPermissionsCommand.self, .init())
+        torch = container.decode(.torch, SettingsChatBotPermissionsCommand.self, .init())
+        vibrate = container.decode(.vibrate, SettingsChatBotPermissionsCommand.self, .init())
     }
 }
 
@@ -278,6 +285,126 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         alias = container.decode(.alias, String.self, "")
         replacement = container.decode(.replacement, String.self, "")
+    }
+}
+
+class SettingsChatBotCustomCommand: Codable, ObservableObject, Identifiable {
+    var id: UUID = .init()
+    @Published var name: String = "myCommand"
+    @Published var formatString: String = ""
+    var permissions: SettingsChatBotPermissionsCommand = .init()
+    var needsWeather: Bool = false
+    var needsGeography: Bool = false
+    var needsGForce: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+        case formatString
+        case permissions
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.formatString, formatString)
+        try container.encode(.permissions, permissions)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        formatString = container.decode(.formatString, String.self, "")
+        permissions = container.decode(.permissions, SettingsChatBotPermissionsCommand.self, .init())
+    }
+}
+
+enum SettingsChatBotCommandSnapshotSource: String, Codable, CaseIterable {
+    case thisDevice = "This device"
+    case webRemoteControl = "Web remote control"
+
+    init(from decoder: any Decoder) throws {
+        self = try SettingsChatBotCommandSnapshotSource(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .thisDevice
+    }
+
+    func toString() -> String {
+        switch self {
+        case .thisDevice:
+            String(localized: "This device")
+        case .webRemoteControl:
+            String(localized: "Web remote control")
+        }
+    }
+}
+
+enum SettingsChatBotCommandSnapshotWebRemoteControlMode: String, Codable, CaseIterable {
+    case fallbackWhenNotLive
+    case always
+
+    init(from decoder: any Decoder) throws {
+        self = try SettingsChatBotCommandSnapshotWebRemoteControlMode(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .fallbackWhenNotLive
+    }
+
+    func toString() -> String {
+        switch self {
+        case .fallbackWhenNotLive:
+            String(localized: "When not live")
+        case .always:
+            String(localized: "Always")
+        }
+    }
+}
+
+class SettingsChatBotCommandSnapshot: Codable, ObservableObject {
+    @Published var source: SettingsChatBotCommandSnapshotSource = .thisDevice
+    @Published var webRemoteControlUrl: String = ""
+    @Published var webRemoteControlMode: SettingsChatBotCommandSnapshotWebRemoteControlMode =
+        .fallbackWhenNotLive
+
+    enum CodingKeys: CodingKey {
+        case source
+        case webRemoteControlUrl
+        case webRemoteControlMode
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.source, source)
+        try container.encode(.webRemoteControlUrl, webRemoteControlUrl)
+        try container.encode(.webRemoteControlMode, webRemoteControlMode)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        source = container.decode(.source, SettingsChatBotCommandSnapshotSource.self, .thisDevice)
+        webRemoteControlUrl = container.decode(.webRemoteControlUrl, String.self, "")
+        webRemoteControlMode = container.decode(
+            .webRemoteControlMode,
+            SettingsChatBotCommandSnapshotWebRemoteControlMode.self,
+            .fallbackWhenNotLive
+        )
+    }
+
+    func effectiveSource(isLive: Bool) -> SettingsChatBotCommandSnapshotSource {
+        switch source {
+        case .thisDevice:
+            .thisDevice
+        case .webRemoteControl:
+            switch webRemoteControlMode {
+            case .fallbackWhenNotLive:
+                isLive ? .thisDevice : .webRemoteControl
+            case .always:
+                .webRemoteControl
+            }
+        }
     }
 }
 
@@ -444,9 +571,10 @@ class SettingsChatNicknames: Codable, ObservableObject {
 
 class SettingsOpenAi: Codable, ObservableObject {
     private static let defaultPersonality = "You give fast and short answers."
+    private static let defaultModel = "gemini-3.5-flash-lite"
     @Published var baseUrl: String = "https://generativelanguage.googleapis.com/v1beta/openai"
     @Published var apiKey: String = ""
-    @Published var model: String = "gemini-2.0-flash"
+    @Published var model: String = defaultModel
     @Published var personality: String
 
     init(personality: String? = nil) {
@@ -476,7 +604,7 @@ class SettingsOpenAi: Codable, ObservableObject {
             "https://generativelanguage.googleapis.com/v1beta/openai"
         )
         apiKey = container.decode(.apiKey, String.self, "")
-        model = container.decode(.model, String.self, "gemini-2.0-flash")
+        model = container.decode(.model, String.self, Self.defaultModel)
         personality = container.decode(.role, String.self, SettingsOpenAi.defaultPersonality)
     }
 
@@ -526,6 +654,7 @@ enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
 enum SettingsVoiceType: String, Codable, CaseIterable {
     case apple
     case ttsMonster
+    case elevenLabs
 
     init(from decoder: any Decoder) throws {
         self = try SettingsVoiceType(rawValue: decoder.singleValueContainer()
@@ -542,16 +671,90 @@ class SettingsVoiceTtsMonster: Codable {
     var voiceId: String = ""
 }
 
+class SettingsVoiceElevenLabs: Codable {
+    var name: String = ""
+    var voiceId: String = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case name
+        case voiceId
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.voiceId, voiceId)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        voiceId = container.decode(.voiceId, String.self, "")
+    }
+}
+
 class SettingsVoice: Codable, @unchecked Sendable {
     var type: SettingsVoiceType = .apple
     var apple: SettingsVoiceApple = .init()
     var ttsMonster: SettingsVoiceTtsMonster = .init()
+    var elevenLabs: SettingsVoiceElevenLabs = .init()
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case type
+        case apple
+        case ttsMonster
+        case elevenLabs
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.apple, apple)
+        try container.encode(.ttsMonster, ttsMonster)
+        try container.encode(.elevenLabs, elevenLabs)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsVoiceType.self, .apple)
+        apple = container.decode(.apple, SettingsVoiceApple.self, .init())
+        ttsMonster = container.decode(.ttsMonster, SettingsVoiceTtsMonster.self, .init())
+        elevenLabs = container.decode(.elevenLabs, SettingsVoiceElevenLabs.self, .init())
+    }
+}
+
+class SettingsElevenLabs: Codable, ObservableObject {
+    @Published var apiKey: String = ""
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case apiKey
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.apiKey, apiKey)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        apiKey = container.decode(.apiKey, String.self, "")
+    }
 }
 
 class SettingsChat: Codable, ObservableObject {
+    static let defaultBigGifScale: Float = 2.0
+    static let defaultActivityFeedHeight: Double = 0.2
     @Published var fontSize: Float = 19.0
+    @Published var font: SettingsFont = .init()
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
     @Published var usernameColorColor: Color = RgbColor(red: 255, green: 163, blue: 0).color()
+    @Published var sameUsernameColor: Bool = false
     var messageColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     @Published var messageColorColor: Color = RgbColor(red: 255, green: 255, blue: 255).color()
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
@@ -568,6 +771,8 @@ class SettingsChat: Codable, ObservableObject {
     @Published var timestampColorEnabled: Bool = false
     @Published var height: Double = 0.7
     @Published var width: Double = 1.0
+    @Published var activityFeedHeight: Double = defaultActivityFeedHeight
+    @Published var activityFeed: Bool = true
     @Published var maximumAge: Int = 30
     @Published var maximumAgeEnabled: Bool = false
     @Published var meInUsernameColor: Bool = true
@@ -577,18 +782,22 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechDefaultLanguage: String?
     @Published var textToSpeechDetectLanguagePerMessage: Bool = false
     @Published var textToSpeechSayUsername: Bool = true
+    @Published var textToSpeechSayEmotes: Bool = false
     @Published var textToSpeechRate: Float = 0.4
     @Published var textToSpeechSayVolume: Float = 0.6
     @Published var textToSpeechLanguageVoices: [String: SettingsVoice] = .init()
     @Published var textToSpeechSubscribersOnly: Bool = false
     @Published var textToSpeechFilter: Bool = true
     @Published var textToSpeechFilterMentions: Bool = true
+    @Published var textToSpeechBluetoothSpeakerOnly: Bool = false
     @Published var ttsMonster: SettingsTtsMonster = .init()
+    @Published var elevenLabs: SettingsElevenLabs = .init()
     @Published var mirrored: Bool = false
     @Published var botEnabled: Bool = false
     var botCommandPermissions: SettingsChatBotPermissions = .init()
     var botSendLowBatteryWarning: Bool = false
     var botCommandAi: SettingsOpenAi = .init()
+    var botCommandSnapshot: SettingsChatBotCommandSnapshot = .init()
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
@@ -597,16 +806,22 @@ class SettingsChat: Codable, ObservableObject {
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
     @Published var showDeletedMessages: Bool = false
     @Published var aliases: [SettingsChatBotAlias] = []
+    @Published var customCommands: [SettingsChatBotCustomCommand] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
     @Published var background: Bool = false
     @Published var sharedChatIcons: Bool = true
+    @Published var bigGifScale: Float = defaultBigGifScale
+    @Published var compactEvents: Bool = true
 
     enum CodingKeys: CodingKey {
         case fontSize
+        case fontFamily
+        case fontStyle
         case usernameColor
+        case sameUsernameColor
         case messageColor
         case backgroundColor
         case backgroundColorEnabled
@@ -619,6 +834,8 @@ class SettingsChat: Codable, ObservableObject {
         case timestampColorEnabled
         case height
         case width
+        case activityFeed
+        case activityFeedHeight
         case maximumAge
         case maximumAgeEnabled
         case meInUsernameColor
@@ -628,18 +845,22 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechDefaultLanguage
         case textToSpeechDetectLanguagePerMessage
         case textToSpeechSayUsername
+        case textToSpeechSayEmotes
         case textToSpeechRate
         case textToSpeechSayVolume
         case textToSpeechLanguageVoices
         case textToSpeechSubscribersOnly
         case textToSpeechFilter
         case textToSpeechFilterMentions
+        case textToSpeechBluetoothSpeakerOnly
         case ttsMonster
+        case elevenLabs
         case mirrored
         case botEnabled
         case botCommandPermissions
         case botSendLowBatteryWarning
         case botCommandAi
+        case botCommandSnapshot
         case badges
         case showFirstTimeChatterMessage
         case showNewFollowerMessage
@@ -648,6 +869,7 @@ class SettingsChat: Codable, ObservableObject {
         case textToSpeechPauseBetweenMessages
         case showDeletedMessages
         case aliases
+        case customCommands
         case predefinedMessages
         case predefinedMessagesFilter
         case sendMessagesTo
@@ -655,12 +877,17 @@ class SettingsChat: Codable, ObservableObject {
         case displayStyle
         case background
         case sharedChatIcons
+        case bigGifScale
+        case compactEvents
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
+        try container.encode(.fontFamily, font.family)
+        try container.encode(.fontStyle, font.style)
         try container.encode(.usernameColor, usernameColor)
+        try container.encode(.sameUsernameColor, sameUsernameColor)
         try container.encode(.messageColor, messageColor)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.backgroundColorEnabled, backgroundColorEnabled)
@@ -673,6 +900,8 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.timestampColorEnabled, timestampColorEnabled)
         try container.encode(.height, height)
         try container.encode(.width, width)
+        try container.encode(.activityFeed, activityFeed)
+        try container.encode(.activityFeedHeight, activityFeedHeight)
         try container.encode(.maximumAge, maximumAge)
         try container.encode(.maximumAgeEnabled, maximumAgeEnabled)
         try container.encode(.meInUsernameColor, meInUsernameColor)
@@ -682,18 +911,22 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechDefaultLanguage, textToSpeechDefaultLanguage)
         try container.encode(.textToSpeechDetectLanguagePerMessage, textToSpeechDetectLanguagePerMessage)
         try container.encode(.textToSpeechSayUsername, textToSpeechSayUsername)
+        try container.encode(.textToSpeechSayEmotes, textToSpeechSayEmotes)
         try container.encode(.textToSpeechRate, textToSpeechRate)
         try container.encode(.textToSpeechSayVolume, textToSpeechSayVolume)
         try container.encode(.textToSpeechLanguageVoices, textToSpeechLanguageVoices)
         try container.encode(.textToSpeechSubscribersOnly, textToSpeechSubscribersOnly)
         try container.encode(.textToSpeechFilter, textToSpeechFilter)
         try container.encode(.textToSpeechFilterMentions, textToSpeechFilterMentions)
+        try container.encode(.textToSpeechBluetoothSpeakerOnly, textToSpeechBluetoothSpeakerOnly)
         try container.encode(.ttsMonster, ttsMonster)
+        try container.encode(.elevenLabs, elevenLabs)
         try container.encode(.mirrored, mirrored)
         try container.encode(.botEnabled, botEnabled)
         try container.encode(.botCommandPermissions, botCommandPermissions)
         try container.encode(.botSendLowBatteryWarning, botSendLowBatteryWarning)
         try container.encode(.botCommandAi, botCommandAi)
+        try container.encode(.botCommandSnapshot, botCommandSnapshot)
         try container.encode(.badges, badges)
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
@@ -702,12 +935,15 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
         try container.encode(.showDeletedMessages, showDeletedMessages)
         try container.encode(.aliases, aliases)
+        try container.encode(.customCommands, customCommands)
         try container.encode(.predefinedMessages, predefinedMessages)
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
         try container.encode(.nicknames, nicknames)
         try container.encode(.displayStyle, displayStyle)
         try container.encode(.background, background)
         try container.encode(.sharedChatIcons, sharedChatIcons)
+        try container.encode(.bigGifScale, bigGifScale)
+        try container.encode(.compactEvents, compactEvents)
     }
 
     init() {}
@@ -715,8 +951,11 @@ class SettingsChat: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = container.decode(.fontSize, Float.self, 19.0)
+        font.family = container.decode(.fontFamily, String?.self, nil)
+        font.style = container.decode(.fontStyle, String.self, "")
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
         usernameColorColor = usernameColor.color()
+        sameUsernameColor = container.decode(.sameUsernameColor, Bool.self, false)
         messageColor = container.decode(.messageColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         messageColorColor = messageColor.color()
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
@@ -737,6 +976,12 @@ class SettingsChat: Codable, ObservableObject {
         timestampColorEnabled = container.decode(.timestampColorEnabled, Bool.self, false)
         height = container.decode(.height, Double.self, 0.7)
         width = container.decode(.width, Double.self, 1.0)
+        activityFeed = container.decode(.activityFeed, Bool.self, true)
+        activityFeedHeight = container.decode(
+            .activityFeedHeight,
+            Double.self,
+            Self.defaultActivityFeedHeight
+        )
         maximumAge = container.decode(.maximumAge, Int.self, 30)
         maximumAgeEnabled = container.decode(.maximumAgeEnabled, Bool.self, false)
         meInUsernameColor = container.decode(.meInUsernameColor, Bool.self, true)
@@ -750,6 +995,7 @@ class SettingsChat: Codable, ObservableObject {
             false
         )
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
+        textToSpeechSayEmotes = container.decode(.textToSpeechSayEmotes, Bool.self, false)
         textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
         textToSpeechSayVolume = container.decode(.textToSpeechSayVolume, Float.self, 0.6)
         textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,
@@ -767,7 +1013,13 @@ class SettingsChat: Codable, ObservableObject {
         textToSpeechSubscribersOnly = container.decode(.textToSpeechSubscribersOnly, Bool.self, false)
         textToSpeechFilter = container.decode(.textToSpeechFilter, Bool.self, true)
         textToSpeechFilterMentions = container.decode(.textToSpeechFilterMentions, Bool.self, true)
+        textToSpeechBluetoothSpeakerOnly = container.decode(
+            .textToSpeechBluetoothSpeakerOnly,
+            Bool.self,
+            false
+        )
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
+        elevenLabs = container.decode(.elevenLabs, SettingsElevenLabs.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)
         botCommandPermissions = container.decode(
@@ -777,6 +1029,11 @@ class SettingsChat: Codable, ObservableObject {
         )
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
         botCommandAi = container.decode(.botCommandAi, SettingsOpenAi.self, .init())
+        botCommandSnapshot = container.decode(
+            .botCommandSnapshot,
+            SettingsChatBotCommandSnapshot.self,
+            .init()
+        )
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
@@ -789,6 +1046,7 @@ class SettingsChat: Codable, ObservableObject {
         )
         showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
         aliases = container.decode(.aliases, [SettingsChatBotAlias].self, [])
+        customCommands = container.decode(.customCommands, [SettingsChatBotCustomCommand].self, [])
         predefinedMessages = container.decode(.predefinedMessages, [SettingsChatPredefinedMessage].self, [])
         predefinedMessagesFilter = container.decode(
             .predefinedMessagesFilter,
@@ -799,29 +1057,7 @@ class SettingsChat: Codable, ObservableObject {
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
         background = container.decode(.background, Bool.self, false)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, true)
-    }
-
-    func getRotation() -> Double {
-        if newMessagesAtTop {
-            0.0
-        } else {
-            180.0
-        }
-    }
-
-    func getScaleX() -> Double {
-        if newMessagesAtTop {
-            1.0
-        } else {
-            -1.0
-        }
-    }
-
-    func isMirrored() -> CGFloat {
-        if mirrored {
-            -1
-        } else {
-            1
-        }
+        bigGifScale = container.decode(.bigGifScale, Float.self, Self.defaultBigGifScale)
+        compactEvents = container.decode(.compactEvents, Bool.self, true)
     }
 }

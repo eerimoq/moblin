@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct PickerView: View {
+struct WizardVideoSourcePickerView: View {
     var onChange: (String) -> Void
     var items: [InlinePickerItem]
     @State var selectedId: String
@@ -27,6 +27,7 @@ struct WidgetWizardVideoSourceSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var createWidgetWizard: CreateWidgetWizard
     @ObservedObject var videoSource: SettingsWidgetVideoSource
+    @ObservedObject var videoSources: VideoSources
     @Binding var presentingCreateWizard: Bool
 
     private func onCameraChange(cameraId: String) {
@@ -36,9 +37,9 @@ struct WidgetWizardVideoSourceSettingsView: View {
     var body: some View {
         Form {
             Section {
-                PickerView(
+                WizardVideoSourcePickerView(
                     onChange: onCameraChange,
-                    items: model.listCameras(excludeBuiltin: false).map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(videoSourceWidget: videoSource)

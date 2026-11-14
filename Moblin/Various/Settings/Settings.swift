@@ -6,6 +6,7 @@ let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
 let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
 let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+let defaultSegmentedPickerSelectedColor = RgbColor(red: 142, green: 142, blue: 147, opacity: 0.6)
 let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
@@ -81,6 +82,16 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     case p3D65 = "P3 D65"
     case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
+    case appleLog2 = "Apple Log 2"
+
+    func isAppleLog() -> Bool {
+        switch self {
+        case .appleLog, .appleLog2:
+            true
+        default:
+            false
+        }
+    }
 }
 
 private let allBundledLuts = [
@@ -145,6 +156,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var audioLevel: Bool = true
     @Published var zoom: Bool = false
     @Published var zoomPresets: Bool = true
+    @Published var zoomSlider: Bool = false
     @Published var microphone: Bool = false
     @Published var audioBar: Bool = true
     @Published var cameras: Bool = false
@@ -153,6 +165,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var gameController: Bool = true
     @Published var location: Bool = false
     @Published var remoteControl: Bool = true
+    @Published var moblinCloud: Bool = true
     @Published var browserWidgets: Bool = true
     @Published var bonding: Bool = true
     @Published var events: Bool = true
@@ -174,6 +187,7 @@ class SettingsShow: Codable, ObservableObject {
         case audioLevel
         case zoom
         case zoomPresets
+        case zoomSlider
         case microphone
         case audioBar
         case cameras
@@ -182,6 +196,7 @@ class SettingsShow: Codable, ObservableObject {
         case gameController
         case location
         case remoteControl
+        case moblinCloud
         case browserWidgets
         case bonding
         case events
@@ -203,6 +218,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.audioLevel, audioLevel)
         try container.encode(.zoom, zoom)
         try container.encode(.zoomPresets, zoomPresets)
+        try container.encode(.zoomSlider, zoomSlider)
         try container.encode(.microphone, microphone)
         try container.encode(.audioBar, audioBar)
         try container.encode(.cameras, cameras)
@@ -211,6 +227,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.gameController, gameController)
         try container.encode(.location, location)
         try container.encode(.remoteControl, remoteControl)
+        try container.encode(.moblinCloud, moblinCloud)
         try container.encode(.browserWidgets, browserWidgets)
         try container.encode(.bonding, bonding)
         try container.encode(.events, events)
@@ -232,6 +249,7 @@ class SettingsShow: Codable, ObservableObject {
         audioLevel = container.decode(.audioLevel, Bool.self, true)
         zoom = container.decode(.zoom, Bool.self, false)
         zoomPresets = container.decode(.zoomPresets, Bool.self, true)
+        zoomSlider = container.decode(.zoomSlider, Bool.self, false)
         microphone = container.decode(.microphone, Bool.self, false)
         audioBar = container.decode(.audioBar, Bool.self, true)
         cameras = container.decode(.cameras, Bool.self, false)
@@ -240,6 +258,7 @@ class SettingsShow: Codable, ObservableObject {
         gameController = container.decode(.gameController, Bool.self, true)
         location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
+        moblinCloud = container.decode(.moblinCloud, Bool.self, true)
         browserWidgets = container.decode(.browserWidgets, Bool.self, true)
         bonding = container.decode(.bonding, Bool.self, true)
         events = container.decode(.events, Bool.self, true)
@@ -322,6 +341,8 @@ class SettingsZoom: Codable, ObservableObject {
     @Published var switchToBack: SettingsZoomSwitchTo = .init()
     @Published var switchToFront: SettingsZoomSwitchTo = .init()
     @Published var speed: Float = 5.0
+    var backgroundColor: RgbColor = defaultSegmentedPickerSelectedColor
+    @Published var backgroundColorColor: Color = defaultSegmentedPickerSelectedColor.color()
 
     init() {}
 
@@ -331,6 +352,7 @@ class SettingsZoom: Codable, ObservableObject {
         case switchToBack
         case switchToFront
         case speed
+        case backgroundColor
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -340,6 +362,7 @@ class SettingsZoom: Codable, ObservableObject {
         try container.encode(.switchToBack, switchToBack)
         try container.encode(.switchToFront, switchToFront)
         try container.encode(.speed, speed)
+        try container.encode(.backgroundColor, backgroundColor)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -349,6 +372,12 @@ class SettingsZoom: Codable, ObservableObject {
         switchToBack = container.decode(.switchToBack, SettingsZoomSwitchTo.self, .init())
         switchToFront = container.decode(.switchToFront, SettingsZoomSwitchTo.self, .init())
         speed = container.decode(.speed, Float.self, 5.0)
+        backgroundColor = container.decode(
+            .backgroundColor,
+            RgbColor.self,
+            defaultSegmentedPickerSelectedColor
+        )
+        backgroundColorColor = backgroundColor.color()
     }
 }
 
@@ -407,15 +436,19 @@ let videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
     }
 }
 
-class SettingsTesla: Codable {
+class SettingsTesla: Codable, ObservableObject {
     var vin: String = ""
     var privateKey: String = ""
     var enabled: Bool = true
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
         case vin
         case privateKey
         case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -423,6 +456,8 @@ class SettingsTesla: Codable {
         try container.encode(.vin, vin)
         try container.encode(.privateKey, privateKey)
         try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
     }
 
     init() {}
@@ -432,6 +467,8 @@ class SettingsTesla: Codable {
         vin = container.decode(.vin, String.self, "")
         privateKey = container.decode(.privateKey, String.self, "")
         enabled = container.decode(.enabled, Bool.self, true)
+        bluetoothPeripheralName = container.decode(.bluetoothPeripheralName, String?.self, nil)
+        bluetoothPeripheralId = container.decode(.bluetoothPeripheralId, UUID?.self, nil)
     }
 }
 
@@ -442,9 +479,28 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     case ipv4AndIpv6 = "IPv4 and IPv6"
 }
 
-class SettingsMediaPlayerFile: Codable, Identifiable {
+class SettingsMediaPlayerFile: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = "My video"
+    @Published var name: String = "My video"
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "My video")
+    }
 
     func clone() -> SettingsMediaPlayerFile {
         let new = SettingsMediaPlayerFile()
@@ -627,6 +683,8 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
     }
 }
 
+let defaultWheelCircumference = 2105
+
 class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")
     var id: UUID = .init()
@@ -634,6 +692,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var enabled: Bool = false
     @Published var bluetoothPeripheralName: String?
     @Published var bluetoothPeripheralId: UUID?
+    @Published var wheelCircumference: Int = defaultWheelCircumference
 
     enum CodingKeys: CodingKey {
         case id
@@ -641,6 +700,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         case enabled
         case bluetoothPeripheralName
         case bluetoothPeripheralId
+        case wheelCircumference
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -650,6 +710,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.enabled, enabled)
         try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
         try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+        try container.encode(.wheelCircumference, wheelCircumference)
     }
 
     init() {}
@@ -661,6 +722,9 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
         enabled = container.decode(.enabled, Bool.self, false)
         bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
         bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+        wheelCircumference = container.decode(.wheelCircumference,
+                                              Int.self,
+                                              defaultWheelCircumference)
     }
 }
 
@@ -783,6 +847,20 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsAppMode: String, Codable, CaseIterable {
+    case streaming
+    case chatPhone
+
+    func toString() -> String {
+        switch self {
+        case .streaming:
+            String(localized: "Streaming")
+        case .chatPhone:
+            String(localized: "Chat phone")
+        }
+    }
+}
+
 class WebBrowserBookmarkSettings: Identifiable, Codable, ObservableObject {
     var id: UUID = .init()
     @Published var url: String = "https://google.com"
@@ -828,12 +906,29 @@ class WebBrowserSettings: Codable, ObservableObject {
     }
 }
 
-class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
+class SettingsAlertsMediaGalleryItem: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
-    var name: String = ""
+    @Published var name: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+    }
 
     init(name: String) {
         self.name = name
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
     }
 }
 
@@ -865,11 +960,40 @@ private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Silence"),
 ]
 
-class SettingsAlertsMediaGallery: Codable {
+class SettingsAlertsMediaGallery: Codable, ObservableObject {
     var bundledImages = allBundledAlertsMediaGalleryImages
-    var customImages: [SettingsAlertsMediaGalleryItem] = []
+    @Published var customImages: [SettingsAlertsMediaGalleryItem] = []
     var bundledSounds = allBundledAlertsMediaGallerySounds
-    var customSounds: [SettingsAlertsMediaGalleryItem] = []
+    @Published var customSounds: [SettingsAlertsMediaGalleryItem] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case bundledImages
+        case customImages
+        case bundledSounds
+        case customSounds
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.bundledImages, bundledImages)
+        try container.encode(.customImages, customImages)
+        try container.encode(.bundledSounds, bundledSounds)
+        try container.encode(.customSounds, customSounds)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        bundledImages = container.decode(.bundledImages,
+                                         [SettingsAlertsMediaGalleryItem].self,
+                                         allBundledAlertsMediaGalleryImages)
+        customImages = container.decode(.customImages, [SettingsAlertsMediaGalleryItem].self, [])
+        bundledSounds = container.decode(.bundledSounds,
+                                         [SettingsAlertsMediaGalleryItem].self,
+                                         allBundledAlertsMediaGallerySounds)
+        customSounds = container.decode(.customSounds, [SettingsAlertsMediaGalleryItem].self, [])
+    }
 
     func getWhiteStarImageId() -> UUID {
         bundledImages[3].id
@@ -877,6 +1001,14 @@ class SettingsAlertsMediaGallery: Codable {
 
     func getGlassesImageId() -> UUID {
         bundledImages[5].id
+    }
+
+    func allImages() -> [SettingsAlertsMediaGalleryItem] {
+        bundledImages + customImages
+    }
+
+    func allSounds() -> [SettingsAlertsMediaGalleryItem] {
+        bundledSounds + customSounds
     }
 }
 
@@ -946,6 +1078,7 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case blur
     case pixellate
     case backgroundImage
+    case icon
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -955,6 +1088,8 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
             "Pixellate"
         case .backgroundImage:
             "Background image"
+        case .icon:
+            "Icon"
         }
     }
 }
@@ -994,7 +1129,7 @@ class SettingsFace: Codable, ObservableObject {
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
     }
 
-    func toEffectSettings(backgroundImage: CIImage?) -> FaceEffectSettings {
+    func toEffectSettings(backgroundImage: CIImage?, iconImage: CGImage?) -> FaceEffectSettings {
         let faceEffectPrivacyMode: FaceEffectPrivacyMode = switch privacyMode {
         case .blur:
             .blur(strength: blurStrength)
@@ -1002,6 +1137,8 @@ class SettingsFace: Codable, ObservableObject {
             .pixellate(strength: pixellateStrength)
         case .backgroundImage:
             .backgroundImage(backgroundImage)
+        case .icon:
+            .icon(iconImage)
         }
         return FaceEffectSettings(blurFaces: blurFaces,
                                   blurText: blurText,
@@ -1094,6 +1231,42 @@ class SettingsWiFi: Codable, Identifiable, ObservableObject {
     }
 }
 
+class SettingsMoblinCloud: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var key: String = ""
+    @Published var wheelOfLuckWidgetId: UUID?
+    @Published var alertsWidgetId: UUID?
+    @Published var url: String = moblinCloudApiUrl
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case enabled
+        case key
+        case wheelOfLuckWidgetId
+        case alertsWidgetId
+        case url
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.key, key)
+        try container.encode(.wheelOfLuckWidgetId, wheelOfLuckWidgetId)
+        try container.encode(.alertsWidgetId, alertsWidgetId)
+        try container.encode(.url, url)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        key = container.decode(.key, String.self, "")
+        wheelOfLuckWidgetId = container.decode(.wheelOfLuckWidgetId, UUID?.self, nil)
+        alertsWidgetId = container.decode(.alertsWidgetId, UUID?.self, nil)
+        url = container.decode(.url, String.self, moblinCloudApiUrl)
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1116,6 +1289,7 @@ class Database: Codable, ObservableObject {
     @Published var vibrate: Bool = false
     @Published var gameControllers: [SettingsGameController] = [.init()]
     var remoteControl: SettingsRemoteControl = .init()
+    var moblinCloud: SettingsMoblinCloud = .init()
     @Published var startStopRecordingConfirmations: Bool = true
     var color: SettingsColor = .init()
     @Published var mirrorFrontCameraOnStream: Bool = true
@@ -1131,6 +1305,7 @@ class Database: Codable, ObservableObject {
     var mediaPlayers: SettingsMediaPlayers = .init()
     @Published var showAllSettings: Bool = false
     @Published var portrait: Bool = false
+    @Published var autoRotateToPortrait: Bool = false
     var djiDevices: SettingsDjiDevices = .init()
     var alertsMediaGallery: SettingsAlertsMediaGallery = .init()
     var catPrinters: SettingsCatPrinters = .init()
@@ -1143,6 +1318,10 @@ class Database: Codable, ObservableObject {
     var moblink: SettingsMoblink = .init()
     @Published var sceneSwitchTransition: SettingsSceneSwitchTransition = .blur
     @Published var forceSceneSwitchTransition: Bool = false
+    @Published var alwaysAttachCameraPreview: Bool = false
+    @Published var alwaysAttachPhotoShoot: Bool = false
+    @Published var photoShootFlash: Bool = false
+    @Published var photoShootInterval: Int = 1
     @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
@@ -1175,11 +1354,20 @@ class Database: Codable, ObservableObject {
     var beauty: SettingsBeauty = .init()
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
-    var scoreboardSizeMigrated: Bool = false
     var streamDecks: SettingsStreamDecks = .init()
+    @Published var graphicsImplementation: SettingsGraphicsImplementation = .coreImage
+    @Published var graphicsHighQualityDownsampling: Bool = false
+    @Published var ingestsSoftwareVideoDecoding: Bool = false
+    @Published var torchLevel: Float = 1.0
+    @Published var appMode: SettingsAppMode = .streaming
+    var httpProxy: SettingsHttpProxy = .init()
 
     func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
         savedWifiNetworks.first(where: { $0.ssid == ssid })
+    }
+
+    func getHighestBitratePreset() -> UInt32 {
+        bitratePresets.sorted { $0.bitrate > $1.bitrate }.first?.bitrate ?? 5_000_000
     }
 
     @MainActor
@@ -1198,12 +1386,6 @@ class Database: Codable, ObservableObject {
             addDefaultBitratePresets(database: database)
         }
         addMissingQuickButtons(database: database)
-        for button in database.quickButtons
-            where button.type != .interactiveChat && button.type != .cameraPreview && button
-            .type != .interactiveBrowserWidgets
-        {
-            button.isOn = false
-        }
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         addMissingGoPro(database: database)
@@ -1237,6 +1419,7 @@ class Database: Codable, ObservableObject {
         case vibrate
         case gameControllers
         case remoteControl
+        case moblinCloud
         case startStopRecordingConfirmations
         case color
         case mirrorFrontCameraOnStream
@@ -1251,6 +1434,7 @@ class Database: Codable, ObservableObject {
         case mediaPlayers
         case showAllSettings
         case portrait
+        case autoRotateToPortrait
         case djiDevices
         case alertsMediaGallery
         case catPrinters
@@ -1263,6 +1447,10 @@ class Database: Codable, ObservableObject {
         case moblink
         case sceneSwitchTransition
         case forceSceneSwitchTransition
+        case alwaysAttachCameraPreview
+        case alwaysAttachPhotoShoot
+        case photoShootFlash
+        case photoShootInterval
         case cameraControlsEnabled
         case externalDisplayContent
         case cyclingPowerDevices
@@ -1294,9 +1482,14 @@ class Database: Codable, ObservableObject {
         case beauty
         case talkBack
         case gimbal
-        case scoreboardSizeMigrated
         case savedWifiNetworks
         case streamDecks
+        case graphicsImplementation
+        case graphicsHighQualityDownsampling
+        case ingestsSoftwareVideoDecoding
+        case torchLevel
+        case appMode
+        case httpProxy
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1322,6 +1515,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.vibrate, vibrate)
         try container.encode(.gameControllers, gameControllers)
         try container.encode(.remoteControl, remoteControl)
+        try container.encode(.moblinCloud, moblinCloud)
         try container.encode(.startStopRecordingConfirmations, startStopRecordingConfirmations)
         try container.encode(.color, color)
         try container.encode(.mirrorFrontCameraOnStream, mirrorFrontCameraOnStream)
@@ -1336,6 +1530,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.mediaPlayers, mediaPlayers)
         try container.encode(.showAllSettings, showAllSettings)
         try container.encode(.portrait, portrait)
+        try container.encode(.autoRotateToPortrait, autoRotateToPortrait)
         try container.encode(.djiDevices, djiDevices)
         try container.encode(.alertsMediaGallery, alertsMediaGallery)
         try container.encode(.catPrinters, catPrinters)
@@ -1348,6 +1543,10 @@ class Database: Codable, ObservableObject {
         try container.encode(.moblink, moblink)
         try container.encode(.sceneSwitchTransition, sceneSwitchTransition)
         try container.encode(.forceSceneSwitchTransition, forceSceneSwitchTransition)
+        try container.encode(.alwaysAttachCameraPreview, alwaysAttachCameraPreview)
+        try container.encode(.alwaysAttachPhotoShoot, alwaysAttachPhotoShoot)
+        try container.encode(.photoShootFlash, photoShootFlash)
+        try container.encode(.photoShootInterval, photoShootInterval)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
@@ -1379,9 +1578,14 @@ class Database: Codable, ObservableObject {
         try container.encode(.beauty, beauty)
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
-        try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
         try container.encode(.savedWifiNetworks, savedWifiNetworks)
         try container.encode(.streamDecks, streamDecks)
+        try container.encode(.graphicsImplementation, graphicsImplementation)
+        try container.encode(.graphicsHighQualityDownsampling, graphicsHighQualityDownsampling)
+        try container.encode(.ingestsSoftwareVideoDecoding, ingestsSoftwareVideoDecoding)
+        try container.encode(.torchLevel, torchLevel)
+        try container.encode(.appMode, appMode)
+        try container.encode(.httpProxy, httpProxy)
     }
 
     init() {}
@@ -1417,6 +1621,7 @@ class Database: Codable, ObservableObject {
         vibrate = container.decode(.vibrate, Bool.self, false)
         gameControllers = container.decode(.gameControllers, [SettingsGameController].self, [.init()])
         remoteControl = container.decode(.remoteControl, SettingsRemoteControl.self, .init())
+        moblinCloud = container.decode(.moblinCloud, SettingsMoblinCloud.self, .init())
         startStopRecordingConfirmations = container.decode(.startStopRecordingConfirmations, Bool.self, true)
         color = container.decode(.color, SettingsColor.self, .init())
         mirrorFrontCameraOnStream = container.decode(.mirrorFrontCameraOnStream, Bool.self, true)
@@ -1432,6 +1637,7 @@ class Database: Codable, ObservableObject {
         mediaPlayers = container.decode(.mediaPlayers, SettingsMediaPlayers.self, .init())
         showAllSettings = container.decode(.showAllSettings, Bool.self, false)
         portrait = container.decode(.portrait, Bool.self, false)
+        autoRotateToPortrait = container.decode(.autoRotateToPortrait, Bool.self, false)
         djiDevices = container.decode(.djiDevices, SettingsDjiDevices.self, .init())
         alertsMediaGallery = container.decode(.alertsMediaGallery, SettingsAlertsMediaGallery.self, .init())
         catPrinters = container.decode(.catPrinters, SettingsCatPrinters.self, .init())
@@ -1452,6 +1658,10 @@ class Database: Codable, ObservableObject {
             .blur
         )
         forceSceneSwitchTransition = container.decode(.forceSceneSwitchTransition, Bool.self, false)
+        alwaysAttachCameraPreview = container.decode(.alwaysAttachCameraPreview, Bool.self, false)
+        alwaysAttachPhotoShoot = container.decode(.alwaysAttachPhotoShoot, Bool.self, false)
+        photoShootFlash = container.decode(.photoShootFlash, Bool.self, false)
+        photoShootInterval = container.decode(.photoShootInterval, Int.self, 1)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, false)
         externalDisplayContent = container.decode(
             .externalDisplayContent,
@@ -1510,23 +1720,32 @@ class Database: Codable, ObservableObject {
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
-        face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
+        face = container.decode(.face, SettingsFace.self, .init())
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
-        scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
         savedWifiNetworks = container.decode(.savedWifiNetworks, [SettingsWiFi].self, [])
-        if !scoreboardSizeMigrated {
-            for widget in widgets where widget.type == .scoreboard {
-                for scene in scenes {
-                    for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
-                        sceneWidget.layout.size = defaultScoreboardSize
-                    }
-                }
-            }
-            scoreboardSizeMigrated = true
-        }
         streamDecks = container.decode(.streamDecks, SettingsStreamDecks.self, .init())
+        graphicsImplementation = container.decode(.graphicsImplementation,
+                                                  SettingsGraphicsImplementation.self,
+                                                  .coreImage)
+        graphicsHighQualityDownsampling = container.decode(.graphicsHighQualityDownsampling,
+                                                           Bool.self,
+                                                           debug.highQualityDownsamplingToBeRemoved)
+        ingestsSoftwareVideoDecoding = container.decode(.ingestsSoftwareVideoDecoding, Bool.self, false)
+        torchLevel = container.decode(.torchLevel, Float.self, 1.0)
+        appMode = container.decode(.appMode, SettingsAppMode.self, .streaming)
+        let httpProxyDefault = SettingsHttpProxy()
+        httpProxyDefault.enabled = debug.httpProxyToBeRemoved
+        httpProxy = container.decode(.httpProxy, SettingsHttpProxy.self, httpProxyDefault)
+    }
+
+    func findScene(id: UUID) -> SettingsScene? {
+        scenes.first { $0.id == id }
+    }
+
+    func findWidget(id: UUID) -> SettingsWidget? {
+        widgets.first { $0.id == id }
     }
 }
 
@@ -1550,6 +1769,16 @@ private func addDefaultScenes(database: Database) {
     scene.videoSource.cameraPosition = .front
     scene.videoSource.frontCameraId = bestFrontCameraId
     database.scenes.append(scene)
+    let widget = SettingsWidget(name: String(localized: "Front"))
+    widget.type = .videoSource
+    widget.videoSource.videoSource.cameraPosition = .front
+    widget.videoSource.videoSource.frontCameraId = bestFrontCameraId
+    database.widgets.append(widget)
+    scene = SettingsScene(name: String(localized: "PiP"))
+    scene.videoSource.cameraPosition = .back
+    scene.videoSource.backCameraId = widestBackCameraId
+    scene.widgets.append(SettingsSceneWidget(widget: widget))
+    database.scenes.append(scene)
     #endif
 }
 
@@ -1571,10 +1800,8 @@ private func addDefaultBackZoomPresets(database: Database) {
         }
         for factor in device.virtualDeviceSwitchOverVideoZoomFactors {
             let x = (Float(truncating: factor) * scale).rounded()
-            if let prevX = xs.last {
-                if (x / prevX) >= 4 {
-                    xs.append(2 * prevX)
-                }
+            if let prevX = xs.last, (x / prevX) >= 4 {
+                xs.append(2 * prevX)
             }
             xs.append(x)
         }
@@ -1687,6 +1914,11 @@ private func addMissingQuickButtonsPageOne(database: Database) {
     button = SettingsQuickButton(type: .widgets,
                                  imageOn: "photo.on.rectangle.fill",
                                  imageOff: "photo.on.rectangle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .sceneEditor,
+                                 imageOn: "rectangle.3.group.fill",
+                                 imageOff: "rectangle.3.group",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .localOverlays,
@@ -1860,6 +2092,7 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOn: "lock.fill",
                                  imageOff: "lock",
                                  page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .image,
                                  imageOn: "camera.fill",
                                  imageOff: "camera",
@@ -1868,11 +2101,6 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .cameraPreview,
                                  imageOn: "camera.rotate.fill",
                                  imageOff: "camera.rotate",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .recordings,
-                                 imageOn: "photo.on.rectangle.angled.fill",
-                                 imageOff: "photo.on.rectangle.angled",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .stream,
@@ -1956,6 +2184,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .previewStream,
                                  imageOn: "video.circle.fill",
                                  imageOff: "video.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .photoShoot,
+                                 imageOn: "person.crop.square.badge.camera.fill",
+                                 imageOff: "person.crop.square.badge.camera",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
@@ -2094,19 +2327,48 @@ private let exportDirectories = [
     replayTransitionsStorageDirectory,
 ]
 private let exportFiles = [
-    URL.documentsDirectory.appending(component: "stealthModeImage.img"),
-    URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
+    stealthModeImagePath,
+    faceBackgroundImagePath,
+    controlBarBackgroundImagePath,
 ]
+
+private func removeExportFiles() {
+    for file in exportFiles {
+        file.remove()
+    }
+}
+
+private func recreateExportDirectories() {
+    for directory in exportDirectories {
+        try? FileManager.default.removeItem(at: URL.documentsDirectory.appending(component: directory))
+        _ = createAndGetDirectory(name: directory)
+    }
+    _ = createAlertVideosDirectory()
+}
+
+private func extractArchive(url: URL) throws -> [UInt8]? {
+    try ZipArchiveReader.withFile(url.path) { reader in
+        let entries = try reader.readDirectory()
+        guard let settingsEntry = entries.first(where: { $0.filename.string == settingsJsonName }) else {
+            return nil
+        }
+        removeExportFiles()
+        recreateExportDirectories()
+        try reader.extract(to: .init(URL.documentsDirectory.path()))
+        URL.documentsDirectory.appending(component: settingsJsonName).remove()
+        return try reader.readFile(settingsEntry)
+    }
+}
 
 private let storage = SimpleStringStorage(key: "settings")
 
-final class Settings: @unchecked Sendable {
+@MainActor
+final class Settings {
     private var realDatabase = Database()
     var database: Database {
         realDatabase
     }
 
-    @MainActor
     func load() {
         do {
             try tryLoadAndMigrate(settings: storage.get())
@@ -2116,7 +2378,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
         addSensitiveData(database: realDatabase)
@@ -2124,6 +2385,9 @@ final class Settings: @unchecked Sendable {
     }
 
     func store() {
+        for stream in realDatabase.streams {
+            stream.storeToKeychain()
+        }
         do {
             let database = extractSensitiveData(fromDatabase: realDatabase)
             try storage.set(realDatabase.toString())
@@ -2133,30 +2397,21 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func reset() {
+        removeExportFiles()
         realDatabase = createDefault()
         store()
     }
 
     func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
-        let root = URL.documentsDirectory
         DispatchQueue.global().async {
-            let settingsJson = root.appendingPathComponent(settingsJsonName)
-            try? FileManager.default.removeItem(at: settingsJson)
-            do {
-                try ZipArchiveReader.withFile(url.path) { reader in
-                    try reader.extract(to: .init(root.path()))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    onCompleted(error.localizedDescription)
-                }
-                return
-            }
+            let settings = Result { try extractArchive(url: url) }
             DispatchQueue.main.async {
                 do {
-                    let settings = try Data(contentsOf: settingsJson)
+                    guard let settings = try settings.get() else {
+                        onCompleted(String(localized: "Settings file not found in archive"))
+                        return
+                    }
                     try self.tryLoadAndMigrate(settings: String(bytes: settings, encoding: .utf8) ?? "")
                     self.store()
                     onCompleted(nil)
@@ -2167,8 +2422,8 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
+        removeExportFiles()
         do {
             try tryLoadAndMigrate(settings: settings)
             store()
@@ -2178,7 +2433,6 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    @MainActor
     func exportToFile(onCompleted: @MainActor @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.get().utf8)
@@ -2189,55 +2443,48 @@ final class Settings: @unchecked Sendable {
                 .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {
-                try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
+                try ZipArchiveWriter.withFile(
+                    url.path,
+                    options: .create,
+                    configuration: .init(compression: .noCompression)
+                ) { writer in
                     try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
-                    let fileManager = FileManager.default
-                    let prefixCount = createAndGetDirectory().standardizedFileURL.path.count + 1
                     for fileUrl in exportFiles where fileUrl.exists() {
-                        let filePath = fileUrl.standardizedFileURL.path
-                        let relativeFilePath = String(filePath.dropFirst(prefixCount))
-                        try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                        try writer.writeFile(filename: fileUrl.lastPathComponent, sourceFile: fileUrl.path)
                     }
                     for directory in exportDirectories {
-                        let directoryUrl = createAndGetDirectory(name: directory)
-                        guard let enumerator = fileManager.enumerator(
-                            at: directoryUrl,
-                            includingPropertiesForKeys: nil,
+                        guard let enumerator = FileManager.default.enumerator(
+                            at: URL.documentsDirectory.appending(component: directory),
+                            includingPropertiesForKeys: [.isRegularFileKey],
                             options: [.producesRelativePathURLs]
                         ) else {
                             continue
                         }
-                        for case let fileUrl as URL in enumerator {
-                            guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
-                                  values.isRegularFile == true
-                            else {
-                                continue
-                            }
-                            let filePath = fileUrl.standardizedFileURL.path
-                            let relativeFilePath = String(filePath.dropFirst(prefixCount))
-                            try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                        for case let fileUrl as URL in enumerator
+                            where (try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]))?
+                            .isRegularFile == true
+                        {
+                            try writer.writeFile(
+                                filename: "\(directory)/\(fileUrl.relativePath)",
+                                sourceFile: fileUrl.path
+                            )
                         }
                     }
+                }
+                DispatchQueue.main.async {
+                    onCompleted(url)
                 }
             } catch {
                 DispatchQueue.main.async {
                     onCompleted(nil)
                 }
             }
-            DispatchQueue.main.async {
-                onCompleted(url)
-            }
         }
     }
 
     private func addSensitiveData(database: Database) {
         for stream in database.streams {
-            if let accessToken = loadTwitchAccessTokenFromKeychain(streamId: stream.id) {
-                stream.twitchAccessToken = accessToken
-            }
-            if let accessToken = loadVkVideoLiveAccessTokenFromKeychain(streamId: stream.id) {
-                stream.vkVideoLiveAccessToken = accessToken
-            }
+            stream.loadFromKeychain()
         }
     }
 
@@ -2247,6 +2494,8 @@ final class Settings: @unchecked Sendable {
             let toStream = SettingsStream(name: "")
             toStream.twitchAccessToken = fromStream.twitchAccessToken
             fromStream.twitchAccessToken = ""
+            toStream.kickAccessToken = fromStream.kickAccessToken
+            fromStream.kickAccessToken = ""
             toStream.vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
             fromStream.vkVideoLiveAccessToken = ""
             toDatabase.streams.append(toStream)
@@ -2257,6 +2506,7 @@ final class Settings: @unchecked Sendable {
     private func insertSensitiveData(toDatabase: Database, fromDatabase: Database) {
         for (index, fromStream) in fromDatabase.streams.enumerated() where index < toDatabase.streams.count {
             toDatabase.streams[index].twitchAccessToken = fromStream.twitchAccessToken
+            toDatabase.streams[index].kickAccessToken = fromStream.kickAccessToken
             toDatabase.streams[index].vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
         }
     }
@@ -2267,75 +2517,6 @@ final class Settings: @unchecked Sendable {
         if realDatabase.quickButtons.count != newButtons.count {
             realDatabase.quickButtons = newButtons
             store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropX > 1.0 {
-            widget.videoSource.cropX = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropY > 1.0 {
-            widget.videoSource.cropY = 0.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropWidth > 1.0 {
-            widget.videoSource.cropWidth = 1.0
-            store()
-        }
-        for widget in realDatabase.widgets where widget.videoSource.cropHeight > 1.0 {
-            widget.videoSource.cropHeight = 1.0
-            store()
-        }
-        for scene in realDatabase.scenes {
-            for sceneWidget in scene.widgets where !sceneWidget.migrated {
-                sceneWidget.migrated = true
-                store()
-                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
-                    continue
-                }
-                guard widget.type == .text else {
-                    continue
-                }
-                if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .trailing {
-                    sceneWidget.layout.alignment = .bottomRight
-                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
-                    sceneWidget.layout.updateXString()
-                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
-                    sceneWidget.layout.updateYString()
-                } else if widget.text.verticalAlignment == .top,
-                          widget.text.horizontalAlignment == .trailing
-                {
-                    sceneWidget.layout.alignment = .topRight
-                    sceneWidget.layout.x = 100 - sceneWidget.layout.x
-                    sceneWidget.layout.updateXString()
-                } else if widget.text.verticalAlignment == .bottom,
-                          widget.text.horizontalAlignment == .leading
-                {
-                    sceneWidget.layout.alignment = .bottomLeft
-                    sceneWidget.layout.y = 100 - sceneWidget.layout.y
-                    sceneWidget.layout.updateYString()
-                }
-            }
-        }
-        for scene in realDatabase.scenes {
-            for sceneWidget in scene.widgets where !sceneWidget.migrated2 {
-                sceneWidget.migrated2 = true
-                store()
-                guard let widget = realDatabase.widgets.first(where: { $0.id == sceneWidget.widgetId }) else {
-                    continue
-                }
-                guard widget.type == .browser else {
-                    continue
-                }
-                guard let stream = database.streams.first(where: { $0.enabled }) else {
-                    continue
-                }
-                let resolution = stream.resolution.dimensions(portrait: stream.portrait)
-                let width = (100 * Double(widget.browser.width) / Double(resolution.width))
-                    .clamped(to: 1 ... 100)
-                let height = (100 * Double(widget.browser.height) / Double(resolution.height))
-                    .clamped(to: 1 ... 100)
-                sceneWidget.layout.size = max(width, height)
-                sceneWidget.layout.updateSizeString()
-            }
         }
     }
 }

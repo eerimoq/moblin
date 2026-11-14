@@ -326,7 +326,7 @@ struct ScoreboardEffectModularView: View {
         if show {
             Image("VolleyballIndicator")
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .padding(fontSize() * 0.1)
         }
     }

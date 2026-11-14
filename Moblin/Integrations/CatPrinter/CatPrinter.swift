@@ -1,9 +1,9 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
-@preconcurrency import AVFoundation
+import AVFoundation
 import Collections
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import CoreImage
 import Foundation
 
@@ -70,15 +70,15 @@ private class CurrentJob {
     }
 }
 
-private let catPrinterServices = [
+private nonisolated(unsafe) let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
-nonisolated(unsafe) let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
+@MainActor let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
-private let printCharacteristicId = CBUUID(string: "AE01")
-private let notifyCharacteristicId = CBUUID(string: "AE02")
-private let dataCharacteristicId = CBUUID(string: "AE03")
+private nonisolated(unsafe) let printCharacteristicId = CBUUID(string: "AE01")
+private nonisolated(unsafe) let notifyCharacteristicId = CBUUID(string: "AE02")
+private nonisolated(unsafe) let dataCharacteristicId = CBUUID(string: "AE03")
 
 private struct PrintJob {
     let image: CIImage
@@ -161,10 +161,7 @@ class CatPrinter: NSObject, @unchecked Sendable {
             reconnect()
             return
         }
-        guard currentJob == nil else {
-            return
-        }
-        guard let printJob = printJobs.popFirst() else {
+        guard currentJob == nil, let printJob = printJobs.popFirst() else {
             return
         }
         let image: [[UInt8]]
@@ -434,21 +431,19 @@ extension CatPrinter: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: catPrinterServices)
+            connect(central)
         default:
             break
         }
     }
 
-    func centralManager(_ central: CBCentralManager,
-                        didDiscover peripheral: CBPeripheral,
-                        advertisementData _: [String: Any],
-                        rssi _: NSNumber)
-    {
-        guard peripheral.identifier == deviceId else {
+    private func connect(_ central: CBCentralManager) {
+        guard let deviceId,
+              let peripheral = central.retrievePeripherals(withIdentifiers: [deviceId]).first
+        else {
+            logger.info("cat-printer: Device not found")
             return
         }
-        central.stopScan()
         self.peripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
@@ -514,10 +509,7 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 
     private func handleMessageMxw01(characteristic: CBCharacteristic) {
-        guard let value = characteristic.value else {
-            return
-        }
-        guard let command = CatPrinterCommandMxw01(data: value) else {
+        guard let value = characteristic.value, let command = CatPrinterCommandMxw01(data: value) else {
             return
         }
         // logger.info("cat-printer: Got \(command) \(value.hexString())")
@@ -587,10 +579,9 @@ extension CatPrinter: CBPeripheralDelegate {
     }
 
     private func handleMessageDefault(characteristic: CBCharacteristic) {
-        guard let value = characteristic.value, let currentJob else {
-            return
-        }
-        guard let command = CatPrinterCommand(data: value) else {
+        guard let value = characteristic.value, let currentJob,
+              let command = CatPrinterCommand(data: value)
+        else {
             return
         }
         switch currentJob.state {

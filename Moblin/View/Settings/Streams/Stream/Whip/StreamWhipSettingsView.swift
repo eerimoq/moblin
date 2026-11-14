@@ -6,10 +6,9 @@ struct StreamWhipSettingsView: View {
     @ObservedObject var whip: SettingsStreamWhip
 
     private func getBearerToken() -> String {
-        guard let authorization = whip.headers.first(where: { $0.name == "Authorization" }) else {
-            return ""
-        }
-        guard let match = authorization.value.prefixMatch(of: /Bearer (.*)/) else {
+        guard let authorization = whip.headers.first(where: { $0.name == "Authorization" }),
+              let match = authorization.value.prefixMatch(of: /Bearer (.*)/)
+        else {
             return ""
         }
         return String(match.output.1)

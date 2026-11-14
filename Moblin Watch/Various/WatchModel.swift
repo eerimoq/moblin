@@ -10,13 +10,14 @@ import WatchConnectivity
 private let previewTimeout = Duration.seconds(6)
 
 private let healthKitTypes: Set<HKSampleType> = [
-    .quantityType(forIdentifier: .heartRate)!,
-    .quantityType(forIdentifier: .distanceCycling)!,
-    .quantityType(forIdentifier: .distanceWalkingRunning)!,
-    .quantityType(forIdentifier: .stepCount)!,
-    .quantityType(forIdentifier: .activeEnergyBurned)!,
-    .quantityType(forIdentifier: .runningPower)!,
-    .quantityType(forIdentifier: .cyclingPower)!,
+    heartRateType,
+    distanceCyclingType,
+    distanceWalkingRunningType,
+    stepCountType,
+    activeEnergyBurnedType,
+    runningPowerType,
+    cyclingPowerType,
+    cyclingCadenceType,
 ]
 
 struct WatchChatPostSegment: Identifiable {
@@ -82,7 +83,8 @@ struct WatchChatPost: Identifiable {
     }
 }
 
-class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
+@MainActor
+class WatchModel: NSObject, ObservableObject {
     let chat = Chat()
     let preview = Preview()
     let control = Control()
@@ -117,8 +119,10 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
 
     private func startPeriodicTimers() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            self.updatePreview()
-            self.keepAlive()
+            MainActor.assumeIsolated {
+                self.updatePreview()
+                self.keepAlive()
+            }
         })
     }
 
@@ -300,10 +304,7 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleZoom(_ data: Any) throws {
-        guard let x = data as? Float else {
-            return
-        }
-        guard !preview.isZooming else {
+        guard let x = data as? Float, !preview.isZooming else {
             return
         }
         preview.zoomX = Double(x)
@@ -318,10 +319,7 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleZoomPreset(_ data: Any) throws {
-        guard let data = data as? String else {
-            return
-        }
-        guard let zoomPresetId = UUID(uuidString: data) else {
+        guard let data = data as? String, let zoomPresetId = UUID(uuidString: data) else {
             return
         }
         preview.zoomPresetId = zoomPresetId
@@ -344,10 +342,7 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func handleScene(_ data: Any) throws {
-        guard let data = data as? String else {
-            return
-        }
-        guard let sceneId = UUID(uuidString: data) else {
+        guard let data = data as? String, let sceneId = UUID(uuidString: data) else {
             return
         }
         preview.sceneId = sceneId
@@ -355,38 +350,46 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startWorkout(type: WatchProtocolWorkoutType) {
-        stopWorkout()
+        guard workoutSession == nil else {
+            return
+        }
         authorizeHealthKit {
             DispatchQueue.main.async {
                 self.startWorkoutAuthorized(type: type)
-                self.control.workoutActive = true
+                self.control.workoutActive = self.workoutSession != nil
             }
         }
     }
 
     func stopWorkout() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
-        control.workoutActive = false
+        guard let workoutSession else {
+            control.workoutActive = false
+            return
+        }
+        workoutSession.stopActivity(with: .now)
     }
 
     private func startWorkoutAuthorized(type: WatchProtocolWorkoutType) {
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
         let addStepCount: Bool
+        let addCyclingMetrics: Bool
         switch type {
         case .walking:
             activityType = .walking
             preview.workoutType = "Walking"
             addStepCount = true
+            addCyclingMetrics = false
         case .running:
             activityType = .running
             preview.workoutType = "Running"
             addStepCount = true
+            addCyclingMetrics = false
         case .cycling:
             activityType = .cycling
             preview.workoutType = "Cycling"
             addStepCount = false
+            addCyclingMetrics = true
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -403,10 +406,11 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
             workoutConfiguration: configuration
         )
         if addStepCount {
-            dataSource.enableCollection(
-                for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
-                predicate: nil
-            )
+            dataSource.enableCollection(for: stepCountType, predicate: nil)
+        }
+        if addCyclingMetrics {
+            dataSource.enableCollection(for: cyclingPowerType, predicate: nil)
+            dataSource.enableCollection(for: cyclingCadenceType, predicate: nil)
         }
         workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
@@ -521,16 +525,54 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         let message = WatchMessageFromWatch.pack(type: .createStreamMarker, data: true)
         WCSession.default.sendMessage(message, replyHandler: nil)
     }
+
+    private func handleWorkoutStateChange(session: HKWorkoutSession,
+                                          toState: HKWorkoutSessionState,
+                                          date: Date)
+    {
+        guard session === workoutSession else {
+            return
+        }
+        switch toState {
+        case .stopped:
+            guard let workoutBuilder else {
+                return
+            }
+            workoutBuilder.endCollection(withEnd: date) { _, _ in
+                workoutBuilder.finishWorkout { _, _ in
+                    session.end()
+                }
+            }
+        case .ended:
+            finishedWorkout(session: session)
+        default:
+            break
+        }
+    }
+
+    private func handleWorkoutError(session: HKWorkoutSession) {
+        guard session === workoutSession else {
+            return
+        }
+        session.end()
+        finishedWorkout(session: session)
+    }
+
+    private func finishedWorkout(session _: HKWorkoutSession) {
+        workoutSession = nil
+        workoutBuilder = nil
+        control.workoutActive = false
+    }
 }
 
 extension WatchModel: WCSessionDelegate {
-    func session(
+    nonisolated func session(
         _: WCSession,
         activationDidCompleteWith _: WCSessionActivationState,
         error _: (any Error)?
     ) {}
 
-    func session(_: WCSession, didReceiveMessage message: [String: Any]) {
+    nonisolated func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let (type, value) = WatchMessageToWatch.unpack(message) else {
             return
         }
@@ -584,9 +626,9 @@ extension WatchModel: WCSessionDelegate {
         }
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {}
+    nonisolated func sessionReachabilityDidChange(_: WCSession) {}
 
-    func session(
+    nonisolated func session(
         _: WCSession,
         didFinish _: WCSessionUserInfoTransfer,
         error _: (any Error)?
@@ -594,33 +636,45 @@ extension WatchModel: WCSessionDelegate {
 }
 
 extension WatchModel: HKWorkoutSessionDelegate {
-    func workoutSession(
-        _: HKWorkoutSession,
-        didChangeTo _: HKWorkoutSessionState,
+    nonisolated func workoutSession(
+        _ session: HKWorkoutSession,
+        didChangeTo toState: HKWorkoutSessionState,
         from _: HKWorkoutSessionState,
-        date _: Date
-    ) {}
-
-    func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
-}
-
-extension WatchModel: HKLiveWorkoutBuilderDelegate {
-    func workoutBuilder(
-        _ workoutBuilder: HKLiveWorkoutBuilder,
-        didCollectDataOf collectedTypes: Set<HKSampleType>
+        date: Date
     ) {
-        for type in collectedTypes {
-            guard let quantityType = type as? HKQuantityType else {
-                continue
-            }
-            guard let statistics = workoutBuilder.statistics(for: quantityType) else {
-                continue
-            }
-            DispatchQueue.main.async {
-                self.updateWorkoutStats(stats: WatchProtocolWorkoutStats(statistics: statistics))
-            }
+        DispatchQueue.main.async {
+            self.handleWorkoutStateChange(session: session, toState: toState, date: date)
         }
     }
 
-    func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
+    nonisolated func workoutSession(_ session: HKWorkoutSession, didFailWithError _: any Error) {
+        DispatchQueue.main.async {
+            self.handleWorkoutError(session: session)
+        }
+    }
+}
+
+extension WatchModel: HKLiveWorkoutBuilderDelegate {
+    nonisolated func workoutBuilder(
+        _ workoutBuilder: HKLiveWorkoutBuilder,
+        didCollectDataOf collectedTypes: Set<HKSampleType>
+    ) {
+        var stats = WatchProtocolWorkoutStats()
+        for type in collectedTypes {
+            guard let quantityType = type as? HKQuantityType,
+                  let statistics = workoutBuilder.statistics(for: quantityType)
+            else {
+                continue
+            }
+            stats.update(statistics: statistics)
+        }
+        guard stats != WatchProtocolWorkoutStats() else {
+            return
+        }
+        DispatchQueue.main.async {
+            self.updateWorkoutStats(stats: stats)
+        }
+    }
+
+    nonisolated func workoutBuilderDidCollectEvent(_: HKLiveWorkoutBuilder) {}
 }

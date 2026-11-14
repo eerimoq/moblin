@@ -30,7 +30,7 @@ extension Model {
                                                                    existingNames: database.streams))
                 database.streams.append(targetStream)
             }
-            targetStream.url = stream.url.trim()
+            targetStream.url = stream.url
             if stream.selected == true {
                 newSelectedStream = targetStream
             }
@@ -44,10 +44,10 @@ extension Model {
                 if let resolution = video.resolution {
                     targetStream.resolution = resolution
                 }
-                if let fps = video.fps, fpss.contains(fps) {
+                if let fps = video.fps {
                     targetStream.fps = fps
                 }
-                if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
+                if let bitrate = video.bitrate {
                     targetStream.bitrate = bitrate
                 }
                 if let codec = video.codec {
@@ -56,16 +56,12 @@ extension Model {
                 if let bFrames = video.bFrames {
                     targetStream.bFrames = bFrames
                 }
-                if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
-                   maxKeyFrameInterval <= 10
-                {
+                if let maxKeyFrameInterval = video.maxKeyFrameInterval {
                     targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
-            if let audio = stream.audio {
-                if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
-                    targetStream.audioBitrate = bitrate
-                }
+            if let bitrate = stream.audio?.bitrate {
+                targetStream.audioBitrate = bitrate
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {
@@ -80,7 +76,7 @@ extension Model {
             }
             if let obs = stream.obs {
                 targetStream.obsWebSocketEnabled = true
-                targetStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                targetStream.obsWebSocketUrl = obs.webSocketUrl
                 targetStream.obsWebSocketPassword = obs.webSocketPassword.trim()
             }
             if let twitch = stream.twitch {
@@ -145,18 +141,30 @@ extension Model {
             database.remoteControl.assistant.port = assistant.port
             if let relay = assistant.relay {
                 database.remoteControl.assistant.relay.enabled = relay.enabled
-                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl.trim()
-                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId.trim()
+                database.remoteControl.assistant.relay.baseUrl = relay.baseUrl
+                database.remoteControl.assistant.relay.bridgeId = relay.bridgeId
             }
         }
         if let streamer = remoteControl.streamer {
             database.remoteControl.streamer.enabled = streamer.enabled
-            database.remoteControl.streamer.url = streamer.url.trim()
+            database.remoteControl.streamer.url = streamer.url
         }
         database.remoteControl.password = remoteControl.password
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
         reloadRemoteControlRelay()
+    }
+
+    private func handleSettingsUrlsDefaultMoblinCloud(settings: MoblinSettingsUrl) {
+        guard let moblinCloud = settings.moblinCloud else {
+            return
+        }
+        database.moblinCloud.enabled = moblinCloud.enabled
+        database.moblinCloud.key = moblinCloud.key.trim()
+        if let url = moblinCloud.url {
+            database.moblinCloud.url = url
+        }
+        reloadMoblinCloud()
     }
 
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
@@ -182,8 +190,9 @@ extension Model {
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         handleSettingsUrlsDefaultRemoteControl(settings: settings)
+        handleSettingsUrlsDefaultMoblinCloud(settings: settings)
         makeToast(title: String(localized: "URL import successful"))
-        updateQuickButtonStates()
+        updateQuickButtonPairs()
     }
 
     private func findCollidingStreamNames(streams: [MoblinSettingsUrlStream]) -> Set<String> {
@@ -220,17 +229,17 @@ extension Model {
             return
         }
         _ = url.startAccessingSecurityScopedResource()
-        importSettingsFromFile(url: url) {
+        importSettingsFromFile(url: url) { _ in
             url.stopAccessingSecurityScopedResource()
         }
     }
 
     private func handleSettingsUrlWithConfirmation(url: URL) -> String? {
         guard url.path.isEmpty else {
-            return "Custom URL path is not empty"
+            return String(localized: "Custom URL path is not empty")
         }
         guard let query = url.query(percentEncoded: false) else {
-            return "Custom URL query is missing"
+            return String(localized: "Custom URL query is missing")
         }
         let settings: MoblinSettingsUrl
         do {

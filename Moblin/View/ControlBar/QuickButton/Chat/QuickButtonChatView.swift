@@ -1,218 +1,118 @@
 import Foundation
-import SDWebImageSwiftUI
 import SwiftUI
-import WrappingHStack
+
+private func makeChatLineStyle(chat: SettingsChat) -> ChatLineStyle {
+    ChatLineStyle(
+        fontSize: CGFloat(chat.fontSize),
+        timestampColor: chat.timestampColorEnabled ? UIColor(Color.gray) : nil,
+        boldUsername: true,
+        badges: chat.badges,
+        sharedChatIcons: chat.sharedChatIcons,
+        animatedEmotes: chat.animatedEmotes,
+        bigGifScale: chat.bigGifScale,
+        linkify: true,
+        nicknames: chat.nicknames,
+        displayStyle: chat.displayStyle,
+        font: chat.font
+    )
+}
 
 private struct HighlightMessageView: View {
-    let postState: ChatPostState
-    let chat: SettingsChat
+    let deleted: Bool
+    let style: ChatLineStyle
     let highlight: ChatHighlight
+    @Binding var linkUrl: URL?
 
-    private func imageOpacity() -> Double {
-        postState.deleted ? 0.25 : 1
+    private func content(titleSegments: [ChatPostSegment]) -> ChatLineContent {
+        style.makeHighlightContent(highlight: highlight, titleSegments: titleSegments, deleted: deleted)
     }
 
     var body: some View {
         if let titleSegments = highlight.titleSegments {
-            WrappingHStack(
-                alignment: .leading,
-                horizontalSpacing: 0,
-                verticalSpacing: 0,
-                fitContentWidth: true
-            ) {
-                Image(systemName: highlight.image)
-                Text(" ")
-                ForEach(titleSegments, id: \.id) { segment in
-                    if let text = segment.text {
-                        if let url = getHttpsUrl(text: text) {
-                            QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
-                        } else {
-                            Text(text)
-                                .foregroundStyle(highlight.messageColor())
-                        }
-                    }
-                    if let url = segment.url {
-                        if chat.animatedEmotes {
-                            WebImage(url: url)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: 25)
-                                .opacity(imageOpacity())
-                        } else {
-                            CacheAsyncImage(url: url) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } placeholder: {
-                                EmptyView()
-                            }
-                            .frame(height: 25)
-                            .opacity(imageOpacity())
-                        }
-                        Text(" ")
-                    }
-                }
+            ChatLineView(content: content(titleSegments: titleSegments)) { url in
+                linkUrl = url
             }
-            .foregroundStyle(highlight.messageColor())
-            .padding(.leading, 5)
         }
+    }
+}
+
+private struct HighlightImageView: View {
+    let style: ChatLineStyle
+    let highlight: ChatHighlight
+
+    var body: some View {
+        ChatLineView(content: style.makeHighlightImageContent(highlight: highlight))
     }
 }
 
 private struct LineView: View {
     let deleted: Bool
     let post: ChatPost
-    let chat: SettingsChat
+    let style: ChatLineStyle
     let platform: Bool
     @Binding var selectedPost: ChatPost?
-
-    private func imageOpacity() -> Double {
-        deleted ? 0.25 : 1
-    }
+    @Binding var linkUrl: URL?
 
     var body: some View {
-        let usernameColor = post.userColor.color()
-        WrappingHStack(
-            alignment: .leading,
-            horizontalSpacing: 0,
-            verticalSpacing: 0,
-            fitContentWidth: true
-        ) {
-            if chat.timestampColorEnabled {
-                GrayTextView(text: "\(post.timestamp) ")
-            }
-            if platform, let image = post.platform?.imageName() {
-                Image(image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding(2)
-                    .frame(height: CGFloat(chat.fontSize * 1.4))
-                    .opacity(imageOpacity())
-            }
-            if chat.sharedChatIcons, let iconUrl = post.sourceChannelIcon {
-                CacheAsyncImage(url: iconUrl) { image in
-                    image.resizable().aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    EmptyView()
-                }
-                .padding(2)
-                .frame(height: CGFloat(chat.fontSize * 1.4))
-                .opacity(imageOpacity())
-            }
-            if chat.badges {
-                ForEach(post.userBadges, id: \.self) { url in
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        EmptyView()
-                    }
-                    .padding(2)
-                    .frame(height: CGFloat(chat.fontSize * 1.4))
-                    .opacity(imageOpacity())
-                }
-            }
-            Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundStyle(deleted ? .gray : usernameColor)
-                .strikethrough(deleted)
-                .lineLimit(1)
-                .padding(.trailing, 0)
-                .bold()
-            if post.isRedemption() {
-                Text(" ")
+        ChatLineView(content: style.makeContent(post: post, platform: platform, deleted: deleted)) { url in
+            if let url {
+                linkUrl = url
             } else {
-                Text(": ")
+                selectedPost = post
             }
-            ForEach(post.segments) { segment in
-                if let text = segment.text {
-                    if let url = getHttpsUrl(text: text) {
-                        QuickButtonChatUrlView(text: text, url: url, deleted: deleted)
-                    } else {
-                        Text(text)
-                            .foregroundStyle(deleted ? .gray : .white)
-                            .strikethrough(deleted)
-                            .italic(post.isAction)
-                    }
-                }
-                if let url = segment.url {
-                    if chat.animatedEmotes {
-                        WebImage(url: url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 25)
-                            .opacity(imageOpacity())
-                    } else {
-                        CacheAsyncImage(url: url) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            EmptyView()
-                        }
-                        .frame(height: 25)
-                        .opacity(imageOpacity())
-                    }
-                    Text(" ")
-                }
-            }
-        }
-        .padding(.leading, 5)
-        .onTapGesture {
-            selectedPost = post
         }
     }
 }
 
 private struct PostView: View {
     let chatSettings: SettingsChat
+    let style: ChatLineStyle
     let moreThanOneStreamingPlatform: Bool
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let rotation: Double
-    let scaleX: Double
-    let size: CGSize
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .frame(width: 3)
-                            .foregroundStyle(highlight.barColor)
-                        VStack(alignment: .leading, spacing: 1) {
-                            HighlightMessageView(postState: post.state,
-                                                 chat: chatSettings,
-                                                 highlight: highlight)
-                            LineView(deleted: state.deleted,
-                                     post: post,
-                                     chat: chatSettings,
-                                     platform: moreThanOneStreamingPlatform,
-                                     selectedPost: $selectedPost)
-                        }
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .frame(width: 3)
+                        .foregroundStyle(highlight.barColor)
+                    if chatSettings.compactEvents, highlight.titleSegments != nil {
+                        HighlightImageView(style: style, highlight: highlight)
                     }
-                    .rotationEffect(Angle(degrees: rotation))
-                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                } else {
-                    LineView(deleted: state.deleted,
-                             post: post,
-                             chat: chatSettings,
-                             platform: moreThanOneStreamingPlatform,
-                             selectedPost: $selectedPost)
-                        .padding(.leading, 3)
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                    VStack(alignment: .leading, spacing: 1) {
+                        if !chatSettings.compactEvents {
+                            HighlightMessageView(
+                                deleted: state.deleted,
+                                style: style,
+                                highlight: highlight,
+                                linkUrl: $linkUrl
+                            )
+                        }
+                        LineView(
+                            deleted: state.deleted,
+                            post: post,
+                            style: style,
+                            platform: moreThanOneStreamingPlatform,
+                            selectedPost: $selectedPost,
+                            linkUrl: $linkUrl
+                        )
+                    }
                 }
+            } else {
+                LineView(
+                    deleted: state.deleted,
+                    post: post,
+                    style: style,
+                    platform: moreThanOneStreamingPlatform,
+                    selectedPost: $selectedPost,
+                    linkUrl: $linkUrl
+                )
+                .padding(.leading, 3)
             }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: size.width, height: 1.5)
-                .padding(2)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
         }
     }
 }
@@ -222,160 +122,23 @@ private struct MessagesView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
-        GeometryReader { metrics in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    Color.clear
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                model.endOfQuickButtonChatReachedWhenPaused()
-                            }
-                        }
-                        .onDisappear {
-                            model.pauseQuickButtonChat()
-                        }
-                        .frame(height: 1)
-                    ForEach(chat.posts) { post in
-                        PostView(chatSettings: chatSettings,
-                                 moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                                 selectedPost: $selectedPost,
-                                 post: post,
-                                 state: post.state,
-                                 rotation: rotation,
-                                 scaleX: scaleX,
-                                 size: metrics.size)
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .frame(minHeight: metrics.size.height)
-        }
-        .foregroundStyle(.white)
-        .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
-    }
-}
-
-private struct ProgressBarView: View {
-    @ObservedObject var progress: ProgressBar
-
-    var body: some View {
-        ProgressView(value: progress.goal - progress.progress, total: progress.goal)
-            .accentColor(.white)
-            .scaleEffect(x: 1, y: 4, anchor: .center)
-            .padding([.top, .leading, .trailing], 10)
-            .padding(.bottom, 20)
-    }
-}
-
-private struct HypeTrainView: View {
-    let model: Model
-    @ObservedObject var hypeTrain: HypeTrain
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Rectangle()
-                .foregroundStyle(.clear)
-                .background(.clear)
-                .frame(height: 1)
-            VStack {
-                if let level = hypeTrain.level {
-                    HStack(spacing: 0) {
-                        let train = HStack(spacing: 0) {
-                            Image(systemName: "train.side.rear.car")
-                            Image(systemName: "train.side.middle.car")
-                            Image(systemName: "train.side.middle.car")
-                            Image(systemName: "train.side.middle.car")
-                            Image(systemName: "train.side.front.car")
-                        }
-                        if #available(iOS 18.0, *) {
-                            train
-                                .symbolEffect(
-                                    .wiggle.forward.byLayer,
-                                    options: .repeat(.periodic(delay: 2.0))
-                                )
-                        } else {
-                            train
-                        }
-                        Spacer()
-                        Text("LEVEL \(level)")
-                        Button {
-                            model.removeHypeTrain()
-                        } label: {
-                            Text("Close")
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .foregroundStyle(.white)
-                    .padding(10)
-                }
-                if let progress = hypeTrain.progress {
-                    ProgressBarView(progress: progress)
-                }
-            }
-            .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
-            Spacer()
-        }
-    }
-}
-
-private struct RaidView: View {
-    let model: Model
-    @ObservedObject var raid: Raid
-
-    private func close() {
-        switch raid.state {
-        case .idle:
-            break
-        case .ongoing:
-            raid.message = String(localized: "Cancelling raid")
-            model.cancelRaidTwitchChannel {
-                switch $0 {
-                case .success:
-                    break
-                default:
-                    raid.message = String(localized: "Failed to cancel the raid")
-                    raid.state = .completed
-                }
-            }
-            raid.state = .cancelling
-        case .cancelling:
-            break
-        case .completed:
-            raid.state = .idle
-        }
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Rectangle()
-                .foregroundStyle(.clear)
-                .background(.clear)
-                .frame(height: 1)
-            VStack {
-                if raid.state != .idle {
-                    HStack {
-                        ChannelImageView(image: raid.channelImage)
-                        Text(raid.message)
-                        Spacer()
-                        Button {
-                            close()
-                        } label: {
-                            Text(raid.state == .ongoing ? "Cancel" : "Close")
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    ProgressBarView(progress: raid.progress)
-                }
-            }
-            .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
-            Spacer()
+        let style = makeChatLineStyle(chat: chatSettings)
+        ChatScrollView(chat: chat,
+                       newMessagesAtTop: chatSettings.newMessagesAtTop,
+                       mirrored: chatSettings.mirrored,
+                       onLatestAppear: model.endOfQuickButtonChatReachedWhenPaused,
+                       onLatestDisappear: model.pauseQuickButtonChat)
+        { post in
+            PostView(chatSettings: chatSettings,
+                     style: style,
+                     moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                     selectedPost: $selectedPost,
+                     linkUrl: $linkUrl,
+                     post: post,
+                     state: post.state)
         }
     }
 }
@@ -384,34 +147,34 @@ private struct ChatView: View {
     let model: Model
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     var body: some View {
         ZStack {
             MessagesView(model: model,
                          chatSettings: model.database.chat,
                          chat: chat,
-                         selectedPost: $selectedPost)
+                         selectedPost: $selectedPost,
+                         linkUrl: $linkUrl)
             if chat.paused {
                 ChatInfo(message: String(localized: "Chat paused: \(chat.pausedPostsCount) new messages"))
                     .padding(2)
             }
-            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
-            RaidView(model: model, raid: model.raid)
+            BannersView(model: model, banners: model.banners)
         }
     }
 }
 
 private struct AlertsPostView: View {
     let chatSettings: SettingsChat
+    let style: ChatLineStyle
     let moreThanOneStreamingPlatform: Bool
     let showFirstTimeChatterMessage: Bool
     let showNewFollowerMessage: Bool
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
     let post: ChatPost
     @ObservedObject var state: ChatPostState
-    let rotation: Double
-    let scaleX: Double
-    let size: CGSize
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
         if highlight.kind == .firstMessage, !showFirstTimeChatterMessage {
@@ -420,53 +183,51 @@ private struct AlertsPostView: View {
         if highlight.kind == .newFollower, !showNewFollowerMessage {
             return false
         }
-        if highlight.kind == .reply {
-            return false
-        }
         return true
     }
 
     var body: some View {
-        if post.user != nil {
-            if !state.deleted || chatSettings.showDeletedMessages {
-                if let highlight = post.highlight {
-                    if shouldShowMessage(highlight: highlight) {
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .frame(width: 3)
-                                .foregroundStyle(highlight.barColor)
-                            VStack(alignment: .leading, spacing: 1) {
-                                HighlightMessageView(postState: post.state,
-                                                     chat: chatSettings,
-                                                     highlight: highlight)
-                                LineView(deleted: state.deleted,
-                                         post: post,
-                                         chat: chatSettings,
-                                         platform: moreThanOneStreamingPlatform,
-                                         selectedPost: $selectedPost)
-                            }
+        if !state.deleted || chatSettings.showDeletedMessages {
+            if let highlight = post.highlight {
+                if shouldShowMessage(highlight: highlight) {
+                    HStack(spacing: 0) {
+                        Rectangle()
+                            .frame(width: 3)
+                            .foregroundStyle(highlight.barColor)
+                        if chatSettings.compactEvents, highlight.titleSegments != nil {
+                            HighlightImageView(style: style, highlight: highlight)
                         }
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                        VStack(alignment: .leading, spacing: 1) {
+                            if !chatSettings.compactEvents {
+                                HighlightMessageView(
+                                    deleted: state.deleted,
+                                    style: style,
+                                    highlight: highlight,
+                                    linkUrl: $linkUrl
+                                )
+                            }
+                            LineView(
+                                deleted: state.deleted,
+                                post: post,
+                                style: style,
+                                platform: moreThanOneStreamingPlatform,
+                                selectedPost: $selectedPost,
+                                linkUrl: $linkUrl
+                            )
+                        }
                     }
-                } else {
-                    LineView(deleted: state.deleted,
-                             post: post,
-                             chat: chatSettings,
-                             platform: moreThanOneStreamingPlatform,
-                             selectedPost: $selectedPost)
-                        .padding(.leading, 3)
-                        .rotationEffect(Angle(degrees: rotation))
-                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
+            } else {
+                LineView(
+                    deleted: state.deleted,
+                    post: post,
+                    style: style,
+                    platform: moreThanOneStreamingPlatform,
+                    selectedPost: $selectedPost,
+                    linkUrl: $linkUrl
+                )
+                .padding(.leading, 3)
             }
-        } else {
-            Rectangle()
-                .fill(.red)
-                .frame(width: size.width, height: 1.5)
-                .padding(2)
-                .rotationEffect(Angle(degrees: rotation))
-                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
         }
     }
 }
@@ -477,69 +238,49 @@ private struct AlertsMessagesView: View {
     @ObservedObject var chat: ChatProvider
     @ObservedObject var quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     var body: some View {
-        let rotation = chatSettings.getRotation()
-        let scaleX = chatSettings.getScaleX()
-        GeometryReader { metrics in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 1) {
-                    Color.clear
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                model.endOfQuickButtonChatAlertsReachedWhenPaused()
-                            }
-                        }
-                        .onDisappear {
-                            model.pauseQuickButtonChatAlerts()
-                        }
-                        .frame(height: 1)
-                    ForEach(quickButtonChat.chatAlertsPosts) { post in
-                        AlertsPostView(
-                            chatSettings: chatSettings,
-                            moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
-                            showFirstTimeChatterMessage: quickButtonChat.showFirstTimeChatterMessage,
-                            showNewFollowerMessage: quickButtonChat.showNewFollowerMessage,
-                            selectedPost: $selectedPost,
-                            post: post,
-                            state: post.state,
-                            rotation: rotation,
-                            scaleX: scaleX,
-                            size: metrics.size
-                        )
-                    }
-                    Spacer(minLength: 0)
-                }
-            }
-            .frame(minHeight: metrics.size.height)
+        let style = makeChatLineStyle(chat: chatSettings)
+        ChatScrollView(chat: chat,
+                       newMessagesAtTop: chatSettings.newMessagesAtTop,
+                       mirrored: chatSettings.mirrored,
+                       onLatestAppear: model.endOfQuickButtonChatAlertsReachedWhenPaused,
+                       onLatestDisappear: model.pauseQuickButtonChatAlerts)
+        { post in
+            AlertsPostView(chatSettings: chatSettings,
+                           style: style,
+                           moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                           showFirstTimeChatterMessage: quickButtonChat.showFirstTimeChatterMessage,
+                           showNewFollowerMessage: quickButtonChat.showNewFollowerMessage,
+                           selectedPost: $selectedPost,
+                           linkUrl: $linkUrl,
+                           post: post,
+                           state: post.state)
         }
-        .foregroundStyle(.white)
-        .rotationEffect(Angle(degrees: rotation))
-        .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
     }
 }
 
 private struct ChatAlertsView: View {
     let model: Model
-    @ObservedObject var quickButtonChat: QuickButtonChat
+    @ObservedObject var chat: ChatProvider
+    let quickButtonChat: QuickButtonChat
     @Binding var selectedPost: ChatPost?
+    @Binding var linkUrl: URL?
 
     var body: some View {
         ZStack {
             AlertsMessagesView(model: model,
                                chatSettings: model.database.chat,
-                               chat: model.quickButtonChat,
+                               chat: chat,
                                quickButtonChat: quickButtonChat,
-                               selectedPost: $selectedPost)
-            if quickButtonChat.chatAlertsPaused {
-                ChatInfo(
-                    message: String(
-                        localized: "Chat paused: \(quickButtonChat.pausedChatAlertsPostsCount) new alerts"
-                    )
-                )
-                .padding(2)
+                               selectedPost: $selectedPost,
+                               linkUrl: $linkUrl)
+            if chat.paused {
+                ChatInfo(message: String(localized: "Chat paused: \(chat.pausedPostsCount) new alerts"))
+                    .padding(2)
             }
-            HypeTrainView(model: model, hypeTrain: model.hypeTrain)
+            BannersView(model: model, banners: model.banners)
         }
     }
 }
@@ -744,7 +485,7 @@ private struct SendMessagesToView: View {
         HStack {
             Image(platform.imageName())
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(width: 24, height: 24)
             Text(platform.name())
                 .padding(.leading, 6)
@@ -764,7 +505,7 @@ private struct PlatformIconView: View {
     var body: some View {
         Image(image)
             .resizable()
-            .aspectRatio(contentMode: .fit)
+            .scaledToFit()
             .frame(width: 25, height: 25)
     }
 }
@@ -933,221 +674,29 @@ private struct AlertsControlView: View {
     }
 }
 
-private struct ActionButtonView: View {
-    var image: String
-    var text: LocalizedStringKey
-    var foreground: Color?
-    var action: () -> Void
-
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            VStack {
-                if let foreground {
-                    Image(systemName: image)
-                        .foregroundStyle(foreground)
-                        .font(.title2)
-                } else {
-                    Image(systemName: image)
-                        .font(.title2)
-                }
-                Text(text)
-                    .foregroundStyle(.white)
-                    .font(.caption)
-                    .lineLimit(1)
-            }
-        }
-    }
-}
-
-private struct ActionButtonsView: View {
-    let model: Model
-    @Binding var selectedPost: ChatPost?
-    @State private var presentingBanConfirm = false
-    @State private var presentingTimeoutConfirm = false
-    @State private var presentingDeleteConfirm = false
-    @State private var presentingNicknameDialog = false
-    @State private var nicknameText = ""
-    @State private var showingChatterInfo = false
-
-    private func dismiss() {
-        showingChatterInfo = false
-        selectedPost = nil
-    }
-
-    private var chat: SettingsChat {
-        model.database.chat
-    }
-
-    private func banButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
-            presentingBanConfirm = true
-        }
-        .confirmationDialog("", isPresented: $presentingBanConfirm) {
-            Button("Ban", role: .destructive) {
-                model.banUser(post: selectedPost)
-                dismiss()
-            }
-        }
-    }
-
-    private func timeoutButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "timer", text: "Timeout") {
-            presentingTimeoutConfirm = true
-        }
-        .confirmationDialog("", isPresented: $presentingTimeoutConfirm) {
-            Button("5 minutes timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 5 * 60)
-                dismiss()
-            }
-            Button("1 hour timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 3600)
-                dismiss()
-            }
-            Button("24 hours timeout", role: .destructive) {
-                model.timeoutUser(post: selectedPost, duration: 24 * 3600)
-                dismiss()
-            }
-        }
-    }
-
-    private func deleteButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "trash", text: "Delete") {
-            presentingDeleteConfirm = true
-        }
-        .confirmationDialog("", isPresented: $presentingDeleteConfirm) {
-            Button("Delete message", role: .destructive) {
-                model.deleteMessage(post: selectedPost)
-                dismiss()
-            }
-        }
-    }
-
-    private func copyButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "document.on.document", text: "Copy") {
-            model.copyMessage(post: selectedPost)
-            dismiss()
-        }
-    }
-
-    private func nicknameButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "person.badge.plus", text: "Nickname") {
-            if let user = selectedPost.user {
-                nicknameText = chat.nicknames.getNickname(user: user) ?? ""
-            } else {
-                nicknameText = ""
-            }
-            presentingNicknameDialog = true
-        }
-        .alert("Nickname for \(selectedPost.user ?? "")", isPresented: $presentingNicknameDialog) {
-            TextField("Nickname", text: $nicknameText)
-            Button("Save") {
-                saveNickname(selectedPost: selectedPost)
-                dismiss()
-            }
-            Button("Cancel", role: .cancel) {
-                dismiss()
-            }
-        }
-    }
-
-    private func infoButton() -> some View {
-        ActionButtonView(image: "info.circle", text: "Info") {
-            showingChatterInfo = true
-        }
-    }
-
-    private func saveNickname(selectedPost: ChatPost) {
-        guard let user = selectedPost.user else {
-            return
-        }
-        let nickname = nicknameText.trimmingCharacters(in: .whitespaces)
-        if nickname.isEmpty {
-            chat.nicknames.nicknames.removeAll(where: { $0.user == user })
-        } else if let existingNickname = chat.nicknames.nicknames.first(where: { $0.user == user }) {
-            existingNickname.nickname = nickname
-        } else {
-            let item = SettingsChatNickname()
-            item.user = user
-            item.nickname = nickname
-            chat.nicknames.nicknames.append(item)
-        }
-        model.reloadChatMessages()
-    }
-
-    var body: some View {
-        if let selectedPost {
-            if showingChatterInfo {
-                QuickButtonChatChatterInfoView(
-                    model: model,
-                    post: selectedPost,
-                    presenting: $showingChatterInfo
-                )
-                .border(.gray)
-                .padding(.horizontal, 5)
-            } else {
-                VStack {
-                    Spacer()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            self.selectedPost = nil
-                        }
-                    VStack(alignment: .leading) {
-                        ScrollView {
-                            LineView(deleted: selectedPost.state.deleted,
-                                     post: selectedPost,
-                                     chat: model.database.chat,
-                                     platform: model.chat.moreThanOneStreamingPlatform,
-                                     selectedPost: $selectedPost)
-                                .foregroundStyle(.white)
-                        }
-                        .frame(height: 100)
-                        .padding(.vertical, 5)
-                        HStack {
-                            Spacer(minLength: 0)
-                            banButton(selectedPost: selectedPost)
-                            Spacer(minLength: 0)
-                            timeoutButton(selectedPost: selectedPost)
-                            Spacer(minLength: 0)
-                            deleteButton(selectedPost: selectedPost)
-                            Spacer(minLength: 0)
-                            copyButton(selectedPost: selectedPost)
-                            Spacer(minLength: 0)
-                            nicknameButton(selectedPost: selectedPost)
-                            Spacer(minLength: 0)
-                            infoButton()
-                                .disabled(selectedPost.platform != .kick)
-                            Spacer(minLength: 0)
-                        }
-                        .padding(.bottom, 5)
-                    }
-                    .border(.gray)
-                    .padding(.horizontal, 5)
-                    .background(.black)
-                }
-            }
-        }
-    }
-}
-
 struct QuickButtonChatView: View {
     let model: Model
+    @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
+    @State var linkUrl: URL?
 
     var body: some View {
         ZStack {
             VStack {
                 if quickButtonChat.showAllChatMessages {
-                    ChatView(model: model, chat: model.quickButtonChat, selectedPost: $selectedPost)
+                    ChatView(model: model,
+                             chat: model.quickButtonChat,
+                             selectedPost: $selectedPost,
+                             linkUrl: $linkUrl)
                 } else {
                     ChatAlertsView(
                         model: model,
+                        chat: model.quickButtonChatAlerts,
                         quickButtonChat: quickButtonChat,
-                        selectedPost: $selectedPost
+                        selectedPost: $selectedPost,
+                        linkUrl: $linkUrl
                     )
                 }
                 HStack {
@@ -1161,9 +710,14 @@ struct QuickButtonChatView: View {
                 .border(.gray)
                 .padding(.horizontal, 5)
             }
-            ActionButtonsView(model: model, selectedPost: $selectedPost)
+            ChatActionButtonsView(model: model,
+                                  style: makeChatLineStyle(chat: model.database.chat),
+                                  selectedPost: $selectedPost,
+                                  linkUrl: $linkUrl)
         }
+        .padding(.bottom, orientation.isPortrait ? 5 : 0)
         .background(.black)
         .navigationTitle("Chat")
+        .quickButtonChatLinkConfirmation(url: $linkUrl)
     }
 }

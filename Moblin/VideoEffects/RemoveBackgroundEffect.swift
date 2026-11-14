@@ -1,4 +1,6 @@
 @preconcurrency import CoreImage
+import MetalPetal
+import simd
 
 private struct HsvColor {
     let hue: CGFloat
@@ -84,8 +86,54 @@ private func makeFilter(settings: FilterSettings) -> (any CIColorCubeWithColorSp
     return filter
 }
 
+private let chromaKeySmoothing: Float = 0.1
+private let chromaKeyNeutralAxisMargin: Float = 0.8
+
+private struct ChromaKeySettings {
+    let color: MTIColor
+    let thresholdSensitivity: Float
+}
+
+private func toChroma(_ color: MTIColor) -> SIMD2<Float> {
+    let luma = 0.2989 * color.red + 0.5866 * color.green + 0.1145 * color.blue
+    return .init(0.7132 * (color.red - luma), 0.5647 * (color.blue - luma))
+}
+
+private func makeSaturatedColor(hue: Double) -> MTIColor {
+    let sector = Float(hue) * Float(hueSectorCount)
+    let secondary = 1 - abs(fmod(sector, 2) - 1)
+    let (red, green, blue): (Float, Float, Float) = switch Int(sector) {
+    case 0:
+        (1, secondary, 0)
+    case 1:
+        (secondary, 1, 0)
+    case 2:
+        (0, 1, secondary)
+    case 3:
+        (0, secondary, 1)
+    case 4:
+        (secondary, 0, 1)
+    default:
+        (1, 0, secondary)
+    }
+    return MTIColor(red: red, green: green, blue: blue, alpha: 1)
+}
+
+private func makeChromaKeySettings(from: RgbColor, to: RgbColor) -> ChromaKeySettings {
+    let fromHue = from.hue()
+    let toHue = to.hue()
+    let hueSpan = toHue < fromHue ? toHue - fromHue + 1 : toHue - fromHue
+    let color = makeSaturatedColor(hue: (fromHue + hueSpan / 2).truncatingRemainder(dividingBy: 1))
+    let chroma = toChroma(color)
+    let thresholdSensitivity = min(distance(chroma, toChroma(makeSaturatedColor(hue: fromHue))),
+                                   length(chroma) * chromaKeyNeutralAxisMargin)
+    return .init(color: color, thresholdSensitivity: thresholdSensitivity)
+}
+
 final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
     private var filter: (any CIColorCubeWithColorSpace)?
+    private let filterMetalPetal = MTIChromaKeyBlendFilter()
+    private var chromaKeySettings: ChromaKeySettings?
     private var pendingSettings: FilterSettings?
     private var updating = false
 
@@ -108,6 +156,10 @@ final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
             minimumBrightnessFloor,
             Double(min(fromHsv.brightness, toHsv.brightness)) * adaptiveThresholdMultiplier
         )
+        nonisolated(unsafe) let chromaKeySettings = makeChromaKeySettings(from: from, to: to)
+        processorPipelineQueue.async {
+            self.chromaKeySettings = chromaKeySettings
+        }
         pendingSettings = FilterSettings(fromHue: from.hue(),
                                          toHue: to.hue(),
                                          minimumSaturation: minimumSaturation,
@@ -141,5 +193,17 @@ final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
         }
         filter.inputImage = image
         return filter.outputImage ?? image
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        guard let chromaKeySettings else {
+            return image
+        }
+        filterMetalPetal.inputImage = image
+        filterMetalPetal.inputBackgroundImage = .transparent
+        filterMetalPetal.color = chromaKeySettings.color
+        filterMetalPetal.thresholdSensitivity = chromaKeySettings.thresholdSensitivity
+        filterMetalPetal.smoothing = chromaKeySmoothing
+        return filterMetalPetal.outputImage ?? image
     }
 }

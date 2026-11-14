@@ -1,4 +1,3 @@
-import NetworkExtension
 import SwiftUI
 
 func rtmpServerStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
@@ -38,10 +37,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
     @ObservedObject var device: SettingsDjiDevice
 
     private func onDeviceChange(value: String) {
-        guard let deviceId = UUID(uuidString: value) else {
-            return
-        }
-        guard let djiDevice = djiScanner.discoveredDevices
+        guard let deviceId = UUID(uuidString: value), let djiDevice = djiScanner.discoveredDevices
             .first(where: { $0.peripheral.identifier == deviceId })
         else {
             return
@@ -115,19 +111,15 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
         Form {
             Section {
                 NavigationLink {
-                    TextEditView(
-                        title: String(localized: "SSID"),
-                        value: device.wifiSsid,
-                        onSubmit: {
-                            device.wifiSsid = $0
-                            if device.wifiPassword.isEmpty,
-                               let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid)
-                            {
-                                device.wifiPassword = network.password
-                            }
-                            updateSavedNetworks()
+                    WiFiSsidEditView(value: device.wifiSsid) {
+                        device.wifiSsid = $0
+                        if device.wifiPassword.isEmpty,
+                           let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid)
+                        {
+                            device.wifiPassword = network.password
                         }
-                    )
+                        updateSavedNetworks()
+                    }
                 } label: {
                     TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
                 }
@@ -145,19 +137,6 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
                 }
             } header: {
                 Text("Network")
-            }
-            .onAppear {
-                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                    guard let ssid = network?.ssid else {
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        if device.wifiSsid.isEmpty {
-                            device.wifiSsid = ssid
-                            device.wifiPassword = database.getSavedWiFiNetwork(ssid: ssid)?.password ?? ""
-                        }
-                    }
-                })
             }
             if !database.savedWifiNetworks.isEmpty {
                 Section {
@@ -350,7 +329,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
                 .disabled(device.isStarted)
             }
-            if device.model == .osmoPocket3 || device.model == .osmoPocket4 {
+            if device.model.hasFps() {
                 Picker("FPS", selection: $device.fps) {
                     ForEach(djiDeviceFpss, id: \.self) {
                         Text(String($0))
@@ -389,7 +368,7 @@ private struct DjiDeviceAutoRestartSettingsView: View {
 }
 
 private struct DjiDeviceStartStopButtonSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var status: StatusOther
     @ObservedObject var device: SettingsDjiDevice
 
@@ -414,7 +393,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
 }
 
 struct DjiDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
     @ObservedObject var status: StatusTopRight
@@ -442,7 +421,7 @@ struct DjiDeviceSettingsView: View {
                     Text(state())
                 }
             }
-            DjiDeviceStartStopButtonSettingsView(status: model.statusOther, device: device)
+            DjiDeviceStartStopButtonSettingsView(model: model, status: model.statusOther, device: device)
         }
         .onAppear {
             model.setCurrentDjiDevice(device: device)

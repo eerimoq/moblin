@@ -10,10 +10,11 @@ private struct PickerItemView: View {
 }
 
 private struct ZoomPresetView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
+    let selectedColor: Color
     let width: CGFloat
 
     private func segmentWidth() -> Double {
@@ -39,30 +40,25 @@ private struct ZoomPresetView: View {
             if let value {
                 model.setZoomPreset(id: value.id)
             }
-        })) {
+        }), selectedColor: selectedColor) {
             PickerItemView(preset: $0)
                 .frame(
                     width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
                     height: height()
                 )
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: min(segmentWidth() * Double(presets.count), max(width - 20, 1)))
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }
 
 private struct ZoomPresetVView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @Binding var presets: [SettingsZoomPreset]
     @Binding var selectedPresetId: UUID
+    let selectedColor: Color
     let width: CGFloat
 
     private func segmentWidth() -> Double {
@@ -88,21 +84,15 @@ private struct ZoomPresetVView: View {
             if let value {
                 model.setZoomPreset(id: value.id)
             }
-        })) {
+        }), selectedColor: selectedColor) {
             PickerItemView(preset: $0)
                 .frame(
                     width: min(segmentWidth(), (width - 20) / CGFloat(presets.count)),
                     height: height()
                 )
         }
-        .background(pickerBackgroundColor)
         .foregroundStyle(.white)
         .frame(width: segmentWidth())
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .padding(.bottom, 5)
     }
 }
@@ -130,9 +120,10 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
-            ZoomPresetView(database: model.database,
+            ZoomPresetView(model: model, database: model.database,
                            presets: presets(),
                            selectedPresetId: selectedPresetId(),
+                           selectedColor: model.database.zoom.backgroundColor.color(),
                            width: width)
         }
     }
@@ -160,9 +151,10 @@ struct StreamOverlayRightZoomPresetVSelctorView: View {
     }
 
     var body: some View {
-        ZoomPresetVView(database: model.database,
+        ZoomPresetVView(model: model, database: model.database,
                         presets: presets(),
                         selectedPresetId: selectedPresetId(),
+                        selectedColor: model.database.zoom.backgroundColor.color(),
                         width: width)
     }
 }

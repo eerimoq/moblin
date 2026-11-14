@@ -88,25 +88,21 @@ struct OptionalHeader {
     }
 
     func getPresentationTimeStamp() -> CMTime {
-        var presentationTimeStamp: CMTime = .invalid
-        if ptsDtsIndicator & 0x02 == 0x02 {
-            presentationTimeStamp = .init(
-                value: TSTimestamp.decode(optionalFields, offset: 0),
-                timescale: CMTimeScale(TSTimestamp.resolution)
-            )
+        guard ptsDtsIndicator & 0x02 == 0x02,
+              let value = TSTimestamp.decode(optionalFields, offset: 0)
+        else {
+            return .invalid
         }
-        return presentationTimeStamp
+        return CMTime(value: value, timescale: CMTimeScale(TSTimestamp.resolution))
     }
 
     func getDecodeTimeStamp() -> CMTime {
-        var decodeTimeStamp: CMTime = .invalid
-        if ptsDtsIndicator & 0x01 == 0x01 {
-            decodeTimeStamp = .init(
-                value: TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize),
-                timescale: CMTimeScale(TSTimestamp.resolution)
-            )
+        guard ptsDtsIndicator & 0x01 == 0x01,
+              let value = TSTimestamp.decode(optionalFields, offset: TSTimestamp.dataSize)
+        else {
+            return .invalid
         }
-        return decodeTimeStamp
+        return CMTime(value: value, timescale: CMTimeScale(TSTimestamp.resolution))
     }
 }
 

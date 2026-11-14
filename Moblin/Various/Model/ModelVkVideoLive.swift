@@ -103,13 +103,6 @@ extension Model {
         resetChat()
     }
 
-    func makeNotLoggedInToVkVideoLiveToast() {
-        makeErrorToast(
-            title: String(localized: "Not logged in to VK Video Live"),
-            subTitle: String(localized: "Please login again")
-        )
-    }
-
     func sendVkVideoLiveChatMessage(message: String) {
         if let streamId = vkVideoLiveChat?.getStreamId() {
             sendVkVideoLiveChatMessage(streamId: streamId, message: message)
@@ -244,7 +237,7 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency VkVideoLiveChatDelegate {
+extension Model: VkVideoLiveChatDelegate {
     func vkVideoLiveChatAppendMessage(
         messageId: String?,
         user: String,
@@ -417,7 +410,7 @@ extension Model: @preconcurrency VkVideoLiveChatDelegate {
     }
 }
 
-extension Model: @preconcurrency VkVideoLiveApiDelegate {
+extension Model: VkVideoLiveApiDelegate {
     func vkVideoLiveApiUnauthorized() {
         stream.vkVideoLiveLoggedIn = false
     }

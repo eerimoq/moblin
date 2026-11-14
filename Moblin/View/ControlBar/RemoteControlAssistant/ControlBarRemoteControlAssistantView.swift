@@ -1,6 +1,19 @@
 import Collections
 import SwiftUI
 
+private struct PreviewImageView<Content: View>: View {
+    @ObservedObject var preview: RemoteControlPreview
+    @ViewBuilder let content: (UIImage) -> Content
+
+    var body: some View {
+        if let image = preview.image {
+            content(image)
+        } else {
+            Text("No preview received yet.")
+        }
+    }
+}
+
 private struct StatusItemView: View {
     let icon: String
     let status: RemoteControlStatusItem?
@@ -100,10 +113,6 @@ private struct RemoteControlAudioLevelView: View {
     var level: Float
     var channels: Int?
     private let barsPerDb: Float = 0.3
-    private let clippingThresholdDb: Float = -1.0
-    private let redThresholdDb: Float = -8.5
-    private let yellowThresholdDb: Float = -20
-    private let zeroThresholdDb: Float = -60
 
     // Approx 60 * 0.3 = 20
     private let maxBars = "||||||||||||||||||||"
@@ -156,12 +165,6 @@ private struct RemoteControlAudioLevelView: View {
                         Text("Muted")
                     } else {
                         Text("Muted,")
-                    }
-                } else if level == .infinity {
-                    if channels == nil {
-                        Text("Unknown")
-                    } else {
-                        Text("Unknown,")
                     }
                 } else {
                     HStack(spacing: 0) {
@@ -224,10 +227,10 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
     var body: some View {
         Section {
             if remoteControl.presentingPreview {
-                if let preview = remoteControl.preview {
-                    Image(uiImage: preview)
+                PreviewImageView(preview: remoteControl.preview) { image in
+                    Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, 3)
                         .onTapGesture(count: 2) { _ in
@@ -237,8 +240,6 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                             model.remoteControlAssistantStopPreview(user: .panel)
                             remoteControl.presentingPreview = false
                         }
-                } else {
-                    Text("No preview received yet.")
                 }
             } else {
                 TextButtonView("Show") {
@@ -430,7 +431,7 @@ private struct ZoomView: View {
     @ObservedObject var remoteControl: RemoteControl
 
     private func submitZoom(value: String) {
-        guard let x = Float(value) else {
+        guard let x = Float(value), x.isFinite else {
             if let zoom = model.remoteControlAssistantStreamerState.zoom {
                 remoteControl.zoom = String(zoom)
             }
@@ -447,10 +448,9 @@ private struct ZoomView: View {
                 .multilineTextAlignment(.trailing)
                 .disableAutocorrection(true)
                 .onSubmit {
-                    guard let zoom = model.remoteControlAssistantStreamerState.zoom else {
-                        return
-                    }
-                    guard remoteControl.zoom != String(zoom) else {
+                    guard let zoom = model.remoteControlAssistantStreamerState.zoom,
+                          remoteControl.zoom != String(zoom)
+                    else {
                         return
                     }
                     submitZoom(value: remoteControl.zoom)
@@ -571,8 +571,8 @@ private struct GimbalPresetView: View {
         NavigationLink {
             Form {
                 Section {
-                    if let presets = remoteControl.settings?.gimbalPresets, !presets.isEmpty {
-                        ForEach(presets) { preset in
+                    if !remoteControl.gimbalPresets.isEmpty {
+                        ForEach(remoteControl.gimbalPresets) { preset in
                             TextButtonView(title: preset.name) {
                                 model.remoteControlAssistantMoveToGimbalPreset(id: preset.id)
                             }
@@ -587,6 +587,60 @@ private struct GimbalPresetView: View {
             .navigationTitle("Gimbal presets")
         } label: {
             Text("Gimbal presets")
+        }
+    }
+}
+
+private struct MacroView: View {
+    let model: Model
+    let macro: RemoteControlMacro
+
+    var body: some View {
+        HStack {
+            Text(macro.name)
+            Spacer()
+            if macro.running {
+                Button {
+                    model.remoteControlAssistantStopMacro(id: macro.id)
+                } label: {
+                    Text("Cancel")
+                }
+                .tint(.red)
+                .buttonStyle(.borderless)
+            } else {
+                Button {
+                    model.remoteControlAssistantStartMacro(id: macro.id)
+                } label: {
+                    Text("Run")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+    }
+}
+
+private struct MacrosView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    if !remoteControl.macros.isEmpty {
+                        ForEach(remoteControl.macros) { macro in
+                            MacroView(model: model, macro: macro)
+                        }
+                    } else {
+                        HCenter {
+                            Text("No macros configured in streamer")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Macros")
+        } label: {
+            Text("Macros")
         }
     }
 }
@@ -662,6 +716,149 @@ private struct FiltersView: View {
     }
 }
 
+private struct SendMessageView: View {
+    let model: Model
+    @State private var text = ""
+
+    private func send() {
+        let text = text.trim()
+        guard !text.isEmpty else {
+            return
+        }
+        model.remoteControlAssistantSendMessage(text: text)
+        self.text = ""
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextField("Message", text: $text)
+                        .onSubmit {
+                            send()
+                        }
+                    TextButtonView("Send") {
+                        send()
+                    }
+                } footer: {
+                    Text("Shown in the streamers activity feed.")
+                }
+            }
+            .navigationTitle("Send message")
+        } label: {
+            Text("Send message")
+        }
+    }
+}
+
+private struct MusicView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+    @State private var title = ""
+
+    private func add() {
+        let title = title.trim()
+        guard !title.isEmpty else {
+            return
+        }
+        model.remoteControlAssistantMusic(command: .add(title: title, user: nil, requestId: nil))
+        self.title = ""
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button {
+                            if remoteControl.musicStatus?.playing == true {
+                                model.remoteControlAssistantMusic(command: .pause)
+                            } else {
+                                model.remoteControlAssistantMusic(command: .play)
+                            }
+                        } label: {
+                            Image(systemName: remoteControl.musicStatus?.playing == true
+                                ? "pause.fill"
+                                : "play.fill")
+                        }
+                        Spacer()
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
+                }
+                Section {
+                    TextField("Song", text: $title)
+                        .onSubmit {
+                            add()
+                        }
+                    TextButtonView("Add") {
+                        add()
+                    }
+                } footer: {
+                    Text("Song title or Apple Music link.")
+                }
+                Section {
+                    if let status = remoteControl.musicStatus, !status.songs.isEmpty {
+                        ForEach(Array(status.songs.enumerated()), id: \.element.id) { index, song in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(song.title)
+                                    if let artist = song.artist {
+                                        MusicArtistView(artist: artist)
+                                    }
+                                    if let addedBy = song.user {
+                                        MusicAddedByView(user: addedBy)
+                                    }
+                                }
+                                Spacer()
+                                if let duration = song.duration {
+                                    MusicDurationView(duration: duration)
+                                }
+                                if index == status.currentSongIndex {
+                                    Image(systemName: status.playing ? "play.fill" : "pause.fill")
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                model.remoteControlAssistantMusic(command: .select(id: song.id))
+                            }
+                        }
+                        .onDelete { offsets in
+                            for offset in offsets {
+                                let id = status.songs[offset].id
+                                model.remoteControlAssistantMusic(command: .remove(id: id))
+                            }
+                        }
+                    } else {
+                        HCenter {
+                            Text("Empty queue")
+                        }
+                    }
+                } header: {
+                    Text("Queue")
+                } footer: {
+                    Text("""
+                    The queue holds at most \(maximumMusicQueueLength) songs. The oldest song is \
+                    removed when a song is added to a full queue.
+                    """)
+                }
+                Section {
+                    TextButtonView("Clear queue") {
+                        model.remoteControlAssistantMusic(command: .clear)
+                    }
+                }
+            }
+            .navigationTitle("Music")
+            .onAppear {
+                model.remoteControlAssistantMusic(command: .status)
+            }
+        } label: {
+            Text("Music")
+        }
+    }
+}
+
 private struct DebugLoggingView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -704,7 +901,10 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 BitrateView(model: model, remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
                 GimbalPresetView(model: model, remoteControl: remoteControl)
+                MacrosView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
+                MusicView(model: model, remoteControl: remoteControl)
+                SendMessageView(model: model)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
                 HCenter {
@@ -779,7 +979,6 @@ private struct ButtonsView: View {
                     CloseButtonView {
                         model.showingRemoteControl = false
                         model.setQuickButton(type: .remote, isOn: model.showingRemoteControl)
-                        model.updateQuickButtonStates()
                     }
                 }
                 Spacer()
@@ -821,16 +1020,14 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 if !model.isRemoteControlAssistantConfigured() {
                     StreamerNotConfiguredView()
                 } else if model.isRemoteControlAssistantConnected() {
-                    if let preview = remoteControl.preview {
-                        Image(uiImage: preview)
+                    PreviewImageView(preview: remoteControl.preview) { image in
+                        Image(uiImage: image)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
                                 remoteControl.presentingPreviewFullScreen = false
                             }
-                    } else {
-                        Text("No preview received yet.")
                     }
                 } else {
                     WaitingForStreamerView()

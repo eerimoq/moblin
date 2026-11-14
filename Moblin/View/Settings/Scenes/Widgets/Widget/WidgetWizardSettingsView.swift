@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 func basicWidgetSettingsTitle(_ createWidgetWizard: CreateWidgetWizard) -> String {
     String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
 }
@@ -25,6 +26,7 @@ private struct AddWidgetToSceneView: View {
     }
 }
 
+@MainActor
 private class SceneToAddWidgetTo: Identifiable, ObservableObject {
     let id: UUID = .init()
     let scene: SettingsScene
@@ -45,23 +47,10 @@ private struct SelectScenesView: View {
 
     private func create() {
         presentingCreateWizard = false
-        let name: String = if createWidgetWizard.name.isEmpty {
-            makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
-        } else {
-            createWidgetWizard.name
-        }
-        let widget = createWidgetWizard.widget
-        widget.type = createWidgetWizard.type
-        widget.name = name
-        database.widgets.append(widget)
-        model.fixAlertMedias()
-        model.resetSelectedScene(changeScene: false, attachCamera: false)
-        for sceneToAddWidgetTo in scenesToAddWidgetTo where sceneToAddWidgetTo.enabled {
-            model.appendWidgetToScene(scene: sceneToAddWidgetTo.scene, widget: widget)
-        }
-        if widget.type == .text {
-            model.textWidgetTextChanged(widget: widget)
-        }
+        model.widgetWizardCreate(type: createWidgetWizard.type,
+                                 name: createWidgetWizard.name,
+                                 widget: createWidgetWizard.widget,
+                                 scenes: scenesToAddWidgetTo.filter(\.enabled).map(\.scene))
     }
 
     var body: some View {
@@ -82,8 +71,9 @@ private struct SelectScenesView: View {
             CloseToolbar(presenting: $presentingCreateWizard)
         }
         .onAppear {
+            let sceneId = createWidgetWizard.sceneId ?? model.getSelectedScene()?.id
             scenesToAddWidgetTo = database.scenes.map {
-                SceneToAddWidgetTo(scene: $0, enabled: $0 === model.getSelectedScene())
+                SceneToAddWidgetTo(scene: $0, enabled: $0.id == sceneId)
             }
         }
     }
@@ -105,6 +95,22 @@ struct WidgetWizardSelectScenesNavigationView: View {
             } label: {
                 WizardNextButtonView()
             }
+        }
+    }
+}
+
+struct WidgetWizardSheetView: View {
+    let model: Model
+    let database: Database
+    @Binding var presentingCreateWizard: Bool
+
+    var body: some View {
+        NavigationStack {
+            WidgetWizardSettingsView(model: model,
+                                     database: database,
+                                     createWidgetWizard: model.createWidgetWizard,
+                                     presentingCreateWizard: $presentingCreateWizard)
+                .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -170,6 +176,7 @@ struct WidgetWizardSettingsView: View {
                                                             createWidgetWizard: createWidgetWizard,
                                                             videoSource: createWidgetWizard.widget
                                                                 .videoSource,
+                                                            videoSources: model.videoSources,
                                                             presentingCreateWizard: $presentingCreateWizard)
                     case .image:
                         WidgetWizardImageSettingsView(model: model,
@@ -187,12 +194,14 @@ struct WidgetWizardSettingsView: View {
                         WidgetWizardVTuberSettingsView(model: model,
                                                        database: database,
                                                        vTuber: createWidgetWizard.widget.vTuber,
+                                                       videoSources: model.videoSources,
                                                        createWidgetWizard: createWidgetWizard,
                                                        presentingCreateWizard: $presentingCreateWizard)
                     case .pngTuber:
                         WidgetWizardPngTuberSettingsView(model: model,
                                                          database: database,
                                                          pngTuber: createWidgetWizard.widget.pngTuber,
+                                                         videoSources: model.videoSources,
                                                          createWidgetWizard: createWidgetWizard,
                                                          presentingCreateWizard: $presentingCreateWizard)
                     case .wheelOfLuck:

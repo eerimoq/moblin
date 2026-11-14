@@ -22,7 +22,6 @@ func getNalUnits(data: Data) -> [NalUnitInfo] {
     return nalUnits
 }
 
-// Should escape as well?
 func addNalUnitStartCodes(_ data: inout Data) {
     var index = 0
     while index + 3 < data.count {
@@ -32,7 +31,6 @@ func addNalUnitStartCodes(_ data: inout Data) {
     }
 }
 
-// Should unescape as well?
 func removeNalUnitStartCodes(_ data: inout Data, _ nalUnits: [NalUnitInfo]) {
     var numberOfThreeBytesStartCodes = nalUnits.count(where: { $0.startCodeLength != 4 })
     if numberOfThreeBytesStartCodes == 0 {
@@ -45,11 +43,11 @@ func removeNalUnitStartCodes(_ data: inout Data, _ nalUnits: [NalUnitInfo]) {
         var endOffset = data.count
         for nalUnit in nalUnits {
             let dataOffset = nalUnit.dataOffset()
-            if numberOfThreeBytesStartCodes > 0 {
-                // Require iOS 18 and later for now.
-                if #available(iOS 18, *) {
-                    data.moveSubranges(.init(dataOffset ..< dataOffset + nalUnit.dataLength), to: endOffset)
-                }
+            if numberOfThreeBytesStartCodes > 0,
+               // Require iOS 18 and later for now.
+               #available(iOS 18, *)
+            {
+                data.moveSubranges(.init(dataOffset ..< dataOffset + nalUnit.dataLength), to: endOffset)
             }
             endOffset -= nalUnit.dataLength
             data.replaceSubrange(endOffset - 4 ..< endOffset, with: Int32(nalUnit.dataLength).bigEndian.data)
@@ -84,12 +82,11 @@ private func readNalUnits<TNalUnit: NalUnit>(_ data: Data,
     var units: [TNalUnit] = []
     for nalUnit in nalUnits {
         let dataOffset = nalUnit.dataOffset()
-        if filter(data[dataOffset]) {
-            if let nalUnit = TNalUnit(data: data.subdata(in: dataOffset ..< dataOffset + nalUnit.dataLength),
-                                      offset: 0)
-            {
-                units.append(nalUnit)
-            }
+        if filter(data[dataOffset]), let nalUnit = TNalUnit(
+            data: data.subdata(in: dataOffset ..< dataOffset + nalUnit.dataLength),
+            offset: 0
+        ) {
+            units.append(nalUnit)
         }
     }
     return units

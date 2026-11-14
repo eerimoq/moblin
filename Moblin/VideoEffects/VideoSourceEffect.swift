@@ -1,4 +1,5 @@
 import CoreImage
+import MetalPetal
 import Vision
 
 struct VideoSourceEffectSettings {
@@ -77,13 +78,12 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func cropFace(
-        _ videoSourceImage: CIImage,
+    private func calcFaceCropRegion(
+        _ videoSourceImageSize: CGSize,
         _ faceDetections: [VNFaceObservation]?,
         _ presentationTimeStamp: Double,
         _ zoom: Double
-    ) -> CIImage {
-        let videoSourceImageSize = videoSourceImage.extent.size
+    ) -> CGRect {
         var left = videoSourceImageSize.width
         var right = 0.0
         var top = 0.0
@@ -93,11 +93,13 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
         {
             var anyFaceUsed = false
             for faceDetection in faceDetections {
-                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize)
+                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize),
+                      shouldUseFace(
+                          boundingBox,
+                          biggestBoundingBox,
+                          videoSourceImageSize
+                      )
                 else {
-                    continue
-                }
-                guard shouldUseFace(boundingBox, biggestBoundingBox, videoSourceImageSize) else {
                     continue
                 }
                 left = min(left, boundingBox.minX)
@@ -137,14 +139,28 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
         var cropY = max(videoSourceImageSize.height - centerY - cropSquareSize / 2, 0)
         cropX = min(cropX, videoSourceImageSize.width - cropSquareSize)
         cropY = min(cropY, videoSourceImageSize.height - cropSquareSize)
+        return CGRect(x: cropX, y: cropY, width: cropSquareSize, height: cropSquareSize)
+    }
+
+    private func cropFace(
+        _ videoSourceImage: CIImage,
+        _ faceDetections: [VNFaceObservation]?,
+        _ presentationTimeStamp: Double,
+        _ zoom: Double
+    ) -> CIImage {
+        let cropRegion = calcFaceCropRegion(videoSourceImage.extent.size,
+                                            faceDetections,
+                                            presentationTimeStamp,
+                                            zoom)
+        let cropY = videoSourceImage.extent.height - cropRegion.maxY
         return videoSourceImage
             .cropped(to: .init(
-                x: cropX,
-                y: videoSourceImageSize.height - cropY - cropSquareSize,
-                width: cropSquareSize,
-                height: cropSquareSize
+                x: cropRegion.minX,
+                y: cropY,
+                width: cropRegion.width,
+                height: cropRegion.height
             ))
-            .translated(x: -cropX, y: -(videoSourceImageSize.height - cropY - cropSquareSize))
+            .translated(x: -cropRegion.minX, y: -cropY)
     }
 
     private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
@@ -161,10 +177,7 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ backgroundImage: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let sceneWidget else {
-            return backgroundImage
-        }
-        guard var widgetImage = info.getCiImage(videoSourceId) else {
+        guard let sceneWidget, var widgetImage = info.getCiImage(videoSourceId) else {
             return backgroundImage
         }
         if settings.trackFaceEnabled {
@@ -181,5 +194,25 @@ final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
                                             backgroundImage.extent,
                                             info)
             .composited(over: backgroundImage)
+    }
+
+    override func executeMetalPetal(_ backgroundImage: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let sceneWidget, let widgetImage = info.getMetalPetalImage(videoSourceId) else {
+            return backgroundImage
+        }
+        var shape = WidgetShape(contentRegion: widgetImage.extent)
+        if settings.trackFaceEnabled {
+            shape.contentRegion = calcFaceCropRegion(widgetImage.extent.size,
+                                                     info.faceDetections(videoSourceId),
+                                                     info.presentationTimeStamp.seconds,
+                                                     settings.trackFaceZoom)
+        }
+        shape.rotation = settings.rotation
+        return applyEffectsResizeMirrorMoveMetalPetal(widgetImage,
+                                                      sceneWidget,
+                                                      settings.mirror,
+                                                      backgroundImage,
+                                                      info,
+                                                      shape)
     }
 }

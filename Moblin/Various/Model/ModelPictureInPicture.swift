@@ -34,30 +34,30 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency AVPictureInPictureSampleBufferPlaybackDelegate {
-    func pictureInPictureController(
+extension Model: AVPictureInPictureSampleBufferPlaybackDelegate {
+    nonisolated func pictureInPictureController(
         _: AVPictureInPictureController,
         setPlaying _: Bool
     ) {}
 
-    func pictureInPictureControllerTimeRangeForPlayback(
+    nonisolated func pictureInPictureControllerTimeRangeForPlayback(
         _: AVPictureInPictureController
     ) -> CMTimeRange {
         CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
     }
 
-    func pictureInPictureControllerIsPlaybackPaused(
+    nonisolated func pictureInPictureControllerIsPlaybackPaused(
         _: AVPictureInPictureController
     ) -> Bool {
         false
     }
 
-    func pictureInPictureController(
+    nonisolated func pictureInPictureController(
         _: AVPictureInPictureController,
         didTransitionToRenderSize _: CMVideoDimensions
     ) {}
 
-    func pictureInPictureController(
+    nonisolated func pictureInPictureController(
         _: AVPictureInPictureController,
         skipByInterval _: CMTime,
         completion completionHandler: @escaping () -> Void

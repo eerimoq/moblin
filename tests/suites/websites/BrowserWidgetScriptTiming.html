@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="ScriptTiming"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+      img {
+        position: absolute;
+        top: 0;
+        width: 400px;
+        height: 400px;
+      }
+      .overlay {
+        display: none;
+      }
+      #styled {
+        left: 0;
+      }
+      .late {
+        left: 480px;
+      }
+      #written {
+        left: 960px;
+      }
+    </style>
+    <script>
+      const events = [`head ${typeof moblin} ${document.readyState}`];
+
+      function showLateImage() {
+        const image = document.createElement("img");
+        image.className = "overlay late";
+        image.src = "BrowserWidgetHighFpsVideo.jpg";
+        document.body.appendChild(image);
+      }
+
+      function checkEvents() {
+        const expected = [
+          "head object loading",
+          "body loading",
+          "module interactive",
+          "domcontentloaded interactive",
+          "load complete",
+        ];
+        if (events.join(", ") === expected.join(", ")) {
+          browserWidgetReport("ok");
+        } else {
+          browserWidgetReport(`error: Events ${events.join(", ")}`);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        events.push(`domcontentloaded ${document.readyState}`);
+      });
+      window.addEventListener("load", () => {
+        events.push(`load ${document.readyState}`);
+        setTimeout(showLateImage, 3000);
+        setTimeout(checkEvents, 3500);
+      });
+    </script>
+    <script type="module">
+      events.push(`module ${document.readyState}`);
+    </script>
+  </head>
+  <body>
+    <img id="styled" class="overlay" src="BrowserWidgetHighFpsVideo.jpg" />
+    <script>
+      events.push(`body ${document.readyState}`);
+      document.write('<img id="written" src="BrowserWidgetHighFpsVideo.jpg" />');
+    </script>
+  </body>
+</html>

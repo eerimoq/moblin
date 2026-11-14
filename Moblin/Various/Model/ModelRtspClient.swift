@@ -2,8 +2,8 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func rtspCameras() -> [Camera] {
-        database.rtspClient.streams.map { stream in
+    func updateRtspVideoSources() {
+        videoSources.rtsp = database.rtspClient.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }
@@ -30,6 +30,8 @@ extension Model {
                                     url: url,
                                     latency: stream.latencySeconds(),
                                     transport: stream.transport,
+                                    softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                                    colorRange: self.stream.colorRange,
                                     delegate: self)
             client.start()
             ingests.rtsp.append(client)
@@ -61,24 +63,24 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency RtspClientDelegate {
-    func rtspClientErrorToast(title: String) {
+extension Model: RtspClientDelegate {
+    nonisolated func rtspClientErrorToast(title: String) {
         makeErrorToastMain(title: title)
     }
 
-    func rtspClientConnected(cameraId: UUID) {
+    nonisolated func rtspClientConnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.rtspClientConnectedInternal(cameraId: cameraId)
         }
     }
 
-    func rtspClientDisconnected(cameraId: UUID) {
+    nonisolated func rtspClientDisconnected(cameraId: UUID) {
         DispatchQueue.main.async {
             self.rtspClientDisconnectedInternal(cameraId: cameraId)
         }
     }
 
-    func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    nonisolated func rtspClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 }

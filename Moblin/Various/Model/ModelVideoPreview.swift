@@ -15,6 +15,7 @@ class VideoPreviewFeed: Identifiable, ObservableObject {
     }
 }
 
+@MainActor
 class VideoPreviewProvider: ObservableObject {
     @Published var feeds: [VideoPreviewFeed] = []
 }
@@ -27,18 +28,19 @@ extension Model {
             guard let scene = getSelectedScene() else {
                 return
             }
-            let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
-            for camera in listCameras() {
+            let devices = getBuiltinCameraDevices(scene: scene,
+                                                  sceneDevice: cameraDevice,
+                                                  resolver: makeSceneResolver())
+            for camera in videoSources.all() {
                 if let device = devices.devices.first(where: { $0.device.uniqueID == camera.id }) {
                     appendVideoPreviewIfNeeded(cameraId: device.id,
                                                name: device.device.name(),
                                                oldFeeds: oldFeeds)
                     continue
                 }
-                guard let cameraId = UUID(uuidString: camera.id) else {
-                    continue
-                }
-                guard activeBufferedVideoIds.contains(cameraId) else {
+                guard let cameraId = UUID(uuidString: camera.id),
+                      activeBufferedVideoIds.contains(cameraId)
+                else {
                     continue
                 }
                 appendVideoPreviewIfNeeded(cameraId: cameraId, name: camera.name, oldFeeds: oldFeeds)

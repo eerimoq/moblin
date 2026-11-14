@@ -2,6 +2,11 @@ import Foundation
 
 class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, Named {
     static let baseName = String(localized: "Streamer name")
+
+    static func isValidPort(port: UInt16) -> Bool {
+        port > 0
+    }
+
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var enabled: Bool = false
@@ -37,25 +42,59 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, N
     }
 }
 
+class SettingsRemoteControlStreamerUrl: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    @Published var name: String = ""
+    @Published var url: String = ""
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+        case url
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "")
+        url = container.decode(.url, String.self, "")
+    }
+}
+
 class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var enabled: Bool = false
+    @Published var name: String = ""
     @Published var url: String = ""
     @Published var previewFps: Float = 1.0
     @Published var reliableChatAndEvents: Bool = false
+    @Published var savedUrls: [SettingsRemoteControlStreamerUrl] = []
 
     enum CodingKeys: CodingKey {
         case enabled
+        case name
         case url
         case previewFps
         case reliableChatAndEvents
+        case savedUrls
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
+        try container.encode(.name, name)
         try container.encode(.url, url)
         try container.encode(.previewFps, previewFps)
         try container.encode(.reliableChatAndEvents, reliableChatAndEvents)
+        try container.encode(.savedUrls, savedUrls)
     }
 
     init() {}
@@ -63,13 +102,19 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
+        name = container.decode(.name, String.self, "")
         url = container.decode(.url, String.self, "")
         previewFps = container.decode(.previewFps, Float.self, 1.0)
         reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, false)
+        savedUrls = container.decode(.savedUrls, [SettingsRemoteControlStreamerUrl].self, [])
     }
 }
 
 class SettingsRemoteControlServerRelay: Codable, ObservableObject {
+    static func isValidBridgeId(bridgeId: String) -> Bool {
+        !bridgeId.isEmpty
+    }
+
     @Published var enabled: Bool = true
     @Published var baseUrl: String = "wss://moblin.mys-lang.org/moblin-remote-control-relay"
     @Published var bridgeId: String = UUID().uuidString.lowercased()
@@ -103,7 +148,7 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 
 class SettingsRemoteControlWeb: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 80
+    @Published var port: UInt16 = DefaultTcpPorts.remoteControlWeb
     @Published var deviceName: String = ""
 
     enum CodingKeys: CodingKey {
@@ -124,7 +169,7 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 80)
+        port = container.decode(.port, UInt16.self, DefaultTcpPorts.remoteControlWeb)
         deviceName = container.decode(.deviceName, String.self, "")
     }
 }

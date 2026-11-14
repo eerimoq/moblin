@@ -1,26 +1,32 @@
 import Collections
 import Foundation
 
+@MainActor
 class ChatProvider: ObservableObject {
     var newPosts: Deque<ChatPost> = []
     var pausedPosts: Deque<ChatPost> = []
     @Published var posts: Deque<ChatPost> = []
     @Published var pausedPostsCount: Int = 0
     @Published var paused = false
-    private let maximumNumberOfMessages: Int
     @Published var moreThanOneStreamingPlatform = false
     @Published var interactiveChat = false
     @Published var triggerScrollToBottom = false
+    @Published var showLabel = false
+    private let hideLabelTimer = MainTimer()
 
-    init(maximumNumberOfMessages: Int) {
-        self.maximumNumberOfMessages = maximumNumberOfMessages
+    func showLabelForAWhile() {
+        showLabel = true
+        hideLabelTimer.startSingleShot(timeout: 5) { [weak self] in
+            self?.showLabel = false
+        }
     }
 
     func appendMessage(post: ChatPost) {
         if paused {
-            if pausedPosts.count < 2 * maximumNumberOfMessages {
-                pausedPosts.append(post)
+            if pausedPosts.count > 2 * maximumNumberOfChatMessages - 1 {
+                pausedPosts.removeFirst()
             }
+            pausedPosts.append(post)
         } else {
             newPosts.append(post)
         }
@@ -52,24 +58,20 @@ class ChatProvider: ObservableObject {
 
     func update() {
         if paused {
-            let count = max(pausedPosts.count - 1, 0)
-            if count != pausedPostsCount {
-                pausedPostsCount = count
+            if pausedPosts.count != pausedPostsCount {
+                pausedPostsCount = pausedPosts.count
             }
         } else {
             while let post = newPosts.popFirst() {
-                if posts.count > maximumNumberOfMessages - 1 {
-                    posts.removeLast()
-                }
-                posts.prepend(post)
+                appendPost(post)
             }
         }
     }
 
-    func pause(redLine: ChatPost) {
+    func pause() {
         paused = true
         pausedPostsCount = 0
-        pausedPosts = [redLine]
+        pausedPosts = []
         while let post = newPosts.popFirst() {
             appendMessage(post: post)
         }
@@ -77,19 +79,15 @@ class ChatProvider: ObservableObject {
 
     func endReachedWhenPaused() {
         while let post = pausedPosts.popFirst() {
-            if post.isRedLine() {
-                if posts.first?.isRedLine() == true {
-                    continue
-                }
-                if pausedPosts.isEmpty {
-                    continue
-                }
-            }
-            if posts.count > maximumNumberOfMessages - 1 {
-                posts.removeLast()
-            }
-            posts.prepend(post)
+            appendPost(post)
         }
         paused = false
+    }
+
+    private func appendPost(_ post: ChatPost) {
+        if posts.count > maximumNumberOfChatMessages - 1 {
+            posts.removeFirst()
+        }
+        posts.append(post)
     }
 }

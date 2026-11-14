@@ -80,7 +80,7 @@ class RtmpStream: @unchecked Sendable {
     private var prevRebasedAudioTimeStamp: Double?
     private var prevRebasedVideoTimeStamp: Double?
     private let processor: Processor
-    weak var delegate: (any RtmpStreamDelegate)?
+    weak let delegate: (any RtmpStreamDelegate)?
 
     init(name: String, processor: Processor, delegate: any RtmpStreamDelegate, queue: DispatchQueue) {
         self.name = name
@@ -122,7 +122,9 @@ class RtmpStream: @unchecked Sendable {
     func closeInternal() {
         setState(state: .initialized)
         stopConnectTimer()
-        processor.stopEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.stopEncoding(self)
+        }
     }
 
     func onInternal(data: AsObject) {
@@ -156,7 +158,9 @@ class RtmpStream: @unchecked Sendable {
             sendFCUnpublish()
             sendDeleteStream()
             sendCloseStream()
-            processor.stopEncoding(self)
+            processorPipelineQueue.async {
+                self.processor.stopEncoding(self)
+            }
         }
         switch state {
         case .open:
@@ -175,7 +179,9 @@ class RtmpStream: @unchecked Sendable {
 
     private func disconnectInternal() {
         setState(state: .initialized)
-        processor.stopEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.stopEncoding(self)
+        }
         stopConnectTimer()
         connection.disconnect()
     }
@@ -200,8 +206,8 @@ class RtmpStream: @unchecked Sendable {
         }
         let dataWasSent = dataTimeStamps[handlerName] != nil
         let timestamp = dataWasSent ?
-            UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
-            UInt32(startedAt.timeIntervalSinceNow * -1000)
+            UInt32(max((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000, 0)) :
+            UInt32(max(startedAt.timeIntervalSinceNow * -1000, 0))
         let chunk = RtmpChunk(
             type: dataWasSent ? RtmpChunkType.one : RtmpChunkType.zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.data.rawValue,
@@ -267,7 +273,9 @@ class RtmpStream: @unchecked Sendable {
              arguments: .string("onMetaData"), .object(createOnMetaData()))
         stopConnectTimer()
         delegate?.rtmpStreamConnected(self)
-        processor.startEncoding(self)
+        processorPipelineQueue.async {
+            self.processor.startEncoding(self)
+        }
     }
 
     private func sendCreateStream() {
@@ -400,9 +408,9 @@ class RtmpStream: @unchecked Sendable {
             count: Int(audioBuffer.byteLength)
         )
         prevRebasedAudioTimeStamp = rebasedTimestamp
+        audioTimeStampDelta += delta
         handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
         audioTimeStampDelta -= floor(audioTimeStampDelta)
-        audioTimeStampDelta += delta
     }
 
     private func videoEncoderOutputFormatInternal(
@@ -459,9 +467,9 @@ class RtmpStream: @unchecked Sendable {
         buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
         buffer.append(data)
         prevRebasedVideoTimeStamp = rebasedTimestamp
+        videoTimeStampDelta += delta
         handleEncodedVideoBuffer(buffer, UInt32(videoTimeStampDelta))
         videoTimeStampDelta -= floor(videoTimeStampDelta)
-        videoTimeStampDelta += delta
     }
 
     private func rebaseTimeStamp(timestamp: Double) -> Double? {

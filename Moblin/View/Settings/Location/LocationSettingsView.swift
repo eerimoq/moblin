@@ -25,6 +25,7 @@ struct LocationSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var location: SettingsLocation
+    @ObservedObject var locationManager: Location
     @Binding var stream: SettingsStream
 
     private func deletePrivacyRegion(at offsets: IndexSet) {
@@ -39,6 +40,11 @@ struct LocationSettingsView: View {
                     .onChange(of: location.enabled) { _ in
                         model.reloadLocation()
                     }
+            }
+            if location.enabled, locationManager.isDenied {
+                Section {
+                    Text("⚠️ Allow Moblin to access your location in iOS Settings to use location.")
+                }
             }
             if database.showAllSettings {
                 Section {
@@ -63,7 +69,7 @@ struct LocationSettingsView: View {
             Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
                 TextButtonView("Split") {
-                    model.resetSplitDistance()
+                    model.resetSplitLocationData()
                 }
                 TextButtonView("Reset") {
                     model.resetLocationData()
@@ -77,7 +83,7 @@ struct LocationSettingsView: View {
             if database.showAllSettings, stream !== fallbackStream {
                 ShortcutSectionView {
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: stream)
+                        StreamRealtimeIrlSettingsView(model: model, stream: stream)
                     } label: {
                         Toggle(isOn: $stream.realtimeIrlEnabled) {
                             Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")

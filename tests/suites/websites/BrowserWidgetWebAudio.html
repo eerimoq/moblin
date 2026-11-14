@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="BrowserWidgetReport.js" data-name="WebAudio"></script>
+    <script>
+      const audioContext = new AudioContext();
+
+      function scheduleBeeps() {
+        const gain = audioContext.createGain();
+        gain.gain.value = 0.5;
+        gain.connect(audioContext.destination);
+        for (let index = 0; index < 10; index++) {
+          const oscillator = audioContext.createOscillator();
+          oscillator.frequency.value = 3000;
+          oscillator.connect(gain);
+          const start = audioContext.currentTime + 1 + 2 * index;
+          oscillator.start(start);
+          oscillator.stop(start + 0.4);
+        }
+      }
+
+      audioContext.resume().then(() => {
+        if (audioContext.state === "running") {
+          scheduleBeeps();
+          browserWidgetReport("ok");
+        } else {
+          browserWidgetReport(`error: Audio context is ${audioContext.state}`);
+        }
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

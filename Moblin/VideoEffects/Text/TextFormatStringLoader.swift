@@ -231,6 +231,7 @@ enum TextFormatPart: Equatable {
     case fullDate
     case bitrate
     case bitrateAndTotal
+    case bonding
     case resolution
     case fps
     case debugOverlay
@@ -239,6 +240,10 @@ enum TextFormatPart: Equatable {
     case altitude(TextFormatLengthUnit)
     case distance(TextFormatLengthUnit)
     case splitDistance(TextFormatLengthUnit)
+    case altitudeAscent(TextFormatLengthUnit)
+    case altitudeDescent(TextFormatLengthUnit)
+    case splitAltitudeAscent(TextFormatLengthUnit)
+    case splitAltitudeDescent(TextFormatLengthUnit)
     case slope
     case timer
     case stopwatch
@@ -266,6 +271,7 @@ enum TextFormatPart: Equatable {
     case teslaMedia
     case cyclingPower
     case cyclingCadence
+    case cyclingSpeed(TextFormatSpeedUnit)
     case runningPace(String)
     case runningCadence(String)
     case runningDistance(String)
@@ -276,6 +282,7 @@ enum TextFormatPart: Equatable {
     case gForceMax(String?)
     case latestSubscriber
     case latestFollower
+    case systemMonitor
 }
 
 @MainActor
@@ -306,6 +313,8 @@ class TextFormatLoader {
                     loadItem(part: .bitrate, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{bitrateandtotal}") {
                     loadItem(part: .bitrateAndTotal, offsetBy: 17)
+                } else if formatFromIndex.hasPrefix("{bonding}") {
+                    loadItem(part: .bonding, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{resolution}") {
                     loadItem(part: .resolution, offsetBy: 12)
                 } else if formatFromIndex.hasPrefix("{fps}") {
@@ -314,6 +323,10 @@ class TextFormatLoader {
                     loadItem(part: .debugOverlay, offsetBy: 14)
                 } else if appendSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAverageSpeedIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeAscentIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendSplitAltitudeDescentIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendAltitudeIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendSplitDistanceIfPresent(formatFromIndex: formatFromIndex) {
@@ -369,6 +382,7 @@ class TextFormatLoader {
                     loadItem(part: .cyclingPower, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
+                } else if appendCyclingSpeedIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {
@@ -383,6 +397,8 @@ class TextFormatLoader {
                     loadItem(part: .latestSubscriber, offsetBy: 18)
                 } else if formatFromIndex.hasPrefix("{latestfollower}") {
                     loadItem(part: .latestFollower, offsetBy: 16)
+                } else if formatFromIndex.hasPrefix("{systemmonitor}") {
+                    loadItem(part: .systemMonitor, offsetBy: 15)
                 } else {
                     index = format.index(after: index)
                 }
@@ -403,6 +419,13 @@ class TextFormatLoader {
                                TextFormatSpeedUnit.init) { .speed($0 ?? .system) }
     }
 
+    private func appendCyclingSpeedIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{cyclingspeed}",
+                               /{cyclingspeed:([^}]+)}/,
+                               TextFormatSpeedUnit.init) { .cyclingSpeed($0 ?? .system) }
+    }
+
     private func appendAverageSpeedIfPresent(formatFromIndex: String) -> Bool {
         appendOptionsIfPresent(formatFromIndex,
                                "{averagespeed}",
@@ -415,6 +438,34 @@ class TextFormatLoader {
                                "{altitude}",
                                /{altitude:([^}]+)}/,
                                TextFormatLengthUnit.init) { .altitude($0 ?? .system) }
+    }
+
+    private func appendAltitudeAscentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{altitudeascent}",
+                               /{altitudeascent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .altitudeAscent($0 ?? .system) }
+    }
+
+    private func appendAltitudeDescentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{altitudedescent}",
+                               /{altitudedescent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .altitudeDescent($0 ?? .system) }
+    }
+
+    private func appendSplitAltitudeAscentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{splitaltitudeascent}",
+                               /{splitaltitudeascent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .splitAltitudeAscent($0 ?? .system) }
+    }
+
+    private func appendSplitAltitudeDescentIfPresent(formatFromIndex: String) -> Bool {
+        appendOptionsIfPresent(formatFromIndex,
+                               "{splitaltitudedescent}",
+                               /{splitaltitudedescent:([^}]+)}/,
+                               TextFormatLengthUnit.init) { .splitAltitudeDescent($0 ?? .system) }
     }
 
     private func appendTemperatureIfPresent(formatFromIndex: String) -> Bool {
@@ -600,6 +651,44 @@ extension [TextFormatPart] {
         return false
     }
 
+    func isGeographyVariable() -> Bool {
+        for variable in self {
+            switch variable {
+            case .country:
+                return true
+            case .countryFlag:
+                return true
+            case .state:
+                return true
+            case .area:
+                return true
+            case .city:
+                return true
+            case .neighborhood:
+                return true
+            default:
+                break
+            }
+        }
+        return false
+    }
+
+    func isGForceVariable() -> Bool {
+        for variable in self {
+            switch variable {
+            case .gForce:
+                return true
+            case .gForceRecentMax:
+                return true
+            case .gForceMax:
+                return true
+            default:
+                break
+            }
+        }
+        return false
+    }
+
     func isLocationVariable() -> Bool {
         for variable in self {
             switch variable {
@@ -610,6 +699,16 @@ extension [TextFormatPart] {
             case .altitude:
                 return true
             case .distance:
+                return true
+            case .splitDistance:
+                return true
+            case .altitudeAscent:
+                return true
+            case .altitudeDescent:
+                return true
+            case .splitAltitudeAscent:
+                return true
+            case .splitAltitudeDescent:
                 return true
             case .slope:
                 return true

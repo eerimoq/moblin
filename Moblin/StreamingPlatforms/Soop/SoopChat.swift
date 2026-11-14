@@ -80,7 +80,7 @@ struct PlayerLiveResponse: Codable {
 }
 
 @MainActor
-final class SoopChat: NSObject, @unchecked Sendable {
+final class SoopChat: NSObject {
     private var model: Model
     private var channelName: String
     private var streamId: String
@@ -162,6 +162,7 @@ final class SoopChat: NSObject, @unchecked Sendable {
 
     func stop() {
         logger.debug("soop: stop")
+        webSocket.cancel()
         keepAliveTask?.cancel()
         keepAliveTask = nil
         task?.cancel()
@@ -273,7 +274,7 @@ final class SoopChat: NSObject, @unchecked Sendable {
         &player_type=html5&mode=landing&from_api=0&pwd=&stream_type=common&quality=HD
         """.utf8)
         request.setContentType("application/x-www-form-urlencoded")
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await httpUrlSession().data(for: request)
         guard let response = response.http else {
             throw "Not an HTTP response"
         }
@@ -284,17 +285,7 @@ final class SoopChat: NSObject, @unchecked Sendable {
     }
 
     private func createSegments(message: String) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
         var id = 0
-        for var segment in makeChatPostTextSegments(text: message, id: &id) {
-            if let text = segment.text {
-                segments += emotes.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
-        return segments
+        return emotes.createSegments(text: message, id: &id)
     }
 }

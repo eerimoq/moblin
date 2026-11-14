@@ -106,11 +106,6 @@ private struct ResponseRequestStatus: Codable {
     let comment: String?
 }
 
-private enum RequestError {
-    case message(String)
-    case response(RequestStatus, String?)
-}
-
 private enum RequestType: String, Codable {
     case getSceneList = "GetSceneList"
     case getSceneItemList = "GetSceneItemList"
@@ -173,8 +168,6 @@ private struct Hello: Decodable {
     // let rpcVersion: Int
     let authentication: HelloAuthentication?
 }
-
-struct EmptyRequestData: Codable {}
 
 struct GetSceneListResponseScene: Decodable {
     let sceneName: String
@@ -476,7 +469,7 @@ private func unpackRequestBatchResponse(data: Data) throws -> (String, [(Respons
 
 private struct Request {
     let onSuccess: (Data?) -> Void
-    let onError: (RequestError) -> Void
+    let onError: (RequestStatus, String?) -> Void
 }
 
 private struct BatchRequest {
@@ -497,6 +490,7 @@ struct ObsRecordStatus {
     let active: Bool
 }
 
+@MainActor
 protocol ObsWebsocketDelegate: AnyObject {
     func obsWebsocketConnected()
     func obsWebsocketSceneChanged(sceneName: String)
@@ -506,6 +500,7 @@ protocol ObsWebsocketDelegate: AnyObject {
     func obsWebsocketAudioVolume(volumes: [ObsAudioInputVolume])
 }
 
+@MainActor
 class ObsWebSocket {
     private let url: URL
     private let password: String
@@ -515,13 +510,13 @@ class ObsWebSocket {
     private var batchRequests: [String: BatchRequest] = [:]
     var connectionErrorMessage: String = ""
     private var connected = false
-    weak var delegate: (any ObsWebsocketDelegate)?
+    weak let delegate: (any ObsWebsocketDelegate)?
 
     init(url: URL, password: String, delegate: any ObsWebsocketDelegate) {
         self.url = url
         self.password = password
         self.delegate = delegate
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, loopback: url.isLoopback())
     }
 
     func start() {
@@ -536,7 +531,7 @@ class ObsWebSocket {
 
     private func startInternal() {
         stopInternal()
-        webSocket = .init(url: url)
+        webSocket = .init(url: url, loopback: url.isLoopback())
         webSocket.delegate = self
         webSocket.start()
     }
@@ -560,19 +555,12 @@ class ObsWebSocket {
     }
 
     func getSceneList(onSuccess: @escaping (ObsSceneList) -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataWithResponse(type: .getSceneList, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetSceneListResponse.self, from: response)
-                onSuccess(ObsSceneList(
-                    current: response.currentProgramSceneName,
-                    scenes: response.scenes.reversed().map(\.sceneName)
-                ))
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getSceneList, onError: onError) { (response: GetSceneListResponse) in
+            onSuccess(ObsSceneList(
+                current: response.currentProgramSceneName,
+                scenes: response.scenes.reversed().map(\.sceneName)
+            ))
+        }
     }
 
     func getSceneItemList(
@@ -580,64 +568,34 @@ class ObsWebSocket {
         onSuccess: @escaping ([GetSceneItemListItem]) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        performRequestWithResponse(
-            type: .getSceneItemList,
-            request: GetSceneItemList(sceneName: sceneName),
-            onSuccess: { response in
-                do {
-                    let response = try JSONDecoder().decode(GetSceneItemListResponse.self, from: response)
-                    onSuccess(response.sceneItems)
-                } catch {
-                    onError("JSON decode failed")
-                }
-            },
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .getSceneItemList,
+                       request: GetSceneItemList(sceneName: sceneName),
+                       onError: onError)
+        { (response: GetSceneItemListResponse) in
+            onSuccess(response.sceneItems)
+        }
     }
 
     func getSpecialInputs(
         onSuccess: @escaping (GetSpecialInputsResponse) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        performRequestNoDataWithResponse(type: .getSpecialInputs, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetSpecialInputsResponse.self, from: response)
-                onSuccess(response)
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getSpecialInputs, onError: onError, onSuccess: onSuccess)
     }
 
     func getInputList(onSuccess: @escaping ([String]) -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataWithResponse(type: .getInputList, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetInputListResponse.self, from: response)
-                onSuccess(response.inputs.map(\.inputName))
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getInputList, onError: onError) { (response: GetInputListResponse) in
+            onSuccess(response.inputs.map(\.inputName))
+        }
     }
 
     func setCurrentProgramScene(name: String, onSuccess: @escaping () -> Void,
                                 onError: @escaping (String) -> Void)
     {
-        let request = SetCurrentProgramSceneRequest(sceneName: name)
-        performRequestNoResponse(
-            type: .setCurrentProgramScene,
-            request: request,
-            onSuccess: onSuccess,
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .setCurrentProgramScene,
+                       request: SetCurrentProgramSceneRequest(sceneName: name),
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func setMediaSourceSettings(name: String,
@@ -645,102 +603,55 @@ class ObsWebSocket {
                                 onSuccess: @escaping () -> Void = {},
                                 onError: @escaping (String) -> Void = { _ in })
     {
-        let request = SetItemUrlRequest(inputName: name,
-                                        inputSettings: SetItemUrlInputSettings(input: input))
-        performRequestNoResponse(
-            type: .setInputSettings,
-            request: request,
-            onSuccess: onSuccess,
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .setInputSettings,
+                       request: SetItemUrlRequest(inputName: name,
+                                                  inputSettings: SetItemUrlInputSettings(input: input)),
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void,
                          onError: @escaping (String) -> Void)
     {
-        performRequestNoDataWithResponse(type: .getStreamStatus, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetStreamStatusResponse.self, from: response)
-                onSuccess(ObsStreamStatus(active: response.outputActive))
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getStreamStatus, onError: onError) { (response: GetStreamStatusResponse) in
+            onSuccess(ObsStreamStatus(active: response.outputActive))
+        }
     }
 
     func getRecordStatus(onSuccess: @escaping (ObsRecordStatus) -> Void,
                          onError: @escaping (String) -> Void)
     {
-        performRequestNoDataWithResponse(type: .getRecordStatus, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetRecordStatusResponse.self, from: response)
-                onSuccess(ObsRecordStatus(active: response.outputActive))
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getRecordStatus, onError: onError) { (response: GetRecordStatusResponse) in
+            onSuccess(ObsRecordStatus(active: response.outputActive))
+        }
     }
 
     func startStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataNoResponse(type: .startStream, onSuccess: onSuccess, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
-                switch code {
-                case .outputRunning:
-                    onError("Already streaming")
-                default:
-                    return false
-                }
-                return true
-            }
-        })
+        performRequest(type: .startStream,
+                       errorMessages: [.outputRunning: "Already streaming"],
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func stopStream(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataNoResponse(type: .stopStream, onSuccess: onSuccess, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
-                switch code {
-                case .outputNotRunning:
-                    onError("Not streaming")
-                default:
-                    return false
-                }
-                return true
-            }
-        })
+        performRequest(type: .stopStream,
+                       errorMessages: [.outputNotRunning: "Not streaming"],
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func startRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataNoResponse(type: .startRecord, onSuccess: onSuccess, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
-                switch code {
-                case .outputRunning:
-                    onError("Already recording")
-                default:
-                    return false
-                }
-                return true
-            }
-        })
+        performRequest(type: .startRecord,
+                       errorMessages: [.outputRunning: "Already recording"],
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func stopRecord(onSuccess: @escaping () -> Void, onError: @escaping (String) -> Void) {
-        performRequestNoDataNoResponse(type: .stopRecord, onSuccess: onSuccess, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError) { code, _ in
-                switch code {
-                case .outputNotRunning:
-                    onError("Not recording")
-                default:
-                    return false
-                }
-                return true
-            }
-        })
+        performRequest(type: .stopRecord,
+                       errorMessages: [.outputNotRunning: "Not recording"],
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func getSourceScreenshot(
@@ -754,9 +665,8 @@ class ObsWebSocket {
             imageWidth: 640,
             imageCompressionQuality: 30
         )
-        performRequestWithResponse(type: .getSourceScreenshot, request: request, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetSourceScreenshotResponse.self, from: response)
+        performRequest(type: .getSourceScreenshot, request: request, onError: onError)
+            { (response: GetSourceScreenshotResponse) in
                 let imageData = response.imageData
                 let index = imageData.index(imageData.startIndex, offsetBy: 22)
                 if let image = Data(base64Encoded: String(imageData[index...])) {
@@ -764,12 +674,7 @@ class ObsWebSocket {
                 } else {
                     onError("Base64 decode failed")
                 }
-            } catch {
-                onError("JSON decode failed")
             }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
     }
 
     func setInputAudioSyncOffset(
@@ -778,18 +683,10 @@ class ObsWebSocket {
         onSuccess: @escaping () -> Void,
         onError: @escaping (String) -> Void
     ) {
-        let request = SetInputAudioSyncOffset(
-            inputName: name,
-            inputAudioSyncOffset: offsetInMs
-        )
-        performRequestNoResponse(
-            type: .setInputAudioSyncOffset,
-            request: request,
-            onSuccess: onSuccess,
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .setInputAudioSyncOffset,
+                       request: SetInputAudioSyncOffset(inputName: name, inputAudioSyncOffset: offsetInMs),
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func getInputAudioSyncOffset(
@@ -797,32 +694,22 @@ class ObsWebSocket {
         onSuccess: @escaping (Int) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        let request = GetInputAudioSyncOffset(inputName: name)
-        performRequestWithResponse(type: .getInputAudioSyncOffset, request: request, onSuccess: { response in
-            do {
-                let response = try JSONDecoder().decode(GetInputAudioSyncOffsetResponse.self, from: response)
-                onSuccess(response.inputAudioSyncOffset)
-            } catch {
-                onError("JSON decode failed")
-            }
-        }, onError: { requestError in
-            self.onRequestError(requestError: requestError, onError: onError)
-        })
+        performRequest(type: .getInputAudioSyncOffset,
+                       request: GetInputAudioSyncOffset(inputName: name),
+                       onError: onError)
+        { (response: GetInputAudioSyncOffsetResponse) in
+            onSuccess(response.inputAudioSyncOffset)
+        }
     }
 
     func setInputSettings(inputName: String,
                           onSuccess: @escaping () -> Void,
                           onError: @escaping (String) -> Void)
     {
-        let request = SetInputSettings(inputName: inputName, inputSettings: .init())
-        performRequestNoResponse(
-            type: .setInputSettings,
-            request: request,
-            onSuccess: onSuccess,
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .setInputSettings,
+                       request: SetInputSettings(inputName: inputName, inputSettings: .init()),
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func setInputMute(inputName: String,
@@ -830,15 +717,10 @@ class ObsWebSocket {
                       onSuccess: @escaping () -> Void,
                       onError: @escaping (String) -> Void)
     {
-        let request = SetInputMute(inputName: inputName, inputMuted: muted)
-        performRequestNoResponse(
-            type: .setInputMute,
-            request: request,
-            onSuccess: onSuccess,
-            onError: { requestError in
-                self.onRequestError(requestError: requestError, onError: onError)
-            }
-        )
+        performRequest(type: .setInputMute,
+                       request: SetInputMute(inputName: inputName, inputMuted: muted),
+                       onError: onError,
+                       onSuccess: onSuccess)
     }
 
     func getMediaSourcesSettingsBatch(
@@ -846,34 +728,16 @@ class ObsWebSocket {
         onSuccess: @escaping ([ObsMediaSourceSettings?]) -> Void,
         onError: @escaping (String) -> Void
     ) {
-        var requests: [String] = []
-        for inputName in inputNames {
-            guard let (request, _) = try? packRequest(
-                type: .getInputSettings,
-                request: GetInputSettingsRequest(inputName: inputName)
-            ) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            guard let request = String(bytes: request, encoding: .utf8) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            requests.append(request)
-        }
-        executeBatchRequest(requests: requests, onError: onError) { results in
-            onSuccess(results.map { status, response in
-                guard status.result, let response else {
-                    return nil
-                }
-                do {
-                    let response = try JSONDecoder().decode(GetInputSettingsResponse.self, from: response)
-                    return ObsMediaSourceSettings(
-                        input: response.inputSettings.input,
-                        isLocalFile: response.inputSettings.is_local_file
+        performRequestBatch(type: .getInputSettings,
+                            requests: inputNames.map { GetInputSettingsRequest(inputName: $0) },
+                            onError: onError)
+        { (responses: [GetInputSettingsResponse?]) in
+            onSuccess(responses.map { response in
+                response.map {
+                    ObsMediaSourceSettings(
+                        input: $0.inputSettings.input,
+                        isLocalFile: $0.inputSettings.is_local_file
                     )
-                } catch {
-                    return nil
                 }
             })
         }
@@ -883,151 +747,109 @@ class ObsWebSocket {
                            onSuccess: @escaping ([Bool?]) -> Void,
                            onError: @escaping (String) -> Void)
     {
-        var requests: [String] = []
-        for inputName in inputNames {
-            guard let (request, _) = try? packRequest(
-                type: .getInputMute,
-                request: GetInputMute(inputName: inputName)
-            ) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            guard let request = String(bytes: request, encoding: .utf8) else {
-                onError("Failed to create OBS message")
-                return
-            }
-            requests.append(request)
-        }
-        executeBatchRequest(requests: requests, onError: onError) { results in
-            onSuccess(results.map { status, response in
-                guard status.result, let response else {
-                    return nil
-                }
-                do {
-                    let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
-                    return response.inputMuted
-                } catch {
-                    return nil
-                }
-            })
+        performRequestBatch(type: .getInputMute,
+                            requests: inputNames.map { GetInputMute(inputName: $0) },
+                            onError: onError)
+        { (responses: [GetInputMuteResponse?]) in
+            onSuccess(responses.map { $0?.inputMuted })
         }
     }
 
-    private func onRequestError(
-        requestError: RequestError,
+    private func performRequest<Response: Decodable>(
+        type: RequestType,
+        request: (any Encodable)? = nil,
         onError: @escaping (String) -> Void,
-        onObsResponseError: ((RequestStatus, String?) -> Bool)? = nil
+        onSuccess: @escaping (Response) -> Void
     ) {
-        switch requestError {
-        case let .message(message):
-            onError(message)
-        case let .response(code, comment):
-            if let onObsResponseError, onObsResponseError(code, comment) {
+        sendRequest(type: type, request: request, errorMessages: [:], onError: onError) { response in
+            guard let response else {
+                onError("Response data missing")
                 return
             }
-            var message = ""
-            if let comment {
-                message = " (\(comment))"
+            do {
+                try onSuccess(JSONDecoder().decode(Response.self, from: response))
+            } catch {
+                onError("JSON decode failed")
             }
-            onError("Operation failed with \(code)\(message)")
         }
     }
 
-    private func executeBatchRequest(
-        requests: [String],
+    private func performRequest(
+        type: RequestType,
+        request: (any Encodable)? = nil,
+        errorMessages: [RequestStatus: String] = [:],
         onError: @escaping (String) -> Void,
-        onComplete: @escaping ([(ResponseRequestStatus, Data?)]) -> Void
+        onSuccess: @escaping () -> Void
+    ) {
+        sendRequest(type: type, request: request, errorMessages: errorMessages, onError: onError) { _ in
+            onSuccess()
+        }
+    }
+
+    private func performRequestBatch<Response: Decodable>(
+        type: RequestType,
+        requests: [any Encodable],
+        onError: @escaping (String) -> Void,
+        onSuccess: @escaping ([Response?]) -> Void
     ) {
         guard isConnected() else {
             onError("Not connected to server")
             return
         }
+        var packedRequests: [String] = []
+        for request in requests {
+            guard let (request, _) = try? packRequest(type: type, request: request) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            packedRequests.append(String.fromUtf8(data: request))
+        }
         let requestId = getNextId()
-        batchRequests[requestId] = BatchRequest(onComplete: onComplete)
+        batchRequests[requestId] = BatchRequest(onComplete: { results in
+            onSuccess(results.map { status, response in
+                guard status.result, let response else {
+                    return nil
+                }
+                return try? JSONDecoder().decode(Response.self, from: response)
+            })
+        })
         let requestBatch = """
         {
           "requestId": \(requestId),
-          "requests": [\(requests.joined(separator: ","))]
+          "requests": [\(packedRequests.joined(separator: ","))]
         }
         """
         send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
-    private func performRequestNoDataNoResponse(
+    private func sendRequest(
         type: RequestType,
-        onSuccess: @escaping () -> Void,
-        onError: @escaping (RequestError) -> Void
-    ) {
-        performRequest(type: type,
-                       request: nil as EmptyRequestData?,
-                       onSuccess: { _ in onSuccess() },
-                       onError: onError)
-    }
-
-    private func performRequestNoDataWithResponse(
-        type: RequestType,
-        onSuccess: @escaping (Data) -> Void,
-        onError: @escaping (RequestError) -> Void
-    ) {
-        performRequestWithResponse(
-            type: type,
-            request: nil as EmptyRequestData?,
-            onSuccess: onSuccess,
-            onError: onError
-        )
-    }
-
-    private func performRequestNoResponse(
-        type: RequestType,
-        request: (some Encodable)?,
-        onSuccess: @escaping () -> Void,
-        onError: @escaping (RequestError) -> Void
-    ) {
-        performRequest(type: type,
-                       request: request,
-                       onSuccess: { _ in
-                           onSuccess()
-                       },
-                       onError: onError)
-    }
-
-    private func performRequestWithResponse(
-        type: RequestType,
-        request: (some Encodable)?,
-        onSuccess: @escaping (Data) -> Void,
-        onError: @escaping (RequestError) -> Void
-    ) {
-        performRequest(type: type,
-                       request: request,
-                       onSuccess: { response in
-                           guard let response else {
-                               onError(.message("Response data missing"))
-                               return
-                           }
-                           onSuccess(response)
-                       },
-                       onError: onError)
-    }
-
-    private func performRequest(
-        type: RequestType,
-        request: (some Encodable)?,
-        onSuccess: @escaping (Data?) -> Void,
-        onError: @escaping (RequestError) -> Void
+        request: (any Encodable)?,
+        errorMessages: [RequestStatus: String],
+        onError: @escaping (String) -> Void,
+        onSuccess: @escaping (Data?) -> Void
     ) {
         guard isConnected() else {
-            onError(.message("Not connected to server"))
+            onError("Not connected to server")
             return
         }
         guard let (request, requestId) = try? packRequest(type: type, request: request) else {
-            onError(.message("Failed to create OBS message"))
+            onError("Failed to create OBS message")
             return
         }
-        requests[requestId] = Request(onSuccess: onSuccess, onError: onError)
+        requests[requestId] = Request(onSuccess: onSuccess, onError: { code, comment in
+            if let message = errorMessages[code] {
+                onError(message)
+            } else if let comment {
+                onError("Operation failed with \(code) (\(comment))")
+            } else {
+                onError("Operation failed with \(code)")
+            }
+        })
         send(op: .request, data: request)
     }
 
-    private func packRequest(type: RequestType, request: (some Encodable)?) throws -> (Data, String) {
+    private func packRequest(type: RequestType, request: (any Encodable)?) throws -> (Data, String) {
         var data: Data?
         if let request {
             data = try JSONEncoder().encode(request)
@@ -1193,21 +1015,20 @@ class ObsWebSocket {
 
     private func handleRequestResponse(data: Data) throws {
         let (requestId, status, data) = try unpackRequestResponse(data: data)
-        guard let request = requests[requestId] else {
+        guard let request = requests.removeValue(forKey: requestId) else {
             logger.debug("Unexpected request id in response")
             return
         }
         if status.result {
             request.onSuccess(data)
         } else {
-            let code = RequestStatus(rawValue: status.code) ?? .unknown
-            request.onError(.response(code, status.comment))
+            request.onError(RequestStatus(rawValue: status.code) ?? .unknown, status.comment)
         }
     }
 
     private func handleRequestBatchResponse(data: Data) throws {
         let (requestId, results) = try unpackRequestBatchResponse(data: data)
-        guard let batchRequest = batchRequests[requestId] else {
+        guard let batchRequest = batchRequests.removeValue(forKey: requestId) else {
             logger.debug("Unexpected request id in batch response")
             return
         }

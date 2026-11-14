@@ -142,23 +142,7 @@ private struct LayoutView: View {
                 Spacer()
             }
             Divider()
-            VStack(spacing: 5) {
-                HStack(spacing: 3) {
-                    AlignmentOptionView(layout: $replay.layout, alignment: .topLeft)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .topCenter)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .topRight)
-                }
-                HStack(spacing: 3) {
-                    AlignmentOptionView(layout: $replay.layout, alignment: .leftCenter)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .center)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .rightCenter)
-                }
-                HStack(spacing: 3) {
-                    AlignmentOptionView(layout: $replay.layout, alignment: .bottomLeft)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .bottomCenter)
-                    AlignmentOptionView(layout: $replay.layout, alignment: .bottomRight)
-                }
-            }
+            AlignmentPickerView(layout: $replay.layout)
         }
     }
 

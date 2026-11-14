@@ -26,9 +26,11 @@ struct StreamWizardTwitchSettingsView: View {
             Section {
                 if createStreamWizard.twitchStream.twitchAccessToken.isEmpty {
                     TextButtonView("Login") {
-                        createStreamWizard.showTwitchAuth = true
-                        model.twitchLogin(stream: createStreamWizard.twitchStream) {
-                            onLoginComplete()
+                        model.twitchLogin(
+                            stream: createStreamWizard.twitchStream,
+                            onComplete: onLoginComplete
+                        ) {
+                            createStreamWizard.showTwitchAuth = true
                         }
                     }
                 } else {

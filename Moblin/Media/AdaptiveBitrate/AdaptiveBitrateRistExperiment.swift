@@ -139,13 +139,13 @@ class AdaptiveBitrateRistExperiment: AdaptiveBitrate {
             pifSpikeDiff = settings.packetsInFlight
         }
         let pifDiffThing = settings.packetsInFlight - pifSpikeDiff
-        if smoothPif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter {
-            if stats.packetsInFlight - smoothPif < allowedPifJitter {
-                currentMaximumBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings
-                    .packetsInFlight
-                if currentMaximumBitrate > targetBitrate {
-                    currentMaximumBitrate = targetBitrate
-                }
+        if smoothPif < Double(settings.packetsInFlight), fastRtt <= avgRtt + allowedRttJitter,
+           stats.packetsInFlight - smoothPif < allowedPifJitter
+        {
+            currentMaximumBitrate += (settings.pifDiffIncreaseFactor * pifDiffThing) / settings
+                .packetsInFlight
+            if currentMaximumBitrate > targetBitrate {
+                currentMaximumBitrate = targetBitrate
             }
         }
     }

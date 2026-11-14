@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RtspClientSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var rtspClient: SettingsRtspClient
     @State var numberOfEnabledStreams: Int = 0
 
@@ -12,6 +12,7 @@ struct RtspClientSettingsView: View {
     private func deleteStream(at indexes: IndexSet) {
         rtspClient.streams.remove(atOffsets: indexes)
         model.reloadRtspClient()
+        model.updateRtspVideoSources()
     }
 
     var body: some View {
@@ -20,7 +21,7 @@ struct RtspClientSettingsView: View {
                 Section {
                     List {
                         ForEach(rtspClient.streams) { stream in
-                            RtspClientStreamSettingsView(rtspClient: rtspClient, stream: stream)
+                            RtspClientStreamSettingsView(model: model, rtspClient: rtspClient, stream: stream)
                                 .contextMenuDeleteButton {
                                     if let offsets = makeOffsets(rtspClient.streams, stream.id) {
                                         deleteStream(at: offsets)
@@ -34,6 +35,7 @@ struct RtspClientSettingsView: View {
                         stream.name = makeUniqueName(name: SettingsRtspClientStream.baseName,
                                                      existingNames: rtspClient.streams)
                         rtspClient.streams.append(stream)
+                        model.updateRtspVideoSources()
                     }
                 } header: {
                     Text("Streams")
@@ -50,7 +52,7 @@ struct RtspClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = rtspClient.streams.filter(\.enabled).count
+            numberOfEnabledStreams = rtspClient.streams.count(where: \.enabled)
         }
     }
 }

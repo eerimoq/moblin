@@ -33,7 +33,7 @@ private struct SpeechToTextStringView: View {
                     Text("Trigger by saying '\(text)'.")
                 }
                 AlertMediaView(alert: alert)
-                AlertPositionView(alert: alert, positionType: alert.positionType)
+                AlertPositionView(alert: alert)
                 Section {
                     TextButtonView("Test") {
                         model.testAlert(alert: .speechToTextString(string.id))
@@ -48,7 +48,7 @@ private struct SpeechToTextStringView: View {
 }
 
 struct WidgetAlertsSpeechToTextSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var speechToText: SettingsWidgetAlertsSpeechToText
 
     private func deleteString(at indexes: IndexSet) {

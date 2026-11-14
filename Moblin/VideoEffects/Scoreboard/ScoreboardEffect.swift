@@ -1,3 +1,4 @@
+import MetalPetal
 import SwiftUI
 
 let scoreboardScoreFontSize = 37.0
@@ -45,7 +46,7 @@ struct PoweredByMoblinView: View {
 
 final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
     private let canvasSize: CGSize
-    private var scoreboardImage: CIImage?
+    private var scoreboardImage: EffectImageCgImage?
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
 
@@ -99,15 +100,21 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        scoreboardImage?
+        scoreboardImage?.getCiImage()
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }
 
-    private func setScoreboardImage(image: CIImage?) {
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        scoreboardImage?.getMetalPetalImage()
+            .moveComposited(sceneWidgetPipeline.layout, image) ?? image
+    }
+
+    private func setScoreboardImage(image: CGImage?) {
+        let scoreboardImage = image?.toEffectImage()
         processorPipelineQueue.async {
-            self.scoreboardImage = image
+            self.scoreboardImage = scoreboardImage
         }
     }
 
@@ -123,7 +130,7 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
                                                   secondaryBackgroundColor: secondaryBackgroundColor,
                                                   generic: generic,
                                                   scale: scale)
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        setScoreboardImage(image: ImageRenderer(content: content).cgImage)
     }
 
     @MainActor
@@ -140,7 +147,7 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
                                                 padel: padel,
                                                 players: players,
                                                 scale: scale)
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        setScoreboardImage(image: ImageRenderer(content: content).cgImage)
     }
 
     @MainActor
@@ -150,7 +157,7 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
         scale: Double
     ) {
         let content = ScoreboardEffectModularView(modular: modular, config: config, scale: scale)
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        setScoreboardImage(image: ImageRenderer(content: content).cgImage)
     }
 
     @MainActor
@@ -165,7 +172,7 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
                                                secondaryBackgroundColor: secondaryBackgroundColor,
                                                golf: golf,
                                                scale: scale)
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        setScoreboardImage(image: ImageRenderer(content: content).cgImage)
     }
 
     @MainActor
@@ -182,6 +189,6 @@ final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
             golf: golf,
             scale: scale
         )
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        setScoreboardImage(image: ImageRenderer(content: content).cgImage)
     }
 }

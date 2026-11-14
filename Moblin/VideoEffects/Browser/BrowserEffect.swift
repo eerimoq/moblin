@@ -1,3 +1,5 @@
+import Collections
+import MetalPetal
 import SwiftUI
 import Vision
 import WebKit
@@ -16,10 +18,23 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
         return nil
     }
     return """
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = window.atob('\(styleSheetData.base64EncodedString())');
-    document.head.appendChild(style);
+    (() => {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = window.atob('\(styleSheetData.base64EncodedString())');
+        document.head.appendChild(style);
+    })();
+    """
+}
+
+private func viewportScript(width: Int) -> String {
+    """
+    (() => {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=\(width), initial-scale=1';
+        (document.head ?? document.documentElement).appendChild(meta);
+    })();
     """
 }
 
@@ -41,7 +56,8 @@ private func addScript(_ configuration: WKWebViewConfiguration,
 
 final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     let webView: WKWebView
-    private var snapshot: CIImage?
+    private var snapshot: EffectImageCgImage?
+    private var snapshotQueue: Deque<EffectImageCgImage> = []
     let width: Double
     let height: Double
     private let url: URL
@@ -50,7 +66,9 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private let mode: SettingsWidgetBrowserMode
     private var baseFps: Double
     private var fps: Double
-    private let snapshotTimer = SimpleTimer(queue: .main)
+    private let snapshotTimer = MainTimer()
+    private var snapshotInProgress = false
+    private var nextSnapshotTime = ContinuousClock.now
     var startLoadingTime = ContinuousClock.now
     private let scale: Double
     private var sceneWidget: SettingsSceneWidget?
@@ -58,8 +76,9 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private let server: BrowserEffectServer
     private let speechToText: Bool
     private var stopped = false
-    private var suspended = false
+    private var suspended: Bool
     private let snapshotConfiguration: WKSnapshotConfiguration
+    private let userContentController: WKUserContentController
 
     @MainActor
     init(
@@ -79,6 +98,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         } else {
             mode = widget.mode
         }
+        suspended = mode != .periodicAudioAndVideo
         speechToText = widget.speechToText
         width = Double(widget.width)
         height = Double(widget.height)
@@ -91,28 +111,43 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         if let source = createStyleSheetSource(styleSheet: styleSheet) {
             addScript(configuration, source, .atDocumentEnd)
         }
+        configuration.userContentController.addUserScript(.init(
+            source: viewportScript(width: widget.width),
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        ))
         addScript(configuration, videoScript(), .atDocumentStart)
         configuration.setHttpProxy(endpoint: proxyServer)
+        userContentController = configuration.userContentController
         server = BrowserEffectServer(configuration: configuration, moblinAccess: moblinAccess)
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.scrollView.showsVerticalScrollIndicator = false
         webView.scrollView.showsHorizontalScrollIndicator = false
+        if #available(iOS 26, *) {
+            webView.scrollView.topEdgeEffect.isHidden = true
+            webView.scrollView.bottomEdgeEffect.isHidden = true
+            webView.scrollView.leftEdgeEffect.isHidden = true
+            webView.scrollView.rightEdgeEffect.isHidden = true
+        }
         super.init()
         server.webView = webView
         server.delegate = self
     }
 
     deinit {
-        webView.configuration.userContentController.removeAllScriptMessageHandlers()
-        stopTakeSnapshots()
+        let userContentController = userContentController
+        DispatchQueue.main.async {
+            userContentController.removeAllScriptMessageHandlers()
+        }
     }
 
     override func isEnabled() -> Bool {
-        mode != .audioOnly && snapshot != nil
+        mode != .audioOnly && (snapshot != nil || !snapshotQueue.isEmpty)
     }
 
     @MainActor
@@ -145,13 +180,18 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         Int(100 * webView.estimatedProgress)
     }
 
+    @MainActor
     func stop() {
         stopTakeSnapshots()
     }
 
     @MainActor
     func reload() {
-        webView.reload()
+        guard isLoaded else {
+            return
+        }
+        startLoadingTime = .now
+        webView.load(URLRequest(url: url))
     }
 
     @MainActor
@@ -172,7 +212,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let snapshot else {
+        guard let snapshot = nextSnapshot()?.getCiImage() else {
             return image
         }
         var image = image
@@ -196,6 +236,43 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         return image
     }
 
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        guard let snapshot = nextSnapshot()?.getMetalPetalImage() else {
+            return image
+        }
+        var image = image
+        if let sceneWidget {
+            image = applyEffectsResizeMirrorMoveMetalPetal(snapshot,
+                                                           sceneWidget,
+                                                           false,
+                                                           image,
+                                                           info)
+        }
+        for crop in crops {
+            let contentRegion = CGRect(x: crop.crop.x,
+                                       y: crop.crop.y,
+                                       width: crop.crop.width,
+                                       height: crop.crop.height)
+            image = snapshot.resizeMirrorMoveComposited(crop.sceneWidget.layout,
+                                                        false,
+                                                        image,
+                                                        .init(contentRegion: contentRegion))
+        }
+        return image
+    }
+
+    private func nextSnapshot() -> EffectImageCgImage? {
+        if let snapshot = snapshotQueue.popFirst() {
+            self.snapshot = snapshot
+        }
+        return snapshot
+    }
+
+    private func clearSnapshots() {
+        snapshot = nil
+        snapshotQueue.removeAll()
+    }
+
     @MainActor
     private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         processorPipelineQueue.async {
@@ -215,7 +292,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     @MainActor
     private func setSceneWidgetLoaded() {
         processorPipelineQueue.async {
-            self.snapshot = nil
+            self.clearSnapshots()
         }
         webView.loadHTMLString("<html></html>", baseURL: nil)
         server.disable()
@@ -224,49 +301,70 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
 
     @MainActor
     private func startTakeSnapshots() {
-        guard !stopped, mode == .periodicAudioAndVideo else {
+        guard !suspended else {
             return
         }
         resumeTakeSnapshots()
     }
 
+    @MainActor
     private func stopTakeSnapshots() {
         stopped = true
         snapshotTimer.stop()
     }
 
+    @MainActor
     private func suspendTakeSnapshots() {
         suspended = true
         snapshotTimer.stop()
         processorPipelineQueue.async { [weak self] in
-            self?.snapshot = nil
+            self?.clearSnapshots()
         }
     }
 
     @MainActor
     private func resumeTakeSnapshots() {
         suspended = false
-        takeSnapshots(takeSnapshotTime: 0)
+        guard !stopped else {
+            return
+        }
+        nextSnapshotTime = .now
+        scheduleSnapshot()
     }
 
     @MainActor
-    private func takeSnapshots(takeSnapshotTime: Double) {
-        snapshotTimer.startSingleShot(timeout: max(1 / fps - takeSnapshotTime, 0.001)) { [weak self] in
+    private func scheduleSnapshot() {
+        guard !snapshotInProgress else {
+            return
+        }
+        let now = ContinuousClock.now
+        let interval = Duration.seconds(1 / fps)
+        nextSnapshotTime = max(nextSnapshotTime + interval, now - interval)
+        let timeout = max(now.duration(to: nextSnapshotTime).seconds, 0)
+        snapshotTimer.startSingleShot(timeout: timeout) { [weak self] in
+            self?.takeSnapshot()
+        }
+    }
+
+    @MainActor
+    private func takeSnapshot() {
+        snapshotInProgress = true
+        webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, _ in
             guard let self else {
                 return
             }
-            let takeSnapshotBeginTime = ContinuousClock.now
-            webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, _ in
-                guard let self, !stopped, !suspended else {
-                    return
-                }
-                let takeSnapshotTime = takeSnapshotBeginTime.duration(to: .now)
-                takeSnapshots(takeSnapshotTime: takeSnapshotTime.seconds)
-                guard let image else {
-                    return
-                }
-                processorPipelineQueue.async {
-                    self.snapshot = CIImage(image: image)
+            snapshotInProgress = false
+            guard !stopped, !suspended else {
+                return
+            }
+            scheduleSnapshot()
+            guard let snapshot = image?.cgImage?.toEffectImage() else {
+                return
+            }
+            processorPipelineQueue.async {
+                self.snapshotQueue.append(snapshot)
+                if self.snapshotQueue.count > 2 {
+                    self.snapshotQueue.removeFirst()
                 }
             }
         }
@@ -283,9 +381,10 @@ extension BrowserEffect: BrowserEffectServerDelegate {
 
     func browserEffectServerVideoEnded() {
         fps = baseFps
-        guard mode != .periodicAudioAndVideo else {
-            return
+        if mode == .periodicAudioAndVideo {
+            resumeTakeSnapshots()
+        } else {
+            suspendTakeSnapshots()
         }
-        suspendTakeSnapshots()
     }
 }

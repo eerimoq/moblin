@@ -1,4 +1,7 @@
 import Foundation
+import Spatial
+
+private let gimbalAngularVelocity: Double = 0.3
 
 extension Model {
     func setGimbalTracking(on: Bool) {
@@ -7,7 +10,28 @@ extension Model {
             Gimbal.shared?.setTracking(on: on)
         }
         setQuickButton(type: .gimbalTracking, isOn: on)
-        updateQuickButtonStates()
+        remoteControlStateChanged(state: RemoteControlState(gimbalTracking: on))
+    }
+
+    func setGimbalMovement(x: Float, y: Float) {
+        guard #available(iOS 18.0, *) else {
+            return
+        }
+        let velocity = Vector3D(x: Double(x) * gimbalAngularVelocity,
+                                y: Double(y) * gimbalAngularVelocity,
+                                z: 0)
+        Gimbal.shared?.setMovement(velocity: velocity)
+    }
+
+    func animateGimbal(motion: SettingsGimbalMotion) {
+        guard #available(iOS 18.0, *) else {
+            return
+        }
+        Gimbal.shared?.animate(motion: motion)
+    }
+
+    func getRemoteControlGimbalPresets() -> [RemoteControlSettingsGimbalPreset] {
+        database.gimbal.presets.map { RemoteControlSettingsGimbalPreset(id: $0.id, name: $0.name) }
     }
 
     func toggleGimbalTracking() {
@@ -18,7 +42,7 @@ extension Model {
         guard #available(iOS 18.0, *) else {
             return
         }
-        Task { @MainActor in
+        Task {
             do {
                 guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
                     return
@@ -27,7 +51,7 @@ extension Model {
                     if let preset = database.gimbal.presets.first(where: { $0.id == id }) {
                         preset.x = Float(angles.x)
                         preset.y = Float(angles.y)
-                        preset.zoomX = zoom.x
+                        preset.zoomX = zoom.level.x
                     }
                 } else {
                     let preset = SettingsGimbalPreset()
@@ -35,9 +59,12 @@ extension Model {
                                                  existingNames: database.gimbal.presets)
                     preset.x = Float(angles.x)
                     preset.y = Float(angles.y)
-                    preset.zoomX = zoom.x
+                    preset.zoomX = zoom.level.x
                     database.gimbal.presets.append(preset)
                 }
+                remoteControlStateChanged(state: RemoteControlState(
+                    gimbalPresets: getRemoteControlGimbalPresets()
+                ))
             } catch {
                 makeErrorToast(
                     title: String(localized: "Failed to get gimbal orientation"),
@@ -53,13 +80,10 @@ extension Model {
     }
 
     private func processGimbalPresetQueue() {
-        guard !moveToGimbalPresetQueueRunning else {
-            return
-        }
-        guard let id = moveToGimbalPresetQueue.popFirst() else {
-            return
-        }
-        guard #available(iOS 18.0, *) else {
+        guard !moveToGimbalPresetQueueRunning, let id = moveToGimbalPresetQueue.popFirst(), #available(
+            iOS 18.0,
+            *
+        ) else {
             return
         }
         guard let preset = database.gimbal.presets.first(where: { $0.id == id }) else {
@@ -70,7 +94,7 @@ extension Model {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.setZoomX(x: preset.zoomX, rate: 5)
         }
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             defer {
                 self?.moveToGimbalPresetQueueRunning = false
                 self?.processGimbalPresetQueue()

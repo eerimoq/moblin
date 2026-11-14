@@ -1,6 +1,6 @@
 import SwiftUI
 
-let clippingThresholdDb: Float = -1.0
+let clippingThresholdDb: Float = -0.2
 let redThresholdDb: Float = -8.5
 let yellowThresholdDb: Float = -20
 let zeroThresholdDb: Float = -60
@@ -27,9 +27,7 @@ struct CompactAudioLevelIconView: View {
 }
 
 func compactAudioLevelColors(level: Float) -> (Color, Color) {
-    if level == .infinity {
-        (.brown, backgroundColor)
-    } else if level > clippingThresholdDb {
+    if level > clippingThresholdDb {
         (.white, .red)
     } else if level > redThresholdDb {
         (.red, backgroundColor)

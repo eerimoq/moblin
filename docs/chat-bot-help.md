@@ -17,8 +17,21 @@
 | !moblin stream title \<title> | Set stream title. |
 | !moblin widget \<name> timer \<number> add \<seconds> | Add time to a timer. |
 | !moblin ai ask \<question> | Ask AI a question. |
+| !moblin custom \<name> | Send the text of given custom command to chat. Configure custom commands in Moblin. |
 | !moblin mute | Mute audio. |
 | !moblin unmute | Unmute audio. |
+| !moblin torch on | Turn the torch on. |
+| !moblin torch off | Turn the torch off. |
+| !moblin torch level \<level> | Set torch level, from 1 to 100. |
+| !moblin vibrate on [\<seconds>] [\<intensity>] [\<sharpness>] | Vibrate the phone. Until turned off if no seconds is given. Intensity and sharpness from 1 to 100, default 100 and 50. |
+| !moblin vibrate off | Stop vibrating the phone. |
+| !moblin music add <song> | Add a song. Free text search or share link. |
+| !moblin music play | Play. |
+| !moblin music pause | Pause. |
+| !moblin music next [\<count>] | Next song(s). |
+| !moblin music previous [\<count>] | Previous song(s). |
+| !moblin music status | Show status. |
+| !moblin music clear | Clear the queue. |
 | !moblin tesla trunk open | Open the trunk. |
 | !moblin tesla trunk close | Close the trunk. |
 | !moblin tesla media next | Next track. |

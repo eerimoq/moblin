@@ -17,13 +17,18 @@ extension UIImage {
 @MainActor
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
-    if orientation != .unknown {
+    if orientation.isValidInterfaceOrientation || isMac() {
         return orientation
     }
     let interfaceOrientation = UIApplication.shared.connectedScenes
-        .first(where: { $0 is UIWindowScene })
-        .flatMap { $0 as? UIWindowScene }?.interfaceOrientation
+        .compactMap { $0 as? UIWindowScene }
+        .first(where: { $0.session.role == .windowApplication })?
+        .interfaceOrientation
     switch interfaceOrientation {
+    case .portrait:
+        return .portrait
+    case .portraitUpsideDown:
+        return .portraitUpsideDown
     case .landscapeLeft:
         return .landscapeRight
     case .landscapeRight:
@@ -53,16 +58,6 @@ func isMac() -> Bool {
     ProcessInfo().isMacCatalystApp
 }
 
-extension ImageRenderer {
-    @MainActor
-    func ciImage() -> CIImage? {
-        guard let image = cgImage else {
-            return nil
-        }
-        return CIImage(cgImage: image)
-    }
-}
-
 @MainActor
 func getWindow() -> UIWindow? {
     guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
@@ -81,7 +76,7 @@ func screenScale() -> CGFloat {
     if isMac() {
         2
     } else {
-        UIScreen().scale
+        getWindow()?.screen.scale ?? UIScreen.main.scale
     }
 }
 

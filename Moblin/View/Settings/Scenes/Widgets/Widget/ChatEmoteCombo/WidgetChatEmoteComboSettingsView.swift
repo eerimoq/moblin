@@ -6,7 +6,7 @@ struct WidgetChatEmoteComboSettingsView: View {
     @ObservedObject var chatEmoteCombo: SettingsWidgetChatEmoteCombo
 
     private func setEffectSettings() {
-        model.getChatEmoteComboEffect(id: widget.id)?.setSettings(settings: chatEmoteCombo)
+        model.chatEmoteComboWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {

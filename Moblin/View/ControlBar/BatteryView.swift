@@ -12,7 +12,7 @@ struct BatteryView: View {
         if model.isBatteryCharging() {
             .white
         } else {
-            .black
+            .clear
         }
     }
 

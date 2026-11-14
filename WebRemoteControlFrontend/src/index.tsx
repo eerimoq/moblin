@@ -19,12 +19,14 @@ import {
   ResponseData,
   SrtPriority,
   WebSocketConnection,
+  ZoomCamera,
   ZoomPreset,
 } from "./utils.ts";
 import {
   GitHubLink,
   Button,
   ConfirmDialog,
+  HoldButton,
   Picker,
   Section,
   Toggle,
@@ -52,6 +54,13 @@ const filterNames = {
   moblinInMouth: "Moblin in mouth",
   cameraMan: "Camera man",
 };
+
+const gimbalMotions: [string, string][] = [
+  ["kapow", "Kapow"],
+  ["yes", "Yes"],
+  ["no", "No"],
+  ["wakeup", "Wakeup"],
+];
 
 const allFilterKeys = [
   "pixellate",
@@ -120,7 +129,6 @@ function App() {
   const [statusRows, setStatusRows] = createSignal<StatusRow[]>([]);
   const [showControl, setShowControl] = createSignal(false);
   const [showSrt, setShowSrt] = createSignal(false);
-  const [showGimbal, setShowGimbal] = createSignal(false);
   const [showFilters, setShowFilters] = createSignal(false);
   const [liveOn, setLiveOn] = createSignal(false);
   const [recordingOn, setRecordingOn] = createSignal(false);
@@ -132,7 +140,17 @@ function App() {
   const [pendingPreviewStream, setPendingPreviewStream] = createSignal<boolean | null>(null);
   const [debugLoggingOn, setDebugLoggingOn] = createSignal(false);
   const [zoomValue, setZoomValue] = createSignal("");
-  const [zoomPresets, setZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [frontZoomPresets, setFrontZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [backZoomPresets, setBackZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [zoomCamera, setZoomCamera] = createSignal<ZoomCamera | null>(null);
+  const zoomPresets = (): ZoomPreset[] => {
+    const camera = zoomCamera();
+    if (camera === null) return [];
+    let presets: ZoomPreset[] = [];
+    if (camera.position === "front") presets = frontZoomPresets();
+    if (camera.position === "back") presets = backZoomPresets();
+    return presets.filter((preset) => preset.x >= camera.minX && preset.x <= camera.maxX);
+  };
   const [currentZoomPresetId, setCurrentZoomPresetId] = createSignal<string | null>(null);
   const [scenes, setScenes] = createSignal<NamedItem[]>([]);
   const [currentSceneId, setCurrentSceneId] = createSignal("");
@@ -147,6 +165,7 @@ function App() {
     RemoteControlSettingsSrtConnectionPriority[]
   >([]);
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
+  const [gimbalTracking, setGimbalTracking] = createSignal(true);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
   const [showingPreview, setShowingPreview] = createSignal(loadShowPreview());
@@ -256,9 +275,8 @@ function App() {
       if (state.zoomPreset !== undefined) {
         setCurrentZoomPresetId(state.zoomPreset);
       }
-      if (state.zoomPresets !== undefined) {
-        setZoomPresets(state.zoomPresets);
-        setCurrentZoomPresetId(state.zoomPreset ?? null);
+      if (state.zoomCamera !== undefined) {
+        setZoomCamera(state.zoomCamera);
       }
       if (state.autoSceneSwitcher !== undefined) {
         setCurrentAutoSwitcherId(state.autoSceneSwitcher.id ?? "");
@@ -267,6 +285,12 @@ function App() {
         for (const [name, on] of convertFilters(state.filters)) {
           setFilterStates(name, on);
         }
+      }
+      if (state.gimbalTracking !== undefined) {
+        setGimbalTracking(state.gimbalTracking);
+      }
+      if (state.gimbalPresets !== undefined) {
+        setGimbalPresets(state.gimbalPresets);
       }
     }
 
@@ -397,18 +421,14 @@ function App() {
     setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers ?? []));
     setMics(data.mics);
     setBitratePresets(data.bitratePresets);
+    setFrontZoomPresets(data.zoomPresets?.front ?? []);
+    setBackZoomPresets(data.zoomPresets?.back ?? []);
     if (data.srt.connectionPriorities.length > 0) {
       setShowSrt(true);
       setSrtEnabled(data.srt.connectionPrioritiesEnabled);
       setSrtPriorities(data.srt.connectionPriorities);
     } else {
       setShowSrt(false);
-    }
-    if (data.gimbalPresets.length > 0) {
-      setShowGimbal(true);
-      setGimbalPresets(data.gimbalPresets);
-    } else {
-      setShowGimbal(false);
     }
     setShowFilters(true);
   }
@@ -709,24 +729,79 @@ function App() {
     );
   }
 
-  function GimbalPresets() {
+  function Gimbal() {
+    function MoveButton(moveProps: { label: string; x: number; y: number }) {
+      return (
+        <HoldButton
+          class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 w-12 py-2"
+          disabled={gimbalTracking()}
+          onStart={() => connection.setGimbalMovement(moveProps.x, moveProps.y)}
+          onStop={() => connection.setGimbalMovement(0, 0)}
+        >
+          {moveProps.label}
+        </HoldButton>
+      );
+    }
+
     return (
-      <Show when={showGimbal()}>
-        <Section title="Gimbal Presets">
+      <Section title="Gimbal">
+        <div class="space-y-3">
+          <Toggle
+            id="gimbalTracking"
+            checked={gimbalTracking()}
+            onChange={(event) => connection.setGimbalTracking(event.target.checked)}
+            label="Tracking"
+          />
+          <Show when={gimbalTracking()}>
+            <p class="text-sm text-zinc-400">Turn tracking off to move the gimbal manually.</p>
+          </Show>
+          <div class="flex flex-col items-center gap-2">
+            <MoveButton label="↑" x={1} y={0} />
+            <div class="flex gap-2">
+              <MoveButton label="←" x={0} y={1} />
+              <MoveButton label="↓" x={-1} y={0} />
+              <MoveButton label="→" x={0} y={-1} />
+            </div>
+          </div>
           <div class="flex flex-wrap gap-2">
-            <For each={gimbalPresets()}>
-              {(preset) => (
+            <For each={gimbalMotions}>
+              {([motion, name]) => (
                 <Button
                   class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-4 py-2"
-                  onClick={() => connection.moveToGimbalPreset(preset.id)}
+                  disabled={gimbalTracking()}
+                  onClick={() => connection.animateGimbal(motion)}
                 >
-                  {preset.name}
+                  {name}
                 </Button>
               )}
             </For>
           </div>
-        </Section>
-      </Show>
+          <Show when={gimbalPresets().length > 0}>
+            <div class="flex flex-wrap gap-2">
+              <For each={gimbalPresets()}>
+                {(preset) => (
+                  <Button
+                    class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-4 py-2"
+                    disabled={gimbalTracking()}
+                    onClick={() => connection.moveToGimbalPreset(preset.id)}
+                  >
+                    {preset.name}
+                  </Button>
+                )}
+              </For>
+            </div>
+          </Show>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200"
+              disabled={gimbalTracking()}
+              onClick={() => connection.saveGimbalPreset()}
+            >
+              Save current position
+            </Button>
+          </div>
+        </div>
+      </Section>
     );
   }
 
@@ -776,7 +851,7 @@ function App() {
       <Status />
       <Control />
       <SrtConnectionPriorities />
-      <GimbalPresets />
+      <Gimbal />
       <Filters />
       <Log />
     </div>

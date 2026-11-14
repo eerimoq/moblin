@@ -12,7 +12,10 @@ extension Model {
 
     func kickLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
         kickAuthOnComplete = { accessToken in
+            storeKickAccessTokenInKeychain(streamId: stream.id, accessToken: accessToken)
             stream.kickLoggedIn = true
+            stream.kickWantsToBeLoggedIn = true
+            stream.kickNotLoggedInCount = 0
             stream.kickAccessToken = accessToken
             self.createStreamWizard.showKickAuth = false
             self.createKickApi(stream: stream).getUser { userData in
@@ -38,7 +41,9 @@ extension Model {
 
     func kickLogout(stream: SettingsStream) {
         stream.kickAccessToken = ""
+        removeKickAccessTokenInKeychain(streamId: stream.id)
         stream.kickLoggedIn = false
+        stream.kickWantsToBeLoggedIn = false
         stream.kickChannelName = ""
         stream.kickChannelId = nil
         stream.kickSlug = nil
@@ -108,10 +113,8 @@ extension Model {
     }
 
     func updateKickChannelInfoIfNeeded() {
-        guard !stream.kickChannelName.isEmpty else {
-            return
-        }
-        guard stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil
+        guard !stream.kickChannelName.isEmpty,
+              stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil
         else {
             return
         }
@@ -125,11 +128,15 @@ extension Model {
         }
     }
 
-    func makeNotLoggedInToKickToast() {
-        makeErrorToast(
-            title: String(localized: "Not logged in to Kick"),
-            subTitle: String(localized: "Please login again")
-        )
+    func makeNotLoggedInToKickToastIfNeeded() {
+        guard stream.kickWantsToBeLoggedIn, !stream.kickLoggedIn else {
+            return
+        }
+        stream.kickNotLoggedInCount += 1
+        if stream.kickNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.kickWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .kick)
     }
 
     func sendKickChatMessage(message: String) {
@@ -271,11 +278,21 @@ extension Model {
         onComplete: @escaping ([KickCategory]?) -> Void
     ) {
         kickSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
+            self.createKickApi(stream: stream).searchCategories(query: query) { categories in
+                guard let categories else {
+                    onComplete(nil)
+                    return
+                }
+                onComplete(sortedBySearchPrefix(categories, searchText: query) { $0.name })
+            }
         }
     }
 
-    func fetchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+    func fetchKickCategories(
+        stream: SettingsStream,
+        query: String,
+        onComplete: @escaping ([KickCategory]?) -> Void
+    ) {
         createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
     }
 
@@ -307,9 +324,21 @@ extension Model {
     }
 
     func createKickApi(stream: SettingsStream) -> KickApi {
-        KickApi(channelId: stream.kickChannelId ?? "",
-                slug: stream.kickSlug ?? "",
-                accessToken: stream.kickAccessToken)
+        let kickApi = KickApi(channelId: stream.kickChannelId ?? "",
+                              slug: stream.kickSlug ?? "",
+                              accessToken: stream.kickAccessToken)
+        kickApi.onUnauthorized = { [weak self] in
+            self?.kickApiUnauthorized(stream: stream)
+        }
+        return kickApi
+    }
+
+    private func kickApiUnauthorized(stream: SettingsStream) {
+        guard stream.kickLoggedIn else {
+            return
+        }
+        stream.kickLoggedIn = false
+        makeNotLoggedInToToast(platform: .kick)
     }
 
     private func appendKickChatAlertMessage(
@@ -317,9 +346,8 @@ extension Model {
         text: String,
         title: String,
         color: Color,
-        image: String? = nil,
-        kind: ChatHighlightKind? = nil,
-        bits _: String? = nil
+        image: String,
+        kind: ChatHighlightKind
     ) {
         var id = 0
         appendChatMessage(platform: .kick,
@@ -338,16 +366,16 @@ extension Model {
                           isOwner: false,
                           bits: nil,
                           highlight: .init(
-                              kind: kind ?? .redemption,
+                              kind: kind,
                               barColor: color,
-                              image: image ?? "medal",
+                              image: image,
                               titleSegments: [ChatPostSegment(id: 0, text: title)]
                           ),
                           live: true)
     }
 }
 
-extension Model: @preconcurrency KickPusherDelegate {
+extension Model: KickPusherDelegate {
     func kickPusherMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }
@@ -401,11 +429,13 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "New subscriber"),
                 color: .cyan,
-                image: "party.popper"
+                image: "party.popper",
+                kind: .other
             )
         }
         playAlert(alert: .kickSubscription(event: event))
         printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickSubscription, amount: event.months))
         latestSubscriber = event.username
     }
 
@@ -416,7 +446,7 @@ extension Model: @preconcurrency KickPusherDelegate {
             just gifted \(event.gifted_usernames.count) subscription(s)! \
             They've gifted \(event.gifter_total) in total!
             """)
-        if stream.kickChatAlerts.giftedSubscriptions {
+        if stream.kickToastAlerts.giftedSubscriptions {
             makeToast(title: "🎁 \(user) \(text)")
         }
         if stream.kickChatAlerts.giftedSubscriptions {
@@ -425,11 +455,13 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Gift subscriptions"),
                 color: .cyan,
-                image: "gift"
+                image: "gift",
+                kind: .other
             )
         }
         playAlert(alert: .kickGiftedSubscriptions(event: event))
         printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickGiftSubscriptions, amount: event.gifted_usernames.count))
         latestSubscriber = user
     }
 
@@ -446,11 +478,13 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Reward Redeemed"),
                 color: .green,
-                image: "medal.star"
+                image: "medal.star",
+                kind: .other
             )
         }
         playAlert(alert: .kickReward(event: event))
         printEventCatPrinters(event: .kickReward, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickReward, text: event.reward_title))
     }
 
     func kickPusherStreamHost(event: KickPusherStreamHostEvent) {
@@ -465,33 +499,34 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: text,
                 title: String(localized: "Host"),
                 color: .orange,
-                image: "person.3"
+                image: "person.3",
+                kind: .other
             )
         }
         playAlert(alert: .kickHost(event: event))
         printEventCatPrinters(event: .kickHost, username: user, message: text)
+        macrosEventOccurred(MacroEvent(event: .kickRaid, amount: event.number_viewers))
     }
 
     func kickPusherUserBanned(event: KickPusherUserBannedEvent) {
-        DispatchQueue.main.async {
-            let text: String
-            let title: String
-            if event.permanent {
-                text = String(localized: "was banned from chat!")
-                title = String(localized: "User banned")
-            } else {
-                text = String(localized: "was timed out from chat!")
-                title = String(localized: "User timed out")
-            }
-            if self.stream.kickChatAlerts.bans {
-                self.appendKickChatAlertMessage(
-                    user: event.user.username,
-                    text: text,
-                    title: title,
-                    color: .red,
-                    image: "nosign"
-                )
-            }
+        let text: String
+        let title: String
+        if event.permanent {
+            text = String(localized: "was banned from chat!")
+            title = String(localized: "User banned")
+        } else {
+            text = String(localized: "was timed out from chat!")
+            title = String(localized: "User timed out")
+        }
+        if stream.kickChatAlerts.bans {
+            appendKickChatAlertMessage(
+                user: event.user.username,
+                text: text,
+                title: title,
+                color: .red,
+                image: "nosign",
+                kind: .other
+            )
         }
     }
 
@@ -509,10 +544,12 @@ extension Model: @preconcurrency KickPusherDelegate {
                 text: message,
                 title: String(localized: "Kicks"),
                 color: .green,
-                image: "suit.diamond"
+                image: "suit.diamond",
+                kind: .other
             )
         }
         playAlert(alert: .kickKicks(event: event))
         printEventCatPrinters(event: .kickKicks(amount: event.gift.amount), username: user, message: message)
+        macrosEventOccurred(MacroEvent(event: .kickKicks, amount: event.gift.amount))
     }
 }

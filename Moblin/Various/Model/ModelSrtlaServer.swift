@@ -13,7 +13,9 @@ extension Model {
             ingests.srtla = SrtlaServer(
                 settings: database.srtlaServer,
                 delegate: self,
-                timecodesEnabled: isTimecodesEnabled()
+                timecodesEnabled: isTimecodesEnabled(),
+                softwareDecoding: database.ingestsSoftwareVideoDecoding,
+                colorRange: stream.colorRange
             )
             ingests.srtla?.start()
         }
@@ -23,8 +25,14 @@ extension Model {
         database.srtlaServer.enabled
     }
 
-    func srtlaCameras() -> [Camera] {
-        database.srtlaServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+    func updateSrtlaVideoSources() {
+        videoSources.srtla = database.srtlaServer.streams
+            .map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+    }
+
+    func updateSrtlaVideoSourcesAndMics() {
+        updateSrtlaVideoSources()
+        updateSrtlaMics()
     }
 
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
@@ -44,14 +52,14 @@ extension Model {
     }
 }
 
-extension Model: @preconcurrency SrtlaServerDelegate {
-    func srtlaServerOnClientStart(cameraId: UUID, name: String) {
+extension Model: SrtlaServerDelegate {
+    nonisolated func srtlaServerOnClientStart(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
             self.srtlaServerOnClientStartInternal(cameraId: cameraId, name: name)
         }
     }
 
-    func srtlaServerOnClientStop(cameraId: UUID, name: String) {
+    nonisolated func srtlaServerOnClientStop(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
             self.srtlaServerOnClientStopInternal(cameraId: cameraId, name: name)
         }
@@ -69,20 +77,11 @@ extension Model: @preconcurrency SrtlaServerDelegate {
         media.removeBufferedAudio(cameraId: cameraId)
     }
 
-    func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
     }
 
-    func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+    nonisolated func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
-    }
-
-    func srtlaServerSetTargetLatencies(
-        cameraId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        media.setBufferedVideoTargetLatency(cameraId: cameraId, latency: videoTargetLatency)
-        media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 }

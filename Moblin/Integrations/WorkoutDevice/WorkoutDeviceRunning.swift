@@ -1,7 +1,7 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 
-let workoutDeviceRunningServiceId = CBUUID(string: "1814")
-let workoutDeviceRunningMeasurementCharacteristicId = CBUUID(string: "2A53")
+nonisolated(unsafe) let workoutDeviceRunningServiceId = CBUUID(string: "1814")
+nonisolated(unsafe) let workoutDeviceRunningMeasurementCharacteristicId = CBUUID(string: "2A53")
 
 private let rscStrideLengthFlagIndex = 0
 private let rscTotalDistanceFlagIndex = 1
@@ -41,9 +41,13 @@ class WorkoutDeviceRunning {
 
     func reset() {
         measurementCharacteristic = nil
-        lastRscUpdateTime = nil
+        resetMeasurements()
         distanceMetersFallback = 0
         usingDeviceDistance = false
+    }
+
+    func resetMeasurements() {
+        lastRscUpdateTime = nil
     }
 
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {

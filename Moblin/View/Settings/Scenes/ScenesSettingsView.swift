@@ -12,11 +12,7 @@ private struct SceneItemView: View {
     }
 
     private func delete() {
-        let deletedCurrentScene = model.getSelectedScene() === scene
-        database.scenes.removeAll { $0 === scene }
-        if deletedCurrentScene {
-            model.resetSelectedScene()
-        }
+        model.deleteScene(scene: scene)
     }
 
     var body: some View {
@@ -27,11 +23,7 @@ private struct SceneItemView: View {
                 DraggableItemPrefixView()
                 Toggle(scene.name, isOn: $scene.enabled)
                     .onChange(of: scene.enabled) { _ in
-                        if model.getSelectedScene() === scene {
-                            model.resetSelectedScene()
-                        } else {
-                            model.sceneSelector.sceneIndex += 0
-                        }
+                        model.sceneEnabledChanged(scene: scene)
                     }
             }
         }
@@ -57,7 +49,9 @@ private struct SceneItemView: View {
 }
 
 private struct ScenesListView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @State private var presentingCreateWizard = false
 
     var body: some View {
         Section {
@@ -70,9 +64,13 @@ private struct ScenesListView: View {
                 }
             }
             CreateButtonView {
-                let name = makeUniqueName(name: SettingsScene.baseName, existingNames: database.scenes)
-                let scene = SettingsScene(name: name)
-                database.scenes.append(scene)
+                model.createSceneWizard.reset()
+                presentingCreateWizard = true
+            }
+            .sheet(isPresented: $presentingCreateWizard) {
+                SceneWizardSheetView(model: model,
+                                     database: database,
+                                     presentingCreateWizard: $presentingCreateWizard)
             }
         } header: {
             Text("Scenes")
@@ -156,6 +154,67 @@ private struct RemoteSceneView: View {
     }
 }
 
+private struct GraphicsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    Picker(selection: $database.graphicsImplementation) {
+                        ForEach(SettingsGraphicsImplementation.allCases, id: \.self) { implementation in
+                            Text(implementation.toString())
+                        }
+                    } label: {
+                        Text("Implementation")
+                    }
+                    .onChange(of: database.graphicsImplementation) { _ in
+                        model.setGraphicsImplementation()
+                    }
+                    if database.graphicsImplementation == .metalPetal {
+                        Text("⚠️ MetalPetal does not work when Moblin is in background.")
+                    }
+                } footer: {
+                    Text("""
+                    Core Image is Apple's image processing framework. MetalPetal is experimental. \
+                    MetalPetal provides similar image processing, and hopefully uses less system \
+                    resources.
+                    """)
+                }
+                if database.graphicsImplementation == .coreImage {
+                    Section {
+                        Toggle("High quality downsampling", isOn: $database.graphicsHighQualityDownsampling)
+                            .onChange(of: database.graphicsHighQualityDownsampling) { _ in
+                                model.setHighQualityDownsampling()
+                            }
+                    } footer: {
+                        Text("""
+                        High quality downsampling makes downscaled images look better, but uses \
+                        more system resources.
+                        """)
+                    }
+                }
+            }
+            .navigationTitle("Graphics")
+        } label: {
+            Text("Graphics")
+        }
+    }
+}
+
+struct OpenSceneEditorButtonView: View {
+    let model: Model
+
+    var body: some View {
+        Section {
+            TextButtonView("Scene editor") {
+                model.presentingSceneEditor = true
+            }
+        }
+    }
+}
+
 struct SceneNameView: View {
     @ObservedObject var scene: SettingsScene
 
@@ -165,11 +224,13 @@ struct SceneNameView: View {
 }
 
 struct ScenesSettingsView: View {
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
         Form {
             ScenesListView(database: database)
+            OpenSceneEditorButtonView(model: model)
             WidgetsSettingsView(database: database)
             if database.showAllSettings {
                 SceneSwitching(database: database, debug: database.debug)
@@ -177,6 +238,7 @@ struct ScenesSettingsView: View {
                 DisconnectProtectionSettingsView(database: database,
                                                  disconnectProtection: database.disconnectProtection)
                 RemoteSceneView(selectedSceneId: database.remoteSceneId)
+                GraphicsView(database: database)
             }
         }
         .navigationTitle("Scenes")

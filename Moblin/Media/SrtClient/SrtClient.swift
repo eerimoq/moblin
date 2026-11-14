@@ -9,9 +9,6 @@ protocol SrtClientDelegate: AnyObject {
     func srtClientDisconnected(cameraId: UUID)
     func srtClientOnVideoBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
     func srtClientOnAudioBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func srtClientSetTargetLatencies(cameraId: UUID,
-                                     _ videoTargetLatency: Double,
-                                     _ audioTargetLatency: Double)
 }
 
 let srtClientLatency = 0.5
@@ -20,20 +17,33 @@ private let reconnectDelay = 5.0
 class SrtClient: @unchecked Sendable {
     private let cameraId: UUID
     private let url: URL
-    private weak var delegate: (any SrtClientDelegate)?
+    private weak let delegate: (any SrtClientDelegate)?
     private var running = false
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
     private var bitrateStats: Atomic<BitrateStats> = .init(.init())
     private let reconnectTimer = SimpleTimer(queue: srtClientQueue)
-    private let reader: MpegTsReader
+    private var reader: MpegTsReader
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
 
-    init(cameraId: UUID, url: URL, delegate: any SrtClientDelegate) {
+    init(
+        cameraId: UUID,
+        url: URL,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange,
+        delegate: any SrtClientDelegate
+    ) {
         self.cameraId = cameraId
         self.url = url
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.delegate = delegate
         reader = MpegTsReader(
+            name: "srt-client",
             decoderQueue: srtClientQueue,
             timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             targetLatency: srtClientLatency
         )
         reader.delegate = self
@@ -57,11 +67,7 @@ class SrtClient: @unchecked Sendable {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        nonisolated(unsafe) var stats: BitrateStatsInstant?
-        bitrateStats.mutate {
-            stats = $0.update()
-        }
-        return stats!
+        bitrateStats.mutate { $0.update() }
     }
 
     private func connectSoon(delay: Double) {
@@ -84,7 +90,7 @@ class SrtClient: @unchecked Sendable {
             return
         }
         self.socket = socket
-        DispatchQueue(label: "com.eerimoq.moblin.srt-client-connection", qos: .userInteractive).async {
+        startBlockingThread(name: "com.eerimoq.moblin.srt-client-connection") {
             self.main(socket: socket)
         }
     }
@@ -110,7 +116,7 @@ class SrtClient: @unchecked Sendable {
             }
         }
         guard result != SRT_ERROR else {
-            logger.info("srt-client: \(cameraId): Connect failed: \(lastSrtError())")
+            logger.debug("srt-client: \(cameraId): Connect failed: \(lastSrtError())")
             srtClientQueue.async {
                 self.connectSoon(delay: reconnectDelay)
             }
@@ -120,6 +126,15 @@ class SrtClient: @unchecked Sendable {
         if !postFailures.isEmpty {
             logger.info("srt-client: \(cameraId): Failed to set post-bind options: \(postFailures).")
         }
+        reader = MpegTsReader(
+            name: "srt-client",
+            decoderQueue: srtClientQueue,
+            timecodesEnabled: false,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
+            targetLatency: srtClientLatency
+        )
+        reader.delegate = self
         delegate?.srtClientConnected(cameraId: cameraId)
         receive(socket: socket)
         delegate?.srtClientDisconnected(cameraId: cameraId)
@@ -133,21 +148,27 @@ class SrtClient: @unchecked Sendable {
         nonisolated(unsafe)
         var packet = Data(count: packetSize)
         while true {
-            packet.count = packetSize
-            let count = packet.withUnsafeMutableBytes { pointer in
-                srt_recvmsg(socket, pointer.baseAddress, Int32(packetSize))
+            let done = autoreleasepool { () -> Bool in
+                packet.count = packetSize
+                let count = packet.withUnsafeMutableBytes { pointer in
+                    srt_recvmsg(socket, pointer.baseAddress, Int32(packetSize))
+                }
+                guard count != SRT_ERROR else {
+                    return true
+                }
+                packet.count = Int(count)
+                bitrateStats.mutate {
+                    $0.add(bytesTransferred: Int(count))
+                }
+                do {
+                    try reader.handlePacketFromClient(packet: packet)
+                } catch {
+                    logger.info("srt-client: \(cameraId): Got corrupt packet: \(error).")
+                }
+                return false
             }
-            guard count != SRT_ERROR else {
+            if done {
                 break
-            }
-            packet.count = Int(count)
-            bitrateStats.mutate {
-                $0.add(bytesTransferred: Int(count))
-            }
-            do {
-                try reader.handlePacketFromClient(packet: packet)
-            } catch {
-                logger.info("srt-client: \(cameraId): Got corrupt packet: \(error).")
             }
         }
     }
@@ -180,10 +201,6 @@ extension SrtClient: MpegTsReaderDelegate {
 
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate?.srtClientOnAudioBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
-        delegate?.srtClientSetTargetLatencies(cameraId: cameraId, videoTargetLatency, audioTargetLatency)
     }
 }
 

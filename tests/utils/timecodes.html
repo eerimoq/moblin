@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEI timecodes</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --page: #f9f9f7;
+        --surface-1: #fcfcfb;
+        --text-primary: #0b0b0b;
+        --text-secondary: #52514e;
+        --muted: #898781;
+        --grid: #e1e0d9;
+        --axis: #c3c2b7;
+        --border: rgba(11, 11, 11, 0.1);
+        --series-1: #2a78d6;
+        --series-2: #eb6834;
+        --series-3: #1baf7a;
+        --series-4: #eda100;
+        --series-5: #e87ba4;
+        --series-6: #008300;
+        --series-7: #4a3aa7;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --page: #0d0d0d;
+          --surface-1: #1a1a19;
+          --text-primary: #ffffff;
+          --text-secondary: #c3c2b7;
+          --muted: #898781;
+          --grid: #2c2c2a;
+          --axis: #383835;
+          --border: rgba(255, 255, 255, 0.1);
+          --series-1: #3987e5;
+          --series-2: #d95926;
+          --series-3: #199e70;
+          --series-4: #c98500;
+          --series-5: #d55181;
+          --series-6: #008300;
+          --series-7: #9085e9;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        background: var(--page);
+        color: var(--text-primary);
+        font:
+          14px/1.5 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 15px;
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+      .meta {
+        color: var(--text-secondary);
+        margin: 0 0 20px;
+      }
+      .card {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .key {
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+        background: currentColor;
+      }
+      button.action {
+        margin-left: auto;
+      }
+      select,
+      button.action {
+        padding: 5px 10px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: var(--surface-1);
+        color: var(--text-primary);
+        font: inherit;
+        cursor: pointer;
+      }
+      .plot {
+        position: relative;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 420px;
+        touch-action: none;
+      }
+      canvas:focus-visible {
+        outline: 2px solid var(--series-1);
+        outline-offset: 2px;
+      }
+      .hint {
+        color: var(--muted);
+        margin: 8px 0 0;
+        font-size: 13px;
+      }
+      .tooltip {
+        position: absolute;
+        min-width: 148px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface-1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.1s;
+      }
+      .tooltip.visible {
+        opacity: 1;
+      }
+      .tooltip .time {
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+      }
+      .tooltip .row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .tooltip .row .name {
+        color: var(--text-secondary);
+        margin-right: auto;
+      }
+      .tooltip .row .value {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: right;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--grid);
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      th {
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+      td {
+        font-variant-numeric: tabular-nums;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      td .name {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .settings {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 16px;
+        margin: 0;
+      }
+      .settings dt {
+        color: var(--text-secondary);
+      }
+      .settings dd {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SEI timecodes</h1>
+      <p class="meta" id="meta"></p>
+
+      <section class="card" id="settingsCard" hidden>
+        <h2>Settings</h2>
+        <dl class="settings" id="settings"></dl>
+      </section>
+
+      <section class="card">
+        <div class="controls">
+          <label for="display">Show</label>
+          <select id="display">
+            <option value="both">Ticks and medians</option>
+            <option value="medians">Medians</option>
+            <option value="ticks">Ticks</option>
+          </select>
+          <button class="action" id="reset" type="button">Reset zoom</button>
+        </div>
+        <div class="plot">
+          <canvas
+            id="chart"
+            tabindex="0"
+            aria-label="Timecode minus presentation time stamp over time"
+          ></canvas>
+          <div class="tooltip" id="tooltip" role="status"></div>
+        </div>
+        <p class="hint">
+          The timecode of a frame minus the wall clock time its presentation time stamp is expected
+          at. A sloping line means the timecodes and the presentation time stamps drift apart. Drag
+          to zoom. Double click to reset. Arrow keys move the crosshair.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2 id="tableTitle">Whole stream</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Median ms</th>
+              <th>Spread ms</th>
+              <th>Drift ms/h</th>
+              <th>Ticks</th>
+              <th>Frames</th>
+              <th>No timecode</th>
+              <th>Not matching</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </section>
+    </main>
+    <script>
+      const DATA = "__TIMECODES_DATA__";
+      const PADDING = { left: 70, right: 18, top: 28, bottom: 34 };
+
+      const canvas = document.getElementById("chart");
+      const context = canvas.getContext("2d");
+      const tooltip = document.getElementById("tooltip");
+      const startDate = new Date(DATA.startTime.replace(" ", "T"));
+      const duration = Math.max(
+        1,
+        DATA.points.length === 0 ? 0 : DATA.points[DATA.points.length - 1][0],
+      );
+
+      let range = { from: 0, to: duration };
+      let display = "both";
+      let colors = {};
+      let crosshair = null;
+      let dragging = null;
+
+      function readColors() {
+        const style = getComputedStyle(document.documentElement);
+        const value = (name) => style.getPropertyValue(name).trim();
+        colors = {
+          text: value("--text-primary"),
+          muted: value("--muted"),
+          grid: value("--grid"),
+          axis: value("--axis"),
+          surface: value("--surface-1"),
+          series: value("--series-1"),
+        };
+      }
+
+      function inRange(points) {
+        return points.filter(([time]) => time >= range.from && time <= range.to);
+      }
+
+      function median(values) {
+        if (values.length === 0) {
+          return null;
+        }
+        const sorted = [...values].sort((first, second) => first - second);
+        const middle = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+      }
+
+      function slopePerHour(points) {
+        if (points.length < 2) {
+          return null;
+        }
+        const meanX = points.reduce((sum, [time]) => sum + time, 0) / points.length;
+        const meanY = points.reduce((sum, [, value]) => sum + value, 0) / points.length;
+        let numerator = 0;
+        let denominator = 0;
+        for (const [time, value] of points) {
+          numerator += (time - meanX) * (value - meanY);
+          denominator += (time - meanX) ** 2;
+        }
+        return denominator === 0 ? null : (3600 * numerator) / denominator;
+      }
+
+      function formatDuration(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor(seconds / 60) % 60;
+        const remainder = Math.floor(seconds) % 60;
+        const padded = `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+        return hours > 0 ? `${hours}:${padded}` : padded;
+      }
+
+      function formatClock(seconds) {
+        const date = new Date(startDate.getTime() + 1000 * seconds);
+        return date.toLocaleTimeString();
+      }
+
+      function formatValue(value) {
+        return value === null ? "-" : value.toFixed(1);
+      }
+
+      function niceStep(span) {
+        const magnitude = Math.pow(10, Math.floor(Math.log10(span)));
+        for (const step of [1, 2, 2.5, 5, 10]) {
+          if (span <= step * magnitude) {
+            return (step * magnitude) / 5;
+          }
+        }
+        return 2 * magnitude;
+      }
+
+      function verticalRange(points, medians) {
+        let minimum = Infinity;
+        let maximum = -Infinity;
+        for (const [, value] of display === "medians" ? medians : points) {
+          minimum = Math.min(minimum, value);
+          maximum = Math.max(maximum, value);
+        }
+        if (minimum > maximum) {
+          return { minimum: -1, maximum: 1, step: 0.5 };
+        }
+        const margin = Math.max(0.05 * (maximum - minimum), 0.5);
+        const step = niceStep(maximum - minimum + 2 * margin);
+        return {
+          minimum: step * Math.floor((minimum - margin) / step),
+          maximum: step * Math.ceil((maximum + margin) / step),
+          step,
+        };
+      }
+
+      function draw() {
+        const ratio = window.devicePixelRatio || 1;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        context.clearRect(0, 0, width, height);
+
+        const plotWidth = Math.max(1, Math.round(width - PADDING.left - PADDING.right));
+        const plotHeight = Math.max(1, height - PADDING.top - PADDING.bottom);
+        const points = inRange(DATA.points);
+        const medians = inRange(DATA.medians);
+        const vertical = verticalRange(points, medians);
+        const span = Math.max(1e-6, range.to - range.from);
+        const x = (time) => PADDING.left + (plotWidth * (time - range.from)) / span;
+        const y = (value) =>
+          PADDING.top +
+          plotHeight * (1 - (value - vertical.minimum) / (vertical.maximum - vertical.minimum));
+
+        context.font = "12px system-ui, -apple-system, sans-serif";
+        context.strokeStyle = colors.grid;
+        context.fillStyle = colors.muted;
+        context.lineWidth = 1;
+        context.textAlign = "right";
+        context.textBaseline = "middle";
+        for (
+          let value = vertical.minimum;
+          value <= vertical.maximum + 1e-6;
+          value += vertical.step
+        ) {
+          const position = Math.round(y(value)) + 0.5;
+          context.beginPath();
+          context.moveTo(PADDING.left, position);
+          context.lineTo(PADDING.left + plotWidth, position);
+          context.stroke();
+          context.fillText(value.toFixed(vertical.step < 1 ? 1 : 0), PADDING.left - 10, position);
+        }
+        context.textAlign = "left";
+        context.textBaseline = "top";
+        context.fillText("ms", 8, 4);
+
+        const ticks = Math.max(2, Math.min(8, Math.floor(plotWidth / 110)));
+        for (let tick = 0; tick <= ticks; tick++) {
+          const time = range.from + (span * tick) / ticks;
+          context.textAlign = tick === 0 ? "left" : tick === ticks ? "right" : "center";
+          context.fillText(formatDuration(time), x(time), PADDING.top + plotHeight + 10);
+        }
+
+        if (vertical.minimum <= 0 && vertical.maximum >= 0) {
+          context.strokeStyle = colors.axis;
+          context.beginPath();
+          context.moveTo(PADDING.left, Math.round(y(0)) + 0.5);
+          context.lineTo(PADDING.left + plotWidth, Math.round(y(0)) + 0.5);
+          context.stroke();
+        }
+
+        context.fillStyle = colors.series;
+        context.strokeStyle = colors.series;
+        if (display !== "medians") {
+          context.globalAlpha = 0.3;
+          for (const [time, value] of points) {
+            context.beginPath();
+            context.arc(x(time), y(value), 1.8, 0, 2 * Math.PI);
+            context.fill();
+          }
+          context.globalAlpha = 1;
+        }
+        if (display !== "ticks") {
+          context.lineWidth = 2;
+          context.lineJoin = "round";
+          context.beginPath();
+          medians.forEach(([time, value], index) => {
+            if (index === 0) {
+              context.moveTo(x(time), y(value));
+            } else {
+              context.lineTo(x(time), y(value));
+            }
+          });
+          context.stroke();
+          for (const [time, value] of medians) {
+            context.beginPath();
+            context.arc(x(time), y(value), 3, 0, 2 * Math.PI);
+            context.fill();
+          }
+        }
+
+        if (dragging) {
+          const from = Math.min(dragging.from, dragging.to);
+          const to = Math.max(dragging.from, dragging.to);
+          context.fillStyle = colors.text;
+          context.globalAlpha = 0.08;
+          context.fillRect(from, PADDING.top, to - from, plotHeight);
+          context.globalAlpha = 1;
+        } else if (crosshair !== null) {
+          const position = Math.round(x(crosshair)) + 0.5;
+          context.strokeStyle = colors.axis;
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(position, PADDING.top);
+          context.lineTo(position, PADDING.top + plotHeight);
+          context.stroke();
+          const nearest = nearestPoint(medians, crosshair);
+          if (nearest !== null) {
+            context.beginPath();
+            context.arc(x(nearest[0]), y(nearest[1]), 4, 0, 2 * Math.PI);
+            context.fillStyle = colors.series;
+            context.fill();
+            context.strokeStyle = colors.surface;
+            context.lineWidth = 2;
+            context.stroke();
+          }
+        }
+      }
+
+      function nearestPoint(points, time) {
+        let nearest = null;
+        let distance = Infinity;
+        for (const point of points) {
+          const candidate = Math.abs(point[0] - time);
+          if (candidate < distance) {
+            distance = candidate;
+            nearest = point;
+          }
+        }
+        return nearest;
+      }
+
+      function plotWidthOf() {
+        return Math.max(1, Math.round(canvas.clientWidth - PADDING.left - PADDING.right));
+      }
+
+      function timeAt(offsetX) {
+        const width = plotWidthOf();
+        const column = Math.min(width, Math.max(0, offsetX - PADDING.left));
+        return range.from + ((range.to - range.from) * column) / width;
+      }
+
+      function columnOf(time) {
+        return (plotWidthOf() * (time - range.from)) / Math.max(1e-6, range.to - range.from);
+      }
+
+      function showTooltip() {
+        const nearest = crosshair === null ? null : nearestPoint(inRange(DATA.medians), crosshair);
+        if (nearest === null) {
+          tooltip.classList.remove("visible");
+          return;
+        }
+        const rows = document.createElement("div");
+        const time = document.createElement("div");
+        time.className = "time";
+        time.textContent = `${formatDuration(nearest[0])} (${formatClock(nearest[0])})`;
+        const row = document.createElement("div");
+        row.className = "row";
+        const key = document.createElement("span");
+        key.className = "key";
+        key.style.color = colors.series;
+        const name = document.createElement("span");
+        name.className = "name";
+        name.textContent = "Timecode";
+        const value = document.createElement("span");
+        value.className = "value";
+        value.textContent = `${nearest[1].toFixed(1)} ms`;
+        row.append(key, name, value);
+        rows.append(time, row);
+        tooltip.replaceChildren(rows);
+        tooltip.classList.add("visible");
+        const width = tooltip.offsetWidth;
+        const position = PADDING.left + columnOf(crosshair);
+        const left = position > canvas.clientWidth / 2 ? position - width - 16 : position + 16;
+        tooltip.style.left = `${Math.max(4, Math.min(left, canvas.clientWidth - width - 4))}px`;
+        tooltip.style.top = `${PADDING.top + 8}px`;
+      }
+
+      function updateTable() {
+        const medians = inRange(DATA.medians);
+        const offsets = medians.map(([, value]) => value);
+        const row = document.createElement("tr");
+        const file = document.createElement("td");
+        const label = document.createElement("span");
+        label.className = "name";
+        const key = document.createElement("span");
+        key.className = "key";
+        key.style.color = colors.series;
+        const text = document.createElement("span");
+        text.textContent = DATA.file;
+        label.append(key, text);
+        file.appendChild(label);
+        row.appendChild(file);
+        for (const value of [
+          formatValue(median(offsets)),
+          formatValue(offsets.length === 0 ? null : Math.max(...offsets) - Math.min(...offsets)),
+          formatValue(slopePerHour(medians)),
+          String(inRange(DATA.points).length),
+          String(DATA.frames),
+          String(DATA.missing),
+          String(DATA.outside),
+        ]) {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        }
+        document.getElementById("tableBody").replaceChildren(row);
+        const title = range.from === 0 && range.to === duration ? "Whole stream" : "Zoomed to";
+        document.getElementById("tableTitle").textContent =
+          `${title} ${formatDuration(range.from)} - ${formatDuration(range.to)}`;
+      }
+
+      function render() {
+        draw();
+        updateTable();
+        showTooltip();
+      }
+
+      canvas.addEventListener("pointermove", (event) => {
+        if (dragging) {
+          dragging.to = Math.min(
+            PADDING.left + plotWidthOf(),
+            Math.max(PADDING.left, event.offsetX),
+          );
+          draw();
+          return;
+        }
+        crosshair = timeAt(event.offsetX);
+        draw();
+        showTooltip();
+      });
+
+      canvas.addEventListener("pointerleave", () => {
+        if (!dragging) {
+          crosshair = null;
+          draw();
+          showTooltip();
+        }
+      });
+
+      canvas.addEventListener("pointerdown", (event) => {
+        canvas.setPointerCapture(event.pointerId);
+        dragging = { from: event.offsetX, to: event.offsetX };
+        crosshair = null;
+        tooltip.classList.remove("visible");
+      });
+
+      canvas.addEventListener("pointerup", (event) => {
+        if (!dragging) {
+          return;
+        }
+        const from = Math.min(dragging.from, dragging.to);
+        const to = Math.max(dragging.from, dragging.to);
+        dragging = null;
+        if (to - from > 5) {
+          const start = timeAt(from);
+          const end = timeAt(to);
+          if (end - start > 1) {
+            range = { from: start, to: end };
+          }
+        }
+        crosshair = timeAt(event.offsetX);
+        render();
+      });
+
+      canvas.addEventListener("dblclick", () => {
+        range = { from: 0, to: duration };
+        render();
+      });
+
+      canvas.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+          return;
+        }
+        event.preventDefault();
+        const step = ((event.shiftKey ? 20 : 1) * (range.to - range.from)) / 100;
+        const current = crosshair === null ? range.from : crosshair;
+        crosshair = Math.min(
+          range.to,
+          Math.max(range.from, current + (event.key === "ArrowLeft" ? -step : step)),
+        );
+        draw();
+        showTooltip();
+      });
+
+      document.getElementById("display").addEventListener("change", (event) => {
+        display = event.target.value;
+        render();
+      });
+
+      document.getElementById("reset").addEventListener("click", () => {
+        range = { from: 0, to: duration };
+        render();
+      });
+
+      window.addEventListener("resize", () => {
+        crosshair = null;
+        draw();
+        showTooltip();
+      });
+
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+        readColors();
+        render();
+      });
+
+      document.getElementById("meta").textContent =
+        `Started ${DATA.startTime} · ${formatDuration(duration)} · ${DATA.file}`;
+
+      function renderSettings() {
+        const settings = DATA.settings || [];
+        if (settings.length === 0) {
+          return;
+        }
+        const list = document.getElementById("settings");
+        for (const setting of settings) {
+          const name = document.createElement("dt");
+          name.textContent = setting.name;
+          const value = document.createElement("dd");
+          value.textContent = setting.value;
+          list.append(name, value);
+        }
+        document.getElementById("settingsCard").hidden = false;
+      }
+
+      renderSettings();
+      document.getElementById("display").value = display;
+      readColors();
+      render();
+    </script>
+  </body>
+</html>

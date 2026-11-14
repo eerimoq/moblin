@@ -13,7 +13,7 @@ private struct PickerView: UIViewControllerRepresentable {
 }
 
 private struct RecordingPathView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var recording: SettingsStreamRecording
     @State var showPicker = false
 
@@ -104,19 +104,14 @@ struct StreamRecordingSettingsView: View {
     @ObservedObject var recording: SettingsStreamRecording
 
     private func submitVideoBitrateChange(value: String) {
-        guard var bitrate = Float(value) else {
+        guard let bitrate = Float(value) else {
             return
         }
-        bitrate = max(bitrate, 0)
-        bitrate = min(bitrate, 50)
-        recording.videoBitrate = bitrateFromMbps(bitrate: bitrate)
+        recording.videoBitrate = bitrateFromMbps(bitrate: bitrate.clamped(to: 0 ... 50))
     }
 
     private func submitMaxKeyFrameInterval(value: String) {
-        guard let interval = Int32(value) else {
-            return
-        }
-        guard interval >= 0, interval <= 10 else {
+        guard let interval = Int32(value), interval >= 0, interval <= 10 else {
             return
         }
         recording.maxKeyFrameInterval = interval
@@ -192,7 +187,7 @@ struct StreamRecordingSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isRecording)
             }
-            RecordingPathView(recording: recording)
+            RecordingPathView(model: model, recording: recording)
             Section {
                 Toggle("Clean recordings", isOn: $recording.cleanRecordings)
                     .onChange(of: recording.cleanRecordings) { _ in

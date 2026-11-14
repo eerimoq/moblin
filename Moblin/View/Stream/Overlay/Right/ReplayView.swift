@@ -18,7 +18,7 @@ private struct ReplayPreview: View {
             ZStack {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(maxWidth: width())
                     .cornerRadius(7)
                     .onTapGesture {
@@ -82,16 +82,15 @@ private struct ReplayControlsSpeedPicker: View {
     @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        SegmentedHPicker(items: SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
+        SegmentedHPicker(
+            items: SettingsReplaySpeed.allCases,
+            selectedItem: $replay.speed,
+            backgroundColor: .clear
+        ) {
             Text($0.rawValue)
                 .font(.subheadline)
                 .frame(height: 35)
         }
-        .cornerRadius(7)
-        .overlay(
-            RoundedRectangle(cornerRadius: 7)
-                .stroke(pickerBorderColor)
-        )
         .frame(width: 90)
         .onChange(of: replay.speed) { _ in
             model.replaySpeedChanged()
@@ -173,6 +172,10 @@ private struct ControlRowView<Content: View>: View {
         .frame(height: 45)
         .background(backgroundColor)
         .cornerRadius(5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(pickerBorderColor)
+        )
     }
 }
 
@@ -228,7 +231,7 @@ private struct ReplayHistoryItem: View {
             if let image {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .cornerRadius(5)
                     .frame(height: height())
                     .onTapGesture {
@@ -245,7 +248,9 @@ private struct ReplayHistoryItem: View {
             }
         }
         .onAppear {
-            createThumbnail(path: video.url(), offset: video.thumbnailOffset()) { image in
+            createThumbnail(path: model.replaysStorage.url(replay: video),
+                            offset: video.thumbnailOffset())
+            { image in
                 self.image = image
             }
         }
@@ -284,6 +289,10 @@ private struct ReplayHistory: View {
         .padding(4)
         .background(backgroundColor)
         .cornerRadius(5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(pickerBorderColor)
+        )
     }
 }
 

@@ -1,110 +1,120 @@
 import Collections
-import CoreMedia
 
-private enum AdjustDriftDirection {
-    case up
-    case down
-    case none
+enum DriftTrackerMedia {
+    case audio
+    case video
+}
+
+private class DriftTrackerMediaState {
+    let targetFillLevel: Double
+    var fillLevels: Deque<Double> = []
+    var latestFillLevelPresentationTimeStamp = 0.0
+
+    init(targetFillLevel: Double) {
+        self.targetFillLevel = targetFillLevel
+    }
+
+    func lowWaterMark() -> Double {
+        if targetFillLevel >= 0.1 {
+            max(-0.2, -targetFillLevel / 2)
+        } else {
+            // Should do something better. The queue is likely close to empty.
+            -targetFillLevel
+        }
+    }
 }
 
 class DriftTracker {
-    private let media: String
     private let name: String
-    private var targetFillLevel: Double
-    private var estimatedFillLevel: Double
-    private var latestEstimatedFillLevelPresentationTimeStamp = 0.0
+    private var audio: DriftTrackerMediaState?
+    private var video: DriftTrackerMediaState?
     private var latestAdjustDriftPresentationTimeStamp = -1.0
     private var drift = 0.0
-    private var adjustDriftDirection: AdjustDriftDirection = .none
 
-    init(media: String, name: String, targetFillLevel: Double) {
-        self.media = media
+    init(name: String) {
         self.name = name
-        self.targetFillLevel = targetFillLevel
-        estimatedFillLevel = targetFillLevel
     }
 
-    func setTargetFillLevel(targetFillLevel: Double) {
+    func addMedia(_ media: DriftTrackerMedia, targetFillLevel: Double) {
         logger.debug("""
-        buffered-\(media): drift-tracker: \(name): Setting target fill level to \
-        \(formatThreeDecimals(targetFillLevel)) (was \(formatThreeDecimals(self.targetFillLevel)))
+        drift-tracker: \(name): Adding \(media) with target fill level \(formatThreeDecimals(targetFillLevel))
         """)
-        if targetFillLevel > self.targetFillLevel {
-            estimatedFillLevel = targetFillLevel
+        switch media {
+        case .audio:
+            audio = DriftTrackerMediaState(targetFillLevel: targetFillLevel)
+        case .video:
+            video = DriftTrackerMediaState(targetFillLevel: targetFillLevel)
         }
-        self.targetFillLevel = targetFillLevel
-    }
-
-    func setDrift(drift: Double) {
-        logger.debug("""
-        buffered-\(media): drift-tracker: \(name): Other media set drift. \
-        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
-        (target \(formatThreeDecimals(targetFillLevel))), \
-        Drift: \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
-        """)
-        self.drift = drift
-        adjustDriftDirection = .none
     }
 
     func getDrift() -> Double {
         drift
     }
 
-    func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) -> Double? {
-        guard outputPresentationTimeStamp > latestEstimatedFillLevelPresentationTimeStamp + 0.5 else {
-            return nil
+    func setDrift(drift: Double) {
+        self.drift = drift
+    }
+
+    func update(media: DriftTrackerMedia,
+                _ outputPresentationTimeStamp: Double,
+                _ newestPresentationTimeStamp: Double)
+    {
+        guard let state = state(media),
+              outputPresentationTimeStamp > state.latestFillLevelPresentationTimeStamp + 0.5
+        else {
+            return
         }
-        latestEstimatedFillLevelPresentationTimeStamp = outputPresentationTimeStamp
-        let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-        let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-        let currentFillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-        estimatedFillLevel = estimatedFillLevel * 0.95 + currentFillLevel * 0.05
-        if estimatedFillLevel < lowWaterMark() {
-            adjustDriftDirection = .up
-        } else if estimatedFillLevel > highWaterMark() {
-            adjustDriftDirection = .down
+        state.latestFillLevelPresentationTimeStamp = outputPresentationTimeStamp
+        state.fillLevels.append(newestPresentationTimeStamp - outputPresentationTimeStamp)
+        if state.fillLevels.count > 60 {
+            state.fillLevels.removeFirst()
         }
-        // Don't adjust too often to allow the moving average above to adjust.
         if latestAdjustDriftPresentationTimeStamp == -1 {
             latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
         }
         guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 20.0 else {
-            return nil
+            return
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
-        switch adjustDriftDirection {
-        case .up:
-            adjustDrift(adjustment: targetFillLevel - estimatedFillLevel)
-        case .down:
-            adjustDrift(adjustment: -(estimatedFillLevel - targetFillLevel))
-        case .none:
-            return nil
+        let deviations = [audio, video]
+            .compactMap { $0 }
+            .filter {
+                $0.fillLevels.count >= 30
+                    && outputPresentationTimeStamp - $0.latestFillLevelPresentationTimeStamp < 20.0
+            }
+            .map { ($0, estimateDeviations($0)) }
+        guard let (state, (_, upperDeviation)) = deviations.min(by: { $0.1.upper < $1.1.upper }),
+              let lowerDeviation = deviations.map(\.1.lower).min()
+        else {
+            return
         }
-        adjustDriftDirection = .none
-        return drift
+        if upperDeviation < state.lowWaterMark() {
+            adjustDrift(deviation: upperDeviation)
+        } else if lowerDeviation > 0.2 {
+            adjustDrift(deviation: lowerDeviation)
+        }
     }
 
-    private func adjustDrift(adjustment: Double) {
-        let drift = drift + adjustment
+    private func state(_ media: DriftTrackerMedia) -> DriftTrackerMediaState? {
+        switch media {
+        case .audio:
+            audio
+        case .video:
+            video
+        }
+    }
+
+    private func estimateDeviations(_ state: DriftTrackerMediaState) -> (lower: Double, upper: Double) {
+        let deviations = state.fillLevels.sorted().map { $0 + drift - state.targetFillLevel }
+        return (deviations[deviations.count / 4], deviations[3 * deviations.count / 4])
+    }
+
+    private func adjustDrift(deviation: Double) {
+        let drift = drift - deviation
         logger.debug("""
-        buffered-\(media): drift-tracker: \(name): \
-        Estimated fill level \(formatThreeDecimals(estimatedFillLevel)) \
-        (target \(formatThreeDecimals(targetFillLevel))), \
+        drift-tracker: \(name): Estimated deviation from target \(formatThreeDecimals(deviation)), \
         Drift \(formatThreeDecimals(self.drift)) -> \(formatThreeDecimals(drift))
         """)
         self.drift = drift
-    }
-
-    private func lowWaterMark() -> Double {
-        if targetFillLevel >= 0.1 {
-            max(targetFillLevel - 0.2, targetFillLevel / 2)
-        } else {
-            // Should do something better. The queue is likely close to empty.
-            0
-        }
-    }
-
-    private func highWaterMark() -> Double {
-        targetFillLevel + 0.2
     }
 }

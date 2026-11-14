@@ -7,13 +7,6 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     case debug = "Debug"
 }
 
-let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
-let pixelFormatTypes = [
-    kCVPixelFormatType_32BGRA,
-    kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
-    kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-]
-
 class SettingsDebug: Codable, ObservableObject {
     static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
@@ -21,17 +14,11 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var debugLogging: Bool = false
     var debugLoggingMigrated: Bool = false
     @Published var debugOverlay: Bool = false
-    var srtOverheadBandwidth: Int32 = 25
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
-    var maximumBandwidthFollowInput: Bool = true
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
-    var pixelFormat: String = pixelFormats[1]
-    // To be removed.
-    var faceToBeRemoved: SettingsFace = .init()
-    @Published var allowVideoRangePixelFormat: Bool = false
+    @Published var nativeLowLightBoost: Bool = false
     var blurSceneSwitch: Bool = true
-    @Published var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
     var tesla: SettingsTesla = .init()
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
@@ -49,9 +36,11 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManAlwaysMove: Bool = false
     @Published var enhancedMoblinSrt: Bool = false
     @Published var videoBitrateChange: Bool = false
-    @Published var highQualityDownsampling: Bool = false
-    @Published var httpProxy: Bool = false
+    var highQualityDownsamplingToBeRemoved: Bool = false
+    var httpProxyToBeRemoved: Bool = false
     @Published var packetPadding: Bool = false
+    @Published var externalCameraVideoRange: Bool = false
+    @Published var photosImageQuality: Double = 0.95
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -59,16 +48,11 @@ class SettingsDebug: Codable, ObservableObject {
         case debugLogging
         case debugLoggingMigrated
         case srtOverlay
-        case srtOverheadBandwidth
         case cameraSwitchRemoveBlackish
-        case maximumBandwidthFollowInput
         case bluetoothOutputOnly
         case maximumLogLines
-        case pixelFormat
-        case beautyFilterSettings
-        case allowVideoRangePixelFormat
+        case nativeLowLightBoost
         case blurSceneSwitch
-        case preferStereoMic
         case twitchRewards
         case removeWindNoise
         case tesla
@@ -96,6 +80,8 @@ class SettingsDebug: Codable, ObservableObject {
         case highQualityDownsampling
         case httpProxy3
         case packetPadding
+        case externalCameraVideoRange
+        case photosImageQuality
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -105,16 +91,11 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.debugLogging, debugLogging)
         try container.encode(.debugLoggingMigrated, debugLoggingMigrated)
         try container.encode(.srtOverlay, debugOverlay)
-        try container.encode(.srtOverheadBandwidth, srtOverheadBandwidth)
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
-        try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
-        try container.encode(.pixelFormat, pixelFormat)
-        try container.encode(.beautyFilterSettings, faceToBeRemoved)
-        try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
+        try container.encode(.nativeLowLightBoost, nativeLowLightBoost)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
-        try container.encode(.preferStereoMic, preferStereoMic)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.tesla, tesla)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
@@ -132,9 +113,11 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
-        try container.encode(.highQualityDownsampling, highQualityDownsampling)
-        try container.encode(.httpProxy3, httpProxy)
+        try container.encode(.highQualityDownsampling, highQualityDownsamplingToBeRemoved)
+        try container.encode(.httpProxy3, httpProxyToBeRemoved)
         try container.encode(.packetPadding, packetPadding)
+        try container.encode(.externalCameraVideoRange, externalCameraVideoRange)
+        try container.encode(.photosImageQuality, photosImageQuality)
     }
 
     init() {}
@@ -150,16 +133,11 @@ class SettingsDebug: Codable, ObservableObject {
             debugLoggingMigrated = true
         }
         debugOverlay = container.decode(.srtOverlay, Bool.self, false)
-        srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
-        maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
-        pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
-        faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
-        allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
+        nativeLowLightBoost = container.decode(.nativeLowLightBoost, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
-        preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
@@ -185,8 +163,10 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
-        highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
-        httpProxy = container.decode(.httpProxy3, Bool.self, false)
+        highQualityDownsamplingToBeRemoved = container.decode(.highQualityDownsampling, Bool.self, false)
+        httpProxyToBeRemoved = container.decode(.httpProxy3, Bool.self, false)
         packetPadding = container.decode(.packetPadding, Bool.self, false)
+        externalCameraVideoRange = container.decode(.externalCameraVideoRange, Bool.self, false)
+        photosImageQuality = container.decode(.photosImageQuality, Double.self, 0.95)
     }
 }

@@ -1,0 +1,34 @@
+[device.iphone16pro]
+moblin-ip-address = "iphone16pro.home"
+capabilities = [
+    "pip",
+    "record",
+    "background-streaming",
+    "dual-mics",
+    "stereo-mic",
+    "gimbal",
+    "p3-color-space",
+    "hlg-color-space",
+    "apple-log-color-space",
+    "apple-music",
+]
+
+[device.macpro]
+moblin-ip-address = "macpro.home"
+moblin-secondary-ip-address = "macpro-2.home"
+capabilities = ["same-page-concurrent-audio"]
+
+[general]
+tester-ip-address = "macpro.home"
+remote-control-port = 2345
+receiver-remote-control-port = 2346
+generic-stream-urls = [
+    "srt://eu.srt.belabox.net:4000?streamid=275092837459082734590872345"
+]
+
+[dji-camera]
+bluetooth-peripheral-name = "OsmoAction5Pro"
+bluetooth-peripheral-id = "E5A7C0B2-2F1D-4C6A-9E3B-71D0F4A85C29"
+wifi-ssid = "moblin"
+wifi-password = "hunter2"
+model = "osmoAction5Pro"

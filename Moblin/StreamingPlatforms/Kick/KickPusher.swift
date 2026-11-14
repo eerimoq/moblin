@@ -22,6 +22,27 @@ private enum BadgeType {
 
 private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
 
+private nonisolated(unsafe) let emoteRegex = /\[emote:(\d+):([^\]]+)\]/
+
+func createKickSegments(message: String, emotesManager: Emotes, id: inout Int) -> [ChatPostSegment] {
+    var segments: [ChatPostSegment] = []
+    var startIndex = message.startIndex
+    for match in message[startIndex...].matches(of: emoteRegex) {
+        let emoteId = match.output.1
+        let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
+        let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
+            .map { ChatPostEmote(moving: $0, still: $0, name: String(match.output.2)) }
+        segments += emotesManager.createSegments(text: String(textBeforeEmote), id: &id)
+        segments.append(ChatPostSegment(id: id, url: url))
+        id += 1
+        startIndex = match.range.upperBound
+    }
+    if startIndex != message.endIndex {
+        segments += emotesManager.createSegments(text: String(message[startIndex...]), id: &id)
+    }
+    return segments
+}
+
 private struct KickBadge {
     let months: Int
     let url: URL
@@ -183,12 +204,11 @@ private func decodeEvent(message: String) throws -> (String, String) {
             with: jsonData,
             options: JSONSerialization.ReadingOptions.mutableContainers
         )
-        if let jsonResult: NSDictionary = data as? NSDictionary {
-            if let type: String = jsonResult["event"] as? String {
-                if let data: String = jsonResult["data"] as? String {
-                    return (type, data)
-                }
-            }
+        if let jsonResult: NSDictionary = data as? NSDictionary,
+           let type: String = jsonResult["event"] as? String,
+           let data: String = jsonResult["data"] as? String
+        {
+            return (type, data)
         }
     }
     throw "Failed to get message event type"
@@ -228,9 +248,10 @@ private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGifte
 
 private let url =
     URL(
-        string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
+        string: "wss://ws-us2.pusher.com/app/34bf7a0ff419a2a775b9?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
+@MainActor
 protocol KickPusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
@@ -254,7 +275,8 @@ protocol KickPusherDelegate: AnyObject {
     func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent)
 }
 
-final class KickPusher: NSObject, @unchecked Sendable {
+@MainActor
+final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
     private var chatroomChannelId: String
@@ -263,7 +285,7 @@ final class KickPusher: NSObject, @unchecked Sendable {
     private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
-    private weak var delegate: (any KickPusherDelegate)?
+    private weak let delegate: (any KickPusherDelegate)?
 
     init(
         delegate: any KickPusherDelegate,
@@ -322,6 +344,10 @@ final class KickPusher: NSObject, @unchecked Sendable {
         emotes.isReady()
     }
 
+    func reloadEmotes() {
+        emotes.reload()
+    }
+
     private func fetchSubscriberBadges() {
         getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
             if let subscriberBadges = channelInfo?.subscriber_badges {
@@ -331,15 +357,11 @@ final class KickPusher: NSObject, @unchecked Sendable {
     }
 
     private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
-        }
+        delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: nil)
-        }
+        delegate?.kickPusherMakeErrorToast(title: title, subTitle: nil)
     }
 
     private func handleMessage(message: String) {
@@ -442,31 +464,19 @@ final class KickPusher: NSObject, @unchecked Sendable {
         delegate?.kickPusherKicksGifted(event: event)
     }
 
-    private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
+    func makeChatPostSegments(content: String) -> [ChatPostSegment] {
         var id = 0
-        for var segment in createKickSegments(message: content, id: &id) {
-            if let text = segment.text {
-                segments += emotes.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
-        return segments
+        return createKickSegments(message: content, emotesManager: emotes, id: &id)
     }
 
     private func makeHighlight(message: ChatMessageEvent) -> ChatHighlight? {
-        if message.type == "reply" {
-            if let username = message.metadata?.original_sender?.username,
-               let content = message.metadata?.original_message?.content
-            {
-                return ChatHighlight.makeReply(
-                    user: username,
-                    segments: makeChatPostSegments(content: content)
-                )
-            }
+        if message.type == "reply", let username = message.metadata?.original_sender?.username,
+           let content = message.metadata?.original_message?.content
+        {
+            return ChatHighlight.makeReply(
+                user: username,
+                segments: makeChatPostSegments(content: content)
+            )
         }
         return nil
     }
@@ -474,24 +484,6 @@ final class KickPusher: NSObject, @unchecked Sendable {
     private func sendMessage(message: String) {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
         webSocket.send(string: message)
-    }
-
-    private func createKickSegments(message: String, id: inout Int) -> [ChatPostSegment] {
-        var segments: [ChatPostSegment] = []
-        var startIndex = message.startIndex
-        for match in message[startIndex...].matches(of: /\[emote:(\d+):[^\]]+\]/) {
-            let emoteId = match.output.1
-            let textBeforeEmote = message[startIndex ..< match.range.lowerBound]
-            let url = URL(string: "https://files.kick.com/emotes/\(emoteId)/fullsize")
-            segments += makeChatPostTextSegments(text: String(textBeforeEmote), id: &id)
-            segments.append(ChatPostSegment(id: id, url: url))
-            id += 1
-            startIndex = match.range.upperBound
-        }
-        if startIndex != message.endIndex {
-            segments += makeChatPostTextSegments(text: String(message[startIndex...]), id: &id)
-        }
-        return segments
     }
 
     func sendSubscribe(channel: String) {

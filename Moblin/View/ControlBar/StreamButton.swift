@@ -11,8 +11,7 @@ private struct StreamButtonText: View {
             .foregroundStyle(.white)
             .frame(minWidth: 60)
             .padding(5)
-            .background(database.streamButtonColorColor)
-            .cornerRadius(10)
+            .background(RoundedRectangle(cornerRadius: 10).fill(database.streamButtonColorColor))
     }
 }
 
@@ -110,13 +109,18 @@ private struct SetupButtonView: View {
 
 struct StreamButton: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var show: Show
     @State private var presentingGoLiveNotificationConfirm = false
 
     var body: some View {
         if model.isLive {
             EndButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
+                .disabled(show.chatPhone)
+                .opacity(show.chatPhone ? 0.5 : 1)
         } else if model.isStreamConfigured() {
             GoLiveButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
+                .disabled(show.chatPhone)
+                .opacity(show.chatPhone ? 0.5 : 1)
         } else {
             SetupButtonView(createStreamWizard: model.createStreamWizard)
         }

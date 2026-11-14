@@ -9,11 +9,6 @@ protocol WhepClientDelegate: AnyObject {
     func whepClientOnPublishStop(streamId: UUID, reason: String)
     func whepClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whepClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whepClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
 }
 
 class WhepClient: @unchecked Sendable {
@@ -21,6 +16,8 @@ class WhepClient: @unchecked Sendable {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
@@ -29,11 +26,20 @@ class WhepClient: @unchecked Sendable {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: any WhepClientDelegate) {
+    init(streamId: UUID,
+         url: URL,
+         latency: Double,
+         syncTimestamps: Bool,
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange,
+         delegate: any WhepClientDelegate)
+    {
         self.streamId = streamId
         self.url = url
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.delegate = delegate
     }
 
@@ -55,7 +61,7 @@ class WhepClient: @unchecked Sendable {
 
     func isConnected() -> Bool {
         dispatchQueue.sync {
-            ingestClient != nil
+            connected
         }
     }
 
@@ -71,9 +77,12 @@ class WhepClient: @unchecked Sendable {
         }
         stopInternal()
         ingestClient = WebrtcIngestClient(
+            name: "whep-client",
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self
@@ -105,7 +114,7 @@ class WhepClient: @unchecked Sendable {
             try ingestClient.setLocalDescription("offer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to create offer: \(error)")
-            stopInternal()
+            reconnectSoon(reason: "Failed to create offer")
         }
     }
 
@@ -120,9 +129,9 @@ class WhepClient: @unchecked Sendable {
         connected = false
     }
 
-    private func reconnectSoon() {
+    private func reconnectSoon(reason: String) {
         stopInternal()
-        logger.debug("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds")
+        logger.debug("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds (\(reason))")
         reconnectTimer.startSingleShot(timeout: reconnectDelay) { [weak self] in
             self?.startInternal()
         }
@@ -134,7 +143,7 @@ class WhepClient: @unchecked Sendable {
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
         request.httpBody = offer.utf8Data
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        httpUrlSession().dataTask(with: request) { [weak self] data, response, error in
             let self2 = self
             dispatchQueue.async {
                 self2?.handleOfferResponse(data: data, response: response, error: error)
@@ -150,7 +159,7 @@ class WhepClient: @unchecked Sendable {
               let answer = String(data: data, encoding: .utf8)
         else {
             logger.info("whep-client: \(streamId): HTTP response not ok")
-            reconnectSoon()
+            reconnectSoon(reason: "Bad HTTP response")
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
@@ -161,14 +170,14 @@ class WhepClient: @unchecked Sendable {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to set remote answer: \(error)")
-            reconnectSoon()
+            reconnectSoon(reason: "Failed to set remote answer")
         }
     }
 
     private func sendDeleteRequest(url: URL) {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+        httpUrlSession().dataTask(with: request).resume()
     }
 }
 
@@ -183,7 +192,7 @@ extension WhepClient: WebrtcIngestClientDelegate {
             delegate.whepClientOnPublishStop(streamId: streamId, reason: reason)
             connected = false
         }
-        reconnectSoon()
+        reconnectSoon(reason: reason)
     }
 
     func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -192,18 +201,6 @@ extension WhepClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate.whepClientOnAudioBuffer(streamId: streamId, sampleBuffer)
-    }
-
-    func webrtcIngestClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        delegate.whepClientSetTargetLatencies(
-            streamId: streamId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {

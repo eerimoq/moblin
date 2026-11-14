@@ -15,6 +15,20 @@ func createDataRateLimits(bitRate: UInt32) -> CFArray {
     return [bytesLimit, secondsLimit] as CFArray
 }
 
+func createColorProperties(_ colorAttachments: [String: String]) -> [VTSessionProperty] {
+    var properties: [VTSessionProperty] = []
+    if let primaries = colorAttachments[kCVImageBufferColorPrimariesKey as String] {
+        properties.append(.init(key: .colorPrimaries, value: primaries as NSString))
+    }
+    if let transferFunction = colorAttachments[kCVImageBufferTransferFunctionKey as String] {
+        properties.append(.init(key: .transferFunction, value: transferFunction as NSString))
+    }
+    if let yCbCrMatrix = colorAttachments[kCVImageBufferYCbCrMatrixKey as String] {
+        properties.append(.init(key: .YCbCrMatrix, value: yCbCrMatrix as NSString))
+    }
+    return properties
+}
+
 struct VideoEncoderSettings {
     enum Format {
         case h264
@@ -95,28 +109,36 @@ struct VideoEncoderSettings {
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
         ]
-        switch rateControl {
-        case .abr:
-            properties.append(.init(key: .averageBitRate, value: bitrate as CFNumber))
-            properties.append(.init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)))
-        case .cbr:
-            properties.append(.init(key: .constantBitRate, value: bitrate as CFNumber))
-        case .vbr:
-            if #available(iOS 26, *) {
-                properties.append(.init(key: .variableBitRate, value: bitrate as CFNumber))
-            }
-        }
+        properties += bitrateProperties(bitrate: bitrate)
         if profileLevel.contains("Main10") {
-            properties += [
-                .init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto),
-                .init(key: .colorPrimaries, value: kCVImageBufferColorPrimaries_ITU_R_2020),
-                .init(key: .transferFunction, value: kCVImageBufferTransferFunction_ITU_R_2100_HLG),
-                .init(key: .YCbCrMatrix, value: kCVImageBufferYCbCrMatrix_ITU_R_2020),
-            ]
+            properties.append(.init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto))
+            properties += createColorProperties(hlgColorAttachments)
         }
         if !isBaseline, profileLevel.contains("H264") {
             properties.append(.init(key: .h264EntropyMode, value: kVTH264EntropyMode_CABAC))
         }
         return properties
+    }
+
+    func bitrateProperties(bitrate: UInt32) -> [VTSessionProperty] {
+        switch rateControl {
+        case .abr:
+            if #available(iOS 27, *) {
+                [.init(key: .averageBitRate, value: bitrate as CFNumber)]
+            } else {
+                [
+                    .init(key: .averageBitRate, value: bitrate as CFNumber),
+                    .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)),
+                ]
+            }
+        case .cbr:
+            [.init(key: .constantBitRate, value: bitrate as CFNumber)]
+        case .vbr:
+            if #available(iOS 26, *) {
+                [.init(key: .variableBitRate, value: bitrate as CFNumber)]
+            } else {
+                []
+            }
+        }
     }
 }

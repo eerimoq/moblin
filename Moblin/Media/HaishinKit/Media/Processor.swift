@@ -2,8 +2,8 @@ import AVFoundation
 import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
-    func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
+    func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideoAttachCameraError()
     func streamVideoCaptureSessionError(_ message: String)
     func streamVideoBufferedVideoReady(cameraId: UUID)
@@ -15,8 +15,9 @@ protocol ProcessorDelegate: AnyObject {
     func streamRecorderFinished()
     func streamAudio(sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
-    func streamSetZoomX(x: Float)
-    func streamSetExposureBias(bias: Float)
+    func streamPhotoTaken()
+    @MainActor func streamSetZoomX(x: Float)
+    @MainActor func streamSetExposureBias(bias: Float)
     func streamSelectedFps(auto: Bool)
 }
 
@@ -36,13 +37,15 @@ private class Stream {
 
 final class Processor: @unchecked Sendable {
     let audio = AudioUnit()
-    let video = VideoUnit()
+    let video: VideoUnit
     let recorder = Recorder()
     private var streams: [Stream] = []
+    private var driftTrackers: [UUID: DriftTracker] = [:]
     let delegate: any ProcessorDelegate
 
-    init(delegate: any ProcessorDelegate) {
+    init(delegate: any ProcessorDelegate, colorRange: SettingsStreamColorRange) {
         self.delegate = delegate
+        video = VideoUnit(colorRange: colorRange)
         audio.processor = self
         video.processor = self
         recorder.delegate = self
@@ -50,7 +53,13 @@ final class Processor: @unchecked Sendable {
 
     func setTorch(value: Bool) {
         processorControlQueue.async {
-            self.video.torch = value
+            self.video.setTorch(value: value)
+        }
+    }
+
+    func setTorchLevel(value: Float) {
+        processorControlQueue.async {
+            self.video.setTorchLevel(value: value)
         }
     }
 
@@ -81,7 +90,13 @@ final class Processor: @unchecked Sendable {
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {
         processorControlQueue.async {
-            self.video.videoOrientation = value
+            self.video.setVideoOrientation(value: value)
+        }
+    }
+
+    func setGraphicsImplementation(value: SettingsGraphicsImplementation) {
+        processorControlQueue.async {
+            self.video.setGraphicsImplementation(value: value)
         }
     }
 
@@ -95,6 +110,10 @@ final class Processor: @unchecked Sendable {
         processorControlQueue.async {
             self.audio.gain = gain
         }
+    }
+
+    func setAudioDelay(delay: Double) {
+        audio.setDelay(delay: delay)
     }
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
@@ -144,8 +163,8 @@ final class Processor: @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
-        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
+        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
@@ -154,10 +173,6 @@ final class Processor: @unchecked Sendable {
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
-        video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
@@ -170,10 +185,6 @@ final class Processor: @unchecked Sendable {
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         audio.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {
-        audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {
@@ -192,8 +203,8 @@ final class Processor: @unchecked Sendable {
         video.unregisterAllEffects()
     }
 
-    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
-        video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
+    func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double, mirror: Bool) {
+        video.setPendingAfterAttachEffects(effects: effects, rotation: rotation, mirror: mirror)
     }
 
     func usePendingAfterAttachEffects() {
@@ -202,6 +213,10 @@ final class Processor: @unchecked Sendable {
 
     func setScreenPreview(enabled: Bool) {
         video.setScreenPreview(enabled: enabled)
+    }
+
+    func setShowCameraPreview(_ show: Bool) {
+        video.setShowCameraPreview(show)
     }
 
     func setVideoPreviewEnabled(enabled: Bool) {
@@ -226,6 +241,10 @@ final class Processor: @unchecked Sendable {
 
     func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         video.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func takePhoto(flash: Bool) {
+        video.takePhoto(flash: flash)
     }
 
     func takeVideoSourceSnapshot(videoSourceId: UUID, onComplete: @escaping @MainActor (UIImage?) -> Void) {
@@ -338,12 +357,17 @@ final class Processor: @unchecked Sendable {
         video.encoder
     }
 
-    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        audio.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
+    func driftTracker(cameraId: UUID, name: String) -> DriftTracker {
+        if let driftTracker = driftTrackers[cameraId] {
+            return driftTracker
+        }
+        let driftTracker = DriftTracker(name: name)
+        driftTrackers[cameraId] = driftTracker
+        return driftTracker
     }
 
-    func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
-        video.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
+    func removeDriftTracker(cameraId: UUID) {
+        driftTrackers.removeValue(forKey: cameraId)
     }
 
     private func attachCameraInternal(params: VideoUnitAttachParams) throws {

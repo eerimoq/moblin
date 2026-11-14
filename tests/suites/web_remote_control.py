@@ -1,0 +1,67 @@
+from playwright.sync_api import sync_playwright
+
+from ..utils.config import WEB_REMOTE_CONTROL_PORT
+from ..utils.generate_device_settings import BitrateRateControl
+from ..utils.generate_device_settings import SceneName
+from ..utils.mediamtx import MediaMtx
+from ..utils.moblin import Moblin
+from ..utils.test_case import TestCase
+
+
+class WebRemoteControlLive(TestCase):
+    """Go live and end."""
+
+    def setup(self):
+        self.moblin.import_settings(
+            overrides={
+                "streams": [
+                    {
+                        "name": "RTMP",
+                        "enabled": True,
+                        "bitrateRateControl": BitrateRateControl.CBR,
+                        "url": self.moblin.tester_rtmp_url("test"),
+                        "rtmp": {"adaptiveBitrateEnabled": False},
+                    }
+                ],
+            }
+        )
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        with MediaMtx() as mediamtx:
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch()
+                page = browser.new_page()
+                page.goto(f"http://{self.moblin.ip_address}:{WEB_REMOTE_CONTROL_PORT}")
+                live_toggle = page.get_by_text("Live", exact=True)
+                self.assert_false(live_toggle.is_checked())
+                live_toggle.click()
+                page.get_by_role("button", name="OK").click()
+                self.moblin.wait_for_bitrate(4_500_000, 5_500_000, None, 3_000_000)
+                mediamtx.wait_for_rtmp_stream("test", 3_000_000)
+                self.assert_true(live_toggle.is_checked())
+                live_toggle.click()
+                page.get_by_role("button", name="OK").click()
+                self.wait_until(lambda: not live_toggle.is_checked())
+                browser.close()
+
+
+class WebRemoteControlSnapshot(TestCase):
+    """Take snapshots of different ages via the web remote control HTTP endpoint and check the HEIC images."""
+
+    def setup(self):
+        self.moblin.import_settings(overrides={})
+
+    def run(self):
+        self.moblin.set_scene(SceneName.FRONT)
+        for age in [0.0, 3.0]:
+            snapshot = self.moblin.take_snapshot(age=age)
+            self.assert_equal(snapshot[4:8], b"ftyp")
+            self.assert_greater(len(snapshot), 10_000)
+
+
+def tests(moblin: Moblin):
+    return [
+        WebRemoteControlLive(moblin),
+        WebRemoteControlSnapshot(moblin),
+    ]

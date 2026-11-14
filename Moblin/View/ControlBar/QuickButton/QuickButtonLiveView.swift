@@ -61,25 +61,35 @@ private struct SoopView: View {
 private struct GoLiveNotificationView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
+    @State private var sending = false
 
     var body: some View {
         Section {
-            NavigationLink {
-                Form {
-                    GoLiveNotificationDiscordTextSettingsView(stream: stream)
+            if !stream.goLiveNotificationDiscordWebhookUrl.isEmpty {
+                NavigationLink {
+                    Form {
+                        GoLiveNotificationDiscordTextSettingsView(stream: stream)
+                    }
+                    .navigationTitle("Discord")
+                } label: {
+                    DiscordLogoAndNameView()
                 }
-                .navigationTitle("Discord")
-            } label: {
-                DiscordLogoAndNameView()
             }
             Button {
-                model.sendGoLiveNotification()
+                sending = true
+                model.sendGoLiveNotification {
+                    sending = false
+                }
             } label: {
                 HCenter {
-                    Text("Send")
+                    if sending {
+                        ProgressView()
+                    } else {
+                        Text("Send")
+                    }
                 }
             }
-            .disabled(!model.isGoLiveNotificationConfigured())
+            .disabled(sending || !model.isGoLiveNotificationConfigured())
         } header: {
             Text("Go live notification")
         }
@@ -130,6 +140,10 @@ struct QuickButtonLiveView: View {
         return false
     }
 
+    private func isGoLiveNotificationConfigured() -> Bool {
+        !stream.goLiveNotificationDiscordWebhookUrl.isEmpty || stream.goLiveNotificationMoblinWebsite
+    }
+
     var body: some View {
         Form {
             if stream !== fallbackStream {
@@ -148,9 +162,7 @@ struct QuickButtonLiveView: View {
                 if !stream.soopChannelName.isEmpty {
                     SoopView(stream: stream)
                 }
-                if database.showAllSettings,
-                   !stream.goLiveNotificationDiscordWebhookUrl.isEmpty
-                {
+                if database.showAllSettings, isGoLiveNotificationConfigured() {
                     GoLiveNotificationView(model: model, stream: stream)
                 }
                 ShortcutView(model: model, database: database, stream: stream)

@@ -3,6 +3,7 @@ import CryptoKit
 import Foundation
 import Network
 
+@MainActor
 protocol MoblinkStreamerDelegate: AnyObject {
     func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
     func moblinkStreamerTunnelRemoved(endpoint: NWEndpoint)
@@ -13,6 +14,7 @@ private struct RequestResponse {
     let onError: (String) -> Void
 }
 
+@MainActor
 private class Relay {
     let webSocket: NWConnection
     private var nextId: Int = 0
@@ -23,13 +25,13 @@ private class Relay {
     private let password: String
     private var address: String?
     private var port: UInt16?
-    weak var streamer: MoblinkStreamer?
+    weak let streamer: MoblinkStreamer?
     private var tunnelEndpoint: NWEndpoint?
     var relayId = UUID()
     var name = ""
     var batteryPercentage: Int?
     var thermalState: MoblinkThermalState?
-    private var pingTimer = SimpleTimer(queue: .main)
+    private var pingTimer = MainTimer()
     var pongReceived = true
 
     init(webSocket: NWConnection, password: String, streamer: MoblinkStreamer) {
@@ -80,6 +82,10 @@ private class Relay {
 
     func stopTunnel() {
         reportTunnelRemoved()
+    }
+
+    func restartTunnel() {
+        startTunnelInternal()
     }
 
     func updateStatus() {
@@ -183,7 +189,7 @@ private class Relay {
         guard identified else {
             throw "Relay not identified"
         }
-        guard let request = requests[id] else {
+        guard let request = requests.removeValue(forKey: id) else {
             logger.info("moblink-streamer: \(name): Unexpected id in response")
             return
         }
@@ -227,13 +233,14 @@ private class Relay {
 
 private let idStorage = SimpleStringStorage(key: "moblinkServerId")
 
-class MoblinkStreamer: NSObject, @unchecked Sendable {
+@MainActor
+class MoblinkStreamer: NSObject {
     private let port: UInt16
     private let password: String
     private let name: String
     private var server: NWListener?
     var connectionErrorMessage = ""
-    private var retryStartTimer = SimpleTimer(queue: .main)
+    private var retryStartTimer = MainTimer()
     fileprivate weak var delegate: (any MoblinkStreamerDelegate)?
     private var relays: [Relay] = []
     private var destinationAddress: String?
@@ -266,6 +273,13 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
         }
         relays.removeAll()
         delegate = nil
+    }
+
+    func restartTunnel(relayId: UUID) {
+        guard let relay = relays.first(where: { $0.relayId == relayId }) else {
+            return
+        }
+        relay.restartTunnel()
     }
 
     func startTunnels(address: String, port: UInt16) {
@@ -309,7 +323,11 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
                 domain: moblinkBonjourDomain,
                 txtRecord: NWTXTRecord(["name": name])
             )
-            server?.newConnectionHandler = handleNewConnection
+            server?.newConnectionHandler = { connection in
+                MainActor.assumeIsolated {
+                    self.handleNewConnection(connection: connection)
+                }
+            }
             server?.start(queue: .main)
             stopRetryStartTimer()
         } catch {
@@ -366,22 +384,24 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
 
     private func receivePacket(webSocket: NWConnection) {
         webSocket.receiveMessage { data, context, _, _ in
-            switch context?.webSocketOperation() {
-            case .text:
-                if let data, !data.isEmpty {
-                    self.handleMessage(webSocket: webSocket, packet: data)
+            MainActor.assumeIsolated {
+                switch context?.webSocketOperation() {
+                case .text:
+                    if let data, !data.isEmpty {
+                        self.handleMessage(webSocket: webSocket, packet: data)
+                        self.receivePacket(webSocket: webSocket)
+                    } else {
+                        self.handleDisconnected(webSocket: webSocket)
+                    }
+                case .ping:
+                    webSocket.sendWebSocket(data: data, opcode: .pong)
                     self.receivePacket(webSocket: webSocket)
-                } else {
+                case .pong:
+                    self.handlePong(webSocket: webSocket)
+                    self.receivePacket(webSocket: webSocket)
+                default:
                     self.handleDisconnected(webSocket: webSocket)
                 }
-            case .ping:
-                webSocket.sendWebSocket(data: data, opcode: .pong)
-                self.receivePacket(webSocket: webSocket)
-            case .pong:
-                self.handlePong(webSocket: webSocket)
-                self.receivePacket(webSocket: webSocket)
-            default:
-                self.handleDisconnected(webSocket: webSocket)
             }
         }
     }

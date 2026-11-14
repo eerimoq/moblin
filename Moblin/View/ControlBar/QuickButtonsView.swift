@@ -6,16 +6,16 @@ let controlBarPages = 5
 private struct QuickButtonImage: View {
     let model: Model
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let buttonSize: CGFloat
     var hideImage: Bool = false
     let onTapGesture: () -> Void
 
-    private func getImage(state: ButtonState) -> String {
-        if state.isOn {
-            state.button.imageOn
+    private func getImage() -> String {
+        if button.isOn {
+            button.imageOn
         } else {
-            state.button.imageOff
+            button.imageOff
         }
     }
 
@@ -27,10 +27,6 @@ private struct QuickButtonImage: View {
         }
     }
 
-    private func backgroundColor() -> Color {
-        state.button.backgroundColor.color()
-    }
-
     private func iconSize() -> Font {
         if quickButtonsSettings.bigButtons {
             .system(size: 20)
@@ -39,29 +35,34 @@ private struct QuickButtonImage: View {
         }
     }
 
-    var body: some View {
-        let image = Image(systemName: getImage(state: state))
+    private func image() -> some View {
+        Image(systemName: getImage())
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
             .foregroundStyle(foregroundColor())
-            .background(backgroundColor())
-            .clipShape(Circle())
+    }
+
+    private func onRing() -> some View {
+        Circle()
+            .stroke(.white)
+            .frame(width: buttonSize - 1, height: buttonSize - 1)
+    }
+
+    var body: some View {
+        let image = image()
         ZStack {
-            if state.isOn {
-                image.overlay(
-                    Circle()
-                        .stroke(.white)
-                        .frame(width: buttonSize - 1, height: buttonSize - 1)
-                )
+            if button.isOn {
+                image.overlay(onRing())
             } else {
                 image
             }
         }
+        .contentShape(Circle())
         .onTapGesture {
             onTapGesture()
         }
         .onLongPressGesture {
-            model.showQuickButtonSettings(type: state.button.type)
+            model.showQuickButtonSettings(type: button.type)
         }
     }
 }
@@ -69,17 +70,21 @@ private struct QuickButtonImage: View {
 private struct InstantReplayView: View {
     let model: Model
     @ObservedObject var replay: ReplayProvider
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
+    let onTapped: () -> Void
+
+    private func timeLeft() -> some View {
+        Text(String(replay.timeLeft))
+            .font(.system(size: 25))
+            .frame(width: size, height: size)
+            .foregroundStyle(.white)
+            .contentShape(Circle())
+    }
 
     var body: some View {
         if replay.isPlaying {
-            Text(String(replay.timeLeft))
-                .font(.system(size: 25))
-                .frame(width: size, height: size)
-                .foregroundStyle(.white)
-                .background(state.button.backgroundColor.color())
-                .clipShape(Circle())
+            timeLeft()
                 .onTapGesture {
                     if model.stream.replay.enabled {
                         model.instantReplay()
@@ -93,7 +98,7 @@ private struct InstantReplayView: View {
         } else {
             QuickButtonImage(model: model,
                              quickButtonsSettings: model.database.quickButtonsGeneral,
-                             state: state,
+                             button: button,
                              buttonSize: size)
             {
                 if model.stream.replay.enabled {
@@ -101,6 +106,7 @@ private struct InstantReplayView: View {
                 } else {
                     model.makeReplayIsNotEnabledToast()
                 }
+                onTapped()
             }
         }
     }
@@ -132,11 +138,11 @@ private struct ButtonTextOverlayView: View {
 }
 
 struct QuickButtonsInnerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var orientation: Orientation
-    let state: ButtonState
+    @ObservedObject var button: SettingsQuickButton
     let size: CGFloat
     let nameSize: CGFloat
     let nameWidth: CGFloat
@@ -145,21 +151,18 @@ struct QuickButtonsInnerView: View {
     @State private var presentingStartWorkoutTypePicker = false
     @State private var presentingStopWorkoutConfirm = false
 
-    private func torchAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func torchAction() {
+        button.isOn.toggle()
         model.toggleTorch()
-        model.updateQuickButtonStates()
     }
 
-    private func muteAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func muteAction() {
+        button.isOn.toggle()
         model.toggleMute()
-        model.updateQuickButtonStates()
     }
 
     private func stealthModeAction() {
         model.toggleStealthMode()
-        model.updateQuickButtonStates()
     }
 
     private func lockScreenAction() {
@@ -231,19 +234,17 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .stream, panel: .streamSwitcher)
     }
 
-    private func gridAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func gridAction() {
+        button.isOn.toggle()
         model.showingGrid.toggle()
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateQuickButtonStates()
     }
 
-    private func levelAction(state: ButtonState) {
-        state.button.isOn.toggle()
+    private func levelAction() {
+        button.isOn.toggle()
         model.showingCameraLevel.toggle()
         model.reloadCameraLevel()
         model.sceneUpdated(updateRemoteScene: false)
-        model.updateQuickButtonStates()
     }
 
     private func obsAction() {
@@ -253,7 +254,6 @@ struct QuickButtonsInnerView: View {
     private func remoteAction() {
         model.showingRemoteControl.toggle()
         model.setQuickButton(type: .remote, isOn: model.showingRemoteControl)
-        model.updateQuickButtonStates()
     }
 
     private func drawAction() {
@@ -261,40 +261,33 @@ struct QuickButtonsInnerView: View {
     }
 
     private func localOverlaysAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .localOverlays, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .localOverlays)
         model.toggleLocalOverlays()
     }
 
     private func browserAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .browser, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .browser)
         model.toggleBrowser()
     }
 
     private func navigationAction() {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .navigation, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .navigation)
         model.toggleNavigation()
     }
 
     private func cameraPreviewAction() {
-        state.button.isOn.toggle()
-        if state.button.isOn {
+        button.isOn.toggle()
+        if button.isOn {
             model.makeToast(
                 title: String(localized: "Widgets will not be visible on screen when Camera preview is on"),
                 subTitle: String(localized: "They will be visible on stream and in recordings")
             )
         }
-        model.updateQuickButtonStates()
-        model.reattachCamera()
+        model.toggleCameraPreview()
     }
 
     private func snapshotAction() {
-        model.takeSnapshot()
+        model.takeSnapshot(age: 0.0, isChatBot: false, message: nil)
     }
 
     private func widgetsAction() {
@@ -310,12 +303,11 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .chat, panel: .chat)
     }
 
-    private func interactiveChatAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .interactiveChat, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
-        model.chat.interactiveChat = state.button.isOn
-        if !state.button.isOn {
+    private func interactiveChatAction() {
+        model.toggleQuickButton(type: .interactiveChat)
+        model.chat.interactiveChat = button.isOn
+        model.chatActivityFeed.interactiveChat = button.isOn
+        if !button.isOn {
             model.disableInteractiveChat()
         }
     }
@@ -326,10 +318,6 @@ struct QuickButtonsInnerView: View {
 
     private func bitrateAction() {
         model.toggleShowingPanel(type: .bitrate, panel: .bitrate)
-    }
-
-    private func recordingsAction() {
-        model.toggleShowingPanel(type: .recordings, panel: .recordings)
     }
 
     private func skipCurrentTtsAction() {
@@ -354,18 +342,16 @@ struct QuickButtonsInnerView: View {
 
     private func portraitAction() {
         model.setDisplayPortrait(portrait: !model.database.portrait)
-        model.reattachCamera()
+        model.attachCamera()
     }
 
     private func goProAction() {
         model.toggleShowingPanel(type: .goPro, panel: .goPro)
     }
 
-    private func replayAction(state: ButtonState) {
+    private func replayAction() {
         model.streamOverlay.showingReplay.toggle()
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .replay, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .replay)
     }
 
     private func liveAction() {
@@ -409,16 +395,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBeautyQuickButton()
     }
 
-    private func videoPreviewAction(state: ButtonState) {
+    private func videoPreviewAction() {
         model.toggleVideoPreview()
-        state.button.isOn.toggle()
-        model.setQuickButton(type: .videoPreview, isOn: state.button.isOn)
-        model.updateQuickButtonStates()
+        model.toggleQuickButton(type: .videoPreview)
     }
 
     private func interactiveBrowserWidgetsAction() {
-        state.button.isOn.toggle()
-        model.setInteractiveBrowserWidgets(on: state.button.isOn)
+        model.setInteractiveBrowserWidgets(on: !button.isOn)
     }
 
     private func macrosAction() {
@@ -433,81 +416,118 @@ struct QuickButtonsInnerView: View {
         model.togglePreviewStream()
     }
 
+    private func photoShootAction() {
+        model.togglePhotoShoot()
+    }
+
+    private func sceneEditorAction() {
+        model.presentingSceneEditor = true
+    }
+
+    private func selectedRing() -> some View {
+        Circle()
+            .stroke(.yellow, lineWidth: 2)
+            .frame(width: size - 2, height: size - 2)
+    }
+
+    private func isPresentingDialog() -> Bool {
+        presentingRecordConfirm
+            || presentingPreviewStreamConfirm
+            || presentingStartWorkoutTypePicker
+            || presentingStopWorkoutConfirm
+    }
+
+    private func stopFilteringUnlessPresentingDialog() {
+        if isPresentingDialog() {
+            model.quickButtonsFilterPresentingDialog()
+        } else {
+            model.stopFilteringQuickButtons(showButton: button)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                let button = Group {
-                    switch state.button.type {
+                let buttonView = Group {
+                    switch button.type {
                     case .unknown:
                         QuickButtonPlaceholderImage(size: size)
                     case .torch:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            torchAction(state: state)
+                            torchAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .mute:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            muteAction(state: state)
+                            muteAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .bitrate:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             bitrateAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .mic:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             micAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .chat:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             chatAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .interactiveChat:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            interactiveChatAction(state: state)
+                            interactiveChatAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .blackScreen:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             stealthModeAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .lockScreen:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             lockScreenAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .record:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             if model.database.startStopRecordingConfirmations {
@@ -515,220 +535,237 @@ struct QuickButtonsInnerView: View {
                             } else {
                                 recordAction()
                             }
+                            stopFilteringUnlessPresentingDialog()
                         }
                         .confirmationDialog("", isPresented: $presentingRecordConfirm) {
-                            Button(state.isOn ? "Stop recording" : "Start recording") {
+                            Button(button.isOn ? "Stop recording" : "Start recording") {
                                 recordAction()
                             }
-                        }
-                    case .recordings:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size)
-                        {
-                            recordingsAction()
                         }
                     case .image:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             imageAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .movie:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             movieAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .fourThree:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             fourThreeAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .crt:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             crtAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .grayScale:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             grayScaleAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .sepia:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             sepiaAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .triple:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             tripleAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .twin:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             twinAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .cameraMan:
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 cameraManAction()
+                                stopFilteringUnlessPresentingDialog()
                             }
                             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
                                 .font(.system(size: 10))
                                 .foregroundStyle(.white)
-                                .stroke(color: state.button.backgroundColor.color())
+                                .stroke(color: button.backgroundColor.color())
                                 .offset(CGSize(width: -5, height: 2))
                                 .frame(width: size, height: size)
                         }
                     case .pixellate:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pixellateAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .stream:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             streamAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .grid:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            gridAction(state: state)
+                            gridAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .cameraLevel:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            levelAction(state: state)
+                            levelAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .obs:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             obsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .remote:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             remoteAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .draw:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             drawAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .localOverlays:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             localOverlaysAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .browser:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             browserAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .cameraPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             cameraPreviewAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .poll:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pollAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .snapshot:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             snapshotAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .widgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             widgetsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .luts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             lutsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .workout:
-                        if state.isOn {
+                        if button.isOn {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 presentingStopWorkoutConfirm = true
+                                stopFilteringUnlessPresentingDialog()
                             }
                             .confirmationDialog("", isPresented: $presentingStopWorkoutConfirm) {
                                 Button("End workout") {
@@ -738,10 +775,11 @@ struct QuickButtonsInnerView: View {
                         } else {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 presentingStartWorkoutTypePicker = true
+                                stopFilteringUnlessPresentingDialog()
                             }
                             .confirmationDialog("", isPresented: $presentingStartWorkoutTypePicker) {
                                 Button("Start walking workout") {
@@ -758,195 +796,223 @@ struct QuickButtonsInnerView: View {
                     case .moderation:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             model.presentingModeration = true
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .predefinedMessages:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             model.presentingPredefinedMessages = true
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .skipCurrentTts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             skipCurrentTtsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .streamMarker:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             streamMarkerAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .reloadBrowserWidgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             reloadBrowserWidgetsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .djiDevices:
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 djiDevicesAction()
+                                stopFilteringUnlessPresentingDialog()
                             }
                             ButtonTextOverlayView(text: String(localized: "DJI"))
                         }
                     case .portrait:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             portraitAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .goPro:
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 goProAction()
+                                stopFilteringUnlessPresentingDialog()
                             }
                             ButtonTextOverlayView(text: String(localized: "GoPro"))
                         }
                     case .replay:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            replayAction(state: state)
+                            replayAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .instantReplay:
-                        InstantReplayView(model: model, replay: model.replay, state: state, size: size)
+                        InstantReplayView(
+                            model: model,
+                            replay: model.replay,
+                            button: button,
+                            size: size,
+                            onTapped: stopFilteringUnlessPresentingDialog
+                        )
                     case .connectionPriorities:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             connectionPrioritiesAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .whirlpool:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             whirlpoolAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .pinch:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pinchAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .autoSceneSwitcher:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             autoSceneSwitcherAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .pauseTts:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             pauseTtsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .live:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             liveAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .navigation:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             navigationAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .blurFaces:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             blurFacesAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .blurText:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             blurTextAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .moblinInMouth:
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size,
                                              hideImage: true)
                             {
                                 moblinInMouthAction()
+                                stopFilteringUnlessPresentingDialog()
                             }
                             Image("MoblinInMouth")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 21, height: 40)
                                 .offset(.init(width: 0, height: 3))
                         }
                     case .privacy:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             privacyAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .glasses:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             glassesAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .sparkle:
                         ZStack {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
-                                             state: state,
+                                             button: button,
                                              buttonSize: size)
                             {
                                 sparkleAction()
+                                stopFilteringUnlessPresentingDialog()
                             }
                             Image(systemName: "sparkle")
                                 .rotationEffect(.degrees(70))
@@ -958,70 +1024,95 @@ struct QuickButtonsInnerView: View {
                     case .beauty:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             beautyAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .videoPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
-                            videoPreviewAction(state: state)
+                            videoPreviewAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .interactiveBrowserWidgets:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             interactiveBrowserWidgetsAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .macros:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             macrosAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .gimbalTracking:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             gimbalTrackingAction()
+                            stopFilteringUnlessPresentingDialog()
                         }
                     case .previewStream:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
+                                         button: button,
                                          buttonSize: size)
                         {
                             presentingPreviewStreamConfirm = true
+                            stopFilteringUnlessPresentingDialog()
                         }
                         .confirmationDialog("", isPresented: $presentingPreviewStreamConfirm) {
-                            Button(state.isOn ? "Stop preview stream" : "Start preview stream") {
+                            Button(button.isOn ? "Stop preview stream" : "Start preview stream") {
                                 previewStreamAction()
                             }
                         }
+                    case .photoShoot:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         button: button,
+                                         buttonSize: size)
+                        {
+                            photoShootAction()
+                            stopFilteringUnlessPresentingDialog()
+                        }
+                    case .sceneEditor:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         button: button,
+                                         buttonSize: size)
+                        {
+                            sceneEditorAction()
+                            stopFilteringUnlessPresentingDialog()
+                        }
                     }
                 }
-                if state.button.type == quickButtons.selectedButtonType {
-                    button.overlay(
-                        Circle()
-                            .stroke(.yellow, lineWidth: 2)
-                            .frame(width: size - 2, height: size - 2)
-                    )
+                if button.type == .unknown {
+                    buttonView
+                } else if button.type == quickButtons.selectedButtonType {
+                    buttonView
+                        .overlay(selectedRing())
+                        .background(Circle().fill(button.backgroundColor.color()))
                 } else {
-                    button
+                    buttonView
+                        .background(Circle().fill(button.backgroundColor.color()))
                 }
             }
             if quickButtonsSettings.showName, !orientation.isPortrait {
-                Text(state.button.name)
+                Text(button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
@@ -1031,6 +1122,47 @@ struct QuickButtonsInnerView: View {
                     .font(.system(size: nameSize))
             }
         }
-        .rotationEffect(.degrees(180))
+        .onChange(of: isPresentingDialog()) { presenting in
+            if !presenting {
+                model.stopFilteringQuickButtons(showButton: button)
+            }
+        }
+        .id(button.id)
+    }
+}
+
+private struct ScrollToQuickButtonModifier: ViewModifier {
+    let model: Model
+    @ObservedObject var quickButtons: QuickButtons
+    let pairs: [QuickButtonPair]
+    let proxy: ScrollViewProxy
+
+    private func scroll() {
+        if let buttonId = model.takeQuickButtonToScrollTo(pairs: pairs) {
+            proxy.scrollTo(buttonId, anchor: .center)
+        }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                scroll()
+            }
+            .onChange(of: quickButtons.scrollToButtonId) { _ in
+                scroll()
+            }
+    }
+}
+
+extension View {
+    func scrollToQuickButton(model: Model,
+                             quickButtons: QuickButtons,
+                             pairs: [QuickButtonPair],
+                             proxy: ScrollViewProxy) -> some View
+    {
+        modifier(ScrollToQuickButtonModifier(model: model,
+                                             quickButtons: quickButtons,
+                                             pairs: pairs,
+                                             proxy: proxy))
     }
 }

@@ -13,10 +13,9 @@ struct BufferedStats {
     }
 
     mutating func getStats(_ presentationTimeStamp: Double) -> (Int, Int)? {
-        guard presentationTimeStamp > latestPresentationTimeStamp + Self.outputInterval else {
-            return nil
-        }
-        guard numberOfDuplicated > 0 || numberOfDropped > 0 else {
+        guard presentationTimeStamp > latestPresentationTimeStamp + Self.outputInterval,
+              numberOfDuplicated > 0 || numberOfDropped > 0
+        else {
             return nil
         }
         defer {

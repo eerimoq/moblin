@@ -5,6 +5,13 @@ func randomString() -> String {
     Data.random(length: 64).base64EncodedString()
 }
 
+func startBlockingThread(name: String, _ block: @escaping @Sendable () -> Void) {
+    let thread = Thread(block: block)
+    thread.name = name
+    thread.qualityOfService = .userInteractive
+    thread.start()
+}
+
 func randomHumanString() -> String {
     Data.random(length: 15).base64EncodedString().replacingOccurrences(
         of: "[+/=]",
@@ -16,6 +23,13 @@ func randomHumanString() -> String {
 extension String {
     func removeAllWhitespaces() -> String {
         replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+    }
+
+    func truncate(length: Int) -> String {
+        guard count > length else {
+            return self
+        }
+        return prefix(max(length - 3, 0)) + String("...".prefix(length))
     }
 }
 
@@ -79,12 +93,14 @@ func emojiFlag(countryCode: String?) -> String {
     return emote
 }
 
+@MainActor
 func uploadImage(
     url: URL,
     paramName: String,
     fileName: String,
     image: Data,
     message: String?,
+    maximumBytesPerSecond: (@MainActor () -> Int?)? = nil,
     onCompleted: (@MainActor (Bool) -> Void)? = nil
 ) {
     let boundary = UUID().uuidString
@@ -104,7 +120,7 @@ func uploadImage(
     data.append("content-type: image/jpeg\r\n\r\n".utf8Data)
     data.append(image)
     data.append("\r\n--\(boundary)--\r\n".utf8Data)
-    httpCall(request: request, body: data) { data in
+    httpCall(request: request, body: data, maximumBytesPerSecond: maximumBytesPerSecond) { data in
         onCompleted?(data != nil)
     }
 }
@@ -122,12 +138,19 @@ extension CGSize {
 class ResourceUsage {
     private var previousTime: ContinuousClock.Instant?
     private var previousUsage: rusage?
+    private var previousCpuTicks: [[UInt32]]?
+    private var appCpuUsage: Float = 0
     private var cpuUsage: Float = 0
     private var memoryUsage: UInt64 = 0
 
     func update(now: ContinuousClock.Instant) {
-        updateCpuUsage(now: now)
+        updateAppCpuUsage(now: now)
+        updateCpuUsage()
         updateMemoryUsage()
+    }
+
+    func getAppCpuUsage() -> Int {
+        Int(appCpuUsage)
     }
 
     func getCpuUsage() -> Int {
@@ -138,7 +161,7 @@ class ResourceUsage {
         Int(memoryUsage)
     }
 
-    private func updateCpuUsage(now: ContinuousClock.Instant) {
+    private func updateAppCpuUsage(now: ContinuousClock.Instant) {
         var usage = rusage()
         guard getrusage(RUSAGE_SELF, &usage) == 0 else {
             return
@@ -147,10 +170,48 @@ class ResourceUsage {
             let systemTime = usage.ru_stime.milliseconds - previousUsage.ru_stime.milliseconds
             let userTime = usage.ru_utime.milliseconds - previousUsage.ru_utime.milliseconds
             let time = Float(systemTime + userTime)
-            cpuUsage = 100 * time / Float(previousTime.duration(to: now).milliseconds)
+            appCpuUsage = 100 * time / Float(previousTime.duration(to: now).milliseconds)
         }
         previousTime = now
         previousUsage = usage
+    }
+
+    private func updateCpuUsage() {
+        var numberOfCpus: natural_t = 0
+        var info: processor_info_array_t?
+        var infoCount: mach_msg_type_number_t = 0
+        let kerr = host_processor_info(mach_host_self(),
+                                       PROCESSOR_CPU_LOAD_INFO,
+                                       &numberOfCpus,
+                                       &info,
+                                       &infoCount)
+        guard kerr == KERN_SUCCESS, let info else {
+            return
+        }
+        defer {
+            vm_deallocate(mach_task_self_,
+                          vm_address_t(bitPattern: UnsafeRawPointer(info)),
+                          vm_size_t(infoCount) * vm_size_t(MemoryLayout<integer_t>.size))
+        }
+        let states = Int(CPU_STATE_MAX)
+        let ticks = (0 ..< Int(numberOfCpus)).map { cpu in
+            (0 ..< states).map { UInt32(bitPattern: info[cpu * states + $0]) }
+        }
+        if let previousCpuTicks, previousCpuTicks.count == ticks.count {
+            var usage: Float = 0
+            for (current, previous) in zip(ticks, previousCpuTicks) {
+                let user = Float(current[Int(CPU_STATE_USER)] &- previous[Int(CPU_STATE_USER)])
+                let system = Float(current[Int(CPU_STATE_SYSTEM)] &- previous[Int(CPU_STATE_SYSTEM)])
+                let idle = Float(current[Int(CPU_STATE_IDLE)] &- previous[Int(CPU_STATE_IDLE)])
+                let nice = Float(current[Int(CPU_STATE_NICE)] &- previous[Int(CPU_STATE_NICE)])
+                let total = user + system + idle + nice
+                if total > 0 {
+                    usage += 100 * (user + system + nice) / total
+                }
+            }
+            cpuUsage = usage
+        }
+        previousCpuTicks = ticks
     }
 
     private func updateMemoryUsage() {
@@ -257,12 +318,11 @@ func makeUniqueName(name: String, existingNames: [some Named]) -> String {
     }
 }
 
-func createSpeechSynthesizer() -> AVSpeechSynthesizer {
-    let synthesizer = AVSpeechSynthesizer()
-    // Using the application audio session makes mic buffers 144 bytes, which adds a lot of overhead.
-    // But when using two audio sessions the volume is all wrong...
-    synthesizer.usesApplicationAudioSession = false
-    return synthesizer
+func sortedBySearchPrefix<T>(_ items: [T], searchText: String, name: (T) -> String) -> [T] {
+    let searchText = searchText.lowercased()
+    let matches = items.filter { name($0).lowercased().hasPrefix(searchText) }
+    let others = items.filter { !name($0).lowercased().hasPrefix(searchText) }
+    return matches + others
 }
 
 func makeRecordingPath(recordingPath: Data) -> URL? {
@@ -287,9 +347,10 @@ extension Locale.Language {
 extension AVAsset {
     func duration() -> Double {
         let semaphore = DispatchSemaphore(value: 0)
-        var duration: Double?
+        nonisolated(unsafe) var duration: Double?
+        nonisolated(unsafe) let asset = self
         Task {
-            duration = try? await load(.duration).seconds
+            duration = try? await asset.load(.duration).seconds
             semaphore.signal()
         }
         semaphore.wait()

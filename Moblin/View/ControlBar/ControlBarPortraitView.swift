@@ -2,7 +2,7 @@ import SwiftUI
 
 @available(iOS 17, *)
 @MainActor
-private struct ControlBarPageScrollTargetBehavior: @preconcurrency ScrollTargetBehavior {
+private struct ControlBarPageScrollTargetBehavior: @MainActor ScrollTargetBehavior {
     let model: Model
 
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
@@ -18,7 +18,7 @@ private struct QuickButtonsView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    let page: Int
+    let pairs: [QuickButtonPair]
     let height: Double
 
     private func buttonSize() -> Double {
@@ -31,15 +31,26 @@ private struct QuickButtonsView: View {
 
     var body: some View {
         HStack {
-            ForEach(model.getQuickButtonPairs(page: page + 1)) { pair in
+            ForEach(pairs.reversed()) { pair in
                 if quickButtonsSettings.twoColumns {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .trailing) {
+                        QuickButtonsInnerView(
+                            model: model,
+                            quickButtons: quickButtons,
+                            quickButtonsSettings: quickButtonsSettings,
+                            orientation: model.orientation,
+                            button: pair.first,
+                            size: buttonSize(),
+                            nameSize: buttonSize(),
+                            nameWidth: buttonSize()
+                        )
                         if let second = pair.second {
                             QuickButtonsInnerView(
+                                model: model,
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
-                                state: second,
+                                button: second,
                                 size: buttonSize(),
                                 nameSize: buttonSize(),
                                 nameWidth: buttonSize()
@@ -47,67 +58,72 @@ private struct QuickButtonsView: View {
                         } else {
                             QuickButtonPlaceholderImage(size: buttonSize())
                         }
-                        QuickButtonsInnerView(
-                            quickButtons: quickButtons,
-                            quickButtonsSettings: quickButtonsSettings,
-                            orientation: model.orientation,
-                            state: pair.first,
-                            size: buttonSize(),
-                            nameSize: buttonSize(),
-                            nameWidth: buttonSize()
-                        )
                     }
                 } else {
+                    QuickButtonsInnerView(
+                        model: model,
+                        quickButtons: quickButtons,
+                        quickButtonsSettings: quickButtonsSettings,
+                        orientation: model.orientation,
+                        button: pair.first,
+                        size: buttonSize(),
+                        nameSize: buttonSize(),
+                        nameWidth: buttonSize()
+                    )
+                    .frame(height: height - 10)
                     if let second = pair.second {
                         QuickButtonsInnerView(
+                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
-                            state: second,
+                            button: second,
                             size: buttonSize(),
                             nameSize: buttonSize(),
                             nameWidth: buttonSize()
                         )
                         .frame(height: height - 10)
                     }
-                    QuickButtonsInnerView(
-                        quickButtons: quickButtons,
-                        quickButtonsSettings: quickButtonsSettings,
-                        orientation: model.orientation,
-                        state: pair.first,
-                        size: buttonSize(),
-                        nameSize: buttonSize(),
-                        nameWidth: buttonSize()
-                    )
-                    .frame(height: height - 10)
                 }
             }
         }
     }
 }
 
-private struct PageView: View {
+struct ControlBarPortraitPageView: View {
     let model: Model
     let quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
-    var page: Int
+    let pairs: [QuickButtonPair]
     var height: Double
+    @State private var scrollViewWidth: CGFloat = 0
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            QuickButtonsView(model: model,
-                             quickButtons: quickButtons,
-                             quickButtonsSettings: quickButtonsSettings,
-                             page: page,
-                             height: height)
+        ScrollViewReader { scrollProxy in
+            EndAnchoredScrollView(axis: .horizontal) {
+                QuickButtonsView(model: model,
+                                 quickButtons: quickButtons,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 pairs: pairs,
+                                 height: height)
+                    .frame(minWidth: scrollViewWidth, maxHeight: .infinity, alignment: .topTrailing)
+                    .controlBarDoubleTapArea(model: model)
+            }
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.width
+            } action: { width in
+                scrollViewWidth = width
+            }
+            .scrollIndicators(.hidden)
+            .scrollDisabled(!quickButtonsSettings.enableScroll)
+            .filterQuickButtonsOnOverscroll(model: model, axis: .horizontal)
+            .scrollToQuickButton(model: model, quickButtons: quickButtons, pairs: pairs, proxy: scrollProxy)
         }
-        .scrollDisabled(!quickButtonsSettings.enableScroll)
-        .rotationEffect(.degrees(180))
     }
 }
 
 private struct IconAndSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
 
     var body: some View {
@@ -118,7 +134,7 @@ private struct IconAndSettingsView: View {
                 Image("\(store.iconImage)NoBackground")
                     .interpolation(.high)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .padding(.bottom, 4)
                     .offset(x: 2)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
@@ -127,13 +143,7 @@ private struct IconAndSettingsView: View {
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
-                Image(systemName: "gearshape")
-                    .frame(width: controlBarButtonSize, height: controlBarButtonSize)
-                    .overlay(
-                        Circle()
-                            .stroke(.secondary)
-                    )
-                    .foregroundStyle(.white)
+                SettingsButtonImage()
             }
             .buttonStyle(.plain)
             .padding(.leading, 10)
@@ -144,19 +154,19 @@ private struct IconAndSettingsView: View {
 
 private struct MainPageView: View {
     let model: Model
-    let quickButtons: QuickButtons
+    @ObservedObject var quickButtons: QuickButtons
     let quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var status: StatusOther
     var height: Double
     @State var presentingThermalState: Bool = false
 
     var body: some View {
-        HStack(spacing: 0) {
-            PageView(model: model,
-                     quickButtons: quickButtons,
-                     quickButtonsSettings: quickButtonsSettings,
-                     page: 0,
-                     height: height)
+        HStack(alignment: .top, spacing: 0) {
+            ControlBarPortraitPageView(model: model,
+                                       quickButtons: quickButtons,
+                                       quickButtonsSettings: quickButtonsSettings,
+                                       pairs: quickButtons.pairs[0],
+                                       height: height)
                 .padding([.top, .leading], 5)
                 .padding(.trailing, 0)
             VStack(spacing: 0) {
@@ -173,8 +183,8 @@ private struct MainPageView: View {
                 .padding(.top, 3)
                 .padding(.trailing, 5)
                 .padding(.leading, 0)
-                IconAndSettingsView(store: model.store)
-                StreamButton()
+                IconAndSettingsView(model: model, store: model.store)
+                StreamButton(show: model.show)
                     .padding(.top, 10)
                     .padding(.horizontal, 5)
             }
@@ -190,6 +200,7 @@ private struct MainPageView: View {
 private struct PagesView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
+    @ObservedObject var pages: QuickButtonsPages
     let quickButtonsSettings: SettingsQuickButtons
     var height: Double
 
@@ -206,23 +217,24 @@ private struct PagesView: View {
                             .id(1)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !quickButtons.pairs[page].isEmpty {
-                                PageView(model: model,
-                                         quickButtons: quickButtons,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         page: page,
-                                         height: height)
+                                ControlBarPortraitPageView(model: model,
+                                                           quickButtons: quickButtons,
+                                                           quickButtonsSettings: quickButtonsSettings,
+                                                           pairs: quickButtons.pairs[page],
+                                                           height: height)
                                     .id(page + 1)
                                     .padding([.top, .leading, .trailing], 5)
                             }
                         }
                     }
                     .containerRelativeFrame(.vertical, count: 1, spacing: 0, alignment: .top)
+                    .controlBarDoubleTapArea(model: model)
                 }
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
-            .scrollPosition(id: $quickButtons.activePage)
+            .scrollPosition(id: $pages.activePage)
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
             ScrollView(.vertical) {
@@ -231,6 +243,7 @@ private struct PagesView: View {
                              quickButtonsSettings: quickButtonsSettings,
                              status: model.statusOther,
                              height: height)
+                    .controlBarDoubleTapArea(model: model)
             }
             .scrollIndicators(.never)
             .ignoresSafeArea(.all, edges: [.bottom])
@@ -239,15 +252,16 @@ private struct PagesView: View {
 }
 
 struct ControlBarPortraitView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
 
     var body: some View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
+                  pages: model.quickButtonsPages,
                   quickButtonsSettings: model.database.quickButtonsGeneral,
                   height: controlBarWidth(quickButtons: quickButtons))
             .frame(height: controlBarWidth(quickButtons: quickButtons))
-            .background(.black)
+            .controlBarFilter(model: model)
     }
 }

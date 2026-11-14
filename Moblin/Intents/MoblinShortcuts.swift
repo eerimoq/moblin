@@ -1,10 +1,10 @@
-@preconcurrency import AppIntents
+import AppIntents
 import IntentsUI
 
 final class MoblinShortcuts: AppShortcutsProvider {
     static let shortcutTileColor = ShortcutTileColor.navy
 
-    static let appShortcuts: [AppShortcut] = [
+    nonisolated(unsafe) static let appShortcuts: [AppShortcut] = [
         AppShortcut(intent: MuteIntent(), phrases: [
             "\(.applicationName), mute",
         ],

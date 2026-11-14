@@ -7,7 +7,7 @@ struct OpacityEffectView: View {
     @ObservedObject var opacity: SettingsVideoEffectOpacity
 
     private func updateWidget() {
-        model.getWidgetOpacityEffect(widget, effect)?.setOpacity(opacity: opacity.opacity)
+        model.opacityEffectSettingsChanged(widget: widget, effect: effect)
     }
 
     var body: some View {

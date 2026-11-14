@@ -8,25 +8,26 @@
 import SwiftUI
 
 struct BlackSharkCoolerDevicesSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices
 
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "BlackSharkMagCooler4Pro")
-                }
+                IntegrationImageView(imageName: "BlackSharkMagCooler4Pro", height: 180)
             }
             Section {
                 List {
                     ForEach(blackSharkCoolerDevices.devices) { device in
-                        BlackSharkCoolerDeviceSettingsView(blackSharkCoolerDevices: blackSharkCoolerDevices,
-                                                           device: device,
-                                                           status: model.statusTopRight)
-                            .contextMenuDeleteButton {
-                                blackSharkCoolerDevices.devices.removeAll { $0.id == device.id }
-                            }
+                        BlackSharkCoolerDeviceSettingsView(
+                            model: model,
+                            blackSharkCoolerDevices: blackSharkCoolerDevices,
+                            device: device,
+                            status: model.statusTopRight
+                        )
+                        .contextMenuDeleteButton {
+                            blackSharkCoolerDevices.devices.removeAll { $0.id == device.id }
+                        }
                     }
                     .onDelete { offsets in
                         blackSharkCoolerDevices.devices.remove(atOffsets: offsets)

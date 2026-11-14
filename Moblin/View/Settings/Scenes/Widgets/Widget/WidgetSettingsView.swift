@@ -8,11 +8,38 @@ struct AlignmentOptionView: View {
     var body: some View {
         Button {
             layout.alignment = alignment
+            if alignment.isHorizontalOrVerticalCenter() {
+                layout.positioningLock = false
+            }
         } label: {
             Image(systemName: layout.alignment == alignment ? "square.fill" : "square")
         }
         .buttonStyle(.borderless)
         .font(.title)
+    }
+}
+
+struct AlignmentPickerView: View {
+    @Binding var layout: SettingsWidgetLayout
+
+    var body: some View {
+        VStack(spacing: 5) {
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .topLeft)
+                AlignmentOptionView(layout: $layout, alignment: .topCenter)
+                AlignmentOptionView(layout: $layout, alignment: .topRight)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
+                AlignmentOptionView(layout: $layout, alignment: .center)
+                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+            }
+            HStack(spacing: 3) {
+                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
+                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
+                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
+            }
+        }
     }
 }
 
@@ -96,26 +123,10 @@ struct WidgetLayoutView: View {
             }
             if widget.hasAlignment() {
                 Divider()
-                VStack(spacing: 5) {
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .topRight)
+                AlignmentPickerView(layout: $layout)
+                    .onChange(of: layout.alignment) { _ in
+                        model.sceneUpdated()
                     }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .center)
-                        AlignmentOptionView(layout: $layout, alignment: .rightCenter)
-                    }
-                    HStack(spacing: 3) {
-                        AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                        AlignmentOptionView(layout: $layout, alignment: .bottomRight)
-                    }
-                }
-                .onChange(of: layout.alignment) { _ in
-                    model.sceneUpdated()
-                }
             }
         }
     }
@@ -128,7 +139,7 @@ struct WidgetLayoutView: View {
                     value: $layout.xString,
                     onSubmit: {
                         setYBasedOnXIfLocked()
-                        model.sceneUpdated()
+                        model.sceneUpdatedThrottled()
                     },
                     numericInput: $numericInput,
                     incrementImageName: "arrow.forward.circle",
@@ -142,7 +153,7 @@ struct WidgetLayoutView: View {
                     value: $layout.yString,
                     onSubmit: {
                         setXBasedOnYIfLocked()
-                        model.sceneUpdated()
+                        model.sceneUpdatedThrottled()
                     },
                     numericInput: $numericInput,
                     incrementImageName: "arrow.down.circle",
@@ -168,7 +179,7 @@ struct WidgetLayoutView: View {
             number: $layout.x,
             value: $layout.xString,
             onSubmit: {
-                model.sceneUpdated()
+                model.sceneUpdatedThrottled()
             },
             numericInput: $numericInput,
             incrementImageName: "arrow.forward.circle",
@@ -183,7 +194,7 @@ struct WidgetLayoutView: View {
             number: $layout.y,
             value: $layout.yString,
             onSubmit: {
-                model.sceneUpdated()
+                model.sceneUpdatedThrottled()
             },
             numericInput: $numericInput,
             incrementImageName: "arrow.down.circle",
@@ -211,7 +222,7 @@ struct WidgetLayoutView: View {
                         number: $layout.size,
                         value: $layout.sizeString,
                         onSubmit: {
-                            model.sceneUpdated()
+                            model.sceneUpdatedThrottled()
                         },
                         numericInput: $numericInput
                     )
@@ -241,6 +252,73 @@ struct WidgetNameView: View {
     }
 }
 
+struct WidgetSettingsSectionsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        Section {
+            NameEditView(name: $widget.name, existingNames: database.widgets)
+        }
+        switch widget.type {
+        case .image:
+            WidgetImageSettingsView(model: model, widget: widget)
+        case .browser:
+            WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
+        case .text:
+            WidgetTextSettingsView(widget: widget, text: widget.text)
+        case .crop:
+            WidgetCropSettingsView(widget: widget)
+        case .map:
+            WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
+        case .scene:
+            WidgetSceneSettingsView(widget: widget, scene: widget.scene)
+        case .slideshow:
+            WidgetSlideshowSettingsView(widget: widget)
+        case .qrCode:
+            WidgetQrCodeSettingsView(model: model, widget: widget)
+        case .alerts:
+            WidgetAlertsSettingsView(model: model, widget: widget)
+        case .videoSource:
+            WidgetVideoSourceSettingsView(widget: widget,
+                                          videoSource: widget.videoSource,
+                                          videoSources: model.videoSources)
+        case .scoreboard:
+            WidgetScoreboardSettingsView(model: model,
+                                         widget: widget,
+                                         scoreboard: widget.scoreboard,
+                                         web: database.remoteControl.web)
+        case .vTuber:
+            WidgetVTuberSettingsView(model: model,
+                                     widget: widget,
+                                     vTuber: widget.vTuber,
+                                     videoSources: model.videoSources)
+        case .pngTuber:
+            WidgetPngTuberSettingsView(model: model,
+                                       widget: widget,
+                                       pngTuber: widget.pngTuber,
+                                       videoSources: model.videoSources)
+        case .snapshot:
+            WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
+        case .chat:
+            WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
+        case .chatEmoteCombo:
+            WidgetChatEmoteComboSettingsView(
+                model: model,
+                widget: widget,
+                chatEmoteCombo: widget.chatEmoteCombo
+            )
+        case .wheelOfLuck:
+            WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
+        case .bingoCard:
+            WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
+        case .pomodoroTimer:
+            WidgetPomodoroTimerSettingsView(model: model, pomodoroTimer: widget.pomodoroTimer)
+        }
+    }
+}
+
 struct WidgetSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -248,56 +326,7 @@ struct WidgetSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                NameEditView(name: $widget.name, existingNames: database.widgets)
-            }
-            switch widget.type {
-            case .image:
-                WidgetImageSettingsView(model: model, widget: widget)
-            case .browser:
-                WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
-            case .text:
-                WidgetTextSettingsView(widget: widget, text: widget.text)
-            case .crop:
-                WidgetCropSettingsView(widget: widget)
-            case .map:
-                WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
-            case .scene:
-                WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
-            case .slideshow:
-                WidgetSlideshowSettingsView(widget: widget)
-            case .qrCode:
-                WidgetQrCodeSettingsView(model: model, widget: widget)
-            case .alerts:
-                WidgetAlertsSettingsView(model: model, widget: widget)
-            case .videoSource:
-                WidgetVideoSourceSettingsView(widget: widget, videoSource: widget.videoSource)
-            case .scoreboard:
-                WidgetScoreboardSettingsView(model: model,
-                                             widget: widget,
-                                             scoreboard: widget.scoreboard,
-                                             web: database.remoteControl.web)
-            case .vTuber:
-                WidgetVTuberSettingsView(model: model, widget: widget, vTuber: widget.vTuber)
-            case .pngTuber:
-                WidgetPngTuberSettingsView(model: model, widget: widget, pngTuber: widget.pngTuber)
-            case .snapshot:
-                WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
-            case .chat:
-                WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
-            case .chatEmoteCombo:
-                WidgetChatEmoteComboSettingsView(
-                    model: model,
-                    widget: widget,
-                    chatEmoteCombo: widget.chatEmoteCombo
-                )
-            case .wheelOfLuck:
-                WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
-            case .bingoCard:
-                WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
-            case .pomodoroTimer:
-                WidgetPomodoroTimerSettingsView(model: model, pomodoroTimer: widget.pomodoroTimer)
-            }
+            WidgetSettingsSectionsView(model: model, database: database, widget: widget)
         }
         .navigationTitle("\(widget.type.toString()) widget")
     }

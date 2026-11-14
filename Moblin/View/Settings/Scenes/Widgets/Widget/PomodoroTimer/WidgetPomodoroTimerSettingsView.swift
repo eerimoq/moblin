@@ -3,7 +3,8 @@ import SwiftUI
 
 @MainActor
 private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
-    model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "-- None --")
+    model.database.alertsMediaGallery.allSounds().first(where: { $0.id == soundId })?
+        .name ?? String(localized: "-- None --")
 }
 
 private struct PomodoroSoundSelectorView: View {
@@ -15,7 +16,7 @@ private struct PomodoroSoundSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $soundId) {
-                    ForEach(model.getAllAlertSounds()) { sound in
+                    ForEach(model.database.alertsMediaGallery.allSounds()) { sound in
                         HStack {
                             Text(sound.name)
                             Spacer()
@@ -94,9 +95,7 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
             }
             .onChange(of: pomodoroTimer.focusDuration) { _ in
-                if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
-                    pomodoroTimer.secondsRemaining = pomodoroTimer.focusDuration * 60
-                }
+                pomodoroTimer.focusDurationChanged()
             }
             Picker("Break", selection: $pomodoroTimer.breakDuration) {
                 ForEach([1, 2, 3, 5, 7, 10, 15, 20, 25, 30], id: \.self) {
@@ -104,9 +103,7 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
             }
             .onChange(of: pomodoroTimer.breakDuration) { _ in
-                if pomodoroTimer.phase == .shortBreak, !pomodoroTimer.isRunning {
-                    pomodoroTimer.secondsRemaining = pomodoroTimer.breakDuration * 60
-                }
+                pomodoroTimer.breakDurationChanged()
             }
         } header: {
             Text("Durations")
@@ -149,37 +146,28 @@ struct WidgetPomodoroTimerSettingsView: View {
             HStack {
                 Text("Width")
                 Slider(value: $pomodoroTimer.width, in: 1 ... 5, step: 0.05)
+                    .onChange(of: pomodoroTimer.width) { _ in
+                        model.updateWidgetOutlines()
+                    }
             }
         }
         Section {
-            ColorPicker("Background", selection: $pomodoroTimer.backgroundColorColor, supportsOpacity: true)
-                .onChange(of: pomodoroTimer.backgroundColorColor) { _ in
-                    guard let color = pomodoroTimer.backgroundColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.backgroundColor = color
-                }
-            ColorPicker("Text", selection: $pomodoroTimer.foregroundColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.foregroundColorColor) { _ in
-                    guard let color = pomodoroTimer.foregroundColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.foregroundColor = color
-                }
-            ColorPicker("Focus", selection: $pomodoroTimer.focusColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.focusColorColor) { _ in
-                    guard let color = pomodoroTimer.focusColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.focusColor = color
-                }
-            ColorPicker("Break", selection: $pomodoroTimer.breakColorColor, supportsOpacity: false)
-                .onChange(of: pomodoroTimer.breakColorColor) { _ in
-                    guard let color = pomodoroTimer.breakColorColor.toRgb() else {
-                        return
-                    }
-                    pomodoroTimer.breakColor = color
-                }
+            RgbColorPickerView(
+                title: "Background",
+                color: $pomodoroTimer.backgroundColorColor,
+                opacity: true
+            ) {
+                pomodoroTimer.backgroundColor = $0
+            }
+            RgbColorPickerView(title: "Text", color: $pomodoroTimer.foregroundColorColor) {
+                pomodoroTimer.foregroundColor = $0
+            }
+            RgbColorPickerView(title: "Focus", color: $pomodoroTimer.focusColorColor) {
+                pomodoroTimer.focusColor = $0
+            }
+            RgbColorPickerView(title: "Break", color: $pomodoroTimer.breakColorColor) {
+                pomodoroTimer.breakColor = $0
+            }
         } header: {
             Text("Colors")
         }

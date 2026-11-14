@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct AuthenticationView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var presentingWebView = false
     let onLoggedIn: () -> Void
@@ -30,7 +30,7 @@ private struct AuthenticationView: View {
 }
 
 private struct KickCategoryPickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var searchText: String = ""
     @State private var categories: [KickCategory] = []
@@ -39,7 +39,7 @@ private struct KickCategoryPickerView: View {
     private func fetchDefaultCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Slots & Casino"]
         for categoryName in categoryNames {
-            model.fetchKickCategories(query: categoryName) { result in
+            model.fetchKickCategories(stream: stream, query: categoryName) { result in
                 if let category = result?.first {
                     categories.append(category)
                 }
@@ -128,7 +128,7 @@ struct KickStreamLiveSettingsView: View {
             }
         }
         NavigationLink {
-            KickCategoryPickerView(stream: stream)
+            KickCategoryPickerView(model: model, stream: stream)
         } label: {
             HStack {
                 Text("Category")
@@ -195,7 +195,7 @@ func loadKickStreamInfo(model: Model,
 }
 
 struct StreamKickSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var fetchingChannelInfo: Bool = false
     @State private var fetchChannelInfoFailed: Bool = false
@@ -267,7 +267,7 @@ struct StreamKickSettingsView: View {
 
     var body: some View {
         Form {
-            AuthenticationView(stream: stream, onLoggedIn: onLoggedIn)
+            AuthenticationView(model: model, stream: stream, onLoggedIn: onLoggedIn)
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Channel name"),

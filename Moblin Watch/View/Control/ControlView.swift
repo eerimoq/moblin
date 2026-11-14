@@ -153,6 +153,7 @@ private struct ControlWorkoutView: View {
     }
 }
 
+@MainActor
 class Control: ObservableObject {
     @Published var isLive = false
     @Published var isRecording = false

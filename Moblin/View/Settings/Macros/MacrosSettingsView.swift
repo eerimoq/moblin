@@ -12,14 +12,118 @@ private func setSelected<T>(_ values: inout Set<T>, _ type: T, _ selected: Bool)
     }
 }
 
+struct MacroActionIfBar {
+    let level: Int
+    let isFirst: Bool
+    let isLast: Bool
+}
+
+func macroActionIfBars(actions: [SettingsMacrosAction]) -> [[MacroActionIfBar]] {
+    var blocks: [(end: Int, level: Int)] = []
+    var bars: [[MacroActionIfBar]] = []
+    for (index, action) in actions.enumerated() {
+        blocks.removeAll(where: { $0.end <= index })
+        var firstLevel: Int?
+        if action.function == .ifCondition, action.ifRunCount > 0 {
+            var level = 0
+            while blocks.contains(where: { $0.level == level }) {
+                level += 1
+            }
+            blocks.append((min(index + 1 + action.ifRunCount, actions.count), level))
+            firstLevel = level
+        }
+        bars.append(blocks.map { MacroActionIfBar(level: $0.level,
+                                                  isFirst: $0.level == firstLevel,
+                                                  isLast: $0.end == index + 1) })
+    }
+    return bars
+}
+
+private let macroActionIfColors: [Color] = [.blue, .purple, .orange, .teal]
+
+private struct ActionIfBarsView: View {
+    let bars: [MacroActionIfBar]
+
+    private func bar(level: Int) -> some View {
+        let bar = bars.first(where: { $0.level == level })
+        return VStack(spacing: 0) {
+            if bar?.isFirst == true {
+                Color.clear
+            }
+            Rectangle()
+                .fill(bar != nil ? macroActionIfColors[level % macroActionIfColors.count] : .clear)
+                .padding(.bottom, bar?.isLast == true ? 4 : 0)
+        }
+        .frame(width: 3)
+    }
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(0 ..< ((bars.map(\.level).max() ?? -1) + 1), id: \.self) {
+                bar(level: $0)
+            }
+            Spacer()
+        }
+        .padding(.leading, 3)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+    }
+}
+
+private struct TextFormatView: View {
+    @EnvironmentObject var model: Model
+    let title: String
+    let suggestions: Bool
+    @Binding var text: String
+    @State var value: String
+
+    var body: some View {
+        Form {
+            TextWidgetTextView(value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
+            if suggestions {
+                Section {
+                    TextWidgetSuggestionsView(widget: false, text: $value)
+                }
+            }
+            TextFormatVariablesView(model: model, widget: false, value: $value)
+        }
+        .onChange(of: value) { _ in
+            text = value
+            model.macrosTextFormatChanged()
+        }
+        .navigationTitle(title)
+    }
+}
+
+private struct MacroVariableView: View {
+    let model: Model
+    let variable: MacroVariable
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                UIPasteboard.general.string = variable.toString()
+                model.makeToast(title: String(localized: "Copied \(variable.toString()) to clipboard"))
+            } label: {
+                Text(variable.toString())
+                    .font(.title3)
+            }
+            Text(variable.description())
+        }
+    }
+}
+
 private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var macros: SettingsMacros
+    @ObservedObject var macro: SettingsMacrosMacro
     @ObservedObject var action: SettingsMacrosAction
+    let ifBars: [MacroActionIfBar]
 
     private func submitZoomX(zoomX: String) {
-        guard let zoomX = Float(zoomX) else {
+        guard let zoomX = Float(zoomX), zoomX.isFinite else {
             return
         }
         action.zoomX = max(zoomX, minZoomX)
@@ -85,20 +189,31 @@ private struct ActionView: View {
                                     .tag($0.id as UUID?)
                             }
                         }
+                    case .sendChatMessage:
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Message"),
+                                           suggestions: true,
+                                           text: $action.chatMessage,
+                                           value: action.chatMessage)
+                        } label: {
+                            TextItemLocalizedView(name: "Message", value: action.chatMessage)
+                        }
+                    case .notification:
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Message"),
+                                           suggestions: true,
+                                           text: $action.notificationMessage,
+                                           value: action.notificationMessage)
+                        } label: {
+                            TextItemLocalizedView(name: "Message", value: action.notificationMessage)
+                        }
+                    case .sendTwitchShoutout:
+                        EmptyView()
                     case .delay:
                         HStack {
                             Text("Delay")
                             Slider(value: $action.delay, in: 1 ... 60)
                             Text("\(Int(action.delay))s")
-                        }
-                    case .macro:
-                        Picker("Macro", selection: $action.macroId) {
-                            Text("-- None --")
-                                .tag(nil as UUID?)
-                            ForEach(macros.macros) {
-                                Text($0.name)
-                                    .tag($0.id as UUID?)
-                            }
                         }
                     case .djiDevices:
                         ForEach(database.djiDevices.devices) { device in
@@ -151,12 +266,129 @@ private struct ActionView: View {
                                 Text($0.toString())
                             }
                         }
+                    case .waitForEvent:
+                        Picker("Event", selection: $action.event) {
+                            ForEach(SettingsMacrosEvent.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                        if let title = action.event.minimumAmountTitle() {
+                            TextEditNavigationView(
+                                title: title,
+                                value: String(action.eventMinimumAmount),
+                                onSubmit: {
+                                    action.eventMinimumAmount = Int($0) ?? 0
+                                },
+                                keyboardType: .numbersAndPunctuation
+                            )
+                        }
+                        if let title = action.event.textTitle() {
+                            TextEditNavigationView(
+                                title: title,
+                                value: action.eventText,
+                                onSubmit: {
+                                    action.eventText = $0
+                                }
+                            )
+                        }
+                        if action.event == .switchScene {
+                            Picker("Scene", selection: $action.eventSceneId) {
+                                Text("-- Any --")
+                                    .tag(nil as UUID?)
+                                ForEach(database.scenes) {
+                                    SceneNameView(scene: $0)
+                                        .tag($0.id as UUID?)
+                                }
+                            }
+                        }
+                    case .ifCondition:
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Value"),
+                                           suggestions: false,
+                                           text: $action.ifValue,
+                                           value: action.ifValue)
+                        } label: {
+                            TextItemLocalizedView(name: "Value", value: action.ifValue)
+                        }
+                        Picker("Comparison", selection: $action.ifComparison) {
+                            ForEach(SettingsMacrosActionIfComparison.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                        NavigationLink {
+                            TextFormatView(title: String(localized: "Other value"),
+                                           suggestions: false,
+                                           text: $action.ifOtherValue,
+                                           value: action.ifOtherValue)
+                        } label: {
+                            TextItemLocalizedView(name: "Other value", value: action.ifOtherValue)
+                        }
+                        Picker("Actions to run", selection: $action.ifRunCount) {
+                            ForEach(1 ... 10, id: \.self) {
+                                Text(String($0))
+                            }
+                        }
+                    case .macro:
+                        Picker("Macro", selection: $action.macroId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(macros.macros) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case nil:
                         EmptyView()
+                    }
+                } footer: {
+                    switch action.function {
+                    case .waitForEvent:
+                        VStack(alignment: .leading, spacing: 5) {
+                            switch action.event {
+                            case .twitchReward, .kickReward:
+                                Text("""
+                                Wait until a viewer redeems the reward, then continue with the following \
+                                actions. Leave reward empty to wait for any reward.
+                                """)
+                            default:
+                                Text("""
+                                Wait until the event happens, then continue with the following actions.
+                                """)
+                            }
+                        }
+                    case .sendTwitchShoutout:
+                        Text("""
+                        Send a Twitch shoutout to the channel in {twitchRaidChannelId}, typically set \
+                        by an earlier Twitch raid event.
+                        """)
+                    case .ifCondition:
+                        Text("Run given number of following actions if the condition is met.")
+                    default:
+                        EmptyView()
+                    }
+                }
+                if action.function == .waitForEvent, !action.event.variables().isEmpty {
+                    Section {
+                        ForEach(action.event.variables(), id: \.self) { variable in
+                            MacroVariableView(model: model, variable: variable)
+                        }
+                    } header: {
+                        Text("Variables")
+                    } footer: {
+                        Text("""
+                        Variables set by the event. Following actions can use them in text. Tap a \
+                        variable to copy it to the clipboard.
+                        """)
                     }
                 }
             }
             .navigationTitle("Action")
+            .onChange(of: action.function) { _ in
+                macro.objectWillChange.send()
+            }
+            .onChange(of: action.ifRunCount) { _ in
+                macro.objectWillChange.send()
+            }
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -189,14 +421,15 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: presetName)
                     }
+                case .sendChatMessage:
+                    Spacer()
+                    GrayTextView(text: action.chatMessage)
+                case .notification:
+                    Spacer()
+                    GrayTextView(text: action.notificationMessage)
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")
-                case .macro:
-                    if let macroName = macros.macros.first(where: { $0.id == action.macroId })?.name {
-                        Spacer()
-                        GrayTextView(text: macroName)
-                    }
                 case .djiDevices:
                     Spacer()
                     GrayTextView(text: String(action.djiDevices.count))
@@ -212,15 +445,40 @@ private struct ActionView: View {
                 case .torch:
                     Spacer()
                     GrayTextView(text: action.torch ? String(localized: "On") : String(localized: "Off"))
-                case .snapshot:
+                case .snapshot, .sendTwitchShoutout:
                     EmptyView()
                 case .reaction:
                     Spacer()
                     GrayTextView(text: action.reaction.toString())
+                case .waitForEvent:
+                    Spacer()
+                    if action.event == .switchScene,
+                       let sceneName = model.getSceneName(id: action.eventSceneId)
+                    {
+                        GrayTextView(text: "\(action.event.toString()) (\(sceneName))")
+                    } else if !action.eventText.isEmpty {
+                        GrayTextView(text: "\(action.event.toString()) (\(action.eventText))")
+                    } else {
+                        GrayTextView(text: action.event.toString())
+                    }
+                case .ifCondition:
+                    Spacer()
+                    GrayTextView(
+                        text: "\(action.ifValue) \(action.ifComparison.toString()) \(action.ifOtherValue)"
+                    )
+                case .macro:
+                    if let macroName = macros.macros.first(where: { $0.id == action.macroId })?.name {
+                        Spacer()
+                        GrayTextView(text: macroName)
+                    }
                 case nil:
                     EmptyView()
                 }
             }
+        }
+        .listRowBackground(ActionIfBarsView(bars: ifBars))
+        .contextMenuDeleteButton {
+            macro.actions.removeAll(where: { $0 === action })
         }
     }
 }
@@ -236,11 +494,20 @@ private struct MacroView: View {
             Form {
                 Section {
                     NameEditView(name: $macro.name, existingNames: macros.macros)
+                        .onChange(of: macro.name) { _ in
+                            model.remoteControlMacrosStateChanged()
+                        }
                 }
                 Section {
                     List {
-                        ForEach(macro.actions) {
-                            ActionView(model: model, database: database, macros: macros, action: $0)
+                        let ifBars = macroActionIfBars(actions: macro.actions)
+                        ForEach(Array(macro.actions.enumerated()), id: \.element.id) { index, action in
+                            ActionView(model: model,
+                                       database: database,
+                                       macros: macros,
+                                       macro: macro,
+                                       action: action,
+                                       ifBars: ifBars[index])
                         }
                         .onMove { froms, to in
                             macro.actions.move(fromOffsets: froms, toOffset: to)
@@ -276,6 +543,12 @@ private struct MacroView: View {
                 }
                 Section {
                     Toggle("Close macros panel on run", isOn: $macro.closePanelOnRun)
+                    Toggle("Run at app start", isOn: $macro.runAtAppStart)
+                } footer: {
+                    Text("""
+                    Run at app start is useful for macros that wait for events, for example to run \
+                    actions when someone follows. Set repeat to forever to wait again after each event.
+                    """)
                 }
                 Section {
                     if macro.running {
@@ -298,6 +571,11 @@ private struct MacroView: View {
         } label: {
             Text(macro.name)
         }
+        .contextMenuDeleteButton {
+            model.stopMacro(macro: macro)
+            macros.macros.removeAll(where: { $0 === macro })
+            model.remoteControlMacrosStateChanged()
+        }
     }
 }
 
@@ -309,9 +587,14 @@ struct MacrosSettingsView: View {
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "Macros",
+                                background: Color(red: 0xE7 / 255, green: 0xE3 / 255, blue: 0xD6 / 255))
+            }
+            Section {
                 Text("""
                 A macro is a sequence of actions that can change settings, filters, etc. with a \
-                single button tap.
+                single button tap. It can also wait for events, for example new followers, before \
+                continuing.
                 """)
             }
             Section {
@@ -321,9 +604,14 @@ struct MacrosSettingsView: View {
                     }
                     .onMove { froms, to in
                         macros.macros.move(fromOffsets: froms, toOffset: to)
+                        model.remoteControlMacrosStateChanged()
                     }
                     .onDelete { offsets in
+                        for offset in offsets {
+                            model.stopMacro(macro: macros.macros[offset])
+                        }
                         macros.macros.remove(atOffsets: offsets)
+                        model.remoteControlMacrosStateChanged()
                     }
                 }
                 CreateButtonView {
@@ -333,6 +621,7 @@ struct MacrosSettingsView: View {
                         existingNames: macros.macros
                     )
                     macros.macros.append(macro)
+                    model.remoteControlMacrosStateChanged()
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "a macro"))

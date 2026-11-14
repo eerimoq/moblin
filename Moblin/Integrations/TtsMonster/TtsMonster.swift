@@ -79,10 +79,9 @@ class TtsMonster {
         if !response.isSuccessful {
             return nil
         }
-        guard let response = try? JSONDecoder().decode(TtsMonsterGenerateResponse.self, from: data) else {
-            return nil
-        }
-        guard let url = URL(string: response.url) else {
+        guard let response = try? JSONDecoder().decode(TtsMonsterGenerateResponse.self, from: data),
+              let url = URL(string: response.url)
+        else {
             return nil
         }
         guard let (data, response) = try? await httpGet(from: url) else {

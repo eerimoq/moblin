@@ -43,7 +43,7 @@ struct UrlSettingsView: View {
                         error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
                         changed = true
                         if value.contains("\n") {
-                            value = value.replacingOccurrences(of: "\n", with: "")
+                            value = value.replace("\n", "")
                             submitUrl()
                         }
                     }
@@ -85,7 +85,7 @@ struct UrlSettingsView: View {
 }
 
 struct RtspClientStreamSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var rtspClient: SettingsRtspClient
     @ObservedObject var stream: SettingsRtspClientStream
 
@@ -94,6 +94,9 @@ struct RtspClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: rtspClient.streams)
+                        .onChange(of: stream.name) { _ in
+                            model.updateRtspVideoSources()
+                        }
                 }
                 Section {
                     NavigationLink {

@@ -26,27 +26,49 @@ extension Model {
             guard let configuration else {
                 return
             }
-            let request = OIDAuthorizationRequest(configuration: configuration,
-                                                  clientId: youTubeClientId,
-                                                  clientSecret: nil,
-                                                  scopes: youTubeScopes,
-                                                  redirectURL: youTubeRedirectUri,
-                                                  responseType: OIDResponseTypeCode,
-                                                  additionalParameters: nil)
-            #if targetEnvironment(macCatalyst)
-            guard let userAgent = OIDExternalUserAgentCatalyst(presenting: rootViewController) else {
-                return
+            nonisolated(unsafe) let serviceConfiguration = configuration
+            MainActor.assumeIsolated {
+                self.youTubeSignIn(stream: stream,
+                                   configuration: serviceConfiguration,
+                                   rootViewController: rootViewController)
             }
-            #else
-            guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
-                return
-            }
-            #endif
-            self.youTube.session = OIDAuthState.authState(
-                byPresenting: request,
-                externalUserAgent: userAgent
-            ) { authState, _ in
+        }
+    }
+
+    private func youTubeSignIn(stream: SettingsStream,
+                               configuration: OIDServiceConfiguration,
+                               rootViewController: UIViewController)
+    {
+        let request = OIDAuthorizationRequest(configuration: configuration,
+                                              clientId: youTubeClientId,
+                                              clientSecret: nil,
+                                              scopes: youTubeScopes,
+                                              redirectURL: youTubeRedirectUri,
+                                              responseType: OIDResponseTypeCode,
+                                              additionalParameters: nil)
+        #if targetEnvironment(macCatalyst)
+        guard let userAgent = OIDExternalUserAgentCatalyst(presenting: rootViewController) else {
+            return
+        }
+        #else
+        guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
+            return
+        }
+        #endif
+        youTube.session = OIDAuthState.authState(byPresenting: request,
+                                                 externalUserAgent: userAgent,
+                                                 callback: makeYouTubeSignInCallback(stream: stream))
+    }
+
+    private nonisolated func makeYouTubeSignInCallback(stream: SettingsStream)
+        -> OIDAuthStateAuthorizationCallback
+    {
+        { authState, _ in
+            nonisolated(unsafe) let authState = authState
+            DispatchQueue.main.async {
                 stream.youTubeAuthState = authState
+                stream.youTubeWantsToBeLoggedIn = authState != nil
+                stream.youTubeNotLoggedInCount = 0
                 self.youTube.session = nil
             }
         }
@@ -54,17 +76,42 @@ extension Model {
 
     func youTubeSignOut(stream: SettingsStream) {
         stream.youTubeAuthState = nil
+        stream.youTubeWantsToBeLoggedIn = false
         removeYouTubeAuthStateInKeychain(streamId: stream.id)
     }
 
+    func makeNotLoggedInToYouTubeToastIfNeeded() {
+        guard stream.youTubeWantsToBeLoggedIn, !stream.isYouTubeAuthorized() else {
+            return
+        }
+        stream.youTubeNotLoggedInCount += 1
+        if stream.youTubeNotLoggedInCount >= maxNotLoggedInToastCount {
+            stream.youTubeWantsToBeLoggedIn = false
+        }
+        makeNotLoggedInToToast(platform: .youTube)
+    }
+
     func getYouTubeApi(stream: SettingsStream, onCompleted: @escaping (YouTubeApi?) -> Void) {
-        getYouTubeAccesssToken(stream: stream) {
+        getYouTubeAccesssToken(stream: stream) { [weak self] in
             guard let accessToken = $0 else {
                 onCompleted(nil)
                 return
             }
-            onCompleted(YouTubeApi(accessToken: accessToken))
+            let youTubeApi = YouTubeApi(accessToken: accessToken)
+            youTubeApi.onUnauthorized = { [weak self] in
+                self?.youTubeApiUnauthorized(stream: stream)
+            }
+            onCompleted(youTubeApi)
         }
+    }
+
+    private func youTubeApiUnauthorized(stream: SettingsStream) {
+        guard stream.isYouTubeAuthorized() else {
+            return
+        }
+        stream.youTubeAuthState = nil
+        removeYouTubeAuthStateInKeychain(streamId: stream.id)
+        makeNotLoggedInToToast(platform: .youTube)
     }
 
     func startFetchingYouTubeChatVideoId() {
@@ -77,18 +124,18 @@ extension Model {
 
     func tryToFetchYouTubeVideoId() {
         guard database.chat.enabled,
-              stream.youTubeAuthState != nil || !stream.youTubeHandle.isEmpty,
+              stream.isYouTubeAuthorized() || !stream.youTubeHandle.isEmpty,
               let youTubeFetchVideoIdStartTime
         else {
             return
         }
-        guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(120) else {
+        guard youTubeFetchVideoIdStartTime.duration(to: .now) < .seconds(60) else {
             stopFetchingYouTubeChatVideoId()
             makeErrorToast(title: String(localized: "Failed to fetch YouTube Video ID"),
                            subTitle: String(localized: "You must be live on YouTube for this to work."))
             return
         }
-        if stream.youTubeAuthState != nil {
+        if stream.isYouTubeAuthorized() {
             getYouTubeApi(stream: stream) { youTubeApi in
                 guard let youTubeApi else {
                     return
@@ -115,7 +162,7 @@ extension Model {
                 }
             }
         } else if !stream.youTubeHandle.isEmpty {
-            Task { @MainActor in
+            Task {
                 if let videoId = try? await fetchYouTubeVideoId(handle: stream.youTubeHandle) {
                     stopFetchingYouTubeChatVideoId()
                     guard videoId != stream.youTubeVideoIds else {
@@ -131,7 +178,7 @@ extension Model {
     }
 
     func isYouTubeViewersConfigured() -> Bool {
-        stream.youTubeAuthState != nil && !stream.youTubeVideoIds.isEmpty
+        stream.isYouTubeAuthorized() && !stream.youTubeVideoIds.isEmpty
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
@@ -159,7 +206,7 @@ extension Model {
         youTubeLiveChats.removeAll()
         if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
             for videoId in stream.getYouTubeVideoIds() {
-                let chat = YouTubeLiveChat(model: self, videoId: videoId, settings: stream.chat)
+                let chat = YouTubeLiveChat(delegate: self, videoId: videoId, settings: stream.chat)
                 youTubeLiveChats[videoId] = chat
                 chat.start()
             }
@@ -178,6 +225,55 @@ extension Model {
         youTubeStreamUpdateTime = monotonicNow
         youTubeStreamUpdateTimePollDelta = min(youTubeStreamUpdateTimePollDelta * 2, .seconds(900))
         getVideo()
+    }
+
+    func banYouTubeUser(user: String, channelId: String, duration: Int?) {
+        guard stream.isYouTubeAuthorized() else {
+            makeNotLoggedInToToast(platform: .youTube)
+            return
+        }
+        getYouTubeApi(stream: stream) { youTubeApi in
+            guard let youTubeApi else {
+                return
+            }
+            youTubeApi.listVideos(videoIds: self.stream.youTubeVideoIds) { response in
+                guard case let .success(response) = response else {
+                    self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                    return
+                }
+                let liveChatIds = response.items.compactMap(\.liveStreamingDetails.activeLiveChatId)
+                guard !liveChatIds.isEmpty else {
+                    self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                    return
+                }
+                var remaining = liveChatIds.count
+                var failed = false
+                for liveChatId in liveChatIds {
+                    youTubeApi.insertLiveChatBan(liveChatId: liveChatId,
+                                                 channelId: channelId,
+                                                 duration: duration)
+                    { response in
+                        switch response {
+                        case .success:
+                            break
+                        default:
+                            failed = true
+                        }
+                        remaining -= 1
+                        guard remaining == 0 else {
+                            return
+                        }
+                        if failed {
+                            self.makeErrorToast(title: String(localized: "Failed to ban user"))
+                        } else if duration == nil {
+                            self.makeToast(title: String(localized: "Banned \(user)"))
+                        } else {
+                            self.makeToast(title: String(localized: "Timed out \(user)"))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private func getYouTubeAccesssToken(stream: SettingsStream, onCompleted: @escaping (String?) -> Void) {
@@ -220,5 +316,41 @@ extension Model {
                 }
             }
         }
+    }
+}
+
+extension Model: YouTubeLiveChatDelegate {
+    func youTubeLiveChatMakeErrorToast(title: String, subTitle: String) {
+        makeErrorToast(title: title, subTitle: subTitle)
+    }
+
+    func youTubeLiveChatMakeToast(title: String) {
+        makeToast(title: title)
+    }
+
+    func youTubeLiveChatAppendMessage(user: String,
+                                      userId: String?,
+                                      segments: [ChatPostSegment],
+                                      isModerator: Bool,
+                                      isOwner: Bool,
+                                      highlight: ChatHighlight?)
+    {
+        appendChatMessage(platform: .youTube,
+                          messageId: nil,
+                          displayName: user,
+                          user: user,
+                          userId: userId,
+                          userColor: nil,
+                          userBadges: [],
+                          segments: segments,
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: isModerator,
+                          isOwner: isOwner,
+                          bits: nil,
+                          highlight: highlight,
+                          live: true)
     }
 }

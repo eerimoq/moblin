@@ -17,14 +17,16 @@ private class DiscoveredSerivce {
     }
 }
 
+@MainActor
 protocol MoblinkScannerDelegate: AnyObject {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer])
 }
 
+@MainActor
 class MoblinkScanner: NSObject {
     private var browser: NetServiceBrowser?
     private var services: [DiscoveredSerivce] = []
-    private weak var delegate: (any MoblinkScannerDelegate)?
+    private weak let delegate: (any MoblinkScannerDelegate)?
 
     init(delegate: any MoblinkScannerDelegate) {
         self.delegate = delegate
@@ -49,10 +51,7 @@ class MoblinkScanner: NSObject {
                 continue
             }
             let metadata = NetService.dictionary(fromTXTRecord: data)
-            guard let nameData = metadata["name"] else {
-                continue
-            }
-            guard let name = String(bytes: nameData, encoding: .utf8) else {
+            guard let nameData = metadata["name"], let name = String(bytes: nameData, encoding: .utf8) else {
                 continue
             }
             streamers.append(.init(name: name, urls: service.urls))
@@ -61,7 +60,7 @@ class MoblinkScanner: NSObject {
     }
 }
 
-extension MoblinkScanner: NetServiceBrowserDelegate {
+extension MoblinkScanner: @MainActor NetServiceBrowserDelegate {
     func netServiceBrowser(_: NetServiceBrowser, didFind service: NetService, moreComing _: Bool) {
         guard !services.contains(where: { $0.service == service }) else {
             return
@@ -74,7 +73,7 @@ extension MoblinkScanner: NetServiceBrowserDelegate {
     func netServiceBrowser(_: NetServiceBrowser, didRemove _: NetService, moreComing _: Bool) {}
 }
 
-extension MoblinkScanner: NetServiceDelegate {
+extension MoblinkScanner: @MainActor NetServiceDelegate {
     func netServiceDidResolveAddress(_ service: NetService) {
         guard let discoveredService = services.first(where: { $0.service == service }) else {
             return
@@ -93,10 +92,7 @@ extension MoblinkScanner: NetServiceDelegate {
         var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
         address.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
             let sockaddrPtr = pointer.bindMemory(to: sockaddr.self)
-            guard let unsafePtr = sockaddrPtr.baseAddress else {
-                return
-            }
-            guard getnameinfo(
+            guard let unsafePtr = sockaddrPtr.baseAddress, getnameinfo(
                 unsafePtr,
                 socklen_t(address.count),
                 &hostname,

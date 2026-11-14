@@ -20,7 +20,7 @@ struct Video: Transferable {
 }
 
 struct MediaPlayerSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
     @ObservedObject var player: SettingsMediaPlayer
     @State var presentingPicker: Bool = false
@@ -45,6 +45,7 @@ struct MediaPlayerSettingsView: View {
                     NameEditView(name: $player.name, existingNames: mediaPlayers.players)
                         .onChange(of: player.name) { _ in
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                            model.updateMediaPlayerVideoSourcesAndMics()
                         }
                 }
                 if false {
@@ -65,6 +66,7 @@ struct MediaPlayerSettingsView: View {
                         .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                            model.updateMediaPlayerVideoSourcesAndMics()
                         }
                         .onDelete(perform: deletePlaylistFile)
                     }

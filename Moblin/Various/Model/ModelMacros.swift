@@ -9,8 +9,20 @@ extension Model {
         macro.running = true
         macro.nextActionIndex = 0
         macro.repeatCurrentCount = 0
+        macro.delayed = false
+        macro.waitingForEventAction = nil
+        macro.eventQueue.removeAll()
+        macro.variables.removeAll()
         macro.stack = [macro]
+        remoteControlMacrosStateChanged()
         executeNextAction(macro: macro)
+    }
+
+    func startMacro(id: UUID) {
+        guard let macro = database.macros.macros.first(where: { $0.id == id }) else {
+            return
+        }
+        startMacro(macro: macro)
     }
 
     func stopMacro(macro: SettingsMacrosMacro) {
@@ -22,8 +34,24 @@ extension Model {
         for macro in macro.stack {
             macro.delayTimer.stop()
             macro.finishedTimer.stop()
+            macro.waitingForEventAction = nil
         }
         macro.stack.removeAll()
+        macro.eventQueue.removeAll()
+        remoteControlMacrosStateChanged()
+    }
+
+    func stopAllMacros() {
+        for macro in database.macros.macros {
+            stopMacro(macro: macro)
+        }
+    }
+
+    func stopMacro(id: UUID) {
+        guard let macro = database.macros.macros.first(where: { $0.id == id }) else {
+            return
+        }
+        stopMacro(macro: macro)
     }
 
     func toggleMacroStartStop(id: UUID) {
@@ -34,6 +62,109 @@ extension Model {
             stopMacro(macro: macro)
         } else if !macro.finished {
             startMacro(macro: macro)
+        }
+    }
+
+    func autoStartMacros() {
+        for macro in database.macros.macros where macro.runAtAppStart {
+            startMacro(macro: macro)
+        }
+    }
+
+    func macrosEventOccurred(_ event: MacroEvent) {
+        var anyRunning = false
+        for macro in database.macros.macros where macro.running {
+            macro.eventQueue.append(event)
+            if macro.eventQueue.count > 100 {
+                macro.eventQueue.removeFirst()
+            }
+            anyRunning = true
+        }
+        guard anyRunning else {
+            return
+        }
+        DispatchQueue.main.async {
+            for macro in self.database.macros.macros where macro.running {
+                self.continueMacroIfQueuedEventMatches(macro: macro)
+            }
+        }
+    }
+
+    private func continueMacroIfQueuedEventMatches(macro: SettingsMacrosMacro) {
+        guard let currentMacro = macro.stack.last,
+              let action = currentMacro.waitingForEventAction,
+              takeQueuedEvent(macro: macro, action: action)
+        else {
+            return
+        }
+        currentMacro.waitingForEventAction = nil
+        executeNextAction(macro: macro)
+    }
+
+    private func takeQueuedEvent(macro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
+        while !macro.eventQueue.isEmpty {
+            let event = macro.eventQueue.removeFirst()
+            if action.matches(event: event) {
+                macro.variables.set(event.variables)
+                return true
+            }
+        }
+        return false
+    }
+
+    func getRemoteControlMacros() -> [RemoteControlMacro] {
+        database.macros.macros.map { RemoteControlMacro(id: $0.id, name: $0.name, running: $0.running) }
+    }
+
+    func remoteControlMacrosStateChanged() {
+        remoteControlStateChanged(
+            state: RemoteControlState(macros: getRemoteControlMacros())
+        )
+    }
+
+    func isMacrosWeatherNeeded() -> Bool {
+        macrosTextFormatActions().contains(where: \.needsWeather)
+    }
+
+    func isMacrosGeographyNeeded() -> Bool {
+        macrosTextFormatActions().contains(where: \.needsGeography)
+    }
+
+    func isMacrosGForceNeeded() -> Bool {
+        macrosTextFormatActions().contains(where: \.needsGForce)
+    }
+
+    func macrosTextFormatChanged() {
+        for action in macrosTextFormatActions() {
+            let parts = loadTextFormat(format: macrosActionTextFormat(action: action))
+            action.needsWeather = parts.isWeatherVariable()
+            action.needsGeography = parts.isGeographyVariable()
+            action.needsGForce = parts.isGForceVariable()
+        }
+        startTextVariableManagers()
+    }
+
+    private func macrosTextFormatActions() -> [SettingsMacrosAction] {
+        database.macros.macros.flatMap {
+            $0.actions.filter {
+                switch $0.function {
+                case .sendChatMessage, .notification, .ifCondition:
+                    true
+                default:
+                    false
+                }
+            }
+        }
+    }
+
+    private func macrosActionTextFormat(action: SettingsMacrosAction) -> String {
+        switch action.function {
+        case .ifCondition:
+            "\(action.ifValue) \(action.ifOtherValue)"
+        case .notification:
+            action.notificationMessage
+        default:
+            action.chatMessage
         }
     }
 
@@ -64,13 +195,21 @@ extension Model {
         }
         if shouldRepeat {
             currentMacro.nextActionIndex = 0
-        } else {
-            currentMacro.running = false
-            currentMacro.finished = true
-            currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
-                currentMacro.finished = false
+            let timeout = currentMacro.delayed ? 0.0 : 1.0
+            currentMacro.delayed = false
+            currentMacro.delayTimer.startSingleShot(timeout: timeout) {
+                self.executeNextAction(macro: macro)
             }
-            macro.stack.removeLast()
+            return
+        }
+        currentMacro.running = false
+        currentMacro.finished = true
+        currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
+            currentMacro.finished = false
+        }
+        macro.stack.removeLast()
+        if macro.stack.isEmpty {
+            remoteControlMacrosStateChanged()
         }
         executeNextAction(macro: macro)
     }
@@ -96,10 +235,20 @@ extension Model {
             executeZoom(action: action)
         case .gimbalPreset:
             executeGimbalPreset(action: action)
+        case .sendChatMessage:
+            executeSendChatMessage(action: action, variables: macro.variables)
+        case .notification:
+            executeNotification(currentMacro: currentMacro, action: action, variables: macro.variables)
+        case .sendTwitchShoutout:
+            executeSendTwitchShoutout(variables: macro.variables)
         case .delay:
             executeDelay(currentMacro: currentMacro,
                          action: action,
                          macro: macro)
+        case .waitForEvent:
+            executeWaitForEvent(currentMacro: currentMacro, action: action, macro: macro)
+        case .ifCondition:
+            executeIfCondition(currentMacro: currentMacro, action: action, variables: macro.variables)
         case .macro:
             executeMacro(action: action, macro: macro)
         case .djiDevices:
@@ -156,10 +305,55 @@ extension Model {
         return true
     }
 
+    private func executeSendChatMessage(action: SettingsMacrosAction, variables: MacroVariables) -> Bool {
+        sendChatMessage(message: formatPlainText(formatString: variables.substitute(action.chatMessage)))
+        return true
+    }
+
+    private func executeNotification(currentMacro: SettingsMacrosMacro,
+                                     action: SettingsMacrosAction,
+                                     variables: MacroVariables) -> Bool
+    {
+        let text = formatPlainText(formatString: variables.substitute(action.notificationMessage))
+        let post = ChatPost(id: chatPostId,
+                            messageId: nil,
+                            displayName: currentMacro.name,
+                            user: currentMacro.name,
+                            userId: nil,
+                            userColor: database.chat.usernameColor,
+                            userBadges: [],
+                            segments: makeChatPostTextSegments(text: text),
+                            timestamp: statusOther.digitalClock,
+                            timestampTime: .now,
+                            isAction: false,
+                            isSubscriber: false,
+                            bits: nil,
+                            highlight: ChatHighlight.makeMacroNotification(),
+                            live: true,
+                            filter: nil,
+                            platform: nil,
+                            sourceChannelIcon: nil,
+                            state: ChatPostState())
+        chatPostId += 1
+        chatActivityFeed.appendMessage(post: post)
+        quickButtonChatAlerts.appendMessage(post: post)
+        return true
+    }
+
+    private func executeSendTwitchShoutout(variables: MacroVariables) -> Bool {
+        if let channelId = variables.get(.twitchRaidChannelId) {
+            sendTwitchShoutout(channelId: channelId)
+        }
+        return true
+    }
+
     private func executeDelay(currentMacro: SettingsMacrosMacro,
                               action: SettingsMacrosAction,
                               macro: SettingsMacrosMacro) -> Bool
     {
+        for macro in macro.stack {
+            macro.delayed = true
+        }
         currentMacro.delayTimer.startSingleShot(timeout: action.delay) {
             self.executeNextAction(macro: macro)
         }
@@ -174,6 +368,29 @@ extension Model {
         }
         macro.stack.append(subMacro.copy())
         return true
+    }
+
+    private func executeIfCondition(currentMacro: SettingsMacrosMacro,
+                                    action: SettingsMacrosAction,
+                                    variables: MacroVariables) -> Bool
+    {
+        let value = formatPlainText(formatString: variables.substitute(action.ifValue))
+        let otherValue = formatPlainText(formatString: variables.substitute(action.ifOtherValue))
+        if !action.ifComparison.evaluate(value: value, otherValue: otherValue) {
+            currentMacro.nextActionIndex += action.ifRunCount
+        }
+        return true
+    }
+
+    private func executeWaitForEvent(currentMacro: SettingsMacrosMacro,
+                                     action: SettingsMacrosAction,
+                                     macro: SettingsMacrosMacro) -> Bool
+    {
+        if takeQueuedEvent(macro: macro, action: action) {
+            return true
+        }
+        currentMacro.waitingForEventAction = action
+        return false
     }
 
     private func executeFilters(action: SettingsMacrosAction) -> Bool {
@@ -236,19 +453,17 @@ extension Model {
     private func executeMute(action: SettingsMacrosAction) -> Bool {
         setMuted(value: action.mute)
         setQuickButton(type: .mute, isOn: action.mute)
-        updateQuickButtonStates()
         return true
     }
 
     private func executeTorch(action: SettingsMacrosAction) -> Bool {
         setTorch(on: action.torch)
         setQuickButton(type: .torch, isOn: action.torch)
-        updateQuickButtonStates()
         return true
     }
 
     private func executeSnapshot() -> Bool {
-        takeSnapshot()
+        takeSnapshot(age: 0.0, isChatBot: false, message: nil)
         return true
     }
 

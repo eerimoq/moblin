@@ -1,12 +1,16 @@
 import AVFoundation
 import Foundation
 
+@MainActor
 class RecordingProvider: ObservableObject {
     @Published var length = noValue
 }
 
 extension Model {
     func startRecording() {
+        guard !isChatPhone() else {
+            return
+        }
         setIsRecording(value: true)
         if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {
@@ -16,13 +20,16 @@ extension Model {
                                subTitle: String(localized: "Is the disk connected?"))
             }
             setIsRecording(value: false)
+            return
         }
+        macrosEventOccurred(MacroEvent(event: .startRecording))
     }
 
     func stopRecording(toastTitle: String? = nil, toastSubTitle: String? = nil) {
         guard isRecording else {
             return
         }
+        macrosEventOccurred(MacroEvent(event: .stopRecording))
         setIsRecording(value: false)
         if let toastTitle {
             makeToast(title: toastTitle, subTitle: toastSubTitle)
@@ -48,10 +55,7 @@ extension Model {
     }
 
     func startRecorderIfNeeded() {
-        guard !isRecorderRecording else {
-            return
-        }
-        guard isRecording || stream.replay.enabled else {
+        guard !isRecorderRecording, isRecording || stream.replay.enabled else {
             return
         }
         isRecorderRecording = true
@@ -64,7 +68,8 @@ extension Model {
             videoCodec: stream.recording.videoCodec,
             videoBitrate: bitrate != 0 ? bitrate : nil,
             keyFrameInterval: keyFrameInterval != 0 ? keyFrameInterval : nil,
-            audioBitrate: audioBitrate != 0 ? audioBitrate : nil
+            audioBitrate: audioBitrate != 0 ? audioBitrate : nil,
+            hdr: database.color.space == .hlgBt2020
         )
     }
 
@@ -105,13 +110,13 @@ extension Model {
     func setIsRecording(value: Bool) {
         isRecording = value
         updateLiveActivity()
+        updateMacStatusItem()
         setQuickButton(type: .record, isOn: value)
-        updateQuickButtonStates()
         updatePictureInPicture()
         if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
-        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(recording: isRecording))
+        remoteControlStateChanged(state: RemoteControlState(recording: isRecording))
     }
 
     func setCleanRecordings() {

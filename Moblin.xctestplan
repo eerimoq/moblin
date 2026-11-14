@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "6D0C2F0E-6B4C-4B8E-9B55-2A1C9E0F7D31",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "defaultTestExecutionTimeAllowance" : 60,
+    "maximumTestExecutionTimeAllowance" : 60,
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Moblin.xcodeproj",
+        "identifier" : "03E649422E634D2800728501",
+        "name" : "MoblinTests"
+      }
+    }
+  ],
+  "version" : 1
+}

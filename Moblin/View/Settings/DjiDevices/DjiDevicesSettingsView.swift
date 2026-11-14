@@ -1,13 +1,18 @@
 import SwiftUI
 
 private struct DjiDeviceSettingsWrapperView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         NavigationLink {
-            DjiDeviceSettingsView(djiDevices: djiDevices, device: device, status: model.statusTopRight)
+            DjiDeviceSettingsView(
+                model: model,
+                djiDevices: djiDevices,
+                device: device,
+                status: model.statusTopRight
+            )
         } label: {
             HStack {
                 DraggableItemPrefixView()
@@ -20,7 +25,7 @@ private struct DjiDeviceSettingsWrapperView: View {
 }
 
 struct DjiDevicesSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
 
     private func deleteDevice(at offsets: IndexSet) {
@@ -30,14 +35,12 @@ struct DjiDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "DjiOa4")
-                }
+                IntegrationImageView(imageName: "DjiOa4", height: 180)
             }
             Section {
                 List {
                     ForEach(djiDevices.devices) { device in
-                        DjiDeviceSettingsWrapperView(djiDevices: djiDevices, device: device)
+                        DjiDeviceSettingsWrapperView(model: model, djiDevices: djiDevices, device: device)
                             .contextMenuDeleteButton {
                                 if let offsets = makeOffsets(djiDevices.devices, device.id) {
                                     deleteDevice(at: offsets)

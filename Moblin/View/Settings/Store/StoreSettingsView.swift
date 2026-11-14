@@ -45,7 +45,7 @@ private struct StoreSettingsBoughtEverythingView: View {
 }
 
 private struct StoreSettingsIconsToBuyView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
     @State var disabledPurchaseButtons: Set<String> = []
 
@@ -58,7 +58,7 @@ private struct StoreSettingsIconsToBuyView: View {
                         Image(icon.imageNoBackground())
                             .interpolation(.high)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                         Spacer()
                         Text(icon.name)
@@ -97,7 +97,7 @@ private struct StoreSettingsIconsToBuyView: View {
 }
 
 private struct StoreSettingsMyIconsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var store: Store
 
     private func setAppIcon(iconImage: String) {
@@ -121,7 +121,7 @@ private struct StoreSettingsMyIconsView: View {
                         Image(icon.imageNoBackground())
                             .interpolation(.high)
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
                         Spacer()
                         Text(icon.name)
@@ -131,6 +131,8 @@ private struct StoreSettingsMyIconsView: View {
             }
             .onChange(of: store.iconImage) { iconImage in
                 model.database.iconImage = iconImage
+                model.updateFaceFilterSettings()
+                model.moblinCloudSendIcon()
                 setAppIcon(iconImage: iconImage)
             }
             .pickerStyle(.inline)
@@ -154,11 +156,11 @@ struct StoreSettingsView: View {
                 Text("Support Moblin developers by buying icons. ❤️")
             }
             if !store.iconsInStore.isEmpty {
-                StoreSettingsIconsToBuyView(store: store)
+                StoreSettingsIconsToBuyView(model: model, store: store)
             } else {
                 StoreSettingsBoughtEverythingView()
             }
-            StoreSettingsMyIconsView(store: store)
+            StoreSettingsMyIconsView(model: model, store: store)
             StoreSettingsRestoreView(model: model)
         }
         .navigationTitle("Store")

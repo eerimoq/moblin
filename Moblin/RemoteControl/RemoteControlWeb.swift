@@ -1,8 +1,10 @@
 import Foundation
 import Network
 
+@MainActor
 protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebConnected()
+    func remoteControlWebDisconnected()
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     func remoteControlWebGetSettings() -> RemoteControlSettings
@@ -12,6 +14,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetLive(on: Bool)
+    func remoteControlWebShowTally(message: String, background: RgbColor, foreground: RgbColor)
+    func remoteControlWebHideTally()
     func remoteControlWebSetPreviewStream(on: Bool)
     func remoteControlWebSetZoom(x: Float)
     func remoteControlWebSetZoomPreset(id: UUID)
@@ -23,6 +27,10 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool)
     func remoteControlWebSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
     func remoteControlWebMoveToGimbalPreset(id: UUID)
+    func remoteControlWebSetGimbalTracking(on: Bool)
+    func remoteControlWebSetGimbalMovement(x: Float, y: Float)
+    func remoteControlWebAnimateGimbal(motion: SettingsGimbalMotion)
+    func remoteControlWebSaveGimbalPreset()
     func remoteControlWebGetScoreboardSports() -> [String]
     func remoteControlWebSetScoreboardSport(sportId: String)
     func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
@@ -37,6 +45,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
     func remoteControlWebDeleteRecording(filename: String)
+    func remoteControlWebTakeSnapshot(age: Float, onComplete: @escaping @MainActor (Data?) -> Void)
     func remoteControlWebStartPreview()
     func remoteControlWebStopPreview()
 }
@@ -86,13 +95,14 @@ private let staticFiles: [StaticFile] = [
 private let recordingsPrefix = "/recordings/"
 private let thumbnailsPrefix = "/thumbnails/"
 
-class RemoteControlWeb: @unchecked Sendable {
+@MainActor
+class RemoteControlWeb {
     private var server: HttpServer?
     private var started: Bool = false
     private var websocketServer: NWListener?
     private var websocketPort: UInt16 = 0
-    private let websocketRetryTimer = SimpleTimer(queue: .main)
-    private weak var delegate: (any RemoteControlWebDelegate)?
+    private let websocketRetryTimer = MainTimer()
+    private weak let delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
     private var connectionsRequestingPreview: Set<ObjectIdentifier> = []
 
@@ -112,7 +122,7 @@ class RemoteControlWeb: @unchecked Sendable {
         stopWebsocketServer()
     }
 
-    func stateChanged(state: RemoteControlAssistantStreamerState) {
+    func stateChanged(state: RemoteControlState) {
         for connection in connections {
             send(connection: connection, message: .event(data: .state(data: state)))
         }
@@ -152,6 +162,7 @@ class RemoteControlWeb: @unchecked Sendable {
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
         routes.append(HttpServerRoute(path: "/recordings.json", handler: handleRecordingsJson))
+        routes.append(HttpServerRoute(path: "/snapshot", handler: handleSnapshot))
         routes.append(HttpServerRoute(
             path: recordingsPrefix,
             prefixMatch: true,
@@ -179,8 +190,16 @@ class RemoteControlWeb: @unchecked Sendable {
         options.autoReplyPing = true
         parameters.defaultProtocolStack.applicationProtocols.append(options)
         websocketServer = try? NWListener(using: parameters, on: .init(integer: Int(websocketPort)))
-        websocketServer?.stateUpdateHandler = handleWebsocketStateUpdate
-        websocketServer?.newConnectionHandler = handleNewWebsocketConnection
+        websocketServer?.stateUpdateHandler = { newState in
+            MainActor.assumeIsolated {
+                self.handleWebsocketStateUpdate(newState)
+            }
+        }
+        websocketServer?.newConnectionHandler = { connection in
+            MainActor.assumeIsolated {
+                self.handleNewWebsocketConnection(connection)
+            }
+        }
         websocketServer?.start(queue: .main)
     }
 
@@ -191,6 +210,7 @@ class RemoteControlWeb: @unchecked Sendable {
 
     private func stopWebsocketServer() {
         for connection in connections {
+            delegate?.remoteControlWebDisconnected()
             connection.cancel()
         }
         connections.removeAll()
@@ -276,6 +296,25 @@ class RemoteControlWeb: @unchecked Sendable {
         response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
     }
 
+    private func handleSnapshot(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            response.send(status: .methodNotAllowed)
+            return
+        }
+        guard let delegate else {
+            response.send(status: .serviceUnavailable)
+            return
+        }
+        let age = Float(request.query["age"] ?? "0") ?? 0.0
+        delegate.remoteControlWebTakeSnapshot(age: age) { snapshot in
+            guard let snapshot else {
+                response.send(status: .serviceUnavailable)
+                return
+            }
+            response.send(data: snapshot, status: .ok, contentType: "image/heic")
+        }
+    }
+
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {
         switch newState {
         case .failed:
@@ -299,21 +338,23 @@ class RemoteControlWeb: @unchecked Sendable {
 
     private func receiveWebsocketPacket(connection: NWConnection) {
         connection.receiveMessage { data, context, _, _ in
-            switch context?.webSocketOperation() {
-            case .text:
-                if let data, !data.isEmpty {
-                    self.handleWebsocketMessage(connection: connection, packet: data)
+            MainActor.assumeIsolated {
+                switch context?.webSocketOperation() {
+                case .text:
+                    if let data, !data.isEmpty {
+                        self.handleWebsocketMessage(connection: connection, packet: data)
+                        self.receiveWebsocketPacket(connection: connection)
+                    } else {
+                        self.handleDisconnected(connection: connection)
+                    }
+                case .ping:
+                    connection.sendWebSocket(data: data, opcode: .pong)
                     self.receiveWebsocketPacket(connection: connection)
-                } else {
+                case .pong:
+                    self.receiveWebsocketPacket(connection: connection)
+                default:
                     self.handleDisconnected(connection: connection)
                 }
-            case .ping:
-                connection.sendWebSocket(data: data, opcode: .pong)
-                self.receiveWebsocketPacket(connection: connection)
-            case .pong:
-                self.receiveWebsocketPacket(connection: connection)
-            default:
-                self.handleDisconnected(connection: connection)
             }
         }
     }
@@ -321,6 +362,7 @@ class RemoteControlWeb: @unchecked Sendable {
     private func handleDisconnected(connection: NWConnection) {
         connection.cancel()
         connections.removeAll(where: { $0 === connection })
+        delegate?.remoteControlWebDisconnected()
         let id = ObjectIdentifier(connection)
         if connectionsRequestingPreview.contains(id) {
             connectionsRequestingPreview.remove(id)
@@ -381,6 +423,14 @@ class RemoteControlWeb: @unchecked Sendable {
         case let .setLive(on: on):
             delegate.remoteControlWebSetLive(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
+        case let .showTally(message: message, background: background, foreground: foreground):
+            delegate.remoteControlWebShowTally(message: message,
+                                               background: background,
+                                               foreground: foreground)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .hideTally:
+            delegate.remoteControlWebHideTally()
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setPreviewStream(on: on):
             delegate.remoteControlWebSetPreviewStream(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
@@ -417,6 +467,18 @@ class RemoteControlWeb: @unchecked Sendable {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlWebMoveToGimbalPreset(id: presetId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setGimbalTracking(on: on):
+            delegate.remoteControlWebSetGimbalTracking(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setGimbalMovement(x: x, y: y):
+            delegate.remoteControlWebSetGimbalMovement(x: x, y: y)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .animateGimbal(motion: motion):
+            delegate.remoteControlWebAnimateGimbal(motion: motion)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .saveGimbalPreset:
+            delegate.remoteControlWebSaveGimbalPreset()
             sendEmptyOkResponse(connection: connection, id: id)
         case .getScoreboardSports:
             let sports = delegate.remoteControlWebGetScoreboardSports()

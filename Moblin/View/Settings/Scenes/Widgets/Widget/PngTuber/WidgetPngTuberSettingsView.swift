@@ -71,15 +71,15 @@ struct WidgetPngTuberSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var pngTuber: SettingsWidgetPngTuber
+    @ObservedObject var videoSources: VideoSources
 
     private func onCameraChange(cameraId: String) {
-        pngTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
-        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        model.pngTuberWidgetSetCamera(widget: widget,
+                                      settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
     }
 
     private func setEffectSettings() {
-        model.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror,
-                                                            sensitivity: pngTuber.sensitivity)
+        model.pngTuberWidgetSettingsChanged(widget: widget)
     }
 
     var body: some View {
@@ -88,7 +88,7 @@ struct WidgetPngTuberSettingsView: View {
                 InlinePickerView(
                     title: "Video source",
                     onChange: onCameraChange,
-                    items: model.listCameras(excludeBuiltin: false).map {
+                    items: videoSources.all().map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraId(pngTuberWidget: pngTuber)

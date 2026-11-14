@@ -40,10 +40,9 @@ func fetchFfzEmotes(platform: EmotesPlatform,
 }
 
 private func makeUrl(emote: FfzEmote) -> URL? {
-    guard let url = emote.images.fourx ?? emote.images.twox ?? emote.images.onex else {
-        return nil
-    }
-    guard let url = URL(string: url) else {
+    guard let url = emote.images.onex ?? emote.images.twox ?? emote.images.fourx,
+          let url = URL(string: url)
+    else {
         return nil
     }
     return url

@@ -27,7 +27,7 @@ struct TwitchStreamLiveSettingsView: View {
             }
         }
         NavigationLink {
-            TwitchCategoryPickerView(stream: stream)
+            TwitchCategoryPickerView(model: model, stream: stream)
         } label: {
             HStack {
                 Text("Category")
@@ -43,7 +43,7 @@ struct TwitchStreamLiveSettingsView: View {
 }
 
 private struct TwitchCategoryPickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var searchText: String = ""
     @State private var categories: [TwitchApiGameData] = []
@@ -68,7 +68,7 @@ private struct TwitchCategoryPickerView: View {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         Color.gray.opacity(0.3)
                     }
@@ -130,6 +130,17 @@ struct TwitchAlertsSettingsView: View {
                         alerts.minimumCheerBits = Int($0) ?? 0
                     }
                 )
+                Toggle("Watch streaks", isOn: $alerts.watchStreaks)
+                Picker("Minimum watch streak", selection: $alerts.minimumWatchStreak) {
+                    ForEach([1, 3, 5, 10, 15, 20, 25], id: \.self) {
+                        Text(String($0))
+                    }
+                }
+            }
+            Section {
+                Toggle("Shared chat", isOn: $alerts.sharedChat)
+            } footer: {
+                Text("Also show events from other channels in a shared chat session.")
             }
         }
         .navigationTitle(title)
@@ -159,6 +170,7 @@ struct StreamTwitchSettingsView: View {
     @State var loggedIn: Bool
     @State private var title: String?
     @State private var category: String?
+    @State private var tokenExpiresIn: Duration?
 
     private func submitChannelName(value: String) {
         stream.twitchChannelName = value
@@ -177,6 +189,7 @@ struct StreamTwitchSettingsView: View {
     private func onLoggedIn() {
         loggedIn = true
         loadStreamInfo()
+        loadTokenExpiresIn()
     }
 
     private func loadStreamInfo() {
@@ -186,20 +199,34 @@ struct StreamTwitchSettingsView: View {
         }
     }
 
+    private func loadTokenExpiresIn() {
+        tokenExpiresIn = nil
+        guard loggedIn else {
+            return
+        }
+        model.getTwitchTokenExpiresIn(stream: stream) {
+            tokenExpiresIn = $0
+        }
+    }
+
     var body: some View {
         Form {
             Section {
                 if !loggedIn {
                     TextButtonView("Login") {
-                        model.showTwitchAuth = true
-                        model.twitchLogin(stream: stream, onComplete: onLoggedIn)
+                        model.twitchLogin(stream: stream, onComplete: onLoggedIn) {
+                            model.showTwitchAuth = true
+                        }
                     }
                 } else {
                     TextButtonView("Logout") {
                         model.twitchLogout(stream: stream)
                         loggedIn = false
+                        tokenExpiresIn = nil
                     }
                 }
+            } footer: {
+                TokenExpiresInView(expiresIn: tokenExpiresIn)
             }
             Section {
                 TextEditNavigationView(
@@ -250,6 +277,7 @@ struct StreamTwitchSettingsView: View {
         .navigationTitle("Twitch")
         .onAppear {
             loadStreamInfo()
+            loadTokenExpiresIn()
         }
     }
 }

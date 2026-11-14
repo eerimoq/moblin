@@ -23,77 +23,104 @@ extension StringProtocol where Self: RangeReplaceableCollection {
         copy.removeFirst(prefix.count)
         return copy
     }
-
-    mutating func append(_ value: Self?) {
-        guard let value else {
-            return
-        }
-        append(contentsOf: value)
-    }
 }
 
-private enum TwitchEmote {
-    static func emotes(from string: String) -> [ChatMessageEmote] {
-        let emoteDefinitions = string.split(separator: "/")
-        return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
+private func parseRange(_ string: Substring) -> ClosedRange<Int>? {
+    let rangeIndexStrings = string.split(separator: "-")
+    guard rangeIndexStrings.count == 2,
+          let rangeStartIndexString = rangeIndexStrings.first,
+          let rangeEndIndexString = rangeIndexStrings.last,
+          let rangeStartIndex = Int(rangeStartIndexString),
+          let rangeEndIndex = Int(rangeEndIndexString),
+          rangeStartIndex <= rangeEndIndex
+    else {
+        return nil
     }
+    return rangeStartIndex ... rangeEndIndex
+}
 
-    private static func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] {
-        let parts = definition.split(separator: ":")
-        guard parts.count == 2,
-              let emoteId = parts.first,
-              let emoteRangesString = parts.last,
-              let url = URL(string: "https://static-cdn.jtvnw.net/emoticons/v2/\(emoteId)/default/dark/3.0")
-        else {
-            return []
-        }
-        var emotes: [ChatMessageEmote] = []
-        for emoteRangeString in emoteRangesString.split(separator: ",") {
-            let rangeIndexStrings = emoteRangeString.split(separator: "-")
-            guard rangeIndexStrings.count == 2,
-                  let rangeStartIndexString = rangeIndexStrings.first,
-                  let rangeEndIndexString = rangeIndexStrings.last,
-                  let rangeStartIndex = Int(rangeStartIndexString),
-                  let rangeEndIndex = Int(rangeEndIndexString),
-                  rangeStartIndex <= rangeEndIndex
-            else {
-                continue
-            }
-            emotes.append(ChatMessageEmote(url: url, range: rangeStartIndex ... rangeEndIndex))
-        }
-        return emotes
+private func parseEmotes(from string: String) -> [ChatMessageEmote] {
+    let emoteDefinitions = string.split(separator: "/")
+    return emoteDefinitions.flatMap { emotes(fromDefinition: $0) }
+}
+
+private func emotes(fromDefinition definition: Substring) -> [ChatMessageEmote] {
+    let parts = definition.split(separator: ":")
+    guard parts.count == 2,
+          let emoteId = parts.first,
+          let emoteRangesString = parts.last,
+          let urls = makeTwitchEmoteUrls(id: String(emoteId))
+    else {
+        return []
     }
+    var emotes: [ChatMessageEmote] = []
+    for emoteRangeString in emoteRangesString.split(separator: ",") {
+        guard let range = parseRange(emoteRangeString) else {
+            continue
+        }
+        emotes.append(ChatMessageEmote(url: urls.moving, stillUrl: urls.still, range: range))
+    }
+    return emotes
+}
+
+private func parseGif(from string: String) -> ChatMessageEmote? {
+    let parts = string.split(separator: "|", maxSplits: 2)
+    guard parts.count == 3,
+          let range = parseRange(parts[0]),
+          let url = URL(string: String(parts[2]))
+    else {
+        return nil
+    }
+    return ChatMessageEmote(url: lowResolutionGiphyUrl(url), range: range, isGif: true)
+}
+
+private func lowResolutionGiphyUrl(_ url: URL) -> URL {
+    guard url.host?.hasSuffix("giphy.com") == true else {
+        return url
+    }
+    return url.deletingLastPathComponent().appendingPathComponent("100.gif")
 }
 
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
     let parts = specifier.split(separator: "=", maxSplits: 1)
-    guard parts.count == 2, let name = parts.first, let value = parts.last else {
+    guard parts.count == 2, let name = parts.first, let value = parts.last, !value.isEmpty else {
         return nil
     }
-    guard !value.isEmpty else {
-        return nil
+    return (String(name), unescapeTagValue(value))
+}
+
+private func unescapeTagValue(_ value: Substring) -> String {
+    guard value.utf8.contains(UInt8(ascii: "\\")) else {
+        return String(value)
     }
     var unescapedValue = ""
-    let scanner = Scanner(string: String(value))
-    while scanner.isAtEnd == false {
-        unescapedValue.append(scanner.scanUpToString("\\"))
-        _ = scanner.scanString("\\")
-        if let escapedCharacter = scanner.scanCharacter() {
-            switch escapedCharacter {
-            case ":":
-                unescapedValue.append(";")
-            case "s":
-                unescapedValue.append(" ")
-            case "r":
-                unescapedValue.append("\r")
-            case "n":
-                unescapedValue.append("\n")
-            default:
-                unescapedValue.append(escapedCharacter)
+    unescapedValue.reserveCapacity(value.count)
+    var index = value.startIndex
+    while index < value.endIndex {
+        let character = value[index]
+        index = value.index(after: index)
+        guard character == "\\", index < value.endIndex else {
+            if character != "\\" {
+                unescapedValue.append(character)
             }
+            continue
+        }
+        let escapedCharacter = value[index]
+        index = value.index(after: index)
+        switch escapedCharacter {
+        case ":":
+            unescapedValue.append(";")
+        case "s":
+            unescapedValue.append(" ")
+        case "r":
+            unescapedValue.append("\r")
+        case "n":
+            unescapedValue.append("\n")
+        default:
+            unescapedValue.append(escapedCharacter)
         }
     }
-    return (String(name), unescapedValue)
+    return unescapedValue
 }
 
 private func parseParameters(from parts: [String]) -> [String] {
@@ -108,6 +135,83 @@ private func parseParameters(from parts: [String]) -> [String] {
         return parameters + [String(finalPart)]
     }
     return parameters
+}
+
+func createTwitchSegments(text: String,
+                          emotes: [ChatMessageEmote],
+                          emotesManager: Emotes,
+                          id: inout Int) -> [ChatPostSegment]
+{
+    var segments: [ChatPostSegment] = []
+    let unicodeText = text.unicodeScalars
+    let unicodeTextCount = unicodeText.count
+    var startIndex = unicodeText.startIndex
+    var startOffset = 0
+    for emote in emotes.sorted(by: { $0.range.lowerBound < $1.range.lowerBound }) {
+        guard emote.range.upperBound < unicodeTextCount else {
+            break
+        }
+        guard emote.range.lowerBound >= startOffset else {
+            continue
+        }
+        if emote.range.lowerBound > startOffset {
+            let endIndex = unicodeText.index(startIndex, offsetBy: emote.range.lowerBound - startOffset)
+            segments += emotesManager.createSegments(
+                text: String(unicodeText[startIndex ..< endIndex]),
+                id: &id
+            )
+        }
+        let emoteStartIndex = unicodeText.index(startIndex, offsetBy: emote.range.lowerBound - startOffset)
+        let emoteEndIndex = unicodeText.index(startIndex, offsetBy: emote.range.upperBound + 1 - startOffset)
+        let emoteName = String(unicodeText[emoteStartIndex ..< emoteEndIndex])
+        if emote.isGif {
+            segments.append(ChatPostSegment(
+                id: id,
+                bigGifUrl: ChatPostEmote(
+                    moving: emote.url,
+                    still: nil,
+                    name: emoteName.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+                )
+            ))
+        } else {
+            segments.append(ChatPostSegment(
+                id: id,
+                url: ChatPostEmote(moving: emote.url, still: emote.stillUrl, name: emoteName)
+            ))
+        }
+        id += 1
+        segments.append(ChatPostSegment(id: id, text: ""))
+        id += 1
+        startIndex = emoteEndIndex
+        startOffset = emote.range.upperBound + 1
+    }
+    if startIndex < unicodeText.endIndex {
+        segments += emotesManager.createSegments(text: String(unicodeText[startIndex...]), id: &id)
+    }
+    return segments
+}
+
+func createTwitchSegments(fragments: [TwitchEventSubMessageFragment],
+                          emotesManager: Emotes,
+                          id: inout Int) -> [ChatPostSegment]
+{
+    var segments: [ChatPostSegment] = []
+    for fragment in fragments {
+        if fragment.type == "emote", let emote = fragment.emote,
+           let urls = makeTwitchEmoteUrls(id: emote.id)
+        {
+            segments.append(ChatPostSegment(
+                id: id,
+                url: ChatPostEmote(moving: urls.moving, still: urls.still, name: fragment.text)
+            ))
+            id += 1
+            segments.append(ChatPostSegment(id: id, text: ""))
+            id += 1
+        } else {
+            segments += emotesManager.createSegments(text: fragment.text, id: &id)
+        }
+    }
+    return segments
 }
 
 struct TwitchChatMessage {
@@ -132,7 +236,7 @@ struct TwitchChatMessage {
     var sourceRoomId: String?
 
     init(string: String) throws {
-        var parts = string.components(separatedBy: .whitespaces)
+        var parts = string.components(separatedBy: " ")
         if let tagsPart = parts.first, tagsPart.hasPrefix("@") {
             let tagsString = tagsPart[tagsPart.index(after: tagsPart.startIndex)...]
             for tag in tagsString.split(separator: ";") {
@@ -144,10 +248,16 @@ struct TwitchChatMessage {
                     displayName = value
                 case "user-id":
                     userId = value
+                case "login":
+                    user = value
                 case "color":
                     color = value
                 case "emotes":
-                    emotes = TwitchEmote.emotes(from: value)
+                    emotes += parseEmotes(from: value)
+                case "gifs":
+                    if let gif = parseGif(from: value) {
+                        emotes.append(gif)
+                    }
                 case "badges":
                     badges = value.split(separator: ",").map { String($0) }
                 case "msg-id":
@@ -196,13 +306,18 @@ struct TwitchChatMessage {
         parts.removeFirst()
         parameters = parseParameters(from: parts)
     }
+
+    var isGigantifiedEmote: Bool {
+        messageId == "gigantified-emote-message"
+    }
 }
 
-private class Badges: @unchecked Sendable {
+@MainActor
+private class Badges {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: URL] = [:]
-    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
+    private var tryFetchAgainTimer = MainTimer()
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -227,18 +342,13 @@ private class Badges: @unchecked Sendable {
             guard let data else {
                 return
             }
-            DispatchQueue.main.async {
+            self.addBadges(badges: data)
+            TwitchApi(self.accessToken).getChannelChatBadges(broadcasterId: self.channelId) { data in
+                guard let data else {
+                    return
+                }
                 self.addBadges(badges: data)
-                TwitchApi(self.accessToken)
-                    .getChannelChatBadges(broadcasterId: self.channelId) { data in
-                        guard let data else {
-                            return
-                        }
-                        DispatchQueue.main.async {
-                            self.addBadges(badges: data)
-                            self.stopTryFetchAgainTimer()
-                        }
-                    }
+                self.stopTryFetchAgainTimer()
             }
         }
     }
@@ -264,11 +374,12 @@ private class Badges: @unchecked Sendable {
     }
 }
 
-private class Cheermotes: @unchecked Sendable {
+@MainActor
+class Cheermotes {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
-    private var tryFetchAgainTimer = SimpleTimer(queue: .main)
+    private var tryFetchAgainTimer = MainTimer()
 
     func start(channelId: String, accessToken: String) {
         self.channelId = channelId
@@ -289,12 +400,8 @@ private class Cheermotes: @unchecked Sendable {
             guard let datas else {
                 return
             }
-            DispatchQueue.main.async {
-                for data in datas {
-                    self.emotes[data.prefix.lowercased()] = data.tiers
-                }
-                self.stopTryFetchAgainTimer()
-            }
+            self.addCheermotes(datas: datas)
+            self.stopTryFetchAgainTimer()
         }
     }
 
@@ -308,22 +415,26 @@ private class Cheermotes: @unchecked Sendable {
         tryFetchAgainTimer.stop()
     }
 
+    func addCheermotes(datas: [TwitchApiGetCheermotesData]) {
+        for data in datas {
+            emotes[data.prefix.lowercased()] = data.tiers
+        }
+    }
+
     func getUrlAndBits(word: String) -> (URL, Int)? {
         let word = word.lowercased().trim()
-        for (prefix, tiers) in emotes {
-            guard let regex = try? Regex("\(prefix)(\\d+)", as: (Substring, Substring).self) else {
-                continue
+        var prefixEndIndex = word.endIndex
+        while prefixEndIndex > word.startIndex {
+            let index = word.index(before: prefixEndIndex)
+            guard word[index].isNumber else {
+                return nil
             }
-            guard let match = try? regex.wholeMatch(in: word) else {
-                continue
-            }
-            guard let bits = Int(match.output.1) else {
-                continue
-            }
-            guard let tier = tiers.reversed().first(where: { bits >= $0.min_bits }) else {
-                continue
-            }
-            guard let url = URL(string: tier.images.dark.static_.two) else {
+            prefixEndIndex = index
+            guard let bits = Int(word[prefixEndIndex...]),
+                  let tiers = emotes[String(word[..<prefixEndIndex])],
+                  let tier = tiers.reversed().first(where: { bits >= $0.min_bits }),
+                  let url = URL(string: tier.images.dark.static_.two)
+            else {
                 continue
             }
             return (url, bits)
@@ -332,6 +443,7 @@ private class Cheermotes: @unchecked Sendable {
     }
 }
 
+@MainActor
 protocol TwitchChatDelegate: AnyObject {
     func twitchChatMakeErrorToast(title: String, subTitle: String?)
     func twitchChatAppendMessage(
@@ -353,13 +465,14 @@ protocol TwitchChatDelegate: AnyObject {
     func twitchChatDeleteUser(userId: String)
 }
 
-final class TwitchChat: @unchecked Sendable {
+@MainActor
+final class TwitchChat {
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: Badges
     private var cheermotes: Cheermotes
     private var channelName: String
-    private weak var delegate: (any TwitchChatDelegate)?
+    private weak let delegate: (any TwitchChatDelegate)?
     private var sourceRoomIcons: [String: URL?] = [:]
     private var accessToken: String = ""
 
@@ -409,7 +522,20 @@ final class TwitchChat: @unchecked Sendable {
     }
 
     func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
-        createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
+        createSegments(text: text, fragments: [], bits: bits)
+    }
+
+    func createSegments(text: String,
+                        fragments: [TwitchEventSubMessageFragment],
+                        bits: String?) -> [ChatPostSegment]
+    {
+        var id = 0
+        var segments = createTwitchSegments(text: text, emotes: [], emotesManager: emotes, id: &id)
+        segments += createTwitchSegments(fragments: fragments, emotesManager: emotes, id: &id)
+        if bits != nil {
+            segments = replaceCheermotes(segments: segments)
+        }
+        return segments
     }
 
     func isConnected() -> Bool {
@@ -418,6 +544,14 @@ final class TwitchChat: @unchecked Sendable {
 
     func hasEmotes() -> Bool {
         emotes.isReady()
+    }
+
+    func reloadEmotes() {
+        emotes.reload()
+    }
+
+    func getBadgeUrl(badgeId: String) -> URL? {
+        badges.getUrl(badgeId: badgeId)
     }
 
     private func handleMessage(message: String) throws {
@@ -434,20 +568,30 @@ final class TwitchChat: @unchecked Sendable {
         }
     }
 
-    private func handleChatMessage(message: TwitchChatMessage) {
-        if let sourceRoomId = message.sourceRoomId, !accessToken.isEmpty {
-            if let sourceRoomIcon = sourceRoomIcons[sourceRoomId] {
-                processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
-            } else {
-                TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
-                    let sourceRoomIcon: URL? = if let user {
-                        URL(string: user.profile_image_url)
-                    } else {
-                        nil
-                    }
-                    self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
-                    self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
+    func getSourceChannelIcon(sourceRoomId: String, onComplete: @escaping (URL?) -> Void) {
+        guard !accessToken.isEmpty else {
+            onComplete(nil)
+            return
+        }
+        if let sourceRoomIcon = sourceRoomIcons[sourceRoomId] {
+            onComplete(sourceRoomIcon)
+        } else {
+            TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
+                let sourceRoomIcon: URL? = if let user {
+                    URL(string: user.profile_image_url)
+                } else {
+                    nil
                 }
+                self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
+                onComplete(sourceRoomIcon)
+            }
+        }
+    }
+
+    private func handleChatMessage(message: TwitchChatMessage) {
+        if let sourceRoomId = message.sourceRoomId {
+            getSourceChannelIcon(sourceRoomId: sourceRoomId) { sourceRoomIcon in
+                self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
             }
         } else {
             processChatMessage(message: message, sourceChannelIcon: nil)
@@ -464,15 +608,20 @@ final class TwitchChat: @unchecked Sendable {
         }
         var announcement = false
         var firstMessage = false
+        var gigantifiedEmote = false
         var subscriber = false
         var moderator = false
         switch message.command {
         case .privateMessage:
             firstMessage = message.firstMessage
+            gigantifiedEmote = message.isGigantifiedEmote
             subscriber = message.subscriber
             moderator = message.moderator
         case .userNotice:
-            announcement = message.messageId == "announcement"
+            guard message.messageId == "announcement" else {
+                return
+            }
+            announcement = true
         default:
             return
         }
@@ -482,9 +631,12 @@ final class TwitchChat: @unchecked Sendable {
                 badgeUrls.append(badgeUrl)
             }
         }
-        let isAction = text.starts(with: "\u{01}ACTION")
+        let isAction = text.starts(with: "\u{01}ACTION ")
         if isAction {
-            text = String(text.dropFirst(7))
+            text = String(text.dropFirst(8))
+            if text.hasSuffix("\u{01}") {
+                text = String(text.dropLast())
+            }
         }
         let segments = createSegments(
             text: text,
@@ -494,6 +646,7 @@ final class TwitchChat: @unchecked Sendable {
         )
         let highlight = createHighlight(announcement: announcement,
                                         firstMessage: firstMessage,
+                                        gigantifiedEmote: gigantifiedEmote,
                                         replySender: message.replySender,
                                         replyText: message.replyText)
         delegate?.twitchChatAppendMessage(
@@ -533,6 +686,7 @@ final class TwitchChat: @unchecked Sendable {
 
     private func createHighlight(announcement: Bool,
                                  firstMessage: Bool,
+                                 gigantifiedEmote: Bool,
                                  replySender: String?,
                                  replyText: String?) -> ChatHighlight?
     {
@@ -540,6 +694,8 @@ final class TwitchChat: @unchecked Sendable {
             ChatHighlight.makeAnnouncement()
         } else if firstMessage {
             ChatHighlight.makeFirstMessage()
+        } else if gigantifiedEmote {
+            ChatHighlight.makeGigantifiedEmote()
         } else if let sender = replySender, let text = replyText {
             ChatHighlight.makeReply(
                 user: sender,
@@ -551,62 +707,11 @@ final class TwitchChat: @unchecked Sendable {
     }
 
     private func handleError(title: String, subTitle: String) {
-        DispatchQueue.main.async {
-            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: subTitle)
-        }
+        delegate?.twitchChatMakeErrorToast(title: title, subTitle: subTitle)
     }
 
     private func handleOk(title: String) {
-        DispatchQueue.main.async {
-            self.delegate?.twitchChatMakeErrorToast(title: title, subTitle: nil)
-        }
-    }
-
-    private func createTwitchSegments(text: String,
-                                      emotes: [ChatMessageEmote],
-                                      id: inout Int) -> [ChatPostSegment]
-    {
-        var segments: [ChatPostSegment] = []
-        let unicodeText = text.unicodeScalars
-        var startIndex = unicodeText.startIndex
-        for emote in emotes.sorted(by: { $0.range.lowerBound < $1.range.lowerBound }) {
-            guard emote.range.lowerBound < unicodeText.count else {
-                break
-            }
-            guard emote.range.upperBound < unicodeText.count else {
-                break
-            }
-            var text: String?
-            if emote.range.lowerBound > 0 {
-                let endIndex = unicodeText.index(
-                    unicodeText.startIndex,
-                    offsetBy: emote.range.lowerBound - 1
-                )
-                if startIndex < endIndex {
-                    text = String(unicodeText[startIndex ... endIndex])
-                }
-            }
-            if let text {
-                segments += makeChatPostTextSegments(text: text, id: &id)
-            }
-            segments.append(ChatPostSegment(id: id, url: emote.url))
-            id += 1
-            segments.append(ChatPostSegment(id: id, text: ""))
-            id += 1
-            startIndex = unicodeText.index(
-                unicodeText.startIndex,
-                offsetBy: emote.range.upperBound + 1
-            )
-        }
-        if startIndex < unicodeText.endIndex {
-            for word in String(unicodeText[startIndex...]).components(separatedBy: .whitespacesAndNewlines)
-                where !word.isEmpty
-            {
-                segments.append(ChatPostSegment(id: id, text: "\(word) "))
-                id += 1
-            }
-        }
-        return segments
+        delegate?.twitchChatMakeErrorToast(title: title, subTitle: nil)
     }
 
     private func createSegments(text: String,
@@ -614,17 +719,13 @@ final class TwitchChat: @unchecked Sendable {
                                 emotesManager: Emotes,
                                 bits: String?) -> [ChatPostSegment]
     {
-        var segments: [ChatPostSegment] = []
         var id = 0
-        for var segment in createTwitchSegments(text: text, emotes: emotes, id: &id) {
-            if let text = segment.text {
-                segments += emotesManager.createSegments(text: text, id: &id)
-                segment.text = nil
-            }
-            if segment.text != nil || segment.url != nil {
-                segments.append(segment)
-            }
-        }
+        var segments = createTwitchSegments(
+            text: text,
+            emotes: emotes,
+            emotesManager: emotesManager,
+            id: &id
+        )
         if bits != nil {
             segments = replaceCheermotes(segments: segments)
         }
@@ -646,7 +747,7 @@ final class TwitchChat: @unchecked Sendable {
                 continue
             }
             id += 1
-            newSegments.append(.init(id: id, url: url))
+            newSegments.append(.init(id: id, url: ChatPostEmote(moving: nil, still: url)))
             id += 1
             newSegments.append(.init(id: id, text: "\(bits) "))
         }
@@ -655,14 +756,14 @@ final class TwitchChat: @unchecked Sendable {
 }
 
 extension TwitchChat: WebSocketClientDelegate {
-    func webSocketClientConnected(_ webSocket: WebSocketClient) {
+    func webSocketClientConnected(_: WebSocketClient) {
         logger.debug("twitch: chat: Connected")
         webSocket.send(string: "CAP REQ :twitch.tv/membership")
         webSocket.send(string: "CAP REQ :twitch.tv/tags")
         webSocket.send(string: "CAP REQ :twitch.tv/commands")
         webSocket.send(string: "PASS oauth:SCHMOOPIIE")
         webSocket.send(string: "NICK justinfan67420")
-        webSocket.send(string: "JOIN #\(channelName)")
+        webSocket.send(string: "JOIN #\(channelName.lowercased())")
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {

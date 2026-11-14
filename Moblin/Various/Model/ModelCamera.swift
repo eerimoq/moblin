@@ -16,6 +16,7 @@ enum CameraShowType: Equatable {
     case focus
 }
 
+@MainActor
 class CameraShow: ObservableObject {
     @Published var type: CameraShowType?
 
@@ -28,6 +29,49 @@ class CameraShow: ObservableObject {
     }
 }
 
+@MainActor
+class VideoSources: ObservableObject {
+    @Published var back: [Camera] = []
+    @Published var front: [Camera] = []
+    @Published var external: [Camera] = []
+    @Published var rtmp: [Camera] = []
+    @Published var srtla: [Camera] = []
+    @Published var srtClient: [Camera] = []
+    @Published var rist: [Camera] = []
+    @Published var rtsp: [Camera] = []
+    @Published var whip: [Camera] = []
+    @Published var whep: [Camera] = []
+    @Published var mediaPlayer: [Camera] = []
+
+    func all() -> [Camera] {
+        var cameras: [Camera] = []
+        if hasTripleBackCamera {
+            cameras.append(backTripleLowEnergyCamera)
+        }
+        if hasDualBackCamera {
+            cameras.append(backDualLowEnergyCamera)
+        }
+        if hasWideDualBackCamera {
+            cameras.append(backWideDualLowEnergyCamera)
+        }
+        cameras += back
+        cameras += front
+        cameras += external
+        cameras += rtmp
+        cameras += srtla
+        cameras += srtClient
+        cameras += rist
+        cameras += rtsp
+        cameras += whip
+        cameras += whep
+        cameras += mediaPlayer
+        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
+        cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
+        return cameras
+    }
+}
+
+@MainActor
 class CameraState: ObservableObject {
     let show = CameraShow()
     var isFocusesLocked: [AVCaptureDevice: Bool] = [:]
@@ -50,6 +94,7 @@ class CameraState: ObservableObject {
     @Published var isFocusLocked = false
     @Published var lockedIso: Float = 1.0
     @Published var lockedExposure: Float = 1.0
+    @Published var exposure: CMTime = .zero
     @Published var isExposureAndIsoLocked = false
     @Published var lockedWhiteBalance: Float = 0
     @Published var isWhiteBalanceLocked = false
@@ -222,6 +267,7 @@ extension Model {
             device: device,
             exposure: device.exposureDuration
         )
+        camera.exposure = device.exposureDuration
         camera.isExposureAndIsoLocked = camera.isExposuresAndIsosLocked[device] ?? false
         if camera.isExposureAndIsoLocked {
             setManualExposureAndIso(exposureFactor: camera.lockedExposure, isoFactor: camera.lockedIso)
@@ -257,12 +303,14 @@ extension Model {
         if let exposureFactor {
             exposure = factorToExposure(device: device, factor: exposureFactor)
             camera.lockedExposures[device] = exposureFactor
+            camera.exposure = exposure
         } else {
             exposure = AVCaptureDevice.currentExposureDuration
             camera.lockedExposures[device] = factorFromExposure(
                 device: device,
                 exposure: device.exposureDuration
             )
+            camera.exposure = device.exposureDuration
         }
         camera.isExposuresAndIsosLocked[device] = true
         camera.isExposureAndIsoLocked = true
@@ -307,11 +355,19 @@ extension Model {
         setManualExposureAndIso(exposureFactor: factor, isoFactor: nil)
     }
 
+    func getExposureFactorStep() -> Float {
+        guard let device = cameraDevice else {
+            return 0.01
+        }
+        return exposureFactorStep(device: device)
+    }
+
     func startObservingExposure() {
         guard let device = cameraDevice else {
             return
         }
         camera.lockedExposure = factorFromExposure(device: device, exposure: device.exposureDuration)
+        camera.exposure = device.exposureDuration
         camera.exposureObservation = device.observe(\.exposureDuration) { [weak self] _, _ in
             guard let self else {
                 return
@@ -323,6 +379,7 @@ extension Model {
                 let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
                 self.camera.lockedExposures[device] = exposure
                 self.camera.lockedExposure = exposure
+                self.camera.exposure = device.exposureDuration
             }
         }
     }
@@ -417,35 +474,13 @@ extension Model {
         camera.whiteBalanceObservation = nil
     }
 
-    func listCameras(position: AVCaptureDevice.Position) -> [Camera] {
-        var deviceTypes: [AVCaptureDevice.DeviceType] = [
-            .builtInTripleCamera,
-            .builtInDualCamera,
-            .builtInDualWideCamera,
-            .builtInUltraWideCamera,
-            .builtInWideAngleCamera,
-            .builtInTelephotoCamera,
-        ]
-        if #available(iOS 17.0, *) {
-            deviceTypes.append(.external)
-        }
-        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
-            deviceTypes: deviceTypes,
-            mediaType: .video,
-            position: position
-        )
-        return deviceDiscovery.devices.map { device in
-            Camera(id: device.uniqueID, name: device.name())
-        }
-    }
-
     func colorSpaceUpdated() {
         setColorSpace()
         resetSelectedScene(changeScene: false)
     }
 
     func lutEnabledUpdated() {
-        if database.color.lutEnabled, database.color.space == .appleLog {
+        if database.color.lutEnabled, database.color.space.isAppleLog() {
             media.registerEffect(lutEffect)
         } else {
             media.unregisterEffect(lutEffect)
@@ -508,33 +543,72 @@ extension Model {
             isOn = true
         }
         setQuickButton(type: .luts, isOn: isOn)
-        updateQuickButtonStates()
     }
 
     func updateShowCameraPreview() -> Bool {
-        let show = shouldShowCameraPreview()
+        let show = shouldShowCameraPreview() && !presentingSceneEditor
         if show != self.show.cameraPreview {
             self.show.cameraPreview = show
         }
         return show
     }
 
-    private func shouldShowCameraPreview() -> Bool {
+    func toggleCameraPreview() {
+        if database.alwaysAttachCameraPreview {
+            media.setShowCameraPreview(updateShowCameraPreview())
+        } else {
+            attachCamera()
+        }
+    }
+
+    func shouldShowCameraPreview() -> Bool {
         if !(getQuickButton(type: .cameraPreview)?.isOn ?? false) {
             return false
         }
         return cameraDevice != nil
     }
 
-    func updateCameraLists() {
+    func updateVideoSources() {
+        updateDeviceVideoSources()
+        updateRtmpVideoSources()
+        updateSrtlaVideoSources()
+        updateSrtClientVideoSources()
+        updateRistVideoSources()
+        updateRtspVideoSources()
+        updateWhipVideoSources()
+        updateWhepVideoSources()
+        updateMediaPlayerVideoSources()
+    }
+
+    func updateDeviceVideoSources() {
+        videoSources.back = listBuiltinCameras(position: .back)
+        videoSources.front = listBuiltinCameras(position: .front)
         if isMac() {
-            externalCameras = []
-            backCameras = listCameras(position: .back)
-            frontCameras = listCameras(position: .front)
+            videoSources.external = []
         } else {
-            externalCameras = listExternalCameras()
-            backCameras = listCameras(position: .back)
-            frontCameras = listCameras(position: .front)
+            videoSources.external = listExternalCameras()
+        }
+    }
+
+    private func listBuiltinCameras(position: AVCaptureDevice.Position) -> [Camera] {
+        var deviceTypes: [AVCaptureDevice.DeviceType] = [
+            .builtInTripleCamera,
+            .builtInDualCamera,
+            .builtInDualWideCamera,
+            .builtInUltraWideCamera,
+            .builtInWideAngleCamera,
+            .builtInTelephotoCamera,
+        ]
+        if #available(iOS 17.0, *) {
+            deviceTypes.append(.external)
+        }
+        let deviceDiscovery = AVCaptureDevice.DiscoverySession(
+            deviceTypes: deviceTypes,
+            mediaType: .video,
+            position: position
+        )
+        return deviceDiscovery.devices.map { device in
+            Camera(id: device.uniqueID, name: device.name())
         }
     }
 
@@ -551,41 +625,12 @@ extension Model {
         return deviceDiscovery.devices.map { Camera(id: $0.uniqueID, name: $0.name()) }
     }
 
-    func listCameras(excludeBuiltin: Bool = false) -> [Camera] {
-        var cameras: [Camera] = []
-        if !excludeBuiltin {
-            if hasTripleBackCamera {
-                cameras.append(backTripleLowEnergyCamera)
-            }
-            if hasDualBackCamera {
-                cameras.append(backDualLowEnergyCamera)
-            }
-            if hasWideDualBackCamera {
-                cameras.append(backWideDualLowEnergyCamera)
-            }
-            cameras += backCameras
-            cameras += frontCameras
-            cameras += externalCameras
-        }
-        cameras += rtmpCameras()
-        cameras += srtlaCameras()
-        cameras += srtClientCameras()
-        cameras += ristCameras()
-        cameras += rtspCameras()
-        cameras += whipCameras()
-        cameras += whepCameras()
-        cameras += playerCameras()
-        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
-        cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
-        return cameras
-    }
-
     private func isBackCamera(cameraId: CameraId) -> Bool {
-        backCameras.contains(where: { $0.id == cameraId })
+        videoSources.back.contains(where: { $0.id == cameraId })
     }
 
     private func isFrontCamera(cameraId: CameraId) -> Bool {
-        frontCameras.contains(where: { $0.id == cameraId })
+        videoSources.front.contains(where: { $0.id == cameraId })
     }
 
     private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
@@ -680,7 +725,7 @@ extension Model {
         }
     }
 
-    private func getCameraId(settingsCameraId: SettingsCameraId?) -> CameraId {
+    func getCameraId(settingsCameraId: SettingsCameraId?) -> CameraId {
         guard let settingsCameraId else {
             return ""
         }
@@ -764,13 +809,13 @@ extension Model {
                 return unknownSad
             }
         case let .back(id):
-            if let camera = backCameras.first(where: { $0.id == id }) {
+            if let camera = videoSources.back.first(where: { $0.id == id }) {
                 return camera.name
             } else {
                 return unknownSad
             }
         case let .front(id):
-            if let camera = frontCameras.first(where: { $0.id == id }) {
+            if let camera = videoSources.front.first(where: { $0.id == id }) {
                 return camera.name
             } else {
                 return unknownSad
@@ -789,7 +834,7 @@ extension Model {
     }
 
     func getExternalCameraName(cameraId: CameraId) -> String {
-        if let camera = externalCameras.first(where: { $0.id == cameraId }) {
+        if let camera = videoSources.external.first(where: { $0.id == cameraId }) {
             camera.name
         } else {
             unknownSad
@@ -797,7 +842,7 @@ extension Model {
     }
 
     func isExternalCameraConnected(cameraId: String) -> Bool {
-        externalCameras.first { $0.id == cameraId } != nil
+        videoSources.external.first { $0.id == cameraId } != nil
     }
 
     func setColorSpace() {
@@ -814,9 +859,15 @@ extension Model {
             } else {
                 .sRGB
             }
+        case .appleLog2:
+            if #available(iOS 26.0, *) {
+                .appleLog2
+            } else {
+                .sRGB
+            }
         }
         media.setColorSpace(colorSpace: colorSpace) {
-            if let x = self.setCameraZoomX(x: self.zoom.x) {
+            if let x = self.setCameraZoomX(x: self.zoom.level.x) {
                 self.setZoomXWhenInRange(x: x)
             }
             self.lutEnabledUpdated()
@@ -893,10 +944,7 @@ extension Model {
     }
 
     func setExposureBias(bias: Float) {
-        guard let position = cameraPosition else {
-            return
-        }
-        guard let device = preferredCamera(position: position) else {
+        guard let device = cameraDevice else {
             return
         }
         if bias < device.minExposureTargetBias {

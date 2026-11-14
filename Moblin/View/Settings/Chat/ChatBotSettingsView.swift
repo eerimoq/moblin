@@ -117,13 +117,47 @@ private struct FaxPermissionsSettingsView: View {
 
 private struct SnapshotPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
+    @ObservedObject var snapshot: SettingsChatBotCommandSnapshot
 
     var body: some View {
         Section {
-            PermissionsSettingsView(
-                title: String(localized: "!moblin snapshot <optional message>"),
-                permissions: permissions
-            )
+            NavigationLink {
+                Form {
+                    Section {
+                        Picker("Source", selection: $snapshot.source) {
+                            ForEach(SettingsChatBotCommandSnapshotSource.allCases, id: \.self) { source in
+                                Text(source.toString())
+                            }
+                        }
+                        if snapshot.source == .webRemoteControl {
+                            Picker("Use remote source", selection: $snapshot.webRemoteControlMode) {
+                                ForEach(
+                                    SettingsChatBotCommandSnapshotWebRemoteControlMode.allCases,
+                                    id: \.self
+                                ) {
+                                    Text($0.toString())
+                                }
+                            }
+                            TextEditNavigationView(
+                                title: String(localized: "URL"),
+                                value: snapshot.webRemoteControlUrl,
+                                onChange: isValidHttpUrl,
+                                onSubmit: { snapshot.webRemoteControlUrl = cleanUrl(url: $0) },
+                                placeholder: "http://192.168.1.10:\(DefaultTcpPorts.remoteControlWeb)"
+                            )
+                        }
+                    } footer: {
+                        Text("""
+                        Take the snapshot on this device, or fetch it from another device's web remote \
+                        control.
+                        """)
+                    }
+                    PermissionsSettingsInnerView(permissions: permissions)
+                }
+                .navigationTitle("!moblin snapshot <optional message>")
+            } label: {
+                Text("!moblin snapshot <optional message>")
+            }
         } footer: {
             Text("Take snapshot.")
         }
@@ -377,6 +411,52 @@ private struct MuteUnmutePermissionsSettingsView: View {
     }
 }
 
+private struct TorchPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin torch ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin torch on"))
+                Text("Turn the torch on.")
+                Text("")
+                Text(String("!moblin torch off"))
+                Text("Turn the torch off.")
+                Text("")
+                Text(String("!moblin torch level <level>"))
+                Text("Set torch level, from 1 to 100.")
+            }
+        }
+    }
+}
+
+private struct VibratePermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin vibrate ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin vibrate on [<seconds>] [<intensity>] [<sharpness>]"))
+                Text("Vibrate the phone. Until turned off if no seconds is given.")
+                Text("Intensity and sharpness from 1 to 100, default 100 and 50.")
+                Text("")
+                Text(String("!moblin vibrate off"))
+                Text("Stop vibrating the phone.")
+            }
+        }
+    }
+}
+
 private struct TeslaPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -446,6 +526,43 @@ private struct SendPermissionsSettingsView: View {
     }
 }
 
+private struct AppleMusicPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin music ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("!moblin music add <song>")
+                Text("Add given song to the queue.")
+                Text("<song> is either a share link or text search.")
+                Text("")
+                Text(String("!moblin music play"))
+                Text("Play.")
+                Text("")
+                Text(String("!moblin music pause"))
+                Text("Pause.")
+                Text("")
+                Text(String("!moblin music next"))
+                Text("Next song.")
+                Text("")
+                Text(String("!moblin music previous"))
+                Text("Previous song.")
+                Text("")
+                Text(String("!moblin music status"))
+                Text("Show status.")
+                Text("")
+                Text(String("!moblin music clear"))
+                Text("Clear the queue.")
+            }
+        }
+    }
+}
+
 private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -467,10 +584,14 @@ private struct ChatBotCommandsSettingsView: View {
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
             ReactionPermissionsSettingsView(permissions: permissions.reaction)
             ScenePermissionsSettingsView(permissions: permissions.scene)
-            SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
+            SnapshotPermissionsSettingsView(permissions: permissions.snapshot,
+                                            snapshot: model.database.chat.botCommandSnapshot)
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
+            TorchPermissionsSettingsView(permissions: permissions.torch)
+            VibratePermissionsSettingsView(permissions: permissions.vibrate)
             SendPermissionsSettingsView(permissions: permissions.send)
+            AppleMusicPermissionsSettingsView(permissions: permissions.music)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
             TwitchPermissionsSettingsView(permissions: permissions.twitch)
@@ -554,6 +675,114 @@ private struct ChatBotAliasSettingsView: View {
     }
 }
 
+private struct ChatBotCustomCommandTextSettingsView: View {
+    @EnvironmentObject var model: Model
+    let customCommand: SettingsChatBotCustomCommand
+    @State var value: String
+
+    var body: some View {
+        Form {
+            TextWidgetTextView(value: $value)
+            TextFormatWarningsView(model: model, location: model.database.location, value: $value)
+            Section {
+                TextWidgetSuggestionsView(widget: false, text: $value)
+            }
+            TextFormatVariablesView(model: model, widget: false, value: $value)
+        }
+        .onChange(of: value) { _ in
+            customCommand.formatString = value
+            model.chatBotCustomCommandsTextChanged()
+        }
+        .navigationTitle("Text")
+    }
+}
+
+private struct ChatBotCustomCommandSettingsView: View {
+    @ObservedObject var customCommand: SettingsChatBotCustomCommand
+
+    private func onNameChange(value: String) -> String? {
+        guard !value.isEmpty else {
+            return String(localized: "The name must not be empty.")
+        }
+        return nil
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Name"),
+                            value: customCommand.name,
+                            onChange: onNameChange
+                        ) {
+                            customCommand.name = $0
+                        }
+                    } label: {
+                        TextItemLocalizedView(name: "Name", value: customCommand.name)
+                    }
+                    NavigationLink {
+                        ChatBotCustomCommandTextSettingsView(
+                            customCommand: customCommand,
+                            value: customCommand.formatString
+                        )
+                    } label: {
+                        TextItemLocalizedView(name: "Text", value: customCommand.formatString)
+                    }
+                } footer: {
+                    Text("Send the text to chat when a user sends !moblin custom <name>.")
+                }
+                PermissionsSettingsInnerView(permissions: customCommand.permissions)
+            }
+            .navigationTitle("Command")
+        } label: {
+            HStack {
+                Text(customCommand.name)
+                Spacer()
+                GrayTextView(text: customCommand.formatString)
+            }
+        }
+    }
+}
+
+private struct ChatBotCustomCommandsSettingsView: View {
+    let model: Model
+    @ObservedObject var chat: SettingsChat
+
+    var body: some View {
+        Form {
+            Section {
+                List {
+                    ForEach(chat.customCommands) { customCommand in
+                        ChatBotCustomCommandSettingsView(customCommand: customCommand)
+                            .contextMenuDeleteButton {
+                                chat.customCommands.removeAll { $0.id == customCommand.id }
+                                model.chatBotCustomCommandsTextChanged()
+                            }
+                    }
+                    .onMove { froms, to in
+                        chat.customCommands.move(fromOffsets: froms, toOffset: to)
+                    }
+                    .onDelete { offsets in
+                        chat.customCommands.remove(atOffsets: offsets)
+                        model.chatBotCustomCommandsTextChanged()
+                    }
+                }
+                CreateButtonView {
+                    chat.customCommands.append(SettingsChatBotCustomCommand())
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("!moblin custom <name>")
+                    Text("Send the text of the command with given name to chat.")
+                }
+            }
+        }
+        .navigationTitle("Custom commands")
+    }
+}
+
 private struct ChatBotAliasesSettingsView: View {
     @ObservedObject var chat: SettingsChat
 
@@ -583,16 +812,33 @@ private struct ChatBotAliasesSettingsView: View {
     }
 }
 
+private func drawChatBotCard(context: GraphicsContext, time: Double) {
+    context.fill(Path(ellipseIn: CGRect(x: 65.52 - 4.08, y: 39.68 - 4.08, width: 8.16, height: 8.16)),
+                 with: .color(Color(red: 0xFF / 255, green: 0x3B / 255, blue: 0x30 / 255)
+                     .opacity(tradingCardPulseOpacity(time: time))))
+}
+
 struct ChatBotSettingsView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
         Form {
             Section {
+                TradingCardView(name: "ChatBot",
+                                background: Color(red: 0xEA / 255, green: 0xF4 / 255, blue: 0xEA / 255),
+                                hasFront: false,
+                                draw: drawChatBotCard)
+            }
+            Section {
                 NavigationLink {
                     ChatBotCommandsSettingsView()
                 } label: {
                     Text("Commands")
+                }
+                NavigationLink {
+                    ChatBotCustomCommandsSettingsView(model: model, chat: model.database.chat)
+                } label: {
+                    Text("Custom commands")
                 }
                 NavigationLink {
                     ChatBotAliasesSettingsView(chat: model.database.chat)

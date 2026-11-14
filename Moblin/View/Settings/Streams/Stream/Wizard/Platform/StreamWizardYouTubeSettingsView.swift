@@ -40,7 +40,7 @@ struct StreamWizardYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                if youTubeStream.youTubeAuthState == nil {
+                if !youTubeStream.isYouTubeAuthorized() {
                     TextButtonView("Login") {
                         model.youTubeSignIn(stream: youTubeStream)
                     }

@@ -6,11 +6,6 @@ protocol WhipServerClientDelegate: AnyObject {
     func whipServerClientOnDisconnected(streamId: UUID, reason: String)
     func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whipServerClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    )
     func whipServerClientOnDataReceived(streamId: UUID, count: Int)
 }
 
@@ -18,20 +13,25 @@ final class WhipServerClient {
     let streamId: UUID
     private var ingestClient: WebrtcIngestClient?
     private var answerCompletion: ((String?) -> Void)?
-    weak var delegate: (any WhipServerClientDelegate)?
+    weak let delegate: (any WhipServerClientDelegate)?
 
     init(streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange,
          iceServers: [String],
          delegate: any WhipServerClientDelegate)
     {
         self.streamId = streamId
         self.delegate = delegate
         ingestClient = WebrtcIngestClient(
+            name: "whip-server",
             streamId: streamId,
             latency: latency,
             syncTimestamps: syncTimestamps,
+            softwareDecoding: softwareDecoding,
+            colorRange: colorRange,
             iceServers: iceServers,
             dispatchQueue: whipServerDispatchQueue,
             delegate: self
@@ -75,18 +75,6 @@ extension WhipServerClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate?.whipServerClientOnAudioBuffer(streamId: streamId, sampleBuffer)
-    }
-
-    func webrtcIngestClientSetTargetLatencies(
-        streamId: UUID,
-        _ videoTargetLatency: Double,
-        _ audioTargetLatency: Double
-    ) {
-        delegate?.whipServerClientSetTargetLatencies(
-            streamId: streamId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {

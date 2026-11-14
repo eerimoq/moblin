@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class ReplayProvider: ObservableObject {
     @Published var selectedId: UUID?
     @Published var isSaving = false
@@ -32,7 +33,10 @@ extension Model {
                     replaySettings.start = start ?? self.database.replay.start
                     replaySettings.stop = self.database.replay.stop
                     replaySettings.duration = file.duration
-                    try? FileManager.default.copyItem(at: file.url, to: replaySettings.url())
+                    try? FileManager.default.copyItem(
+                        at: file.url,
+                        to: self.replaysStorage.url(replay: replaySettings)
+                    )
                     self.replaysStorage.append(replay: replaySettings)
                     completion?(replaySettings)
                 }
@@ -46,8 +50,13 @@ extension Model {
         replay.startFromEnd = video.startFromEnd()
         replay.selectedId = video.id
         replayFrameExtractor = ReplayFrameExtractor(
-            video: ReplayBufferFile(url: video.url(), duration: video.duration, remove: false),
+            video: ReplayBufferFile(
+                url: replaysStorage.url(replay: video),
+                duration: video.duration,
+                remove: false
+            ),
             offset: video.thumbnailOffset(),
+            pixelFormatType: stream.colorRange.pixelFormatType(),
             delegate: self,
             completion: completion
         )
@@ -163,6 +172,7 @@ extension Model {
             size: stream.dimensions(),
             layout: replay.layout,
             transitionMode: transitionMode,
+            pixelFormatType: stream.colorRange.pixelFormatType(),
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
@@ -184,18 +194,10 @@ extension Model {
         }
         stream.replay.enterForegroundCountAtLatestUsage = enterForegroundCount
     }
-
-    func handleRecorderInitSegment(data: Data) {
-        replayBuffer.setInitSegment(data: data)
-    }
-
-    func handleRecorderDataSegment(segment: RecorderDataSegment) {
-        replayBuffer.appendDataSegment(segment: segment)
-    }
 }
 
-extension Model: @preconcurrency ReplayDelegate {
-    func replayOutputFrame(
+extension Model: ReplayDelegate {
+    nonisolated func replayOutputFrame(
         image: UIImage,
         offset _: Double,
         video: ReplayBufferFile,
@@ -209,20 +211,20 @@ extension Model: @preconcurrency ReplayDelegate {
     }
 }
 
-extension Model: @preconcurrency ReplayEffectDelegate {
-    func replayEffectStatus(timeLeft: Int) {
+extension Model: ReplayEffectDelegate {
+    nonisolated func replayEffectStatus(timeLeft: Int) {
         DispatchQueue.main.async {
             self.replay.timeLeft = timeLeft
         }
     }
 
-    func replayEffectCompleted() {
+    nonisolated func replayEffectCompleted() {
         DispatchQueue.main.async {
             self.replay.isPlaying = false
         }
     }
 
-    func replayEffectError(message: String) {
+    nonisolated func replayEffectError(message: String) {
         makeErrorToastMain(title: message)
     }
 }

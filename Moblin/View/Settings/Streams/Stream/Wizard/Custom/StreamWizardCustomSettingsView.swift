@@ -40,7 +40,6 @@ struct StreamWizardCustomSettingsView: View {
         }
         .onAppear {
             createStreamWizard.platform = .custom
-            createStreamWizard.networkSetup = .none
             createStreamWizard.customProtocol = .none
             createStreamWizard.name = makeUniqueName(name: String(localized: "Custom"),
                                                      existingNames: model.database.streams)

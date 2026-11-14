@@ -12,6 +12,9 @@ struct StreamSrtSettingsView: View {
         guard latency >= 0 else {
             return String(localized: "Too small")
         }
+        guard latency <= 65535 else {
+            return String(localized: "Too big")
+        }
         return nil
     }
 
@@ -41,6 +44,7 @@ struct StreamSrtSettingsView: View {
             return
         }
         srt.overheadBandwidth = overheadBandwidth
+        model.reloadStreamIfEnabled(stream: stream)
     }
 
     var body: some View {

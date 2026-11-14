@@ -1,4 +1,4 @@
-@preconcurrency public import AVFoundation
+public import AVFoundation
 import Foundation
 
 extension AVCaptureColorSpace: @retroactive CustomStringConvertible {
@@ -12,6 +12,8 @@ extension AVCaptureColorSpace: @retroactive CustomStringConvertible {
             "HLG_BT2020"
         case .appleLog:
             "Apple Log"
+        case .appleLog2:
+            "Apple Log 2"
         default:
             "Unknown"
         }

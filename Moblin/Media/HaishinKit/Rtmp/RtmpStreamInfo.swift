@@ -28,7 +28,7 @@ class RtmpStreamInfo {
     }
 
     func onTimeout() {
-        bitrateStats.mutate { _ = $0.update() }
+        bitrateStats.mutate { $0.update() }
     }
 
     func onWritten(sequence: Int64) {

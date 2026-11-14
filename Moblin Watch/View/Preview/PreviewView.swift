@@ -2,10 +2,11 @@ import Combine
 import SwiftUI
 
 private struct AudioLevelView: View {
+    @ObservedObject var control: Control
     let level: Float
 
     var body: some View {
-        if level.isNaN {
+        if control.isMuted {
             CompactAudioLevelIconView(
                 name: "microphone.slash",
                 foregroundColor: .white,
@@ -59,11 +60,12 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusAudioLevel() {
-            AudioLevelView(level: preview.audioLevel)
+            AudioLevelView(control: model.control, level: preview.audioLevel)
         }
     }
 }
 
+@MainActor
 class Preview: ObservableObject {
     @Published var speedAndTotal = noValue
     @Published var recordingLength = noValue
@@ -94,7 +96,7 @@ struct PreviewView: View {
                 if let image = preview.image {
                     Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
                 }
                 if preview.showPreviewDisconnected {

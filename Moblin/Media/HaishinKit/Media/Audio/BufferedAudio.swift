@@ -1,4 +1,4 @@
-@preconcurrency import AVFoundation
+import AVFoundation
 import Collections
 
 private let deltaLimit = 0.03
@@ -7,10 +7,9 @@ protocol BufferedAudioSampleBufferDelegate: AnyObject {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
 }
 
-class BufferedAudio {
+class BufferedAudio: @unchecked Sendable {
     private var cameraId: UUID
     private let name: String
-    private weak var processor: Processor?
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -20,7 +19,7 @@ class BufferedAudio {
     private var latestSampleBuffer: CMSampleBuffer?
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
-    private let driftTracker: DriftTracker
+    private let driftTracker: DriftTracker?
     private var isInitialBuffering = true
     private var isSyncingWithOutput = true
     weak var delegate: (any BufferedAudioSampleBufferDelegate)?
@@ -29,24 +28,26 @@ class BufferedAudio {
     private var stats = BufferedStats()
     private let manualOutput: Bool
 
-    init(cameraId: UUID, name: String, latency: Double, processor: Processor?, manualOutput: Bool) {
+    init(
+        cameraId: UUID,
+        name: String,
+        latency: Double,
+        manualOutput: Bool,
+        driftTracker: DriftTracker?
+    ) {
         self.cameraId = cameraId
         self.name = name
         self.latency = latency
-        self.processor = processor
         self.manualOutput = manualOutput
+        self.driftTracker = driftTracker
         if manualOutput {
             isOutputting = true
         }
-        driftTracker = DriftTracker(media: "audio", name: name, targetFillLevel: latency)
+        driftTracker?.addMedia(.audio, targetFillLevel: latency)
     }
 
     func numberOfBuffers() -> Int {
         sampleBuffers.count
-    }
-
-    func setTargetLatency(latency: Double) {
-        driftTracker.setTargetFillLevel(targetFillLevel: latency)
     }
 
     func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -65,7 +66,7 @@ class BufferedAudio {
     func getSampleBuffer(_ outputPresentationTimeStamp: Double) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
-        let drift = driftTracker.getDrift()
+        let drift = driftTracker?.getDrift() ?? 0.0
         while let nextSampleBuffer = sampleBuffers.first {
             if latestSampleBuffer == nil {
                 latestSampleBuffer = nextSampleBuffer
@@ -104,15 +105,13 @@ class BufferedAudio {
         }
         if !isInitialBuffering, hasBufferBeenAppended, !manualOutput {
             hasBufferBeenAppended = false
-            if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
-                processor?.setBufferedVideoDrift(cameraId: cameraId, drift: drift)
+            if let driftTracker, let newestSampleBuffer = sampleBuffers.last ?? latestSampleBuffer {
+                driftTracker.update(media: .audio,
+                                    outputPresentationTimeStamp,
+                                    newestSampleBuffer.presentationTimeStamp.seconds)
             }
         }
         return sampleBuffer
-    }
-
-    func setDrift(drift: Double) {
-        driftTracker.setDrift(drift: drift)
     }
 
     private func consumeBuffer(_ numberOfBuffersConsumed: inout Int) {

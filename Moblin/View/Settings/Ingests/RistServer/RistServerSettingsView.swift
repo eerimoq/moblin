@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RistServerSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var ristServer: SettingsRistServer
 
     private func submitPort(value: String) {
@@ -23,7 +23,7 @@ struct RistServerSettingsView: View {
     private func deleteStream(at indexes: IndexSet) {
         ristServer.streams.remove(atOffsets: indexes)
         model.reloadRistServer()
-        model.updateMicsListAsync()
+        model.updateRistVideoSourcesAndMics()
     }
 
     var body: some View {
@@ -79,7 +79,7 @@ struct RistServerSettingsView: View {
                                                      existingNames: ristServer.streams)
                         stream.virtualDestinationPort = ristServer.makeUniqueVirtualDestinationPort()
                         ristServer.streams.append(stream)
-                        model.updateMicsListAsync()
+                        model.updateRistVideoSourcesAndMics()
                     }
                     .disabled(model.ristServerEnabled())
                 } header: {

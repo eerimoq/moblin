@@ -35,7 +35,7 @@ func fetchBttvEmotes(platform: EmotesPlatform,
 }
 
 private func makeUrl(emote: BttvEmote) -> URL? {
-    guard let url = URL(string: "https://cdn.betterttv.net/emote/\(emote.id)/3x") else {
+    guard let url = URL(string: "https://cdn.betterttv.net/emote/\(emote.id)/1x") else {
         logger.info("emotes: Failed to create URL for BTTV emote \(emote.code)")
         return nil
     }

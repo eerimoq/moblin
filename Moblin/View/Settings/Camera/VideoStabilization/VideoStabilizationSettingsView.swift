@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct VideoStabilizationSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @State var mode: SettingsVideoStabilizationMode
 
     var body: some View {
@@ -13,7 +13,7 @@ struct VideoStabilizationSettingsView: View {
         }
         .onChange(of: mode) {
             model.database.videoStabilizationMode = $0
-            model.reattachCamera()
+            model.attachCamera()
         }
     }
 }

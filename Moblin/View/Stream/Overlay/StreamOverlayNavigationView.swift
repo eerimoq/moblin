@@ -235,13 +235,12 @@ private struct MapView: View {
                 LongPressGesture(minimumDuration: 0.5)
                     .sequenced(before: DragGesture(minimumDistance: 0))
                     .onEnded { value in
-                        guard case .second(true, let drag) = value else {
-                            return
-                        }
-                        guard let location = drag?.location else {
-                            return
-                        }
-                        guard let coordinate = proxy.convert(location, from: .local) else {
+                        guard case .second(true, let drag) = value, let location = drag?.location,
+                              let coordinate = proxy.convert(
+                                  location,
+                                  from: .local
+                              )
+                        else {
                             return
                         }
                         serLongPressLocation(coordinate: coordinate)

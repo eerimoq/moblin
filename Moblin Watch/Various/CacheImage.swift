@@ -1,7 +1,8 @@
 import SwiftUI
 import WatchConnectivity
 
-private class Cache: @unchecked Sendable {
+@MainActor
+private class Cache {
     private var cache: [URL: Image] = [:]
     private var waiters: [URL: [(Image) -> Void]] = [:]
     private var waitingForResponse = false
@@ -57,6 +58,7 @@ private class Cache: @unchecked Sendable {
     }
 }
 
+@MainActor
 private let cache = Cache()
 
 struct CacheImage<Content: View>: View {

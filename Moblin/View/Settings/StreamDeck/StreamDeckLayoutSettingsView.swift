@@ -240,9 +240,7 @@ struct StreamDecksSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "StreamDeck")
-                }
+                IntegrationImageView(imageName: "StreamDeck")
             }
             if !streamDeck.isDeviceDriverInstalled {
                 Section {

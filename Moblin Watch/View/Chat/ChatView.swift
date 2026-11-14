@@ -4,6 +4,7 @@ import DequeModule
 import SwiftUI
 import WrappingHStack
 
+@MainActor
 class Chat: ObservableObject {
     @Published var posts = Deque<WatchChatPost>()
 }
@@ -28,7 +29,7 @@ private struct LineView: View {
                     CacheImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     }
                     .padding(2)
                     .frame(height: CGFloat(chatSettings.fontSize * 1.3))
@@ -49,7 +50,7 @@ private struct LineView: View {
                     CacheImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     }
                     .frame(height: CGFloat(chatSettings.fontSize) * 1.5)
                     Text(" ")

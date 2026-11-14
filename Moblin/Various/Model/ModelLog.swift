@@ -44,7 +44,7 @@ extension Model {
         logsStorage.flush()
     }
 
-    private func debugLog(message: String) {
+    private nonisolated func debugLog(message: String) {
         DispatchQueue.main.async {
             if self.log.count > self.database.debug.maximumLogLines {
                 self.log.removeFirst()

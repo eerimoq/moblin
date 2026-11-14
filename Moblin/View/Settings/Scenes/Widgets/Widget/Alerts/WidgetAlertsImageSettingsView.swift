@@ -28,7 +28,7 @@ func loadAlertImage(model: Model, imageId: UUID) -> Data? {
 }
 
 private struct CustomImageView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
     @State var image: Data?
@@ -60,7 +60,7 @@ private struct CustomImageView: View {
                         if let image {
                             AnimatedImage(data: image)
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
+                                .scaledToFit()
                                 .frame(width: 1920 / 6, height: 1080 / 6)
                         } else {
                             Text("Select image")
@@ -68,7 +68,7 @@ private struct CustomImageView: View {
                     }
                 }
                 .sheet(isPresented: $showPicker) {
-                    AlertPickerView(type: .gif)
+                    AlertPickerView(model: model, type: .gif)
                 }
             } footer: {
                 Text("Only GIF:s are supported.")
@@ -78,13 +78,31 @@ private struct CustomImageView: View {
     }
 }
 
+private struct ImageGalleryItemView: View {
+    let model: Model
+    @ObservedObject var image: SettingsAlertsMediaGalleryItem
+
+    var body: some View {
+        NavigationLink {
+            CustomImageView(
+                model: model,
+                media: image,
+                image: loadAlertImage(model: model, imageId: image.id)
+            )
+        } label: {
+            Text(image.name)
+        }
+    }
+}
+
 private struct ImageGalleryView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
 
     private func deleteImage(at offsets: IndexSet) {
-        model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)
+        gallery.customImages.remove(atOffsets: offsets)
         model.fixAlertMedias()
         imageId = alert.imageId
     }
@@ -93,30 +111,18 @@ private struct ImageGalleryView: View {
         Form {
             Section {
                 List {
-                    ForEach(model.database.alertsMediaGallery.customImages) { image in
-                        NavigationLink {
-                            CustomImageView(
-                                media: image,
-                                image: loadAlertImage(model: model, imageId: image.id)
-                            )
-                        } label: {
-                            Text(image.name)
-                        }
-                        .contextMenuDeleteButton {
-                            if let offsets = makeOffsets(
-                                model.database.alertsMediaGallery.customImages,
-                                image.id
-                            ) {
-                                deleteImage(at: offsets)
+                    ForEach(gallery.customImages) { image in
+                        ImageGalleryItemView(model: model, image: image)
+                            .contextMenuDeleteButton {
+                                if let offsets = makeOffsets(gallery.customImages, image.id) {
+                                    deleteImage(at: offsets)
+                                }
                             }
-                        }
                     }
                     .onDelete(perform: deleteImage)
                 }
                 TextButtonView("Add") {
-                    let image = SettingsAlertsMediaGalleryItem(name: "My image")
-                    model.database.alertsMediaGallery.customImages.append(image)
-                    model.objectWillChange.send()
+                    gallery.customImages.append(SettingsAlertsMediaGalleryItem(name: "My image"))
                 }
             } footer: {
                 SwipeLeftToDeleteHelpView(kind: String(localized: "an image"))
@@ -127,7 +133,8 @@ private struct ImageGalleryView: View {
 }
 
 struct AlertImageSelectorView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var gallery: SettingsAlertsMediaGallery
     let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
     @State var loopCount: Float
@@ -136,14 +143,14 @@ struct AlertImageSelectorView: View {
         Form {
             Section {
                 Picker("", selection: $imageId) {
-                    ForEach(model.getAllAlertImages()) { image in
+                    ForEach(gallery.allImages()) { image in
                         HStack {
                             Text(image.name)
                             Spacer()
                             if let image = loadAlertImage(model: model, imageId: image.id) {
                                 AnimatedImage(data: image)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                                     .frame(width: 90, height: 50)
                             } else {
                                 Image(systemName: "photo")
@@ -184,7 +191,7 @@ struct AlertImageSelectorView: View {
             }
             Section {
                 NavigationLink {
-                    ImageGalleryView(alert: alert, imageId: $imageId)
+                    ImageGalleryView(model: model, gallery: gallery, alert: alert, imageId: $imageId)
                 } label: {
                     Text("My images")
                 }

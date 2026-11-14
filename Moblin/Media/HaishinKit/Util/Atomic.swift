@@ -11,7 +11,8 @@ struct Atomic<A: Sendable> {
         lock = OSAllocatedUnfairLock(initialState: value)
     }
 
-    func mutate(_ transform: @Sendable (inout A) -> Void) {
+    @discardableResult
+    func mutate<R: Sendable>(_ transform: @Sendable (inout A) -> R) -> R {
         lock.withLock {
             transform(&$0)
         }

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-private let faceBackgroundImagePath = URL.documentsDirectory.appending(component: "faceBackgroundImage.img")
+let faceBackgroundImagePath = URL.documentsDirectory.appending(component: "faceBackgroundImage.img")
 
 extension Model {
     nonisolated func saveFaceBackgroundImage(data: Data) {
@@ -9,12 +9,16 @@ extension Model {
     }
 
     func loadFaceBackgroundImage() {
-        guard let data = try? Data(contentsOf: faceBackgroundImagePath) else {
-            return
+        faceBackgroundImage = readFaceBackgroundImage()
+        updateFaceFilterSettings()
+    }
+
+    private func readFaceBackgroundImage() -> CIImage? {
+        guard let data = try? Data(contentsOf: faceBackgroundImagePath),
+              let cgImage = UIImage(data: data)?.cgImage
+        else {
+            return nil
         }
-        guard let uiImage = UIImage(data: data), let cgImage = uiImage.cgImage else {
-            return
-        }
-        faceBackgroundImage = CIImage(cgImage: cgImage)
+        return CIImage(cgImage: cgImage)
     }
 }

@@ -3,13 +3,30 @@ import SwiftUI
 struct ChatMessageEmote: Identifiable {
     let id = UUID()
     let url: URL
+    var stillUrl: URL?
     let range: ClosedRange<Int>
+    var isGif = false
+}
+
+struct ChatPostEmote: Codable {
+    let moving: URL?
+    let still: URL?
+    var name: String?
+
+    func url(animated: Bool) -> URL? {
+        if animated {
+            moving ?? still
+        } else {
+            still ?? moving
+        }
+    }
 }
 
 struct ChatPostSegment: Identifiable, Codable {
     let id: Int
     var text: String?
-    var url: URL?
+    var url: ChatPostEmote?
+    var bigGifUrl: ChatPostEmote?
 }
 
 func makeChatPostTextSegments(text: String) -> [ChatPostSegment] {
@@ -27,12 +44,15 @@ func makeChatPostTextSegments(text: String, id: inout Int) -> [ChatPostSegment] 
 }
 
 enum ChatHighlightKind: Codable {
-    case redemption
     case other
+    case redemption
     case firstMessage
     case newFollower
     case reply
     case moderator
+    case remoteControlAssistant
+    case gigantifiedEmote
+    case macroNotification
 }
 
 struct ChatHighlight {
@@ -88,21 +108,21 @@ struct ChatHighlight {
         )
     }
 
-    static func makePaidMessage(amount: String) -> ChatHighlight {
+    static func makePaidMessage() -> ChatHighlight {
         ChatHighlight(
             kind: .other,
             barColor: .orange,
             image: "message",
-            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Chat\(amount)"))
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Chat"))
         )
     }
 
-    static func makePaidSticker(amount: String) -> ChatHighlight {
+    static func makePaidSticker() -> ChatHighlight {
         ChatHighlight(
             kind: .other,
             barColor: .green,
             image: "doc.plaintext",
-            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Sticker\(amount)"))
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Super Sticker"))
         )
     }
 
@@ -131,12 +151,39 @@ struct ChatHighlight {
         )
     }
 
+    static func makeGigantifiedEmote() -> ChatHighlight {
+        ChatHighlight(
+            kind: .gigantifiedEmote,
+            barColor: .purple,
+            image: "arrow.up.backward.and.arrow.down.forward.square",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Gigantified emote"))
+        )
+    }
+
     static func makeModerator() -> ChatHighlight {
         ChatHighlight(
             kind: .moderator,
             barColor: .green,
-            image: "shield.check",
+            image: "",
             titleSegments: nil
+        )
+    }
+
+    static func makeRemoteControlAssistant() -> ChatHighlight {
+        ChatHighlight(
+            kind: .remoteControlAssistant,
+            barColor: .green,
+            image: "person.wave.2",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Remote control assistant"))
+        )
+    }
+
+    static func makeMacroNotification() -> ChatHighlight {
+        ChatHighlight(
+            kind: .macroNotification,
+            barColor: .cyan,
+            image: "increase.indent",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Notification"))
         )
     }
 
@@ -154,6 +201,12 @@ struct ChatHighlight {
             .reply
         case .moderator:
             .moderator
+        case .remoteControlAssistant:
+            .other
+        case .gigantifiedEmote:
+            .other
+        case .macroNotification:
+            .other
         }
         let barColor = barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0)
         return WatchProtocolChatHighlight(
@@ -175,8 +228,13 @@ struct ChatHighlight {
             defaultColor
         }
     }
+
+    func isAlert() -> Bool {
+        kind != .reply
+    }
 }
 
+@MainActor
 class ChatPostState: ObservableObject {
     @Published var deleted: Bool
 
@@ -188,10 +246,6 @@ class ChatPostState: ObservableObject {
 struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         lhs.id == rhs.id
-    }
-
-    func isRedemption() -> Bool {
-        highlight?.kind == .redemption || highlight?.kind == .newFollower
     }
 
     var id: Int
@@ -214,12 +268,33 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     let sourceChannelIcon: URL?
     let state: ChatPostState
 
-    func text() -> String {
-        segments.filter { $0.text != nil }.map { $0.text! }.joined(separator: "").trim()
+    func isRedemption() -> Bool {
+        switch highlight?.kind {
+        case .other:
+            true
+        case .redemption:
+            true
+        case .newFollower:
+            true
+        default:
+            false
+        }
     }
 
-    func isRedLine() -> Bool {
-        user == nil
+    func isBigGif() -> Bool {
+        segments.first?.bigGifUrl != nil
+    }
+
+    func text(emoteNames: Bool = false) -> String {
+        segments.compactMap { segment -> String? in
+            if emoteNames, let name = (segment.url ?? segment.bigGifUrl)?.name {
+                "\(name) "
+            } else {
+                segment.text
+            }
+        }
+        .joined()
+        .trim()
     }
 
     func displayName(nicknames: SettingsChatNicknames, displayStyle: SettingsChatDisplayStyle) -> String {
@@ -251,5 +326,21 @@ struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
             return nickname
         }
         return displayName
+    }
+}
+
+extension ChatHighlight {
+    init(remoteControl highlight: RemoteControlChatHighlight) {
+        kind = highlight.kind
+        barColor = highlight.barColor.color()
+        image = highlight.image
+        titleSegments = highlight.titleSegments
+    }
+
+    func toRemoteControl() -> RemoteControlChatHighlight {
+        RemoteControlChatHighlight(kind: kind,
+                                   barColor: barColor.toRgb() ?? .init(red: 0, green: 255, blue: 0),
+                                   image: image,
+                                   titleSegments: titleSegments)
     }
 }

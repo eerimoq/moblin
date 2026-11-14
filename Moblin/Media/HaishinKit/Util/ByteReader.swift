@@ -71,6 +71,12 @@ class ByteReader {
             (UInt32(readUInt8()) << 24)
     }
 
+    func readUInt64() throws -> UInt64 {
+        let high = try readUInt32()
+        let low = try readUInt32()
+        return UInt64(high) << 32 | UInt64(low)
+    }
+
     func readDouble() throws -> Double {
         guard bytesAvailable >= ByteReader.sizeOfDouble else {
             throw ByteReader.Error.eof

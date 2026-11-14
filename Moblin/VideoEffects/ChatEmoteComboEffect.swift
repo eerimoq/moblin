@@ -1,8 +1,10 @@
 import Combine
+import MetalPetal
 import SwiftUI
 
 private let borderWidth = 1.5
 
+@MainActor
 private class EmoteComboState: ObservableObject {
     @Published var emoteUrl: URL?
     @Published var count: Int = 0
@@ -24,7 +26,7 @@ private struct EmoteComboView: View {
                 CacheAsyncImage(url: url) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                 } placeholder: {
                     EmptyView()
                 }
@@ -42,17 +44,19 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
     private let canvasSize: CGSize
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
-    private var comboImage: CIImage?
+    private var comboImage: EffectImageCgImage?
     private var renderer: ImageRenderer<EmoteComboView>?
     private var cancellable: AnyCancellable?
-    private let state = EmoteComboState()
+    private let state: EmoteComboState
     private var settings = SettingsWidgetChatEmoteCombo()
     private var currentEmoteUrl: URL?
     private var comboCount: Int = 0
     private let timer = SimpleTimer(queue: .main)
 
+    @MainActor
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
+        state = EmoteComboState()
         super.init()
     }
 
@@ -75,7 +79,7 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     func appendMessage(post: ChatPost) {
-        guard let emoteUrl = post.segments.first?.url else {
+        guard let emoteUrl = post.segments.first?.url?.url(animated: false) else {
             return
         }
         if emoteUrl == currentEmoteUrl {
@@ -105,18 +109,19 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
             guard let self else {
                 return
             }
-            let image = renderer?.ciImage()
+            let image = renderer?.cgImage
             if comboCount > 0 {
                 setComboImage(image: image)
             }
         }
-        _ = renderer?.ciImage()
+        _ = renderer?.cgImage
         setComboImage(image: nil)
     }
 
-    private func setComboImage(image: CIImage?) {
+    private func setComboImage(image: CGImage?) {
+        let comboImage = image?.toEffectImage()
         processorPipelineQueue.async {
-            self.comboImage = image
+            self.comboImage = comboImage
         }
     }
 
@@ -124,9 +129,13 @@ final class ChatEmoteComboEffect: VideoEffect, @unchecked Sendable {
         guard let comboImage else {
             return image
         }
-        return comboImage
+        return comboImage.getCiImage()
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image)
+    }
+
+    override func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        comboImage?.getMetalPetalImage().moveComposited(sceneWidgetPipeline.layout, image) ?? image
     }
 }

@@ -3,12 +3,11 @@ import SwiftUI
 struct MediaPlayerFileSettingsView: View {
     @EnvironmentObject var model: Model
     let player: SettingsMediaPlayer
-    let file: SettingsMediaPlayerFile
+    @ObservedObject var file: SettingsMediaPlayerFile
     @State var image: UIImage?
 
     private func submitName(value: String) {
         file.name = value.trim()
-        model.objectWillChange.send()
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
@@ -31,7 +30,7 @@ struct MediaPlayerFileSettingsView: View {
                 if let image {
                     Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(width: 90)
                 } else {
                     Image(systemName: "photo")

@@ -72,8 +72,8 @@ func deleteTrash() {
     }
 }
 
-func createAndGetDirectory(name: String...) -> URL {
-    var directory = URL.documentsDirectory
+func createAndGetDirectory(root: URL = .documentsDirectory, name: String...) -> URL {
+    var directory = root
     for name in name {
         directory = directory.appending(component: name)
     }

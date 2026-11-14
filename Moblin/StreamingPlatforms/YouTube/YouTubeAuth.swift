@@ -8,6 +8,7 @@ let youTubeRedirectUri =
 let youTubeScopes = [
     "https://www.googleapis.com/auth/youtube",
 ]
+private let youTubeAuthServer = "www.youtube.com"
 
 func storeYouTubeAuthStateInKeychain(streamId: UUID, authState: String) {
     createKeychain(streamId: streamId.uuidString).store(value: authState)
@@ -21,6 +22,15 @@ func removeYouTubeAuthStateInKeychain(streamId: UUID) {
     createKeychain(streamId: streamId.uuidString).remove()
 }
 
+func removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: [UUID]) {
+    let usedStreamIds = Set(usedStreamIds.map(\.uuidString))
+    for streamId in Keychain.loadStreamIds(server: youTubeAuthServer)
+        where !usedStreamIds.contains(streamId)
+    {
+        createKeychain(streamId: streamId).remove()
+    }
+}
+
 private func createKeychain(streamId: String) -> Keychain {
-    Keychain(streamId: streamId, server: "www.youtube.com", logPrefix: "youtube: auth")
+    Keychain(streamId: streamId, server: youTubeAuthServer, logPrefix: "youtube: auth")
 }

@@ -129,9 +129,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask
     {
         #if targetEnvironment(macCatalyst)
-        return .all
+        .all
         #else
-        return AppDelegate.orientationLock
+        AppDelegate.orientationLock
         #endif
     }
 }

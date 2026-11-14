@@ -29,10 +29,13 @@ extension NWConnection.ContentContext {
 }
 
 extension NWConnection {
-    func sendWebSocket(data: Data?, opcode: NWProtocolWebSocket.Opcode) {
+    func sendWebSocket(data: Data?,
+                       opcode: NWProtocolWebSocket.Opcode,
+                       completion: NWConnection.SendCompletion = .idempotent)
+    {
         let metadata = NWProtocolWebSocket.Metadata(opcode: opcode)
         let context = NWConnection.ContentContext(identifier: "context", metadata: [metadata])
-        send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
+        send(content: data, contentContext: context, isComplete: true, completion: completion)
     }
 }
 
@@ -63,7 +66,7 @@ func makeUrl(_ path: String, _ parameters: [(String, String)]) -> String {
 func makeMdnsHostname(deviceName: String) -> String {
     let name = deviceName
         .lowercased()
-        .replacingOccurrences(of: " ", with: "-")
+        .replace(" ", "-")
         .replacing(/-+/, with: "-")
         .trimmingCharacters(in: ["-"])
         .replacing(/[^\w\d-]/, with: "")
@@ -74,12 +77,30 @@ func httpRequest(request: URLRequest,
                  queue: DispatchQueue = .main,
                  completion: ((Data?, URLResponse?, (any Error)?) -> Void)? = nil)
 {
-    URLSession.shared.dataTask(with: request) { data, response, error in
+    nonisolated(unsafe) let completion = completion
+    httpUrlSession().dataTask(with: request) { data, response, error in
         queue.async {
             completion?(data, response, error)
         }
+    }.resume()
+}
+
+func httpGet(from: URL) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(from: from)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
     }
-    .resume()
+}
+
+func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    let (data, response) = try await httpUrlSession().data(for: request)
+    if let response = response.http {
+        return (data, response)
+    } else {
+        throw "Not an HTTP response"
+    }
 }
 
 func getHttpsUrl(text: String) -> URL? {
@@ -101,5 +122,23 @@ extension WKWebViewConfiguration {
         } else {
             websiteDataStore.proxyConfigurations = []
         }
+    }
+}
+
+extension URL {
+    func isLoopback() -> Bool {
+        guard let host = host()?.trimmingCharacters(in: ["[", "]"]) else {
+            return false
+        }
+        if host == "localhost" {
+            return true
+        }
+        if let address = IPv4Address(host) {
+            return address.isLoopback
+        }
+        if let address = IPv6Address(host) {
+            return address.isLoopback
+        }
+        return false
     }
 }

@@ -3,10 +3,10 @@ import AVFoundation
 protocol MpegTsReaderDelegate: AnyObject {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer)
-    func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double)
 }
 
 class MpegTsReader: @unchecked Sendable {
+    private let name: String
     private var programAssociationTable = MpegTsProgramAssociation()
     private var programMappingTable: [UInt16: MpegTsProgramMapping] = [:]
     private var programs: [UInt16: UInt16] = [:]
@@ -23,19 +23,30 @@ class MpegTsReader: @unchecked Sendable {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private var videoDecoder: VideoDecoder?
-    private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
     private let targetLatency: Double
     weak var delegate: (any MpegTsReaderDelegate)?
     private let decoderQueue: DispatchQueue
-    private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
-                                                      maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
+    private let wrappingTimestamp = WrappingTimestamp(
+        name: "MpegTsReader",
+        maximumTimestamp: CMTime(value: 0x2_0000_0000, timescale: CMTimeScale(TSTimestamp.resolution))
+    )
 
-    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
+    init(name: String,
+         decoderQueue: DispatchQueue,
+         timecodesEnabled: Bool,
+         softwareDecoding: Bool,
+         colorRange: SettingsStreamColorRange,
+         targetLatency: Double)
+    {
+        self.name = name
         self.decoderQueue = decoderQueue
         self.timecodesEnabled = timecodesEnabled
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         self.targetLatency = targetLatency
-        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
     }
 
     func handlePacketFromClient(packet: Data) throws {
@@ -50,7 +61,6 @@ class MpegTsReader: @unchecked Sendable {
                 try handleProgramMedia(packet: packet, data: data)
             }
         }
-        updateTargetLatencies()
     }
 
     private func handleProgramAssociationTable(packet: MpegTsPacket) throws {
@@ -80,12 +90,9 @@ class MpegTsReader: @unchecked Sendable {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer
-            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
-        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
-            return
-        }
-        guard let dataBuffer = sampleBuffer.dataBuffer else {
+        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer,
+              let dataBuffer = sampleBuffer.dataBuffer
+        else {
             return
         }
         guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
@@ -162,12 +169,17 @@ class MpegTsReader: @unchecked Sendable {
     {
         let ptsDelta = (presentationTimeStamp - latestPresentationTimeStamp).seconds
         let timePerBuffer = Double(samplesPerBuffer) / sampleFrequency
-        return max(Int((ptsDelta / timePerBuffer - 1).rounded()), 0)
+        guard ptsDelta.isFinite, ptsDelta < 10 else {
+            return 0
+        }
+        let numberOfGapBuffers = (ptsDelta / timePerBuffer - 1).rounded()
+        guard numberOfGapBuffers.isFinite else {
+            return 0
+        }
+        return max(Int(numberOfGapBuffers), 0)
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer
-            .setLatestVideoPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         guard let videoDecoder else {
             return
         }
@@ -214,7 +226,10 @@ class MpegTsReader: @unchecked Sendable {
         let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         logger.info("mpeg-ts-reader: Got new video dimensions \(dimensions)")
         videoDecoder?.stopRunning()
-        videoDecoder = VideoDecoder(lockQueue: decoderQueue)
+        videoDecoder = VideoDecoder(name: name,
+                                    lockQueue: decoderQueue,
+                                    softwareDecoding: softwareDecoding,
+                                    colorRange: colorRange)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
@@ -256,10 +271,9 @@ class MpegTsReader: @unchecked Sendable {
     private func getOpusFormatDescription(_ packetId: UInt16,
                                           _ data: ElementaryStreamSpecificData) -> CMFormatDescription?
     {
-        guard let extensionData = data.getDescriptor(tag: .extension) else {
-            return nil
-        }
-        guard extensionData.count == 2, extensionData[0] == 0x80 else {
+        guard let extensionData = data.getDescriptor(tag: .extension), extensionData.count == 2,
+              extensionData[0] == 0x80
+        else {
             return nil
         }
         let channels = extensionData[1]
@@ -284,10 +298,7 @@ class MpegTsReader: @unchecked Sendable {
             magicCookie: nil,
             extensions: nil,
             formatDescriptionOut: &formatDescription
-        ) == noErr else {
-            return nil
-        }
-        guard let formatDescription else {
+        ) == noErr, let formatDescription else {
             return nil
         }
         if formatDescriptions[packetId] != formatDescription {
@@ -358,7 +369,7 @@ class MpegTsReader: @unchecked Sendable {
         var dataOffset = AdtsHeader.size
         let optionalHeader = packetizedElementaryStream.optionalHeader
         while let dataLength = iterator.next() {
-            let delta = CMTime(seconds: offset)
+            let delta = CMTime(seconds: offset, preferredTimescale: CMTimeScale(TSTimestamp.resolution))
             let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer(advancedBy: dataOffset,
                                                                               length: dataLength)
             var sampleSizes = [dataLength]
@@ -510,13 +521,6 @@ class MpegTsReader: @unchecked Sendable {
             basePresentationTimeStamp = currentPresentationTimeStamp() + latency
         }
         return basePresentationTimeStamp
-    }
-
-    private func updateTargetLatencies() {
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
-            return
-        }
-        delegate?.mpegTsReaderSetTargetLatencies(videoTargetLatency, audioTargetLatency)
     }
 }
 

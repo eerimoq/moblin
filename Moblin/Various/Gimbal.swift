@@ -1,6 +1,7 @@
-import DockKit
 import Foundation
 import Spatial
+#if canImport(DockKit)
+import DockKit
 
 @available(iOS 18.0, *)
 @MainActor
@@ -31,7 +32,7 @@ class Gimbal {
     }
 
     func setTracking(on: Bool) {
-        Task { @MainActor in
+        Task {
             try? await DockAccessoryManager.shared.setSystemTrackingEnabled(on)
             tracking = on
         }
@@ -44,26 +45,32 @@ class Gimbal {
         _ = try? await accessory?.setOrientation(angles)
     }
 
-    func animate(motion: DockAccessory.Animation) {
-        Task { @MainActor [weak self] in
+    func animate(motion: SettingsGimbalMotion) {
+        let motion: DockAccessory.Animation = switch motion {
+        case .kapow:
+            .kapow
+        case .yes:
+            .yes
+        case .no:
+            .no
+        case .wakeup:
+            .wakeup
+        }
+        Task { [weak self] in
             guard let self, !tracking else {
                 return
             }
-            _ = try await accessory?.animate(motion: motion)
+            _ = try? await accessory?.animate(motion: motion)
         }
     }
 
     func setMovement(velocity: Vector3D) {
-        Task { @MainActor [weak self] in
+        Task { [weak self] in
             guard let self, !tracking else {
                 return
             }
-            _ = try await accessory?.setAngularVelocity(velocity)
+            _ = try? await accessory?.setAngularVelocity(velocity)
         }
-    }
-
-    func cancelMovement() {
-        setMovement(velocity: .init(x: 0, y: 0, z: 0))
     }
 
     func getCurrentOrientation() async throws -> Vector3D? {
@@ -154,9 +161,35 @@ class Gimbal {
         let zoomSpeed = 1 + gimbal.zoomSpeed / 1000
         let rate = 1 + 2 * Float(pow(Double(gimbal.zoomSpeed) / 50.0, 1.3))
         if zoomIn {
-            model.setZoomX(x: model.zoom.x * zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.level.x * zoomSpeed, rate: rate)
         } else {
-            model.setZoomX(x: model.zoom.x / zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.level.x / zoomSpeed, rate: rate)
         }
     }
 }
+
+#else
+
+@MainActor
+class Gimbal {
+    static var shared: Gimbal?
+
+    init(model _: Model) {}
+
+    func isConnected() -> Bool {
+        false
+    }
+
+    func setTracking(on _: Bool) {}
+
+    func setOrientation(angles _: Vector3D) async {}
+
+    func animate(motion _: SettingsGimbalMotion) {}
+
+    func setMovement(velocity _: Vector3D) {}
+
+    func getCurrentOrientation() async throws -> Vector3D? {
+        nil
+    }
+}
+#endif

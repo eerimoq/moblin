@@ -1,4 +1,4 @@
-@preconcurrency import CoreBluetooth
+import CoreBluetooth
 import Foundation
 
 // The actual values do not matter.
@@ -24,8 +24,8 @@ private let configureType: UInt32 = 0x8E0240
 private let startStreamingType: UInt32 = 0x780840
 private let statusType: UInt32 = 0x020D00
 
-private let fff4Id = CBUUID(string: "FFF4")
-private let fff5Id = CBUUID(string: "FFF5")
+private nonisolated(unsafe) let fff4Id = CBUUID(string: "FFF4")
+private nonisolated(unsafe) let fff5Id = CBUUID(string: "FFF5")
 
 private let pairPinCode = "mbln"
 
@@ -45,10 +45,12 @@ enum DjiDeviceState {
     case stoppingStream
 }
 
+@MainActor
 protocol DjiDeviceDelegate: AnyObject {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState)
 }
 
+@MainActor
 class DjiDevice: NSObject {
     private var wifiSsid: String?
     private var wifiPassword: String?
@@ -64,8 +66,8 @@ class DjiDevice: NSObject {
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
     weak var delegate: (any DjiDeviceDelegate)?
-    private let startStreamingTimer = SimpleTimer(queue: .main)
-    private let stopStreamingTimer = SimpleTimer(queue: .main)
+    private let startStreamingTimer = MainTimer()
+    private let stopStreamingTimer = MainTimer()
     private var model: SettingsDjiDeviceModel = .unknown
     private var batteryPercentage: Int?
 
@@ -165,25 +167,23 @@ class DjiDevice: NSObject {
     }
 }
 
-extension DjiDevice: CBCentralManagerDelegate {
+extension DjiDevice: @MainActor CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            centralManager?.scanForPeripherals(withServices: nil)
+            connect(central)
         default:
             break
         }
     }
 
-    func centralManager(_ central: CBCentralManager,
-                        didDiscover peripheral: CBPeripheral,
-                        advertisementData _: [String: Any],
-                        rssi _: NSNumber)
-    {
-        guard peripheral.identifier == deviceId else {
+    private func connect(_ central: CBCentralManager) {
+        guard let deviceId,
+              let peripheral = central.retrievePeripherals(withIdentifiers: [deviceId]).first
+        else {
+            logger.info("dji-device: Device not found")
             return
         }
-        central.stopScan()
         cameraPeripheral = peripheral
         peripheral.delegate = self
         central.connect(peripheral, options: nil)
@@ -202,7 +202,7 @@ extension DjiDevice: CBCentralManagerDelegate {
     }
 }
 
-extension DjiDevice: CBPeripheralDelegate {
+extension DjiDevice: @MainActor CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             return
@@ -349,7 +349,7 @@ extension DjiDevice: CBPeripheralDelegate {
             setState(state: .configuring)
         case .osmoPocket3:
             sendStartStreaming()
-        case .osmoPocket4:
+        case .osmoPocket4, .osmoPocket4Pro:
             sendStartStreaming()
         case .unknown:
             sendStartStreaming()
@@ -369,7 +369,7 @@ extension DjiDevice: CBPeripheralDelegate {
         }
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
         switch model {
-        case .osmoPocket4:
+        case .osmoPocket4, .osmoPocket4Pro:
             let payload = DjiStartStreamingMessagePayload2(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
@@ -377,7 +377,6 @@ extension DjiDevice: CBPeripheralDelegate {
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
                 enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                header: DjiStartStreamingMessagePayload2.osmoPocket4Header,
                 middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
@@ -392,7 +391,6 @@ extension DjiDevice: CBPeripheralDelegate {
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
                 enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
-                header: DjiStartStreamingMessagePayload2.osmoAction6Header,
                 middle: DjiStartStreamingMessagePayload2.osmoAction6Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
@@ -404,8 +402,7 @@ extension DjiDevice: CBPeripheralDelegate {
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
-                bitrateKbps: bitrateKbps,
-                oa5: model.hasNewProtocol()
+                bitrateKbps: bitrateKbps
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,
@@ -469,10 +466,7 @@ extension DjiDevice: CBPeripheralDelegate {
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
         error _: (any Error)?
     ) {
-        guard state == .connecting else {
-            return
-        }
-        guard characteristic.uuid == fff4Id else {
+        guard state == .connecting, characteristic.uuid == fff4Id else {
             return
         }
         let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)

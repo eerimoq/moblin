@@ -1,4 +1,4 @@
-@preconcurrency import AVFoundation
+import AVFoundation
 import Collections
 import CoreAudio
 
@@ -15,7 +15,7 @@ private class TalkbackPlayer {
             playerNode.play()
             isRunning = true
         } catch {
-            logger.info("talk-back-audio-player: Failed to start engine: \(error)")
+            logger.info("audio-unit: Failed to start talkback player engine: \(error)")
         }
     }
 
@@ -34,11 +34,9 @@ private class TalkbackPlayer {
 
     private func makePcmBuffer(from sampleBuffer: CMSampleBuffer) -> AVAudioPCMBuffer? {
         guard let formatDescription = sampleBuffer.formatDescription,
-              var asbd = formatDescription.audioStreamBasicDescription
+              var asbd = formatDescription.audioStreamBasicDescription,
+              let format = AVAudioFormat(streamDescription: &asbd)
         else {
-            return nil
-        }
-        guard let format = AVAudioFormat(streamDescription: &asbd) else {
             return nil
         }
         let frameCount = AVAudioFrameCount(sampleBuffer.numSamples)
@@ -78,8 +76,12 @@ func makeChannelMap(
     outputToInputChannelsMap: [Int: Int]
 ) -> [NSNumber] {
     var channelMap = Array(repeating: -1, count: numberOfOutputChannels)
-    for inputIndex in 0 ..< min(numberOfInputChannels, numberOfOutputChannels) {
-        channelMap[inputIndex] = inputIndex
+    for outputIndex in 0 ..< numberOfOutputChannels {
+        if outputIndex < numberOfInputChannels {
+            channelMap[outputIndex] = outputIndex
+        } else if numberOfInputChannels == 1 {
+            channelMap[outputIndex] = 0
+        }
     }
     for outputIndex in 0 ..< numberOfOutputChannels {
         if let inputIndex = outputToInputChannelsMap[outputIndex], inputIndex < numberOfInputChannels {
@@ -89,6 +91,64 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
+func calcAudioLevelPeakFloat32(samples: UnsafeMutablePointer<Float32>, count: Int) -> Float32 {
+    var peak: Float32 = 0.0
+    for index in 0 ..< count {
+        peak = max(peak, abs(samples[index]))
+    }
+    return peak
+}
+
+func calcAudioLevelPeakInt16(samples: UnsafeMutablePointer<Int16>, count: Int) -> Float {
+    var peak: UInt16 = 0
+    for index in 0 ..< count {
+        peak = max(peak, samples[index].magnitude)
+    }
+    return Float(peak) / (Float(Int16.max) + 1)
+}
+
+private class AudioMeasurement {
+    private var currentPeak: Float = 0.0
+    private var windowStart: Double = .nan
+    private let windowDuration = 0.05
+    private let windowInterval = 0.2
+
+    func input(sampleBuffer: CMSampleBuffer) -> Float? {
+        let now = sampleBuffer.presentationTimeStamp.seconds
+        if windowStart.isNaN {
+            windowStart = now
+        }
+        guard now >= windowStart else {
+            return nil
+        }
+        _ = sampleBuffer.foreachAudioSample(float32: {
+            currentPeak = max(currentPeak, calcAudioLevelPeakFloat32(samples: $0, count: $1))
+        }, int16: {
+            currentPeak = max(currentPeak, calcAudioLevelPeakInt16(samples: $0, count: $1))
+        })
+        guard now >= windowStart + windowDuration else {
+            return nil
+        }
+        windowStart = windowStart + windowInterval
+        defer {
+            currentPeak = 0
+        }
+        return peak()
+    }
+
+    func reset() {
+        currentPeak = 0.0
+        windowStart = .nan
+    }
+
+    private func peak() -> Float {
+        guard currentPeak > 0 else {
+            return defaultAudioLevel
+        }
+        return 20 * log10(currentPeak)
+    }
+}
+
 final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: AudioEncoder?
@@ -96,15 +156,35 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var output: AVCaptureAudioDataOutput?
     var muted = false
     var gain: Float = 1.0
+    private var delay = 0.0
     weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
     let session = AVCaptureSession()
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
-    private var latestAudioStatusTime = 0.0
     private var talkbackCameraId: UUID?
     private var talkbackPlayer: TalkbackPlayer?
+    private var latestSampleBufferAppendTime: CMTime = .zero
+    private var numberOfDiscardedSampleBuffers = 0
+    private var measurement = AudioMeasurement()
+    private let silenceTimer = SimpleTimer(queue: processorPipelineQueue)
+    private var latestBuiltinSampleBuffer: CMSampleBuffer?
+    private var latestBuiltinPresentationTimeStamp: CMTime = .invalid
+    private var nextBuiltinPresentationTimeStamp: CMTime = .invalid
+    private var isOutputtingSilence = false
+
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sessionWasInterrupted),
+                                               name: .AVCaptureSessionWasInterrupted,
+                                               object: session)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sessionInterruptionEnded),
+                                               name: .AVCaptureSessionInterruptionEnded,
+                                               object: session)
+    }
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -118,10 +198,103 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     func startRunning() {
         session.startRunning()
+        processorPipelineQueue.async {
+            self.isOutputtingSilence = false
+        }
     }
 
     func stopRunning() {
         session.stopRunning()
+        processorPipelineQueue.async {
+            self.silenceTimer.stop()
+            self.latestBuiltinSampleBuffer = nil
+        }
+    }
+
+    @objc
+    private func sessionWasInterrupted(_ notification: NSNotification) {
+        let reason = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as? Int
+        logger.info("audio-unit: Capture session interrupted with reason \(reason ?? -1)")
+        processorPipelineQueue.async { [weak self] in
+            self?.silenceTimer.startPeriodic(interval: 0.1, initial: 0) { [weak self] in
+                self?.outputSilenceWhileInterrupted()
+            }
+        }
+    }
+
+    @objc
+    private func sessionInterruptionEnded(_: NSNotification) {
+        logger.info("audio-unit: Capture session interruption ended")
+        processorPipelineQueue.async {
+            self.silenceTimer.stop()
+        }
+    }
+
+    private func outputSilenceWhileInterrupted() {
+        if !isOutputtingSilence {
+            guard let latestBuiltinSampleBuffer,
+                  let sampleRate = latestBuiltinSampleBuffer.formatDescription?.audioStreamBasicDescription?
+                      .mSampleRate
+            else {
+                return
+            }
+            nextBuiltinPresentationTimeStamp = latestBuiltinPresentationTimeStamp + CMTime(
+                value: CMTimeValue(latestBuiltinSampleBuffer.numSamples),
+                timescale: CMTimeScale(sampleRate)
+            )
+        }
+        let end = currentPresentationTimeStamp() - CMTime(seconds: 0.1)
+        guard end > nextBuiltinPresentationTimeStamp else {
+            return
+        }
+        isOutputtingSilence = true
+        outputBuiltinSilence(until: end)
+    }
+
+    private func outputBuiltinSilence(until end: CMTime) {
+        guard selectedBufferedAudioId == nil,
+              let processor,
+              let formatDescription = latestBuiltinSampleBuffer?.formatDescription
+        else {
+            return
+        }
+        let builtinFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
+        let sampleRate = builtinFormat.sampleRate
+        let frames = ((end - nextBuiltinPresentationTimeStamp).seconds * sampleRate).rounded()
+        guard frames > 0, frames < 10 * sampleRate else {
+            return
+        }
+        let numberOfFrames = AVAudioFrameCount(frames)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: builtinFormat, frameCapacity: numberOfFrames)
+        else {
+            return
+        }
+        buffer.frameLength = numberOfFrames
+        for audioBuffer in UnsafeMutableAudioBufferListPointer(buffer.mutableAudioBufferList) {
+            guard let data = audioBuffer.mData else {
+                continue
+            }
+            memset(data, 0, Int(audioBuffer.mDataByteSize))
+        }
+        let presentationTimeStamp = nextBuiltinPresentationTimeStamp
+        nextBuiltinPresentationTimeStamp = presentationTimeStamp + CMTime(
+            value: CMTimeValue(numberOfFrames),
+            timescale: CMTimeScale(sampleRate)
+        )
+        guard let sampleBuffer = buffer.makeSampleBuffer(presentationTimeStamp) else {
+            return
+        }
+        appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
+    }
+
+    private func updateBuiltinAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        if isOutputtingSilence {
+            logger.info("audio-unit: Microphone audio resumed.")
+            isOutputtingSilence = false
+            outputBuiltinSilence(until: presentationTimeStamp)
+        }
+        latestBuiltinSampleBuffer = sampleBuffer
+        latestBuiltinPresentationTimeStamp = presentationTimeStamp
     }
 
     func attach(params: AudioUnitAttachParams) throws {
@@ -131,13 +304,14 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 cameraId: UUID(),
                 name: "builtin",
                 latency: params.builtinDelay,
-                processor: self.processor,
-                manualOutput: true
+                manualOutput: true,
+                driftTracker: nil
             )
         }
         if let device = params.device {
             try attachDevice(device)
         }
+        measurement.reset()
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate) {
@@ -172,6 +346,12 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    func setDelay(delay: Double) {
+        processorPipelineQueue.async {
+            self.delay = delay
+        }
+    }
+
     func setSpeechToText(enabled: Bool) {
         processorPipelineQueue.async {
             self.speechToTextEnabled = enabled
@@ -199,18 +379,6 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         processorPipelineQueue.async {
             self.appendBufferedAudioSampleBufferInternal(cameraId: cameraId, sampleBuffer)
-        }
-    }
-
-    func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedAudioDriftInternal(cameraId: cameraId, drift: drift)
-        }
-    }
-
-    func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
-        processorPipelineQueue.async {
-            self.setBufferedAudioTargetLatencyInternal(cameraId: cameraId, latency: latency)
         }
     }
 
@@ -251,8 +419,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             cameraId: cameraId,
             name: name,
             latency: latency,
-            processor: processor,
-            manualOutput: false
+            manualOutput: false,
+            driftTracker: processor?.driftTracker(cameraId: cameraId, name: name)
         )
         bufferedAudio.delegate = self
         bufferedAudios[cameraId] = bufferedAudio
@@ -260,18 +428,11 @@ final class AudioUnit: NSObject, @unchecked Sendable {
 
     private func removeBufferedAudioInternal(cameraId: UUID) {
         bufferedAudios.removeValue(forKey: cameraId)?.stopOutput()
+        processor?.removeDriftTracker(cameraId: cameraId)
     }
 
     private func appendBufferedAudioSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
-    }
-
-    private func setBufferedAudioDriftInternal(cameraId: UUID, drift: Double) {
-        bufferedAudios[cameraId]?.setDrift(drift: drift)
-    }
-
-    private func setBufferedAudioTargetLatencyInternal(cameraId: UUID, latency: Double) {
-        bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 
     private func appendNewSampleBuffer(_ processor: Processor,
@@ -281,14 +442,33 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
             return
         }
-        if shouldUpdateAudioLevel(sampleBuffer) {
+        let presentationTimeStamp = presentationTimeStamp + CMTime(
+            seconds: delay,
+            preferredTimescale: presentationTimeStamp.timescale
+        )
+        guard presentationTimeStamp > latestSampleBufferAppendTime else {
+            numberOfDiscardedSampleBuffers += 1
+            return
+        }
+        if numberOfDiscardedSampleBuffers > 0 {
+            logger.info(
+                """
+                audio-unit: Discarded \(numberOfDiscardedSampleBuffers) old buffers before \
+                \(presentationTimeStamp.seconds)
+                """
+            )
+            numberOfDiscardedSampleBuffers = 0
+        }
+        latestSampleBufferAppendTime = presentationTimeStamp
+        if let audioLevel = measurement.input(sampleBuffer: sampleBuffer) {
             let numberOfAudioChannels = Int(
                 sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
             )
-            let audioLevel: Float = muted ? .nan : sampleBuffer.audioLevel()
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: audioLevel,
-                             numberOfAudioChannels: numberOfAudioChannels)
+            updateAudioLevel(
+                sampleBuffer: sampleBuffer,
+                audioLevel: audioLevel,
+                numberOfAudioChannels: numberOfAudioChannels
+            )
         }
         if speechToTextEnabled {
             processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
@@ -318,25 +498,15 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         return bufferedBuiltinAudio
     }
 
-    private func shouldUpdateAudioLevel(_ sampleBuffer: CMSampleBuffer) -> Bool {
-        let now = sampleBuffer.presentationTimeStamp.seconds
-        if now - latestAudioStatusTime > 0.2 {
-            latestAudioStatusTime = now
-            return true
-        } else {
-            return false
-        }
-    }
-
     private func updateAudioLevel(
         sampleBuffer: CMSampleBuffer,
         audioLevel: Float,
         numberOfAudioChannels: Int
     ) {
         let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-        processor?.delegate.stream(audioLevel: audioLevel,
-                                   numberOfAudioChannels: numberOfAudioChannels,
-                                   sampleRate: sampleRate)
+        processor?.delegate.streamAudioLevel(audioLevel: audioLevel,
+                                             numberOfAudioChannels: numberOfAudioChannels,
+                                             sampleRate: sampleRate)
     }
 
     private func appendTalkback(sampleBuffer: CMSampleBuffer) {
@@ -353,6 +523,12 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     }
 }
 
+// private var baseTimestamp: Double = .nan
+// private var previousTimestamp: Double = 0.0
+// private var previousSyncedTimestamp: Double = 0.0
+// private var sampleCounter: Double = 0.0
+// private var nowStart: ContinuousClock.Instant?
+
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
@@ -363,7 +539,44 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             return
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
-        let presentationTimeStamp = syncTimeToVideo(processor: processor, sampleBuffer: sampleBuffer)
+        let presentationTimeStamp = syncTimeToHost(processor: processor, sampleBuffer: sampleBuffer)
+        updateBuiltinAudio(sampleBuffer, presentationTimeStamp)
+        // if baseTimestamp.isNaN {
+        //     baseTimestamp = sampleBuffer.presentationTimeStamp.seconds
+        // }
+        // if nowStart == nil {
+        //     nowStart = .now
+        // }
+        // let timestamp = sampleBuffer.presentationTimeStamp.seconds - baseTimestamp
+        // let syncedTimestamp = presentationTimeStamp.seconds - baseTimestamp
+        // let delta = timestamp - previousTimestamp
+        // let deltaSynced = syncedTimestamp - previousSyncedTimestamp
+        // let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
+        // let numSamples = sampleBuffer.numSamples
+        // let hostTime = currentPresentationTimeStamp().seconds - baseTimestamp
+        // let sampleTime = sampleCounter / sampleRate
+        // let now = nowStart!.duration(to: .now).seconds
+        // logger.info("""
+        // xxx audio \
+        // r: \(sampleRate) ns: \(numSamples) \
+        // t: \(formatFourDecimals(timestamp)) ts: \(formatFourDecimals(syncedTimestamp)) \
+        // d: \(formatFourDecimals(delta)) ds: \(formatFourDecimals(deltaSynced)) \
+        // c: \(formatFourDecimals(sampleTime)) \
+        // h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
+        // """)
+        // if delta > 0.03 || delta < 0.01 || deltaSynced > 0.03 || deltaSynced < 0.01 {
+        //     logger.info("""
+        //     xxx audio abnormal \
+        //     r: \(sampleRate) ns: \(numSamples) \
+        //     t: \(formatFourDecimals(timestamp)) ts: \(formatFourDecimals(syncedTimestamp)) \
+        //     d: \(formatFourDecimals(delta)) ds: \(formatFourDecimals(deltaSynced)) \
+        //     c: \(formatFourDecimals(sampleTime)) \
+        //     h: \(formatFourDecimals(hostTime)) n: \(formatFourDecimals(now))
+        //     """)
+        // }
+        // sampleCounter += Double(numSamples)
+        // previousTimestamp = timestamp
+        // previousSyncedTimestamp = syncedTimestamp
         var sampleBuffer = sampleBuffer
         if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer, presentationTimeStamp) {
             sampleBuffer = bufferedAudio.getSampleBuffer(presentationTimeStamp.seconds) ?? sampleBuffer
@@ -394,13 +607,11 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
     }
 }
 
-private func syncTimeToVideo(processor: Processor, sampleBuffer: CMSampleBuffer) -> CMTime {
+private func syncTimeToHost(processor: Processor, sampleBuffer: CMSampleBuffer) -> CMTime {
     var presentationTimeStamp = sampleBuffer.presentationTimeStamp
-    if let audioClock = processor.audio.session.synchronizationClock,
-       let videoClock = processor.video.session.synchronizationClock
-    {
+    if let audioClock = processor.audio.session.synchronizationClock {
         let audioTimescale = sampleBuffer.presentationTimeStamp.timescale
-        let seconds = audioClock.convertTime(presentationTimeStamp, to: videoClock).seconds
+        let seconds = audioClock.convertTime(presentationTimeStamp, to: CMClockGetHostTimeClock()).seconds
         let value = CMTimeValue(seconds * Double(audioTimescale))
         presentationTimeStamp = CMTime(value: value, timescale: audioTimescale)
     }

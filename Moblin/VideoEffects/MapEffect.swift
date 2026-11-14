@@ -1,24 +1,26 @@
 import Collections
 import CoreImage
 import MapKit
+import MetalPetal
 
 final class MapEffect: VideoEffect, @unchecked Sendable {
-    private var mapSnapshot: CIImage?
+    private var mapSnapshot: EffectImageCiImage?
     private let widget: SettingsWidgetMap
     private var sceneWidget: SettingsSceneWidget?
     private var location: CLLocation = .init()
     private var size: CGSize = .zero
-    private var newLocations: Deque<CLLocation> = [.init()]
+    private var newLocations: Deque<CLLocation> = []
     private var mapSnapshotter: MKMapSnapshotter?
-    private let dot: CIImage?
+    private let dot: EffectImageCgImage?
     private var dotOffsetRatio = 0.0
     private var zoomOutFactor: Int?
     private var isLocationUpdated: Bool = true
+    private var isSnapshotInProgress = false
 
     init(widget: SettingsWidgetMap) {
         self.widget = widget.clone()
         if let image = UIImage(named: "MapDot"), let image = image.cgImage {
-            dot = CIImage(cgImage: image)
+            dot = image.toEffectImage()
         } else {
             dot = nil
         }
@@ -55,32 +57,69 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
         guard let sceneWidget, let dot, let mapSnapshot else {
             return image
         }
+        let dotImage = dot.getCiImage()
+        let mapImage = mapSnapshot.getCiImage()
         let height = toPixels(sceneWidget.layout.size, size.height)
         let width = toPixels(sceneWidget.layout.size, size.width)
         let side = CGFloat(max(40, min(height, width)))
-        let mapWithDotImage = dot
+        let mapWithDotImage = dotImage
             .translated(x: (side - 30) / 2, y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2))
-            .composited(over: mapSnapshot
-                .scaled(x: side / CGFloat(mapSnapshot.extent.width),
-                        y: side / CGFloat(mapSnapshot.extent.width)))
+            .composited(over: mapImage
+                .scaled(x: side / CGFloat(mapImage.extent.width),
+                        y: side / CGFloat(mapImage.extent.width)))
         return applyEffectsResizeMirrorMove(mapWithDotImage, sceneWidget, false, image.extent, info)
             .composited(over: image)
     }
 
-    private func nextNewLocation() -> CLLocation {
+    override func executeMetalPetal(_ image: MTIImage, _ info: VideoEffectInfo) -> MTIImage {
+        let size = image.extent.size
+        update(size: size)
+        guard let sceneWidget, let dot, let mapSnapshot else {
+            return image
+        }
+        let mapImage = mapSnapshot.getMetalPetalImage()
+        let dotImage = dot.getMetalPetalImage()
+        let mapWidth = mapImage.size.width
+        let mapHeight = mapImage.size.height
+        let height = toPixels(sceneWidget.layout.size, size.height)
+        let width = toPixels(sceneWidget.layout.size, size.width)
+        let side = CGFloat(max(40, min(height, width)))
+        let dotSide = 30 * mapWidth / side
+        let dotSize = CGSize(width: dotSide, height: dotSide)
+        let dotX = mapWidth / 2
+        let dotY = mapHeight / 2 + CGFloat(dotOffsetRatio) * mapHeight / 2
+        let filter = MTIMultilayerCompositingFilter()
+        filter.inputBackgroundImage = mapImage
+        filter.layers = [
+            .init(content: dotImage, position: CGPoint(x: dotX, y: dotY), size: dotSize),
+        ]
+        guard let mapWithDotImage = filter.outputImage else {
+            return image
+        }
+        return applyEffectsResizeMirrorMoveMetalPetal(mapWithDotImage,
+                                                      sceneWidget,
+                                                      false,
+                                                      image,
+                                                      info)
+    }
+
+    private func nextNewLocation() -> CLLocation? {
         let now = Date()
         let delay = widget.delay
-        return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first!
+        return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first
     }
 
     private func update(size: CGSize) {
+        guard !isSnapshotInProgress else {
+            return
+        }
         let (newLocation, zoomOutFactor, isLocationUpdated) = {
             defer {
                 self.isLocationUpdated = false
             }
             return (self.nextNewLocation(), self.zoomOutFactor, self.isLocationUpdated)
         }()
-        guard size != self.size
+        guard let newLocation, size != self.size
             || newLocation.coordinate.latitude != location.coordinate.latitude
             || newLocation.coordinate.longitude != location.coordinate.longitude
             || newLocation.speed != location.speed
@@ -93,12 +132,18 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             zoomOutFactor: zoomOutFactor
         )
         self.mapSnapshotter = mapSnapshotter
-        self.mapSnapshotter?.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
+        isSnapshotInProgress = true
+        mapSnapshotter.start(with: DispatchQueue.global(), completionHandler: { snapshot, error in
             guard let snapshot, error == nil, let image = snapshot.image.cgImage else {
+                processorPipelineQueue.async {
+                    self.isSnapshotInProgress = false
+                }
                 return
             }
+            let mapSnapshot = CIImage(cgImage: image).toEffectImage(isOpaque: true)
             processorPipelineQueue.async {
-                self.mapSnapshot = CIImage(cgImage: image)
+                self.isSnapshotInProgress = false
+                self.mapSnapshot = mapSnapshot
                 self.dotOffsetRatio = dotOffsetRatio
             }
         })

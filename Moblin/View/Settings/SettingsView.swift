@@ -2,6 +2,23 @@ import SwiftUI
 
 let settingsHalfWidth = 350.0
 
+private struct AppModeView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Picker("App mode", selection: $database.appMode) {
+            ForEach(SettingsAppMode.allCases, id: \.self) {
+                Text($0.toString())
+            }
+        }
+        .disabled(model.isLive || model.isRecording)
+        .onChange(of: database.appMode) { _ in
+            model.appModeChanged()
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -18,7 +35,7 @@ struct SettingsView: View {
                     Label("Streams", systemImage: "dot.radiowaves.left.and.right")
                 }
                 NavigationLink {
-                    ScenesSettingsView(database: database)
+                    ScenesSettingsView(model: model, database: database)
                 } label: {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
@@ -60,6 +77,7 @@ struct SettingsView: View {
                     LocationSettingsView(
                         database: database,
                         location: database.location,
+                        locationManager: model.locationManager,
                         stream: $model.stream
                     )
                 } label: {
@@ -99,9 +117,14 @@ struct SettingsView: View {
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        MediaPlayersSettingsView(mediaPlayers: database.mediaPlayers)
+                        MediaPlayersSettingsView(model: model, mediaPlayers: database.mediaPlayers)
                     } label: {
                         Label("Media players", systemImage: "play.rectangle.on.rectangle")
+                    }
+                    NavigationLink {
+                        AppleMusicSettingsView(model: model, musicPlaylist: model.musicPlaylist)
+                    } label: {
+                        Label("Apple Music", systemImage: "music.note")
                     }
                 }
             }
@@ -145,10 +168,21 @@ struct SettingsView: View {
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }
+                    if !isMac() {
+                        NavigationLink {
+                            MoblinCloudSettingsView(
+                                model: model,
+                                database: database,
+                                moblinCloud: database.moblinCloud
+                            )
+                        } label: {
+                            Label("Moblin Cloud", systemImage: "cloud")
+                        }
+                    }
                 }
                 Section {
                     NavigationLink {
-                        DjiDevicesSettingsView(djiDevices: database.djiDevices)
+                        DjiDevicesSettingsView(model: model, djiDevices: database.djiDevices)
                     } label: {
                         Label("DJI devices", systemImage: "appletvremote.gen1")
                     }
@@ -158,7 +192,7 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
-                        CatPrintersSettingsView(catPrinters: database.catPrinters)
+                        CatPrintersSettingsView(model: model, catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")
                     }
@@ -168,12 +202,12 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        WorkoutDevicesSettingsView(workoutDevices: database.workoutDevices)
+                        WorkoutDevicesSettingsView(model: model, workoutDevices: database.workoutDevices)
                     } label: {
                         Label("Workout devices", systemImage: "figure.walk.motion")
                     }
                     NavigationLink {
-                        BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database
+                        BlackSharkCoolerDevicesSettingsView(model: model, blackSharkCoolerDevices: database
                             .blackSharkCoolerDevices)
                     } label: {
                         Label("Black Shark coolers", systemImage: "fan")
@@ -197,7 +231,7 @@ struct SettingsView: View {
             if database.showAllSettings, isPhone() {
                 Section {
                     NavigationLink {
-                        WatchSettingsView(watch: database.watch)
+                        WatchSettingsView(model: model, watch: database.watch)
                     } label: {
                         Label("Apple Watch", systemImage: "applewatch")
                     }
@@ -216,7 +250,7 @@ struct SettingsView: View {
                         Label("About", systemImage: "info.circle")
                     }
                     NavigationLink {
-                        DebugSettingsView(debug: database.debug)
+                        DebugSettingsView(model: model, debug: database.debug)
                     } label: {
                         Label("Debug", systemImage: "ladybug")
                     }
@@ -237,10 +271,16 @@ struct SettingsView: View {
                 }
             }
             Section {
+                if database.showAllSettings, !isMac() {
+                    AppModeView(database: database)
+                }
                 Toggle("Show all settings", isOn: $database.showAllSettings)
             }
             Section {
-                ResetSettingsView()
+                SettingsSaveView(model: model)
+            }
+            Section {
+                SettingsResetView(model: model)
             }
         }
         .navigationTitle("Settings")

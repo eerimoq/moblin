@@ -37,7 +37,7 @@ class RtmpServerClient: @unchecked Sendable {
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
     private var chunkStream: RtmpServerChunkStream!
     var streamKey: String = ""
-    weak var server: RtmpServer?
+    weak let server: RtmpServer?
     var latestReceiveTime = ContinuousClock.now
     var connectionState: RtmpServerClientConnectionState {
         didSet {
@@ -49,15 +49,24 @@ class RtmpServerClient: @unchecked Sendable {
     private var totalBytesReceivedAcked: UInt64 = 0
     var latency: Int32 = 2000
     var cameraId: UUID = .init()
-    var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: 2.0)
     private var basePresentationTimeStamp: Double
     private var inputBuffer = Data()
     private var receiveSize: Int = 0
+    private var receiveMinimumSize: Int = 0
     private var isProcessing = false
+    private let softwareDecoding: Bool
+    private let colorRange: SettingsStreamColorRange
 
-    init(server: RtmpServer, connection: NWConnection) {
+    init(
+        server: RtmpServer,
+        connection: NWConnection,
+        softwareDecoding: Bool,
+        colorRange: SettingsStreamColorRange
+    ) {
         self.server = server
         self.connection = connection
+        self.softwareDecoding = softwareDecoding
+        self.colorRange = colorRange
         state = .uninitialized
         chunkState = .basicHeaderFirstByte
         chunkStreams = [:]
@@ -101,17 +110,6 @@ class RtmpServerClient: @unchecked Sendable {
 
     func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
         server?.delegate.rtmpServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func updateTargetLatencies() {
-        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
-            return
-        }
-        server?.delegate.rtmpServerSetTargetLatencies(
-            cameraId: cameraId,
-            videoTargetLatency,
-            audioTargetLatency
-        )
     }
 
     private func handleData(data: Data) {
@@ -203,7 +201,10 @@ class RtmpServerClient: @unchecked Sendable {
             break
         }
         if chunkStreams[chunkStreamId] == nil {
-            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self, streamId: chunkStreamId)
+            chunkStreams[chunkStreamId] = RtmpServerChunkStream(client: self,
+                                                                streamId: chunkStreamId,
+                                                                softwareDecoding: softwareDecoding,
+                                                                colorRange: colorRange)
         }
         chunkStream = chunkStreams[chunkStreamId]
         // logger.info("rtmp-server: \(chunkStreamId): Chunk message header format: \(format)")
@@ -319,6 +320,7 @@ class RtmpServerClient: @unchecked Sendable {
 
     func receiveData(size: Int) {
         receiveSize = size
+        receiveMinimumSize = size
         if isProcessing {
             return
         }
@@ -326,8 +328,8 @@ class RtmpServerClient: @unchecked Sendable {
     }
 
     private func receiveDataFromNetwork() {
-        connection.receive(minimumIncompleteLength: receiveSize, maximumLength: max(
-            receiveSize,
+        connection.receive(minimumIncompleteLength: receiveMinimumSize, maximumLength: max(
+            receiveMinimumSize,
             8192
         )) { data, _, isComplete, error in
             if let data {
@@ -346,7 +348,7 @@ class RtmpServerClient: @unchecked Sendable {
     private func processReceivedData(data: Data) {
         // logger.info("rtmp-server: client: Got data \(data)")
         totalBytesReceived += UInt64(data.count)
-        server?.bitrateStats.add(bytesTransferred: data.count)
+        server?.bitrateStats.mutate { $0.add(bytesTransferred: data.count) }
         latestReceiveTime = .now
         inputBuffer.append(data)
         isProcessing = true
@@ -363,6 +365,7 @@ class RtmpServerClient: @unchecked Sendable {
             }
         }
         inputBuffer = inputBuffer.advanced(by: offset)
+        receiveMinimumSize = max(receiveSize - inputBuffer.count, 1)
         if totalBytesReceived - totalBytesReceivedAcked > windowAcknowledgementSize {
             sendAck()
             totalBytesReceivedAcked = totalBytesReceived

@@ -74,7 +74,7 @@ private struct HideShowButtonPanelView: View {
 }
 
 private struct PanelButtonsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let backgroundColor: Color
 
     private func onClose() {
@@ -152,11 +152,6 @@ private struct MenuView: View {
                 QuickButtonSceneWidgetsView(sceneSelector: model.sceneSelector)
                     .navigationBarTitleDisplayMode(.inline)
             }
-        case .recordings:
-            NavigationStack {
-                RecordingsSettingsView(model: model)
-                    .navigationBarTitleDisplayMode(.inline)
-            }
         case .store:
             NavigationStack {
                 StoreSettingsView(model: model, store: model.store)
@@ -164,7 +159,9 @@ private struct MenuView: View {
             }
         case .chat:
             NavigationStack {
-                QuickButtonChatView(model: model, quickButtonChat: model.quickButtonChatState)
+                QuickButtonChatView(model: model,
+                                    orientation: model.orientation,
+                                    quickButtonChat: model.quickButtonChatState)
                     .navigationBarTitleDisplayMode(.inline)
             }
         case .djiDevices:
@@ -205,6 +202,7 @@ private struct MenuView: View {
                                                    button: button,
                                                    showAll: true)
                         .navigationBarTitleDisplayMode(.inline)
+                        .id(button.id)
                 }
             }
         case .streamingButtonSettings:
@@ -261,10 +259,10 @@ private struct InstantReplayCountdownView: View {
 }
 
 private struct MutedView: View {
-    @ObservedObject var level: AudioLevel
+    @ObservedObject var audio: AudioProvider
 
     var body: some View {
-        if level.isMuted() {
+        if audio.muted {
             Image(systemName: "microphone.slash")
                 .font(.system(size: 80))
                 .foregroundStyle(.red)
@@ -276,8 +274,122 @@ private struct MutedView: View {
     }
 }
 
+private struct PhotoShootFlashButtonView: View {
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Button {
+            database.photoShootFlash.toggle()
+        } label: {
+            Image(systemName: database.photoShootFlash ? "bolt.fill" : "bolt.slash.fill")
+                .font(.system(size: 30))
+                .foregroundStyle(database.photoShootFlash ? .yellow : .white)
+                .frame(width: 60, height: 60)
+                .background(.black.opacity(0.75))
+                .clipShape(Circle())
+        }
+    }
+}
+
+private struct PhotoShootIntervalPickerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+
+    var body: some View {
+        Menu {
+            Picker("", selection: Binding(get: {
+                database.photoShootInterval
+            }, set: { interval in
+                model.setPhotoShootInterval(interval: interval)
+            })) {
+                ForEach([1, 2, 3, 10, 60], id: \.self) { interval in
+                    Text(formatShortDuration(seconds: interval))
+                }
+            }
+        } label: {
+            VStack(spacing: 2) {
+                Image(systemName: "timer")
+                    .font(.system(size: 24))
+                Text(verbatim: "\(database.photoShootInterval)s")
+                    .font(.system(size: 14))
+            }
+            .foregroundStyle(.white)
+            .frame(width: 60, height: 60)
+            .background(.black.opacity(0.75))
+            .clipShape(Circle())
+        }
+    }
+}
+
+private struct PhotoShootCountdownView: View {
+    @ObservedObject var photoShoot: PhotoShootProvider
+    @ObservedObject var database: Database
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 0.05)) { _ in
+            let interval = Double(database.photoShootInterval)
+            let remaining = if let nextPhotoTime = photoShoot.nextPhotoTime {
+                max((nextPhotoTime - .now).seconds, 0)
+            } else {
+                interval
+            }
+            ZStack {
+                Circle()
+                    .stroke(.white.opacity(0.3), lineWidth: 5)
+                Circle()
+                    .trim(from: 0, to: remaining / interval)
+                    .stroke(.white, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                Text(verbatim: "\(max(Int(remaining.rounded(.up)), 1))")
+                    .font(.system(size: 28, weight: .bold))
+                    .monospacedDigit()
+            }
+            .frame(width: 70, height: 70)
+        }
+    }
+}
+
+private struct PhotoShootInfoView: View {
+    @ObservedObject var photoShoot: PhotoShootProvider
+    let database: Database
+
+    var body: some View {
+        VStack {
+            Text("Photo shoot")
+                .font(.system(size: 30))
+            PhotoShootCountdownView(photoShoot: photoShoot, database: database)
+        }
+        .foregroundStyle(.white)
+        .padding(20)
+        .background(photoShoot.photoTaken ? .white.opacity(0.75) : .black.opacity(0.75))
+        .cornerRadius(10)
+        .animation(photoShoot.photoTaken ? nil : .easeOut(duration: 0.2), value: photoShoot.photoTaken)
+        .allowsHitTesting(false)
+    }
+}
+
+private struct PhotoShootView: View {
+    let model: Model
+    let photoShoot: PhotoShootProvider
+    let enabled: Bool
+
+    var body: some View {
+        if enabled {
+            VStack(spacing: 15) {
+                PhotoShootInfoView(photoShoot: photoShoot, database: model.database)
+                HStack(spacing: 15) {
+                    PhotoShootIntervalPickerView(model: model, database: model.database)
+                    if model.cameraDevice?.hasFlash == true {
+                        PhotoShootFlashButtonView(database: model.database)
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct WebBrowserAlertsView: UIViewControllerRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIViewController(context _: Context) -> WebBrowserController {
         model.webBrowserController
@@ -329,60 +441,19 @@ private struct InteractiveBrowserView: View {
     @ObservedObject var browserEffect: BrowserEffect
     let streamSize: CGSize
 
-    private func browserWidgetScale(
-        layout: SettingsWidgetLayout,
-        browserSize: CGSize,
-        streamSize: CGSize
-    ) -> Double {
-        let scaleX = toPixels(layout.size, streamSize.width) / browserSize.width
-        let scaleY = toPixels(layout.size, streamSize.height) / browserSize.height
-        return min(scaleX, scaleY)
-    }
-
-    private func browserWidgetOffset(
-        layout: SettingsWidgetLayout,
-        displaySize: CGSize,
-        streamSize: CGSize
-    ) -> CGPoint {
-        let x: Double = if layout.alignment.isHorizontalCenter() {
-            (streamSize.width - displaySize.width) / 2
-        } else if layout.alignment.isLeft() {
-            toPixels(layout.x, streamSize.width)
-        } else {
-            streamSize.width - toPixels(layout.x, streamSize.width) - displaySize.width
-        }
-        let y: Double = if layout.alignment.isVerticalCenter() {
-            (streamSize.height - displaySize.height) / 2
-        } else if layout.alignment.isTop() {
-            toPixels(layout.y, streamSize.height)
-        } else {
-            streamSize.height - toPixels(layout.y, streamSize.height) - displaySize.height
-        }
-        return CGPoint(x: x, y: y)
-    }
-
     var body: some View {
         if let layout = browserEffect.layout {
             let browserSize = CGSize(width: browserEffect.width, height: browserEffect.height)
-            let scale = browserWidgetScale(
-                layout: layout,
-                browserSize: browserSize,
-                streamSize: streamSize
-            )
+            let scale = layoutScale(layout, browserSize, streamSize)
             let displaySize = CGSize(
                 width: scale * browserSize.width,
                 height: scale * browserSize.height
-            )
-            let offset = browserWidgetOffset(
-                layout: layout,
-                displaySize: displaySize,
-                streamSize: streamSize
             )
             BrowserWidgetView(browser: browser)
                 .frame(width: browserSize.width, height: browserSize.height)
                 .scaleEffect(scale)
                 .frame(width: displaySize.width, height: displaySize.height)
-                .position(x: offset.x + displaySize.width / 2, y: offset.y + displaySize.height / 2)
+                .position(layoutCenter(layout, displaySize, streamSize))
         }
     }
 }
@@ -391,7 +462,6 @@ struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
     let streamView: StreamView
-    @FocusState private var focused: Bool
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
     @ObservedObject var orientation: Orientation
@@ -413,12 +483,12 @@ struct MainView: View {
         UITextField.appearance().clearButtonMode = .always
     }
 
-    private func handleTapToFocus(metrics: GeometryProxy, location: CGPoint) {
+    private func handleTapToFocus(size: CGSize, location: CGPoint) {
         guard model.database.tapToFocus else {
             return
         }
-        let x = (location.x / metrics.size.width).clamped(to: 0 ... 1)
-        let y = (location.y / metrics.size.height).clamped(to: 0 ... 1)
+        let x = (location.x / size.width).clamped(to: 0 ... 1)
+        let y = (location.y / size.height).clamped(to: 0 ... 1)
         model.setFocusPointOfInterest(focusPoint: CGPoint(x: x, y: y))
     }
 
@@ -442,178 +512,125 @@ struct MainView: View {
         .allowsHitTesting(model.interactiveBrowsers)
     }
 
-    private func streamAspectRatio() -> CGFloat {
-        model.stream.dimensions().aspectRatio()
+    private func streamViewWithWidgets() -> some View {
+        GeometryReader { metrics in
+            let layout = model.streamViewLayout(metrics: metrics)
+            ZStack {
+                streamView
+                    .onTapGesture(count: 1) {
+                        handleTapToFocus(size: layout.size, location: $0)
+                    }
+                    .onLongPressGesture {
+                        handleLeaveTapToFocus()
+                    }
+                StreamOverlayTapGridView(camera: model.camera, size: layout.size)
+                browserWidgets(streamSize: layout.size)
+                TallyView(tally: model.tally)
+            }
+            .frame(width: layout.size.width, height: layout.size.height)
+            .offset(layout.offset)
+        }
     }
 
-    private func portraitVideoOffset() -> Double {
-        if model.stream.portrait {
+    private func streamArea() -> some View {
+        ZStack {
+            streamViewWithWidgets()
+            GeometryReader { metrics in
+                StreamOverlayView(streamOverlay: model.streamOverlay,
+                                  chatSettings: model.database.chat,
+                                  orientation: orientation,
+                                  width: metrics.size.width)
+                    .padding(.bottom, orientation.isPortrait ? 5 : 0)
+                    .opacity(model.showLocalOverlays ? 1 : 0)
+            }
+            if model.showDrawOnStream, model.stream.portrait || !orientation.isPortrait {
+                DrawOnStreamView(model: model)
+            }
+            MutedView(audio: model.audio)
+            PhotoShootView(model: model, photoShoot: model.photoShoot, enabled: model.photoShootEnabled)
+            if model.showBrowser {
+                WebBrowserView(model: model,
+                               database: model.database,
+                               orientation: orientation,
+                               webBrowserState: model.webBrowserState)
+            }
+            if model.showNavigation {
+                if #available(iOS 26, *) {
+                    StreamOverlayNavigationView(model: model,
+                                                database: model.database,
+                                                navigation: model.navigation())
+                }
+            }
+            if model.showingRemoteControl {
+                ControlBarRemoteControlAssistantView(model: model,
+                                                     remoteControlSettings: model.database.remoteControl)
+            }
+            if !orientation.isPortrait, model.showingPanel != .none, model.panelHidden {
+                PanelButtonsView(
+                    model: model,
+                    backgroundColor: model.showingPanel.buttonsBackgroundColor()
+                )
+                .padding(.trailing, -1)
+            }
+        }
+        .gesture(
+            MagnificationGesture()
+                .onChanged { amount in
+                    model.changeZoomX(amount: Float(amount))
+                }
+                .onEnded { amount in
+                    model.commitZoomX(amount: Float(amount))
+                }
+        )
+    }
+
+    private func panel() -> some View {
+        ZStack {
+            MenuView()
+                .background(.black)
+                .opacity(model.panelHidden ? 0 : 1)
+            if orientation.isPortrait {
+                let backgroundColor = model.panelHidden ? model.showingPanel
+                    .buttonsBackgroundColor() : .clear
+                PanelButtonsView(model: model, backgroundColor: backgroundColor)
+                    .padding(.trailing, 10)
+                    .padding(.top, -7)
+            } else if !model.panelHidden {
+                PanelButtonsView(model: model, backgroundColor: .clear)
+            }
+        }
+    }
+
+    private func streamAreaTrailingPadding(panelWidth: CGFloat) -> CGFloat {
+        if orientation.isPortrait || model.showingPanel == .none {
             0
         } else {
-            model.portraitVideoOffsetFromTop
+            panelWidth
         }
     }
 
-    private func portrait() -> some View {
-        VStack(spacing: 0) {
-            ZStack {
-                HStack {
-                    Spacer(minLength: 0)
-                    VStack {
-                        GeometryReader { metrics in
-                            ZStack {
-                                streamView
-                                    .onTapGesture(count: 1) {
-                                        handleTapToFocus(metrics: metrics, location: $0)
-                                    }
-                                    .onLongPressGesture {
-                                        handleLeaveTapToFocus()
-                                    }
-                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
-                                browserWidgets(streamSize: metrics.size)
-                            }
-                            .offset(CGSize(
-                                width: 0,
-                                height: portraitVideoOffset() * metrics.size.height * 2
-                            ))
-                        }
-                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
-                        Spacer(minLength: 0)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .ignoresSafeArea()
-                GeometryReader { metrics in
-                    StreamOverlayView(streamOverlay: model.streamOverlay,
-                                      chatSettings: model.database.chat,
-                                      orientation: orientation,
-                                      width: metrics.size.width)
-                        .opacity(model.showLocalOverlays ? 1 : 0)
-                }
-                if model.showDrawOnStream, model.stream.portrait {
-                    DrawOnStreamView(model: model)
-                }
-                MutedView(level: model.audio.level)
-                if model.showBrowser {
-                    WebBrowserView(model: model,
-                                   database: model.database,
-                                   orientation: orientation,
-                                   webBrowserState: model.webBrowserState)
-                }
-                if model.showNavigation {
-                    if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(model: model,
-                                                    database: model.database,
-                                                    navigation: model.navigation())
-                    }
-                }
-                if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model,
-                                                         remoteControlSettings: model.database.remoteControl)
-                }
-                if model.showingPanel != .none {
-                    MenuView()
-                        .opacity(model.panelHidden ? 0 : 1)
-                    let backgroundColor = model.panelHidden ? model.showingPanel
-                        .buttonsBackgroundColor() : .clear
-                    PanelButtonsView(backgroundColor: backgroundColor)
-                        .padding(.trailing, 10)
-                        .padding(.top, -7)
-                }
-            }
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { amount in
-                        model.changeZoomX(amount: Float(amount))
-                    }
-                    .onEnded { amount in
-                        model.commitZoomX(amount: Float(amount))
-                    }
-            )
-            ControlBarPortraitView(quickButtons: quickButtons)
-        }
-    }
-
-    private func landscape() -> some View {
-        HStack(spacing: 0) {
-            ZStack {
-                HStack {
-                    Spacer(minLength: 0)
-                    VStack {
-                        Spacer(minLength: 0)
-                        GeometryReader { metrics in
-                            ZStack {
-                                streamView
-                                    .onTapGesture(count: 1) {
-                                        handleTapToFocus(metrics: metrics, location: $0)
-                                    }
-                                    .onLongPressGesture {
-                                        handleLeaveTapToFocus()
-                                    }
-                                StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
-                                browserWidgets(streamSize: metrics.size)
-                            }
-                        }
-                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
-                        Spacer(minLength: 0)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .ignoresSafeArea()
-                GeometryReader { metrics in
-                    StreamOverlayView(streamOverlay: model.streamOverlay,
-                                      chatSettings: model.database.chat,
-                                      orientation: orientation,
-                                      width: metrics.size.width)
-                        .opacity(model.showLocalOverlays ? 1 : 0)
-                }
-                if model.showDrawOnStream {
-                    DrawOnStreamView(model: model)
-                }
-                MutedView(level: model.audio.level)
-                if model.showBrowser {
-                    WebBrowserView(model: model,
-                                   database: model.database,
-                                   orientation: orientation,
-                                   webBrowserState: model.webBrowserState)
-                }
-                if model.showNavigation {
-                    if #available(iOS 26, *) {
-                        StreamOverlayNavigationView(model: model,
-                                                    database: model.database,
-                                                    navigation: model.navigation())
-                    }
-                }
-                if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model,
-                                                         remoteControlSettings: model.database.remoteControl)
-                }
-                if model.showingPanel != .none, model.panelHidden {
-                    PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
-                        .padding(.trailing, -1)
-                }
-            }
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { amount in
-                        model.changeZoomX(amount: Float(amount))
-                    }
-                    .onEnded { amount in
-                        model.commitZoomX(amount: Float(amount))
-                    }
-            )
+    private func streamAndPanel() -> some View {
+        let panelWidth = model.panelHidden ? 1 : settingsHalfWidth
+        return ZStack(alignment: .trailing) {
+            streamArea()
+                .padding(.trailing, streamAreaTrailingPadding(panelWidth: panelWidth))
             if model.showingPanel != .none {
-                ZStack {
-                    MenuView()
-                        .opacity(model.panelHidden ? 0 : 1)
-                        .background(.black)
-                    if !model.panelHidden {
-                        PanelButtonsView(backgroundColor: .clear)
-                    }
-                }
-                .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
+                panel()
+                    .frame(width: orientation.isPortrait ? nil : panelWidth)
             }
-            ControlBarLandscapeView(model: model, quickButtons: quickButtons)
+        }
+    }
+
+    private func main() -> some View {
+        let layout = orientation.isPortrait ? AnyLayout(VStackLayout(spacing: 0)) :
+            AnyLayout(HStackLayout(spacing: 0))
+        return layout {
+            streamAndPanel()
+            if orientation.isPortrait {
+                ControlBarPortraitView(model: model, quickButtons: quickButtons)
+            } else {
+                ControlBarLandscapeView(model: model, quickButtons: quickButtons)
+            }
         }
     }
 
@@ -635,21 +652,26 @@ struct MainView: View {
         }
     }
 
+    private func safeAreaRegionsToIgnore() -> SafeAreaRegions {
+        if orientation.isPortrait, model.showingPanel != .none, !model.panelHidden {
+            .keyboard
+        } else {
+            []
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             let all = ZStack {
-                if orientation.isPortrait {
-                    portrait()
-                } else {
-                    landscape()
-                }
-                WebBrowserAlertsView()
+                main()
+                WebBrowserAlertsView(model: model)
                     .opacity(webBrowserController.showAlert ? 1 : 0)
                 if model.showStealthMode {
                     StealthModeView(
                         model: model,
                         quickButtons: quickButtons,
                         chat: model.chat,
+                        chatAlerts: model.chatActivityFeed,
                         stealthMode: model.stealthMode,
                         orientation: orientation
                     )
@@ -678,6 +700,16 @@ struct MainView: View {
                                        filter: model.database.chat.predefinedMessagesFilter,
                                        presentingPredefinedMessages: $model.presentingPredefinedMessages)
             }
+            .fullScreenCover(isPresented: $model.presentingSceneEditor, onDismiss: {
+                model.sceneEditorPresentationChanged()
+            }, content: {
+                SceneEditorView(model: model,
+                                database: model.database,
+                                sceneSelector: model.sceneSelector,
+                                streamOverlay: model.streamOverlay,
+                                sceneEditor: model.sceneEditor,
+                                orientation: model.orientation)
+            })
             .confirmationDialog(
                 "Are you sure you want to import settings? This will replace your current settings.",
                 isPresented: $model.presentingSettingsImportConfirmation,
@@ -711,47 +743,16 @@ struct MainView: View {
             #if targetEnvironment(macCatalyst)
             all
             #else
-            if #available(iOS 17.0, *) {
-                let all = all
-                    .focusable()
-                    .focused($focused)
-                    .onKeyPress { press in
-                        model.handleKeyPress(press: press)
-                    }
-                    .onChange(of: model.showingPanel) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: model.showBrowser) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: model.showTwitchAuth) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: model.showVkVideoLiveAuth) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.presenting) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.presentingSetup) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onChange(of: createStreamWizard.showTwitchAuth) { _ in
-                        focused = model.isKeyboardActive()
-                    }
-                    .onAppear {
-                        focused = true
-                    }
-                if #available(iOS 18.0, *) {
-                    all
-                        .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
-                            if event.phase == .ended {
-                                // model.takeSnapshot()
+            if #available(iOS 18.0, *) {
+                all
+                    .background {
+                        Color.black
+                            .onCameraCaptureEvent(isEnabled: model.cameraControlEnabled) { event in
+                                if event.phase == .ended {
+                                    // model.takeSnapshot()
+                                }
                             }
-                        }
-                } else {
-                    all
-                }
+                    }
             } else {
                 all
             }
@@ -760,12 +761,11 @@ struct MainView: View {
                 .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
-        #if targetEnvironment(macCatalyst)
         .background {
-            MacKeyPressView(model: model, shouldClaimFocus: model.isKeyboardActive())
+            KeyPressView(model: model)
                 .frame(width: 0, height: 0)
         }
-        #endif
         .ignoresSafeArea(.container, edges: edgesToIgnore())
+        .ignoresSafeArea(safeAreaRegionsToIgnore(), edges: .bottom)
     }
 }

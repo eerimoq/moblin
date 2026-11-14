@@ -11,7 +11,7 @@ private enum RistPeerState {
     case disconnected
 }
 
-private class RistRemotePeer: AdaptiveBitrateDelegate {
+private class RistRemotePeer: AdaptiveBitrateDelegate, @unchecked Sendable {
     let interfaceName: String
     let interfaceType: NWInterface.InterfaceType?
     let relayEndpoint: NWEndpoint?
@@ -20,7 +20,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     var adaptiveWeight: AdaptiveBitrateRistExperiment?
     private var state: RistPeerState = .connecting
     private var connectingTimer = SimpleTimer(queue: ristQueue)
-    weak var stream: RistStream?
+    weak let stream: RistStream?
 
     init(interfaceName: String,
          interfaceType: NWInterface.InterfaceType?,
@@ -106,7 +106,7 @@ class RistStream: @unchecked Sendable {
     private var bonding: Bool = false
     private var url: String = ""
     private var state: RistStreamState = .connecting
-    private weak var ristDelegate: (any RistStreamDelegate)?
+    private weak let ristDelegate: (any RistStreamDelegate)?
     private let processor: Processor
     private var totalByteCount = Atomic<Int64>(0)
 
@@ -163,7 +163,7 @@ class RistStream: @unchecked Sendable {
             for peer in peers {
                 var connection = BondingConnection(name: peer.bondingConnectionName(), usage: 0, rtt: nil)
                 if let stats = peer.stats {
-                    connection.usage = stats.bandwidth + stats.retryBandwidth
+                    connection.usage = (stats.bandwidth + stats.retryBandwidth) / 8
                     connection.rtt = Int(stats.rtt)
                 }
                 connections.append(connection)
@@ -225,7 +225,7 @@ class RistStream: @unchecked Sendable {
             logger.info("rist: Failed to start")
             return
         }
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
         }
@@ -239,7 +239,7 @@ class RistStream: @unchecked Sendable {
         state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
-        processorControlQueue.async {
+        processorPipelineQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
         }
@@ -398,10 +398,10 @@ extension RistStream: RistSenderContextDelegate {
 }
 
 func makeRistBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String? {
-    guard let url = URL(string: url) else {
-        return nil
-    }
-    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+    guard let url = URL(string: url), var urlComponents = URLComponents(
+        url: url,
+        resolvingAgainstBaseURL: false
+    ) else {
         return nil
     }
     urlComponents.query = url.query
@@ -415,10 +415,7 @@ func makeRistBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String
 }
 
 func makeRistMoblinkBondingUrl(_ url: String, _ endpoint: NWEndpoint) -> String? {
-    guard var url = URLComponents(string: url) else {
-        return nil
-    }
-    guard case let .hostPort(host, port) = endpoint else {
+    guard var url = URLComponents(string: url), case let .hostPort(host, port) = endpoint else {
         return nil
     }
     url.host = "\(host)"
