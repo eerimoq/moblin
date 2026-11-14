@@ -31,10 +31,7 @@ struct VkVideoLiveLoginView: View {
 
     var body: some View {
         ZStack {
-            ScrollView {
-                VkVideoLiveAuthView(vkVideoLiveAuth: model.vkVideoLiveAuth)
-                    .frame(height: 2500)
-            }
+            VkVideoLiveAuthView(vkVideoLiveAuth: model.vkVideoLiveAuth)
             CloseButtonTopRightView {
                 presenting = false
             }
@@ -53,6 +50,11 @@ class VkVideoLiveAuth: NSObject {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        configuration.userContentController.addUserScript(WKUserScript(
+            source: "try { localStorage.setItem('pwaHowToInstallModalDisplayed', '1') } catch (e) {}",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        ))
         webBrowser = WKWebView(frame: .zero, configuration: configuration)
         webBrowser!.navigationDelegate = self
         webBrowser!.uiDelegate = self
