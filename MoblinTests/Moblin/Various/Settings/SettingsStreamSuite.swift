@@ -9,6 +9,7 @@ private func decodeStream(_ json: String) throws -> SettingsStream {
 private func removeFromKeychain(_ id: UUID) {
     removeTwitchAccessTokenInKeychain(streamId: id)
     removeKickAccessTokenInKeychain(streamId: id)
+    removeVkVideoLiveAccessTokenInKeychain(streamId: id)
     removeYouTubeAuthStateInKeychain(streamId: id)
 }
 
@@ -36,6 +37,31 @@ struct SettingsStreamSuite {
         stream.loadFromKeychain()
         #expect(stream.twitchAccessToken == "" && stream.kickAccessToken == "")
         #expect(loadKickAccessTokenFromKeychain(streamId: id) == nil)
+    }
+
+    @Test
+    func loadingIgnoresPlainTextVkVideoLiveToken() throws {
+        let id = UUID()
+        defer {
+            removeFromKeychain(id)
+        }
+        let stream = try decodeStream(#"{"id":"\#(id.uuidString)","vkVideoLiveAccessToken":"vk"}"#)
+        stream.loadFromKeychain()
+        #expect(stream.vkVideoLiveAccessToken == "")
+        #expect(loadVkVideoLiveAccessTokenFromKeychain(streamId: id) == nil)
+    }
+
+    @Test
+    func loadingTakesTheVkVideoLiveTokenFromTheKeychain() throws {
+        let id = UUID()
+        defer {
+            removeFromKeychain(id)
+        }
+        storeVkVideoLiveAccessTokenInKeychain(streamId: id, accessToken: "vk")
+        let stream = try decodeStream(#"{"id":"\#(id.uuidString)"}"#)
+        #expect(stream.vkVideoLiveAccessToken == "")
+        stream.loadFromKeychain()
+        #expect(stream.vkVideoLiveAccessToken == "vk")
     }
 
     @Test

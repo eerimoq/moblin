@@ -2496,6 +2496,8 @@ final class Settings {
             fromStream.twitchAccessToken = ""
             toStream.kickAccessToken = fromStream.kickAccessToken
             fromStream.kickAccessToken = ""
+            toStream.vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
+            fromStream.vkVideoLiveAccessToken = ""
             toDatabase.streams.append(toStream)
         }
         return toDatabase
@@ -2505,6 +2507,7 @@ final class Settings {
         for (index, fromStream) in fromDatabase.streams.enumerated() where index < toDatabase.streams.count {
             toDatabase.streams[index].twitchAccessToken = fromStream.twitchAccessToken
             toDatabase.streams[index].kickAccessToken = fromStream.kickAccessToken
+            toDatabase.streams[index].vkVideoLiveAccessToken = fromStream.vkVideoLiveAccessToken
         }
     }
 

@@ -492,6 +492,7 @@ final class Model: NSObject, ObservableObject {
     @Published var portraitVideoOffsetFromTop = 0.0
     @Published var currentStreamId = UUID()
     @Published var showTwitchAuth = false
+    @Published var showVkVideoLiveAuth = false
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
@@ -608,6 +609,8 @@ final class Model: NSObject, ObservableObject {
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickPlatformStatus: KickPlatformStatus?
+    var vkVideoLiveChat: VkVideoLiveChat?
+    var vkVideoLivePlatformStatus: VkVideoLivePlatformStatus?
     var youTubeLiveChats: [String: YouTubeLiveChat] = [:]
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
@@ -699,11 +702,14 @@ final class Model: NSObject, ObservableObject {
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
+    let vkVideoLiveAuth = VkVideoLiveAuth()
+    var vkVideoLiveAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = MainTimer()
     let twitchSearchChannelsTimer = MainTimer()
     let kickSearchCategoriesTimer = MainTimer()
     let kickSearchChannelsTimer = MainTimer()
+    let vkVideoLiveSearchCategoriesTimer = MainTimer()
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()
@@ -1143,6 +1149,7 @@ final class Model: NSObject, ObservableObject {
         let streamIds = database.streams.map(\.id)
         removeUnusedTwitchAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedKickAccessTokensInKeychain(usedStreamIds: streamIds)
+        removeUnusedVkVideoLiveAccessTokensInKeychain(usedStreamIds: streamIds)
         removeUnusedYouTubeAuthStatesInKeychain(usedStreamIds: streamIds)
     }
 
@@ -1290,6 +1297,7 @@ final class Model: NSObject, ObservableObject {
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         twitchAuth.setOnAccessToken(onAccessToken: handleTwitchAccessToken)
+        vkVideoLiveAuth.setOnAccessToken(onAccessToken: handleVkVideoLiveAccessToken)
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
@@ -2063,6 +2071,8 @@ final class Model: NSObject, ObservableObject {
                 updateViewersTwitch()
             case .kick:
                 updateViewersKick()
+            case .vkVideoLive:
+                updateViewersVkVideoLive()
             case .youTube:
                 updateViewersYouTube()
             case .soop:
@@ -2416,6 +2426,7 @@ final class Model: NSObject, ObservableObject {
         reloadRemoteControlWeb()
         reloadMoblinCloud()
         reloadKickViewers()
+        reloadVkVideoLiveViewers()
         reloadSoopPlatformStatus()
         reloadNtpClient()
     }
@@ -2450,8 +2461,8 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isViewersConfigured() -> Bool {
-        isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
-            isSoopViewersConfigured()
+        isTwitchViewersConfigured() || isKickViewersConfigured() || isVkVideoLiveViewersConfigured() ||
+            isYouTubeViewersConfigured() || isSoopViewersConfigured()
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2540,6 +2551,9 @@ final class Model: NSObject, ObservableObject {
         }
         if isKickViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .kick, status: .unknown))
+        }
+        if isVkVideoLiveViewersConfigured() {
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .vkVideoLive, status: .unknown))
         }
         if isYouTubeViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .youTube, status: .unknown))

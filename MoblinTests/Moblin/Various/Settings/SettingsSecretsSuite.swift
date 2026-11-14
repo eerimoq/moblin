@@ -38,6 +38,7 @@ private func makePhoneStream() -> SettingsStream {
     ]
     stream.twitchAccessToken = "twitch-token-secret"
     stream.kickAccessToken = "kick-token-secret"
+    stream.vkVideoLiveAccessToken = "vk-video-live-token-secret"
     return stream
 }
 
@@ -74,6 +75,7 @@ private let streamSecrets = [
     "second-destination-secret",
     "twitch-token-secret",
     "kick-token-secret",
+    "vk-video-live-token-secret",
 ]
 
 private let widgetSecrets = [
@@ -120,6 +122,7 @@ struct SettingsSecretsSuite {
         let stream = copied(makePhoneStream())
         stream.twitchAccessToken = "twitch-token-secret"
         stream.kickAccessToken = "kick-token-secret"
+        stream.vkVideoLiveAccessToken = "vk-video-live-token-secret"
         stream.removeSecrets()
         #expect(!encoded(stream).contains(secret))
     }
@@ -129,9 +132,11 @@ struct SettingsSecretsSuite {
         let stream = copied(makePhoneStream())
         stream.twitchAccessToken = "twitch-token-secret"
         stream.kickAccessToken = "kick-token-secret"
+        stream.vkVideoLiveAccessToken = "vk-video-live-token-secret"
         stream.removeAccessTokens()
         let json = encoded(stream)
         #expect(!json.contains("twitch-token-secret") && !json.contains("kick-token-secret"))
+        #expect(!json.contains("vk-video-live-token-secret"))
         #expect(json.contains("stream-url-secret"))
     }
 
@@ -145,6 +150,7 @@ struct SettingsSecretsSuite {
         StreamCase("RealtimeIRL base URL", "") { $0.realtimeIrlBaseUrl },
         StreamCase("Twitch access token", "") { $0.twitchAccessToken },
         StreamCase("Kick access token", "") { $0.kickAccessToken },
+        StreamCase("VK Video Live access token", "") { $0.vkVideoLiveAccessToken },
     ])
     func removedStreamSecretsKeepSchemes(testCase: StreamCase) {
         let stream = makePhoneStream()
@@ -181,6 +187,7 @@ struct SettingsSecretsSuite {
                        + "rtmp://my_public_ip:1935/live/foobar") { destinationUrls($0) },
         StreamCase("Twitch access token", "twitch-token-secret") { $0.twitchAccessToken },
         StreamCase("Kick access token", "kick-token-secret") { $0.kickAccessToken },
+        StreamCase("VK Video Live access token", "vk-video-live-token-secret") { $0.vkVideoLiveAccessToken },
     ])
     func keptStreamSecretsAreThePhones(testCase: StreamCase) {
         let phone = makePhoneStream()
@@ -225,6 +232,7 @@ struct SettingsSecretsSuite {
         },
         StreamCase("Twitch access token", "") { $0.twitchAccessToken },
         StreamCase("Kick access token", "") { $0.kickAccessToken },
+        StreamCase("VK Video Live access token", "") { $0.vkVideoLiveAccessToken },
     ])
     func newStreamSecretsAreDefaults(testCase: StreamCase) {
         let stream = makePhoneStream()

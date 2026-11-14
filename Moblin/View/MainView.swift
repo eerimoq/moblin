@@ -688,6 +688,9 @@ struct MainView: View {
             .sheet(isPresented: $model.showTwitchAuth) {
                 TwitchLoginView(model: model, presenting: $model.showTwitchAuth)
             }
+            .sheet(isPresented: $model.showVkVideoLiveAuth) {
+                VkVideoLiveLoginView(model: model, presenting: $model.showVkVideoLiveAuth)
+            }
             .sheet(isPresented: $model.presentingModeration) {
                 QuickButtonChatModerationView(model: model, presentingModeration: $model.presentingModeration)
             }

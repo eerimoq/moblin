@@ -514,6 +514,7 @@ struct QuickButtonChatModerationView: View {
                 Section {
                     QuickButtonChatModerationTwitchView(model: model, platform: $platform)
                     QuickButtonChatModerationKickView(model: model, platform: $platform)
+                    QuickButtonChatModerationVkVideoLiveView(model: model, platform: $platform)
                 }
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(model: model, stream: model.stream)
