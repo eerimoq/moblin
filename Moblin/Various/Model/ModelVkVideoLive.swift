@@ -182,14 +182,25 @@ extension Model {
         }
     }
 
-    func setVkVideoLiveEmoteOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
+    func setVkVideoLiveNoCapitalLettersMode(enabled: Bool,
+                                            onComplete: @escaping (OperationResult) -> Void)
+    {
         editVkVideoLiveChatSettings(onComplete: onComplete) { settings in
-            if enabled {
-                settings.mode = VkVideoLiveChatMode(only_smiles: VkVideoLiveChatModeOnlySmiles())
-            } else {
-                settings.mode = VkVideoLiveChatMode(general: settings.mode?.general
-                    ?? VkVideoLiveChatModeGeneral())
-            }
+            settings.setCapitalLettersProhibited(enabled)
+        }
+    }
+
+    func setVkVideoLiveNoLinksMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
+        editVkVideoLiveChatSettings(onComplete: onComplete) { settings in
+            settings.setLinksProhibited(enabled)
+        }
+    }
+
+    func setVkVideoLiveLettersAndNumbersOnlyMode(enabled: Bool,
+                                                 onComplete: @escaping (OperationResult) -> Void)
+    {
+        editVkVideoLiveChatSettings(onComplete: onComplete) { settings in
+            settings.setLettersAndNumbersOnly(enabled)
         }
     }
 
@@ -205,6 +216,7 @@ extension Model {
                 return
             }
             modify(&settings)
+            settings.fillRequiredFields()
             api.editChatSettings(channelUrl: channelUrl, settings: settings, onComplete: onComplete)
         }
     }

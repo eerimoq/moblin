@@ -140390,6 +140390,9 @@
         }
       }
     },
+    "Letters and numbers only" : {
+
+    },
     "LEVEL %lld" : {
       "localizations" : {
         "de" : {
@@ -173400,6 +173403,9 @@
         }
       }
     },
+    "No capital letters" : {
+
+    },
     "No direct sunlight" : {
       "localizations" : {
         "de" : {
@@ -173993,6 +173999,9 @@
           }
         }
       }
+    },
+    "No links" : {
+
     },
     "No macros configured in streamer" : {
       "localizations" : {

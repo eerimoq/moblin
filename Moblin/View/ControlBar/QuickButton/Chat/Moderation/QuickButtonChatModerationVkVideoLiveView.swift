@@ -13,7 +13,15 @@ struct QuickButtonChatModerationVkVideoLiveView: View {
             Form {
                 Section {
                     SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
-                    EmotesOnlyView(action: model.setVkVideoLiveEmoteOnlyMode)
+                    ToggleActionView(text: "No capital letters",
+                                     image: "textformat.size.smaller",
+                                     action: model.setVkVideoLiveNoCapitalLettersMode)
+                    ToggleActionView(text: "No links",
+                                     image: "link",
+                                     action: model.setVkVideoLiveNoLinksMode)
+                    ToggleActionView(text: "Letters and numbers only",
+                                     image: "textformat.abc",
+                                     action: model.setVkVideoLiveLettersAndNumbersOnlyMode)
                 } footer: {
                     Text("The VK Video Live API does not support message deletion, bans or timeouts.")
                 }

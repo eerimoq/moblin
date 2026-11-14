@@ -204,6 +204,43 @@ struct VkVideoLiveChatSettings: Codable {
     var mode: VkVideoLiveChatMode?
     var same_message_timeout: Int64?
     var subscription_alert: Bool?
+
+    mutating func setCapitalLettersProhibited(_ prohibited: Bool) {
+        updateGeneralMode { $0.is_caps_prohibited = prohibited }
+    }
+
+    mutating func setLinksProhibited(_ prohibited: Bool) {
+        updateGeneralMode { $0.is_links_prohibited = prohibited }
+    }
+
+    mutating func setLettersAndNumbersOnly(_ only: Bool) {
+        updateGeneralMode { $0.is_ru_en_numbers = only }
+    }
+
+    mutating func fillRequiredFields() {
+        allow_access = allow_access ?? "any"
+        allow_access_after = allow_access_after ?? 0
+        any_message_timeout = any_message_timeout ?? 0
+        follow_alert = follow_alert ?? true
+        same_message_timeout = same_message_timeout ?? 0
+        subscription_alert = subscription_alert ?? true
+    }
+
+    private mutating func updateGeneralMode(_ update: (inout VkVideoLiveChatModeGeneral) -> Void) {
+        var general = VkVideoLiveChatModeGeneral(
+            is_caps_prohibited: mode?.general?.is_caps_prohibited ?? false,
+            is_links_prohibited: mode?.general?.is_links_prohibited ?? false,
+            is_ru_en_numbers: mode?.general?.is_ru_en_numbers ?? false
+        )
+        update(&general)
+        if general.is_caps_prohibited == true || general.is_links_prohibited == true
+            || general.is_ru_en_numbers == true
+        {
+            mode = VkVideoLiveChatMode(general: general)
+        } else {
+            mode = VkVideoLiveChatMode()
+        }
+    }
 }
 
 private struct VkVideoLiveChatSettingsData: Decodable {
