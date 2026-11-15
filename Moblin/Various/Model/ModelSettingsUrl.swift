@@ -73,6 +73,9 @@ extension Model {
                 if let dnsLookupStrategy = srt.dnsLookupStrategy {
                     targetStream.srt.dnsLookupStrategy = dnsLookupStrategy
                 }
+                if let implementation = srt.implementation {
+                    targetStream.srt.implementation = implementation
+                }
             }
             if let obs = stream.obs {
                 targetStream.obsWebSocketEnabled = true

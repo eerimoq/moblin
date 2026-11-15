@@ -32,6 +32,7 @@ class MoblinSettingsSrt: Codable {
     var latency: Int32?
     var adaptiveBitrateEnabled: Bool?
     var dnsLookupStrategy: SettingsDnsLookupStrategy?
+    var implementation: SettingsStreamSrtImplementation?
 
     init() {}
 
@@ -47,6 +48,9 @@ class MoblinSettingsSrt: Codable {
                                                               String(
                                                                   localized: "Unsupported SRT DNS lookup strategy"
                                                               ))
+        implementation = try container.decodeEnumIfPresent(SettingsStreamSrtImplementation.self,
+                                                           forKey: .implementation,
+                                                           String(localized: "Unsupported SRT implementation"))
     }
 }
 
