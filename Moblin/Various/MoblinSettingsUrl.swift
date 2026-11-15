@@ -50,7 +50,9 @@ class MoblinSettingsSrt: Codable {
                                                               ))
         implementation = try container.decodeEnumIfPresent(SettingsStreamSrtImplementation.self,
                                                            forKey: .implementation,
-                                                           String(localized: "Unsupported SRT implementation"))
+                                                           String(
+                                                               localized: "Unsupported SRT implementation"
+                                                           ))
     }
 }
 
