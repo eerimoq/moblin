@@ -1795,7 +1795,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func backgroundRunLevel() -> BackgroundRunLevel {
-        if (isLive || isRecording) && stream.backgroundStreaming {
+        if isLive || isRecording, stream.backgroundStreaming {
             return .full
         }
         if isLive || isRecording {
