@@ -2191,6 +2191,10 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "person.crop.square.badge.camera",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .soundBoard,
+                                 imageOn: "speaker.wave.2.bubble",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
 @MainActor

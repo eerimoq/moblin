@@ -43,6 +43,7 @@ enum ShowingPanel {
     case streamingButtonSettings
     case live
     case macros
+    case soundBoard
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
@@ -495,6 +496,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
+    var soundBoardPlayer: AudioPlayer?
     @Published var presentingSceneEditor: Bool = false
     @Published var presentingSettingsImportConfirmation = false
     var pendingSettingsImportAction: (() -> Void)?
@@ -956,6 +958,7 @@ final class Model: NSObject, ObservableObject {
             .autoSceneSwitcher,
             .live,
             .macros,
+            .soundBoard,
         ].contains(type)
     }
 

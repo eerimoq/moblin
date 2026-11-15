@@ -220,6 +220,11 @@ private struct MenuView: View {
                 QuickButtonMacrosView(model: model, macros: model.database.macros)
                     .navigationBarTitleDisplayMode(.inline)
             }
+        case .soundBoard:
+            NavigationStack {
+                QuickButtonSoundBoardView(model: model, gallery: model.database.alertsMediaGallery)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         case .none:
             EmptyView()
         }

@@ -408,6 +408,10 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .macros, panel: .macros)
     }
 
+    private func soundBoardAction() {
+        model.toggleShowingPanel(type: .soundBoard, panel: .soundBoard)
+    }
+
     private func gimbalTrackingAction() {
         model.toggleGimbalTracking()
     }
@@ -809,6 +813,15 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             model.presentingPredefinedMessages = true
+                            stopFilteringUnlessPresentingDialog()
+                        }
+                    case .soundBoard:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         button: button,
+                                         buttonSize: size)
+                        {
+                            soundBoardAction()
                             stopFilteringUnlessPresentingDialog()
                         }
                     case .skipCurrentTts:

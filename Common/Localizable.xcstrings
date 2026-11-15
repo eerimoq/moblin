@@ -246320,6 +246320,9 @@
         }
       }
     },
+    "Sound board" : {
+
+    },
     "Sounds" : {
       "localizations" : {
         "de" : {
@@ -291189,6 +291192,9 @@
           }
         }
       }
+    },
+    "Unsupported SRT implementation" : {
+
     },
     "Unsupported video codec" : {
       "comment" : "Error message when an unsupported video codec is specified.",
