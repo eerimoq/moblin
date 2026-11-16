@@ -616,9 +616,9 @@ private struct StatusesView: View {
                           bitrate: model.bitrate,
                           textPlacement: textPlacement)
         ServerBitrateStatusView(model: model,
-                               show: model.database.show,
-                               serverBitrate: model.serverBitrate,
-                               textPlacement: textPlacement)
+                                show: model.database.show,
+                                serverBitrate: model.serverBitrate,
+                                textPlacement: textPlacement)
         BondingStatusView(show: model.database.show,
                           bonding: model.bonding,
                           textPlacement: textPlacement)

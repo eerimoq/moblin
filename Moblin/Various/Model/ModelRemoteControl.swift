@@ -1321,7 +1321,10 @@ extension Model: RemoteControlStreamerDelegate {
             return
         }
         serverBitrate.speedAndTotal = formatBytesPerSecond(speed: bitsPerSecond)
-        serverBitrate.statusIconColor = bitrateStatusIconColor(speed: bitsPerSecond, target: Int64(stream.bitrate))
+        serverBitrate.statusIconColor = bitrateStatusIconColor(
+            speed: bitsPerSecond,
+            target: Int64(stream.bitrate)
+        )
     }
 
     func remoteControlStreamerMoveToGimbalPreset(id: UUID) {

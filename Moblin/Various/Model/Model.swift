@@ -224,11 +224,11 @@ class Bitrate: ObservableObject {
 // than an absolute number any particular setup would have to guess.
 func bitrateStatusIconColor(speed: Int64, target: Int64) -> Color? {
     if speed < target / 5 {
-        return .red
+        .red
     } else if speed < target / 2 {
-        return .orange
+        .orange
     } else {
-        return nil
+        nil
     }
 }
 
