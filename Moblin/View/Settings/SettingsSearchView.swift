@@ -648,12 +648,11 @@ struct SettingsSearchFieldView: View {
 }
 
 struct SettingsSearchResultsView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
+    let items: [SettingsSearchItem]
     let text: String
 
     var body: some View {
-        let items = settingsSearchItems(model: model, database: database).filter {
+        let items = items.filter {
             settingsSearchMatches(text: text, title: $0.title, path: $0.path, keywords: $0.keywords)
         }
         if items.isEmpty {

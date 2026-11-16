@@ -23,6 +23,11 @@ struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @State private var searchText = ""
+    @State private var searchItems: [SettingsSearchItem] = []
+
+    private func updateSearchItems() {
+        searchItems = searchText.isEmpty ? [] : settingsSearchItems(model: model, database: database)
+    }
 
     var body: some View {
         Form {
@@ -30,10 +35,16 @@ struct SettingsView: View {
                 SettingsSearchFieldView(text: $searchText)
             }
             if !searchText.isEmpty {
-                SettingsSearchResultsView(database: database, text: searchText)
+                SettingsSearchResultsView(items: searchItems, text: searchText)
             } else {
                 SettingsContentView(database: database)
             }
+        }
+        .onChange(of: searchText.isEmpty) { _ in
+            updateSearchItems()
+        }
+        .onAppear {
+            updateSearchItems()
         }
         .navigationTitle("Settings")
     }
