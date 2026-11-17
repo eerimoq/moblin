@@ -495,7 +495,11 @@ class RtmpStream: @unchecked Sendable {
                 return
             }
             logger.info("rtmp: \(name): Connect timeout")
-            socket.close(isDisconnected: true)
+            if socket.readyState == .closed {
+                handleStatus(code: RtmpStatusCode.connectFailed.rawValue, description: nil)
+            } else {
+                socket.close(isDisconnected: true)
+            }
         }
     }
 
