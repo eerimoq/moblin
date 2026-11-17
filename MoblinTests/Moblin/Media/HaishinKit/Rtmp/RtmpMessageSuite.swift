@@ -44,16 +44,16 @@ struct RtmpMessageSuite {
 
     @Test
     func abortEncode() {
-        let message = RtmpAbortMessge()
+        let message = RtmpAbortMessage()
         message.chunkStreamId = 5
         #expect(message.encoded == Data([0x00, 0x00, 0x00, 0x05]))
     }
 
     @Test
     func abortDecode() throws {
-        let sent = RtmpAbortMessge()
+        let sent = RtmpAbortMessage()
         sent.chunkStreamId = 9
-        let message = try #require(transfer(sent) as? RtmpAbortMessge)
+        let message = try #require(transfer(sent) as? RtmpAbortMessage)
         #expect(message.chunkStreamId == 9)
     }
 
