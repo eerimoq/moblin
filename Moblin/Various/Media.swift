@@ -7,7 +7,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnSrtConnected()
     func mediaOnSrtDisconnected(_ reason: String)
     func mediaOnRtmpConnected()
-    func mediaOnRtmpDisconnected(_ message: String)
+    func mediaOnRtmpDisconnected(_ reason: RtmpDisconnectReason)
     func mediaOnRtmpDestinationConnected(_ destination: String)
     func mediaOnRtmpDestinationDisconnected(_ destination: String)
     func mediaOnRistConnected()
@@ -1281,7 +1281,7 @@ extension Media: SrtStreamOfficialDelegate {
 }
 
 extension Media: RtmpStreamDelegate {
-    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: String) {
+    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: RtmpDisconnectReason) {
         DispatchQueue.main.async {
             if rtmpStream === self.rtmpStream {
                 self.delegate.mediaOnRtmpDisconnected(reason)

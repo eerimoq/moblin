@@ -180,7 +180,44 @@ func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
 
 protocol RtmpStreamDelegate: AnyObject {
     func rtmpStreamConnected(_ rtmpStream: RtmpStream)
-    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: String)
+    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: RtmpDisconnectReason)
+}
+
+enum RtmpDisconnectReason: Equatable {
+    case connectFailed
+    case connectTimeout
+    case serverClosed
+    case streamRejected
+    case connectionLost
+    case serverError(code: String, description: String?)
+
+    func toString() -> String {
+        switch self {
+        case .connectFailed:
+            return String(localized: "Could not connect to the server. Check the URL and the network.")
+        case .connectTimeout:
+            return String(localized: "Timed out connecting to the server. Check the URL and the network.")
+        case .serverClosed:
+            return String(localized: "The server closed the connection. Check the URL.")
+        case .streamRejected:
+            return String(localized: "The server rejected the stream. The stream key is likely wrong.")
+        case .connectionLost:
+            return String(localized: "The connection to the server was lost.")
+        case let .serverError(code, description):
+            let error = [code, description].compactMap { $0 }.joined(separator: ": ")
+            if code.hasPrefix("NetStream.Publish.") {
+                return String(
+                    localized: "The server rejected the stream (\(error)). The stream key is likely wrong."
+                )
+            } else if code == RtmpStatusCode.connectRejected.rawValue {
+                return String(localized: """
+                The server rejected the connection (\(error)). The URL or credentials are likely wrong.
+                """)
+            } else {
+                return String(localized: "The server reported an error (\(error)).")
+            }
+        }
+    }
 }
 
 private enum State {
@@ -209,6 +246,8 @@ class RtmpStream: @unchecked Sendable {
     private let statsTimer: SimpleTimer
     private let queue: DispatchQueue
     private var timestamps = RtmpTimestamps()
+    private var serverError: (code: String, description: String?)?
+    private var connectTimedOut = false
     private let processor: Processor
     weak let delegate: (any RtmpStreamDelegate)?
 
@@ -246,6 +285,8 @@ class RtmpStream: @unchecked Sendable {
     }
 
     private func connectInternal() {
+        serverError = nil
+        connectTimedOut = false
         startConnectTimer()
         connectSocket(url)
     }
@@ -308,9 +349,9 @@ class RtmpStream: @unchecked Sendable {
         case .connectRejected:
             handleConnectRejected(description: description)
         case .connectFailed:
-            delegate?.rtmpStreamDisconnected(self, reason: code)
+            reportDisconnected(handshakeDone: false)
         case .connectClosed:
-            delegate?.rtmpStreamDisconnected(self, reason: code)
+            reportDisconnected(handshakeDone: true)
             disconnectInternal()
         case .publishStart:
             if state != .initialized {
@@ -318,6 +359,29 @@ class RtmpStream: @unchecked Sendable {
             }
         default:
             break
+        }
+    }
+
+    private func reportDisconnected(handshakeDone: Bool) {
+        let reason = makeDisconnectReason(handshakeDone: handshakeDone)
+        logger.info("rtmp: \(name): Disconnected: \(reason)")
+        delegate?.rtmpStreamDisconnected(self, reason: reason)
+    }
+
+    private func makeDisconnectReason(handshakeDone: Bool) -> RtmpDisconnectReason {
+        if let serverError {
+            return .serverError(code: serverError.code, description: serverError.description)
+        }
+        switch state {
+        case .publishing:
+            return .connectionLost
+        case .open:
+            return .streamRejected
+        case .initialized:
+            if connectTimedOut {
+                return .connectTimeout
+            }
+            return handshakeDone ? .serverClosed : .connectFailed
         }
     }
 
@@ -451,6 +515,9 @@ class RtmpStream: @unchecked Sendable {
                     if case let .string(value) = data["description"] {
                         description = value
                     }
+                    if data["level"] == .string("error") {
+                        serverError = (code, description)
+                    }
                     handleStatus(code: code, description: description)
                 }
             }
@@ -495,6 +562,7 @@ class RtmpStream: @unchecked Sendable {
                 return
             }
             logger.info("rtmp: \(name): Connect timeout")
+            connectTimedOut = true
             if socket.readyState == .closed {
                 handleStatus(code: RtmpStatusCode.connectFailed.rawValue, description: nil)
             } else {

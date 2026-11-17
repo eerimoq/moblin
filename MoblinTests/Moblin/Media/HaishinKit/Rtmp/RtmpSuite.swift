@@ -112,10 +112,7 @@ struct RtmpStreamEventsSuite {
         let data = makeStatusChunkData(code: "NetConnection.Connect.Failed")
             + makeStatusChunkData(code: "NetConnection.Connect.Closed")
         #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: data).isEmpty)
-        #expect(modelMock.getDisconnectedReasons() == [
-            "NetConnection.Connect.Failed",
-            "NetConnection.Connect.Closed",
-        ])
+        #expect(modelMock.getDisconnectedReasons() == [.connectFailed, .serverClosed])
     }
 
     @Test
@@ -123,7 +120,7 @@ struct RtmpStreamEventsSuite {
         let modelMock = RtmpModelMock()
         let rtmpStream = makeRtmpStream(modelMock: modelMock)
         rtmpStream.socketDisconnected(rtmpStream.socket, code: .connectFailed)
-        #expect(modelMock.getDisconnectedReasons() == ["NetConnection.Connect.Failed"])
+        #expect(modelMock.getDisconnectedReasons() == [.connectFailed])
     }
 
     @Test
@@ -161,6 +158,6 @@ struct RtmpStreamEventsSuite {
         let data = makeStatusChunkData(code: "NetConnection.Connect.Closed")
             + makeStatusChunkData(code: "NetConnection.Connect.Failed")
         _ = rtmpStream.socketDataReceived(rtmpStream.socket, data: data)
-        #expect(modelMock.getDisconnectedReasons() == ["NetConnection.Connect.Closed"])
+        #expect(modelMock.getDisconnectedReasons() == [.serverClosed])
     }
 }

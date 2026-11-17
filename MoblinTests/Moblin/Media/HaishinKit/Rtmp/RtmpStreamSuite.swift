@@ -48,7 +48,7 @@ private actor RtmpServerMock {
     }
 
     func closeClient() {
-        client?.cancel()
+        client?.send(content: nil, contentContext: .finalMessage, isComplete: true, completion: .idempotent)
     }
 
     func send(data: Data) {
@@ -619,9 +619,9 @@ private struct PublishingStream {
     let reader: ClientMessageReader
 }
 
-private func makeStatus(code: String, description: String = "") -> AsValue {
+private func makeStatus(code: String, description: String = "", level: String = "status") -> AsValue {
     .object([
-        "level": .string("status"),
+        "level": .string(level),
         "code": .string(code),
         "description": .string(description),
     ])
@@ -733,7 +733,7 @@ extension RtmpStreamSuite {
                           arguments: [makeStatus(code: "NetConnection.Connect.Failed",
                                                  description: String(repeating: "x", count: 300))],
                           maximumSize: 4096)
-        #expect(await stream.modelMock.waitForDisconnected() == "NetConnection.Connect.Failed")
+        #expect(await stream.modelMock.waitForDisconnected() == .connectionLost)
     }
 
     @Test
@@ -750,7 +750,7 @@ extension RtmpStreamSuite {
                           transactionId: 0,
                           commandName: .onStatus,
                           arguments: [makeStatus(code: "NetConnection.Connect.Closed")])
-        #expect(await stream.modelMock.waitForDisconnected() == "NetConnection.Connect.Closed")
+        #expect(await stream.modelMock.waitForDisconnected() == .connectionLost)
         try await expectUnpublish(stream)
     }
 
@@ -899,7 +899,45 @@ extension RtmpStreamSuite {
         #expect(try await reader.nextCommand(server: server).commandName == .publish)
         let start = ContinuousClock.now
         await server.closeClient()
-        #expect(await modelMock.waitForDisconnected() == "NetConnection.Connect.Closed")
+        #expect(await modelMock.waitForDisconnected() == .streamRejected)
         #expect(start.duration(to: .now) < .seconds(5))
+    }
+
+    @Test
+    func serverReportsPublishErrorAndClosesConnection() async throws {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        let reader = ClientMessageReader()
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/app/bad")
+        rtmpStream.connect()
+        _ = await receiveC0C1(server: server)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        #expect(try await reader.nextCommand(server: server).commandName == .connect)
+        await sendCommand(server: server,
+                          transactionId: 1,
+                          commandName: .result,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+        #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+        #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
+        #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+        let createStream = try await reader.nextCommand(server: server)
+        await sendCommand(server: server,
+                          transactionId: createStream.transactionId,
+                          commandName: .result,
+                          arguments: [.number(1)])
+        #expect(try await reader.nextCommand(server: server).commandName == .publish)
+        await sendCommand(server: server,
+                          transactionId: 0,
+                          commandName: .onStatus,
+                          arguments: [makeStatus(code: "NetStream.Publish.BadName",
+                                                 description: "Bad stream key.",
+                                                 level: "error")])
+        await server.closeClient()
+        #expect(await modelMock.waitForDisconnected()
+            == .serverError(code: "NetStream.Publish.BadName", description: "Bad stream key."))
     }
 }

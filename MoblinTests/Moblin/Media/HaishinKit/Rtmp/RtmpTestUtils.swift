@@ -3,16 +3,16 @@ import AVFoundation
 import Testing
 
 final class RtmpModelMock {
-    private let disconnected = MessageQueue<String>()
+    private let disconnected = MessageQueue<RtmpDisconnectReason>()
     private let connected = MessageQueue<Void>()
     private let lock = NSLock()
-    private var disconnectedReasons: [String] = []
+    private var disconnectedReasons: [RtmpDisconnectReason] = []
 
-    func getDisconnectedReasons() -> [String] {
+    func getDisconnectedReasons() -> [RtmpDisconnectReason] {
         lock.withLock { disconnectedReasons }
     }
 
-    func waitForDisconnected() async -> String {
+    func waitForDisconnected() async -> RtmpDisconnectReason {
         await disconnected.get()
     }
 
@@ -27,7 +27,7 @@ extension RtmpModelMock: RtmpStreamDelegate {
         connected.put(())
     }
 
-    func rtmpStreamDisconnected(_: RtmpStream, reason: String) {
+    func rtmpStreamDisconnected(_: RtmpStream, reason: RtmpDisconnectReason) {
         logger.info("rtmp-test: Disconnected \(reason)")
         lock.withLock { disconnectedReasons.append(reason) }
         disconnected.put(reason)
