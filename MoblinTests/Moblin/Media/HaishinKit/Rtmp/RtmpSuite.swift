@@ -43,22 +43,22 @@ struct RtmpSuite {
 
     @Test
     func connectResultInOneRead() {
-        let connection = RtmpConnection(name: "test", queue: DispatchQueue(label: "test"))
+        let rtmpStream = makeRtmpStream()
         var arguments: [AsValue]?
-        connection.callCompletions[1] = { arguments = $0 }
-        #expect(connection.socketDataReceived(data: makeConnectResultChunkData()).isEmpty)
+        rtmpStream.callCompletions[1] = { arguments = $0 }
+        #expect(rtmpStream.socketDataReceived(data: makeConnectResultChunkData()).isEmpty)
         #expect(arguments?.count == 1)
     }
 
     @Test
     func connectResultSplitAfterChunkHeader() {
-        let connection = RtmpConnection(name: "test", queue: DispatchQueue(label: "test"))
+        let rtmpStream = makeRtmpStream()
         var arguments: [AsValue]?
-        connection.callCompletions[1] = { arguments = $0 }
+        rtmpStream.callCompletions[1] = { arguments = $0 }
         let data = makeConnectResultChunkData()
-        let buffer = connection.socketDataReceived(data: data.subdata(in: 0 ..< 12))
+        let buffer = rtmpStream.socketDataReceived(data: data.subdata(in: 0 ..< 12))
         #expect(buffer == data.subdata(in: 0 ..< 12))
-        #expect(connection.socketDataReceived(data: buffer + data.advanced(by: 12)).isEmpty)
+        #expect(rtmpStream.socketDataReceived(data: buffer + data.advanced(by: 12)).isEmpty)
         #expect(arguments?.count == 1)
     }
 
@@ -70,4 +70,12 @@ struct RtmpSuite {
         #expect(streamUrl == "rtmp://foo.com/live")
         #expect(streamKey == "g:3234234?key=1234")
     }
+}
+
+private func makeRtmpStream() -> RtmpStream {
+    let modelMock = RtmpModelMock()
+    return RtmpStream(name: "test",
+                      processor: Processor(delegate: modelMock, colorRange: .full),
+                      delegate: modelMock,
+                      queue: DispatchQueue(label: "test"))
 }

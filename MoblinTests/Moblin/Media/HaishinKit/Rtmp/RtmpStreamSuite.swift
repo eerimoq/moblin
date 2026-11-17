@@ -4,67 +4,6 @@ import Testing
 
 private let rtmpQueue = DispatchQueue(label: "test")
 
-private class ModelMock {
-    private let status = MessageQueue<String>()
-    private let connected = MessageQueue<Void>()
-
-    func waitForStatus() async -> String {
-        await status.get()
-    }
-
-    func waitForConnected() async {
-        await connected.get()
-    }
-}
-
-extension ModelMock: RtmpStreamDelegate {
-    func rtmpStreamStatus(_: RtmpStream, code: String) {
-        logger.info("rtmp-test: Status \(code)")
-        status.put(code)
-    }
-
-    func rtmpStreamConnected(_: RtmpStream) {
-        logger.info("rtmp-test: Connected")
-        connected.put(())
-    }
-}
-
-extension ModelMock: ProcessorDelegate {
-    func streamAudioLevel(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
-
-    func streamLowFpsImage(lowFpsImage _: Data?, frameNumber _: UInt64) {}
-
-    func streamVideoAttachCameraError() {}
-
-    func streamVideoCaptureSessionError(_: String) {}
-
-    func streamVideoBufferedVideoReady(cameraId _: UUID) {}
-
-    func streamVideoBufferedVideoRemoved(cameraId _: UUID) {}
-
-    func streamVideoFps(fps _: Int) {}
-
-    func streamVideoEncoderResolution(resolution _: CGSize) {}
-
-    func streamRecorderInitSegment(data _: Data) {}
-
-    func streamRecorderDataSegment(segment _: Moblin.RecorderDataSegment) {}
-
-    func streamRecorderFinished() {}
-
-    func streamAudio(sampleBuffer _: CMSampleBuffer) {}
-
-    func streamNoTorch() {}
-
-    func streamPhotoTaken() {}
-
-    func streamSetZoomX(x _: Float) {}
-
-    func streamSetExposureBias(bias _: Float) {}
-
-    func streamSelectedFps(auto _: Bool) {}
-}
-
 private actor RtmpServerMock {
     private let listener: NWListener
     private var client: NWConnection?
@@ -154,7 +93,7 @@ struct RtmpStreamSuite {
     @Test
     func basic() async throws {
         let streamKey = "5"
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -264,7 +203,7 @@ struct RtmpStreamSuite {
     @Test
     func youTube() async throws {
         let streamKey = "5"
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -379,7 +318,7 @@ struct RtmpStreamSuite {
 
     @Test
     func acknowledgementChunkSplitOverTwoReads() {
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -388,17 +327,15 @@ struct RtmpStreamSuite {
                                     processor: processor,
                                     delegate: modelMock,
                                     queue: rtmpQueue)
-        let connection = RtmpConnection(name: "test", queue: rtmpQueue)
-        connection.stream = rtmpStream
         rtmpStream.info.onWritten(sequence: 14000)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeZeroChunk = Data([0x02, 0, 0, 0, 0, 0, 4, 0x03, 0, 0, 0, 0]) + UInt32(1).bigEndian.data
-        #expect(connection.socketDataReceived(data: typeZeroChunk).isEmpty)
+        #expect(rtmpStream.socketDataReceived(data: typeZeroChunk).isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeThreeChunk = Data([0xC2]) + UInt32(14001).bigEndian.data
-        let buffered = connection.socketDataReceived(data: typeThreeChunk.prefix(3))
+        let buffered = rtmpStream.socketDataReceived(data: typeThreeChunk.prefix(3))
         #expect(buffered == typeThreeChunk.prefix(3))
-        #expect(connection.socketDataReceived(data: buffered + typeThreeChunk.suffix(2)).isEmpty)
+        #expect(rtmpStream.socketDataReceived(data: buffered + typeThreeChunk.suffix(2)).isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 0)
     }
 
@@ -674,7 +611,7 @@ private final class ClientMessageReader {
 }
 
 private struct PublishingStream {
-    let modelMock: ModelMock
+    let modelMock: RtmpModelMock
     let processor: Processor
     let server: RtmpServerMock
     let rtmpStream: RtmpStream
@@ -710,7 +647,7 @@ private func sendCommand(server: RtmpServerMock,
 }
 
 private func connectAndPublish() async throws -> PublishingStream {
-    let modelMock = ModelMock()
+    let modelMock = RtmpModelMock()
     let processor = Processor(delegate: modelMock, colorRange: .full)
     let server = try RtmpServerMock()
     let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)

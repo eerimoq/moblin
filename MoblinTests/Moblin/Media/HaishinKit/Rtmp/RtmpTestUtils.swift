@@ -2,6 +2,67 @@ import AVFoundation
 @testable import Moblin
 import Testing
 
+final class RtmpModelMock {
+    private let status = MessageQueue<String>()
+    private let connected = MessageQueue<Void>()
+
+    func waitForStatus() async -> String {
+        await status.get()
+    }
+
+    func waitForConnected() async {
+        await connected.get()
+    }
+}
+
+extension RtmpModelMock: RtmpStreamDelegate {
+    func rtmpStreamStatus(_: RtmpStream, code: String) {
+        logger.info("rtmp-test: Status \(code)")
+        status.put(code)
+    }
+
+    func rtmpStreamConnected(_: RtmpStream) {
+        logger.info("rtmp-test: Connected")
+        connected.put(())
+    }
+}
+
+extension RtmpModelMock: ProcessorDelegate {
+    func streamAudioLevel(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
+
+    func streamLowFpsImage(lowFpsImage _: Data?, frameNumber _: UInt64) {}
+
+    func streamVideoAttachCameraError() {}
+
+    func streamVideoCaptureSessionError(_: String) {}
+
+    func streamVideoBufferedVideoReady(cameraId _: UUID) {}
+
+    func streamVideoBufferedVideoRemoved(cameraId _: UUID) {}
+
+    func streamVideoFps(fps _: Int) {}
+
+    func streamVideoEncoderResolution(resolution _: CGSize) {}
+
+    func streamRecorderInitSegment(data _: Data) {}
+
+    func streamRecorderDataSegment(segment _: Moblin.RecorderDataSegment) {}
+
+    func streamRecorderFinished() {}
+
+    func streamAudio(sampleBuffer _: CMSampleBuffer) {}
+
+    func streamNoTorch() {}
+
+    func streamPhotoTaken() {}
+
+    func streamSetZoomX(x _: Float) {}
+
+    func streamSetExposureBias(bias _: Float) {}
+
+    func streamSelectedFps(auto _: Bool) {}
+}
+
 func makeAacFormat() -> AVAudioFormat {
     makeAudioFormat(formatId: kAudioFormatMPEG4AAC,
                     formatFlags: UInt32(MPEG4ObjectID.AAC_LC.rawValue),
