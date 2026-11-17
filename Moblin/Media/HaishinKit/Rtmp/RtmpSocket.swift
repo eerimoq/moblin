@@ -167,14 +167,27 @@ final class RtmpSocket: @unchecked Sendable {
     }
 
     private func receive(on connection: NWConnection) {
-        connection.receive(minimumIncompleteLength: 0, maximumLength: 255) { [weak self] data, _, _, _ in
-            guard let self, let data else {
-                return
+        connection
+            .receive(minimumIncompleteLength: 0,
+                     maximumLength: 255)
+            { [weak self] data, _, isComplete, error in
+                guard let self else {
+                    return
+                }
+                if let data, !data.isEmpty {
+                    inputBuffer.append(data)
+                    processInput()
+                }
+                if let error {
+                    logger.info("rtmp: \(name): Receive failed: \(error)")
+                    close(isDisconnected: true)
+                } else if isComplete {
+                    logger.info("rtmp: \(name): Connection closed by server")
+                    close(isDisconnected: true)
+                } else {
+                    receive(on: connection)
+                }
             }
-            inputBuffer.append(data)
-            processInput()
-            receive(on: connection)
-        }
     }
 
     private func processInput() {

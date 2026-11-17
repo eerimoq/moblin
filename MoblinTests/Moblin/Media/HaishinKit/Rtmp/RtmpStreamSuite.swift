@@ -47,6 +47,10 @@ private actor RtmpServerMock {
         }
     }
 
+    func closeClient() {
+        client?.cancel()
+    }
+
     func send(data: Data) {
         client!.send(content: data, completion: .idempotent)
     }
@@ -864,5 +868,38 @@ extension RtmpStreamSuite {
         let second = await stream.reader.nextMessage(server: stream.server)
         #expect(second.timestamp == 20)
         #expect(second.encoded.last == 3)
+    }
+
+    @Test
+    func serverClosesConnectionAfterPublish() async throws {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        let reader = ClientMessageReader()
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/app/bad")
+        rtmpStream.connect()
+        _ = await receiveC0C1(server: server)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        #expect(try await reader.nextCommand(server: server).commandName == .connect)
+        await sendCommand(server: server,
+                          transactionId: 1,
+                          commandName: .result,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+        #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+        #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
+        #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+        let createStream = try await reader.nextCommand(server: server)
+        await sendCommand(server: server,
+                          transactionId: createStream.transactionId,
+                          commandName: .result,
+                          arguments: [.number(1)])
+        #expect(try await reader.nextCommand(server: server).commandName == .publish)
+        let start = ContinuousClock.now
+        await server.closeClient()
+        #expect(await modelMock.waitForDisconnected() == "NetConnection.Connect.Closed")
+        #expect(start.duration(to: .now) < .seconds(5))
     }
 }
