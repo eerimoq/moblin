@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsSearchItem: Identifiable {
     let title: String
     let path: [String]
-    let name: String?
+    let breadcrumb: [String]
     let image: String
     let keywords: [String]
     let destination: () -> AnyView
@@ -44,9 +44,14 @@ private struct SettingsSearchItemsBuilder {
         _ keywords: [String],
         @ViewBuilder destination: @escaping () -> some View
     ) {
+        let breadcrumb = if let name, let first = path.first {
+            [first, name] + path.dropFirst()
+        } else {
+            path
+        }
         items.append(SettingsSearchItem(title: title,
                                         path: path,
-                                        name: name,
+                                        breadcrumb: breadcrumb,
                                         image: image,
                                         keywords: keywords,
                                         destination: { AnyView(destination()) }))
@@ -126,7 +131,9 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
                     StreamWhipSettingsView(model: model, stream: stream, whip: stream.whip)
                 }
             case .mobcam:
-                break
+                builder.add(String(localized: "Mobcam"), streamPath, streamImage, ["mobcam"]) {
+                    StreamMobcamSettingsView(stream: stream)
+                }
             }
             builder.add(String(localized: "Recording"),
                         streamPath,
@@ -188,16 +195,17 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
         {
             StreamEmotesSettingsView(stream: stream)
         }
-        builder.add(String(localized: "Background streaming"),
-                    streamPath,
-                    streamImage,
-                    searchKeywords("Background", "Picture in picture", "Portrait", "Multi streaming") +
-                        ["pip"])
-        {
-            StreamSettingsView(database: database, stream: stream)
+        if !isMac() {
+            builder.add(String(localized: "Background streaming"),
+                        streamPath,
+                        streamImage,
+                        searchKeywords("Background", "Picture in picture") + ["pip"])
+            {
+                StreamSettingsView(database: database, stream: stream)
+            }
         }
         builder.add(String(localized: "Bitrate presets"),
-                    streamPath,
+                    streamPath + [String(localized: "Video")],
                     streamImage,
                     searchKeywords("Bitrate", "Quick buttons"))
         {
@@ -247,12 +255,14 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
                                      ttsMonster: database.chat.ttsMonster,
                                      elevenLabs: database.chat.elevenLabs)
     }
-    builder.add(String(localized: "Filters"),
-                [chat],
-                chatImage,
-                searchKeywords("Filter", "Block", "Hide", "Nicknames"))
-    {
-        ChatSettingsView(model: model, database: database, chat: database.chat, stream: model.stream)
+    if showAll {
+        builder.add(String(localized: "Filters"),
+                    [chat],
+                    chatImage,
+                    searchKeywords("Filter", "Block", "Hide", "Nicknames"))
+        {
+            ChatSettingsView(model: model, database: database, chat: database.chat, stream: model.stream)
+        }
     }
     let displayImage = "rectangle.inset.topright.fill"
     builder.add(display, [], displayImage, searchKeywords("Screen", "User interface", "Layout") + ["ui"]) {
@@ -420,7 +430,7 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
     builder.add(String(localized: "Store (support us) ❤️"),
                 [],
                 "cart",
-                searchKeywords("Donate", "Buy"))
+                searchKeywords("Donate", "Buy", "Icon"))
     {
         StoreSettingsView(model: model, store: model.store)
     }
@@ -633,20 +643,6 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
     return builder.items
 }
 
-struct SettingsSearchFieldView: View {
-    @Binding var text: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search", text: $text)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-        }
-    }
-}
-
 struct SettingsSearchResultsView: View {
     let items: [SettingsSearchItem]
     let text: String
@@ -667,8 +663,8 @@ struct SettingsSearchResultsView: View {
                         Label {
                             VStack(alignment: .leading) {
                                 Text(item.title)
-                                if !item.path.isEmpty {
-                                    Text((item.path + [item.name].compactMap { $0 }).joined(separator: " › "))
+                                if !item.breadcrumb.isEmpty {
+                                    Text(item.breadcrumb.joined(separator: " › "))
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }

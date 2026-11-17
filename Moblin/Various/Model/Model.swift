@@ -435,6 +435,11 @@ class Snapshot: ObservableObject {
 }
 
 @MainActor
+class PanelState: ObservableObject {
+    @Published var searching = false
+}
+
+@MainActor
 class Orientation: ObservableObject {
     @Published var isPortrait: Bool = false
 }
@@ -560,6 +565,7 @@ final class Model: NSObject, ObservableObject {
     let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
     let toast = Toast()
+    let panelState = PanelState()
     let statusOther = StatusOther()
     let statusTopLeft = StatusTopLeft()
     let systemMonitor = SystemMonitor()

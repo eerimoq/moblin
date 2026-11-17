@@ -112,6 +112,26 @@ private struct PanelButtonsView: View {
     }
 }
 
+private struct PanelButtonsInPanelView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var orientation: Orientation
+    @ObservedObject var panelState: PanelState
+
+    var body: some View {
+        if orientation.isPortrait {
+            if model.panelHidden || !panelState.searching {
+                let backgroundColor = model.panelHidden ? model.showingPanel
+                    .buttonsBackgroundColor() : .clear
+                PanelButtonsView(model: model, backgroundColor: backgroundColor)
+                    .padding(.trailing, 10)
+                    .padding(.top, -7)
+            }
+        } else if !model.panelHidden, !panelState.searching {
+            PanelButtonsView(model: model, backgroundColor: .clear)
+        }
+    }
+}
+
 private struct MenuView: View {
     @EnvironmentObject var model: Model
 
@@ -616,15 +636,7 @@ struct MainView: View {
             MenuView()
                 .background(.black)
                 .opacity(model.panelHidden ? 0 : 1)
-            if orientation.isPortrait {
-                let backgroundColor = model.panelHidden ? model.showingPanel
-                    .buttonsBackgroundColor() : .clear
-                PanelButtonsView(model: model, backgroundColor: backgroundColor)
-                    .padding(.trailing, 10)
-                    .padding(.top, -7)
-            } else if !model.panelHidden {
-                PanelButtonsView(model: model, backgroundColor: .clear)
-            }
+            PanelButtonsInPanelView(orientation: orientation, panelState: model.panelState)
         }
     }
 

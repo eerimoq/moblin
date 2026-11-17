@@ -19,6 +19,38 @@ private struct AppModeView: View {
     }
 }
 
+private struct SettingsFormView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.isSearching) private var isSearching
+    @ObservedObject var database: Database
+    let searchText: String
+    let searchItems: [SettingsSearchItem]
+
+    var body: some View {
+        Form {
+            if model.isLive {
+                InfoBannerView(text: "Settings that would stop the stream are disabled when live.")
+            }
+            if !searchText.isEmpty {
+                SettingsSearchResultsView(items: searchItems, text: searchText)
+            } else {
+                SettingsContentView(database: database)
+            }
+        }
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .onChange(of: isSearching) { isSearching in
+            model.panelState.searching = isSearching
+        }
+        .onAppear {
+            model.panelState.searching = isSearching
+        }
+        .onDisappear {
+            model.panelState.searching = false
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -30,23 +62,15 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        Form {
-            Section {
-                SettingsSearchFieldView(text: $searchText)
+        SettingsFormView(database: database, searchText: searchText, searchItems: searchItems)
+            .onChange(of: searchText.isEmpty) { _ in
+                updateSearchItems()
             }
-            if !searchText.isEmpty {
-                SettingsSearchResultsView(items: searchItems, text: searchText)
-            } else {
-                SettingsContentView(database: database)
+            .onAppear {
+                updateSearchItems()
             }
-        }
-        .onChange(of: searchText.isEmpty) { _ in
-            updateSearchItems()
-        }
-        .onAppear {
-            updateSearchItems()
-        }
-        .navigationTitle("Settings")
+            .searchable(text: $searchText, placement: .navigationBarDrawer)
+            .navigationTitle("Settings")
     }
 }
 
@@ -55,9 +79,6 @@ private struct SettingsContentView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        if model.isLive {
-            InfoBannerView(text: "Settings that would stop the stream are disabled when live.")
-        }
         Section {
             NavigationLink {
                 StreamsSettingsView(createStreamWizard: model.createStreamWizard, database: database)
