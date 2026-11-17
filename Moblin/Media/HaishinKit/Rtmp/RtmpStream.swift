@@ -285,13 +285,13 @@ class RtmpStream: @unchecked Sendable {
     }
 
     private func connectInternal() {
-        serverError = nil
         connectTimedOut = false
         startConnectTimer()
         connectSocket(url)
     }
 
     private func connectSocket(_ url: String) {
+        serverError = nil
         guard let uri = URL(string: url), let scheme = uri.scheme, let host = uri.host else {
             return
         }
@@ -372,15 +372,15 @@ class RtmpStream: @unchecked Sendable {
         if let serverError {
             return .serverError(code: serverError.code, description: serverError.description)
         }
+        if connectTimedOut {
+            return .connectTimeout
+        }
         switch state {
         case .publishing:
             return .connectionLost
         case .open:
             return .streamRejected
         case .initialized:
-            if connectTimedOut {
-                return .connectTimeout
-            }
             return handshakeDone ? .serverClosed : .connectFailed
         }
     }
@@ -515,7 +515,9 @@ class RtmpStream: @unchecked Sendable {
                     if case let .string(value) = data["description"] {
                         description = value
                     }
-                    if data["level"] == .string("error") {
+                    if data["level"] == .string("error"),
+                       code.hasPrefix("NetConnection.Connect.") || code.hasPrefix("NetStream.")
+                    {
                         serverError = (code, description)
                     }
                     handleStatus(code: code, description: description)
@@ -643,6 +645,7 @@ class RtmpStream: @unchecked Sendable {
         send(handlerName: "@setDataFrame",
              arguments: .string("onMetaData"), .object(createOnMetaData()))
         stopConnectTimer()
+        serverError = nil
         delegate?.rtmpStreamConnected(self)
         processorPipelineQueue.async {
             self.processor.startEncoding(self)
