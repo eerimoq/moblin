@@ -144,11 +144,12 @@ func makeRtmpVideoFrame(_ format: VideoEncoderSettings.Format,
     return buffer
 }
 
-enum RtmpConnectionCode: String {
+enum RtmpStatusCode: String {
     case connectClosed = "NetConnection.Connect.Closed"
     case connectFailed = "NetConnection.Connect.Failed"
     case connectRejected = "NetConnection.Connect.Rejected"
     case connectSuccess = "NetConnection.Connect.Success"
+    case publishStart = "NetStream.Publish.Start"
 }
 
 func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
@@ -178,12 +179,8 @@ func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
 }
 
 protocol RtmpStreamDelegate: AnyObject {
-    func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String)
     func rtmpStreamConnected(_ rtmpStream: RtmpStream)
-}
-
-enum RtmpStreamCode: String {
-    case publishStart = "NetStream.Publish.Start"
+    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: String)
 }
 
 private enum State {
@@ -304,15 +301,18 @@ class RtmpStream: @unchecked Sendable {
     }
 
     private func handleStatus(code: String, description: String?) {
-        delegate?.rtmpStreamStatus(self, code: code)
-        switch code {
-        case RtmpConnectionCode.connectSuccess.rawValue:
+        logger.info("rtmp: \(name): Status \(code)")
+        switch RtmpStatusCode(rawValue: code) {
+        case .connectSuccess:
             handleConnectSuccess()
-        case RtmpConnectionCode.connectRejected.rawValue:
+        case .connectRejected:
             handleConnectRejected(description: description)
-        case RtmpConnectionCode.connectClosed.rawValue:
+        case .connectFailed:
+            delegate?.rtmpStreamDisconnected(self, reason: code)
+        case .connectClosed:
+            delegate?.rtmpStreamDisconnected(self, reason: code)
             disconnectInternal()
-        case RtmpStreamCode.publishStart.rawValue:
+        case .publishStart:
             if state != .initialized {
                 setState(state: .publishing)
             }
@@ -748,7 +748,7 @@ extension RtmpStream: RtmpSocketDelegate {
         handleClosed()
     }
 
-    func socketDisconnected(_ socket: RtmpSocket, code: RtmpConnectionCode) {
+    func socketDisconnected(_ socket: RtmpSocket, code: RtmpStatusCode) {
         guard socket === self.socket else {
             return
         }

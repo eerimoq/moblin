@@ -37,7 +37,7 @@ enum RtmpHandshake {
 protocol RtmpSocketDelegate: AnyObject {
     func socketHandshakeDone(_ socket: RtmpSocket)
     func socketClosed(_ socket: RtmpSocket)
-    func socketDisconnected(_ socket: RtmpSocket, code: RtmpConnectionCode)
+    func socketDisconnected(_ socket: RtmpSocket, code: RtmpStatusCode)
     func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
     func socketUpdateStats(_ socket: RtmpSocket, totalBytesSent: Int64)
 }

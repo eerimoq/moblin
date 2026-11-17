@@ -134,7 +134,6 @@ struct RtmpStreamSuite {
         ))
         let setChunkSize = try await receiveSetChunkSize(server: server)
         #expect(setChunkSize.size == 8192)
-        #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
@@ -181,7 +180,6 @@ struct RtmpStreamSuite {
                 ]
             )
         ))
-        #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
         await modelMock.waitForConnected()
         rtmpStream.disconnect()
         // @setDataFrame
@@ -250,7 +248,6 @@ struct RtmpStreamSuite {
         // Nothing below is updated to match Wireshark.
         let setChunkSize = try await receiveSetChunkSize(server: server)
         #expect(setChunkSize.size == 8192)
-        #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
@@ -297,7 +294,6 @@ struct RtmpStreamSuite {
                 ]
             )
         ))
-        #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
         await modelMock.waitForConnected()
         rtmpStream.disconnect()
         // @setDataFrame
@@ -667,7 +663,6 @@ private func connectAndPublish() async throws -> PublishingStream {
                       commandName: .result,
                       arguments: [makeStatus(code: "NetConnection.Connect.Success")])
     #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
-    #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
     #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
     #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
     let createStream = try await reader.nextCommand(server: server)
@@ -683,7 +678,6 @@ private func connectAndPublish() async throws -> PublishingStream {
                       transactionId: 0,
                       commandName: .onStatus,
                       arguments: [makeStatus(code: "NetStream.Publish.Start")])
-    #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
     await modelMock.waitForConnected()
     let setDataFrame = try #require(await reader.nextMessage(server: server) as? RtmpDataMessage)
     #expect(setDataFrame.handlerName == "@setDataFrame")
@@ -732,10 +726,10 @@ extension RtmpStreamSuite {
         await sendCommand(server: stream.server,
                           transactionId: 0,
                           commandName: .onStatus,
-                          arguments: [makeStatus(code: "NetStream.Foo",
+                          arguments: [makeStatus(code: "NetConnection.Connect.Failed",
                                                  description: String(repeating: "x", count: 300))],
                           maximumSize: 4096)
-        #expect(await stream.modelMock.waitForStatus() == "NetStream.Foo")
+        #expect(await stream.modelMock.waitForDisconnected() == "NetConnection.Connect.Failed")
     }
 
     @Test
@@ -752,7 +746,7 @@ extension RtmpStreamSuite {
                           transactionId: 0,
                           commandName: .onStatus,
                           arguments: [makeStatus(code: "NetConnection.Connect.Closed")])
-        #expect(await stream.modelMock.waitForStatus() == "NetConnection.Connect.Closed")
+        #expect(await stream.modelMock.waitForDisconnected() == "NetConnection.Connect.Closed")
         try await expectUnpublish(stream)
     }
 

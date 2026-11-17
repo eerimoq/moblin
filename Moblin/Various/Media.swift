@@ -1281,18 +1281,13 @@ extension Media: SrtStreamOfficialDelegate {
 }
 
 extension Media: RtmpStreamDelegate {
-    func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String) {
+    func rtmpStreamDisconnected(_ rtmpStream: RtmpStream, reason: String) {
         DispatchQueue.main.async {
-            switch RtmpConnectionCode(rawValue: code) {
-            case .connectFailed, .connectClosed:
-                if rtmpStream === self.rtmpStream {
-                    self.delegate.mediaOnRtmpDisconnected("\(code)")
-                } else {
-                    self.delegate.mediaOnRtmpDestinationDisconnected(rtmpStream.name)
-                    rtmpStream.reconnectSoon()
-                }
-            default:
-                break
+            if rtmpStream === self.rtmpStream {
+                self.delegate.mediaOnRtmpDisconnected(reason)
+            } else {
+                self.delegate.mediaOnRtmpDestinationDisconnected(rtmpStream.name)
+                rtmpStream.reconnectSoon()
             }
         }
     }
