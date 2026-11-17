@@ -767,105 +767,6 @@ private func expectUnpublish(_ stream: PublishingStream) async throws {
     #expect(closeStream.arguments == [.number(1)])
 }
 
-private func makeAacFormat() -> AVAudioFormat {
-    var description = AudioStreamBasicDescription(
-        mSampleRate: 48000,
-        mFormatID: kAudioFormatMPEG4AAC,
-        mFormatFlags: UInt32(MPEG4ObjectID.AAC_LC.rawValue),
-        mBytesPerPacket: 0,
-        mFramesPerPacket: 1024,
-        mBytesPerFrame: 0,
-        mChannelsPerFrame: 2,
-        mBitsPerChannel: 0,
-        mReserved: 0
-    )
-    return AVAudioFormat(streamDescription: &description)!
-}
-
-private func makeAacBuffer(format: AVAudioFormat, payload: Data) -> AVAudioCompressedBuffer {
-    let buffer = AVAudioCompressedBuffer(format: format, packetCapacity: 1, maximumPacketSize: 64)
-    payload.withUnsafeBytes { buffer.data.copyMemory(from: $0.baseAddress!, byteCount: payload.count) }
-    buffer.byteLength = UInt32(payload.count)
-    buffer.packetCount = 1
-    return buffer
-}
-
-private func makeH264FormatDescription() throws -> CMFormatDescription {
-    let sps: [UInt8] = [0x67, 0x42, 0x00, 0x0A, 0xF8, 0x41, 0xA2]
-    let pps: [UInt8] = [0x68, 0xCE, 0x38, 0x80]
-    var formatDescription: CMFormatDescription?
-    let status = sps.withUnsafeBufferPointer { sps in
-        pps.withUnsafeBufferPointer { pps in
-            let pointers = [sps.baseAddress!, pps.baseAddress!]
-            let sizes = [sps.count, pps.count]
-            return CMVideoFormatDescriptionCreateFromH264ParameterSets(
-                allocator: nil,
-                parameterSetCount: 2,
-                parameterSetPointers: pointers,
-                parameterSetSizes: sizes,
-                nalUnitHeaderLength: 4,
-                formatDescriptionOut: &formatDescription
-            )
-        }
-    }
-    #expect(status == noErr)
-    return try #require(formatDescription)
-}
-
-private func makeVideoSampleBuffer(formatDescription: CMFormatDescription,
-                                   decodeTimeStamp: CMTime,
-                                   presentationTimeStamp: CMTime,
-                                   isSync: Bool,
-                                   payload: Data) throws -> CMSampleBuffer
-{
-    var blockBuffer: CMBlockBuffer?
-    #expect(CMBlockBufferCreateWithMemoryBlock(
-        allocator: nil,
-        memoryBlock: nil,
-        blockLength: payload.count,
-        blockAllocator: nil,
-        customBlockSource: nil,
-        offsetToData: 0,
-        dataLength: payload.count,
-        flags: kCMBlockBufferAssureMemoryNowFlag,
-        blockBufferOut: &blockBuffer
-    ) == noErr)
-    let block = try #require(blockBuffer)
-    payload.withUnsafeBytes {
-        _ = CMBlockBufferReplaceDataBytes(with: $0.baseAddress!,
-                                          blockBuffer: block,
-                                          offsetIntoDestination: 0,
-                                          dataLength: payload.count)
-    }
-    var timing = CMSampleTimingInfo(duration: .invalid,
-                                    presentationTimeStamp: presentationTimeStamp,
-                                    decodeTimeStamp: decodeTimeStamp)
-    var sampleSize = payload.count
-    var sampleBuffer: CMSampleBuffer?
-    #expect(CMSampleBufferCreateReady(allocator: nil,
-                                      dataBuffer: block,
-                                      formatDescription: formatDescription,
-                                      sampleCount: 1,
-                                      sampleTimingEntryCount: 1,
-                                      sampleTimingArray: &timing,
-                                      sampleSizeEntryCount: 1,
-                                      sampleSizeArray: &sampleSize,
-                                      sampleBufferOut: &sampleBuffer) == noErr)
-    let buffer = try #require(sampleBuffer)
-    if !isSync {
-        let attachments = CMSampleBufferGetSampleAttachmentsArray(buffer, createIfNecessary: true)!
-        let attachment = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), to: CFMutableDictionary.self)
-        CFDictionarySetValue(attachment,
-                             Unmanaged.passUnretained(kCMSampleAttachmentKey_NotSync).toOpaque(),
-                             Unmanaged.passUnretained(kCFBooleanTrue).toOpaque())
-    }
-    return buffer
-}
-
-private func time(_ value: Int64) -> CMTime {
-    CMTime(value: value, timescale: 1024)
-}
-
 extension RtmpStreamSuite {
     @Test
     func pingIsAnsweredWithPong() async throws {
@@ -931,8 +832,8 @@ extension RtmpStreamSuite {
         var timestamps: [UInt32] = []
         for (index, pts) in [10240, 10261, 10282, 10303, 10324, 10345].enumerated() {
             stream.rtmpStream.audioEncoderOutputBuffer(
-                makeAacBuffer(format: format, payload: Data([UInt8(index), 1, 2])),
-                time(Int64(pts))
+                makeAudioBuffer(format: format, payload: Data([UInt8(index), 1, 2])),
+                mediaTime(Int64(pts))
             )
             (message, raw) = await stream.reader.next(server: stream.server)
             #expect(message.type == .audio)
@@ -950,8 +851,8 @@ extension RtmpStreamSuite {
         var timestamps: [UInt32] = []
         for (index, pts) in [10240, 10200, 10261, 10250, 10282].enumerated() {
             stream.rtmpStream.audioEncoderOutputBuffer(
-                makeAacBuffer(format: format, payload: Data([UInt8(index)])),
-                time(Int64(pts))
+                makeAudioBuffer(format: format, payload: Data([UInt8(index)])),
+                mediaTime(Int64(pts))
             )
         }
         for _ in 0 ..< 3 {
@@ -981,8 +882,8 @@ extension RtmpStreamSuite {
             try stream.rtmpStream.videoEncoderOutputSampleBuffer(
                 encoder,
                 makeVideoSampleBuffer(formatDescription: formatDescription,
-                                      decodeTimeStamp: time(Int64(dts)),
-                                      presentationTimeStamp: time(Int64(dts + 64)),
+                                      decodeTimeStamp: mediaTime(Int64(dts)),
+                                      presentationTimeStamp: mediaTime(Int64(dts + 64)),
                                       isSync: isSync,
                                       payload: Data([0, 0, 0, 2, isSync ? 0x65 : 0x41, UInt8(index)])),
                 .zero
@@ -1004,8 +905,8 @@ extension RtmpStreamSuite {
         try stream.rtmpStream.videoEncoderOutputSampleBuffer(
             stream.processor.getVideoEncoder(),
             makeVideoSampleBuffer(formatDescription: formatDescription,
-                                  decodeTimeStamp: time(10240),
-                                  presentationTimeStamp: time(10240),
+                                  decodeTimeStamp: mediaTime(10240),
+                                  presentationTimeStamp: mediaTime(10240),
                                   isSync: true,
                                   payload: Data([0, 0, 0, 1, 0x65])),
             .zero
@@ -1013,16 +914,16 @@ extension RtmpStreamSuite {
         #expect(await stream.reader.nextMessage(server: stream.server).type == .video)
         let format = makeAacFormat()
         stream.rtmpStream.audioEncoderOutputBuffer(
-            makeAacBuffer(format: format, payload: Data([1])),
-            time(10200)
+            makeAudioBuffer(format: format, payload: Data([1])),
+            mediaTime(10200)
         )
         stream.rtmpStream.audioEncoderOutputBuffer(
-            makeAacBuffer(format: format, payload: Data([2])),
-            time(10261)
+            makeAudioBuffer(format: format, payload: Data([2])),
+            mediaTime(10261)
         )
         stream.rtmpStream.audioEncoderOutputBuffer(
-            makeAacBuffer(format: format, payload: Data([3])),
-            time(10282)
+            makeAudioBuffer(format: format, payload: Data([3])),
+            mediaTime(10282)
         )
         let first = await stream.reader.nextMessage(server: stream.server)
         #expect(first.type == .audio)

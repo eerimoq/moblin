@@ -1,38 +1,147 @@
 @preconcurrency import AVFoundation
 
-let extendedVideoHeader: UInt8 = 0b1000_0000
+struct RtmpTimestamps {
+    private struct Track {
+        private var previous: Double?
+        private var fraction = 0.0
 
-private func calcVideoCompositionTime(_ sampleBuffer: CMSampleBuffer) -> Int32 {
-    let decodeTimeStamp = sampleBuffer.decodeTimeStamp
-    guard decodeTimeStamp.isValid else {
-        return 0
+        mutating func next(_ timestamp: Double) -> UInt32? {
+            var delta = 0.0
+            if let previous {
+                delta = (timestamp - previous) * 1000
+            }
+            guard delta >= 0 else {
+                return nil
+            }
+            previous = timestamp
+            fraction += delta
+            let timestampDelta = UInt32(fraction)
+            fraction -= floor(fraction)
+            return timestampDelta
+        }
     }
-    let presentationTimeStamp = sampleBuffer.presentationTimeStamp
-    return Int32((presentationTimeStamp.seconds - decodeTimeStamp.seconds) * 1000)
+
+    private var base: Double?
+    private var audioTrack = Track()
+    private var videoTrack = Track()
+
+    mutating func audio(_ timestamp: Double) -> UInt32? {
+        guard let timestamp = rebase(timestamp) else {
+            return nil
+        }
+        return audioTrack.next(timestamp)
+    }
+
+    mutating func video(_ timestamp: Double) -> UInt32? {
+        guard let timestamp = rebase(timestamp) else {
+            return nil
+        }
+        return videoTrack.next(timestamp)
+    }
+
+    private mutating func rebase(_ timestamp: Double) -> Double? {
+        let base = base ?? timestamp
+        self.base = base
+        let timestamp = timestamp - base
+        guard timestamp >= 0 else {
+            return nil
+        }
+        return timestamp
+    }
 }
 
-private func makeVideoHeader(_ frameType: FlvFrameType,
-                             _ fourCc: FlvVideoFourCC,
-                             _ avcPacketType: FlvAvcPacketType, // Not part of FLV?
-                             _ videoPacketType: FlvVideoPacketType) -> Data
-{
+private let aac = FlvAudioCodec.aac.rawValue << 4
+    | FlvSoundRate.kHz44.rawValue << 2
+    | FlvSoundSize.snd16bit.rawValue << 1
+    | FlvSoundType.stereo.rawValue
+
+private let opus = FlvAudioCodec.exHeader.rawValue << 4
+    | FlvOpusPacketType.sequenceStart.rawValue
+
+func makeRtmpAudioSequenceHeader(_ format: AVAudioFormat) -> Data? {
+    guard let description = format.formatDescription.audioStreamBasicDescription else {
+        return nil
+    }
     let writer = ByteWriter()
-    if fourCc == .avc1 {
-        writer.writeUInt8((frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue)
-        writer.writeUInt8(avcPacketType.rawValue)
-    } else {
-        writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | videoPacketType.rawValue)
-        writer.writeUInt32(fourCc.rawValue)
+    switch description.mFormatID {
+    case kAudioFormatOpus:
+        writer.writeUInt8(opus)
+        writer.writeUTF8Bytes("Opus")
+        writer.writeUTF8Bytes("OpusHead")
+        writer.writeUInt8(1)
+        writer.writeUInt8(UInt8(description.mChannelsPerFrame))
+        writer.writeUInt16(0)
+        writer.writeUInt32(UInt32(description.mSampleRate))
+        writer.writeUInt16(0)
+        writer.writeUInt8(0)
+    default:
+        writer.writeUInt8(aac)
+        writer.writeUInt8(FlvAacPacketType.seq.rawValue)
+        writer.writeBytes(MpegTsAudioConfig(formatDescription: format.formatDescription).encode())
     }
     return writer.data
 }
 
-private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
-    makeVideoHeader(frameType, .avc1, packetType, .sequenceStart)
+func makeRtmpAudioFrame(_ audioBuffer: AVAudioCompressedBuffer) -> Data {
+    var buffer: Data
+    switch audioBuffer.format.formatDescription.audioStreamBasicDescription?.mFormatID {
+    case kAudioFormatOpus:
+        buffer = Data([FlvAudioCodec.exHeader.rawValue << 4 | FlvOpusPacketType.codedFrames.rawValue])
+        buffer += "Opus".utf8Data
+    default:
+        buffer = Data([aac, FlvAacPacketType.raw.rawValue])
+    }
+    buffer.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(audioBuffer.byteLength))
+    return buffer
 }
 
-private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
-    makeVideoHeader(frameType, .hevc, .nal, packetType)
+private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
+    Data([(frameType.rawValue << 4) | FlvVideoCodec.avc.rawValue, packetType.rawValue])
+}
+
+private func makeHevcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
+    let writer = ByteWriter()
+    writer.writeUInt8(extendedVideoHeader | (frameType.rawValue << 4) | packetType.rawValue)
+    writer.writeUInt32(FlvVideoFourCC.hevc.rawValue)
+    return writer.data
+}
+
+func makeRtmpVideoSequenceHeader(_ format: VideoEncoderSettings.Format,
+                                 _ formatDescription: CMFormatDescription) -> Data?
+{
+    switch format {
+    case .h264:
+        guard let avcC = MpegTsVideoConfigAvc.getAvcC(formatDescription) else {
+            return nil
+        }
+        return makeAvcVideoTagHeader(.key, .seq) + Data([0, 0, 0]) + avcC
+    case .hevc:
+        guard let hvcC = MpegTsVideoConfigHevc.getHvcC(formatDescription) else {
+            return nil
+        }
+        return makeHevcVideoTagHeader(.key, .sequenceStart) + hvcC
+    }
+}
+
+func makeRtmpVideoFrame(_ format: VideoEncoderSettings.Format,
+                        _ sampleBuffer: CMSampleBuffer,
+                        _ data: Data) -> Data
+{
+    let frameType = sampleBuffer.getIsSync() ? FlvFrameType.key : FlvFrameType.inter
+    var buffer: Data = switch format {
+    case .h264:
+        makeAvcVideoTagHeader(frameType, .nal)
+    case .hevc:
+        makeHevcVideoTagHeader(frameType, .codedFrames)
+    }
+    var compositionTime: Int32 = 0
+    if sampleBuffer.decodeTimeStamp.isValid {
+        compositionTime = Int32((sampleBuffer.presentationTimeStamp.seconds
+                - sampleBuffer.decodeTimeStamp.seconds) * 1000)
+    }
+    buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
+    buffer.append(data)
+    return buffer
 }
 
 protocol RtmpStreamDelegate: AnyObject {
@@ -43,14 +152,6 @@ protocol RtmpStreamDelegate: AnyObject {
 enum RtmpStreamCode: String {
     case publishStart = "NetStream.Publish.Start"
 }
-
-private let aac = FlvAudioCodec.aac.rawValue << 4
-    | FlvSoundRate.kHz44.rawValue << 2
-    | FlvSoundSize.snd16bit.rawValue << 1
-    | FlvSoundType.stereo.rawValue
-
-private let opus = FlvAudioCodec.exHeader.rawValue << 4
-    | FlvOpusPacketType.sequenceStart.rawValue
 
 private enum State {
     case initialized
@@ -73,12 +174,7 @@ class RtmpStream: @unchecked Sendable {
     private let connectTimer: SimpleTimer
     private let queue: DispatchQueue
 
-    // Outbound
-    private var baseTimeStamp = -1.0
-    private var audioTimeStampDelta = 0.0
-    private var videoTimeStampDelta = 0.0
-    private var prevRebasedAudioTimeStamp: Double?
-    private var prevRebasedVideoTimeStamp: Double?
+    private var timestamps = RtmpTimestamps()
     private let processor: Processor
     weak let delegate: (any RtmpStreamDelegate)?
 
@@ -258,11 +354,7 @@ class RtmpStream: @unchecked Sendable {
             arguments: [.string(streamKey), .string("live")]
         )))
         startedAt = .init()
-        baseTimeStamp = -1.0
-        audioTimeStampDelta = 0.0
-        videoTimeStampDelta = 0.0
-        prevRebasedAudioTimeStamp = nil
-        prevRebasedVideoTimeStamp = nil
+        timestamps = RtmpTimestamps()
         videoChunkType = .zero
         audioChunkType = .zero
         dataTimeStamps.removeAll()
@@ -357,81 +449,28 @@ class RtmpStream: @unchecked Sendable {
     }
 
     private func audioEncoderOutputFormatInternal(_ format: AVAudioFormat) {
-        guard let audioStreamBasicDescription = format.formatDescription.audioStreamBasicDescription else {
+        guard let buffer = makeRtmpAudioSequenceHeader(format) else {
             return
         }
-        let writer = ByteWriter()
-        switch audioStreamBasicDescription.mFormatID {
-        case kAudioFormatOpus:
-            writer.writeUInt8(opus)
-            writer.writeUTF8Bytes("Opus")
-            writer.writeUTF8Bytes("OpusHead")
-            writer.writeUInt8(1)
-            writer.writeUInt8(UInt8(audioStreamBasicDescription.mChannelsPerFrame))
-            writer.writeUInt16(0)
-            writer.writeUInt32(UInt32(audioStreamBasicDescription.mSampleRate))
-            writer.writeUInt16(0)
-            writer.writeUInt8(0)
-        default:
-            writer.writeUInt8(aac)
-            writer.writeUInt8(FlvAacPacketType.seq.rawValue)
-            writer.writeBytes(MpegTsAudioConfig(formatDescription: format.formatDescription).encode())
-        }
-        handleEncodedAudioBuffer(writer.data, 0)
+        handleEncodedAudioBuffer(buffer, 0)
     }
 
     private func audioEncoderOutputBufferInternal(_ audioBuffer: AVAudioCompressedBuffer,
                                                   _ presentationTimeStamp: CMTime)
     {
-        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: presentationTimeStamp.seconds) else {
-            logger.info("rtmp: \(name): Dropping audio buffer. Failed to rebase timestamp.")
+        guard let timestamp = timestamps.audio(presentationTimeStamp.seconds) else {
+            logger.info("rtmp: \(name): Dropping audio buffer")
             return
         }
-        var delta = 0.0
-        if let prevRebasedAudioTimeStamp {
-            delta = (rebasedTimestamp - prevRebasedAudioTimeStamp) * 1000
-        }
-        guard delta >= 0 else {
-            logger.info("rtmp: \(name): Dropping audio buffer (delta: \(delta))")
-            return
-        }
-        var buffer: Data
-        switch audioBuffer.format.formatDescription.audioStreamBasicDescription?.mFormatID {
-        case kAudioFormatOpus:
-            buffer = Data([FlvAudioCodec.exHeader.rawValue << 4 | FlvOpusPacketType.codedFrames.rawValue])
-            buffer += "Opus".utf8Data
-        default:
-            buffer = Data([aac, FlvAacPacketType.raw.rawValue])
-        }
-        buffer.append(
-            audioBuffer.data.assumingMemoryBound(to: UInt8.self),
-            count: Int(audioBuffer.byteLength)
-        )
-        prevRebasedAudioTimeStamp = rebasedTimestamp
-        audioTimeStampDelta += delta
-        handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
-        audioTimeStampDelta -= floor(audioTimeStampDelta)
+        handleEncodedAudioBuffer(makeRtmpAudioFrame(audioBuffer), timestamp)
     }
 
     private func videoEncoderOutputFormatInternal(
         _ format: VideoEncoderSettings.Format,
         _ formatDescription: CMFormatDescription
     ) {
-        var buffer: Data
-        switch format {
-        case .h264:
-            guard let avcC = MpegTsVideoConfigAvc.getAvcC(formatDescription) else {
-                return
-            }
-            buffer = makeAvcVideoTagHeader(.key, .seq)
-            buffer += Data([0, 0, 0])
-            buffer += avcC
-        case .hevc:
-            guard let hvcC = MpegTsVideoConfigHevc.getHvcC(formatDescription) else {
-                return
-            }
-            buffer = makeHevcExtendedTagHeader(.key, .sequenceStart)
-            buffer += hvcC
+        guard let buffer = makeRtmpVideoSequenceHeader(format, formatDescription) else {
+            return
         }
         handleEncodedVideoBuffer(buffer, 0)
     }
@@ -439,49 +478,18 @@ class RtmpStream: @unchecked Sendable {
     private func videoEncoderOutputSampleBufferInternal(_ format: VideoEncoderSettings.Format,
                                                         _ sampleBuffer: CMSampleBuffer)
     {
-        let decodeTimeStamp: Double = if sampleBuffer.decodeTimeStamp.isValid {
-            sampleBuffer.decodeTimeStamp.seconds
+        let decodeTimeStamp = if sampleBuffer.decodeTimeStamp.isValid {
+            sampleBuffer.decodeTimeStamp
         } else {
-            sampleBuffer.presentationTimeStamp.seconds
+            sampleBuffer.presentationTimeStamp
         }
-        guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
+        guard let data = sampleBuffer.dataBuffer?.data,
+              let timestamp = timestamps.video(decodeTimeStamp.seconds)
+        else {
+            logger.info("rtmp: \(name): Dropping video buffer")
             return
         }
-        var delta = 0.0
-        if let prevRebasedVideoTimeStamp {
-            delta = (rebasedTimestamp - prevRebasedVideoTimeStamp) * 1000
-        }
-        guard let data = sampleBuffer.dataBuffer?.data, delta >= 0 else {
-            logger.info("rtmp: \(name): Dropping video buffer (delta: \(delta))")
-            return
-        }
-        var buffer: Data
-        let frameType = sampleBuffer.getIsSync() ? FlvFrameType.key : FlvFrameType.inter
-        switch format {
-        case .h264:
-            buffer = makeAvcVideoTagHeader(frameType, .nal)
-        case .hevc:
-            buffer = makeHevcExtendedTagHeader(frameType, .codedFrames)
-        }
-        let compositionTime = calcVideoCompositionTime(sampleBuffer)
-        buffer.append(contentsOf: compositionTime.bigEndian.data[1 ..< 4])
-        buffer.append(data)
-        prevRebasedVideoTimeStamp = rebasedTimestamp
-        videoTimeStampDelta += delta
-        handleEncodedVideoBuffer(buffer, UInt32(videoTimeStampDelta))
-        videoTimeStampDelta -= floor(videoTimeStampDelta)
-    }
-
-    private func rebaseTimeStamp(timestamp: Double) -> Double? {
-        if baseTimeStamp == -1.0 {
-            baseTimeStamp = timestamp
-        }
-        let timestamp = timestamp - baseTimeStamp
-        if timestamp >= 0 {
-            return timestamp
-        } else {
-            return nil
-        }
+        handleEncodedVideoBuffer(makeRtmpVideoFrame(format, sampleBuffer, data), timestamp)
     }
 }
 
