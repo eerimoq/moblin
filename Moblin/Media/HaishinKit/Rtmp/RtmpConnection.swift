@@ -25,7 +25,7 @@ enum RtmpConnectionCode: String {
     }
 }
 
-private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
+func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
     var command = url.absoluteString
     guard let index = description.firstIndex(of: "?") else {
         return command
