@@ -978,4 +978,16 @@ extension RtmpStreamSuite {
         await server.closeClient()
         #expect(await modelMock.waitForDisconnected() == .streamRejected)
     }
+
+    @Test(arguments: ["rtmp://127.0.0.1:1/app/key", "rtmp://moblin-no-such-host.invalid/app/key"])
+    func unreachableServerIsReportedWithoutWaitingForConnectTimeout(url: String) async {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        rtmpStream.setUrl(url)
+        let start = ContinuousClock.now
+        rtmpStream.connect()
+        #expect(await modelMock.waitForDisconnected() == .connectFailed)
+        #expect(start.duration(to: .now) < .seconds(10))
+    }
 }

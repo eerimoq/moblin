@@ -155,6 +155,9 @@ final class RtmpSocket: @unchecked Sendable {
             logger.info("rtmp: \(name): Connection is ready.")
             write(data: RtmpHandshake.createC0C1Packet())
             setReadyState(state: .versionSent)
+        case let .waiting(error):
+            logger.info("rtmp: \(name): Connection waiting: \(error)")
+            close(isDisconnected: true)
         case let .failed(error):
             logger.info("rtmp: \(name): Connection failed: \(error)")
             close(isDisconnected: true)
