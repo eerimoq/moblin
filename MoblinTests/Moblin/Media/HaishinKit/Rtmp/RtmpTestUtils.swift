@@ -5,6 +5,12 @@ import Testing
 final class RtmpModelMock {
     private let status = MessageQueue<String>()
     private let connected = MessageQueue<Void>()
+    private let lock = NSLock()
+    private var statusCodes: [String] = []
+
+    func getStatusCodes() -> [String] {
+        lock.withLock { statusCodes }
+    }
 
     func waitForStatus() async -> String {
         await status.get()
@@ -18,6 +24,7 @@ final class RtmpModelMock {
 extension RtmpModelMock: RtmpStreamDelegate {
     func rtmpStreamStatus(_: RtmpStream, code: String) {
         logger.info("rtmp-test: Status \(code)")
+        lock.withLock { statusCodes.append(code) }
         status.put(code)
     }
 

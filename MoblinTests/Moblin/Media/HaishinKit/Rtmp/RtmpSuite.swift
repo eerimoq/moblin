@@ -46,7 +46,7 @@ struct RtmpSuite {
         let rtmpStream = makeRtmpStream()
         var arguments: [AsValue]?
         rtmpStream.callCompletions[1] = { arguments = $0 }
-        #expect(rtmpStream.socketDataReceived(data: makeConnectResultChunkData()).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: makeConnectResultChunkData()).isEmpty)
         #expect(arguments?.count == 1)
     }
 
@@ -56,9 +56,10 @@ struct RtmpSuite {
         var arguments: [AsValue]?
         rtmpStream.callCompletions[1] = { arguments = $0 }
         let data = makeConnectResultChunkData()
-        let buffer = rtmpStream.socketDataReceived(data: data.subdata(in: 0 ..< 12))
+        let buffer = rtmpStream.socketDataReceived(rtmpStream.socket, data: data.subdata(in: 0 ..< 12))
         #expect(buffer == data.subdata(in: 0 ..< 12))
-        #expect(rtmpStream.socketDataReceived(data: buffer + data.advanced(by: 12)).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: buffer + data.advanced(by: 12))
+            .isEmpty)
         #expect(arguments?.count == 1)
     }
 
@@ -73,9 +74,89 @@ struct RtmpSuite {
 }
 
 private func makeRtmpStream() -> RtmpStream {
-    let modelMock = RtmpModelMock()
-    return RtmpStream(name: "test",
-                      processor: Processor(delegate: modelMock, colorRange: .full),
-                      delegate: modelMock,
-                      queue: DispatchQueue(label: "test"))
+    makeRtmpStream(modelMock: RtmpModelMock())
+}
+
+private func makeRtmpStream(modelMock: RtmpModelMock) -> RtmpStream {
+    RtmpStream(name: "test",
+               processor: Processor(delegate: modelMock, colorRange: .full),
+               delegate: modelMock,
+               queue: DispatchQueue(label: "test"))
+}
+
+private func makeCommandChunkData(transactionId: Int,
+                                  commandName: RtmpCommandName,
+                                  arguments: [AsValue]) -> Data
+{
+    RtmpChunk(message: RtmpCommandMessage(
+        streamId: 0,
+        transactionId: transactionId,
+        commandType: .amf0Command,
+        commandName: commandName,
+        commandObject: nil,
+        arguments: arguments
+    )).encode()
+}
+
+private func makeStatusChunkData(code: String) -> Data {
+    makeCommandChunkData(transactionId: 0,
+                         commandName: .onStatus,
+                         arguments: [.object(["code": .string(code)])])
+}
+
+struct RtmpStreamEventsSuite {
+    @Test
+    func statusesAreReportedInOrderWhileReading() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        let data = makeStatusChunkData(code: "NetStream.Foo") + makeStatusChunkData(code: "NetStream.Bar")
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: data).isEmpty)
+        #expect(modelMock.getStatusCodes() == ["NetStream.Foo", "NetStream.Bar"])
+    }
+
+    @Test
+    func disconnectFromCurrentSocketIsReported() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        rtmpStream.socketDisconnected(rtmpStream.socket, code: .connectFailed)
+        #expect(modelMock.getStatusCodes() == ["NetConnection.Connect.Failed"])
+    }
+
+    @Test
+    func disconnectFromOldSocketIsIgnored() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        rtmpStream.socketDisconnected(RtmpSocket(name: "old", queue: DispatchQueue(label: "test")),
+                                      code: .connectFailed)
+        #expect(modelMock.getStatusCodes().isEmpty)
+    }
+
+    @Test
+    func dataFromOldSocketIsIgnored() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        _ = rtmpStream.socketDataReceived(RtmpSocket(name: "old", queue: DispatchQueue(label: "test")),
+                                          data: makeStatusChunkData(code: "NetStream.Foo"))
+        #expect(modelMock.getStatusCodes().isEmpty)
+    }
+
+    @Test
+    func messagesAfterCloseCommandAreIgnored() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        let data = makeCommandChunkData(transactionId: 0, commandName: .close, arguments: [])
+            + makeStatusChunkData(code: "NetStream.Foo")
+        _ = rtmpStream.socketDataReceived(rtmpStream.socket, data: data)
+        #expect(modelMock.getStatusCodes().isEmpty)
+    }
+
+    @Test
+    func messagesAfterConnectClosedStatusAreIgnored() {
+        let modelMock = RtmpModelMock()
+        let rtmpStream = makeRtmpStream(modelMock: modelMock)
+        let data = makeStatusChunkData(code: "NetConnection.Connect.Closed")
+            + makeStatusChunkData(code: "NetStream.Foo")
+        _ = rtmpStream.socketDataReceived(rtmpStream.socket, data: data)
+        #expect(modelMock.getStatusCodes() == ["NetConnection.Connect.Closed"])
+    }
 }

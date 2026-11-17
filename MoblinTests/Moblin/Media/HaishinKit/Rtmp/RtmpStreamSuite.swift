@@ -330,12 +330,13 @@ struct RtmpStreamSuite {
         rtmpStream.info.onWritten(sequence: 14000)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeZeroChunk = Data([0x02, 0, 0, 0, 0, 0, 4, 0x03, 0, 0, 0, 0]) + UInt32(1).bigEndian.data
-        #expect(rtmpStream.socketDataReceived(data: typeZeroChunk).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: typeZeroChunk).isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeThreeChunk = Data([0xC2]) + UInt32(14001).bigEndian.data
-        let buffered = rtmpStream.socketDataReceived(data: typeThreeChunk.prefix(3))
+        let buffered = rtmpStream.socketDataReceived(rtmpStream.socket, data: typeThreeChunk.prefix(3))
         #expect(buffered == typeThreeChunk.prefix(3))
-        #expect(rtmpStream.socketDataReceived(data: buffered + typeThreeChunk.suffix(2)).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: buffered + typeThreeChunk.suffix(2))
+            .isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 0)
     }
 

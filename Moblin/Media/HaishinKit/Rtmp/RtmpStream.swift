@@ -149,12 +149,6 @@ enum RtmpConnectionCode: String {
     case connectFailed = "NetConnection.Connect.Failed"
     case connectRejected = "NetConnection.Connect.Rejected"
     case connectSuccess = "NetConnection.Connect.Success"
-
-    func eventData() -> AsObject {
-        [
-            "code": .string(rawValue),
-        ]
-    }
 }
 
 func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
@@ -210,8 +204,8 @@ class RtmpStream: @unchecked Sendable {
     private var streamKey = ""
     private var url: String = ""
     private var uri: URL?
-    private var socket: RtmpSocket
-    private let chunkReader = RtmpChunkReader()
+    private(set) var socket: RtmpSocket
+    private var chunkReader = RtmpChunkReader()
     var callCompletions: [Int: ([AsValue]) -> Void] = [:]
     private var nextTransactionId = 0
     private let connectTimer: SimpleTimer
@@ -264,7 +258,7 @@ class RtmpStream: @unchecked Sendable {
             return
         }
         self.uri = uri
-        chunkReader.clear()
+        chunkReader = RtmpChunkReader()
         socket = RtmpSocket(name: name, queue: queue)
         socket.delegate = self
         if scheme == "rtmps" {
@@ -309,33 +303,15 @@ class RtmpStream: @unchecked Sendable {
         return nextTransactionId
     }
 
-    private func on(data: AsObject) {
-        queue.async {
-            self.handleStatus(data: data)
-        }
-    }
-
-    private func handleStatus(data: AsObject) {
-        guard case let .string(code) = data["code"] else {
-            return
-        }
-        switch RtmpConnectionCode(rawValue: code) {
-        case .connectSuccess:
-            handleConnectSuccess()
-        case .connectRejected:
-            handleConnectRejected(data: data)
-        case .connectClosed:
-            disconnectInternal()
-        default:
-            break
-        }
+    private func handleStatus(code: String, description: String?) {
         delegate?.rtmpStreamStatus(self, code: code)
         switch code {
         case RtmpConnectionCode.connectSuccess.rawValue:
-            setState(state: .initialized)
-            sendReleaseStream()
-            sendFCPublish()
-            sendCreateStream()
+            handleConnectSuccess()
+        case RtmpConnectionCode.connectRejected.rawValue:
+            handleConnectRejected(description: description)
+        case RtmpConnectionCode.connectClosed.rawValue:
+            disconnectInternal()
         case RtmpStreamCode.publishStart.rawValue:
             if state != .initialized {
                 setState(state: .publishing)
@@ -352,14 +328,18 @@ class RtmpStream: @unchecked Sendable {
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
             message: RtmpSetChunkSizeMessage(UInt32(socket.maximumChunkSizeToServer))
         ))
+        setState(state: .initialized)
+        sendReleaseStream()
+        sendFCPublish()
+        sendCreateStream()
     }
 
-    private func handleConnectRejected(data: AsObject) {
+    private func handleConnectRejected(description: String?) {
         guard
             let uri,
             let user = uri.user,
             let password = uri.password,
-            case let .string(description) = data["description"]
+            let description
         else {
             return
         }
@@ -424,7 +404,7 @@ class RtmpStream: @unchecked Sendable {
     private func handleClosed() {
         nextTransactionId = 0
         callCompletions.removeAll()
-        chunkReader.clear()
+        chunkReader = RtmpChunkReader()
     }
 
     private func processMessage(message: RtmpMessage) {
@@ -466,8 +446,12 @@ class RtmpStream: @unchecked Sendable {
             case .close:
                 disconnectInternal()
             default:
-                if case let .object(data) = message.arguments.first {
-                    on(data: data)
+                if case let .object(data) = message.arguments.first, case let .string(code) = data["code"] {
+                    var description: String?
+                    if case let .string(value) = data["description"] {
+                        description = value
+                    }
+                    handleStatus(code: code, description: description)
                 }
             }
             return
@@ -750,28 +734,40 @@ extension RtmpStream: VideoEncoderDelegate {
 }
 
 extension RtmpStream: RtmpSocketDelegate {
-    func socketReadyStateChanged(readyState: RtmpSocketReadyState) {
-        switch readyState {
-        case .handshakeDone:
-            handleHandshakeDone()
-        case .closed:
-            handleClosed()
-        default:
-            break
+    func socketHandshakeDone(_ socket: RtmpSocket) {
+        guard socket === self.socket else {
+            return
         }
+        handleHandshakeDone()
     }
 
-    func socketUpdateStats(totalBytesSent: Int64) {
-        info.onWritten(sequence: totalBytesSent)
+    func socketClosed(_ socket: RtmpSocket) {
+        guard socket === self.socket else {
+            return
+        }
+        handleClosed()
     }
 
-    func socketDataReceived(data: Data) -> Data {
+    func socketDisconnected(_ socket: RtmpSocket, code: RtmpConnectionCode) {
+        guard socket === self.socket else {
+            return
+        }
+        handleStatus(code: code.rawValue, description: nil)
+    }
+
+    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
         chunkReader.read(data: data) { message in
+            guard socket === self.socket, socket.readyState != .closed else {
+                return
+            }
             processMessage(message: message)
         }
     }
 
-    func socketPost(data: AsObject) {
-        on(data: data)
+    func socketUpdateStats(_ socket: RtmpSocket, totalBytesSent: Int64) {
+        guard socket === self.socket else {
+            return
+        }
+        info.onWritten(sequence: totalBytesSent)
     }
 }

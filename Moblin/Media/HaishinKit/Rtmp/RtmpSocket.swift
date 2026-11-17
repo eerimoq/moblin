@@ -35,15 +35,16 @@ enum RtmpHandshake {
 }
 
 protocol RtmpSocketDelegate: AnyObject {
-    func socketDataReceived(data: Data) -> Data
-    func socketReadyStateChanged(readyState: RtmpSocketReadyState)
-    func socketUpdateStats(totalBytesSent: Int64)
-    func socketPost(data: AsObject)
+    func socketHandshakeDone(_ socket: RtmpSocket)
+    func socketClosed(_ socket: RtmpSocket)
+    func socketDisconnected(_ socket: RtmpSocket, code: RtmpConnectionCode)
+    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data
+    func socketUpdateStats(_ socket: RtmpSocket, totalBytesSent: Int64)
 }
 
 final class RtmpSocket: @unchecked Sendable {
     var maximumChunkSizeToServer = RtmpChunk.defaultSize
-    private var readyState: RtmpSocketReadyState = .uninitialized
+    private(set) var readyState: RtmpSocketReadyState = .uninitialized
     private var inputBuffer = Data()
     weak var delegate: (any RtmpSocketDelegate)?
     private var totalBytesSending: Int64 = 0
@@ -85,12 +86,7 @@ final class RtmpSocket: @unchecked Sendable {
         let wasHandshakeDone = readyState == .handshakeDone
         setReadyState(state: .closed)
         if isDisconnected {
-            let data: AsObject = if wasHandshakeDone {
-                RtmpConnectionCode.connectClosed.eventData()
-            } else {
-                RtmpConnectionCode.connectFailed.eventData()
-            }
-            delegate?.socketPost(data: data)
+            delegate?.socketDisconnected(self, code: wasHandshakeDone ? .connectClosed : .connectFailed)
         }
     }
 
@@ -107,7 +103,14 @@ final class RtmpSocket: @unchecked Sendable {
         }
         logger.info("rtmp: \(name): Setting socket state \(readyState) -> \(state)")
         readyState = state
-        delegate?.socketReadyStateChanged(readyState: readyState)
+        switch state {
+        case .handshakeDone:
+            delegate?.socketHandshakeDone(self)
+        case .closed:
+            delegate?.socketClosed(self)
+        default:
+            break
+        }
     }
 
     private func write(data: Data) {
@@ -123,7 +126,7 @@ final class RtmpSocket: @unchecked Sendable {
             }
             totalBytesSent += size
         })
-        delegate?.socketUpdateStats(totalBytesSent: totalBytesSending)
+        delegate?.socketUpdateStats(self, totalBytesSent: totalBytesSending)
         if hasTooMuchDataBuffered() {
             logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
             queue.async {
@@ -206,6 +209,6 @@ final class RtmpSocket: @unchecked Sendable {
         guard !inputBuffer.isEmpty, let delegate else {
             return
         }
-        inputBuffer = delegate.socketDataReceived(data: inputBuffer)
+        inputBuffer = delegate.socketDataReceived(self, data: inputBuffer)
     }
 }
