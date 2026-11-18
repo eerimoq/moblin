@@ -184,16 +184,13 @@ struct StreamOverlayView: View {
                     BannersView(model: model, banners: model.banners)
                         .frame(maxWidth: orientation.isPortrait ? .infinity : 400)
                 }
-                HStack {
-                    Spacer()
-                    RightOverlayBottomView(database: model.database,
-                                           show: model.database.show,
-                                           streamOverlay: model.streamOverlay,
-                                           zoom: model.zoom,
-                                           orientation: orientation,
-                                           width: width)
-                        .padding(.trailing)
-                }
+                RightOverlayBottomView(database: model.database,
+                                       show: model.database.show,
+                                       streamOverlay: model.streamOverlay,
+                                       zoom: model.zoom,
+                                       orientation: orientation,
+                                       width: width)
+                    .padding(.trailing)
                 HStack {
                     LeftOverlayView(model: model, database: model.database)
                         .padding(.leading, leadingPadding())
