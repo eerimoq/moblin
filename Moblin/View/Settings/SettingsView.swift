@@ -51,6 +51,23 @@ private struct SettingsFormView: View {
     }
 }
 
+private struct SettingsSearchableModifier: ViewModifier {
+    @Binding var text: String
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            content
+                .searchable(text: $text)
+                .toolbar {
+                    DefaultToolbarItem(kind: .search, placement: .bottomBar)
+                }
+        } else {
+            content
+                .searchable(text: $text, placement: .navigationBarDrawer)
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -69,7 +86,7 @@ struct SettingsView: View {
             .onAppear {
                 updateSearchItems()
             }
-            .searchable(text: $searchText, placement: .navigationBarDrawer)
+            .modifier(SettingsSearchableModifier(text: $searchText))
             .navigationTitle("Settings")
     }
 }
