@@ -188,9 +188,10 @@ struct DisplaySettingsView: View {
             Section {
                 Toggle("Big buttons", isOn: $database.bigButtons)
                 Toggle("Big audio level meter", isOn: $database.bigAudioLevelMeter)
-                Toggle("Vertical buttons", isOn: $database.verticalButtons)
+                Toggle("Vertical scene buttons", isOn: $database.verticalSceneButtons)
+                Toggle("Vertical zoom buttons", isOn: $database.verticalZoomButtons)
                 Toggle("Zoom and scene buttons on one row", isOn: $database.zoomAndSceneButtonsOnOneRow)
-                    .disabled(database.verticalButtons)
+                    .disabled(database.verticalSceneButtons || database.verticalZoomButtons)
                 if database.showAllSettings {
                     NavigationLink {
                         LocalOverlaysSettingsView(show: database.show)

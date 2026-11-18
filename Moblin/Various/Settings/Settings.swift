@@ -1340,8 +1340,9 @@ class Database: Codable, ObservableObject {
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
-    @Published var verticalButtons: Bool = false
+    @Published var verticalSceneButtons: Bool = false
     @Published var zoomAndSceneButtonsOnOneRow: Bool = false
+    @Published var verticalZoomButtons: Bool = false
     @Published var bigAudioLevelMeter: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
@@ -1471,6 +1472,7 @@ class Database: Codable, ObservableObject {
         case bigButtons
         case verticalButtons
         case zoomAndSceneButtonsOnOneRow
+        case verticalZoomButtons
         case bigAudioLevelMeter
         case ristServer
         case disconnectProtection
@@ -1566,8 +1568,9 @@ class Database: Codable, ObservableObject {
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
-        try container.encode(.verticalButtons, verticalButtons)
+        try container.encode(.verticalButtons, verticalSceneButtons)
         try container.encode(.zoomAndSceneButtonsOnOneRow, zoomAndSceneButtonsOnOneRow)
+        try container.encode(.verticalZoomButtons, verticalZoomButtons)
         try container.encode(.bigAudioLevelMeter, bigAudioLevelMeter)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
@@ -1709,8 +1712,9 @@ class Database: Codable, ObservableObject {
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
-        verticalButtons = container.decode(.verticalButtons, Bool.self, false)
+        verticalSceneButtons = container.decode(.verticalButtons, Bool.self, false)
         zoomAndSceneButtonsOnOneRow = container.decode(.zoomAndSceneButtonsOnOneRow, Bool.self, false)
+        verticalZoomButtons = container.decode(.verticalZoomButtons, Bool.self, verticalSceneButtons)
         bigAudioLevelMeter = container.decode(.bigAudioLevelMeter, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(

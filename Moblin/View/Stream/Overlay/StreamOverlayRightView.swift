@@ -707,6 +707,42 @@ private struct RightOverlayBottomVerticalView: View {
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var zoom: Zoom
     let width: CGFloat
+    let verticalZoom: Bool
+
+    private func showZoomPresets() -> Bool {
+        show.zoomPresets && zoom.hasZoom
+    }
+
+    @ViewBuilder
+    private var controls: some View {
+        StreamOverlayRightFaceView(model: model, face: database.face)
+        if streamOverlay.showingPixellate {
+            StreamOverlayRightPixellateView(model: model, database: database)
+        }
+        if streamOverlay.showingWhirlpool {
+            StreamOverlayRightWhirlpoolView(model: model, database: database)
+        }
+        if streamOverlay.showingPinch {
+            StreamOverlayRightPinchView(model: model, database: database)
+        }
+        if streamOverlay.showingCamera {
+            StreamOverlayRightCameraSettingsControlView(model: model,
+                                                        camera: model.camera,
+                                                        show: model.camera.show)
+        }
+        if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+            StreamOverlayRightTorchView(model: model, database: database)
+        }
+        if show.zoomSlider, zoom.hasZoom {
+            StreamOverlayRightZoomSliderView(model: model)
+        }
+    }
+
+    private var scenes: some View {
+        StreamOverlayRightSceneVSelectorView(database: database,
+                                             sceneSelector: model.sceneSelector,
+                                             width: width)
+    }
 
     var body: some View {
         HStack(alignment: .bottom) {
@@ -714,39 +750,29 @@ private struct RightOverlayBottomVerticalView: View {
             if streamOverlay.showMediaPlayerControls {
                 StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model
                     .mediaPlayerPlayer)
+                scenes
+            } else if !verticalZoom, showZoomPresets() {
+                HStack(alignment: .bottom, spacing: 0) {
+                    VStack(alignment: .trailing) {
+                        controls
+                        StreamOverlayRightZoomPresetSelctorView(model: model,
+                                                                zoom: zoom,
+                                                                width: width)
+                    }
+                    .padding(.trailing)
+                    scenes
+                }
             } else {
                 VStack(alignment: .trailing) {
-                    StreamOverlayRightFaceView(model: model, face: database.face)
-                    if streamOverlay.showingPixellate {
-                        StreamOverlayRightPixellateView(model: model, database: database)
-                    }
-                    if streamOverlay.showingWhirlpool {
-                        StreamOverlayRightWhirlpoolView(model: model, database: database)
-                    }
-                    if streamOverlay.showingPinch {
-                        StreamOverlayRightPinchView(model: model, database: database)
-                    }
-                    if streamOverlay.showingCamera {
-                        StreamOverlayRightCameraSettingsControlView(model: model,
-                                                                    camera: model.camera,
-                                                                    show: model.camera.show)
-                    }
-                    if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
-                        StreamOverlayRightTorchView(model: model, database: database)
-                    }
-                    if show.zoomSlider, zoom.hasZoom {
-                        StreamOverlayRightZoomSliderView(model: model)
-                    }
+                    controls
                 }
-                if show.zoomPresets, zoom.hasZoom {
+                if verticalZoom, showZoomPresets() {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
                                                              zoom: zoom,
                                                              width: width)
                 }
+                scenes
             }
-            StreamOverlayRightSceneVSelectorView(database: database,
-                                                 sceneSelector: model.sceneSelector,
-                                                 width: width)
         }
     }
 }
@@ -759,36 +785,52 @@ private struct RightOverlayBottomHorizontalView: View {
     @ObservedObject var zoom: Zoom
     let width: CGFloat
     let zoomAndScenesOnOneRow: Bool
+    let verticalZoom: Bool
 
     private func showZoomPresets() -> Bool {
         show.zoomPresets && zoom.hasZoom
     }
 
+    @ViewBuilder
+    private var controls: some View {
+        StreamOverlayRightFaceView(model: model, face: database.face)
+        if streamOverlay.showingPixellate {
+            StreamOverlayRightPixellateView(model: model, database: database)
+        }
+        if streamOverlay.showingWhirlpool {
+            StreamOverlayRightWhirlpoolView(model: model, database: database)
+        }
+        if streamOverlay.showingPinch {
+            StreamOverlayRightPinchView(model: model, database: database)
+        }
+        if streamOverlay.showingCamera {
+            StreamOverlayRightCameraSettingsControlView(model: model,
+                                                        camera: model.camera,
+                                                        show: model.camera.show)
+        }
+        if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
+            StreamOverlayRightTorchView(model: model, database: database)
+        }
+        if show.zoomSlider, zoom.hasZoom {
+            StreamOverlayRightZoomSliderView(model: model)
+        }
+    }
+
     var body: some View {
         if streamOverlay.showMediaPlayerControls {
             StreamOverlayRightMediaPlayerControlsView(model: model, mediaPlayer: model.mediaPlayerPlayer)
+        } else if verticalZoom, showZoomPresets() {
+            HStack(alignment: .bottom) {
+                VStack(alignment: .trailing, spacing: 1) {
+                    controls
+                }
+                StreamOverlayRightZoomPresetVSelctorView(model: model,
+                                                         zoom: zoom,
+                                                         width: width)
+                    .padding(.bottom)
+            }
         } else {
-            StreamOverlayRightFaceView(model: model, face: database.face)
-            if streamOverlay.showingPixellate {
-                StreamOverlayRightPixellateView(model: model, database: database)
-            }
-            if streamOverlay.showingWhirlpool {
-                StreamOverlayRightWhirlpoolView(model: model, database: database)
-            }
-            if streamOverlay.showingPinch {
-                StreamOverlayRightPinchView(model: model, database: database)
-            }
-            if streamOverlay.showingCamera {
-                StreamOverlayRightCameraSettingsControlView(model: model,
-                                                            camera: model.camera,
-                                                            show: model.camera.show)
-            }
-            if streamOverlay.isTorchOn, !streamOverlay.isFrontCameraSelected {
-                StreamOverlayRightTorchView(model: model, database: database)
-            }
-            if show.zoomSlider, zoom.hasZoom {
-                StreamOverlayRightZoomSliderView(model: model)
-            }
+            controls
             if !zoomAndScenesOnOneRow, showZoomPresets() {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
                                                         zoom: zoom,
@@ -826,8 +868,18 @@ struct RightOverlayBottomView: View {
     @ObservedObject var orientation: Orientation
     let width: CGFloat
 
+    private func verticalScenes() -> Bool {
+        database.verticalSceneButtons && !orientation.isPortrait
+    }
+
+    private func verticalZoom() -> Bool {
+        database.verticalZoomButtons && !orientation.isPortrait
+    }
+
     private func zoomAndScenesOnOneRow() -> Bool {
-        database.zoomAndSceneButtonsOnOneRow && !orientation.isPortrait
+        database.zoomAndSceneButtonsOnOneRow && !database.verticalSceneButtons && !database
+            .verticalZoomButtons
+            && !orientation.isPortrait
     }
 
     var body: some View {
@@ -858,13 +910,14 @@ struct RightOverlayBottomView: View {
                                                        orientation: model.orientation,
                                                        videoPreview: model.videoPreview)
                 } else {
-                    if database.verticalButtons {
+                    if verticalScenes() {
                         RightOverlayBottomVerticalView(model: model,
                                                        database: database,
                                                        show: show,
                                                        streamOverlay: streamOverlay,
                                                        zoom: zoom,
-                                                       width: width)
+                                                       width: width,
+                                                       verticalZoom: verticalZoom())
                     } else {
                         RightOverlayBottomHorizontalView(model: model,
                                                          database: database,
@@ -872,7 +925,8 @@ struct RightOverlayBottomView: View {
                                                          streamOverlay: streamOverlay,
                                                          zoom: zoom,
                                                          width: width,
-                                                         zoomAndScenesOnOneRow: zoomAndScenesOnOneRow())
+                                                         zoomAndScenesOnOneRow: zoomAndScenesOnOneRow(),
+                                                         verticalZoom: verticalZoom())
                     }
                 }
             }

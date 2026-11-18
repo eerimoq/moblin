@@ -92,7 +92,6 @@ private struct ZoomPresetVView: View {
         }
         .foregroundStyle(.white)
         .frame(width: segmentWidth())
-        .padding(.bottom, 5)
     }
 }
 
