@@ -758,6 +758,11 @@ private struct RightOverlayBottomHorizontalView: View {
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var zoom: Zoom
     let width: CGFloat
+    let zoomAndScenesOnOneRow: Bool
+
+    private func showZoomPresets() -> Bool {
+        show.zoomPresets && zoom.hasZoom
+    }
 
     var body: some View {
         if streamOverlay.showMediaPlayerControls {
@@ -784,15 +789,31 @@ private struct RightOverlayBottomHorizontalView: View {
             if show.zoomSlider, zoom.hasZoom {
                 StreamOverlayRightZoomSliderView(model: model)
             }
-            if show.zoomPresets, zoom.hasZoom {
+            if !zoomAndScenesOnOneRow, showZoomPresets() {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
                                                         zoom: zoom,
                                                         width: width)
+                    .padding(.bottom, 5)
             }
         }
-        StreamOverlayRightSceneSelectorView(database: database,
-                                            sceneSelector: model.sceneSelector,
-                                            width: width)
+        if zoomAndScenesOnOneRow {
+            HStack(alignment: .bottom) {
+                if !streamOverlay.showMediaPlayerControls, showZoomPresets() {
+                    StreamOverlayRightZoomPresetSelctorView(model: model,
+                                                            zoom: zoom,
+                                                            width: width / 2)
+                        .padding(.leading, UIDevice.current.userInterfaceIdiom == .pad ? 15 : 0)
+                }
+                Spacer()
+                StreamOverlayRightSceneSelectorView(database: database,
+                                                    sceneSelector: model.sceneSelector,
+                                                    width: width / 2)
+            }
+        } else {
+            StreamOverlayRightSceneSelectorView(database: database,
+                                                sceneSelector: model.sceneSelector,
+                                                width: width)
+        }
     }
 }
 
@@ -802,7 +823,12 @@ struct RightOverlayBottomView: View {
     @ObservedObject var show: SettingsShow
     @ObservedObject var streamOverlay: StreamOverlay
     @ObservedObject var zoom: Zoom
+    @ObservedObject var orientation: Orientation
     let width: CGFloat
+
+    private func zoomAndScenesOnOneRow() -> Bool {
+        database.zoomAndSceneButtonsOnOneRow && !orientation.isPortrait
+    }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
@@ -822,6 +848,7 @@ struct RightOverlayBottomView: View {
                         StreamOverlayRightZoomPresetSelctorView(model: model,
                                                                 zoom: zoom,
                                                                 width: width)
+                            .padding(.bottom, 5)
                     }
                     StreamOverlayRightSceneSelectorView(database: database,
                                                         sceneSelector: model.sceneSelector,
@@ -844,7 +871,8 @@ struct RightOverlayBottomView: View {
                                                          show: show,
                                                          streamOverlay: streamOverlay,
                                                          zoom: zoom,
-                                                         width: width)
+                                                         width: width,
+                                                         zoomAndScenesOnOneRow: zoomAndScenesOnOneRow())
                     }
                 }
             }

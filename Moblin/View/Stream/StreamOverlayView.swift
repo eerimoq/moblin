@@ -190,6 +190,7 @@ struct StreamOverlayView: View {
                                            show: model.database.show,
                                            streamOverlay: model.streamOverlay,
                                            zoom: model.zoom,
+                                           orientation: orientation,
                                            width: width)
                         .padding(.trailing)
                 }

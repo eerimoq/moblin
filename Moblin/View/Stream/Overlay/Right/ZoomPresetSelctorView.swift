@@ -49,7 +49,6 @@ private struct ZoomPresetView: View {
         }
         .foregroundStyle(.white)
         .frame(width: min(segmentWidth() * Double(presets.count), max(width - 20, 1)))
-        .padding(.bottom, 5)
     }
 }
 
