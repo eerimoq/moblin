@@ -282,12 +282,19 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
     {
         StreamButtonsSettingsView(database: database)
     }
-    builder.add(String(localized: "Big buttons"),
+    builder.add(String(localized: "Status"),
                 [display],
                 displayImage,
-                searchKeywords("Large", "Size", "Vertical buttons", "Big audio level meter"))
+                searchKeywords("Local overlays", "Overlay", "Info", "Big audio level meter"))
     {
-        DisplaySettingsView(database: database)
+        LocalOverlaysStatusSettingsView(database: database, show: database.show)
+    }
+    builder.add(String(localized: "Zoom and scene controls"),
+                [display],
+                displayImage,
+                searchKeywords("Local overlays", "Big buttons", "Large", "Size", "Vertical buttons"))
+    {
+        LocalOverlaysZoomAndSceneControlsSettingsView(database: database, show: database.show)
     }
     builder.add(String(localized: "Vibrate"),
                 [display],
@@ -306,13 +313,6 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
         }
     }
     if showAll {
-        builder.add(String(localized: "Local overlays"),
-                    [display],
-                    displayImage,
-                    searchKeywords("Status", "Overlay", "Info"))
-        {
-            LocalOverlaysSettingsView(show: database.show)
-        }
         builder.add(String(localized: "Network interface names"),
                     [display],
                     displayImage,
