@@ -19,16 +19,18 @@ private struct StreamItemView: View {
         NavigationLink {
             StreamSettingsView(database: database, stream: stream)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Toggle(stream.name, isOn: Binding(get: {
-                    stream.enabled
-                }, set: { _ in
-                    model.setCurrentStream(stream: stream)
-                    model.reloadStreamIfEnabled(stream: stream)
-                }))
-                .disabled(stream.enabled || model.isLive || model.isRecording)
+            Toggle(isOn: Binding(get: {
+                stream.enabled
+            }, set: { _ in
+                model.setCurrentStream(stream: stream)
+                model.reloadStreamIfEnabled(stream: stream)
+            })) {
+                HStack {
+                    DraggableItemPrefixView()
+                    Text(stream.name)
+                }
             }
+            .disabled(stream.enabled || model.isLive || model.isRecording)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if !stream.enabled {

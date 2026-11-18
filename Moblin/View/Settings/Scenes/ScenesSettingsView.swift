@@ -19,12 +19,14 @@ private struct SceneItemView: View {
         NavigationLink {
             SceneSettingsView(database: model.database, scene: scene)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Toggle(scene.name, isOn: $scene.enabled)
-                    .onChange(of: scene.enabled) { _ in
-                        model.sceneEnabledChanged(scene: scene)
-                    }
+            Toggle(isOn: $scene.enabled) {
+                HStack {
+                    DraggableItemPrefixView()
+                        .onChange(of: scene.enabled) { _ in
+                            model.sceneEnabledChanged(scene: scene)
+                        }
+                    Text(scene.name)
+                }
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
