@@ -7,25 +7,24 @@ struct LocalOverlaysZoomAndSceneControlsSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Picker("Layout", selection: $database.zoomAndSceneButtonsLayout) {
+                    ForEach(SettingsZoomAndSceneButtonsLayout.allCases, id: \.self) {
+                        Text($0.toString())
+                    }
+                }
                 Toggle("Big buttons", isOn: $database.bigButtons)
-                Toggle("Zoom and scene buttons on one row", isOn: $database.zoomAndSceneButtonsOnOneRow)
-                    .disabled(database.verticalSceneButtons || database.verticalZoomButtons)
             } header: {
                 Text("General")
+            } footer: {
+                Text("The layout is only used in landscape.")
             }
-            Section {
-                if database.showAllSettings {
+            if database.showAllSettings {
+                Section {
                     Toggle("Buttons", isOn: $show.zoomPresets)
                     Toggle("Slider", isOn: $show.zoomSlider)
+                } header: {
+                    Text("Zoom")
                 }
-                Toggle("Vertical buttons", isOn: $database.verticalZoomButtons)
-            } header: {
-                Text("Zoom")
-            }
-            Section {
-                Toggle("Vertical buttons", isOn: $database.verticalSceneButtons)
-            } header: {
-                Text("Scene")
             }
         }
         .navigationTitle("Zoom and scene controls")

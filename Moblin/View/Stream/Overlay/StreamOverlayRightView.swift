@@ -868,18 +868,20 @@ struct RightOverlayBottomView: View {
     @ObservedObject var orientation: Orientation
     let width: CGFloat
 
+    private func layout() -> SettingsZoomAndSceneButtonsLayout {
+        orientation.isPortrait ? .stacked : database.zoomAndSceneButtonsLayout
+    }
+
     private func verticalScenes() -> Bool {
-        database.verticalSceneButtons && !orientation.isPortrait
+        [.verticalScenes, .vertical].contains(layout())
     }
 
     private func verticalZoom() -> Bool {
-        database.verticalZoomButtons && !orientation.isPortrait
+        [.verticalZoom, .vertical].contains(layout())
     }
 
     private func zoomAndScenesOnOneRow() -> Bool {
-        database.zoomAndSceneButtonsOnOneRow && !database.verticalSceneButtons && !database
-            .verticalZoomButtons
-            && !orientation.isPortrait
+        layout() == .oneRow
     }
 
     var body: some View {

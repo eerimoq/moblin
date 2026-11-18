@@ -292,8 +292,15 @@ func settingsSearchItems(model: Model, database: Database) -> [SettingsSearchIte
     builder.add(String(localized: "Zoom and scene controls"),
                 [display],
                 displayImage,
-                searchKeywords("Local overlays", "Big buttons", "Large", "Size", "Vertical buttons"))
-    {
+                searchKeywords(
+                    "Local overlays",
+                    "Big buttons",
+                    "Large",
+                    "Size",
+                    "Layout",
+                    "Vertical",
+                    "One row"
+                )) {
         LocalOverlaysZoomAndSceneControlsSettingsView(database: database, show: database.show)
     }
     builder.add(String(localized: "Vibrate"),

@@ -847,6 +847,29 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsZoomAndSceneButtonsLayout: String, Codable, CaseIterable {
+    case stacked = "Stacked"
+    case oneRow = "One row"
+    case verticalZoom = "Vertical zoom"
+    case verticalScenes = "Vertical scenes"
+    case vertical = "Vertical"
+
+    func toString() -> String {
+        switch self {
+        case .stacked:
+            String(localized: "Stacked")
+        case .oneRow:
+            String(localized: "One row")
+        case .verticalZoom:
+            String(localized: "Vertical zoom")
+        case .verticalScenes:
+            String(localized: "Vertical scenes")
+        case .vertical:
+            String(localized: "Vertical")
+        }
+    }
+}
+
 enum SettingsAppMode: String, Codable, CaseIterable {
     case streaming
     case chatPhone
@@ -1340,9 +1363,7 @@ class Database: Codable, ObservableObject {
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
-    @Published var verticalSceneButtons: Bool = false
-    @Published var zoomAndSceneButtonsOnOneRow: Bool = false
-    @Published var verticalZoomButtons: Bool = false
+    @Published var zoomAndSceneButtonsLayout: SettingsZoomAndSceneButtonsLayout = .stacked
     @Published var bigAudioLevelMeter: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
@@ -1471,8 +1492,7 @@ class Database: Codable, ObservableObject {
         case selfieStick
         case bigButtons
         case verticalButtons
-        case zoomAndSceneButtonsOnOneRow
-        case verticalZoomButtons
+        case zoomAndSceneButtonsLayout
         case bigAudioLevelMeter
         case ristServer
         case disconnectProtection
@@ -1568,9 +1588,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
-        try container.encode(.verticalButtons, verticalSceneButtons)
-        try container.encode(.zoomAndSceneButtonsOnOneRow, zoomAndSceneButtonsOnOneRow)
-        try container.encode(.verticalZoomButtons, verticalZoomButtons)
+        try container.encode(.zoomAndSceneButtonsLayout, zoomAndSceneButtonsLayout)
         try container.encode(.bigAudioLevelMeter, bigAudioLevelMeter)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
@@ -1712,9 +1730,11 @@ class Database: Codable, ObservableObject {
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
-        verticalSceneButtons = container.decode(.verticalButtons, Bool.self, false)
-        zoomAndSceneButtonsOnOneRow = container.decode(.zoomAndSceneButtonsOnOneRow, Bool.self, false)
-        verticalZoomButtons = container.decode(.verticalZoomButtons, Bool.self, verticalSceneButtons)
+        zoomAndSceneButtonsLayout = container.decode(
+            .zoomAndSceneButtonsLayout,
+            SettingsZoomAndSceneButtonsLayout.self,
+            container.decode(.verticalButtons, Bool.self, false) ? .vertical : .stacked
+        )
         bigAudioLevelMeter = container.decode(.bigAudioLevelMeter, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(
