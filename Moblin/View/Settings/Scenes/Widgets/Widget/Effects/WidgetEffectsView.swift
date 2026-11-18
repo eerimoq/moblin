@@ -5,12 +5,14 @@ private struct EffectLabelView: View {
     @ObservedObject var effect: SettingsVideoEffect
 
     var body: some View {
-        HStack {
-            DraggableItemPrefixView()
-            Toggle(effect.type.toString(), isOn: $effect.enabled)
-                .onChange(of: effect.enabled) { _ in
-                    model.resetSelectedScene(changeScene: false)
-                }
+        Toggle(isOn: $effect.enabled) {
+            HStack {
+                DraggableItemPrefixView()
+                Text(effect.type.toString())
+            }
+        }
+        .onChange(of: effect.enabled) { _ in
+            model.resetSelectedScene(changeScene: false)
         }
     }
 }
