@@ -76,6 +76,14 @@ Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
     - Create, end and delete streams.
 - SOOP integration.
   - Scuffed chat.
+- CHZZK integration.
+  - Stream directly with the server URL and stream key from [CHZZK Studio](https://studio.chzzk.naver.com/setting).
+  - Show the viewer count, chat messages and donation notifications.
+  - To enable these features, register a personal app in the [CHZZK developer center](https://developers.chzzk.naver.com/)
+    with `http://localhost:8080/chzzk/callback` as its login redirect URL. Enable the permissions for user information
+    (유저 정보 조회), chat messages (채팅 메시지 조회) and donations (후원 조회).
+    Select the stream in Moblin, open its CHZZK settings, save the client ID and secret, then log in as the broadcaster.
+    Viewer counts appear when Moblin finds the channel in CHZZK's live directory.
 - Open Streaming Platform integration.
   - Chat.
 - Basic scenes.

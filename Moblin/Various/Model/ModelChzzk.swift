@@ -64,11 +64,11 @@ extension Model {
         chzzkChat?.stop()
         chzzkChat = nil
         if isChzzkEventsConfigured(), let api = chzzkApi {
-            let chat = ChzzkChat(api: api, accessToken: { [weak self] in
+            let chat = ChzzkChat(api: api, accessToken: { [weak self] forceRefresh in
                 guard let self else {
                     throw CancellationError()
                 }
-                return try await chzzkAccessToken()
+                return try await chzzkAccessToken(forceRefresh: forceRefresh)
             }, onChat: { [weak self] event in
                 self?.appendChzzkChat(event)
             }, onDonation: { [weak self] event in

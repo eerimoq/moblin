@@ -13,6 +13,20 @@ private func removeFromKeychain(_ id: UUID) {
 }
 
 struct SettingsStreamSuite {
+    @Test(arguments: [
+        (#"{}"#, "original"),
+        (#"{"chzzkChannelId":""}"#, ""),
+        (#"{"chzzkChannelId":" new "}"#, "new"),
+    ])
+    func remoteChannelUpdatePreservesOmittedId(json: String, expected: String) throws {
+        let incoming = try decodeStream(json)
+        let current = SettingsStream(name: "Main")
+        current.chzzkChannelId = "original"
+        let changed = current.updateChzzkChannelId(from: incoming)
+        #expect(current.chzzkChannelId == expected)
+        #expect(changed == (expected != "original"))
+    }
+
     @Test
     func decodingDoesNotTouchTheKeychain() throws {
         let id = UUID()

@@ -148638,6 +148638,16 @@
         }
       }
     },
+    "Log in to CHZZK again." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직에 다시 로그인해 주세요."
+          }
+        }
+      }
+    },
     "Log in with your streaming account to receive chat messages and donations." : {
       "localizations" : {
         "ko" : {

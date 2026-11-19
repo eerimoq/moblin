@@ -8,11 +8,14 @@ struct ChzzkLoginRequest {
     let url: URL
 
     func code(from url: URL) -> String? {
-        guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              parts.scheme == "http", parts.host == "localhost", parts.port == 8080,
-              parts.path == "/chzzk/callback", parts.user == nil, parts.password == nil,
-              parts.queryItems?.filter({ $0.name == "state" }).map(\.value) == [state],
-              let codes = parts.queryItems?.filter({ $0.name == "code" }),
+        guard var parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        let items = parts.queryItems ?? []
+        parts.query = nil
+        let codes = items.filter { $0.name == "code" }
+        guard parts.string == chzzkRedirectUri,
+              items.filter({ $0.name == "state" }).map(\.value) == [state],
               codes.count == 1, let code = codes.first?.value, !code.isEmpty
         else {
             return nil
@@ -32,7 +35,10 @@ struct ChzzkAccount: Codable {
     }
 
     static func load() -> Self {
-        guard let value = keychain.load(), let account = try? JSONDecoder().decode(Self.self, from: Data(value.utf8))
+        guard let value = keychain.load(), let account = try? JSONDecoder().decode(
+            Self.self,
+            from: Data(value.utf8)
+        )
         else {
             return Self()
         }
@@ -42,8 +48,10 @@ struct ChzzkAccount: Codable {
     func store() {
         if clientId.isEmpty, clientSecret.isEmpty {
             Self.keychain.remove()
-        } else if let data = try? JSONEncoder().encode(self) {
-            Self.keychain.store(value: String(decoding: data, as: UTF8.self))
+        } else if let data = try? JSONEncoder().encode(self),
+                  let value = String(data: data, encoding: .utf8)
+        {
+            Self.keychain.store(value: value)
         }
     }
 }
@@ -97,7 +105,10 @@ extension Model {
         }
         let state = UUID().uuidString
         chzzkLoginRequest = ChzzkLoginRequest(streamId: stream.id, state: state,
-                                              url: api.authorizationUrl(redirectUri: chzzkRedirectUri, state: state))
+                                              url: api.authorizationUrl(
+                                                  redirectUri: chzzkRedirectUri,
+                                                  state: state
+                                              ))
         chzzkPresentingLogin = true
     }
 
@@ -124,7 +135,9 @@ extension Model {
                     return
                 }
                 guard stream.chzzkChannelId.isEmpty || stream.chzzkChannelId == user.channelId else {
-                    makeErrorToast(title: String(localized: "The signed-in channel does not match this stream."))
+                    makeErrorToast(
+                        title: String(localized: "The signed-in channel does not match this stream.")
+                    )
                     return
                 }
                 chzzkRefreshTask?.cancel()
@@ -158,15 +171,15 @@ extension Model {
         }
     }
 
-    func chzzkAccessToken() async throws -> String {
+    func chzzkAccessToken(forceRefresh: Bool = false) async throws -> String {
         guard chzzkLoggedIn, let tokens = chzzkAccount.tokens, let api = chzzkApi else {
             throw URLError(.userAuthenticationRequired)
         }
-        if tokens.expiresAt.timeIntervalSinceNow > 60 {
-            return tokens.accessToken
-        }
         if let chzzkRefreshTask {
             return try await chzzkRefreshTask.value
+        }
+        if !forceRefresh, tokens.expiresAt.timeIntervalSinceNow > 60 {
+            return tokens.accessToken
         }
         let task = Task {
             defer {
@@ -174,7 +187,18 @@ extension Model {
                     chzzkRefreshTask = nil
                 }
             }
-            let updated = try await api.refresh(refreshToken: tokens.refreshToken)
+            let updated: ChzzkTokens
+            do {
+                updated = try await api.refresh(refreshToken: tokens.refreshToken)
+            } catch let ChzzkApiError.status(status) where [400, 401, 403].contains(status) {
+                try Task.checkCancellation()
+                chzzkAccount.tokens = nil
+                chzzkAccount.channelId = nil
+                chzzkAccount.store()
+                chzzkChannelUpdated()
+                makeErrorToast(title: String(localized: "Log in to CHZZK again."))
+                throw URLError(.userAuthenticationRequired)
+            }
             try Task.checkCancellation()
             chzzkAccount.tokens = updated
             chzzkAccount.store()

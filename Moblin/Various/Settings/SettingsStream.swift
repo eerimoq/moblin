@@ -1265,7 +1265,12 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
     @Published var youTubeScheduleStreamAutoStop: Bool = true
     @Published var soopChannelName: String = ""
-    @Published var chzzkChannelId: String = ""
+    @Published private var storedChzzkChannelId: String? = ""
+    var chzzkChannelId: String {
+        get { storedChzzkChannelId ?? "" }
+        set { storedChzzkChannelId = newValue }
+    }
+
     var soopStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
     var openStreamingPlatformChannelId: String = ""
@@ -1564,7 +1569,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
                                                            .public)
         youTubeScheduleStreamAutoStop = container.decode(.youTubeScheduleStreamAutoStop, Bool.self, true)
         soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
-        chzzkChannelId = container.decode(.chzzkChannelId, String.self, "")
+        storedChzzkChannelId = container.decode(.chzzkChannelId, String?.self, nil)
         soopStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")
         openStreamingPlatformChannelId = container.decode(.openStreamingPlatformChannelId, String.self, "")
@@ -1644,6 +1649,14 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
 
     func getYouTubeVideoIds() -> [String] {
         youTubeVideoIds.split(separator: ",").map { String($0) }
+    }
+
+    func updateChzzkChannelId(from new: SettingsStream) -> Bool {
+        guard let channelId = new.storedChzzkChannelId?.trim(), channelId != chzzkChannelId else {
+            return false
+        }
+        chzzkChannelId = channelId
+        return true
     }
 
     func clone() -> SettingsStream {

@@ -94,7 +94,7 @@ private struct ChzzkHandshake: Decodable {
 @MainActor
 final class ChzzkChat {
     private let api: ChzzkApi
-    private let accessToken: @MainActor () async throws -> String
+    private let accessToken: @MainActor (Bool) async throws -> String
     private let onChat: (ChzzkChatMessage) -> Void
     private let onDonation: (ChzzkDonation) -> Void
     private var task: Task<Void, Never>?
@@ -105,7 +105,7 @@ final class ChzzkChat {
     private var chatSubscribed = false
     private var donationSubscribed = false
 
-    init(api: ChzzkApi, accessToken: @escaping @MainActor () async throws -> String,
+    init(api: ChzzkApi, accessToken: @escaping @MainActor (Bool) async throws -> String,
          onChat: @escaping (ChzzkChatMessage) -> Void, onDonation: @escaping (ChzzkDonation) -> Void)
     {
         self.api = api
@@ -120,10 +120,15 @@ final class ChzzkChat {
             var delay = 2
             while !Task.isCancelled {
                 do {
-                    let token = try await accessToken()
-                    let url = try await api.session(accessToken: token)
-                    try Task.checkCancellation()
-                    try await listen(url: url, token: token)
+                    let token = try await accessToken(false)
+                    do {
+                        try await connect(token: token)
+                    } catch ChzzkApiError.status(401) {
+                        try Task.checkCancellation()
+                        closeSocket()
+                        let refreshed = try await accessToken(true)
+                        try await connect(token: refreshed)
+                    }
                 } catch {
                     guard !Task.isCancelled else {
                         return
@@ -164,7 +169,9 @@ final class ChzzkChat {
         donationSubscribed
     }
 
-    private func listen(url: URL, token: String) async throws {
+    private func connect(token: String) async throws {
+        let url = try await api.session(accessToken: token)
+        try Task.checkCancellation()
         let connection = httpUrlSession().webSocketTask(with: url)
         socket = connection
         connection.resume()

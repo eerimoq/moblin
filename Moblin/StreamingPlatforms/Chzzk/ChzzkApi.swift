@@ -23,10 +23,29 @@ private struct ChzzkResponse<Content: Decodable>: Decodable {
 
 private struct ChzzkEmpty: Decodable {}
 
-private struct ChzzkTokenResponse: Decodable {
+struct ChzzkTokenResponse: Decodable {
     let accessToken: String
     let refreshToken: String
     let expiresIn: Int
+
+    private enum CodingKeys: CodingKey {
+        case accessToken, refreshToken, expiresIn
+    }
+
+    init(from decoder: any Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        accessToken = try values.decode(String.self, forKey: .accessToken)
+        refreshToken = try values.decode(String.self, forKey: .refreshToken)
+        if let seconds = try? values.decode(Int.self, forKey: .expiresIn) {
+            expiresIn = seconds
+        } else {
+            let text = try values.decode(String.self, forKey: .expiresIn)
+            guard let seconds = Int(text) else {
+                throw ChzzkApiError.invalidResponse
+            }
+            expiresIn = seconds
+        }
+    }
 }
 
 private struct ChzzkSession: Decodable {

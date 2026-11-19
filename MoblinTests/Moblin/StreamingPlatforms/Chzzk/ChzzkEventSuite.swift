@@ -3,6 +3,15 @@ import Foundation
 import Testing
 
 struct ChzzkEventSuite {
+    @Test(arguments: ["86400", #""86400""#])
+    func tokenLifetime(seconds: String) throws {
+        let json = """
+        {"accessToken":"access","refreshToken":"refresh","expiresIn":\(seconds)}
+        """
+        let token = try JSONDecoder().decode(ChzzkTokenResponse.self, from: Data(json.utf8))
+        #expect(token.expiresIn == 86400)
+    }
+
     @Test
     func connectedSessionWithStringPayload() throws {
         let json = #"["SYSTEM","{\"type\":\"connected\",\"data\":{\"sessionKey\":\"test-session\"}}"]"#

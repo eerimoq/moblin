@@ -135,8 +135,10 @@ extension Model {
 
     func isRemoteControlChatAndEvents(platform: Platform?) -> Bool {
         switch platform {
-        case .twitch, nil:
+        case .twitch:
             break
+        case nil:
+            return useRemoteControlForChatAndEvents && !isChzzkEventsConfigured()
         default:
             return false
         }
@@ -156,7 +158,7 @@ extension Model {
         if isSoopChatConfigured(), !isSoopChatConnected() {
             return false
         }
-        if isChzzkChatConfigured(), chzzkChat?.isConnected() != true {
+        if isChzzkChatConfigured(), chzzkChat?.isChatConnected() != true {
             return false
         }
         if isOpenStreamingPlatformChatConfigured(), !isOpenStreamingPlatformChatConnected() {
@@ -362,7 +364,7 @@ extension Model {
             }
             if isChzzkChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .chzzk,
-                                                   connected: chzzkChat?.isConnected() == true))
+                                                   connected: chzzkChat?.isChatConnected() == true))
             }
             if isOpenStreamingPlatformChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,
