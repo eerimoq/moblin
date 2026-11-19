@@ -134,7 +134,7 @@ struct QuickButtonLiveView: View {
         if !stream.youTubeHandle.isEmpty {
             return true
         }
-        if !stream.soopChannelName.isEmpty {
+        if !stream.soopChannelName.isEmpty || !stream.chzzkChannelId.isEmpty {
             return true
         }
         return false
@@ -161,6 +161,11 @@ struct QuickButtonLiveView: View {
                 }
                 if !stream.soopChannelName.isEmpty {
                     SoopView(stream: stream)
+                }
+                if !stream.chzzkChannelId.isEmpty {
+                    Section {} header: {
+                        ChzzkLogoAndNameView(channel: stream.chzzkChannelId)
+                    }
                 }
                 if database.showAllSettings, isGoLiveNotificationConfigured() {
                     GoLiveNotificationView(model: model, stream: stream)

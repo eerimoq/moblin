@@ -5,6 +5,7 @@ enum WizardPlatform {
     case kick
     case youTube
     case soop
+    case chzzk
     case custom
     case obs
     case mobcam
@@ -115,9 +116,17 @@ extension Model {
             case .belaboxCloudObs:
                 url = createStreamWizard.belaboxUrl
             case .direct:
-                let ingestUrl = createStreamWizard.directIngest
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-                url = "\(ingestUrl)/\(createStreamWizard.directStreamKey)"
+                let ingest: String
+                let key: String
+                if createStreamWizard.platform == .chzzk {
+                    ingest = createStreamWizard.chzzkIngest.trim()
+                    key = createStreamWizard.chzzkStreamKey.trim()
+                } else {
+                    ingest = createStreamWizard.directIngest
+                    key = createStreamWizard.directStreamKey
+                }
+                let ingestUrl = ingest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                url = "\(ingestUrl)/\(key)"
             case .myServers:
                 if let customUrl = createStreamFromWizardCustomUrl() {
                     url = customUrl
@@ -175,6 +184,11 @@ extension Model {
             if !createStreamWizard.soopChannelName.isEmpty, !createStreamWizard.soopStreamId.isEmpty {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()
                 stream.soopStreamId = createStreamWizard.soopStreamId.trim()
+            }
+        case .chzzk:
+            stream.chzzkChannelId = createStreamWizard.chzzkChannelId.trim()
+            if createStreamWizard.networkSetup == .direct {
+                stream.maxKeyFrameInterval = 1
             }
         case .obs:
             break
@@ -243,6 +257,9 @@ extension Model {
         createStreamWizard.youTubeStream.youTubeAuthState = nil
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""
+        createStreamWizard.chzzkChannelId = ""
+        createStreamWizard.chzzkIngest = ""
+        createStreamWizard.chzzkStreamKey = ""
         createStreamWizard.obsAddress = ""
         createStreamWizard.obsPort = ""
         createStreamWizard.obsRemoteControlEnabled = false

@@ -82,6 +82,7 @@ extension Model {
         reloadKickPusher()
         reloadYouTubeLiveChat()
         reloadSoopChat()
+        reloadChzzkChat()
         reloadOpenStreamingPlatformChat()
     }
 
@@ -117,6 +118,9 @@ extension Model {
         if isSoopChatConfigured() {
             numberOfChats += 1
         }
+        if isChzzkChatConfigured() {
+            numberOfChats += 1
+        }
         if isOpenStreamingPlatformChatConfigured() {
             numberOfChats += 1
         }
@@ -125,7 +129,7 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
+            isYouTubeLiveChatConfigured() || isSoopChatConfigured() || isChzzkChatConfigured() ||
             isOpenStreamingPlatformChatConfigured()
     }
 
@@ -152,6 +156,9 @@ extension Model {
         if isSoopChatConfigured(), !isSoopChatConnected() {
             return false
         }
+        if isChzzkChatConfigured(), chzzkChat?.isConnected() != true {
+            return false
+        }
         if isOpenStreamingPlatformChatConfigured(), !isOpenStreamingPlatformChatConnected() {
             return false
         }
@@ -163,6 +170,7 @@ extension Model {
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
             || hasSoopChatEmotes()
+            || isChzzkChatConfigured()
             || hasOpenStreamingPlatformChatEmotes()
     }
 
@@ -351,6 +359,10 @@ extension Model {
             }
             if isSoopChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .soop, connected: isSoopChatConnected()))
+            }
+            if isChzzkChatConfigured() {
+                statuses.append(ChatPlatformStatus(platform: .chzzk,
+                                                   connected: chzzkChat?.isConnected() == true))
             }
             if isOpenStreamingPlatformChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,

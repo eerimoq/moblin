@@ -102,8 +102,11 @@ struct ChatLineStyle {
             items.append(.text("\(post.timestamp) ",
                                ChatLineTextStyle(color: timestampColor, singleLine: true)))
         }
-        if platform, let image = post.platform?.imageName() {
-            items.append(badgeItem(source: .asset(image), deleted: deleted))
+        if platform, let platform = post.platform {
+            let source: ChatImageSource = platform == .chzzk
+                ? .symbol(platform.imageName(), fontSize, .systemMint)
+                : .asset(platform.imageName())
+            items.append(badgeItem(source: source, deleted: deleted))
         }
         if sharedChatIcons, let iconUrl = post.sourceChannelIcon {
             items.append(badgeItem(source: .url(iconUrl), deleted: deleted))

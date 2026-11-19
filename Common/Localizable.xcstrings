@@ -37598,6 +37598,16 @@
         }
       }
     },
+    "API credentials" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 인증 정보"
+          }
+        }
+      }
+    },
     "API key" : {
       "localizations" : {
         "de" : {
@@ -66748,6 +66758,36 @@
         }
       }
     },
+    "CHZZK" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직"
+          }
+        }
+      }
+    },
+    "CHZZK developer center" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 개발자 센터"
+          }
+        }
+      }
+    },
+    "CHZZK login failed" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 로그인 실패"
+          }
+        }
+      }
+    },
     "Cinematic" : {
       "localizations" : {
         "de" : {
@@ -68214,6 +68254,26 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "清除佇列。"
+          }
+        }
+      }
+    },
+    "Client ID" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클라이언트 ID"
+          }
+        }
+      }
+    },
+    "Client secret" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "클라이언트 시크릿"
           }
         }
       }
@@ -76756,6 +76816,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "從OBS顯示連線資訊中複製，如圖下。工具 → WebSocket伺服器設定 → 顯示連線資訊 → 伺服器密碼"
+          }
+        }
+      }
+    },
+    "Copy the ID from the end of your CHZZK channel URL, or leave it blank to fill it in at login." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "치지직 채널 주소 끝에 있는 ID를 복사하세요. 비워 두면 로그인할 때 자동으로 입력됩니다."
+          }
+        }
+      }
+    },
+    "Copy the stream URL and stream key from Settings in CHZZK Studio on your computer." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PC에서 치지직 스튜디오의 설정을 열고 스트림 URL과 스트림 키를 복사하세요."
           }
         }
       }
@@ -92208,6 +92288,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "贊助"
+          }
+        }
+      }
+    },
+    "Donated ₩%@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@원 후원"
           }
         }
       }
@@ -148548,6 +148638,16 @@
         }
       }
     },
+    "Log in with your streaming account to receive chat messages and donations." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "방송 계정으로 로그인하면 채팅 메시지와 후원 알림을 받을 수 있습니다."
+          }
+        }
+      }
+    },
     "Login" : {
       "localizations" : {
         "de" : {
@@ -148692,6 +148792,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登入"
+          }
+        }
+      }
+    },
+    "Login redirect URL" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그인 리디렉션 URL"
           }
         }
       }
@@ -211841,6 +211951,16 @@
         }
       }
     },
+    "Register an app with permission to read user information, chat messages and donations." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앱을 등록할 때 ‘유저 정보 조회’, ‘채팅 메시지 조회’, ‘후원 조회’ 권한을 선택하세요."
+          }
+        }
+      }
+    },
     "Regular" : {
       "localizations" : {
         "de" : {
@@ -232641,6 +232761,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇聲音"
+          }
+        }
+      }
+    },
+    "Select this stream to configure CHZZK login." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 스트림을 활성화하면 치지직 로그인을 설정할 수 있습니다."
           }
         }
       }
@@ -286134,6 +286264,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "伺服器回報了錯誤 (%@)。"
+          }
+        }
+      }
+    },
+    "The signed-in channel does not match this stream." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그인한 채널이 이 스트림에 설정된 채널과 다릅니다."
           }
         }
       }

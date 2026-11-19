@@ -619,6 +619,9 @@ final class Model: NSObject, ObservableObject {
     var youTubeLiveChats: [String: YouTubeLiveChat] = [:]
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
+    var chzzkChat: ChzzkChat?
+    var chzzkViewersTask: Task<Void, Error>?
+    var chzzkPlatformStatus: PlatformStatus = .unknown
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
     var youTubePlatformStatus: PlatformStatus = .unknown
@@ -705,6 +708,10 @@ final class Model: NSObject, ObservableObject {
 
     var speechToText: SpeechToText?
     let twitchAuth = TwitchAuth()
+    @Published var chzzkAccount = ChzzkAccount.load()
+    @Published var chzzkPresentingLogin = false
+    var chzzkLoginRequest: ChzzkLoginRequest?
+    var chzzkRefreshTask: Task<String, Error>?
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
@@ -2076,6 +2083,8 @@ final class Model: NSObject, ObservableObject {
                 updateViewersYouTube()
             case .soop:
                 updateViewersSoop()
+            case .chzzk:
+                StreamingPlatformStatus(platform: .chzzk, status: chzzkPlatformStatus)
             default:
                 streamingPlatformStatus
             }
@@ -2451,16 +2460,17 @@ final class Model: NSObject, ObservableObject {
     }
 
     func isEventsConfigured() -> Bool {
-        isTwitchEventSubConfigured()
+        isTwitchEventSubConfigured() || isChzzkEventsConfigured()
     }
 
     func isEventsConnected() -> Bool {
-        isTwitchEventsConnected()
+        (!isTwitchEventSubConfigured() || isTwitchEventsConnected()) &&
+            (!isChzzkEventsConfigured() || chzzkChat?.isConnected() == true) && isEventsConfigured()
     }
 
     func isViewersConfigured() -> Bool {
         isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
-            isSoopViewersConfigured()
+            isSoopViewersConfigured() || isChzzkViewersConfigured()
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2556,6 +2566,10 @@ final class Model: NSObject, ObservableObject {
         if isSoopViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .soop, status: .unknown))
         }
+        if isChzzkViewersConfigured() {
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .chzzk, status: .unknown))
+        }
+        reloadChzzkViewers()
         twitchPlatformStatus = .unknown
         twitchStreamUpdateTime = .now.advanced(by: .seconds(15))
         youTubeStreamUpdateTimePollDelta = .seconds(15)

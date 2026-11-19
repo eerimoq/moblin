@@ -23,6 +23,7 @@ private struct StreamUpdateEffects {
     var kickChannelName = false
     var youTubeVideoIds = false
     var soopChannelName = false
+    var chzzkChannelId = false
     var soopStreamId = false
     var openStreamingPlatformUrl = false
     var openStreamingPlatformChannelId = false
@@ -326,6 +327,9 @@ extension Model {
         stream.youTubeScheduleStreamVisibility = new.youTubeScheduleStreamVisibility
         stream.youTubeScheduleStreamAutoStop = new.youTubeScheduleStreamAutoStop
         effects.soopChannelName = stream.soopChannelName != new.soopChannelName
+        let chzzkChannelId = new.chzzkChannelId.trim()
+        effects.chzzkChannelId = stream.chzzkChannelId != chzzkChannelId
+        stream.chzzkChannelId = chzzkChannelId
         stream.soopChannelName = new.soopChannelName
         effects.soopStreamId = stream.soopStreamId != new.soopStreamId
         stream.soopStreamId = new.soopStreamId
@@ -428,6 +432,9 @@ extension Model {
         }
         if effects.soopChannelName {
             soopChannelNameUpdated()
+        }
+        if effects.chzzkChannelId {
+            chzzkChannelUpdated()
         }
         if effects.soopStreamId {
             soopStreamIdUpdated()

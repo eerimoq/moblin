@@ -68,6 +68,25 @@ struct ObsLogoAndNameView: View {
     }
 }
 
+struct ChzzkLogoAndNameView: View {
+    var channel: String = ""
+
+    var body: some View {
+        HStack {
+            Platform.chzzk.image()
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 25)
+            if channel.isEmpty {
+                Text("CHZZK")
+            } else {
+                Text(verbatim: "\(Platform.chzzk.name()) (\(channel))")
+                    .lineLimit(1)
+            }
+        }
+    }
+}
+
 struct DiscordLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(logo: "DiscordLogo", name: String(localized: "Discord"))
@@ -160,6 +179,15 @@ struct StreamPlatformsSettingsView: View {
                 SoopLogoAndNameView()
                 Spacer()
                 GrayTextView(text: stream.soopChannelName)
+            }
+        }
+        NavigationLink {
+            StreamChzzkSettingsView(model: model, stream: stream)
+        } label: {
+            HStack {
+                ChzzkLogoAndNameView()
+                Spacer()
+                GrayTextView(text: stream.chzzkChannelId)
             }
         }
         NavigationLink {

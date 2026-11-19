@@ -38,6 +38,9 @@ class CreateStreamWizard: ObservableObject {
     @Published var youTubeHandle = ""
     @Published var soopChannelName = ""
     @Published var soopStreamId = ""
+    @Published var chzzkChannelId = ""
+    @Published var chzzkIngest = ""
+    @Published var chzzkStreamKey = ""
     @Published var obsAddress = ""
     @Published var obsPort = ""
     @Published var obsRemoteControlEnabled = false

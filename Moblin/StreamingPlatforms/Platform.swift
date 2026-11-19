@@ -1,6 +1,7 @@
-import Foundation
+import SwiftUI
 
 enum Platform: Codable, CaseIterable {
+    case chzzk
     case soop
     case kick
     case openStreamingPlatform
@@ -9,6 +10,8 @@ enum Platform: Codable, CaseIterable {
 
     func name() -> String {
         switch self {
+        case .chzzk:
+            String(localized: "CHZZK")
         case .soop:
             String(localized: "SOOP")
         case .kick:
@@ -24,6 +27,8 @@ enum Platform: Codable, CaseIterable {
 
     func imageName() -> String {
         switch self {
+        case .chzzk:
+            "bolt.fill"
         case .soop:
             "SoopLogo"
         case .kick:
@@ -35,5 +40,9 @@ enum Platform: Codable, CaseIterable {
         case .youTube:
             "YouTubeLogo"
         }
+    }
+
+    func image() -> Image {
+        self == .chzzk ? Image(systemName: imageName()) : Image(imageName())
     }
 }
