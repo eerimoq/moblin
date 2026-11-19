@@ -89,8 +89,8 @@ struct QuickButtonChatChatterInfoView: View {
                         displayStyle: model.database.chat.displayStyle
                     ))
                     .bold()
-                    if let platform = post.platform {
-                        platform.image()
+                    if let image = post.platform?.imageName() {
+                        Image(image)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 16)

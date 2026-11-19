@@ -72,18 +72,12 @@ struct ChzzkLogoAndNameView: View {
     var channel: String = ""
 
     var body: some View {
-        HStack {
-            Platform.chzzk.image()
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 25)
-            if channel.isEmpty {
-                Text("CHZZK")
-            } else {
-                Text(verbatim: "\(Platform.chzzk.name()) (\(channel))")
-                    .lineLimit(1)
-            }
-        }
+        PlatformLogoAndNameView(
+            logo: Platform.chzzk.imageName(),
+            name: Platform.chzzk.name(),
+            channel: channel
+        )
+        .lineLimit(1)
     }
 }
 

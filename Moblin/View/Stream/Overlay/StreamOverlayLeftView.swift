@@ -28,7 +28,7 @@ private struct ViewersLogoView: View {
     let platform: Platform
 
     var body: some View {
-        platform.image()
+        Image(platform.imageName())
             .resizable()
             .scaledToFit()
             .padding(.vertical, 2)

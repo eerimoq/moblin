@@ -1,4 +1,4 @@
-import SwiftUI
+import Foundation
 
 enum Platform: Codable, CaseIterable {
     case chzzk
@@ -28,7 +28,7 @@ enum Platform: Codable, CaseIterable {
     func imageName() -> String {
         switch self {
         case .chzzk:
-            "bolt.fill"
+            "ChzzkLogo"
         case .soop:
             "SoopLogo"
         case .kick:
@@ -40,9 +40,5 @@ enum Platform: Codable, CaseIterable {
         case .youTube:
             "YouTubeLogo"
         }
-    }
-
-    func image() -> Image {
-        self == .chzzk ? Image(systemName: imageName()) : Image(imageName())
     }
 }
