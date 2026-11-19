@@ -824,6 +824,7 @@ private struct RightOverlayBottomHorizontalView: View {
                 VStack(alignment: .trailing, spacing: 1) {
                     controls
                 }
+                .padding(.bottom, 11)
                 StreamOverlayRightZoomPresetVSelctorView(model: model,
                                                          zoom: zoom,
                                                          width: width)
