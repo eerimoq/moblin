@@ -554,6 +554,7 @@ final class Model: NSObject, ObservableObject {
     let externalDisplay = ExternalDisplay()
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
+    let showTaps = ShowTaps()
     let stealthMode = StealthMode()
     let controlBar = ControlBar()
     var faceBackgroundImage: CIImage?
@@ -1363,6 +1364,9 @@ final class Model: NSObject, ObservableObject {
 
     @objc func handleApplicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
+        if isAppActive {
+            updateShowTaps()
+        }
         guard !isMac() else {
             return
         }

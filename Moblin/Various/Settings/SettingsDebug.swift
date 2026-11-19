@@ -41,6 +41,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var packetPadding: Bool = false
     @Published var externalCameraVideoRange: Bool = false
     @Published var photosImageQuality: Double = 0.95
+    @Published var showTaps: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -82,6 +83,7 @@ class SettingsDebug: Codable, ObservableObject {
         case packetPadding
         case externalCameraVideoRange
         case photosImageQuality
+        case showTaps
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -118,6 +120,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.packetPadding, packetPadding)
         try container.encode(.externalCameraVideoRange, externalCameraVideoRange)
         try container.encode(.photosImageQuality, photosImageQuality)
+        try container.encode(.showTaps, showTaps)
     }
 
     init() {}
@@ -168,5 +171,6 @@ class SettingsDebug: Codable, ObservableObject {
         packetPadding = container.decode(.packetPadding, Bool.self, false)
         externalCameraVideoRange = container.decode(.externalCameraVideoRange, Bool.self, false)
         photosImageQuality = container.decode(.photosImageQuality, Double.self, 0.95)
+        showTaps = container.decode(.showTaps, Bool.self, false)
     }
 }
