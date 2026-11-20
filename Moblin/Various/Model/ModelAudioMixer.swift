@@ -8,6 +8,10 @@ func makeAudioMixerMixedMics(mics: [SettingsMicsMic], current: SettingsMicsMic) 
     mics.filter { $0.mixed && $0.connected && isAudioMicMixable(mic: $0, current: current) }
 }
 
+func makeMicDelayRange(audioMixer: Bool) -> ClosedRange<Double> {
+    audioMixer ? -0.5 ... 2.0 : -0.5 ... 0.5
+}
+
 extension Model {
     func updateAudioMixer() {
         setAudioChannelsMap(channelsMap: makeAudioEncoderChannelsMap())
@@ -53,7 +57,7 @@ extension Model {
                                         bufferedAudio: bufferedAudio,
                                         channelsMap: makeAudioInputChannelsMap(),
                                         gain: pow(10, mic.gainDb / 20),
-                                        delay: mic.delay.clamped(to: -0.5 ... 0.5))
+                                        delay: mic.delay.clamped(to: makeMicDelayRange(audioMixer: true)))
     }
 
     private func makeAudioEncoderChannelsMap() -> [Int: Int] {

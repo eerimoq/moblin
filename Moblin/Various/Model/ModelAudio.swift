@@ -283,7 +283,8 @@ extension Model {
         if database.debug.audioMixer {
             updateMixedMics()
         } else {
-            media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+            let delay = getMicById(id: mic.current.id)?.delay ?? 0
+            media.setAudioDelay(delay: delay.clamped(to: makeMicDelayRange(audioMixer: false)))
         }
     }
 
