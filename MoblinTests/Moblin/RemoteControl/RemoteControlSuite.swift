@@ -404,6 +404,7 @@ struct RemoteControlSuite {
           "area" : "Malmö",
           "averageSpeed" : 7.25,
           "city" : "Malmö",
+          "condition" : "rain",
           "country" : "Sweden",
           "countryFlag" : "🇸🇪",
           "cyclingCadence" : 90,
@@ -421,6 +422,8 @@ struct RemoteControlSuite {
             "Belt" : null,
             "Watch" : 75
           },
+          "humidity" : 0.75,
+          "isDaylight" : true,
           "latitude" : 55.60587,
           "longitude" : 13.00073,
           "neighborhood" : "Möllevången",
@@ -434,6 +437,7 @@ struct RemoteControlSuite {
           "stepCount" : 8000,
           "temperature" : 22,
           "timeZone" : "Europe\\/Stockholm",
+          "windDirection" : 225,
           "windGust" : 8.5,
           "windSpeed" : 3,
           "workoutDistance" : 4200
@@ -464,6 +468,10 @@ struct RemoteControlSuite {
         #expect(decoded.feelsLikeTemperature == 17)
         #expect(decoded.windSpeed == 3)
         #expect(decoded.windGust == 8.5)
+        #expect(decoded.windDirection == 225)
+        #expect(decoded.humidity == 0.75)
+        #expect(decoded.condition == "rain")
+        #expect(decoded.isDaylight == true)
         #expect(decoded.country == "Sweden")
         #expect(decoded.countryFlag == "🇸🇪")
         #expect(decoded.state == "Skåne")
@@ -502,6 +510,10 @@ struct RemoteControlSuite {
                            feelsLikeTemperature: 17,
                            windSpeed: 3,
                            windGust: 8.5,
+                           windDirection: 225,
+                           humidity: 0.75,
+                           condition: "rain",
+                           isDaylight: true,
                            country: "Sweden",
                            countryFlag: "🇸🇪",
                            state: "Skåne",
