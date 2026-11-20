@@ -17,11 +17,16 @@ class AudioProvider: ObservableObject {
 @MainActor
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
+    @Published var mixed: [SettingsMicsMic] = []
     @Published var inputGain: Float = 1.0
     @Published var inputGainSettable: Bool = false
     let inputGainTimer = SimpleTimer(queue: processorControlQueue)
     var requested: SettingsMicsMic?
     var isSwitchTimerRunning: Bool = false
+
+    func statusText() -> String {
+        ([current] + mixed).map(\.name).joined(separator: " + ")
+    }
 }
 
 extension Model {
@@ -155,7 +160,9 @@ extension Model {
                 if let highestPrioMic = getHighestPriorityConnectedMic() {
                     defaultMic = highestPrioMic
                 }
-            } else if let highestPrioMic = getHighestPriorityConnectedMic() {
+            } else if let highestPrioMic = getHighestPriorityConnectedMic(),
+                      getConnectedMicById(id: mic.current.id) == nil || !mic.mixed.contains(highestPrioMic)
+            {
                 selectMic(mic: highestPrioMic)
                 defaultMic = highestPrioMic
             }
@@ -164,10 +171,12 @@ extension Model {
 
     func markMicAsConnected(id: String) {
         getMicById(id: id)?.connected = true
+        updateMixedMics()
     }
 
     func markMicAsDisconnected(id: String) {
         getMicById(id: id)?.connected = false
+        updateMixedMics()
     }
 
     func updateMics() {
@@ -256,6 +265,7 @@ extension Model {
             }
         }
         database.mics.mics = mics
+        updateMixedMics()
     }
 
     func getMicById(id: String) -> SettingsMicsMic? {

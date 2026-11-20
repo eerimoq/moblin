@@ -100,6 +100,20 @@ struct SettingsSuite {
     }
 
     @Test
+    func micMixedDefaultsToOff() throws {
+        let mic = try JSONDecoder().decode(SettingsMicsMic.self, from: Data("{}".utf8))
+        #expect(!mic.mixed)
+    }
+
+    @Test
+    func micMixedIsPersisted() throws {
+        let mic = SettingsMicsMic()
+        mic.mixed = true
+        let decoded = try JSONDecoder().decode(SettingsMicsMic.self, from: JSONEncoder().encode(mic))
+        #expect(decoded.mixed)
+    }
+
+    @Test
     func widgetSceneId() throws {
         let scene = SettingsWidgetScene()
         #expect(scene.sceneId == nil)
