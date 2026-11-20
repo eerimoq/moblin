@@ -154,8 +154,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     var previewEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
-    var muted = false
-    var gain: Float = 1.0
+    private var muted = false
+    private var gain: Float = 1.0
     private var delay = 0.0
     weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
@@ -343,6 +343,18 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.previewEncoder?.stopRunning()
             self.previewEncoder = nil
+        }
+    }
+
+    func setMuted(muted: Bool) {
+        processorPipelineQueue.async {
+            self.muted = muted
+        }
+    }
+
+    func setGain(gain: Float) {
+        processorPipelineQueue.async {
+            self.gain = gain
         }
     }
 
