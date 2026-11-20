@@ -270,7 +270,11 @@ extension Model {
     }
 
     func updateMicDelay() {
-        media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+        if database.debug.audioMixer {
+            updateMixedMics()
+        } else {
+            media.setAudioDelay(delay: getMicById(id: mic.current.id)?.delay ?? 0)
+        }
     }
 
     func selectMicDefault(mic: SettingsMicsMic) {
@@ -702,7 +706,7 @@ extension Model {
         remoteControlStateChanged(state: RemoteControlState(mic: micId))
     }
 
-    private func getMicCameraId(mic: SettingsMicsMic) -> UUID? {
+    func getMicCameraId(mic: SettingsMicsMic) -> UUID? {
         if isRtmpMic(mic: mic) {
             getRtmpMicCameraId(mic: mic)
         } else if isSrtlaMic(mic: mic) {

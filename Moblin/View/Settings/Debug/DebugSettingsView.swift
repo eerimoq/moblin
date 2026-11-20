@@ -2,6 +2,23 @@ import Collections
 import SwiftUI
 import WebKit
 
+private struct AudioMixerView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var debug: SettingsDebug
+
+    var body: some View {
+        Toggle("Audio mixer", isOn: $debug.audioMixer)
+            .disabled(model.isLive || model.isRecording)
+            .onChange(of: debug.audioMixer) { _ in
+                if model.stream.enabled {
+                    model.reloadStreamIfEnabled(stream: model.stream)
+                } else {
+                    model.updateAudioMixer()
+                }
+            }
+    }
+}
+
 struct DebugSettingsView: View {
     let model: Model
     @ObservedObject var debug: SettingsDebug
@@ -116,6 +133,7 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                AudioMixerView(debug: debug)
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
                 NavigationLink {
                     HttpProxySettingsView(

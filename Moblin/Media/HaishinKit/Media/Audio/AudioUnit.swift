@@ -173,6 +173,11 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     private var latestBuiltinPresentationTimeStamp: CMTime = .invalid
     private var nextBuiltinPresentationTimeStamp: CMTime = .invalid
     private var isOutputtingSilence = false
+    private var isRunning = false
+    private var builtinDelay = 0.0
+    private var mixer: AudioMixer?
+    private let mixerTimer = SimpleTimer(queue: processorPipelineQueue)
+    private var latestMixerLogTime = ContinuousClock.now
 
     override init() {
         super.init()
@@ -200,6 +205,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         session.startRunning()
         processorPipelineQueue.async {
             self.isOutputtingSilence = false
+            self.isRunning = true
+            self.updateMixerTimer()
         }
     }
 
@@ -208,6 +215,8 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.silenceTimer.stop()
             self.latestBuiltinSampleBuffer = nil
+            self.isRunning = false
+            self.updateMixerTimer()
         }
     }
 
@@ -231,6 +240,9 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     }
 
     private func outputSilenceWhileInterrupted() {
+        guard mixer == nil else {
+            return
+        }
         if !isOutputtingSilence {
             guard let latestBuiltinSampleBuffer,
                   let sampleRate = latestBuiltinSampleBuffer.formatDescription?.audioStreamBasicDescription?
@@ -307,6 +319,9 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 manualOutput: true,
                 driftTracker: nil
             )
+            if params.device != nil {
+                self.builtinDelay = params.builtinDelay
+            }
         }
         if let device = params.device {
             try attachDevice(device)
@@ -349,18 +364,26 @@ final class AudioUnit: NSObject, @unchecked Sendable {
     func setMuted(muted: Bool) {
         processorPipelineQueue.async {
             self.muted = muted
+            self.mixer?.setMasterMuted(muted)
         }
     }
 
     func setGain(gain: Float) {
         processorPipelineQueue.async {
             self.gain = gain
+            self.mixer?.setMasterGain(gain)
         }
     }
 
     func setDelay(delay: Double) {
         processorPipelineQueue.async {
             self.delay = delay
+        }
+    }
+
+    func setMixedAudio(sources: [AudioMixerSourceSettings]?) {
+        processorPipelineQueue.async {
+            self.setMixedAudioInternal(sources: sources)
         }
     }
 
@@ -417,6 +440,60 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         session.automaticallyConfiguresApplicationAudioSession = false
     }
 
+    private func setMixedAudioInternal(sources: [AudioMixerSourceSettings]?) {
+        guard let sources else {
+            mixer = nil
+            updateMixerTimer()
+            return
+        }
+        if mixer == nil {
+            logger.info("audio-unit: Audio mixer enabled")
+            let mixer = AudioMixer()
+            mixer.setMasterGain(gain)
+            mixer.setMasterMuted(muted)
+            self.mixer = mixer
+            updateMixerTimer()
+        }
+        mixer?.setSources(sources)
+    }
+
+    private func updateMixerTimer() {
+        if isRunning, mixer != nil {
+            let interval = Double(audioMixerFramesPerBlock) / audioMixerSampleRate
+            mixerTimer.startPeriodic(interval: interval) { [weak self] in
+                self?.handleMixerTimer()
+            }
+        } else {
+            mixerTimer.stop()
+        }
+    }
+
+    private func handleMixerTimer() {
+        guard let mixer, let processor else {
+            return
+        }
+        while let block = mixer.renderNextBlock(now: currentPresentationTimeStamp()) {
+            if let sampleBuffer = block.buffer.makeSampleBuffer(block.presentationTimeStamp) {
+                appendOutputSampleBuffer(processor, sampleBuffer, block.presentationTimeStamp)
+            }
+        }
+        if logger.debugEnabled, latestMixerLogTime.duration(to: .now) > .seconds(10) {
+            latestMixerLogTime = .now
+            logMixerStats(mixer)
+        }
+    }
+
+    private func logMixerStats(_ mixer: AudioMixer) {
+        var inputs: [String] = []
+        if let input = mixer.builtinInput {
+            inputs.append("builtin \(input.numberOfSlips) slips, \(input.numberOfResyncs) resyncs")
+        }
+        for (cameraId, input) in mixer.bufferedInputs {
+            inputs.append("\(cameraId) \(input.numberOfResyncs) resyncs")
+        }
+        logger.debug("audio-mixer: \(mixer.numberOfSkips) skips. \(inputs.joined(separator: ", "))")
+    }
+
     private func setTalkbackInternal(cameraId: UUID?) {
         talkbackCameraId = cameraId
         talkbackPlayer?.stop()
@@ -458,6 +535,13 @@ final class AudioUnit: NSObject, @unchecked Sendable {
             seconds: delay,
             preferredTimescale: presentationTimeStamp.timescale
         )
+        appendOutputSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
+    }
+
+    private func appendOutputSampleBuffer(_ processor: Processor,
+                                          _ sampleBuffer: CMSampleBuffer,
+                                          _ presentationTimeStamp: CMTime)
+    {
         guard presentationTimeStamp > latestSampleBufferAppendTime else {
             numberOfDiscardedSampleBuffers += 1
             return
@@ -552,6 +636,11 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
         let presentationTimeStamp = syncTimeToHost(processor: processor, sampleBuffer: sampleBuffer)
+        if let mixer {
+            let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: builtinDelay)
+            mixer.appendBuiltin(sampleBuffer, presentationTimeStamp)
+            return
+        }
         updateBuiltinAudio(sampleBuffer, presentationTimeStamp)
         // if baseTimestamp.isNaN {
         //     baseTimestamp = sampleBuffer.presentationTimeStamp.seconds
@@ -611,6 +700,10 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         if cameraId == talkbackCameraId {
             appendTalkback(sampleBuffer: sampleBuffer)
+        }
+        if let mixer {
+            mixer.appendBuffered(cameraId: cameraId, sampleBuffer)
+            return
         }
         guard selectedBufferedAudioId == cameraId, let processor else {
             return

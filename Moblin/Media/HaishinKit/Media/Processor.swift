@@ -112,6 +112,10 @@ final class Processor: @unchecked Sendable {
         audio.setDelay(delay: delay)
     }
 
+    func setMixedAudio(sources: [AudioMixerSourceSettings]?) {
+        audio.setMixedAudio(sources: sources)
+    }
+
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         audio.encoder.setSettings(settings: settings)
     }
