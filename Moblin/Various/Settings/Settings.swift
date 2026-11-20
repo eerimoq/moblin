@@ -851,6 +851,29 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsZoomAndSceneButtonsLayout: String, Codable, CaseIterable {
+    case stacked = "Stacked"
+    case oneRow = "One row"
+    case verticalZoom = "Vertical zoom"
+    case verticalScenes = "Vertical scenes"
+    case vertical = "Vertical"
+
+    func toString() -> String {
+        switch self {
+        case .stacked:
+            String(localized: "Stacked")
+        case .oneRow:
+            String(localized: "One row")
+        case .verticalZoom:
+            String(localized: "Vertical zoom")
+        case .verticalScenes:
+            String(localized: "Vertical scenes")
+        case .vertical:
+            String(localized: "Vertical")
+        }
+    }
+}
+
 enum SettingsAppMode: String, Codable, CaseIterable {
     case streaming
     case chatPhone
@@ -1344,7 +1367,7 @@ class Database: Codable, ObservableObject {
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
-    @Published var verticalButtons: Bool = false
+    @Published var zoomAndSceneButtonsLayout: SettingsZoomAndSceneButtonsLayout = .stacked
     @Published var bigAudioLevelMeter: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
@@ -1473,6 +1496,7 @@ class Database: Codable, ObservableObject {
         case selfieStick
         case bigButtons
         case verticalButtons
+        case zoomAndSceneButtonsLayout
         case bigAudioLevelMeter
         case ristServer
         case disconnectProtection
@@ -1568,7 +1592,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
-        try container.encode(.verticalButtons, verticalButtons)
+        try container.encode(.zoomAndSceneButtonsLayout, zoomAndSceneButtonsLayout)
         try container.encode(.bigAudioLevelMeter, bigAudioLevelMeter)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
@@ -1710,7 +1734,11 @@ class Database: Codable, ObservableObject {
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
-        verticalButtons = container.decode(.verticalButtons, Bool.self, false)
+        zoomAndSceneButtonsLayout = container.decode(
+            .zoomAndSceneButtonsLayout,
+            SettingsZoomAndSceneButtonsLayout.self,
+            container.decode(.verticalButtons, Bool.self, false) ? .vertical : .stacked
+        )
         bigAudioLevelMeter = container.decode(.bigAudioLevelMeter, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(
@@ -2193,6 +2221,10 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .photoShoot,
                                  imageOn: "person.crop.square.badge.camera.fill",
                                  imageOff: "person.crop.square.badge.camera",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .soundBoard,
+                                 imageOn: "speaker.wave.2.bubble",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }

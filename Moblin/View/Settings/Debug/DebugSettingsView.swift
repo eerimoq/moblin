@@ -68,6 +68,10 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.debugOverlay) { _ in
                         model.updateDebugOverlay()
                     }
+                Toggle("Show taps", isOn: $debug.showTaps)
+                    .onChange(of: debug.showTaps) { _ in
+                        model.updateShowTaps()
+                    }
             }
             Section {
                 NavigationLink {

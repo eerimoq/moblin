@@ -186,15 +186,23 @@ struct DisplaySettingsView: View {
                 Text("Control bar")
             }
             Section {
-                Toggle("Big buttons", isOn: $database.bigButtons)
-                Toggle("Big audio level meter", isOn: $database.bigAudioLevelMeter)
-                Toggle("Vertical buttons", isOn: $database.verticalButtons)
+                NavigationLink {
+                    LocalOverlaysStatusSettingsView(database: database, show: database.show)
+                } label: {
+                    Text("Status")
+                }
+                NavigationLink {
+                    LocalOverlaysZoomAndSceneControlsSettingsView(database: database, show: database.show)
+                } label: {
+                    Text("Zoom and scene controls")
+                }
+            } header: {
+                Text("Local overlays")
+            } footer: {
+                Text("Local overlays do not appear on stream.")
+            }
+            Section {
                 if database.showAllSettings {
-                    NavigationLink {
-                        LocalOverlaysSettingsView(show: database.show)
-                    } label: {
-                        Text("Local overlays")
-                    }
                     ExternalDisplayContentView(model: model, database: database)
                     NavigationLink {
                         LocalOverlaysNetworkInterfaceNamesSettingsView(model: model, database: database)

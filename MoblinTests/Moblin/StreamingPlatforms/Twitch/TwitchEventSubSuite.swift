@@ -21,6 +21,7 @@ private final class Delegate: TwitchEventSubDelegate {
     var predictions: [(phase: String, event: TwitchEventSubChannelPredictionEvent)] = []
     var moderates: [TwitchEventSubChannelModerateEvent] = []
     var shoutoutCreates: [TwitchEventSubChannelShoutoutCreateEvent] = []
+    var shoutoutReceives: [TwitchEventSubChannelShoutoutReceiveEvent] = []
     var unauthorizedCount = 0
     var notifications: [String] = []
 
@@ -116,6 +117,10 @@ private final class Delegate: TwitchEventSubDelegate {
 
     func twitchEventSubChannelShoutoutCreate(event: TwitchEventSubChannelShoutoutCreateEvent) {
         shoutoutCreates.append(event)
+    }
+
+    func twitchEventSubChannelShoutoutReceive(event: TwitchEventSubChannelShoutoutReceiveEvent) {
+        shoutoutReceives.append(event)
     }
 
     func twitchEventSubUnauthorized() {
@@ -686,6 +691,30 @@ struct TwitchEventSubSuite {
         #expect(delegate.shoutoutCreates.count == 1)
         #expect(delegate.shoutoutCreates.first?.moderator_user_name == "Mod")
         #expect(delegate.shoutoutCreates.first?.to_broadcaster_user_name == "Friend")
+        #expect(delegate.notifications.count == 1)
+    }
+
+    @Test
+    func shoutoutReceive() {
+        let delegate = Delegate()
+        makeEventSub(delegate: delegate).handleMessage(messageText: notification(
+            subscriptionType: "channel.shoutout.receive",
+            event: #"""
+            {
+              "broadcaster_user_id": "111",
+              "broadcaster_user_login": "me",
+              "broadcaster_user_name": "Me",
+              "from_broadcaster_user_id": "555",
+              "from_broadcaster_user_login": "friend",
+              "from_broadcaster_user_name": "Friend",
+              "viewer_count": 860,
+              "started_at": "2026-09-06T10:00:00.000Z"
+            }
+            """#
+        ))
+        #expect(delegate.shoutoutReceives.count == 1)
+        #expect(delegate.shoutoutReceives.first?.from_broadcaster_user_name == "Friend")
+        #expect(delegate.shoutoutReceives.first?.viewer_count == 860)
         #expect(delegate.notifications.count == 1)
     }
 

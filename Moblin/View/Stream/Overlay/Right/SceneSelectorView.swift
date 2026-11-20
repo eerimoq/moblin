@@ -119,6 +119,5 @@ struct StreamOverlayRightSceneVSelectorView: View {
         }
         .foregroundStyle(.white)
         .frame(width: sceneSegmentWidth)
-        .padding(.bottom, 5)
     }
 }

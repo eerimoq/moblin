@@ -566,12 +566,15 @@ extension Model {
         updateStreamUptime(now: .now)
     }
 
-    private func onDisconnected(reason: String) {
+    private func onDisconnected(reason: String, cause: String? = nil) {
         guard streaming else {
             return
         }
         logger.info("stream: Disconnected with reason: \(reason)")
-        let subTitle = String(localized: "Attempting again in 5 seconds.")
+        var subTitle = String(localized: "Attempting again in 5 seconds.")
+        if let cause {
+            subTitle = "\(cause)\n\(subTitle)"
+        }
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
             makeFffffToast(subTitle: subTitle)
@@ -931,9 +934,9 @@ extension Model: MediaDelegate {
         }
     }
 
-    nonisolated func mediaOnRtmpDisconnected(_ message: String) {
+    nonisolated func mediaOnRtmpDisconnected(_ reason: RtmpDisconnectReason) {
         DispatchQueue.main.async {
-            self.onDisconnected(reason: "RTMP disconnected with message \(message)")
+            self.onDisconnected(reason: "RTMP disconnected with reason \(reason)", cause: reason.toString())
         }
     }
 

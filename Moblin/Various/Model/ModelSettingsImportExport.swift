@@ -10,8 +10,8 @@ extension Model {
     func importSettingsFromFile(url: URL, completion: @escaping @MainActor (Bool) -> Void) {
         cleanupBeforeImport()
         settings.importFromFile(url: url) {
-            self.importDone(message: $0)
             completion($0 == nil)
+            self.importDone(message: $0)
         }
     }
 
@@ -46,8 +46,8 @@ extension Model {
         } else if let settings = UIPasteboard.general.string {
             cleanupBeforeImport()
             self.settings.importFromClipboard(settings: settings) {
-                self.importDone(message: $0)
                 completion()
+                self.importDone(message: $0)
             }
         } else {
             importFailed(message: String(localized: "No settings found in clipboard"))

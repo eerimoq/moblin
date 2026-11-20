@@ -1,5 +1,7 @@
 import AVFoundation
 
+let extendedVideoHeader: UInt8 = 0b1000_0000
+
 enum FlvAacPacketType: UInt8 {
     case seq = 0
     case raw = 1

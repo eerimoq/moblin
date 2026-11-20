@@ -7,5 +7,6 @@ struct ThermalStateView: View {
         Image(systemName: "flame")
             .font(.system(size: 11))
             .foregroundStyle(thermalState.color())
+            .contentShape(Rectangle().inset(by: -12))
     }
 }

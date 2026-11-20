@@ -516,12 +516,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
     @Published var adaptiveBitrateEnabled: Bool = true
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
-    var mpegtsPacketsPerPacketRemove: Int = 7
     @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     @Published var implementation: SettingsStreamSrtImplementation = .moblin
     @Published var bigPackets: Bool = true
-    var bigPacketsMigrated: Bool = false
-    var implemenationMigrated: Bool = false
 
     init() {}
 
@@ -532,12 +529,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
         case adaptiveBitrateEnabled
         case adaptiveBitrate
         case connectionPriorities
-        case mpegtsPacketsPerPacket
         case dnsLookupStrategy
         case implementation
         case bigPackets
-        case bigPacketsMigrated
-        case implemenationMigrated
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -548,12 +542,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
         try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
         try container.encode(.adaptiveBitrate, adaptiveBitrate)
         try container.encode(.connectionPriorities, connectionPriorities)
-        try container.encode(.mpegtsPacketsPerPacket, mpegtsPacketsPerPacketRemove)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
         try container.encode(.implementation, implementation)
         try container.encode(.bigPackets, bigPackets)
-        try container.encode(.bigPacketsMigrated, bigPacketsMigrated)
-        try container.encode(.implemenationMigrated, implemenationMigrated)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -566,22 +557,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
         connectionPriorities = container.decode(.connectionPriorities,
                                                 SettingsStreamSrtConnectionPriorities.self,
                                                 .init())
-        mpegtsPacketsPerPacketRemove = container.decode(.mpegtsPacketsPerPacket, Int.self, 7)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
         implementation = container.decode(.implementation, SettingsStreamSrtImplementation.self, .moblin)
         bigPackets = container.decode(.bigPackets, Bool.self, true)
-        bigPacketsMigrated = container.decode(.bigPacketsMigrated, Bool.self, false)
-        if !bigPacketsMigrated {
-            bigPackets = mpegtsPacketsPerPacketRemove == 7
-            bigPacketsMigrated = true
-        }
-        implemenationMigrated = container.decode(.implemenationMigrated, Bool.self, false)
-        if !implemenationMigrated {
-            if latency < 1000 {
-                implementation = .official
-            }
-            implemenationMigrated = true
-        }
     }
 
     func mpegtsPacketsPerPacket() -> Int {
@@ -600,12 +578,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
         new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         new.adaptiveBitrate = adaptiveBitrate.clone()
         new.connectionPriorities = connectionPriorities.clone()
-        new.mpegtsPacketsPerPacketRemove = mpegtsPacketsPerPacketRemove
         new.dnsLookupStrategy = dnsLookupStrategy
         new.implementation = implementation
         new.bigPackets = bigPackets
-        new.bigPacketsMigrated = bigPacketsMigrated
-        new.implemenationMigrated = implemenationMigrated
         return new
     }
 }
@@ -1271,7 +1246,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     var twitchRewards: [SettingsStreamTwitchReward] = []
     @Published var twitchRaidsSent: [SettingsStreamTwitchRaidChannel] = []
     @Published var twitchRaidsReceived: [SettingsStreamTwitchRaidChannel] = []
-    @Published var twitchSendMessagesTo: Bool = true
     @Published var kickChannelName: String = ""
     @Published var kickChannelId: String?
     @Published var kickChatroomChannelId: String?
@@ -1280,7 +1254,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var kickLoggedIn: Bool = false
     var kickWantsToBeLoggedIn: Bool = false
     var kickNotLoggedInCount: Int = 0
-    @Published var kickSendMessagesTo: Bool = true
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
     @Published var youTubeAuthState: OIDAuthState?
@@ -1373,7 +1346,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case twitchRewards
         case twitchRaidsSent
         case twitchRaidsReceived
-        case twitchSendMessagesTo
         case kickChannelName
         case kickChannelId
         case kickChatroomChannelId
@@ -1382,7 +1354,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         case kickLoggedIn
         case kickWantsToBeLoggedIn
         case kickNotLoggedInCount
-        case kickSendMessagesTo
         case kickChatAlerts
         case kickToastAlerts
         case youTubeVideoId
@@ -1468,7 +1439,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.twitchRaidsSent, twitchRaidsSent)
         try container.encode(.twitchRaidsReceived, twitchRaidsReceived)
-        try container.encode(.twitchSendMessagesTo, twitchSendMessagesTo)
         try container.encode(.twitchChatAlerts, twitchChatAlerts)
         try container.encode(.twitchToastAlerts, twitchToastAlerts)
         try container.encode(.kickChannelName, kickChannelName)
@@ -1479,7 +1449,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.kickLoggedIn, kickLoggedIn)
         try container.encode(.kickWantsToBeLoggedIn, kickWantsToBeLoggedIn)
         try container.encode(.kickNotLoggedInCount, kickNotLoggedInCount)
-        try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
         try container.encode(.youTubeVideoId, youTubeVideoIds)
@@ -1565,7 +1534,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         twitchRaidsReceived = container.decode(.twitchRaidsReceived,
                                                [SettingsStreamTwitchRaidChannel].self,
                                                [])
-        twitchSendMessagesTo = container.decode(.twitchSendMessagesTo, Bool.self, true)
         twitchChatAlerts = container.decode(.twitchChatAlerts, SettingsTwitchAlerts.self, .init())
         twitchToastAlerts = container.decode(.twitchToastAlerts, SettingsTwitchAlerts.self, .init())
         if let twitchShowFollows {
@@ -1581,7 +1549,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         kickLoggedIn = container.decode(.kickLoggedIn, Bool.self, false)
         kickWantsToBeLoggedIn = container.decode(.kickWantsToBeLoggedIn, Bool.self, kickLoggedIn)
         kickNotLoggedInCount = container.decode(.kickNotLoggedInCount, Int.self, 0)
-        kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
         youTubeVideoIds = container.decode(.youTubeVideoId, String.self, "")
@@ -1684,7 +1651,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.twitchRewards = twitchRewards
         new.twitchRaidsSent = twitchRaidsSent.map { $0.clone() }
         new.twitchRaidsReceived = twitchRaidsReceived.map { $0.clone() }
-        new.twitchSendMessagesTo = twitchSendMessagesTo
         new.twitchChatAlerts = twitchChatAlerts.clone()
         new.twitchToastAlerts = twitchToastAlerts.clone()
         new.twitchAccessToken = twitchAccessToken
@@ -1705,7 +1671,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         if kickLoggedIn {
             storeKickAccessTokenInKeychain(streamId: new.id, accessToken: kickAccessToken)
         }
-        new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
         new.youTubeAuthState = youTubeAuthState

@@ -4,67 +4,6 @@ import Testing
 
 private let rtmpQueue = DispatchQueue(label: "test")
 
-private class ModelMock {
-    private let status = MessageQueue<String>()
-    private let connected = MessageQueue<Void>()
-
-    func waitForStatus() async -> String {
-        await status.get()
-    }
-
-    func waitForConnected() async {
-        await connected.get()
-    }
-}
-
-extension ModelMock: RtmpStreamDelegate {
-    func rtmpStreamStatus(_: RtmpStream, code: String) {
-        logger.info("rtmp-test: Status \(code)")
-        status.put(code)
-    }
-
-    func rtmpStreamConnected(_: RtmpStream) {
-        logger.info("rtmp-test: Connected")
-        connected.put(())
-    }
-}
-
-extension ModelMock: ProcessorDelegate {
-    func streamAudioLevel(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
-
-    func streamLowFpsImage(lowFpsImage _: Data?, frameNumber _: UInt64) {}
-
-    func streamVideoAttachCameraError() {}
-
-    func streamVideoCaptureSessionError(_: String) {}
-
-    func streamVideoBufferedVideoReady(cameraId _: UUID) {}
-
-    func streamVideoBufferedVideoRemoved(cameraId _: UUID) {}
-
-    func streamVideoFps(fps _: Int) {}
-
-    func streamVideoEncoderResolution(resolution _: CGSize) {}
-
-    func streamRecorderInitSegment(data _: Data) {}
-
-    func streamRecorderDataSegment(segment _: Moblin.RecorderDataSegment) {}
-
-    func streamRecorderFinished() {}
-
-    func streamAudio(sampleBuffer _: CMSampleBuffer) {}
-
-    func streamNoTorch() {}
-
-    func streamPhotoTaken() {}
-
-    func streamSetZoomX(x _: Float) {}
-
-    func streamSetExposureBias(bias _: Float) {}
-
-    func streamSelectedFps(auto _: Bool) {}
-}
-
 private actor RtmpServerMock {
     private let listener: NWListener
     private var client: NWConnection?
@@ -102,10 +41,14 @@ private actor RtmpServerMock {
         return await input.get()
     }
 
-    func send(chunk: RtmpChunk) {
-        for chunk in chunk.split(maximumSize: 128) {
+    func send(chunk: RtmpChunk, maximumSize: Int = 128) {
+        for chunk in chunk.split(maximumSize: maximumSize) {
             send(data: chunk)
         }
+    }
+
+    func closeClient() {
+        client?.send(content: nil, contentContext: .finalMessage, isComplete: true, completion: .idempotent)
     }
 
     func send(data: Data) {
@@ -154,7 +97,7 @@ struct RtmpStreamSuite {
     @Test
     func basic() async throws {
         let streamKey = "5"
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -195,7 +138,6 @@ struct RtmpStreamSuite {
         ))
         let setChunkSize = try await receiveSetChunkSize(server: server)
         #expect(setChunkSize.size == 8192)
-        #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
@@ -242,7 +184,6 @@ struct RtmpStreamSuite {
                 ]
             )
         ))
-        #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
         await modelMock.waitForConnected()
         rtmpStream.disconnect()
         // @setDataFrame
@@ -264,7 +205,7 @@ struct RtmpStreamSuite {
     @Test
     func youTube() async throws {
         let streamKey = "5"
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -311,7 +252,6 @@ struct RtmpStreamSuite {
         // Nothing below is updated to match Wireshark.
         let setChunkSize = try await receiveSetChunkSize(server: server)
         #expect(setChunkSize.size == 8192)
-        #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
@@ -358,7 +298,6 @@ struct RtmpStreamSuite {
                 ]
             )
         ))
-        #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
         await modelMock.waitForConnected()
         rtmpStream.disconnect()
         // @setDataFrame
@@ -379,7 +318,7 @@ struct RtmpStreamSuite {
 
     @Test
     func acknowledgementChunkSplitOverTwoReads() {
-        let modelMock = ModelMock()
+        let modelMock = RtmpModelMock()
         let processor = Processor(
             delegate: modelMock,
             colorRange: .full
@@ -388,17 +327,16 @@ struct RtmpStreamSuite {
                                     processor: processor,
                                     delegate: modelMock,
                                     queue: rtmpQueue)
-        let connection = RtmpConnection(name: "test", queue: rtmpQueue)
-        connection.stream = rtmpStream
         rtmpStream.info.onWritten(sequence: 14000)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeZeroChunk = Data([0x02, 0, 0, 0, 0, 0, 4, 0x03, 0, 0, 0, 0]) + UInt32(1).bigEndian.data
-        #expect(connection.socketDataReceived(data: typeZeroChunk).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: typeZeroChunk).isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 10)
         let typeThreeChunk = Data([0xC2]) + UInt32(14001).bigEndian.data
-        let buffered = connection.socketDataReceived(data: typeThreeChunk.prefix(3))
+        let buffered = rtmpStream.socketDataReceived(rtmpStream.socket, data: typeThreeChunk.prefix(3))
         #expect(buffered == typeThreeChunk.prefix(3))
-        #expect(connection.socketDataReceived(data: buffered + typeThreeChunk.suffix(2)).isEmpty)
+        #expect(rtmpStream.socketDataReceived(rtmpStream.socket, data: buffered + typeThreeChunk.suffix(2))
+            .isEmpty)
         #expect(rtmpStream.info.stats.value.packetsInFlight == 0)
     }
 
@@ -639,4 +577,417 @@ private func readMessage(data: Data) -> RtmpMessage? {
     let messages = readMessages(data: data)
     #expect(messages.count == 1)
     return messages.first
+}
+
+private final class ClientMessageReader {
+    private let reader = RtmpChunkReader()
+    private var buffer = Data()
+    private var raw = Data()
+    private var messages: [(RtmpMessage, Data)] = []
+
+    func next(server: RtmpServerMock) async -> (RtmpMessage, Data) {
+        while messages.isEmpty {
+            let data = await server.receive(count: 1)
+            raw += data
+            buffer += data
+            buffer = reader.read(data: buffer) { message in
+                messages.append((message, raw))
+                raw = Data()
+            }
+        }
+        let (message, raw) = messages.removeFirst()
+        if let message = message as? RtmpSetChunkSizeMessage {
+            reader.maximumChunkSize = Int(message.size)
+        }
+        return (message, raw)
+    }
+
+    func nextMessage(server: RtmpServerMock) async -> RtmpMessage {
+        await next(server: server).0
+    }
+
+    func nextCommand(server: RtmpServerMock) async throws -> RtmpCommandMessage {
+        try #require(await nextMessage(server: server) as? RtmpCommandMessage)
+    }
+}
+
+private struct PublishingStream {
+    let modelMock: RtmpModelMock
+    let processor: Processor
+    let server: RtmpServerMock
+    let rtmpStream: RtmpStream
+    let reader: ClientMessageReader
+}
+
+private func makeStatus(code: String, description: String = "", level: String = "status") -> AsValue {
+    .object([
+        "level": .string(level),
+        "code": .string(code),
+        "description": .string(description),
+    ])
+}
+
+private func sendCommand(server: RtmpServerMock,
+                         transactionId: Int,
+                         commandName: RtmpCommandName,
+                         arguments: [AsValue],
+                         maximumSize: Int = 128) async
+{
+    await server.send(chunk: RtmpChunk(
+        type: .zero,
+        chunkStreamId: 3,
+        message: RtmpCommandMessage(
+            streamId: 0,
+            transactionId: transactionId,
+            commandType: .amf0Command,
+            commandName: commandName,
+            commandObject: nil,
+            arguments: arguments
+        )
+    ), maximumSize: maximumSize)
+}
+
+private func connectAndPublish() async throws -> PublishingStream {
+    let modelMock = RtmpModelMock()
+    let processor = Processor(delegate: modelMock, colorRange: .full)
+    let server = try RtmpServerMock()
+    let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+    let reader = ClientMessageReader()
+    await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/live/5")
+    rtmpStream.connect()
+    _ = await receiveC0C1(server: server)
+    await sendS0S1(server: server)
+    _ = await receiveC2(server: server)
+    await sendS2(server: server)
+    #expect(try await reader.nextCommand(server: server).commandName == .connect)
+    await sendWindowAcknowledgementSize(server: server, chunkStreamId: 2, size: 2_500_000)
+    #expect(await reader.nextMessage(server: server) is RtmpWindowAcknowledgementSizeMessage)
+    await sendCommand(server: server,
+                      transactionId: 1,
+                      commandName: .result,
+                      arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+    #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+    #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
+    #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+    let createStream = try await reader.nextCommand(server: server)
+    #expect(createStream.commandName == .createStream)
+    await sendCommand(server: server,
+                      transactionId: createStream.transactionId,
+                      commandName: .result,
+                      arguments: [.number(1)])
+    let publish = try await reader.nextCommand(server: server)
+    #expect(publish.commandName == .publish)
+    #expect(publish.streamId == 1)
+    await sendCommand(server: server,
+                      transactionId: 0,
+                      commandName: .onStatus,
+                      arguments: [makeStatus(code: "NetStream.Publish.Start")])
+    await modelMock.waitForConnected()
+    let setDataFrame = try #require(await reader.nextMessage(server: server) as? RtmpDataMessage)
+    #expect(setDataFrame.handlerName == "@setDataFrame")
+    #expect(setDataFrame.streamId == 1)
+    return PublishingStream(modelMock: modelMock,
+                            processor: processor,
+                            server: server,
+                            rtmpStream: rtmpStream,
+                            reader: reader)
+}
+
+private func expectUnpublish(_ stream: PublishingStream) async throws {
+    #expect(try await stream.reader.nextCommand(server: stream.server).commandName == .fcUnpublish)
+    let deleteStream = try await stream.reader.nextCommand(server: stream.server)
+    #expect(deleteStream.commandName == .deleteStream)
+    #expect(deleteStream.arguments == [.number(1)])
+    let closeStream = try await stream.reader.nextCommand(server: stream.server)
+    #expect(closeStream.commandName == .closeStream)
+    #expect(closeStream.arguments == [.number(1)])
+}
+
+extension RtmpStreamSuite {
+    @Test
+    func pingIsAnsweredWithPong() async throws {
+        let stream = try await connectAndPublish()
+        await stream.server.send(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: 2,
+            message: RtmpUserControlMessage(event: .ping, value: 1234)
+        ))
+        let (message, raw) = await stream.reader.next(server: stream.server)
+        let pong = try #require(message as? RtmpUserControlMessage)
+        #expect(pong.event == .pong)
+        #expect(pong.value == 1234)
+        #expect(raw.first == 0x02)
+    }
+
+    @Test
+    func serverChunkSizeIsUsedWhenReading() async throws {
+        let stream = try await connectAndPublish()
+        await stream.server.send(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: 2,
+            message: RtmpSetChunkSizeMessage(4096)
+        ))
+        await sendCommand(server: stream.server,
+                          transactionId: 0,
+                          commandName: .onStatus,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Failed",
+                                                 description: String(repeating: "x", count: 300))],
+                          maximumSize: 4096)
+        #expect(await stream.modelMock.waitForDisconnected() == .connectionLost)
+    }
+
+    @Test
+    func closeCommandUnpublishes() async throws {
+        let stream = try await connectAndPublish()
+        await sendCommand(server: stream.server, transactionId: 0, commandName: .close, arguments: [])
+        try await expectUnpublish(stream)
+    }
+
+    @Test
+    func connectClosedStatusUnpublishes() async throws {
+        let stream = try await connectAndPublish()
+        await sendCommand(server: stream.server,
+                          transactionId: 0,
+                          commandName: .onStatus,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Closed")])
+        #expect(await stream.modelMock.waitForDisconnected() == .connectionLost)
+        try await expectUnpublish(stream)
+    }
+
+    @Test
+    func aacAudio() async throws {
+        let stream = try await connectAndPublish()
+        let format = makeAacFormat()
+        stream.rtmpStream.audioEncoderOutputFormat(format)
+        var (message, raw) = await stream.reader.next(server: stream.server)
+        #expect(message.type == .audio)
+        #expect(message.streamId == 1)
+        #expect(message.timestamp == 0)
+        #expect(message.encoded == Data([0xAF, 0x00, 0x11, 0x90]))
+        #expect(raw.prefix(1) == Data([0x08]))
+        var timestamps: [UInt32] = []
+        for (index, pts) in [10240, 10261, 10282, 10303, 10324, 10345].enumerated() {
+            stream.rtmpStream.audioEncoderOutputBuffer(
+                makeAudioBuffer(format: format, payload: Data([UInt8(index), 1, 2])),
+                mediaTime(Int64(pts))
+            )
+            (message, raw) = await stream.reader.next(server: stream.server)
+            #expect(message.type == .audio)
+            #expect(message.encoded == Data([0xAF, 0x01, UInt8(index), 1, 2]))
+            #expect(raw.prefix(1) == Data([0x48]))
+            timestamps.append(message.timestamp)
+        }
+        #expect(timestamps == [0, 20, 41, 61, 82, 102])
+    }
+
+    @Test
+    func audioBuffersBeforeBaseOrOutOfOrderAreDropped() async throws {
+        let stream = try await connectAndPublish()
+        let format = makeAacFormat()
+        var timestamps: [UInt32] = []
+        for (index, pts) in [10240, 10200, 10261, 10250, 10282].enumerated() {
+            stream.rtmpStream.audioEncoderOutputBuffer(
+                makeAudioBuffer(format: format, payload: Data([UInt8(index)])),
+                mediaTime(Int64(pts))
+            )
+        }
+        for _ in 0 ..< 3 {
+            let message = await stream.reader.nextMessage(server: stream.server)
+            #expect(message.type == .audio)
+            timestamps.append(message.timestamp)
+        }
+        #expect(timestamps == [0, 20, 41])
+    }
+
+    @Test
+    func h264Video() async throws {
+        let stream = try await connectAndPublish()
+        let formatDescription = try makeH264FormatDescription()
+        let avcC = try #require(MpegTsVideoConfigAvc.getAvcC(formatDescription))
+        let encoder = stream.processor.getVideoEncoder()
+        stream.rtmpStream.videoEncoderOutputFormat(encoder, formatDescription)
+        var (message, raw) = await stream.reader.next(server: stream.server)
+        #expect(message.type == .video)
+        #expect(message.streamId == 1)
+        #expect(message.timestamp == 0)
+        #expect(message.encoded == Data([0x17, 0x00, 0x00, 0x00, 0x00]) + avcC)
+        #expect(raw.prefix(1) == Data([0x09]))
+        var timestamps: [UInt32] = []
+        for (index, dts) in [10240, 10272, 10304, 10336, 10368].enumerated() {
+            let isSync = index == 0
+            try stream.rtmpStream.videoEncoderOutputSampleBuffer(
+                encoder,
+                makeVideoSampleBuffer(formatDescription: formatDescription,
+                                      decodeTimeStamp: mediaTime(Int64(dts)),
+                                      presentationTimeStamp: mediaTime(Int64(dts + 64)),
+                                      isSync: isSync,
+                                      payload: Data([0, 0, 0, 2, isSync ? 0x65 : 0x41, UInt8(index)])),
+                .zero
+            )
+            (message, raw) = await stream.reader.next(server: stream.server)
+            #expect(message.type == .video)
+            #expect(message.encoded == Data([isSync ? 0x17 : 0x27, 0x01, 0x00, 0x00, 62,
+                                             0, 0, 0, 2, isSync ? 0x65 : 0x41, UInt8(index)]))
+            #expect(raw.prefix(1) == Data([0x49]))
+            timestamps.append(message.timestamp)
+        }
+        #expect(timestamps == [0, 31, 62, 93, 125])
+    }
+
+    @Test
+    func audioAndVideoShareBaseTimestamp() async throws {
+        let stream = try await connectAndPublish()
+        let formatDescription = try makeH264FormatDescription()
+        try stream.rtmpStream.videoEncoderOutputSampleBuffer(
+            stream.processor.getVideoEncoder(),
+            makeVideoSampleBuffer(formatDescription: formatDescription,
+                                  decodeTimeStamp: mediaTime(10240),
+                                  presentationTimeStamp: mediaTime(10240),
+                                  isSync: true,
+                                  payload: Data([0, 0, 0, 1, 0x65])),
+            .zero
+        )
+        #expect(await stream.reader.nextMessage(server: stream.server).type == .video)
+        let format = makeAacFormat()
+        stream.rtmpStream.audioEncoderOutputBuffer(
+            makeAudioBuffer(format: format, payload: Data([1])),
+            mediaTime(10200)
+        )
+        stream.rtmpStream.audioEncoderOutputBuffer(
+            makeAudioBuffer(format: format, payload: Data([2])),
+            mediaTime(10261)
+        )
+        stream.rtmpStream.audioEncoderOutputBuffer(
+            makeAudioBuffer(format: format, payload: Data([3])),
+            mediaTime(10282)
+        )
+        let first = await stream.reader.nextMessage(server: stream.server)
+        #expect(first.type == .audio)
+        #expect(first.timestamp == 0)
+        #expect(first.encoded.last == 2)
+        let second = await stream.reader.nextMessage(server: stream.server)
+        #expect(second.timestamp == 20)
+        #expect(second.encoded.last == 3)
+    }
+
+    @Test
+    func serverClosesConnectionAfterPublish() async throws {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        let reader = ClientMessageReader()
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/app/bad")
+        rtmpStream.connect()
+        _ = await receiveC0C1(server: server)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        #expect(try await reader.nextCommand(server: server).commandName == .connect)
+        await sendCommand(server: server,
+                          transactionId: 1,
+                          commandName: .result,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+        #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+        #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
+        #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+        let createStream = try await reader.nextCommand(server: server)
+        await sendCommand(server: server,
+                          transactionId: createStream.transactionId,
+                          commandName: .result,
+                          arguments: [.number(1)])
+        #expect(try await reader.nextCommand(server: server).commandName == .publish)
+        let start = ContinuousClock.now
+        await server.closeClient()
+        #expect(await modelMock.waitForDisconnected() == .streamRejected)
+        #expect(start.duration(to: .now) < .seconds(5))
+    }
+
+    @Test
+    func serverReportsPublishErrorAndClosesConnection() async throws {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        let reader = ClientMessageReader()
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/app/bad")
+        rtmpStream.connect()
+        _ = await receiveC0C1(server: server)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        #expect(try await reader.nextCommand(server: server).commandName == .connect)
+        await sendCommand(server: server,
+                          transactionId: 1,
+                          commandName: .result,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+        #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+        #expect(try await reader.nextCommand(server: server).commandName == .releaseStream)
+        #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+        let createStream = try await reader.nextCommand(server: server)
+        await sendCommand(server: server,
+                          transactionId: createStream.transactionId,
+                          commandName: .result,
+                          arguments: [.number(1)])
+        #expect(try await reader.nextCommand(server: server).commandName == .publish)
+        await sendCommand(server: server,
+                          transactionId: 0,
+                          commandName: .onStatus,
+                          arguments: [makeStatus(code: "NetStream.Publish.BadName",
+                                                 description: "Bad stream key.",
+                                                 level: "error")])
+        await server.closeClient()
+        #expect(await modelMock.waitForDisconnected()
+            == .serverError(code: "NetStream.Publish.BadName", description: "Bad stream key."))
+    }
+
+    @Test
+    func failedCallIsNotReportedAsDisconnectReason() async throws {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        let reader = ClientMessageReader()
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/app/bad")
+        rtmpStream.connect()
+        _ = await receiveC0C1(server: server)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        #expect(try await reader.nextCommand(server: server).commandName == .connect)
+        await sendCommand(server: server,
+                          transactionId: 1,
+                          commandName: .result,
+                          arguments: [makeStatus(code: "NetConnection.Connect.Success")])
+        #expect(await reader.nextMessage(server: server) is RtmpSetChunkSizeMessage)
+        let releaseStream = try await reader.nextCommand(server: server)
+        #expect(releaseStream.commandName == .releaseStream)
+        await sendCommand(server: server,
+                          transactionId: releaseStream.transactionId,
+                          commandName: .error,
+                          arguments: [makeStatus(code: "NetConnection.Call.Failed",
+                                                 description: "Method not found (releaseStream).",
+                                                 level: "error")])
+        #expect(try await reader.nextCommand(server: server).commandName == .fcPublish)
+        let createStream = try await reader.nextCommand(server: server)
+        await sendCommand(server: server,
+                          transactionId: createStream.transactionId,
+                          commandName: .result,
+                          arguments: [.number(1)])
+        #expect(try await reader.nextCommand(server: server).commandName == .publish)
+        await server.closeClient()
+        #expect(await modelMock.waitForDisconnected() == .streamRejected)
+    }
+
+    @Test(arguments: ["rtmp://127.0.0.1:1/app/key", "rtmp://moblin-no-such-host.invalid/app/key"])
+    func unreachableServerIsReportedWithoutWaitingForConnectTimeout(url: String) async {
+        let modelMock = RtmpModelMock()
+        let processor = Processor(delegate: modelMock, colorRange: .full)
+        let rtmpStream = RtmpStream(name: "test", processor: processor, delegate: modelMock, queue: rtmpQueue)
+        rtmpStream.setUrl(url)
+        let start = ContinuousClock.now
+        rtmpStream.connect()
+        #expect(await modelMock.waitForDisconnected() == .connectFailed)
+        #expect(start.duration(to: .now) < .seconds(10))
+    }
 }

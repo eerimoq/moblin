@@ -159,7 +159,7 @@ struct CameraSettingsLutsView: View {
     }
 }
 
-private struct CameraSettingsAppleLogLutView: View {
+struct CameraSettingsAppleLogLutView: View {
     let model: Model
     @ObservedObject var color: SettingsColor
 

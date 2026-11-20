@@ -67,6 +67,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case previewStream = "Preview stream"
     case photoShoot = "Photo shoot"
     case sceneEditor = "Scene editor"
+    case soundBoard = "Sound board"
 
     init(from decoder: any Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -208,6 +209,8 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             String(localized: "Photo shoot")
         case .sceneEditor:
             String(localized: "Scene editor")
+        case .soundBoard:
+            String(localized: "Sound board")
         }
     }
 

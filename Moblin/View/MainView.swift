@@ -112,6 +112,26 @@ private struct PanelButtonsView: View {
     }
 }
 
+private struct PanelButtonsInPanelView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var orientation: Orientation
+    @ObservedObject var panelState: PanelState
+
+    var body: some View {
+        if orientation.isPortrait {
+            if model.panelHidden || !panelState.searching {
+                let backgroundColor = model.panelHidden ? model.showingPanel
+                    .buttonsBackgroundColor() : .clear
+                PanelButtonsView(model: model, backgroundColor: backgroundColor)
+                    .padding(.trailing, 10)
+                    .padding(.top, -7)
+            }
+        } else if !model.panelHidden, !panelState.searching {
+            PanelButtonsView(model: model, backgroundColor: .clear)
+        }
+    }
+}
+
 private struct MenuView: View {
     @EnvironmentObject var model: Model
 
@@ -218,6 +238,11 @@ private struct MenuView: View {
         case .macros:
             NavigationStack {
                 QuickButtonMacrosView(model: model, macros: model.database.macros)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+        case .soundBoard:
+            NavigationStack {
+                QuickButtonSoundBoardView(model: model, gallery: model.database.alertsMediaGallery)
                     .navigationBarTitleDisplayMode(.inline)
             }
         case .none:
@@ -436,6 +461,21 @@ private struct StreamOverlayTapGridView: View {
     }
 }
 
+private struct BrowserWidgetMinimizeButtonView: View {
+    let browserEffect: BrowserEffect
+    @ObservedObject var minimized: BrowserEffectMinimized
+
+    var body: some View {
+        Button {
+            browserEffect.toggleMinimized()
+        } label: {
+            Image(systemName: minimized.value ? "chevron.up.circle.fill" : "chevron.down.circle.fill")
+                .font(.system(size: 30))
+                .foregroundStyle(.white, .black.opacity(0.6))
+        }
+    }
+}
+
 private struct InteractiveBrowserView: View {
     let browser: Browser
     @ObservedObject var browserEffect: BrowserEffect
@@ -453,6 +493,13 @@ private struct InteractiveBrowserView: View {
                 .frame(width: browserSize.width, height: browserSize.height)
                 .scaleEffect(scale)
                 .frame(width: displaySize.width, height: displaySize.height)
+                .overlay(alignment: .bottomTrailing) {
+                    if browserEffect.localOnly {
+                        BrowserWidgetMinimizeButtonView(browserEffect: browserEffect,
+                                                        minimized: browserEffect.minimized)
+                            .padding(4)
+                    }
+                }
                 .position(layoutCenter(layout, displaySize, streamSize))
         }
     }
@@ -589,15 +636,7 @@ struct MainView: View {
             MenuView()
                 .background(.black)
                 .opacity(model.panelHidden ? 0 : 1)
-            if orientation.isPortrait {
-                let backgroundColor = model.panelHidden ? model.showingPanel
-                    .buttonsBackgroundColor() : .clear
-                PanelButtonsView(model: model, backgroundColor: backgroundColor)
-                    .padding(.trailing, 10)
-                    .padding(.top, -7)
-            } else if !model.panelHidden {
-                PanelButtonsView(model: model, backgroundColor: .clear)
-            }
+            PanelButtonsInPanelView(orientation: orientation, panelState: model.panelState)
         }
     }
 

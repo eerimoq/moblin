@@ -1285,6 +1285,20 @@ extension Model: TwitchEventSubDelegate {
         )
     }
 
+    func twitchEventSubChannelShoutoutReceive(event: TwitchEventSubChannelShoutoutReceiveEvent) {
+        appendTwitchChatAlertMessage(
+            user: event.from_broadcaster_user_name,
+            segments: makeTwitchAlertSegments(
+                text: String(localized: "gave you a shoutout to \(event.viewer_count) viewers!")
+            ),
+            title: String(localized: "Shoutout received"),
+            color: .orange,
+            image: "megaphone",
+            kind: .other,
+            sharedChat: nil
+        )
+    }
+
     func twitchEventSubUnauthorized() {
         twitchApiUnauthorized(stream: stream)
     }

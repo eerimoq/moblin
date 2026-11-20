@@ -43,6 +43,7 @@ enum ShowingPanel {
     case streamingButtonSettings
     case live
     case macros
+    case soundBoard
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
@@ -454,6 +455,11 @@ class Snapshot: ObservableObject {
 }
 
 @MainActor
+class PanelState: ObservableObject {
+    @Published var searching = false
+}
+
+@MainActor
 class Orientation: ObservableObject {
     @Published var isPortrait: Bool = false
 }
@@ -515,6 +521,7 @@ final class Model: NSObject, ObservableObject {
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
+    var soundBoardPlayer: AudioPlayer?
     @Published var presentingSceneEditor: Bool = false
     @Published var presentingSettingsImportConfirmation = false
     var pendingSettingsImportAction: (() -> Void)?
@@ -567,6 +574,7 @@ final class Model: NSObject, ObservableObject {
     let externalDisplay = ExternalDisplay()
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
+    let showTaps = ShowTaps()
     let stealthMode = StealthMode()
     let controlBar = ControlBar()
     var faceBackgroundImage: CIImage?
@@ -578,6 +586,7 @@ final class Model: NSObject, ObservableObject {
     let sceneEditor = SceneEditor()
     let sceneSelector = SceneSelector()
     let toast = Toast()
+    let panelState = PanelState()
     let statusOther = StatusOther()
     let statusTopLeft = StatusTopLeft()
     let systemMonitor = SystemMonitor()
@@ -977,6 +986,7 @@ final class Model: NSObject, ObservableObject {
             .autoSceneSwitcher,
             .live,
             .macros,
+            .soundBoard,
         ].contains(type)
     }
 
@@ -1375,6 +1385,9 @@ final class Model: NSObject, ObservableObject {
 
     @objc func handleApplicationDidChangeActive(notification: NSNotification) {
         isAppActive = notification.name == UIApplication.didBecomeActiveNotification
+        if isAppActive {
+            updateShowTaps()
+        }
         guard !isMac() else {
             return
         }
@@ -1816,7 +1829,7 @@ final class Model: NSObject, ObservableObject {
     }
 
     private func backgroundRunLevel() -> BackgroundRunLevel {
-        if (isLive || isRecording) && stream.backgroundStreaming {
+        if isLive || isRecording, stream.backgroundStreaming {
             return .full
         }
         if isLive || isRecording {

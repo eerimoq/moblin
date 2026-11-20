@@ -4,14 +4,7 @@ import UniformTypeIdentifiers
 
 @MainActor
 private func loadSound(model: Model, soundId: UUID) -> AudioPlayer? {
-    let url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
-        .first(where: { $0.id == soundId })
-    {
-        Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
-    } else {
-        model.alertMediaStorage.makePath(id: soundId)
-    }
-    guard let url else {
+    guard let url = model.makeAlertSoundUrl(soundId: soundId) else {
         return nil
     }
     return try? AudioPlayer(contentsOf: url)

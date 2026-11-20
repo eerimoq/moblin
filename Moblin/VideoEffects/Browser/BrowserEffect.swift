@@ -54,6 +54,10 @@ private func addScript(_ configuration: WKWebViewConfiguration,
     ))
 }
 
+class BrowserEffectMinimized: ObservableObject {
+    @Published var value = false
+}
+
 final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     let webView: WKWebView
     private var snapshot: EffectImageCgImage?
@@ -79,6 +83,8 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var suspended: Bool
     private let snapshotConfiguration: WKSnapshotConfiguration
     private let userContentController: WKUserContentController
+    let localOnly: Bool
+    let minimized = BrowserEffectMinimized()
 
     @MainActor
     init(
@@ -93,6 +99,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
+        localOnly = widget.localOnly
         if widget.localOnly {
             mode = .audioOnly
         } else {
@@ -183,6 +190,12 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     @MainActor
     func stop() {
         stopTakeSnapshots()
+    }
+
+    @MainActor
+    func toggleMinimized() {
+        minimized.value.toggle()
+        webView.isHidden = minimized.value
     }
 
     @MainActor
