@@ -173,6 +173,28 @@ private struct BitrateStatusView: View {
     }
 }
 
+// Shows a bitrate reported by something external over remote control (a
+// receiving server/relay, say) rather than measured on the phone itself -
+// hidden until a value has actually arrived, see isShowingStatusServerBitrate().
+private struct ServerBitrateStatusView: View {
+    let model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var serverBitrate: ServerBitrate
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusServerBitrate() {
+            StreamOverlayIconAndTextView(
+                icon: "antenna.radiowaves.left.and.right",
+                text: serverBitrate.speedAndTotal,
+                textPlacement: textPlacement,
+                color: .white,
+                iconBackgroundColor: serverBitrate.statusIconColor ?? backgroundColor
+            )
+        }
+    }
+}
+
 @MainActor
 private func netStreamColor(model: Model) -> Color {
     if model.isStreaming() {
@@ -593,6 +615,10 @@ private struct StatusesView: View {
                           show: model.database.show,
                           bitrate: model.bitrate,
                           textPlacement: textPlacement)
+        ServerBitrateStatusView(model: model,
+                                show: model.database.show,
+                                serverBitrate: model.serverBitrate,
+                                textPlacement: textPlacement)
         BondingStatusView(show: model.database.show,
                           bonding: model.bonding,
                           textPlacement: textPlacement)

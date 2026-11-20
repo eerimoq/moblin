@@ -52,6 +52,8 @@ protocol RemoteControlStreamerDelegate: AnyObject {
                                    onCompleted: @escaping (Int, [SettingsHttpHeader], Data) -> Void)
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
+    func remoteControlStreamerShowToast(title: String, subTitle: String?, type: RemoteControlToastType)
+    func remoteControlStreamerSetServerBitrate(bitsPerSecond: Int64?)
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
     func remoteControlStreamerSetGimbalTracking(on: Bool)
     func remoteControlStreamerSetGimbalMovement(x: Float, y: Float)
@@ -476,6 +478,12 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .triggerReaction(reaction: reaction):
             delegate.remoteControlStreamerTriggerReaction(reaction: reaction)
+            sendEmptyOkResponse(id: id)
+        case let .showToast(title: title, subTitle: subTitle, type: type):
+            delegate.remoteControlStreamerShowToast(title: title, subTitle: subTitle, type: type)
+            sendEmptyOkResponse(id: id)
+        case let .setServerBitrate(bitsPerSecond: bitsPerSecond):
+            delegate.remoteControlStreamerSetServerBitrate(bitsPerSecond: bitsPerSecond)
             sendEmptyOkResponse(id: id)
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlStreamerMoveToGimbalPreset(id: presetId)
