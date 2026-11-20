@@ -4,6 +4,29 @@ import Foundation
 private let noBackZoomPresetId = UUID()
 private let noFrontZoomPresetId = UUID()
 
+enum LowEnergyCameraKind: Hashable {
+    case triple
+    case dual
+    case wideDual
+}
+
+enum LowEnergyCameraLens {
+    case ultraWide
+    case wide
+    case telephoto
+
+    var deviceType: AVCaptureDevice.DeviceType {
+        switch self {
+        case .ultraWide:
+            .builtInUltraWideCamera
+        case .wide:
+            .builtInWideAngleCamera
+        case .telephoto:
+            .builtInTelephotoCamera
+        }
+    }
+}
+
 #if targetEnvironment(macCatalyst)
 @MainActor
 class MacZoomRamp {
@@ -90,11 +113,11 @@ extension Model {
                 setZoomXWhenInRange(x: preset.x)
                 switch getSelectedScene()?.videoSource.cameraPosition {
                 case .backTripleLowEnergy:
-                    attachBackTripleLowEnergyCamera(force: false)
+                    attachBackTripleLowEnergyCamera(force: false, selectLensForZoom: true)
                 case .backDualLowEnergy:
-                    attachBackDualLowEnergyCamera(force: false)
+                    attachBackDualLowEnergyCamera(force: false, selectLensForZoom: true)
                 case .backWideDualLowEnergy:
-                    attachBackWideDualLowEnergyCamera(force: false)
+                    attachBackWideDualLowEnergyCamera(force: false, selectLensForZoom: true)
                 default:
                     break
                 }

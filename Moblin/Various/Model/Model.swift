@@ -577,6 +577,7 @@ final class Model: NSObject, ObservableObject {
     let createWidgetWizard = CreateWidgetWizard()
     let createSceneWizard = CreateSceneWizard()
     let zoom = Zoom()
+    var lowEnergyCameraSelectedLensByKind: [LowEnergyCameraKind: LowEnergyCameraLens] = [:]
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let musicPlaylist = MusicPlaylist()
@@ -2903,44 +2904,59 @@ final class Model: NSObject, ObservableObject {
         return false
     }
 
-    func attachBackTripleLowEnergyCamera(force: Bool = true) {
-        attachBackLowEnergyCamera(bestDeviceType: .builtInTripleCamera, force: force) { backX, switchOverX in
+    func attachBackTripleLowEnergyCamera(force: Bool = true, selectLensForZoom: Bool = false) {
+        attachBackLowEnergyCamera(
+            kind: .triple,
+            bestDeviceType: .builtInTripleCamera,
+            force: force,
+            selectLensForZoom: selectLensForZoom
+        ) { backX, switchOverX in
             if backX < 1.0 {
-                .builtInUltraWideCamera
+                .ultraWide
             } else if backX < switchOverX {
-                .builtInWideAngleCamera
+                .wide
             } else {
-                .builtInTelephotoCamera
+                .telephoto
             }
         }
     }
 
-    func attachBackDualLowEnergyCamera(force: Bool = true) {
-        attachBackLowEnergyCamera(bestDeviceType: .builtInDualCamera, force: force) { backX, switchOverX in
+    func attachBackDualLowEnergyCamera(force: Bool = true, selectLensForZoom: Bool = false) {
+        attachBackLowEnergyCamera(
+            kind: .dual,
+            bestDeviceType: .builtInDualCamera,
+            force: force,
+            selectLensForZoom: selectLensForZoom
+        ) { backX, switchOverX in
             if backX < switchOverX {
-                .builtInWideAngleCamera
+                .wide
             } else {
-                .builtInTelephotoCamera
+                .telephoto
             }
         }
     }
 
-    func attachBackWideDualLowEnergyCamera(force: Bool = true) {
-        attachBackLowEnergyCamera(bestDeviceType: .builtInDualWideCamera,
-                                  force: force)
-        { backX, switchOverX in
+    func attachBackWideDualLowEnergyCamera(force: Bool = true, selectLensForZoom: Bool = false) {
+        attachBackLowEnergyCamera(
+            kind: .wideDual,
+            bestDeviceType: .builtInDualWideCamera,
+            force: force,
+            selectLensForZoom: selectLensForZoom
+        ) { backX, switchOverX in
             if backX < switchOverX {
-                .builtInUltraWideCamera
+                .ultraWide
             } else {
-                .builtInWideAngleCamera
+                .wide
             }
         }
     }
 
     private func attachBackLowEnergyCamera(
+        kind: LowEnergyCameraKind,
         bestDeviceType: AVCaptureDevice.DeviceType,
         force: Bool,
-        getDeviceType: (Float, Float) -> AVCaptureDevice.DeviceType
+        selectLensForZoom: Bool,
+        getLensForZoom: (Float, Float) -> LowEnergyCameraLens
     ) {
         cameraPosition = .back
         lowEnergyCameraUpdateBackZoom(force: force)
@@ -2952,8 +2968,13 @@ final class Model: NSObject, ObservableObject {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let switchOverX = (Float(truncating: lastZoomFactor) * scale).rounded()
-        let deviceType = getDeviceType(zoom.backX, switchOverX)
-        guard let device = AVCaptureDevice.default(deviceType, for: .video, position: .back),
+        let lens = if selectLensForZoom {
+            getLensForZoom(zoom.backX, switchOverX)
+        } else {
+            lowEnergyCameraSelectedLensByKind[kind] ?? getLensForZoom(zoom.backX, switchOverX)
+        }
+        lowEnergyCameraSelectedLensByKind[kind] = lens
+        guard let device = AVCaptureDevice.default(lens.deviceType, for: .video, position: .back),
               let scene = getSelectedScene()
         else {
             return
