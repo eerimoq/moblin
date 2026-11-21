@@ -3,6 +3,7 @@ import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
     func streamAudioLevel(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
+    func streamBuiltinAudioNumberOfChannels(numberOfChannels: Int)
     func streamLowFpsImage(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideoAttachCameraError()
     func streamVideoCaptureSessionError(_ message: String)
@@ -101,19 +102,27 @@ final class Processor: @unchecked Sendable {
     }
 
     func setHasAudio(value: Bool) {
-        processorControlQueue.async {
-            self.audio.muted = !value
-        }
+        audio.setMuted(muted: !value)
     }
 
     func setAudioGain(gain: Float) {
-        processorControlQueue.async {
-            self.audio.gain = gain
-        }
+        audio.setGain(gain: gain)
     }
 
     func setAudioDelay(delay: Double) {
         audio.setDelay(delay: delay)
+    }
+
+    func setMixedAudio(sources: [AudioMixerSourceSettings]?) {
+        audio.setMixedAudio(sources: sources)
+    }
+
+    func captureMixedAudio(ids: [String],
+                           start: Int64,
+                           count: Int,
+                           onComplete: @escaping @Sendable (AudioMixerCaptures) -> Void)
+    {
+        audio.captureMixedAudio(ids: ids, start: start, count: count, onComplete: onComplete)
     }
 
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
