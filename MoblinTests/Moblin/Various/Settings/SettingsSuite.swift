@@ -86,6 +86,20 @@ struct SettingsSuite {
     }
 
     @Test
+    func debugAudioMixerDefaultsToOff() throws {
+        let debug = try JSONDecoder().decode(SettingsDebug.self, from: Data("{}".utf8))
+        #expect(!debug.audioMixer)
+    }
+
+    @Test
+    func debugAudioMixerIsPersisted() throws {
+        let debug = SettingsDebug()
+        debug.audioMixer = true
+        let decoded = try JSONDecoder().decode(SettingsDebug.self, from: JSONEncoder().encode(debug))
+        #expect(decoded.audioMixer)
+    }
+
+    @Test
     func widgetSceneId() throws {
         let scene = SettingsWidgetScene()
         #expect(scene.sceneId == nil)

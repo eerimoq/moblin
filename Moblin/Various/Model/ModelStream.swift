@@ -368,12 +368,7 @@ extension Model {
         setGraphicsImplementation()
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: stream.audioCodec.toEncoder())
-        setAudioChannelsMap(channelsMap: [
-            0: database.audio.outputToInputChannelsMap.channel1,
-            1: database.audio.outputToInputChannelsMap.channel2,
-        ])
-        updateAudioGain()
-        updateMicDelay()
+        updateAudioMixer()
         startRecorderIfNeeded()
         reloadConnections()
         resetChat()
@@ -861,7 +856,12 @@ extension Model {
     }
 
     func updateAudioGain() {
-        let gainDb = database.audio.gainDb + (getMicById(id: mic.current.id)?.gainDb ?? 0)
+        var gainDb = database.audio.gainDb
+        if database.debug.audioMixer {
+            updateMixedMics()
+        } else {
+            gainDb += getMicById(id: mic.current.id)?.gainDb ?? 0
+        }
         media.setAudioGain(gain: pow(10, gainDb / 20.0))
     }
 
